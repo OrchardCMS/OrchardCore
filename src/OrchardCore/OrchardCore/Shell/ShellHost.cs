@@ -345,7 +345,7 @@ namespace OrchardCore.Environment.Shell
             // Pre-create and register all tenant shells.
             foreach (var settings in allSettings)
             {
-                AddAndRegisterShell(new ShellContext.PlaceHolder { Settings = settings });
+                AddAndRegisterShell(new ShellContext.PlaceHolder { Settings = settings, PreCreated = true });
             };
 
             if (_logger.IsEnabled(LogLevel.Information))
