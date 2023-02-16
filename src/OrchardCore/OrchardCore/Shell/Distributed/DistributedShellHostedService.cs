@@ -616,12 +616,8 @@ namespace OrchardCore.Environment.Shell.Distributed
                 // Reuse or create a new context based on the default tenant.
                 _context = await ReuseOrCreateDistributedContextAsync(defaultContext);
 
-                // If the context is not null.
-                if (_context != null)
-                {
-                    // Cache the default context.
-                    _defaultContext = defaultContext;
-                }
+                // Cache the default context.
+                _defaultContext = defaultContext;
 
                 // If the context is not reused.
                 if (_context != previousContext)
