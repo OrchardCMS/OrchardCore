@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using OrchardCore.ContentManagement.CompiledQueries;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Builders;
@@ -54,11 +53,8 @@ namespace OrchardCore.ContentManagement
 
         public async Task<ContentItem> NewAsync(string contentType)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentType);
-            if (contentTypeDefinition == null)
-            {
-                contentTypeDefinition = new ContentTypeDefinitionBuilder().Named(contentType).Build();
-            }
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentType)
+                ?? new ContentTypeDefinitionBuilder().Named(contentType).Build();
 
             // Create a new kernel for the model instance.
             var context = new ActivatingContentContext(new ContentItem() { ContentType = contentTypeDefinition.Name })
@@ -104,7 +100,7 @@ namespace OrchardCore.ContentManagement
             {
                 contentItems = (await _session
                     .Query<ContentItem, ContentItemIndex>()
-                    .Where(x => x.ContentItemId.IsIn(contentItemIds) && x.Latest == true)
+                    .Where(x => x.ContentItemId.IsIn(contentItemIds) && x.Latest)
                     .ListAsync()).ToList();
             }
             else
@@ -129,7 +125,7 @@ namespace OrchardCore.ContentManagement
                 {
                     contentItems = (await _session
                        .Query<ContentItem, ContentItemIndex>()
-                       .Where(x => x.ContentItemId.IsIn(itemIdsToQuery) && x.Published == true)
+                       .Where(x => x.ContentItemId.IsIn(itemIdsToQuery) && x.Published)
                        .ListAsync()).ToList();
                 }
             }
@@ -167,81 +163,7 @@ namespace OrchardCore.ContentManagement
                 return null;
             }
 
-            ContentItem contentItem = null;
-
-            if (options.IsLatest)
-            {
-                contentItem = await _session
-                    .Query<ContentItem, ContentItemIndex>()
-                    .Where(x => x.ContentItemId == contentItemId && x.Latest == true)
-                    .FirstOrDefaultAsync();
-            }
-            else if (options.IsDraft && !options.IsDraftRequired)
-            {
-                contentItem = await _session
-                    .Query<ContentItem, ContentItemIndex>()
-                    .Where(x =>
-                        x.ContentItemId == contentItemId &&
-                        x.Published == false &&
-                        x.Latest == true)
-                    .FirstOrDefaultAsync();
-            }
-            else if (options.IsDraft || options.IsDraftRequired)
-            {
-                // Loaded whatever is the latest as it will be cloned
-                contentItem = await _session
-                    .Query<ContentItem, ContentItemIndex>()
-                    .Where(x =>
-                        x.ContentItemId == contentItemId &&
-                        x.Latest == true)
-                    .FirstOrDefaultAsync();
-            }
-            else if (options.IsPublished)
-            {
-                // If the published version is requested and is already loaded, we can
-                // return it right away
-                if (_contentManagerSession.RecallPublishedItemId(contentItemId, out contentItem))
-                {
-                    return contentItem;
-                }
-
-                contentItem = await _session.ExecuteQuery(new PublishedContentItemById(contentItemId)).FirstOrDefaultAsync();
-            }
-
-            if (contentItem == null)
-            {
-                return null;
-            }
-
-            contentItem = await LoadAsync(contentItem);
-
-            if (options.IsDraftRequired)
-            {
-                // When draft is required and latest is published a new version is added
-                if (contentItem.Published)
-                {
-                    // We save the previous version further because this call might do a session query.
-                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-
-                    // Check if not versionable, meaning we use only one version
-                    if (contentTypeDefinition != null && !contentTypeDefinition.IsVersionable())
-                    {
-                        contentItem.Published = false;
-                    }
-                    else
-                    {
-                        // Save the previous version
-                        _session.Save(contentItem, checkConcurrency: true);
-
-                        contentItem = await BuildNewVersionAsync(contentItem);
-                    }
-                }
-
-                // Save the new version
-                _session.Save(contentItem, checkConcurrency: true);
-            }
-
-            return contentItem;
+            return (await GetAsync(new[] { contentItemId }, options)).FirstOrDefault();
         }
 
         public async Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, VersionOptions options)
@@ -485,52 +407,6 @@ namespace OrchardCore.ContentManagement
             _session.Save(publishedItem, checkConcurrency: true);
 
             await ReversedHandlers.InvokeAsync((handler, context) => handler.UnpublishedAsync(context), context, _logger);
-        }
-
-        protected async Task<ContentItem> BuildNewVersionAsync(ContentItem existingContentItem)
-        {
-            ContentItem latestVersion;
-
-            if (existingContentItem.Latest)
-            {
-                latestVersion = existingContentItem;
-            }
-            else
-            {
-                latestVersion = await _session
-                    .Query<ContentItem, ContentItemIndex>(x =>
-                        x.ContentItemId == existingContentItem.ContentItemId &&
-                        x.Latest)
-                    .FirstOrDefaultAsync();
-
-                if (latestVersion != null)
-                {
-                    _session.Save(latestVersion);
-                }
-            }
-
-            if (latestVersion != null)
-            {
-                latestVersion.Latest = false;
-            }
-
-            // We are not invoking NewAsync as we are cloning an existing item
-            // This will also prevent the Elements (parts) from being allocated unnecessarily
-            var buildingContentItem = new ContentItem();
-
-            buildingContentItem.ContentType = existingContentItem.ContentType;
-            buildingContentItem.ContentItemId = existingContentItem.ContentItemId;
-            buildingContentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(existingContentItem);
-            buildingContentItem.DisplayText = existingContentItem.DisplayText;
-            buildingContentItem.Latest = true;
-            buildingContentItem.Data = new JObject(existingContentItem.Data);
-
-            var context = new VersionContentContext(existingContentItem, buildingContentItem);
-
-            await Handlers.InvokeAsync((handler, context) => handler.VersioningAsync(context), context, _logger);
-            await ReversedHandlers.InvokeAsync((handler, context) => handler.VersionedAsync(context), context, _logger);
-
-            return context.BuildingContentItem;
         }
 
         protected async Task<IEnumerable<ContentItem>> BuildNewVersionsAsync(IEnumerable<ContentItem> existingContentItems)
