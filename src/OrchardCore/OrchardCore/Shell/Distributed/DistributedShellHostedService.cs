@@ -530,19 +530,20 @@ namespace OrchardCore.Environment.Shell.Distributed
         /// <summary>
         /// Creates a distributed context based on the default tenant context.
         /// </summary>
-        private Task<DistributedContext> CreateDistributedContextAsync(ShellContext defaultContext)
+        private async Task<DistributedContext> CreateDistributedContextAsync(ShellContext defaultContext)
         {
-            // The descriptor is null if the default context is a placeholder without blueprint,
-            // otherwise capture the descriptor as the blueprint may be set to null right after.
-            var descriptor = defaultContext.Blueprint?.Descriptor;
-            if (descriptor != null)
+            // Get the default tenant descriptor.
+            var descriptor = await GetDefaultShellDescriptorAsync(defaultContext);
+
+            // If no descriptor.
+            if (descriptor == null)
             {
-                // Creates a new context based on the default settings and descriptor.
-                return CreateDistributedContextAsync(defaultContext.Settings, descriptor);
+                // Nothing to create.
+                return null;
             }
 
-            // Creates a new context based on the default settings.
-            return CreateDistributedContextAsync(defaultContext.Settings);
+            // Creates a new context based on the default settings and descriptor.
+            return await CreateDistributedContextAsync(defaultContext.Settings, descriptor);
         }
 
         /// <summary>
@@ -578,6 +579,31 @@ namespace OrchardCore.Environment.Shell.Distributed
         }
 
         /// <summary>
+        /// Gets the default tenant descriptor.
+        /// </summary>
+        private async Task<ShellDescriptor> GetDefaultShellDescriptorAsync(ShellContext defaultContext)
+        {
+            // Capture the descriptor as the blueprint may be set to null right after.
+            var descriptor = defaultContext.Blueprint?.Descriptor;
+
+            // No descriptor if the default context is a placeholder without blueprint.
+            if (descriptor == null)
+            {
+                try
+                {
+                    // Get the default tenant descriptor from the database.
+                    descriptor = await _shellContextFactory.GetShellDescriptorAsync(defaultContext.Settings);
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+
+            return descriptor;
+        }
+
+        /// <summary>
         /// Gets or creates a new distributed context if the default tenant has changed.
         /// </summary>
         private async Task<DistributedContext> GetOrCreateDistributedContextAsync(ShellContext defaultContext)
@@ -587,14 +613,17 @@ namespace OrchardCore.Environment.Shell.Distributed
             {
                 var previousContext = _context;
 
-                // Reuse or create a new context based on the default context.
+                // Reuse or create a new context based on the default tenant.
                 _context = await ReuseOrCreateDistributedContextAsync(defaultContext);
+
+                // If the context is not null.
                 if (_context != null)
                 {
+                    // Cache the default context.
                     _defaultContext = defaultContext;
                 }
 
-                // If a new context was created.
+                // If the context is not reused.
                 if (_context != previousContext)
                 {
                     // Release the previous one.
@@ -617,47 +646,32 @@ namespace OrchardCore.Environment.Shell.Distributed
                 return await CreateDistributedContextAsync(defaultContext);
             }
 
-            // If the default context is still the placeholder pre-created on loading.
+            // Check if the default context is still the placeholder pre-created on loading.
             if (defaultContext is ShellContext.PlaceHolder placeholder && placeholder.PreCreated)
             {
                 // Reuse the current context.
                 return _context;
             }
 
-            // The descriptor is null if the default context is a placeholder without blueprint,
-            // otherwise capture the descriptor as the blueprint may be set to null right after.
-            var descriptor = defaultContext.Blueprint?.Descriptor;
+            // Get the default tenant descriptor.
+            var descriptor = await GetDefaultShellDescriptorAsync(defaultContext);
+
+            // If no descriptor.
             if (descriptor == null)
             {
-                try
-                {
-                    // Get the default tenant descriptor from the database.
-                    descriptor = await _shellContextFactory.GetShellDescriptorAsync(defaultContext.Settings);
-                }
-                catch
-                {
-                    return null;
-                }
+                // Nothing to create.
+                return null;
             }
 
-            // Reuse or create a new context based on the default tenant settings and descriptor.
-            return await ReuseOrCreateDistributedContextAsync(defaultContext.Settings, descriptor);
-        }
-
-        /// <summary>
-        /// Reuses or creates a new distributed context based on the default tenant settings and descriptor.
-        /// </summary>
-        private Task<DistributedContext> ReuseOrCreateDistributedContextAsync(ShellSettings defaultSettings, ShellDescriptor descriptor)
-        {
             // Check if the default tenant descriptor was updated.
             if (_context.Context.Blueprint.Descriptor.SerialNumber != descriptor.SerialNumber)
             {
                 // Creates a new context based on the default settings and descriptor.
-                return CreateDistributedContextAsync(defaultSettings, descriptor);
+                return await CreateDistributedContextAsync(defaultContext.Settings, descriptor);
             }
 
             // Reuse the current context.
-            return Task.FromResult(_context);
+            return _context;
         }
 
         /// <summary>
