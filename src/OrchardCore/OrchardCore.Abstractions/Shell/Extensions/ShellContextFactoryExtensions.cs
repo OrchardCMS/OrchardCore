@@ -30,6 +30,9 @@ public static class ShellContextFactoryExtensions
     public static Task<ShellContext> CreateMinimumContextAsync(this IShellContextFactory shellContextFactory, ShellSettings shellSettings) =>
         shellContextFactory.CreateDescribedContextAsync(shellSettings, new ShellDescriptor());
 
+    /// <summary>
+    /// Gets the shell descriptor from the store.
+    /// </summary>
     public static async Task<ShellDescriptor> GetShellDescriptorAsync(this IShellContextFactory shellContextFactory, ShellSettings shellSettings)
     {
         ShellDescriptor shellDescriptor = null;

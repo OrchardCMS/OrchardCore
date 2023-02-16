@@ -591,7 +591,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             {
                 try
                 {
-                    // Get the default tenant descriptor from the database.
+                    // Get the default tenant descriptor from the store.
                     descriptor = await _shellContextFactory.GetShellDescriptorAsync(defaultContext.Settings);
                 }
                 catch
