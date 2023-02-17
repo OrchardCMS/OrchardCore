@@ -4,9 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Environment.Shell.Builders;
 
-/// <summary>
-/// Provides a mechanism for initializing tenant container services asynchronously.
-/// </summary>
 public static class ServiceCollectionExtensions
 {
     /// <summary>
