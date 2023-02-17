@@ -75,7 +75,7 @@ namespace OrchardCore.Environment.Shell.Builders
             var blueprint = await _compositionStrategy.ComposeAsync(settings, shellDescriptor);
             var provider = _shellContainerFactory.CreateContainer(settings, blueprint);
 
-            var asyncInitializers = provider.GetServices<IShellContainerAsyncInitializer>();
+            var asyncInitializers = provider.GetServices<IShellAsyncInitializer>();
             foreach (var asyncInitializer in asyncInitializers)
             {
                 await asyncInitializer.InitializeAsync(provider);

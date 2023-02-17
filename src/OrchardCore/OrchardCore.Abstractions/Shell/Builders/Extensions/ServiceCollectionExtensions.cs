@@ -10,14 +10,9 @@ namespace OrchardCore.Environment.Shell.Builders;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds an async initializer that will get called on each tenant container creation.
+    /// Registers an initialization delegate that will be executed asynchronously on each tenant container creation.
     /// </summary>
-    public static IServiceCollection AddShellContainerAsyncInitializer(
-        this IServiceCollection services,
-        Func<IServiceProvider, Task> _initializeAsync)
-    {
-        services.AddTransient<IShellContainerAsyncInitializer>(sp => new ShellContainerAsyncInitializer(_initializeAsync));
+    public static IServiceCollection AddAsyncInitialization(this IServiceCollection services, Func<IServiceProvider, Task> _initializeAsync) =>
+            services.AddTransient<IShellAsyncInitializer>(sp => new ShellAsyncInitializer(_initializeAsync));
 
-        return services;
-    }
 }

@@ -4,7 +4,6 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Options;
-using OrchardCore.Abstractions.Shell;
 using OrchardCore.Data;
 using OrchardCore.Data.Documents;
 using OrchardCore.Data.Migration;
@@ -116,7 +115,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     return store;
                 });
 
-                services.AddShellContainerAsyncInitializer(async sp =>
+                services.AddAsyncInitialization(async sp =>
                 {
                     var store = sp.GetService<IStore>();
                     if (store == null)
