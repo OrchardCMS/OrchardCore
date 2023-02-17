@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage.AmazonS3;
 using OrchardCore.Media.AmazonS3.ViewModels;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Media.AmazonS3
 {

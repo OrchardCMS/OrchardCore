@@ -26,7 +26,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
 
             if (model != null && (model.IncludeAll || model.Indices.Length > 0))
             {
-                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("elastic-index-rebuild", async scope => {
+                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("elastic-index-rebuild", async scope =>
+                {
 
                     var elasticIndexingService = scope.ServiceProvider.GetService<ElasticIndexingService>();
                     var elasticIndexSettingsService = scope.ServiceProvider.GetService<ElasticIndexSettingsService>();

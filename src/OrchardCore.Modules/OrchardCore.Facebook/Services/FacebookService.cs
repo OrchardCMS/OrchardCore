@@ -41,7 +41,7 @@ namespace OrchardCore.Facebook.Services
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 
-        public Task<IEnumerable<ValidationResult>> ValidateSettingsAsync(FacebookSettings settings)
+        public IEnumerable<ValidationResult> ValidateSettings(FacebookSettings settings)
         {
             if (settings == null)
             {
@@ -66,7 +66,7 @@ namespace OrchardCore.Facebook.Services
                 }));
             }
 
-            return Task.FromResult<IEnumerable<ValidationResult>>(results);
+            return results;
         }
     }
 }

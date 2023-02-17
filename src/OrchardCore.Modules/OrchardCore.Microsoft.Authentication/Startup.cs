@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Microsoft.Identity.Web;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Microsoft.Authentication.Configuration;
@@ -12,6 +12,7 @@ using OrchardCore.Microsoft.Authentication.Deployment;
 using OrchardCore.Microsoft.Authentication.Drivers;
 using OrchardCore.Microsoft.Authentication.Recipes;
 using OrchardCore.Microsoft.Authentication.Services;
+using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
@@ -31,6 +32,9 @@ namespace OrchardCore.Microsoft.Authentication
             services.AddScoped<IDisplayDriver<ISite>, MicrosoftAccountSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuMicrosoftAccount>();
             services.AddRecipeExecutionStep<MicrosoftAccountSettingsStep>();
+
+            services.AddTransient<IConfigureOptions<MicrosoftAccountSettings>, MicrosoftAccountSettingsConfiguration>();
+
             // Register the options initializers required by the Microsoft Account Handler.
             services.TryAddEnumerable(new[]
             {
@@ -55,6 +59,9 @@ namespace OrchardCore.Microsoft.Authentication
 
             services.AddScoped<IDisplayDriver<ISite>, AzureADSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuAAD>();
+
+            services.AddTransient<IConfigureOptions<AzureADSettings>, AzureADSettingsConfiguration>();
+
             // Register the options initializers required by the Policy Scheme, Cookie and OpenId Connect Handler.
             services.TryAddEnumerable(new[]
             {
@@ -65,7 +72,7 @@ namespace OrchardCore.Microsoft.Authentication
                 // The build warning is disabled temporarily until the code can be migrated.
 
                 ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, AzureADOptionsConfiguration>(),
-                ServiceDescriptor.Transient<IConfigureOptions<AzureADOptions>, AzureADOptionsConfiguration>(),
+                ServiceDescriptor.Transient<IConfigureOptions<MicrosoftIdentityOptions>, AzureADOptionsConfiguration>(),
                 ServiceDescriptor.Transient<IConfigureOptions<PolicySchemeOptions>, AzureADOptionsConfiguration>(),
                 ServiceDescriptor.Transient<IConfigureOptions<OpenIdConnectOptions>, OpenIdConnectOptionsConfiguration>(),
 

@@ -8,7 +8,7 @@ namespace OrchardCore.ContentTypes.Deployment
     {
         public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            if (!(step is DeleteContentDefinitionDeploymentStep deleteContentDefinitionStep))
+            if (step is not DeleteContentDefinitionDeploymentStep deleteContentDefinitionStep)
             {
                 return Task.CompletedTask;
             }

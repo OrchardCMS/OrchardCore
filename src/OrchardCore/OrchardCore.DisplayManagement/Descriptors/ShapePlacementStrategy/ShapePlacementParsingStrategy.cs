@@ -61,7 +61,10 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
                         {
                             JsonSerializer serializer = new JsonSerializer();
                             var placementFile = serializer.Deserialize<PlacementFile>(jtr);
-                            ProcessPlacementFile(builder, featureDescriptor, placementFile);
+                            if (placementFile != null)
+                            {
+                                ProcessPlacementFile(builder, featureDescriptor, placementFile);
+                            }
                         }
                     }
                 }

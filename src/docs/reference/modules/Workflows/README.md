@@ -257,6 +257,29 @@ Developing custom activities involve the following steps:
 3. Optionally implement a **view model** if your activity has properties that the user should be able to configure.
 4. Implement the various Razor views for the various shapes provided by the driver. Although not required, it is recommended to store these files in the `Views/Items` folder. Note that it is required for your views to be discoverable by the display engine.  
 
+You may trigger a custom event activity by calling the `TriggerEventAsync` method on `IWorkflowManager`. The following is an example of how to trigger the workflow for a custom event named `CustomTaskActivity`
+
+```csharp
+var customData = new CustomDto();
+
+var input = new Dictionary<string, object>()
+{
+    // Here we are passing custom data to the workflow's input.
+    { "data", customData}
+};
+
+await workflowManager.TriggerEventAsync("CustomTaskActivity", input);
+```
+
+You may passing an instance of a custom object to the workflow's input by adding it to the input collection. If you are looking to use liquid to access the member of the custom object, you must register a member access strategy. The following example for defining a custom type.
+
+```csharp
+services.Configure<TemplateOptions>(o =>
+{
+    o.MemberAccessStrategy.Register<CustomDto>();
+});
+```
+
 ### Activity Display Types
 
 An activity has the following display types:
@@ -276,6 +299,7 @@ Used when the activity is rendered as part of the workflow editor design surface
 
 - `Name`
 - `Category`
+- `DisplayText`
 - `Properties`
 - `HasEditor`
 - `GetPossibleOutcomes`
@@ -290,11 +314,7 @@ Used when the activity is rendered as part of the workflow editor design surface
 - `OnActivityExecutingAsync`
 - `OnActivityExecutedAsync`
 
-The `IEvent` interface adds the following member:
-
-- `CanStartWorkflow`
-
-The following is an example of a simple activity implementation that displays a notification:
+The following is an example of a simple task activity implementation that displays a notification:
 
 ```csharp
 public class NotifyTask : TaskActivity

@@ -94,7 +94,7 @@
         <p class="lead">@T["Please answer a few questions to configure your site."]</p>
     </div>
 
-    <div asp-validation-summary="ModelOnly"></div>
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
     @if (defaultRecipe == null)
     {

@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Resolvers;
-using GraphQL.Types;
 
 namespace OrchardCore.Apis.GraphQL.Resolvers
 {

@@ -40,7 +40,7 @@ namespace OrchardCore.Tests.Apis.Context
             var tenantName = Guid.NewGuid().ToString("n");
             var tablePrefix = await TablePrefixGenerator.GeneratePrefixAsync();
 
-            var createModel = new Tenants.ViewModels.CreateApiViewModel
+            var createModel = new Tenants.Models.TenantApiModel
             {
                 DatabaseProvider = DatabaseProvider,
                 TablePrefix = tablePrefix,
