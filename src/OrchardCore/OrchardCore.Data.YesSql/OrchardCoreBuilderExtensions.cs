@@ -10,6 +10,7 @@ using OrchardCore.Data.Documents;
 using OrchardCore.Data.Migration;
 using OrchardCore.Data.YesSql;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Environment.Shell.Scope;
@@ -40,7 +41,6 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 services.AddScoped<IDbConnectionValidator, DbConnectionValidator>();
                 services.AddScoped<IDataMigrationManager, DataMigrationManager>();
-                services.AddTransient<IShellContextEvents, DataStoreInitializer>();
                 services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
 
                 services.AddTransient<ITableNameConventionFactory, TableNameConventionFactory>();
@@ -114,6 +114,23 @@ namespace Microsoft.Extensions.DependencyInjection
                     store.RegisterIndexes(indexes);
 
                     return store;
+                });
+
+                services.AddShellContainerAsyncInitializer(async sp =>
+                {
+                    var store = sp.GetService<IStore>();
+                    if (store == null)
+                    {
+                        return;
+                    }
+
+                    await store.InitializeAsync();
+
+                    var storeCollectionOptions = sp.GetService<IOptions<StoreCollectionOptions>>().Value;
+                    foreach (var collection in storeCollectionOptions.Collections)
+                    {
+                        await store.InitializeCollectionAsync(collection);
+                    }
                 });
 
                 services.AddScoped(sp =>
