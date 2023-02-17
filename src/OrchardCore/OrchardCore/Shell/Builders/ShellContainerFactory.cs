@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -32,7 +33,7 @@ namespace OrchardCore.Environment.Shell.Builders
             _serviceProvider = serviceProvider;
         }
 
-        public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint)
+        public async Task<IServiceProvider> CreateContainerAsync(ShellSettings settings, ShellBlueprint blueprint)
         {
             var tenantServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
@@ -204,6 +205,12 @@ namespace OrchardCore.Environment.Shell.Builders
                         typeFeatureProvider.TryAdd(type, feature);
                     }
                 }
+            }
+
+            startups = shellServiceProvider.GetServices<IStartup>().OrderBy(s => s.InitializeOrder);
+            foreach (var startup in startups)
+            {
+                await startup.InitializeServicesAsync(shellServiceProvider);
             }
 
             return shellServiceProvider;
