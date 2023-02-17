@@ -270,12 +270,18 @@ namespace OrchardCore.BackgroundTasks.Controllers
         {
             var name = task.GetTaskName();
 
-            if (document.Settings.ContainsKey(name))
+            BackgroundTaskSettings settings;
+            var defaultSettings = task.GetDefaultSettings();
+
+            if (document.Settings.TryGetValue(name, out settings))
             {
-                return document.Settings[name];
+                // Set the name using the default settings to ensure it populates old documents.
+                settings.Name = defaultSettings.Name;
+
+                return settings;
             }
 
-            return task.GetDefaultSettings();
+            return defaultSettings;
         }
     }
 }
