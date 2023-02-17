@@ -21,7 +21,7 @@ namespace OrchardCore.Setup
 
         private string[] _supportedCultures = new string[]
         {
-            "ar", "cs", "de", "el", "en", "es", "fa", "fr", "it", "ja", "pl", "pt-BR", "ru", "sv", "tr", "vi", "zh-Hans-CN", "zh-Hant-TW"
+            "ar", "cs", "de", "el", "en", "es", "fa", "fr", "it", "ja", "pl", "pt-BR", "ru", "sv", "tr", "vi", "zh-CN", "zh-TW", "zh-Hans-CN", "zh-Hant-TW"
         };
 
         public Startup(IShellConfiguration shellConfiguration)
@@ -49,16 +49,18 @@ namespace OrchardCore.Setup
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var localizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
+            var ignoreSystemSettings = serviceProvider.GetService<IOptions<CultureOptions>>().Value.IgnoreSystemSettings;
 
+            var localizationOptionsUpdater = new LocalizationOptionsUpdater(localizationOptions, ignoreSystemSettings);
             if (!String.IsNullOrEmpty(_defaultCulture))
             {
-                localizationOptions.SetDefaultCulture(_defaultCulture);
+                localizationOptionsUpdater.SetDefaultCulture(_defaultCulture);
                 _supportedCultures = _supportedCultures.Union(new[] { _defaultCulture }).ToArray();
             }
 
             if (_supportedCultures?.Length > 0)
             {
-                localizationOptions
+                localizationOptionsUpdater
                     .AddSupportedCultures(_supportedCultures)
                     .AddSupportedUICultures(_supportedCultures);
             }

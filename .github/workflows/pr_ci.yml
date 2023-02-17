@@ -23,7 +23,8 @@ jobs:
         node-version: "15"
     - name: Build
       run: |
-        dotnet build -c Release
+        dotnet build -c Release -f net7.0
+        dotnet build -c Release -f net6.0
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
