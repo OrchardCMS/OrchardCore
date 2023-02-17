@@ -49,25 +49,23 @@ namespace OrchardCore.Setup
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var localizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
-            var cultureOptions = serviceProvider.GetService<IOptions<CultureOptions>>().Value;
+            var ignoreSystemSettings = serviceProvider.GetService<IOptions<CultureOptions>>().Value.IgnoreSystemSettings;
 
-            var requestLocalizationOptions = new OrchardCoreRequestLocalizationOptions(cultureOptions.IgnoreSystemSettings)
-                .WithRequestLocalizationOptions(localizationOptions);
-
+            var localizationOptionsUpdater = new LocalizationOptionsUpdater(localizationOptions, ignoreSystemSettings);
             if (!String.IsNullOrEmpty(_defaultCulture))
             {
-                requestLocalizationOptions.SetDefaultCulture(_defaultCulture);
+                localizationOptionsUpdater.SetDefaultCulture(_defaultCulture);
                 _supportedCultures = _supportedCultures.Union(new[] { _defaultCulture }).ToArray();
             }
 
             if (_supportedCultures?.Length > 0)
             {
-                requestLocalizationOptions
+                localizationOptionsUpdater
                     .AddSupportedCultures(_supportedCultures)
                     .AddSupportedUICultures(_supportedCultures);
             }
 
-            app.UseRequestLocalization(requestLocalizationOptions);
+            app.UseRequestLocalization(localizationOptions);
 
             routes.MapAreaControllerRoute(
                 name: "Setup",
