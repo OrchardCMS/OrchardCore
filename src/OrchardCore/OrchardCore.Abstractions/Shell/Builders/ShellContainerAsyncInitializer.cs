@@ -10,9 +10,7 @@ internal class ShellContainerAsyncInitializer : IShellContainerAsyncInitializer
 {
     private readonly Func<IServiceProvider, Task> _initializeAsync;
 
-    public ShellContainerAsyncInitializer(Func<IServiceProvider, Task> initializeAsync) =>
-        _initializeAsync = initializeAsync;
+    public ShellContainerAsyncInitializer(Func<IServiceProvider, Task> initializeAsync) => _initializeAsync = initializeAsync;
 
-    public Task InitializeAsync(IServiceProvider serviceProvider) =>
-        _initializeAsync.Invoke(serviceProvider);
+    public Task InitializeAsync(IServiceProvider serviceProvider) => _initializeAsync.Invoke(serviceProvider);
 }
