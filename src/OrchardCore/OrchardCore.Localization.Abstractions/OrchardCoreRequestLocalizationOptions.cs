@@ -12,6 +12,7 @@ namespace OrchardCore.Localization;
 public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
 {
     private readonly bool _useUserOverride;
+    private RequestLocalizationOptions _requestLocalizationOptions;
 
     /// <summary>
     /// Creates a new <see cref="OrchardCoreRequestLocalizationOptions"/> with default values.
@@ -45,6 +46,8 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
         FallBackToParentCultures = requestLocalizationOptions.FallBackToParentCultures;
         FallBackToParentUICultures = requestLocalizationOptions.FallBackToParentUICultures;
 
+        _requestLocalizationOptions = requestLocalizationOptions;
+
         return this;
     }
 
@@ -60,6 +63,14 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
 
         SupportedCultures = supportedCultures;
 
+        // As long as this custom derived class is used, the original options need to be updated,
+        // so that we can retrieve the values by injecting 'IOptions<RequestLocalizationOptions>'.
+        // as it is done in the 'OC.Setup' index razor view.
+        if (_requestLocalizationOptions != null)
+        {
+            _requestLocalizationOptions.SupportedCultures= SupportedCultures;
+        }
+
         return this;
     }
 
@@ -74,6 +85,14 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
 
         SupportedUICultures = supportedUICultures;
 
+        // As long as this custom derived class is used, the original options need to be updated,
+        // so that we can retrieve the values by injecting 'IOptions<RequestLocalizationOptions>',
+        // as it is done in the 'OC.Setup' index razor view.
+        if (_requestLocalizationOptions != null)
+        {
+            _requestLocalizationOptions.SupportedUICultures = SupportedUICultures;
+        }
+
         return this;
     }
 
@@ -81,6 +100,14 @@ public class OrchardCoreRequestLocalizationOptions : RequestLocalizationOptions
     public new OrchardCoreRequestLocalizationOptions SetDefaultCulture(string defaultCulture)
     {
         DefaultRequestCulture = new RequestCulture(new CultureInfo(defaultCulture, _useUserOverride));
+
+        // As long as this custom derived class is used, the original options need to be updated,
+        // so that we can retrieve the values by injecting 'IOptions<RequestLocalizationOptions>'.
+        // as it is done in the 'OC.Setup' index razor view.
+        if (_requestLocalizationOptions != null)
+        {
+            _requestLocalizationOptions.DefaultRequestCulture = DefaultRequestCulture;
+        }
 
         return this;
     }
