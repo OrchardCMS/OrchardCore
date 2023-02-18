@@ -115,7 +115,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     return store;
                 });
 
-                services.AddAsyncInitialization(async sp =>
+                services.Initialize(async sp =>
                 {
                     var store = sp.GetService<IStore>();
                     if (store == null)

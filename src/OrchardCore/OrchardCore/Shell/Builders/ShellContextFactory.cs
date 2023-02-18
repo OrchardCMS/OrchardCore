@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 
@@ -75,10 +76,10 @@ namespace OrchardCore.Environment.Shell.Builders
             var blueprint = await _compositionStrategy.ComposeAsync(settings, shellDescriptor);
             var provider = _shellContainerFactory.CreateContainer(settings, blueprint);
 
-            var asyncInitializers = provider.GetServices<IShellAsyncInitializer>();
-            foreach (var asyncInitializer in asyncInitializers)
+            var options = provider.GetService<IOptions<ShellContainerOptions>>().Value;
+            foreach (var initializeAsync in options.AsyncInitializations)
             {
-                await asyncInitializer.InitializeAsync(provider);
+                await initializeAsync(provider);
             }
 
             return new ShellContext
