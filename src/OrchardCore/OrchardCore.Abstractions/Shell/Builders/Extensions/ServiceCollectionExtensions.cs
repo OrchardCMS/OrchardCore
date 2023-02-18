@@ -9,6 +9,6 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// Registers an initialization delegate to be executed asynchronously on tenant container creation.
     /// </summary>
-    public static IServiceCollection Initialize(this IServiceCollection services, Func<IServiceProvider, ValueTask> _initializeAsync) =>
-            services.Configure<ShellContainerOptions>(options => options.AsyncInitializations.Add(_initializeAsync));
+    public static IServiceCollection Initialize(this IServiceCollection services, Func<IServiceProvider, ValueTask> _initializeAsync)
+        => services.Configure<ShellContainerOptions>(options => options.Initializations.Add(_initializeAsync));
 }

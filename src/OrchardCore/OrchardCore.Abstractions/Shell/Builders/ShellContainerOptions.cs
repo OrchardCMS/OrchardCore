@@ -9,5 +9,5 @@ internal class ShellContainerOptions
     /// <summary>
     /// Initialization delegates to be executed asynchronously on tenant container creation.
     /// </summary>
-    public readonly List<Func<IServiceProvider, ValueTask>> AsyncInitializations = new();
+    public readonly List<Func<IServiceProvider, ValueTask>> Initializations = new();
 }

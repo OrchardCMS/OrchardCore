@@ -77,7 +77,7 @@ namespace OrchardCore.Environment.Shell.Builders
             var provider = _shellContainerFactory.CreateContainer(settings, blueprint);
 
             var options = provider.GetService<IOptions<ShellContainerOptions>>().Value;
-            foreach (var initializeAsync in options.AsyncInitializations)
+            foreach (var initializeAsync in options.Initializations)
             {
                 await initializeAsync(provider);
             }
