@@ -199,6 +199,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 }
 
                 settings.Title = defaultSettiongs.Title;
+                settings.Description = defaultSettiongs.Description;
                 settings.Schedule = model.Schedule?.Trim();
                 settings.LockTimeout = model.LockTimeout;
                 settings.LockExpiration = model.LockExpiration;
@@ -214,33 +215,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
             model.DefaultSchedule = defaultSettiongs.Schedule;
 
             return View(model);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Delete(string name)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
-            {
-                return Forbid();
-            }
-
-            if (String.IsNullOrWhiteSpace(name))
-            {
-                return NotFound();
-            }
-
-            var document = await _backgroundTaskManager.LoadDocumentAsync();
-
-            if (!document.Settings.ContainsKey(name))
-            {
-                return NotFound();
-            }
-
-            await _backgroundTaskManager.RemoveAsync(name);
-
-            await _notifier.SuccessAsync(H["The task has been deleted."]);
-
-            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
