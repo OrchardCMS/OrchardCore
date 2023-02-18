@@ -16,14 +16,14 @@
   </PropertyGroup>
 
   <!-- These versions are used for the NuGet packages that are dependent on the current TFM -->
+  <PropertyGroup>
+    <AspNetCorePackagesVersion>7.0.3</AspNetCorePackagesVersion>
+    <MicrosoftExtensionsPackagesVersion>7.0.3</MicrosoftExtensionsPackagesVersion>
+  </PropertyGroup>
+
   <PropertyGroup Condition="$(TargetFramework) == 'net6.0'">
     <AspNetCorePackagesVersion>6.0.14</AspNetCorePackagesVersion>
     <MicrosoftExtensionsPackagesVersion>6.0.14</MicrosoftExtensionsPackagesVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="$(TargetFramework) == 'net7.0'">
-    <AspNetCorePackagesVersion>7.0.3</AspNetCorePackagesVersion>
-    <MicrosoftExtensionsPackagesVersion>7.0.3</MicrosoftExtensionsPackagesVersion>
   </PropertyGroup>
 
   <!-- 'Microsoft.AspNetCore' packages that are not included in the ASP.NET Core shared framework -->
