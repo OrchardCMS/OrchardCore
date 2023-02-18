@@ -152,17 +152,17 @@ namespace OrchardCore.BackgroundTasks.Controllers
             }
 
             var document = await _backgroundTaskManager.GetDocumentAsync();
-            var defaultSettiongs = task.GetDefaultSettings();
+            var defaultSettings = task.GetDefaultSettings();
             if (!document.Settings.TryGetValue(name, out var settings))
             {
-                settings = defaultSettiongs;
+                settings = defaultSettings;
             }
 
             var model = new BackgroundTaskViewModel
             {
-                Name = defaultSettiongs.Name,
-                Title = defaultSettiongs.Title,
-                DefaultSchedule = defaultSettiongs.Schedule,
+                Name = defaultSettings.Name,
+                Title = defaultSettings.Title,
+                DefaultSchedule = defaultSettings.Schedule,
                 Enable = settings.Enable,
                 Schedule = settings.Schedule,
                 Description = settings.Description,
@@ -187,7 +187,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
             {
                 return NotFound();
             }
-            var defaultSettiongs = task.GetDefaultSettings();
+            var defaultSettings = task.GetDefaultSettings();
 
             if (ModelState.IsValid)
             {
@@ -195,11 +195,11 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
                 if (!document.Settings.TryGetValue(model.Name, out var settings))
                 {
-                    settings = defaultSettiongs;
+                    settings = defaultSettings;
                 }
 
-                settings.Title = defaultSettiongs.Title;
-                settings.Description = defaultSettiongs.Description;
+                settings.Title = defaultSettings.Title;
+                settings.Description = defaultSettings.Description;
                 settings.Schedule = model.Schedule?.Trim();
                 settings.LockTimeout = model.LockTimeout;
                 settings.LockExpiration = model.LockExpiration;
@@ -211,8 +211,8 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            model.Title = defaultSettiongs.Title;
-            model.DefaultSchedule = defaultSettiongs.Schedule;
+            model.Title = defaultSettings.Title;
+            model.DefaultSchedule = defaultSettings.Schedule;
 
             return View(model);
         }
