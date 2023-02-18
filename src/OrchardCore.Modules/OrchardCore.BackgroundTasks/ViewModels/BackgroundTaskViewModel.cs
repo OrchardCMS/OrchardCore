@@ -4,7 +4,6 @@ namespace OrchardCore.BackgroundTasks.ViewModels
 {
     public class BackgroundTaskViewModel
     {
-        [BindNever]
         public string Name { get; set; }
 
         [BindNever]
