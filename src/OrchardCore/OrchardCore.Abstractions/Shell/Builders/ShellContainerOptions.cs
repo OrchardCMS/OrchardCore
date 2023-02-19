@@ -7,7 +7,7 @@ namespace OrchardCore.Environment.Shell.Builders;
 internal class ShellContainerOptions
 {
     /// <summary>
-    /// Initialization delegates to be executed asynchronously on tenant container creation.
+    /// Initialize delegates to be executed asynchronously on tenant container creation.
     /// </summary>
-    public readonly List<Func<IServiceProvider, ValueTask>> Initializations = new();
+    public readonly List<Func<IServiceProvider, ValueTask>> Initializers = new();
 }
