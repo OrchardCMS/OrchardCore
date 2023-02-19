@@ -64,26 +64,25 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             var items = _backgroundTasks.Select(task =>
             {
-                var name = task.GetTaskName();
                 var defaultSettings = task.GetDefaultSettings();
 
-                if (document.Settings.TryGetValue(name, out var settings))
+                if (document.Settings.TryGetValue(task.GetTaskName(), out var settings))
                 {
                     return new BackgroundTaskEntry()
                     {
+                        Title = defaultSettings.Title,
                         Name = settings.Name,
                         Description = settings.Description,
                         Enable = settings.Enable,
-                        Title = defaultSettings.Title
                     };
                 }
 
                 return new BackgroundTaskEntry()
                 {
+                    Title = defaultSettings.Title,
                     Name = defaultSettings.Name,
                     Description = defaultSettings.Description,
                     Enable = defaultSettings.Enable,
-                    Title = defaultSettings.Title
                 };
             });
 
@@ -167,7 +166,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 Schedule = settings.Schedule,
                 Description = settings.Description,
                 LockTimeout = settings.LockTimeout,
-                LockExpiration = settings.LockExpiration
+                LockExpiration = settings.LockExpiration,
             };
 
             return View(model);
