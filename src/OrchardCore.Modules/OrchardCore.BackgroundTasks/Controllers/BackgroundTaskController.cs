@@ -88,8 +88,8 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             if (!String.IsNullOrWhiteSpace(options.Search))
             {
-                items = items.Where(x => x.Title.Contains(options.Search, StringComparison.OrdinalIgnoreCase)
-                    || (x.Description != null && x.Description.Contains(options.Search, StringComparison.OrdinalIgnoreCase))
+                items = items.Where(entry => entry.Title != null && entry.Title.Contains(options.Search, StringComparison.OrdinalIgnoreCase)
+                    || (entry.Description != null && entry.Description.Contains(options.Search, StringComparison.OrdinalIgnoreCase))
                 );
             }
 
