@@ -1,11 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Notifications.Models;
 using OrchardCore.Users;
-using OrchardCore.Users.Models;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -15,21 +15,21 @@ namespace OrchardCore.Notifications.Activities;
 
 public abstract class NotifyUserTaskActivity : TaskActivity
 {
-    protected readonly INotificationService _notificationCoordinator;
+    protected readonly INotificationService _notificationService;
     protected readonly IWorkflowExpressionEvaluator _expressionEvaluator;
     protected readonly IStringLocalizer S;
     protected readonly HtmlEncoder _htmlEncoder;
     protected readonly ILogger _logger;
 
     public NotifyUserTaskActivity(
-        INotificationService notificationCoordinator,
+        INotificationService notificationService,
         IWorkflowExpressionEvaluator expressionEvaluator,
         HtmlEncoder htmlEncoder,
         ILogger logger,
         IStringLocalizer localizer
     )
     {
-        _notificationCoordinator = notificationCoordinator;
+        _notificationService = notificationService;
         _expressionEvaluator = expressionEvaluator;
         _htmlEncoder = htmlEncoder;
         _logger = logger;
@@ -38,19 +38,25 @@ public abstract class NotifyUserTaskActivity : TaskActivity
 
     public override LocalizedString Category => S["Notifications"];
 
-    public WorkflowExpression<string> Summary
+    public WorkflowExpression<string> Subject
     {
         get => GetProperty(() => new WorkflowExpression<string>());
         set => SetProperty(value);
     }
 
-    public WorkflowExpression<string> Body
+    public WorkflowExpression<string> TextBody
     {
         get => GetProperty(() => new WorkflowExpression<string>());
         set => SetProperty(value);
     }
 
-    public bool IsHtmlBody
+    public WorkflowExpression<string> HtmlBody
+    {
+        get => GetProperty(() => new WorkflowExpression<string>());
+        set => SetProperty(value);
+    }
+
+    public bool IsHtmlPreferred
     {
         get => GetProperty(() => false);
         set => SetProperty(value);
@@ -58,29 +64,30 @@ public abstract class NotifyUserTaskActivity : TaskActivity
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        return Outcomes(S["Done"], S["Failed"], S["Failed: user not found"], S["Failed: disabled User"]);
+        return Outcomes(S["Done"], S["Failed"], S["Failed: no user found"]);
     }
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var user = await GetUserAsync(workflowContext, activityContext);
+        var users = await GetUsersAsync(workflowContext, activityContext);
 
-        if (user == null)
+        if (users == null || !users.Any())
         {
-            return Outcomes("Failed: user not found");
-        }
-
-        if (user is User u && !u.IsEnabled)
-        {
-            return Outcomes("Failed: disabled user");
+            return Outcomes("Failed: no user found");
         }
 
         var message = await GetMessageAsync(workflowContext);
 
-        var result = await _notificationCoordinator.SendAsync(user, message);
-        workflowContext.LastResult = result;
+        var totalSent = 0;
 
-        if (result == 0)
+        foreach (var user in users)
+        {
+            totalSent += await _notificationService.SendAsync(user, message);
+        }
+
+        workflowContext.LastResult = totalSent;
+
+        if (totalSent == 0)
         {
             return Outcomes("Failed");
         }
@@ -90,11 +97,12 @@ public abstract class NotifyUserTaskActivity : TaskActivity
 
     protected virtual async Task<INotificationMessage> GetMessageAsync(WorkflowExecutionContext workflowContext)
     {
-        return new HtmlNotificationMessage()
+        return new NotificationMessage()
         {
-            Summary = await _expressionEvaluator.EvaluateAsync(Summary, workflowContext, _htmlEncoder),
-            Body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, _htmlEncoder),
-            IsHtmlBody = IsHtmlBody
+            Summary = await _expressionEvaluator.EvaluateAsync(Subject, workflowContext, null),
+            TextBody = await _expressionEvaluator.EvaluateAsync(TextBody, workflowContext, null),
+            HtmlBody = await _expressionEvaluator.EvaluateAsync(HtmlBody, workflowContext, _htmlEncoder),
+            IsHtmlPreferred = IsHtmlPreferred,
         };
     }
 
@@ -102,5 +110,5 @@ public abstract class NotifyUserTaskActivity : TaskActivity
 
     abstract public override LocalizedString DisplayText { get; }
 
-    abstract protected Task<IUser> GetUserAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext);
+    abstract protected Task<IEnumerable<IUser>> GetUsersAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext);
 }

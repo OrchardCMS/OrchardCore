@@ -24,6 +24,7 @@ using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Setup.Services;
+using OrchardCore.Tenants.Models;
 using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
 
@@ -86,7 +87,7 @@ namespace OrchardCore.Tenants.Controllers
 
         [HttpPost]
         [Route("create")]
-        public async Task<IActionResult> Create(CreateApiViewModel model)
+        public async Task<IActionResult> Create(TenantApiModel model)
         {
             if (!_currentShellSettings.IsDefaultShell())
             {
@@ -98,9 +99,7 @@ namespace OrchardCore.Tenants.Controllers
                 return this.ChallengeOrForbid("Api");
             }
 
-            model.IsNewTenant = !_shellHost.TryGetSettings(model.Name, out var settings);
-
-            ModelState.AddModelErrors(await _tenantValidator.ValidateAsync(model));
+            await ValidateModelAsync(model, isNewTenant: !_shellHost.TryGetSettings(model.Name, out var settings));
 
             if (ModelState.IsValid)
             {
@@ -114,15 +113,15 @@ namespace OrchardCore.Tenants.Controllers
                     shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
                     shellSettings.State = TenantState.Uninitialized;
 
-					shellSettings["Category"] = model.Category;
-            		shellSettings["Description"] = model.Description;
+                    shellSettings["Category"] = model.Category;
+                    shellSettings["Description"] = model.Description;
                     shellSettings["ConnectionString"] = model.ConnectionString;
                     shellSettings["TablePrefix"] = model.TablePrefix;
                     shellSettings["Schema"] = model.Schema;
                     shellSettings["DatabaseProvider"] = model.DatabaseProvider;
                     shellSettings["Secret"] = Guid.NewGuid().ToString();
                     shellSettings["RecipeName"] = model.RecipeName;
-                    shellSettings["FeatureProfile"] = model.FeatureProfile;
+                    shellSettings["FeatureProfile"] = String.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
 
                     await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
@@ -138,6 +137,56 @@ namespace OrchardCore.Tenants.Controllers
 
                     return Created(GetEncodedUrl(settings, token), null);
                 }
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        [HttpPost]
+        [Route("edit")]
+        public async Task<IActionResult> Edit(TenantApiModel model)
+        {
+            if (!_currentShellSettings.IsDefaultShell())
+            {
+                return Forbid();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
+            {
+                return this.ChallengeOrForbid("Api");
+            }
+
+            if (ModelState.IsValid)
+            {
+                await ValidateModelAsync(model, isNewTenant: false);
+            }
+
+            if (!_shellHost.TryGetSettings(model.Name, out var shellSettings))
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                shellSettings["Description"] = model.Description;
+                shellSettings["Category"] = model.Category;
+                shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
+                shellSettings.RequestUrlHost = model.RequestUrlHost;
+                shellSettings["FeatureProfile"] = String.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
+
+                if (shellSettings.State == TenantState.Uninitialized)
+                {
+                    shellSettings["DatabaseProvider"] = model.DatabaseProvider;
+                    shellSettings["TablePrefix"] = model.TablePrefix;
+                    shellSettings["Schema"] = model.Schema;
+                    shellSettings["ConnectionString"] = model.ConnectionString;
+                    shellSettings["RecipeName"] = model.RecipeName;
+                    shellSettings["Secret"] = Guid.NewGuid().ToString();
+                }
+
+                await _shellHost.UpdateShellSettingsAsync(shellSettings);
+
+                return Ok();
             }
 
             return BadRequest(ModelState);
@@ -417,7 +466,7 @@ namespace OrchardCore.Tenants.Controllers
             var host = shellSettings.RequestUrlHosts.FirstOrDefault();
             var hostString = host != null ? new HostString(host) : Request.Host;
 
-            var pathString = HttpContext.Features.Get<ShellContextFeature>().OriginalPathBase;
+            var pathString = HttpContext.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? PathString.Empty;
             if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
             {
                 pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
@@ -439,6 +488,13 @@ namespace OrchardCore.Tenants.Controllers
             var token = dataProtector.Protect(shellSettings["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
 
             return token;
+        }
+
+        private async Task ValidateModelAsync(TenantApiModel model, bool isNewTenant)
+        {
+            model.IsNewTenant = isNewTenant;
+
+            ModelState.AddModelErrors(await _tenantValidator.ValidateAsync(model));
         }
     }
 }

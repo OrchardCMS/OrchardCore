@@ -2653,6 +2653,33 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "DotCat1985",
+      "name": "DotCat",
+      "avatar_url": "https://avatars.githubusercontent.com/u/61869142?v=4",
+      "profile": "https://github.com/DotCat1985",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "kylgarmor",
+      "name": "kylgarmor",
+      "avatar_url": "https://avatars.githubusercontent.com/u/63015960?v=4",
+      "profile": "https://github.com/kylgarmor",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "fuzl-llc",
+      "name": "Brent",
+      "avatar_url": "https://avatars.githubusercontent.com/u/62618663?v=4",
+      "profile": "https://github.com/fuzl-llc",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true

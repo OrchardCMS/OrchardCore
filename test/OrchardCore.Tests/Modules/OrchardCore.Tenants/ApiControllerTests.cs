@@ -6,8 +6,8 @@ using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Setup.Services;
 using OrchardCore.Tenants;
 using OrchardCore.Tenants.Controllers;
+using OrchardCore.Tenants.Models;
 using OrchardCore.Tenants.Services;
-using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Modules.OrchardCore.Tenants.Tests;
 
@@ -27,12 +27,12 @@ public class ApiControllerTests
     {
         // Arrange
         var controller = CreateController();
-        var viewModel = new CreateApiViewModel
+        var viewModel = new TenantApiModel
         {
             Name = "Test",
             RequestUrlPrefix = "test",
             RequestUrlHost = "orchardcore.net",
-            FeatureProfile = "Feature Profile",
+            FeatureProfiles = new[] { "Feature Profile" },
             IsNewTenant = true
         };
 
@@ -68,12 +68,12 @@ public class ApiControllerTests
     {
         // Arrange
         var controller = CreateController();
-        var viewModel = new CreateApiViewModel
+        var viewModel = new TenantApiModel
         {
             Name = "Test",
             RequestUrlPrefix = "test",
             RequestUrlHost = "orchardcore.net",
-            FeatureProfile = "Feature Profile",
+            FeatureProfiles = new[] { "Feature Profile" },
             IsNewTenant = true
         };
 
@@ -190,7 +190,7 @@ public class ApiControllerTests
 
         httpContext.Features.Set(new ShellContextFeature
         {
-            OriginalPathBase = new PathString()
+            OriginalPathBase = PathString.Empty
         });
 
         httpContext.User.AddIdentity(new ClaimsIdentity());

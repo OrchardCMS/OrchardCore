@@ -17,7 +17,7 @@ public static class ShellContextExtensions
         context.Features.Set(new ShellContextFeature
         {
             ShellContext = shell,
-            OriginalPathBase = String.Empty,
+            OriginalPathBase = PathString.Empty,
             OriginalPath = "/"
         });
 

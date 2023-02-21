@@ -1,12 +1,12 @@
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Microsoft.Authentication.Settings;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Microsoft.Authentication.Configuration;
 

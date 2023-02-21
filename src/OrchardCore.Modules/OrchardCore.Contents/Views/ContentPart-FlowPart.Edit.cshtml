@@ -1,0 +1,28 @@
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentManagement.Metadata.Settings
+@using OrchardCore.ContentManagement
+@using OrchardCore
+
+@{
+    ContentTypePartDefinition typePartDefinition = Model.ContentTypePartDefinition;
+    var description = typePartDefinition.Description();
+    var name = typePartDefinition.PartDefinition.Name.HtmlClassify();
+}
+
+<div class="@Orchard.GetWrapperCssClasses("content-part-wrapper", $"content-part-wrapper-{name}")">
+    <div class="@Orchard.GetLabelCssClasses()">
+        @typePartDefinition.DisplayName()
+
+        @if (!String.IsNullOrEmpty(description))
+        {
+            <small class="form-text text-muted">@description</small>
+        }
+    </div>
+
+    <div class="@Orchard.GetEndCssClasses()">
+        @foreach (var shape in Model)
+        {
+            @await DisplayAsync(shape)
+        }
+    </div>
+</div>

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Abstractions.Shell;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 
@@ -33,7 +34,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 _logger.LogInformation("Creating shell context for tenant '{TenantName}'", settings.Name);
             }
 
-            var describedContext = await CreateDescribedContextAsync(settings, MinimumShellDescriptor());
+            var describedContext = await CreateDescribedContextAsync(settings, new ShellDescriptor());
 
             ShellDescriptor currentDescriptor = null;
             await describedContext.CreateScope().UsingServiceScopeAsync(async scope =>
@@ -51,13 +52,13 @@ namespace OrchardCore.Environment.Shell.Builders
             return describedContext;
         }
 
-        // TODO: This should be provided by a ISetupService that returns a set of ShellFeature instances.
         Task<ShellContext> IShellContextFactory.CreateSetupContextAsync(ShellSettings settings)
         {
             if (_logger.IsEnabled(LogLevel.Debug))
             {
                 _logger.LogDebug("No shell settings available. Creating shell context for setup");
             }
+
             var descriptor = MinimumShellDescriptor();
 
             return CreateDescribedContextAsync(settings, descriptor);
@@ -75,12 +76,20 @@ namespace OrchardCore.Environment.Shell.Builders
             var blueprint = await _compositionStrategy.ComposeAsync(settings, shellDescriptor);
             var provider = _shellContainerFactory.CreateContainer(settings, blueprint);
 
-            return new ShellContext
+            var context = new ShellContext
             {
                 Settings = settings,
                 Blueprint = blueprint,
                 ServiceProvider = provider
             };
+
+            var shellEvents = provider.GetServices<IShellContextEvents>();
+            foreach (var shellEvent in shellEvents)
+            {
+                await shellEvent.CreatedAsync(context);
+            }
+
+            return context;
         }
 
         /// <summary>

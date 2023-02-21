@@ -1,8 +1,8 @@
-@using OrchardCore.ContentManagement.Metadata.Settings;
-@using OrchardCore.Mvc.Utilities;
-@using OrchardCore.Widgets.Models;
-@using OrchardCore.Widgets.ViewModels;
-@using OrchardCore.ContentManagement.Metadata.Models;
+@using OrchardCore.ContentManagement.Metadata.Settings
+@using OrchardCore.Mvc.Utilities
+@using OrchardCore.Widgets.Models
+@using OrchardCore.Widgets.ViewModels
+@using OrchardCore.ContentManagement.Metadata.Models
 
 @model WidgetsListPartEditViewModel
 
@@ -19,7 +19,7 @@
 
 <script asp-name="jquery-ui" at="Foot"></script>
 
-<div class="mb-3">
+<div>
     @foreach (var zone in Model.AvailableZones)
     {
         var widgetTemplatePlaceholderId = Guid.NewGuid().ToString("n");

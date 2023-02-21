@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -164,7 +164,7 @@ public class AwsFileStore : IFileStore
         {
             BucketName = _options.BucketName,
             Objects = listObjectsResponse.S3Objects
-                .Select( key => new KeyVersion { Key = key.Key }).ToList()
+                .Select(metadata => new KeyVersion { Key = metadata.Key }).ToList()
         };
 
         var response = await _amazonS3Client.DeleteObjectsAsync(deleteObjectsRequest);
