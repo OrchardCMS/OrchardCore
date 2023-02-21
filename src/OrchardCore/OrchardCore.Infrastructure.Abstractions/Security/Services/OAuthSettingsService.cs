@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
-using OrchardCore.Security;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Security.Services;
@@ -40,7 +38,7 @@ public abstract class OAuthSettingsService<TAuthenticationSettings> where TAuthe
 
         var oldSettings = await _siteService.LoadSiteSettingsAsync();
 
-        oldSettings.Properties[nameof(TAuthenticationSettings)] = JObject.FromObject(settings);
+        oldSettings.Put(nameof(TAuthenticationSettings), settings);
 
         await _siteService.UpdateSiteSettingsAsync(oldSettings);
     }
