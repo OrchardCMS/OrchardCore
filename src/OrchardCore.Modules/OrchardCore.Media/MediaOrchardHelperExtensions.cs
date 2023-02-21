@@ -7,7 +7,7 @@ using OrchardCore;
 /// </summary>
 public static class MediaOrchardHelperExtensions
 {
-    private static readonly HashSet<string> _imageExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".bmp", ".gif", ".jpeg", ".jpg", ".png", ".tiff", ".webp" };
+    private static readonly HashSet<string> _imageExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".bmp", ".gif", ".jpeg", ".jpg", ".png", ".webp" };
 
     /// <summary>
     /// Determines if a path is an image file.
