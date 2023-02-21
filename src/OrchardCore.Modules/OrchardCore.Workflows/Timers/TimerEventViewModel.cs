@@ -6,5 +6,6 @@ namespace OrchardCore.Workflows.Timers
     {
         [Required]
         public string CronExpression { get; set; }
+        public bool UseSiteTimeZone { get; set; }
     }
 }

@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using NCrontab;
 using OrchardCore.Modules;
+using OrchardCore.Settings;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -14,11 +16,13 @@ namespace OrchardCore.Workflows.Timers
         public static string EventName => nameof(TimerEvent);
         private readonly IClock _clock;
         private readonly IStringLocalizer S;
+        private readonly ISiteService _siteService;
 
-        public TimerEvent(IClock clock, IStringLocalizer<TimerEvent> localizer)
+        public TimerEvent(IClock clock, IStringLocalizer<TimerEvent> localizer, ISiteService siteService)
         {
             _clock = clock;
             S = localizer;
+            _siteService = siteService;
         }
 
         public override string Name => EventName;
@@ -33,15 +37,20 @@ namespace OrchardCore.Workflows.Timers
             set => SetProperty(value);
         }
 
-        private DateTime? StartedUtc
+        private DateTime? StartedTime
         {
             get => GetProperty<DateTime?>();
             set => SetProperty(value);
         }
-
-        public override bool CanExecute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public bool UseSiteTimeZone
         {
-            return StartedUtc == null || IsExpired();
+            get => GetProperty(() => false);
+            set => SetProperty(value);
+        }
+
+        public override async Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        {
+            return StartedTime == null || await IsExpired();
         }
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
@@ -49,9 +58,9 @@ namespace OrchardCore.Workflows.Timers
             return Outcomes(S["Done"]);
         }
 
-        public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public override async Task<ActivityExecutionResult> ResumeAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            if (IsExpired())
+            if (await IsExpired())
             {
                 workflowContext.LastResult = "TimerEvent";
                 return Outcomes("Done");
@@ -60,13 +69,23 @@ namespace OrchardCore.Workflows.Timers
             return Halt();
         }
 
-        private bool IsExpired()
+        private async Task<bool> IsExpired()
         {
-            StartedUtc ??= _clock.UtcNow;
-            var schedule = CrontabSchedule.Parse(CronExpression);
-            var whenUtc = schedule.GetNextOccurrence(StartedUtc.Value);
+            DateTime when, now;
+            if (UseSiteTimeZone)
+            {
+                var timeZoneId = (await _siteService.GetSiteSettingsAsync()).TimeZoneId;
+                now = _clock.ConvertToTimeZone(new DateTimeOffset(_clock.UtcNow), _clock.GetTimeZone(timeZoneId)).DateTime;
+            }
+            else
+            {
+                now = _clock.UtcNow;
+            }
+            StartedTime ??= now;
 
-            return _clock.UtcNow >= whenUtc;
+            var schedule = CrontabSchedule.Parse(CronExpression);
+            when = schedule.GetNextOccurrence(StartedTime.Value);
+            return now >= when;
         }
     }
 }

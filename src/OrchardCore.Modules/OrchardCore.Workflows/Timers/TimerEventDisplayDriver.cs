@@ -7,11 +7,13 @@ namespace OrchardCore.Workflows.Timers
         protected override void EditActivity(TimerEvent source, TimerEventViewModel model)
         {
             model.CronExpression = source.CronExpression;
+            model.UseSiteTimeZone = source.UseSiteTimeZone;
         }
 
         protected override void UpdateActivity(TimerEventViewModel model, TimerEvent target)
         {
             target.CronExpression = model.CronExpression.Trim();
+            target.UseSiteTimeZone = model.UseSiteTimeZone;
         }
     }
 }
