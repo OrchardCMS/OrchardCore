@@ -58,10 +58,11 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
     - name: Deploy preview docker image for linux
+      shell: pwsh
       if: matrix.os == 'ubuntu-latest'
       run: |
-        rm -rf ./src/OrchardCore.Cms.Web/App_Data
-        rm -rf ./src/OrchardCore.Cms.Web/App_Data_Tests
+        Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item
+        Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests -Recurse | Remove-Item
         $output = [System.IO.Path]::GetFullPath(".build/release")
         dotnet publish -c Release --property:PublishDir=$output --no-build --framework net7.0
         docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-linux:dev .
