@@ -7,7 +7,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers an initialize delegate to be executed asynchronously on tenant container creation.
+    /// Registers a delegate to be invoked asynchronously after a tenant container is created.
     /// </summary>
     public static IServiceCollection Initialize(this IServiceCollection services, Func<IServiceProvider, ValueTask> _initializeAsync)
         => services.Configure<ShellContainerOptions>(options => options.Initializers.Add(_initializeAsync));
