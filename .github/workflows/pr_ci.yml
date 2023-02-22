@@ -29,8 +29,11 @@ jobs:
       run: |
         dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
     - name: Functional Tests
+      shell: pwsh
       if: matrix.os == 'ubuntu-latest'
       run: |
+        $output = [System.IO.Path]::GetFullPath("./test")
+        echo $output
         cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
