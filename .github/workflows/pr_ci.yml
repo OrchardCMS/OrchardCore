@@ -32,8 +32,9 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       shell: pwsh
       run: |
-        $output = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($pwd, "cms-tests"))
         cd test/OrchardCore.Tests.Functional
+        $output = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($pwd, "cms-tests"))
+        echo $output
         npm install
         npm run cms:test
         npm run mvc:test
