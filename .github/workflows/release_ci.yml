@@ -72,7 +72,7 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       shell: pwsh
       run: |
-        Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item
+        Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse -file | Remove-Item
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests -Recurse | Remove-Item
         $output = [System.IO.Path]::GetFullPath("./.build/release")
         dotnet publish -c Release --property:PublishDir=$output --no-build --framework net7.0
