@@ -70,10 +70,11 @@ jobs:
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
     - name: Deploy release docker image for linux
       if: matrix.os == 'ubuntu-latest'
+      shell: pwsh
       run: |
-        rm -rf ./src/OrchardCore.Cms.Web/App_Data
-        rm -rf ./src/OrchardCore.Cms.Web/App_Data_Tests
-        $output = [System.IO.Path]::GetFullPath(".build/release")
+        Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item
+        Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests -Recurse | Remove-Item
+        $output = [System.IO.Path]::GetFullPath("./.build/release")
         dotnet publish -c Release --property:PublishDir=$output --no-build --framework net7.0
         docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-linux:latest -t orchardproject/orchardcore-cms-linux:${{ steps.get_version.outputs.VERSION }} .
         docker push orchardproject/orchardcore-cms-linux:latest 
