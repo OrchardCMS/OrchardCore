@@ -9,8 +9,8 @@
 
   <ItemGroup>
     <PackageManagement Include="AngleSharp" Version="0.17.1" />
-    <PackageManagement Include="AWSSDK.S3" Version="3.7.103.12" />
-    <PackageManagement Include="AWSSDK.SecurityToken" Version="3.7.101.11" />
+    <PackageManagement Include="AWSSDK.S3" Version="3.7.103.14" />
+    <PackageManagement Include="AWSSDK.SecurityToken" Version="3.7.101.13" />
     <PackageManagement Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.4" />
     <PackageManagement Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
     <PackageManagement Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.3.0" />
