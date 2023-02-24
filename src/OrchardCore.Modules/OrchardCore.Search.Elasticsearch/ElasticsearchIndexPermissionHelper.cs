@@ -19,9 +19,7 @@ public class ElasticsearchIndexPermissionHelper
             throw new ArgumentException($"{nameof(indexName)} cannot be null or empty");
         }
 
-        Permission permission;
-
-        if (!_permissions.TryGetValue(indexName, out permission))
+        if (!_permissions.TryGetValue(indexName, out var permission))
         {
             permission = new Permission(
                 String.Format(_indexPermissionTemplate.Name, indexName),
