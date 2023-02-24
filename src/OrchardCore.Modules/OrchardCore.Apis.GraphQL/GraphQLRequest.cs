@@ -1,5 +1,4 @@
 using System.Text.Json;
-using GraphQL;
 
 namespace OrchardCore.Apis.GraphQL
 {

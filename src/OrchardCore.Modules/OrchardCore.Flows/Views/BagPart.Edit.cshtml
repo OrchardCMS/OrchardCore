@@ -1,6 +1,6 @@
-@using OrchardCore.Flows.Models;
-@using OrchardCore.Flows.ViewModels;
-@using OrchardCore.Mvc.Utilities;
+@using OrchardCore.Flows.Models
+@using OrchardCore.Flows.ViewModels
+@using OrchardCore.Mvc.Utilities
 @model BagPartEditViewModel
 @inject IContentManager ContentManager
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
@@ -13,7 +13,7 @@
 }
 <script asp-name="jQuery-ui" at="Foot"></script>
 
-<div class="mb-3">
+<div>
     <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-bagpart bagpart-@partName.HtmlClassify() row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })">
         @{
             var index = 0;

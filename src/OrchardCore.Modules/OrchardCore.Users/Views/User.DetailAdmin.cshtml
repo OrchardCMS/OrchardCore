@@ -1,0 +1,23 @@
+@using OrchardCore.Mvc.Utilities
+@using OrchardCore.ContentManagement
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["View User"])</h1></zone>
+
+<article>
+    <header>
+        @await DisplayAsync(Model.Header)
+        @if (Model.Meta != null)
+        {
+            <div class="metadata">
+                @await DisplayAsync(Model.Meta)
+            </div>
+        }
+    </header>
+    @await DisplayAsync(Model.Content)
+    @if (Model.Footer != null)
+    {
+        <footer>
+            @await DisplayAsync(Model.Footer)
+        </footer>
+    }
+</article>

@@ -44,7 +44,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
         [InlineData("permissionTwo", "Fantastic Fox Loves Permission Two")]
         public async Task FieldsWithRequirePermissionsShouldResolveWhenUserHasPermissions(string fieldName, string expectedFieldValue)
         {
-            var options = BuildExecutionOptions($"query {{ test {{{ fieldName }}} }}",
+            var options = BuildExecutionOptions($"query {{ test {{{fieldName}}} }}",
                             new PermissionsContext
                             {
                                 UsePermissionsContext = true,

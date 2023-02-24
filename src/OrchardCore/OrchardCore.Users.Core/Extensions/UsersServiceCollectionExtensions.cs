@@ -38,9 +38,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.TryAddScoped<RoleManager<IRole>>();
             services.TryAddScoped<IRoleService, RoleService>();
-            
+
             services.AddIndexProvider<UserIndexProvider>();
-            services.AddIndexProvider<UserByRoleNameIndexProvider>();
             services.AddIndexProvider<UserByLoginInfoIndexProvider>();
             services.AddIndexProvider<UserByClaimIndexProvider>();
 

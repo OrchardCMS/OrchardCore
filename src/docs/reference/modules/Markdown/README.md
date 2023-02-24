@@ -97,7 +97,7 @@ To define what HTML to render when the editor is selected from the settings, a s
 Sample content:
 
 ```csharp
-@using OrchardCore.Markdown.ViewModels;
+@using OrchardCore.Markdown.ViewModels
 @model MarkdownBodyPartViewModel
 
 <fieldset class="mb-3">
