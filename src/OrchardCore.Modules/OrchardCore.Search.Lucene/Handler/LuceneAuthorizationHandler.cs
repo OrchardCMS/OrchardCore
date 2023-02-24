@@ -36,11 +36,11 @@ public class LuceneAuthorizationHandler : AuthorizationHandler<PermissionRequire
             return;
         }
 
-        var provider = _serviceProvider.GetService<LuceneSearchProvider>();
+        var service = _serviceProvider.GetService<LuceneSearchService>();
 
-        if (parameters.Provider.AreaName != provider?.AreaName)
+        if (service == null || service.Name != parameters.ServiceName)
         {
-            // Only validate LuceneSearchProvider is requested.
+            // Only validate Lucene is requested.
             return;
         }
 

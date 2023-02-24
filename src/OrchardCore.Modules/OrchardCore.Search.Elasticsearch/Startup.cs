@@ -29,7 +29,6 @@ using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Providers;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Drivers;
-using OrchardCore.Search.Elasticsearch.Providers;
 using OrchardCore.Search.Elasticsearch.Services;
 using OrchardCore.Search.Lucene.Handler;
 using OrchardCore.Security.Permissions;
@@ -132,15 +131,14 @@ namespace OrchardCore.Search.Elasticsearch
                     });
 
                     services.AddElasticServices();
-                    services.AddSingleton<ElasticSearchProvider>();
-                    services.AddSingleton<SearchProvider>(sp => sp.GetRequiredService<ElasticSearchProvider>());
                     services.AddScoped<IPermissionProvider, Permissions>();
                     services.AddScoped<INavigationProvider, AdminMenu>();
                     services.AddScoped<IDisplayDriver<ISite>, ElasticSettingsDisplayDriver>();
                     services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
                     services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
                     services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
-                    services.AddScoped<ISearchService, ElasticsearchService>();
+                    services.AddScoped<ElasticsearchService>();
+                    services.AddScoped<ISearchService>(sp => sp.GetRequiredService<ElasticsearchService>());
                     services.AddScoped<IAuthorizationHandler, ElasticsearchAuthorizationHandler>();
                 }
                 catch (Exception ex)
@@ -235,7 +233,7 @@ namespace OrchardCore.Search.Elasticsearch
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            if (services.Any(d => d.ImplementationType == typeof(ElasticSearchProvider)))
+            if (services.Any(d => d.ImplementationType == typeof(ElasticsearchService)))
             {
                 services.AddTransient<IDeploymentSource, ElasticIndexDeploymentSource>();
                 services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticIndexDeploymentStep>());
@@ -261,7 +259,7 @@ namespace OrchardCore.Search.Elasticsearch
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            if (services.Any(d => d.ImplementationType == typeof(ElasticSearchProvider)))
+            if (services.Any(d => d.ImplementationType == typeof(ElasticsearchService)))
             {
                 services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
             }
@@ -273,7 +271,7 @@ namespace OrchardCore.Search.Elasticsearch
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            if (services.Any(d => d.ImplementationType == typeof(ElasticSearchProvider)))
+            if (services.Any(d => d.ImplementationType == typeof(ElasticsearchService)))
             {
                 services.AddScoped<IContentPickerResultProvider, ElasticContentPickerResultProvider>();
                 services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldElasticEditorSettingsDriver>();

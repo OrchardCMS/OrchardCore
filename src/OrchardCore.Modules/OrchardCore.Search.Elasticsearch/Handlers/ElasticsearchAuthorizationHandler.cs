@@ -6,7 +6,7 @@ using OrchardCore.Entities;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Elasticsearch;
 using OrchardCore.Search.Elasticsearch.Core.Models;
-using OrchardCore.Search.Elasticsearch.Providers;
+using OrchardCore.Search.Elasticsearch.Services;
 using OrchardCore.Security;
 using OrchardCore.Settings;
 
@@ -37,11 +37,11 @@ public class ElasticsearchAuthorizationHandler : AuthorizationHandler<Permission
             return;
         }
 
-        var provider = _serviceProvider.GetService<ElasticSearchProvider>();
+        var service = _serviceProvider.GetService<ElasticsearchService>();
 
-        if (parameters.Provider.AreaName != provider?.AreaName)
+        if (service == null || service.Name != parameters.ServiceName)
         {
-            // Only validate ElasticSearchProvider is requested.
+            // Only validate Elasticsearch is requested.
             return;
         }
 

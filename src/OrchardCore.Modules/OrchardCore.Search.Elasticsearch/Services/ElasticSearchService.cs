@@ -6,7 +6,6 @@ using OrchardCore.Entities;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
-using OrchardCore.Search.Elasticsearch.Providers;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Elasticsearch.Services;
@@ -18,7 +17,6 @@ public class ElasticsearchService : ISearchService
     private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
     private readonly ElasticAnalyzerManager _elasticAnalyzerManager;
     private readonly IElasticSearchQueryService _elasticsearchQueryService;
-    private readonly ElasticSearchProvider _elasticSearchProvider;
     private readonly ILogger _logger;
 
     public ElasticsearchService(
@@ -27,7 +25,6 @@ public class ElasticsearchService : ISearchService
         ElasticIndexSettingsService elasticIndexSettingsService,
         ElasticAnalyzerManager elasticAnalyzerManager,
         IElasticSearchQueryService elasticsearchQueryService,
-        ElasticSearchProvider elasticSearchProvider,
         ILogger<ElasticsearchService> logger
         )
     {
@@ -36,22 +33,12 @@ public class ElasticsearchService : ISearchService
         _elasticIndexSettingsService = elasticIndexSettingsService;
         _elasticAnalyzerManager = elasticAnalyzerManager;
         _elasticsearchQueryService = elasticsearchQueryService;
-        _elasticSearchProvider = elasticSearchProvider;
         _logger = logger;
     }
 
-    public bool CanHandle(SearchProvider provider)
-    {
-        if (provider == null)
-        {
-            throw new ArgumentNullException(nameof(provider));
-        }
+    public string Name => "Elasticsearch";
 
-        return String.Equals(provider.AreaName, _elasticSearchProvider.AreaName)
-            && String.Equals(provider.Name, _elasticSearchProvider.Name);
-    }
-
-    public async Task<SearchResult> GetAsync(string indexName, string term, int start, int pageSize)
+    public async Task<SearchResult> SearchAsync(string indexName, string term, int start, int pageSize)
     {
         var index = !String.IsNullOrWhiteSpace(indexName) ? indexName.Trim() : await DefaultIndexAsync();
 

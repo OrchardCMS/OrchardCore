@@ -4,13 +4,18 @@ namespace OrchardCore.Search.Abstractions;
 
 public class SearchPermissionParameters
 {
-    public SearchProvider Provider { get; }
+    public string ServiceName { get; }
 
     public string IndexName { get; }
 
-    public SearchPermissionParameters(SearchProvider provider, string indexName)
+    public SearchPermissionParameters(string serviceName, string indexName)
     {
-        Provider = provider ?? throw new ArgumentNullException(nameof(provider));
+        if (String.IsNullOrEmpty(serviceName))
+        {
+            throw new ArgumentException($"{nameof(serviceName)} cannot be null or empty");
+        }
+
+        ServiceName = serviceName;
 
         IndexName = indexName;
     }

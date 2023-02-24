@@ -17,7 +17,6 @@ public class LuceneSearchService : ISearchService
     private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
     private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
     private readonly ILuceneSearchQueryService _luceneSearchQueryService;
-    private readonly LuceneSearchProvider _luceneSearchProvider;
     private readonly ILogger _logger;
 
     public LuceneSearchService(
@@ -27,7 +26,6 @@ public class LuceneSearchService : ISearchService
         LuceneAnalyzerManager luceneAnalyzerManager,
         LuceneIndexSettingsService luceneIndexSettingsService,
         ILuceneSearchQueryService luceneSearchQueryService,
-        LuceneSearchProvider luceneSearchProvider,
         ILogger<LuceneSearchService> logger)
     {
         _siteService = siteService;
@@ -36,22 +34,12 @@ public class LuceneSearchService : ISearchService
         _luceneAnalyzerManager = luceneAnalyzerManager;
         _luceneIndexSettingsService = luceneIndexSettingsService;
         _luceneSearchQueryService = luceneSearchQueryService;
-        _luceneSearchProvider = luceneSearchProvider;
         _logger = logger;
     }
 
-    public bool CanHandle(SearchProvider provider)
-    {
-        if (provider == null)
-        {
-            throw new ArgumentNullException(nameof(provider));
-        }
+    public string Name => "Lucene";
 
-        return String.Equals(provider.AreaName, _luceneSearchProvider.AreaName)
-            && String.Equals(provider.Name, _luceneSearchProvider.Name);
-    }
-
-    public async Task<SearchResult> GetAsync(string indexName, string term, int start, int size)
+    public async Task<SearchResult> SearchAsync(string indexName, string term, int start, int size)
     {
         var index = !String.IsNullOrWhiteSpace(indexName) ? indexName.Trim() : await DefaultIndexAsync();
 

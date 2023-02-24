@@ -55,8 +55,6 @@ namespace OrchardCore.Search.Lucene
             });
 
             services.AddScoped<IDataMigration, Migrations>();
-            services.AddSingleton<LuceneSearchProvider>();
-            services.AddSingleton<SearchProvider>(sp => sp.GetRequiredService<LuceneSearchProvider>());
             services.AddSingleton<LuceneIndexingState>();
             services.AddSingleton<LuceneIndexSettingsService>();
             services.AddSingleton<LuceneIndexManager>();
@@ -85,7 +83,8 @@ namespace OrchardCore.Search.Lucene
             services.AddRecipeExecutionStep<LuceneIndexStep>();
             services.AddRecipeExecutionStep<LuceneIndexRebuildStep>();
             services.AddRecipeExecutionStep<LuceneIndexResetStep>();
-            services.AddScoped<ISearchService, LuceneSearchService>();
+            services.AddScoped<LuceneSearchService>();
+            services.AddScoped<ISearchService>(sp => sp.GetRequiredService<LuceneSearchService>());
             services.AddScoped<IAuthorizationHandler, LuceneAuthorizationHandler>();
         }
 

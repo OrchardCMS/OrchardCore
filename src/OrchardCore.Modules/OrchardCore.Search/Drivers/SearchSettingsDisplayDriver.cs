@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -43,16 +44,16 @@ namespace OrchardCore.Search.Drivers
 
             return Initialize<SearchSettingsViewModel>("SearchSettings_Edit", model =>
             {
-                var searchProviders = _serviceProvider.GetServices<SearchProvider>();
+                var searchServices = _serviceProvider.GetServices<ISearchService>();
 
-                if (searchProviders.Any())
+                if (searchServices.Any())
                 {
-                    model.SearchProviders = searchProviders;
+                    model.SearchServices = searchServices.Select(service => new SelectListItem(service.Name, service.Name)).ToList();
                     model.Placeholder = settings.Placeholder;
                     model.PageTitle = settings.PageTitle;
                 }
 
-                model.SearchProviderAreaName = settings.SearchProviderAreaName;
+                model.ProviderName = settings.ProviderName;
             }).Location("Content:2").OnGroup(GroupId);
         }
 
@@ -69,7 +70,7 @@ namespace OrchardCore.Search.Drivers
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                section.SearchProviderAreaName = model.SearchProviderAreaName;
+                section.ProviderName = model.ProviderName;
                 section.Placeholder = model.Placeholder;
                 section.PageTitle = model.PageTitle;
             }

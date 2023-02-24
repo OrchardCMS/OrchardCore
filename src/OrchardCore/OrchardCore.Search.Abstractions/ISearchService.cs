@@ -4,7 +4,7 @@ namespace OrchardCore.Search.Abstractions;
 
 public interface ISearchService
 {
-    bool CanHandle(SearchProvider provider);
+    string Name { get; }
 
-    Task<SearchResult> GetAsync(string indexName, string term, int start, int size);
+    Task<SearchResult> SearchAsync(string indexName, string term, int start, int size);
 }

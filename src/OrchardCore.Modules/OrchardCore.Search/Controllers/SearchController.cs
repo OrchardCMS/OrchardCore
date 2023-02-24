@@ -67,17 +67,16 @@ public class SearchController : Controller
         var siteSettings = await _siteService.GetSiteSettingsAsync();
 
         var searchSettings = siteSettings.As<SearchSettings>();
+        ISearchService searchService = null;
 
-        var searchProvider = GetSearchProvider(searchSettings.SearchProviderAreaName);
-
-        if (searchProvider == null)
+        if (!String.IsNullOrEmpty(searchSettings.ProviderName))
         {
-            await _notifier.WarningAsync(H["No search provider feature is enabled."]);
-
-            return View();
+            searchService = searchServices.FirstOrDefault(service => service.Name == searchSettings.ProviderName);
         }
 
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.QuerySearchIndex, new SearchPermissionParameters(searchProvider, viewModel.Index)))
+        searchService ??= searchServices.First();
+
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.QuerySearchIndex, new SearchPermissionParameters(searchService.Name, viewModel.Index)))
         {
             return this.ChallengeOrForbid();
         }
@@ -86,8 +85,6 @@ public class SearchController : Controller
         {
             return View(await GetEmptyShape(viewModel, searchSettings));
         }
-
-        var searchService = searchServices.FirstOrDefault(service => service.CanHandle(searchProvider)) ?? searchServices.First();
 
         var pager = new PagerSlim(pagerParameters, siteSettings.PageSize);
 
@@ -106,7 +103,7 @@ public class SearchController : Controller
             size = Convert.ToInt32(pagerParameters.After) + pager.PageSize + 1;
         }
 
-        var searchResult = await searchService.GetAsync(viewModel.Index, viewModel.Terms, from, size);
+        var searchResult = await searchService.SearchAsync(viewModel.Index, viewModel.Terms, from, size);
 
         if (!searchResult.Success || !searchResult.ContentItemIds.Any())
         {
@@ -187,19 +184,5 @@ public class SearchController : Controller
                 Index = viewModel.Index,
             };
         });
-    }
-
-    private SearchProvider GetSearchProvider(string providerName)
-    {
-        var searchProviders = _serviceProvider.GetServices<SearchProvider>();
-
-        SearchProvider searchProvider = null;
-
-        if (!String.IsNullOrEmpty(providerName))
-        {
-            searchProvider = searchProviders.FirstOrDefault(x => x.AreaName == providerName);
-        }
-
-        return searchProvider ?? searchProviders.First();
     }
 }
