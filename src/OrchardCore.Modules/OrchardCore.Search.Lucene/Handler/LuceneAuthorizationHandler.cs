@@ -40,7 +40,7 @@ public class LuceneAuthorizationHandler : AuthorizationHandler<PermissionRequire
 
         if (service == null || service.Name != parameters.ServiceName)
         {
-            // Only validate Lucene is requested.
+            // Only validate if Lucene is requested.
             return;
         }
 

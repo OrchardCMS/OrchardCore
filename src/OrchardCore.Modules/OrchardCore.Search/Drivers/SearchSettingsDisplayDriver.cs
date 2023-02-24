@@ -46,12 +46,11 @@ namespace OrchardCore.Search.Drivers
             {
                 var searchServices = _serviceProvider.GetServices<ISearchService>();
 
-                if (searchServices.Any())
-                {
-                    model.SearchServices = searchServices.Select(service => new SelectListItem(service.Name, service.Name)).ToList();
-                    model.Placeholder = settings.Placeholder;
-                    model.PageTitle = settings.PageTitle;
-                }
+
+                model.SearchServices = searchServices.Select(service => new SelectListItem(service.Name, service.Name)).ToList();
+                model.Placeholder = settings.Placeholder;
+                model.PageTitle = settings.PageTitle;
+
 
                 model.ProviderName = settings.ProviderName;
             }).Location("Content:2").OnGroup(GroupId);

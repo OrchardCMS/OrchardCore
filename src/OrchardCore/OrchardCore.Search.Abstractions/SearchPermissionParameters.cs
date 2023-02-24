@@ -16,7 +16,6 @@ public class SearchPermissionParameters
         }
 
         ServiceName = serviceName;
-
         IndexName = indexName;
     }
 }
