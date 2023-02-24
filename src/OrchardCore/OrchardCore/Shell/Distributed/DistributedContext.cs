@@ -33,6 +33,8 @@ namespace OrchardCore.Environment.Shell.Distributed
             DistributedCache = distributedCache;
         }
 
+        public ShellContext Context => _context;
+
         public IDistributedCache DistributedCache { get; }
 
         public DistributedContext Acquire()
