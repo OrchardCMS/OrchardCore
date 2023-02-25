@@ -11,7 +11,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
-using OrchardCore.BackgroundTasks.Models;
 using OrchardCore.BackgroundTasks.Services;
 using OrchardCore.BackgroundTasks.ViewModels;
 using OrchardCore.DisplayManagement;
@@ -63,22 +62,44 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             var document = await _backgroundTaskManager.GetDocumentAsync();
 
-            var items = _backgroundTasks.Select(task => new BackgroundTaskEntry() { Settings = GetSettings(task, document) });
+            var items = _backgroundTasks.Select(task =>
+            {
+                var defaultSettings = task.GetDefaultSettings();
+
+                if (document.Settings.TryGetValue(task.GetTaskName(), out var settings))
+                {
+                    return new BackgroundTaskEntry()
+                    {
+                        Title = defaultSettings.Title,
+                        Name = settings.Name,
+                        Description = settings.Description,
+                        Enable = settings.Enable,
+                    };
+                }
+
+                return new BackgroundTaskEntry()
+                {
+                    Title = defaultSettings.Title,
+                    Name = defaultSettings.Name,
+                    Description = defaultSettings.Description,
+                    Enable = defaultSettings.Enable,
+                };
+            });
 
             if (!String.IsNullOrWhiteSpace(options.Search))
             {
-                items = items.Where(x => x.Settings.Title.Contains(options.Search, StringComparison.OrdinalIgnoreCase)
-                    || (x.Settings.Description != null && x.Settings.Description.Contains(options.Search, StringComparison.OrdinalIgnoreCase))
+                items = items.Where(entry => entry.Title != null && entry.Title.Contains(options.Search, StringComparison.OrdinalIgnoreCase)
+                    || (entry.Description != null && entry.Description.Contains(options.Search, StringComparison.OrdinalIgnoreCase))
                 );
             }
 
             if (String.Equals(options.Status, "enabled", StringComparison.OrdinalIgnoreCase))
             {
-                items = items.Where(x => x.Settings.Enable);
+                items = items.Where(entry => entry.Enable);
             }
             else if (String.Equals(options.Status, "disabled", StringComparison.OrdinalIgnoreCase))
             {
-                items = items.Where(x => !x.Settings.Enable);
+                items = items.Where(entry => !entry.Enable);
             }
 
             options.Statuses = new List<SelectListItem>()
@@ -97,7 +118,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             var model = new BackgroundTaskIndexViewModel
             {
-                Tasks = taskItems.OrderBy(entry => entry.Settings.Title).Skip(pager.GetStartIndex()).Take(pager.PageSize).ToList(),
+                Tasks = taskItems.OrderBy(entry => entry.Title).Skip(pager.GetStartIndex()).Take(pager.PageSize).ToList(),
                 Pager = pagerShape,
                 Options = options,
             };
@@ -130,19 +151,22 @@ namespace OrchardCore.BackgroundTasks.Controllers
             }
 
             var document = await _backgroundTaskManager.GetDocumentAsync();
-
-            var settings = GetSettings(task, document);
+            var defaultSettings = task.GetDefaultSettings();
+            if (!document.Settings.TryGetValue(name, out var settings))
+            {
+                settings = defaultSettings;
+            }
 
             var model = new BackgroundTaskViewModel
             {
-                Name = name,
-                Title = settings.Title,
+                Name = defaultSettings.Name,
+                Title = defaultSettings.Title,
+                DefaultSchedule = defaultSettings.Schedule,
                 Enable = settings.Enable,
                 Schedule = settings.Schedule,
-                DefaultSchedule = task?.GetDefaultSettings().Schedule,
                 Description = settings.Description,
                 LockTimeout = settings.LockTimeout,
-                LockExpiration = settings.LockExpiration
+                LockExpiration = settings.LockExpiration,
             };
 
             return View(model);
@@ -162,13 +186,19 @@ namespace OrchardCore.BackgroundTasks.Controllers
             {
                 return NotFound();
             }
+            var defaultSettings = task.GetDefaultSettings();
 
             if (ModelState.IsValid)
             {
                 var document = await _backgroundTaskManager.LoadDocumentAsync();
 
-                var settings = GetSettings(task, document);
+                if (!document.Settings.TryGetValue(model.Name, out var settings))
+                {
+                    settings = defaultSettings;
+                }
 
+                settings.Title = defaultSettings.Title;
+                settings.Description = defaultSettings.Description;
                 settings.Schedule = model.Schedule?.Trim();
                 settings.LockTimeout = model.LockTimeout;
                 settings.LockExpiration = model.LockExpiration;
@@ -180,34 +210,10 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            model.Title = defaultSettings.Title;
+            model.DefaultSchedule = defaultSettings.Schedule;
+
             return View(model);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Delete(string name)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
-            {
-                return Forbid();
-            }
-
-            if (String.IsNullOrWhiteSpace(name))
-            {
-                return NotFound();
-            }
-
-            var document = await _backgroundTaskManager.LoadDocumentAsync();
-
-            if (!document.Settings.ContainsKey(name))
-            {
-                return NotFound();
-            }
-
-            await _backgroundTaskManager.RemoveAsync(name);
-
-            await _notifier.SuccessAsync(H["The task has been deleted."]);
-
-            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -227,7 +233,10 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             var document = await _backgroundTaskManager.LoadDocumentAsync();
 
-            var settings = GetSettings(task, document);
+            if (!document.Settings.TryGetValue(name, out var settings))
+            {
+                settings = task.GetDefaultSettings();
+            }
 
             settings.Enable = true;
 
@@ -255,7 +264,10 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             var document = await _backgroundTaskManager.LoadDocumentAsync();
 
-            var settings = GetSettings(task, document);
+            if (!document.Settings.TryGetValue(name, out var settings))
+            {
+                settings = task.GetDefaultSettings();
+            }
 
             settings.Enable = false;
 
@@ -264,18 +276,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
             await _notifier.SuccessAsync(H["The task has been disabled."]);
 
             return RedirectToAction(nameof(Index));
-        }
-
-        private static BackgroundTaskSettings GetSettings(IBackgroundTask task, BackgroundTaskDocument document)
-        {
-            var name = task.GetTaskName();
-
-            if (document.Settings.ContainsKey(name))
-            {
-                return document.Settings[name];
-            }
-
-            return task.GetDefaultSettings();
         }
     }
 }
