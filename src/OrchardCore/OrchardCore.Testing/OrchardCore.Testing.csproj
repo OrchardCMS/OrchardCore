@@ -27,8 +27,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\OrchardCore.Cms.Web\OrchardCore.Cms.Web.csproj" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Workflows\OrchardCore.Workflows.csproj" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Tenants\OrchardCore.Tenants.csproj" />
     <ProjectReference Include="..\OrchardCore.Apis.GraphQL.Client\OrchardCore.Apis.GraphQL.Client.csproj" />
     <ProjectReference Include="..\OrchardCore.Autoroute.Core\OrchardCore.Autoroute.Core.csproj" />
     <ProjectReference Include="..\OrchardCore.Deployment.Abstractions\OrchardCore.Deployment.Abstractions.csproj" />

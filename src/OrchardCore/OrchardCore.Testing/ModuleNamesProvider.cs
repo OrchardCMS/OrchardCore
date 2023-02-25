@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -10,11 +11,14 @@ namespace OrchardCore.Testing
     {
         private readonly IEnumerable<string> _moduleNames;
 
-        public ModuleNamesProvider()
+        public ModuleNamesProvider(Assembly assembly)
         {
-            var assembly = Assembly.Load(new AssemblyName(typeof(Program).Assembly.GetName().Name));
+            if (assembly == null)
+            {
+                throw new ArgumentNullException(nameof(assembly));
+            }
 
-            _moduleNames = assembly
+            _moduleNames = Assembly.Load(new AssemblyName(assembly.GetName().Name))
                 .GetCustomAttributes<ModuleNameAttribute>()
                 .Select(m => m.Name);
         }

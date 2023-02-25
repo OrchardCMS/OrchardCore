@@ -26,7 +26,7 @@ namespace OrchardCore.Tests.Apis.Context
                 })
                 .Configure(appBuilder => appBuilder.UseAuthorization()));
 
-            services.AddSingleton<IModuleNamesProvider, ModuleNamesProvider>();
+            services.AddSingleton<IModuleNamesProvider>(new ModuleNamesProvider(typeof(Program).Assembly));
         }
 
         public void Configure(IApplicationBuilder app, IHostEnvironment env, ILoggerFactory loggerFactory) => app.UseOrchardCore();

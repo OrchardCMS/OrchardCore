@@ -22,7 +22,7 @@ public class OrchardCoreTestFixture<TStartup> : WebApplicationFactory<TStartup> 
     }
 
     protected override IWebHostBuilder CreateWebHostBuilder()
-        => WebHostBuilderFactory.CreateFromAssemblyEntryPoint(typeof(Program).Assembly, Array.Empty<string>());
+        => WebHostBuilderFactory.CreateFromAssemblyEntryPoint(typeof(TStartup).Assembly, Array.Empty<string>());
 
     protected override IHostBuilder CreateHostBuilder()
         => Host.CreateDefaultBuilder().ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<TStartup>());
