@@ -14,6 +14,11 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings Condition="'$(RazorRuntimeCompilation)' == 'false'">enable</ImplicitUsings>
   </PropertyGroup>
+  
+  <!-- For Unit Tests-->
+  <ItemGroup>
+    <InternalsVisibleTo Include="OrchardCore.Tests" />
+  </ItemGroup>
 
   <!-- Watcher include and excludes -->
   <ItemGroup>
