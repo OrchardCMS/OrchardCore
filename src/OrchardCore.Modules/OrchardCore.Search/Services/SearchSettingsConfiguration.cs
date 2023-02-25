@@ -20,7 +20,7 @@ namespace OrchardCore.Search.Configuration
                 .GetAwaiter().GetResult()
                 .As<SearchSettings>();
 
-            options.SearchProviderAreaName = settings.SearchProviderAreaName;
+            options.ProviderName = settings.ProviderName;
         }
     }
 }
