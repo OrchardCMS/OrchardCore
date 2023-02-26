@@ -8,7 +8,7 @@ namespace OrchardCore.Localization;
 public class LocalizationOptionsUpdater
 {
     private readonly bool _useUserOverride;
-    private RequestLocalizationOptions _options;
+    private readonly RequestLocalizationOptions _options;
 
     public LocalizationOptionsUpdater(RequestLocalizationOptions options, bool ignoreSystemSettings)
     {
