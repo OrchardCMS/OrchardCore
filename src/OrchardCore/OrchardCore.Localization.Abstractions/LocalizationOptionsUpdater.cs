@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
 
@@ -18,26 +19,18 @@ public class LocalizationOptionsUpdater
 
     public LocalizationOptionsUpdater AddSupportedCultures(params string[] cultures)
     {
-        var supportedCultures = new List<CultureInfo>();
-        foreach (var culture in cultures)
-        {
-            supportedCultures.Add(new CultureInfo(culture, _useUserOverride));
-        }
-
-        _options.SupportedCultures = supportedCultures;
+        _options.SupportedCultures = cultures
+            .Select(culture => new CultureInfo(culture, _useUserOverride))
+            .ToList();
 
         return this;
     }
 
     public LocalizationOptionsUpdater AddSupportedUICultures(params string[] uiCultures)
     {
-        var supportedUICultures = new List<CultureInfo>();
-        foreach (var culture in uiCultures)
-        {
-            supportedUICultures.Add(new CultureInfo(culture, _useUserOverride));
-        }
-
-        _options.SupportedUICultures = supportedUICultures;
+        _options.SupportedUICultures = uiCultures
+            .Select(culture => new CultureInfo(culture, _useUserOverride))
+            .ToList();
 
         return this;
     }
