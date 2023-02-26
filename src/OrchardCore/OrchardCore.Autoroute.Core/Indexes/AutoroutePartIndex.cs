@@ -12,7 +12,7 @@ using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Data;
 using YesSql.Indexes;
 
-namespace OrchardCore.Autoroute.Core.Indexes
+namespace OrchardCore.Autoroute.Indexes
 {
     public class AutoroutePartIndex : MapIndex
     {
@@ -85,7 +85,7 @@ namespace OrchardCore.Autoroute.Core.Indexes
             var part = context.ContentItem.As<AutoroutePart>();
 
             // Validate that the content definition contains this part, this prevents indexing parts
-            // that have been removed from the type definition, but are still present in the elements.            
+            // that have been removed from the type definition, but are still present in the elements.
             if (part != null)
             {
                 // Lazy initialization because of ISession cyclic dependency.

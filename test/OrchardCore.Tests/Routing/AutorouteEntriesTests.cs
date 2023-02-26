@@ -1,4 +1,4 @@
-using OrchardCore.Autoroute.Core.Services;
+using OrchardCore.Autoroute.Services;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;

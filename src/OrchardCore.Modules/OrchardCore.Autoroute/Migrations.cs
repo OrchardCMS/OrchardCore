@@ -1,4 +1,4 @@
-using OrchardCore.Autoroute.Core.Indexes;
+using OrchardCore.Autoroute.Indexes;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
