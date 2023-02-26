@@ -15,7 +15,7 @@ namespace OrchardCore.Localization;
 public class LocalizationOptionsUpdater
 {
     private readonly bool _useUserOverride;
-    private RequestLocalizationOptions _options;
+    private readonly RequestLocalizationOptions _options;
 
     /// <summary>
     /// Initializes a new instance of a <see cref="LocalizationOptionsUpdater"/>.
