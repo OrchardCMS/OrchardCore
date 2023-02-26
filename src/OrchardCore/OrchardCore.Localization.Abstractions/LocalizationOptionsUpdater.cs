@@ -8,6 +8,10 @@ namespace OrchardCore.Localization;
 /// <summary>
 /// Represents a utility class to update the <see cref="RequestLocalizationOptions"/>.
 /// </summary>
+/// <remarks>
+/// This is mainly used in the localization module to update the current <see cref="RequestLocalizationOptions"/> that
+/// might set from other modules in Orchard Core pipeline.
+/// </remarks>
 public class LocalizationOptionsUpdater
 {
     private readonly bool _useUserOverride;
