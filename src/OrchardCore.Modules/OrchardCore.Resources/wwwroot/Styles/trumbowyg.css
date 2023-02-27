@@ -1,5 +1,5 @@
 /**
- * Trumbowyg v2.26.0 - A lightweight WYSIWYG editor
+ * Trumbowyg v2.27.1 - A lightweight WYSIWYG editor
  * Default stylesheet for Trumbowyg editor
  * ------------------------
  * @link http://alex-d.github.io/Trumbowyg
@@ -8,13 +8,15 @@
  *         Twitter : @AlexandreDemode
  *         Website : alex-d.fr
  */
-#trumbowyg-icons {
+#trumbowyg-icons,
+.trumbowyg-icons {
   overflow: hidden;
   visibility: hidden;
   height: 0;
   width: 0;
 }
-#trumbowyg-icons svg {
+#trumbowyg-icons svg,
+.trumbowyg-icons svg {
   height: 0;
   width: 0;
 }
@@ -36,15 +38,19 @@
 }
 
 .trumbowyg-box,
-.trumbowyg-editor {
+.trumbowyg-editor-box {
   display: block;
   position: relative;
   width: 100%;
   min-height: 300px;
 }
 
-[dir] .trumbowyg-box, [dir] .trumbowyg-editor {
+[dir] .trumbowyg-box, [dir] .trumbowyg-editor-box {
   border: 1px solid #d7e0e2;
+}
+
+.trumbowyg-box .trumbowyg-editor {
+  min-height: 100%;
 }
 
 [dir] .trumbowyg-box .trumbowyg-editor {
@@ -56,7 +62,7 @@
   border: none !important;
 }
 
-.trumbowyg-editor,
+.trumbowyg-editor-box,
 .trumbowyg-textarea {
   position: relative;
   box-sizing: border-box;
@@ -68,13 +74,25 @@
   user-select: text;
 }
 
-[dir] .trumbowyg-editor, [dir] .trumbowyg-textarea {
+[dir] .trumbowyg-editor-box, [dir] .trumbowyg-textarea {
   padding: 20px;
   border-style: none;
 }
-.trumbowyg-editor.trumbowyg-autogrow-on-enter,
+.trumbowyg-editor-box.trumbowyg-autogrow-on-enter,
 .trumbowyg-textarea.trumbowyg-autogrow-on-enter {
   transition: height 300ms ease-out;
+}
+
+[dir] .trumbowyg-editor-box {
+  padding: 0;
+}
+
+.trumbowyg-editor {
+  outline: none;
+}
+
+[dir] .trumbowyg-editor {
+  padding: 20px;
 }
 
 .trumbowyg-box-blur .trumbowyg-editor *, .trumbowyg-box-blur .trumbowyg-editor::before {
@@ -131,7 +149,7 @@
 [dir] .trumbowyg-box.trumbowyg-editor-hidden .trumbowyg-textarea {
   margin-bottom: 1px;
 }
-.trumbowyg-box.trumbowyg-editor-hidden .trumbowyg-editor {
+.trumbowyg-box.trumbowyg-editor-hidden .trumbowyg-editor-box {
   display: none;
 }
 
@@ -143,7 +161,7 @@
   background: none;
 }
 
-.trumbowyg-editor[contenteditable=true]:empty:not(:focus)::before {
+.trumbowyg-editor-box[contenteditable=true]:empty:not(:focus)::before {
   content: attr(placeholder);
   color: #999;
   pointer-events: none;
@@ -249,7 +267,7 @@
   display: block;
   content: " ";
   position: absolute;
-  top: 25px;
+  top: 27px;
   height: 0;
   width: 0;
 }
@@ -663,7 +681,8 @@ body.trumbowyg-body-fullscreen {
   font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif !important;
   font-size: 14px !important;
   line-height: 1.45em !important;
-  color: #333;
+  color: #333 !important;
+  font-weight: normal !important;
 }
 [dir] .trumbowyg-editor.trumbowyg-reset-css {
   background: #fefefe !important;
@@ -686,14 +705,14 @@ body.trumbowyg-body-fullscreen {
   background: none !important;
   margin: 0 !important;
   margin-bottom: 15px !important;
-  border: none;
+  border: none !important;
 }
 [dir] .trumbowyg-editor.trumbowyg-reset-css iframe, [dir] .trumbowyg-editor.trumbowyg-reset-css object, [dir] .trumbowyg-editor.trumbowyg-reset-css hr {
   margin-bottom: 15px !important;
 }
 .trumbowyg-editor.trumbowyg-reset-css blockquote {
   font-style: italic !important;
-  color: #555;
+  color: #555 !important;
 }
 [dir=ltr] .trumbowyg-editor.trumbowyg-reset-css blockquote {
   margin-left: 32px !important;
@@ -702,10 +721,10 @@ body.trumbowyg-body-fullscreen {
   margin-right: 32px !important;
 }
 .trumbowyg-editor.trumbowyg-reset-css ul {
-  list-style: disc;
+  list-style: disc !important;
 }
 .trumbowyg-editor.trumbowyg-reset-css ol {
-  list-style: decimal;
+  list-style: decimal !important;
 }
 [dir=ltr] .trumbowyg-editor.trumbowyg-reset-css ul, [dir=ltr] .trumbowyg-editor.trumbowyg-reset-css ol {
   padding-left: 20px !important;
@@ -714,7 +733,7 @@ body.trumbowyg-body-fullscreen {
   padding-right: 20px !important;
 }
 [dir] .trumbowyg-editor.trumbowyg-reset-css ul ul, [dir] .trumbowyg-editor.trumbowyg-reset-css ol ol, [dir] .trumbowyg-editor.trumbowyg-reset-css ul ol, [dir] .trumbowyg-editor.trumbowyg-reset-css ol ul {
-  border: none;
+  border: none !important;
   margin: 2px !important;
   padding: 0 !important;
 }
@@ -725,22 +744,22 @@ body.trumbowyg-body-fullscreen {
   padding-right: 24px !important;
 }
 .trumbowyg-editor.trumbowyg-reset-css hr {
-  display: block;
-  height: 1px;
+  display: block !important;
+  height: 1px !important;
 }
 [dir] .trumbowyg-editor.trumbowyg-reset-css hr {
-  border: none;
-  border-top: 1px solid #CCC;
+  border: none !important;
+  border-top: 1px solid #CCC !important;
 }
 .trumbowyg-editor.trumbowyg-reset-css h1,
 .trumbowyg-editor.trumbowyg-reset-css h2,
 .trumbowyg-editor.trumbowyg-reset-css h3,
 .trumbowyg-editor.trumbowyg-reset-css h4 {
-  color: #111;
-  font-weight: bold;
+  color: #111 !important;
+  font-weight: bold !important;
 }
 [dir] .trumbowyg-editor.trumbowyg-reset-css h1, [dir] .trumbowyg-editor.trumbowyg-reset-css h2, [dir] .trumbowyg-editor.trumbowyg-reset-css h3, [dir] .trumbowyg-editor.trumbowyg-reset-css h4 {
-  background: none;
+  background: none !important;
   margin: 0 !important;
   padding: 0 !important;
 }
