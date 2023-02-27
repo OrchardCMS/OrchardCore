@@ -45,8 +45,6 @@ namespace OrchardCore.Localization.PortableObject
                 index += "Areas.".Length;
             }
 
-            var relativeName = baseName.Substring(index);
-
             return new PortableObjectHtmlLocalizer(_stringLocalizerFactory.Create(baseName, location));
         }
     }
