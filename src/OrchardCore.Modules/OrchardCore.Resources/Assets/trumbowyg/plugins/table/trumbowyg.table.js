@@ -550,12 +550,16 @@
                             t.saveRange();
 
                             var node = t.doc.getSelection().anchorNode;
-                            var $focusedRow = $(node).closest('tr');
                             var $table = $(node).closest('table');
 
                             if ($table.length === 0) {
                                 return;
                             }
+
+                            if (node.tagName === 'TR') {
+                                node = $('td, th', node)[0];
+                            }
+                            var $focusedRow = $(node).closest('tr');
 
                             var tableState = getTableState($table);
 
@@ -778,7 +782,7 @@
                         text: t.lang.tableDeleteRow,
                         ico: 'row-delete',
 
-                        fn: tableButtonAction(function ($table, $focusedRow) {
+                        fn: tableButtonAction(function ($table, $focusedRow, node, tableState) {
                             // Only one row is remaining in the table, remove the table
                             if ($('tbody tr', $table).length === 1) {
                                 $table.remove();
@@ -791,7 +795,41 @@
                             if ($focusedRowParent.is('thead')) {
                                 $elementToRemove = $focusedRowParent;
                             }
+
+                            // Manage merged cells
+                            var $rows = $('tr', $table);
+                            var rowIndex = $rows.index($(node).closest('tr'));
+                            for (var y = 0; y < tableState[0].length; y += 1) {
+                                var cellState = getCellState(tableState, [rowIndex, y], false);
+
+                                if (cellState.rowspan === 1) {
+                                    continue;
+                                }
+
+                                var originCellState = getCellState(tableState, [rowIndex, y]);
+                                originCellState.element.setAttribute('rowspan', originCellState.rowspan - 1);
+
+                                // If origin cell is not in this row, continue
+                                if (cellState.mergedIn !== undefined) {
+                                    continue;
+                                }
+
+                                // If origin cell is in this row, move it to the next row
+                                var originCellIndex = getCellIndex(cellState.element, tableState[rowIndex]);
+                                if (originCellIndex === 0) {
+                                    $($rows[rowIndex + 1]).prepend(originCellState.element);
+                                    continue;
+                                }
+                                var nextRowPreviousColumnCellState = getCellState(tableState, [
+                                    rowIndex + 1,
+                                    originCellIndex - 1
+                                ]);
+                                $(nextRowPreviousColumnCellState.element).after(originCellState.element);
+                            }
+
                             $elementToRemove.remove();
+                            simplifyCells($table);
+                            redrawResizeLayers();
                         }),
                     };
 
@@ -800,12 +838,27 @@
                         text: t.lang.tableDeleteColumn,
                         ico: 'col-delete',
 
-                        fn: tableButtonAction(function ($table, $focusedRow, node) {
-                            var cellIndex = $(node).closest('td').index();
+                        fn: tableButtonAction(function ($table, $focusedRow, node, tableState) {
+                            var $rows = $('tr', $table);
+                            var rowIndex = $rows.index($(node).closest('tr'));
+                            var columnIndex = getCellIndex($(node).closest('td, th')[0], tableState[rowIndex]);
 
-                            $table.find('tr').each(function () {
-                                $(this).find('td:eq(' + cellIndex + '), th:eq(' + cellIndex + ')').remove();
-                            });
+                            for (var x = 0; x < tableState.length; x += 1) {
+                                var cellState = getCellState(tableState, [x, columnIndex], false);
+
+                                // Reduce cell colspan by 1
+                                if (cellState.colspan > 1) {
+                                    var originCellState = getCellState(tableState, [x, columnIndex]);
+                                    originCellState.element.setAttribute('colspan', originCellState.colspan - 1);
+                                    continue;
+                                }
+
+                                // Delete cell if not merged
+                                cellState.element.remove();
+                            }
+
+                            simplifyCells();
+                            redrawResizeLayers();
                         })
                     };
 
@@ -1279,6 +1332,7 @@
 
                                 // Update HTML
                                 t.syncCode();
+                                redrawResizeLayers();
                             });
 
                         $(window)

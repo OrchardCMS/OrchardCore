@@ -1,8 +1,8 @@
 /**
- * Trumbowyg v2.27.1 - A lightweight WYSIWYG editor
+ * Trumbowyg v2.27.2 - A lightweight WYSIWYG editor
  * Default stylesheet for Trumbowyg editor
  * ------------------------
- * @link http://alex-d.github.io/Trumbowyg
+ * @link https://alex-d.github.io/Trumbowyg/
  * @license MIT
  * @author Alexandre Demode (Alex-D)
  *         Twitter : @AlexandreDemode
@@ -40,13 +40,36 @@
   fill: #222;
 }
 
-.trumbowyg-box,
+.trumbowyg-box {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+     -moz-box-orient: vertical;
+     -moz-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  min-height: 300px;
+}
+
 .trumbowyg-editor-box {
   display: block;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+     -moz-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+}
+
+.trumbowyg-box,
+.trumbowyg-editor-box {
   position: relative;
-  border: 1px solid #d7e0e2;
   width: 100%;
-  min-height: 300px;
+  border: 1px solid #d7e0e2;
 }
 
 .trumbowyg-box .trumbowyg-editor {
@@ -66,7 +89,6 @@
      -moz-box-sizing: border-box;
           box-sizing: border-box;
   padding: 20px;
-  min-height: 300px;
   width: 100%;
   border-style: none;
   resize: none;
@@ -152,6 +174,14 @@
 }
 
 .trumbowyg-button-pane {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+      -ms-flex-wrap: wrap;
+          flex-wrap: wrap;
   width: 100%;
   min-height: 36px;
   background: #ecf0f1;
@@ -163,28 +193,39 @@
   line-height: 10px;
   -webkit-backface-visibility: hidden;
           backface-visibility: hidden;
+  overflow: hidden;
   z-index: 11;
 }
-.trumbowyg-button-pane::after {
+.trumbowyg-button-pane::before, .trumbowyg-button-pane::after {
   content: " ";
   display: block;
   position: absolute;
-  top: 36px;
+  top: 35px;
   left: 0;
   right: 0;
   width: 100%;
   height: 1px;
   background: #d7e0e2;
 }
+.trumbowyg-button-pane::after {
+  top: 71px;
+}
 .trumbowyg-button-pane .trumbowyg-button-group {
-  display: inline-block;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+      -ms-flex-wrap: wrap;
+          flex-wrap: wrap;
 }
 .trumbowyg-button-pane .trumbowyg-button-group .trumbowyg-fullscreen-button svg {
   color: transparent;
 }
 .trumbowyg-button-pane .trumbowyg-button-group::after {
   content: " ";
-  display: inline-block;
+  display: block;
   width: 1px;
   background: #d7e0e2;
   margin: 0 5px;
@@ -195,7 +236,7 @@
   content: none;
 }
 .trumbowyg-button-pane button {
-  display: inline-block;
+  display: block;
   position: relative;
   width: 35px;
   height: 35px;
@@ -253,7 +294,7 @@
   right: 7px;
 }
 .trumbowyg-button-pane .trumbowyg-right {
-  float: right;
+  margin-left: auto;
 }
 
 .trumbowyg-dropdown {
@@ -509,12 +550,12 @@ body.trumbowyg-body-fullscreen {
   z-index: 99999;
 }
 .trumbowyg-fullscreen.trumbowyg-box,
-.trumbowyg-fullscreen .trumbowyg-editor {
+.trumbowyg-fullscreen .trumbowyg-editor-box {
   border: none;
 }
-.trumbowyg-fullscreen .trumbowyg-editor,
+.trumbowyg-fullscreen .trumbowyg-editor-box,
 .trumbowyg-fullscreen .trumbowyg-textarea {
-  height: calc(100% - 37px) !important;
+  height: auto !important;
   overflow: auto;
 }
 .trumbowyg-fullscreen .trumbowyg-overlay {
@@ -674,7 +715,7 @@ body.trumbowyg-body-fullscreen {
   background-color: #222;
   border-bottom-color: #343434;
 }
-.trumbowyg-dark .trumbowyg-button-pane::after {
+.trumbowyg-dark .trumbowyg-button-pane::before, .trumbowyg-dark .trumbowyg-button-pane::after {
   background: #343434;
 }
 .trumbowyg-dark .trumbowyg-button-pane .trumbowyg-button-group:not(:empty)::after {

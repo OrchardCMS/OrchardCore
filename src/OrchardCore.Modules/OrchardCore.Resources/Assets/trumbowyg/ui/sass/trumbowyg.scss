@@ -1,8 +1,8 @@
 /**
- * Trumbowyg v2.27.1 - A lightweight WYSIWYG editor
+ * Trumbowyg v2.27.2 - A lightweight WYSIWYG editor
  * Default stylesheet for Trumbowyg editor
  * ------------------------
- * @link http://alex-d.github.io/Trumbowyg
+ * @link https://alex-d.github.io/Trumbowyg/
  * @license MIT
  * @author Alexandre Demode (Alex-D)
  *         Twitter : @AlexandreDemode
@@ -74,13 +74,22 @@ $modal-label-width: 150px;
     }
 }
 
-.trumbowyg-box,
+.trumbowyg-box {
+    display: flex;
+    flex-direction: column;
+    min-height: 300px;
+}
+
 .trumbowyg-editor-box {
     display: block;
+    flex: 1;
+}
+
+.trumbowyg-box,
+.trumbowyg-editor-box {
     position: relative;
-    border: 1px solid $light-border-color;
     width: 100%;
-    min-height: 300px;
+    border: 1px solid $light-border-color;
 }
 
 .trumbowyg-box .trumbowyg-editor {
@@ -98,7 +107,6 @@ $modal-label-width: 150px;
     position: relative;
     box-sizing: border-box;
     padding: 20px;
-    min-height: 300px;
     width: 100%;
     border-style: none;
     resize: none;
@@ -186,8 +194,10 @@ $modal-label-width: 150px;
 }
 
 .trumbowyg-button-pane {
+    display: flex;
+    flex-wrap: wrap;
     width: 100%;
-    min-height: 36px;
+    min-height: $button-size + 1;
     background: $light-color;
     border-bottom: 1px solid $light-border-color;
     margin: 0;
@@ -196,13 +206,15 @@ $modal-label-width: 150px;
     list-style-type: none;
     line-height: 10px;
     backface-visibility: hidden;
+    overflow: hidden;
     z-index: 11;
 
+    &::before,
     &::after {
         content: " ";
         display: block;
         position: absolute;
-        top: 36px;
+        top: $button-size;
         left: 0;
         right: 0;
         width: 100%;
@@ -210,8 +222,13 @@ $modal-label-width: 150px;
         background: darken($light-color, 7%);
     }
 
+    &::after {
+        top: $button-size * 2 + 1;
+    }
+
     .trumbowyg-button-group {
-        display: inline-block;
+        display: flex;
+        flex-wrap: wrap;
 
         .trumbowyg-fullscreen-button svg {
             color: transparent;
@@ -219,7 +236,7 @@ $modal-label-width: 150px;
 
         &::after {
             content: " ";
-            display: inline-block;
+            display: block;
             width: 1px;
             background: darken($light-color, 7%);
             margin: 0 $pane-spacing;
@@ -233,7 +250,7 @@ $modal-label-width: 150px;
     }
 
     button {
-        display: inline-block;
+        display: block;
         position: relative;
         width: $button-size;
         height: $button-size;
@@ -299,7 +316,7 @@ $modal-label-width: 150px;
     }
 
     .trumbowyg-right {
-        float: right;
+        margin-left: auto;
     }
 }
 
@@ -567,12 +584,12 @@ body.trumbowyg-body-fullscreen {
     z-index: 99999;
 
     &.trumbowyg-box,
-    .trumbowyg-editor {
+    .trumbowyg-editor-box {
         border: none;
     }
-    .trumbowyg-editor,
+    .trumbowyg-editor-box,
     .trumbowyg-textarea {
-        height: calc(100% - 37px) !important;
+        height: auto !important;
         overflow: auto;
     }
     .trumbowyg-overlay {
@@ -742,6 +759,7 @@ body.trumbowyg-body-fullscreen {
         background-color: $dark-background-color-pane;
         border-bottom-color: $dark-border-color;
 
+        &::before,
         &::after {
             background: lighten($dark-color, 7%);
         }
