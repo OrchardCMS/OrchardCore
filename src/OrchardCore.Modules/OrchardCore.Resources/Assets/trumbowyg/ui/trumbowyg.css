@@ -1,5 +1,5 @@
 /**
- * Trumbowyg v2.27.2 - A lightweight WYSIWYG editor
+ * Trumbowyg v2.27.3 - A lightweight WYSIWYG editor
  * Default stylesheet for Trumbowyg editor
  * ------------------------
  * @link https://alex-d.github.io/Trumbowyg/
@@ -155,6 +155,11 @@
 
 .trumbowyg-box.trumbowyg-editor-hidden .trumbowyg-textarea {
   display: block;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+     -moz-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
   margin-bottom: 1px;
 }
 .trumbowyg-box.trumbowyg-editor-hidden .trumbowyg-editor-box {
