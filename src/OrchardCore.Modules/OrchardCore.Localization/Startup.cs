@@ -41,9 +41,6 @@ public class Startup : StartupBase
         services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization").
             AddDataAnnotationsPortableObjectLocalization();
 
-        services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization").
-            AddDataAnnotationsPortableObjectLocalization();
-
         services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
     }
 
