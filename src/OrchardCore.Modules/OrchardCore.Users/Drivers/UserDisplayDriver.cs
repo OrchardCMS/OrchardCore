@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
@@ -25,9 +27,10 @@ namespace OrchardCore.Users.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
-        private IEnumerable<IUserEventHandler> _userEventHandlers;
+        private readonly IEnumerable<IUserEventHandler> _userEventHandlers;
         private readonly ILogger _logger;
         private readonly IHtmlLocalizer H;
+        private readonly IStringLocalizer S;
 
         public UserDisplayDriver(
             UserManager<IUser> userManager,
@@ -36,7 +39,8 @@ namespace OrchardCore.Users.Drivers
             ILogger<UserDisplayDriver> logger,
             IEnumerable<IUserEventHandler> userEventHandlers,
             IAuthorizationService authorizationService,
-            IHtmlLocalizer<UserDisplayDriver> htmlLocalizer)
+            IHtmlLocalizer<UserDisplayDriver> htmlLocalizer,
+            IStringLocalizer<UserDisplayDriver> stringLocalizer)
         {
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
@@ -45,55 +49,79 @@ namespace OrchardCore.Users.Drivers
             _logger = logger;
             _userEventHandlers = userEventHandlers;
             H = htmlLocalizer;
+            S = stringLocalizer;
         }
 
         public override IDisplayResult Display(User user)
         {
             return Combine(
                 Initialize<SummaryAdminUserViewModel>("UserFields", model => model.User = user).Location("SummaryAdmin", "Header:1"),
+                Initialize<SummaryAdminUserViewModel>("UserInfo", model => model.User = user).Location("DetailAdmin", "Content:5"),
                 Initialize<SummaryAdminUserViewModel>("UserButtons", model => model.User = user).Location("SummaryAdmin", "Actions:1")
             );
         }
 
-        public override IDisplayResult Edit(User user)
+        public override async Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
         {
-            return Initialize<EditUserViewModel>("UserFields_Edit", async model =>
+            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.EditUsers, user))
+            {
+                return null;
+            }
+
+            return Initialize<EditUserViewModel>("UserFields_Edit", model =>
             {
                 model.EmailConfirmed = user.EmailConfirmed;
                 model.IsEnabled = user.IsEnabled;
+                model.IsNewRequest = context.IsNew;
                 // The current user cannot disable themselves, nor can a user without permission to manage this user disable them.
-                model.IsEditingDisabled = !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers, user) ||
-                    String.Equals(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), user.UserId, StringComparison.OrdinalIgnoreCase);
+                model.IsEditingDisabled = IsCurrentUser(user);
             })
-            .Location("Content:1.5")
-            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ViewUsers, user));
+           .Location("Content:1.5");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
         {
             // To prevent html injection when updating the user must meet all authorization requirements.
-            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers, user))
+            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.EditUsers, user))
             {
                 // When the user is only editing their profile never update this part of the user.
-                return Edit(user);
+                return await EditAsync(user, context);
             }
 
             var model = new EditUserViewModel();
 
-            if (!await context.Updater.TryUpdateModelAsync(model, Prefix))
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            if (context.IsNew)
+            {
+                if (String.IsNullOrWhiteSpace(model.Password))
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.Password), S["A password is required"]);
+                }
+
+                if (model.Password != model.PasswordConfirmation)
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.Password), S["The password and the password confirmation fields must match."]);
+                }
+            }
+
+            if (!context.Updater.ModelState.IsValid)
             {
                 return await EditAsync(user, context);
             }
 
-            var isEditingDisabled = !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers, user) ||
-                    String.Equals(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), user.UserId, StringComparison.OrdinalIgnoreCase);
+            var isEditingDisabled = IsCurrentUser(user);
 
             if (!isEditingDisabled && !model.IsEnabled && user.IsEnabled)
             {
-                var usersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole)).Cast<User>(); ;
-                if (usersOfAdminRole.Count() == 1 && String.Equals(user.UserId, usersOfAdminRole.First().UserId, StringComparison.OrdinalIgnoreCase))
+                var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole))
+                    .Cast<User>()
+                    .Where(user => user.IsEnabled)
+                    .ToList();
+
+                if (enabledUsersOfAdminRole.Count == 1 && user.UserId == enabledUsersOfAdminRole.First().UserId)
                 {
-                    await _notifier.WarningAsync(H["Cannot disable the only administrator."]);
+                    await _notifier.WarningAsync(H["Cannot disable the only enabled administrator."]);
                 }
                 else
                 {
@@ -122,7 +150,12 @@ namespace OrchardCore.Users.Drivers
                 }
             }
 
-            return Edit(user);
+            return await EditAsync(user, context);
+        }
+
+        private bool IsCurrentUser(User user)
+        {
+            return _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) == user.UserId;
         }
     }
 }

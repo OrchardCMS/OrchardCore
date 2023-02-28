@@ -23,7 +23,7 @@ namespace OrchardCore.ContentLocalization.Services
 
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
-        private int _lastIndexId;
+        private long _lastIndexId;
         private string _stateIdentifier;
         private bool _initialized;
 

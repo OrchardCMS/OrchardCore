@@ -53,9 +53,6 @@ namespace OrchardCore.Media.Indexing
                     }
                 }
 
-                // It doesn't really makes sense to store file contents without analyzing them for search as well.
-                var fileIndexingOptions = options | DocumentIndexOptions.Analyze;
-
                 foreach (var path in field.Paths)
                 {
                     var providerType = _mediaFileIndexingOptions.GetRegisteredMediaFileTextProvider(Path.GetExtension(path));
@@ -72,7 +69,7 @@ namespace OrchardCore.Media.Indexing
 
                             foreach (var key in context.Keys)
                             {
-                                context.DocumentIndex.Set(key + FileTextKeySuffix, fileText, fileIndexingOptions);
+                                context.DocumentIndex.Set(key + FileTextKeySuffix, fileText, options);
                             }
                         }
                     }

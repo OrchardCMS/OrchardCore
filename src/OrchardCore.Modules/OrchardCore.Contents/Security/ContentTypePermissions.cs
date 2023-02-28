@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Contents.Security
@@ -20,7 +20,7 @@ namespace OrchardCore.Contents.Security
         {
             // manage rights only for Securable types
             var securableTypes = _contentDefinitionManager.ListTypeDefinitions()
-                .Where(ctd => ctd.GetSettings<ContentTypeSettings>().Securable);
+                .Where(ctd => ctd.IsSecurable());
 
             var result = new List<Permission>();
 

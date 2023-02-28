@@ -2,9 +2,6 @@
 
 In this article, we are going to see how easy it is to create a CMS Web application using the NuGet packages provided by Orchard Core.
 
-You can find the original blog post written by Chris Payne here:  
-<http://ideliverable.com/blog/getting-started-with-orchard-core-as-a-nuget-package>
-
 ## Create an Orchard Core CMS application
 
 In Visual Studio, create a new empty .NET Core web application. Ex: `Cms.Web`. Do not check "Place solution and project in the same directory", because later when you create modules and themes you will want them to live alongside the web application within the solution.
@@ -14,22 +11,69 @@ In Visual Studio, create a new empty .NET Core web application. Ex: `Cms.Web`. D
 
 To add a reference to the package, right-click on the project and click on `Manage NuGet packages...`, check `Include prerelease` if required. If you added the preview source above, select this from the `Package Source` selection in the top right.  In the `Browse` tab, search for `OrchardCore.Application.Cms.Targets` and `Install` the package.
 
-Open `Startup.cs` and modify the `ConfigureServices` method by adding this line:
+### Getting Started with `Program.cs` Only Using .NET 6 Framework?
+!!! tip
+    When starting a new project using `.NET 6` framework, you'll notice that the created project does not have a `Startup` class as it did in previous versions of the .NET framework.
+
+Open `Program.cs` file. Remove the following line "if exists"
 
 ```csharp
-services.AddOrchardCms();
+builder.Services.AddRazorPages();
 ```
 
-In the `Configure` method, replace this block:
+Add the following line 
 
 ```csharp
-app.UseEndpoints(endpoints =>
+builder.Services.AddOrchardCms()
+```
+
+Additionally, remove the following lines
+
+```csharp
+app.UseHttpsRedirection();
+app.UseRouting();
+app.UseAuthorization();
+app.MapRazorPages();
+```
+Lastly, add the following line to the request pipeline
+
+```csharp
+app.UseOrchardCore();
+```
+
+When you are done, the `Program.cs` file will something like this
+
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddOrchardCms()
+
+var app = builder.Build();
+
+if (!app.Environment.IsDevelopment())
 {
-    endpoints.MapGet("/", async context =>
-    {
-        await context.Response.WriteAsync("Hello World!");
-    });
-});
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
+}
+
+app.UseStaticFiles();
+app.UseOrchardCore();
+
+app.Run();
+```
+
+### Getting Started Using `Startup.cs` file?
+
+Open `Startup.cs` file, then modify the `ConfigureServices` method by adding this line:
+
+```csharp
+builder.Services.AddOrchardCms();
+```
+
+After the `app` initialization, replace this line:
+
+```csharp
+app.MapGet("/", () => "Hello World!");
 ```
 
 with this line:
@@ -37,6 +81,8 @@ with this line:
 ```csharp
 app.UseOrchardCore();
 ```
+
+Finally, remove the default `Pages` and/or `Views` folder to allow OrchardCore to render the views from the active theme.
 
 ## Setup your application
 

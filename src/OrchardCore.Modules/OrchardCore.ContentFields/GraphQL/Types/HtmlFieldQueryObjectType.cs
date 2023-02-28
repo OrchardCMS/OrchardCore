@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid.Values;
+using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -32,9 +33,9 @@ namespace OrchardCore.ContentFields.GraphQL
                 .ResolveLockedAsync(RenderHtml);
         }
 
-        private static async Task<object> RenderHtml(ResolveFieldContext<HtmlField> ctx)
+        private static async Task<object> RenderHtml(IResolveFieldContext<HtmlField> ctx)
         {
-            var serviceProvider = ctx.ResolveServiceProvider();
+            var serviceProvider = ctx.RequestServices;
             var shortcodeService = serviceProvider.GetRequiredService<IShortcodeService>();
             var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
 

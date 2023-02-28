@@ -30,12 +30,6 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
         public override LocalizedString DisplayText => S["Create Tenant Task"];
 
-        public string ContentType
-        {
-            get => GetProperty<string>();
-            set => SetProperty(value);
-        }
-
         public WorkflowExpression<string> Description
         {
             get => GetProperty(() => new WorkflowExpression<string>());
@@ -72,6 +66,12 @@ namespace OrchardCore.Tenants.Workflows.Activities
             set => SetProperty(value);
         }
 
+        public WorkflowExpression<string> Schema
+        {
+            get => GetProperty(() => new WorkflowExpression<string>());
+            set => SetProperty(value);
+        }
+
         public WorkflowExpression<string> RecipeName
         {
             get => GetProperty(() => new WorkflowExpression<string>());
@@ -91,69 +91,81 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
         public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            if (ShellScope.Context.Settings.Name != ShellHelper.DefaultShellName)
+            if (!ShellScope.Context.Settings.IsDefaultShell())
             {
                 return Outcomes("Failed");
             }
 
             var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null))?.Trim();
 
-            if (string.IsNullOrEmpty(tenantName))
+            if (String.IsNullOrEmpty(tenantName))
             {
                 return Outcomes("Failed");
             }
 
-            if (ShellHost.TryGetSettings(tenantName, out var shellSettings))
+            if (ShellHost.TryGetSettings(tenantName, out _))
             {
                 return Outcomes("Failed");
             }
 
+            var description = (await ExpressionEvaluator.EvaluateAsync(Description, workflowContext, null))?.Trim();
             var requestUrlPrefix = (await ExpressionEvaluator.EvaluateAsync(RequestUrlPrefix, workflowContext, null))?.Trim();
             var requestUrlHost = (await ExpressionEvaluator.EvaluateAsync(RequestUrlHost, workflowContext, null))?.Trim();
             var databaseProvider = (await ExpressionEvaluator.EvaluateAsync(DatabaseProvider, workflowContext, null))?.Trim();
             var connectionString = (await ExpressionEvaluator.EvaluateAsync(ConnectionString, workflowContext, null))?.Trim();
             var tablePrefix = (await ExpressionEvaluator.EvaluateAsync(TablePrefix, workflowContext, null))?.Trim();
+            var schema = (await ExpressionEvaluator.EvaluateAsync(Schema, workflowContext, null))?.Trim();
             var recipeName = (await ExpressionEvaluator.EvaluateAsync(RecipeName, workflowContext, null))?.Trim();
             var featureProfile = (await ExpressionEvaluator.EvaluateAsync(FeatureProfile, workflowContext, null))?.Trim();
 
             // Creates a default shell settings based on the configuration.
-            shellSettings = ShellSettingsManager.CreateDefaultSettings();
+            var shellSettings = ShellSettingsManager.CreateDefaultSettings();
 
             shellSettings.Name = tenantName;
 
-            if (!string.IsNullOrEmpty(requestUrlHost))
+            if (!String.IsNullOrEmpty(description))
+            {
+                shellSettings["Description"] = description;
+            }
+
+            if (!String.IsNullOrEmpty(requestUrlHost))
             {
                 shellSettings.RequestUrlHost = requestUrlHost;
             }
 
-            if (!string.IsNullOrEmpty(requestUrlPrefix))
+            if (!String.IsNullOrEmpty(requestUrlPrefix))
             {
                 shellSettings.RequestUrlPrefix = requestUrlPrefix;
             }
 
             shellSettings.State = TenantState.Uninitialized;
 
-            if (!string.IsNullOrEmpty(connectionString))
+            if (!String.IsNullOrEmpty(connectionString))
             {
                 shellSettings["ConnectionString"] = connectionString;
             }
 
-            if (!string.IsNullOrEmpty(tablePrefix))
+            if (!String.IsNullOrEmpty(tablePrefix))
             {
                 shellSettings["TablePrefix"] = tablePrefix;
             }
 
-            if (!string.IsNullOrEmpty(databaseProvider))
+            if (!String.IsNullOrEmpty(schema))
+            {
+                shellSettings["Schema"] = schema;
+            }
+
+            if (!String.IsNullOrEmpty(databaseProvider))
             {
                 shellSettings["DatabaseProvider"] = databaseProvider;
             }
 
-            if (!string.IsNullOrEmpty(recipeName))
+            if (!String.IsNullOrEmpty(recipeName))
             {
                 shellSettings["RecipeName"] = recipeName;
             }
 
-            if (!string.IsNullOrEmpty(featureProfile))
+            if (!String.IsNullOrEmpty(featureProfile))
             {
                 shellSettings["FeatureProfile"] = featureProfile;
             }

@@ -47,6 +47,10 @@ namespace OrchardCore.OpenId.Recipes
                 new PathString("/connect/token") : PathString.Empty;
             settings.UserinfoEndpointPath = model.EnableUserInfoEndpoint ?
                 new PathString("/connect/userinfo") : PathString.Empty;
+            settings.IntrospectionEndpointPath = model.EnableIntrospectionEndpoint ?
+                new PathString("/connect/introspect") : PathString.Empty;
+            settings.RevocationEndpointPath = model.EnableRevocationEndpoint ?
+                new PathString("/connect/revoke") : PathString.Empty;
 
             settings.AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow;
             settings.AllowClientCredentialsFlow = model.AllowClientCredentialsFlow;
@@ -58,6 +62,7 @@ namespace OrchardCore.OpenId.Recipes
             settings.DisableAccessTokenEncryption = model.DisableAccessTokenEncryption;
             settings.DisableRollingRefreshTokens = model.DisableRollingRefreshTokens;
             settings.UseReferenceAccessTokens = model.UseReferenceAccessTokens;
+            settings.RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange;
 
             await _serverService.UpdateSettingsAsync(settings);
         }

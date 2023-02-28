@@ -1,0 +1,124 @@
+@model ListNotificationsViewModel
+
+<!-- Hidden submit button do not remove -->
+<input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
+<input type="submit" name="submit.BulkAction" class="visually-hidden" />
+@Html.HiddenFor(o => o.Options.BulkAction)
+
+@if (Model.Header != null && Model.Header.Search != null)
+{
+    <div class="card bg-primary mb-3 position-sticky action-bar">
+        <div class="card-body">
+            <div class="row gx-3">
+                <div class="col">
+                    @await DisplayAsync(Model.Header.Search)
+                </div>
+                <div class="col-auto">
+                    @await DisplayAsync(Model.Header.ActionBarButtons)
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="list-group with-checkbox notification-container">
+    @if (Model.Header != null && (Model.Header.Summary != null || Model.Header.Actions != null))
+    {
+        <div class="list-group-item bg-primary">
+            <div class="row gx-3">
+                @if (Model.Header.Summary != null)
+                {
+                    <div class="col">
+                        @await DisplayAsync(Model.Header.Summary)
+                    </div>
+                }
+                @if (Model.Header.Actions != null)
+                {
+                    <div class="col col-md-auto text-end">
+                        @await DisplayAsync(Model.Header.Actions)
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    @if (Model.Notifications.Any())
+    {
+        @foreach (var notification in Model.Notifications)
+        {
+            @await DisplayAsync(notification)
+        }
+    }
+    else
+    {
+        <div class="list-group-item">
+            <div class="alert alert-info mb-0">
+                @T["No notifications found."]
+            </div>
+        </div>
+    }
+</div>
+
+@await DisplayAsync(Model.Pager)
+
+<script at="Foot">
+    $(function () {
+        var actions = $("#actions");
+        var items = $("#items");
+        var filters = $(".filter");
+        var selectAllCtrl = $("#select-all");
+        var selectedItems = $("#selected-items");
+        var itemsCheckboxes = $(":checkbox[name='itemIds']");
+
+        // This applies to all filter selectpickers on page. Add .nosubmit to not submit
+        $('.selectpicker:not(.nosubmit)').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+            $("[name='submit.Filter']").click();
+        });
+
+        $(".dropdown-menu .dropdown-item").filter(function () {
+            return $(this).data("action");
+        }).on("click", function () {
+            if ($(":checkbox[name='itemIds']:checked").length > 1) {
+                var $this = $(this);
+                confirmDialog({
+                    ...$this.data(), callback: function (r) {
+                        if (r) {
+                            $("#@Html.IdFor(o => o.Options.BulkAction)").val($this.data("action"));
+                            $("[name='submit.BulkAction']").click();
+                        }
+                    }
+                });
+            }
+        });
+        function displayActionsOrFilters() {
+            if ($(":checkbox[name='itemIds']:checked").length > 1) {
+                actions.show();
+                filters.hide();
+                selectedItems.show();
+                items.hide();
+            }
+            else {
+                actions.hide();
+                filters.show();
+                selectedItems.hide();
+                items.show();
+            }
+        }
+
+        selectAllCtrl.click(function () {
+            itemsCheckboxes.not(this).prop("checked", this.checked);
+            selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
+            displayActionsOrFilters();
+        });
+
+        itemsCheckboxes.on("click", function () {
+            var itemsCount = $(":checkbox[name='itemIds']").length;
+            var selectedItemsCount = $(":checkbox[name='itemIds']:checked").length;
+
+            selectAllCtrl.prop("checked", selectedItemsCount == itemsCount);
+            selectAllCtrl.prop("indeterminate", selectedItemsCount > 0 && selectedItemsCount < itemsCount);
+
+            selectedItems.text(selectedItemsCount + ' @T["selected"]');
+            displayActionsOrFilters();
+        });
+    })
+</script>

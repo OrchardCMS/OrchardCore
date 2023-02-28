@@ -1,9 +1,3 @@
-using System;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using Moq;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.OpenId.Deployment;
 using OrchardCore.OpenId.Recipes;
@@ -11,7 +5,6 @@ using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Tests.Stubs;
-using Xunit;
 using static OrchardCore.OpenId.Settings.OpenIdServerSettings;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
@@ -32,6 +25,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 result.AuthorizationEndpointPath = "/connect/authorize";
                 result.LogoutEndpointPath = "/connect/logout";
                 result.UserinfoEndpointPath = "/connect/userinfo";
+                result.IntrospectionEndpointPath = "/connect/introspect";
+                result.RevocationEndpointPath = "/connect/revoke";
 
                 result.EncryptionCertificateStoreLocation = StoreLocation.LocalMachine;
                 result.EncryptionCertificateStoreName = StoreName.My;
@@ -51,6 +46,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 result.DisableAccessTokenEncryption = true;
                 result.DisableRollingRefreshTokens = true;
                 result.UseReferenceAccessTokens = true;
+                result.RequireProofKeyForCodeExchange = true;
             }
 
             return result;

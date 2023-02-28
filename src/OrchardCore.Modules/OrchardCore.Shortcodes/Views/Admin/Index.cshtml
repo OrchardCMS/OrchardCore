@@ -12,46 +12,48 @@
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
-        
-    <div class="card mb-3 position-sticky action-bar">
-        <div class="card-body bg-primary p-3">
-            <div class="mb-0">
-                <div class="input-group input-group-sm w-sm-50 w-25 d-inline-flex has-search">
-                <i class="fa fa-search form-control-feedback" aria-hidden="true"></i>
-                    <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+
+    <div class="card mb-3 bg-primary position-sticky action-bar">
+        <div class="card-body">
+            <div class="row gx-3">
+                <div class="col">
+                    <div class="has-search">
+                        <i class="fa fa-search form-control-feedback" aria-hidden="true"></i>
+                        <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                    </div>
                 </div>
-                <div class="btn-group float-end">
-                    <a asp-route-action="Create" class="btn btn-sm btn-secondary float-end create" role="button">@T["Add Shortcode"]</a>
+                <div class="col-auto">
+                    <a asp-route-action="Create" class="btn btn-secondary create" role="button">@T["Add Shortcode"]</a>
                 </div>
             </div>
         </div>
     </div>
     <ul class="list-group with-checkbox">
-        @if (Model.ShortcodeTemplates.Any())
+        @if (Model.ShortcodeTemplates.Count > 0)
         {
             <li class="list-group-item bg-primary">
-                <div class="row">
-                    <div class="col mb-1">
-                        <div class="form-check mt-2 me-n2">
+                <div class="row gx-3">
+                    <div class="col">
+                        <div class="form-check my-1">
                             <input type="checkbox" class="form-check-input" id="select-all">
                             <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
                             <label id="items" for="select-all">@T.Plural(Model.ShortcodeTemplates.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
                             <label id="selected-items" class="text-muted" for="select-all"></label>
                         </div>
                     </div>
-                        <div class="col-2 mb-1" style="display:none" id="actions">
-                            <div class="dropdown float-end mt-1">
-                                <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    @T["Actions"]
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
-                                    @foreach (var item in Model.Options.ContentsBulkAction)
-                                    {
-                                        <li><a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a></li>
-                                    }
-                                </ul>
-                            </div>
+                    <div class="col col-md-auto text-end">
+                        <div class="dropdown" style="display:none" id="actions">
+                            <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                @T["Actions"]
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
+                                @foreach (var item in Model.Options.ContentsBulkAction)
+                                {
+                                    <li><a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a></li>
+                                }
+                            </ul>
                         </div>
+                    </div>
                 </div>
             </li>
             @foreach (var entry in Model.ShortcodeTemplates)
@@ -97,7 +99,6 @@
         var selectAllCtrl = $("#select-all");
         var selectedItems = $("#selected-items");
         var itemsCheckboxes = $(":checkbox[name='itemIds']");
-
         function displayActionsOrFilters() {
             if ($(":checkbox[name='itemIds']:checked").length > 1) {
                 actions.show();
@@ -112,34 +113,31 @@
                 items.show();
             }
         }
-
-        $(".dropdown-menu .dropdown-item").filter(function() {
+        $(".dropdown-menu .dropdown-item").filter(function () {
             return $(this).data("action");
         }).on("click", function () {
             if ($(":checkbox[name='itemIds']:checked").length > 1) {
                 var $this = $(this);
-                confirmDialog({...$this.data(), callback: function(r) {
-                    if (r) {
-                        $("[name='Options.BulkAction']").val($this.data("action"));
-                        $("[name='submit.BulkAction']").click();
+                confirmDialog({
+                    ...$this.data(), callback: function (r) {
+                        if (r) {
+                            $("[name='Options.BulkAction']").val($this.data("action"));
+                            $("[name='submit.BulkAction']").click();
+                        }
                     }
-                }});
+                });
             }
         });
-
-        selectAllCtrl.click(function(){
+        selectAllCtrl.click(function () {
             itemsCheckboxes.not(this).prop("checked", this.checked);
             selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
             displayActionsOrFilters();
         });
-
         itemsCheckboxes.on("click", function () {
             var itemsCount = $(":checkbox[name='itemIds']").length;
             var selectedItemsCount = $(":checkbox[name='itemIds']:checked").length;
-
             selectAllCtrl.prop("checked", selectedItemsCount == itemsCount);
             selectAllCtrl.prop("indeterminate", selectedItemsCount > 0 && selectedItemsCount < itemsCount);
-
             selectedItems.text(selectedItemsCount + ' @T["selected"]');
             displayActionsOrFilters();
         });

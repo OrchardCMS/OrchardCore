@@ -300,13 +300,13 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     },
                     createFolder: function () {
                         $('#createFolderModal-errors').empty();
-                        var modal = new bootstrap.Modal($('#createFolderModal'));
+                        var modal = bootstrap.Modal.getOrCreateInstance($('#createFolderModal'));
                         modal.show();
                         $('#createFolderModal .modal-body input').val('').focus();
                     },
                     renameMedia: function (media) {
                         $('#renameMediaModal-errors').empty();
-                        var modal = new bootstrap.Modal($('#renameMediaModal'));
+                        var modal = bootstrap.Modal.getOrCreateInstance($('#renameMediaModal'));
                         modal.show();
                         $('#old-item-name').val(media.name);
                         $('#renameMediaModal .modal-body input').val(media.name).focus();
@@ -444,7 +444,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     },
                     success: function (data) {
                         bus.$emit('addFolder', mediaApp.selectedFolder, data);
-                        var modal = new bootstrap.Modal($('#createFolderModal'));
+                        var modal = bootstrap.Modal.getOrCreateInstance($('#createFolderModal'));
                         modal.hide();
                     },
                     error: function (error) {
@@ -472,7 +472,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 var oldPath = currentFolder + oldName;
 
                 if (newPath.toLowerCase() === oldPath.toLowerCase()) {
-                    var modal = new bootstrap.Modal($('#renameMediaModal'));
+                    var modal = bootstrap.Modal.getOrCreateInstance($('#renameMediaModal'));
                     modal.hide();
                     return;
                 }
@@ -484,7 +484,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
                     },
                     success: function (data) {
-                        var modal = new bootstrap.Modal($('#renameMediaModal'));
+                        var modal = bootstrap.Modal.getOrCreateInstance($('#renameMediaModal'));
                         modal.hide();
                         bus.$emit('mediaRenamed', newName, newPath, oldPath);
                     },

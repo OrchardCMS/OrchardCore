@@ -1,13 +1,7 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Html.Models;
-using OrchardCore.Lucene;
+using OrchardCore.Search.Lucene;
 using OrchardCore.Tests.Apis.Context;
-using Xunit;
 
 namespace OrchardCore.Tests.Apis.Lucene
 {
@@ -22,7 +16,7 @@ namespace OrchardCore.Tests.Apis.Lucene
 
                 // Act
                 var index = "ArticleIndex";
-                // { "from": 0, "size": 2, "query": { "simple_query_string": { "analyze_wildcard": true, "fields": ["Content.ContentItem.DisplayText.Normalized^2", "HtmlBodyPart"], "query": "orchard*" } } }
+                // { "from": 0, "size": 2, "query": { "simple_query_string": { "analyze_wildcard": true, "fields": ["Content.ContentItem.DisplayText_Normalized^2", "Content.BodyAspect.Body"], "query": "orchard*" } } }
                 var dynamicQuery = new
                 {
                     from = 0,
@@ -32,7 +26,7 @@ namespace OrchardCore.Tests.Apis.Lucene
                         simple_query_string = new
                         {
                             analyze_wildcard = true,
-                            fields = new string[] { "Content.ContentItem.DisplayText.Normalized^2", "HtmlBodyPart" },
+                            fields = new string[] { "Content.ContentItem.DisplayText.Normalized^2", "Content.BodyAspect.Body" },
                             query = "orchard*"
                         }
                     }
@@ -60,7 +54,7 @@ namespace OrchardCore.Tests.Apis.Lucene
 
                 // Act
                 var index = "ArticleIndex";
-                // { "from": 0, "size": 2, "query": { "simple_query_string": { "analyze_wildcard": true, "fields": ["Content.ContentItem.DisplayText.Normalized", "HtmlBodyPart^2"], "query": "orchard*" } } }
+                // { "from": 0, "size": 2, "query": { "simple_query_string": { "analyze_wildcard": true, "fields": ["Content.ContentItem.DisplayText_Normalized", "Content.BodyAspect.Body^2"], "query": "orchard*" } } }
                 var dynamicQuery = new
                 {
                     from = 0,
@@ -70,7 +64,7 @@ namespace OrchardCore.Tests.Apis.Lucene
                         simple_query_string = new
                         {
                             analyze_wildcard = true,
-                            fields = new string[] { "Content.ContentItem.DisplayText.Normalized", "HtmlBodyPart^2" },
+                            fields = new string[] { "Content.ContentItem.DisplayText_Normalized", "Content.BodyAspect.Body^2" },
                             query = "orchard*"
                         }
                     }
@@ -139,12 +133,12 @@ namespace OrchardCore.Tests.Apis.Lucene
                 // Should find articles with "Orchard" in the title
                 var index = "ArticleIndex";
 
-                // { "from": 0, "size": 10, "query":{ "bool": { "should": [ { "wildcard": {  "Content.ContentItem.DisplayText.Normalized": { "value": "orch*", "boost": 2 } } },{ "wildcard": { "HtmlBodyPart": { "value": "orchar*", "boost": 5 } } } ] } } }
+                // { "from": 0, "size": 10, "query":{ "bool": { "should": [ { "wildcard": {  "Content.ContentItem.DisplayText.Normalized": { "value": "orch*", "boost": 2 } } },{ "wildcard": { "Content.BodyAspect.Body": { "value": "orchar*", "boost": 5 } } } ] } } }
                 var query =
                     "{ \"from\": 0, \"size\": 10, \"query\":" +
                         "{ \"bool\": { \"should\": [ " +
                             "{ \"wildcard\": {  \"Content.ContentItem.DisplayText.Normalized\": { \"value\": \"orch*\", \"boost\": 2 } } }," +
-                            "{ \"wildcard\": { \"HtmlBodyPart\": { \"value\": \"orchar*\", \"boost\": 5 } } }" +
+                            "{ \"wildcard\": { \"Content.BodyAspect.Body\": { \"value\": \"orchar*\", \"boost\": 5 } } }" +
                         "] } } }";
 
                 var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");

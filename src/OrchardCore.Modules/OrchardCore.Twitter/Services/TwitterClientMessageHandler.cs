@@ -8,22 +8,24 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
-using OrchardCore.Entities;
+using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
-using OrchardCore.Settings;
 using OrchardCore.Twitter.Settings;
 
 namespace OrchardCore.Twitter.Services
 {
     public class TwitterClientMessageHandler : DelegatingHandler
     {
-        private readonly ISiteService _siteService;
+        private readonly TwitterSettings _twitterSettings;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IClock _clock;
 
-        public TwitterClientMessageHandler(IClock clock, ISiteService siteService, IDataProtectionProvider dataProtectionProvider)
+        public TwitterClientMessageHandler(
+            IClock clock,
+            IOptions<TwitterSettings> twitterSettings,
+            IDataProtectionProvider dataProtectionProvider)
         {
-            _siteService = siteService;
+            _twitterSettings = twitterSettings.Value;
             _dataProtectionProvider = dataProtectionProvider;
             _clock = clock;
         }
@@ -41,26 +43,29 @@ namespace OrchardCore.Twitter.Services
 
         public async Task ConfigureOAuthAsync(HttpRequestMessage request)
         {
-            var container = await _siteService.GetSiteSettingsAsync();
-            var settings = container.As<TwitterSettings>();
             var protrector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
             var queryString = request.RequestUri.Query;
 
-            if (!string.IsNullOrWhiteSpace(settings.ConsumerSecret))
-                settings.ConsumerSecret = protrector.Unprotect(settings.ConsumerSecret);
-            if (!string.IsNullOrWhiteSpace(settings.ConsumerSecret))
-                settings.AccessTokenSecret = protrector.Unprotect(settings.AccessTokenSecret);
+            if (!String.IsNullOrWhiteSpace(_twitterSettings.ConsumerSecret))
+            {
+                _twitterSettings.ConsumerSecret = protrector.Unprotect(_twitterSettings.ConsumerSecret);
+            }
+
+            if (!String.IsNullOrWhiteSpace(_twitterSettings.AccessTokenSecret))
+            {
+                _twitterSettings.AccessTokenSecret = protrector.Unprotect(_twitterSettings.AccessTokenSecret);
+            }
 
             var nonce = GetNonce();
             var timeStamp = Convert.ToInt64((_clock.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds).ToString();
 
             var sortedParameters = new SortedDictionary<string, string>();
 
-            sortedParameters.Add(Uri.EscapeDataString("oauth_consumer_key"), Uri.EscapeDataString(settings.ConsumerKey));
+            sortedParameters.Add(Uri.EscapeDataString("oauth_consumer_key"), Uri.EscapeDataString(_twitterSettings.ConsumerKey));
             sortedParameters.Add(Uri.EscapeDataString("oauth_nonce"), Uri.EscapeDataString(nonce));
             sortedParameters.Add(Uri.EscapeDataString("oauth_signature_method"), Uri.EscapeDataString("HMAC-SHA1"));
             sortedParameters.Add(Uri.EscapeDataString("oauth_timestamp"), Uri.EscapeDataString(timeStamp));
-            sortedParameters.Add(Uri.EscapeDataString("oauth_token"), Uri.EscapeDataString(settings.AccessToken));
+            sortedParameters.Add(Uri.EscapeDataString("oauth_token"), Uri.EscapeDataString(_twitterSettings.AccessToken));
             sortedParameters.Add(Uri.EscapeDataString("oauth_version"), Uri.EscapeDataString("1.0"));
 
             if (!string.IsNullOrEmpty(request.RequestUri.Query))
@@ -92,7 +97,7 @@ namespace OrchardCore.Twitter.Services
                 Uri.EscapeDataString(request.RequestUri.AbsoluteUri.ToString()), "&",
                 Uri.EscapeDataString(string.Join("&", sortedParameters.Select(c => string.Format("{0}={1}", c.Key, c.Value)))));
 
-            var secret = string.Concat(settings.ConsumerSecret, "&", settings.AccessTokenSecret);
+            var secret = string.Concat(_twitterSettings.ConsumerSecret, "&", _twitterSettings.AccessTokenSecret);
             string signature;
             using (var hasher = new HMACSHA1(ASCIIEncoding.ASCII.GetBytes(secret)))
             {
@@ -100,12 +105,12 @@ namespace OrchardCore.Twitter.Services
             }
 
             var sb = new StringBuilder();
-            sb.Append("oauth_consumer_key=\"").Append(Uri.EscapeDataString(settings.ConsumerKey)).Append("\", ");
+            sb.Append("oauth_consumer_key=\"").Append(Uri.EscapeDataString(_twitterSettings.ConsumerKey)).Append("\", ");
             sb.Append("oauth_nonce=\"").Append(Uri.EscapeDataString(nonce)).Append("\", ");
             sb.Append("oauth_signature=\"").Append(Uri.EscapeDataString(signature)).Append("\", ");
             sb.Append($"oauth_signature_method=\"HMAC-SHA1\", ");
             sb.Append("oauth_timestamp=\"").Append(Uri.EscapeDataString(timeStamp)).Append("\", ");
-            sb.Append("oauth_token=\"").Append(Uri.EscapeDataString(settings.AccessToken)).Append("\", ");
+            sb.Append("oauth_token=\"").Append(Uri.EscapeDataString(_twitterSettings.AccessToken)).Append("\", ");
             sb.Append("oauth_version=\"").Append(Uri.EscapeDataString("1.0")).Append('"');
 
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("OAuth", sb.ToString());

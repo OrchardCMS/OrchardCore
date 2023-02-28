@@ -25,7 +25,7 @@ namespace OrchardCore.Tenants
             }
 
             // Don't add the menu item on non-default tenants
-            if (_shellSettings.Name != ShellHelper.DefaultShellName)
+            if (!_shellSettings.IsDefaultShell())
             {
                 return Task.CompletedTask;
             }

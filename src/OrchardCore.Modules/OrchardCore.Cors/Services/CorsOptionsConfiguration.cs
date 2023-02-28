@@ -40,7 +40,7 @@ namespace OrchardCore.Cors.Services
                     }
                     else
                     {
-                        configurePolicy.WithHeaders(corsPolicy.AllowedOrigins);
+                        configurePolicy.WithHeaders(corsPolicy.AllowedHeaders);
                     }
 
                     if (corsPolicy.AllowAnyMethod)

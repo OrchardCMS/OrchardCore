@@ -1,11 +1,37 @@
 @model OrchardCore.Flows.ViewModels.BagPartSettingsViewModel
-
+@using OrchardCore.Flows.Settings
+@using OrchardCore.Flows.Models
 <div class="mb-3">
+    <label asp-for="Source">@T["Contained Content Types"]</label>
+    <div class="w-sm-50" id="@Html.IdFor(x => x.Source)">
+        <div class="form-check">
+            <input class="form-check-input" type="radio" asp-for="Source" id="SourceContentTypes" value="@(BagPartSettingType.ContentTypes)" checked="@(Model.Source == BagPartSettingType.ContentTypes))">
+            <label for="SourceContentTypes">
+                @T["Content Types"]
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" asp-for="Source" id="SourceStereotype" value="@(BagPartSettingType.Stereotypes)" checked="@(Model.Source == BagPartSettingType.Stereotypes)">
+            <label for="SourceStereotype">
+                @T["Stereotype"] <span class="hint">@T["All content types of these Stereotypes"]</span>
+            </label>
+        </div>
+    </div>
+</div>
+
+<div class="mb-3" id="ContentTypesContainer">
     <label asp-for="ContainedContentTypes">@T["Contained Content Types"]</label>
     <span class="hint">@T["The content types that this bag can contain, e.g. Slide for a Slide Show."]</span>
     @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.ContainedContentTypes, htmlName = Html.NameFor(m => m.ContainedContentTypes) })
 </div>
 
+<div class="mb-3" id="StereotypesContainer">
+    <div class="w-sm-50" id="@Html.IdFor(x => x.Source)">
+        <label asp-for="Stereotypes">@T["Stereotypes"]</label>
+        <input asp-for="Stereotypes" class="form-control medium" />
+        <span class="hint">@T["The Stereotypes of the content types that this bag can contain. You may define multiple Stereotypes using the comma (,) as a separator"]</span>
+    </div>
+</div>
 <div class="mb-3">
     <div class="w-sm-50">
         <label asp-for="DisplayType">@T["Display Type"]</label>
@@ -13,3 +39,28 @@
     </div>
     <span class="hint">@T["The display type to use when rendering the content items. Default is Summary."]</span>
 </div>
+
+<script at="Foot" asp-name="bagPartSettings">
+    document.addEventListener('DOMContentLoaded', function() {
+        var sources = document.getElementsByName('@Html.NameFor(x => x.Source)');
+        var contentTypesContainer = document.getElementById('ContentTypesContainer');
+        var stereotypeContainer = document.getElementById('StereotypesContainer');
+
+        for (var i = 0; i < sources.length; i++) {
+            var source = sources[i];
+            source.addEventListener('change', function(src) {
+                if (!src.target.checked) {
+                    return;
+                }
+                if (src.target.value == '@(BagPartSettingType.Stereotypes)') {
+                    contentTypesContainer.classList.add('d-none');
+                    stereotypeContainer.classList.remove('d-none');
+                } else {
+                    contentTypesContainer.classList.remove('d-none');
+                    stereotypeContainer.classList.add('d-none');
+                }
+            });
+            source.dispatchEvent(new Event('change'));
+        }
+    });
+</script>

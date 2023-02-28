@@ -40,7 +40,30 @@ public class Startup : StartupBase
         services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization").
             AddDataAnnotationsPortableObjectLocalization();
 
-        services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
+            services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization").
+                AddDataAnnotationsPortableObjectLocalization();
+
+            services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
+        }
+
+        /// <inheritdocs />
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            var localizationService = serviceProvider.GetService<ILocalizationService>();
+
+            var defaultCulture = localizationService.GetDefaultCultureAsync().GetAwaiter().GetResult();
+            var supportedCultures = localizationService.GetSupportedCulturesAsync().GetAwaiter().GetResult();
+
+            var localizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
+            var ignoreSystemSettings = serviceProvider.GetService<IOptions<CultureOptions>>().Value.IgnoreSystemSettings;
+
+            new LocalizationOptionsUpdater(localizationOptions, ignoreSystemSettings)
+                .SetDefaultCulture(defaultCulture)
+                .AddSupportedCultures(supportedCultures)
+                .AddSupportedUICultures(supportedCultures);
+
+            app.UseRequestLocalization(localizationOptions);
+        }
     }
 
     /// <inheritdocs />

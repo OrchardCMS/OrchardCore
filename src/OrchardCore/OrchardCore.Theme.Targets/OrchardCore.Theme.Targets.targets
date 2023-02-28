@@ -49,6 +49,7 @@
     11: , string tags
     12: , object defaultTenant
     13: , object alwaysEnabled
+    14: , object enabledByDependencyOnly
     -->
   <!-- OrchardCoreEmbeddingAfter/BeforeTargets declared in the 'OrchardCore.Modules.Targets.targets' file;
     may be appended by consuming developer discretionary requirements. -->
@@ -60,7 +61,7 @@
     <Message
       Importance="high"
       Condition="'$(OrchardCoreDebugTargets)' == 'true'"
-      Text="Embedding '@(OrchardCoreThemes)' theme: {'id': '%(OrchardCoreThemes.Identity)', 'name': '%(OrchardCoreThemes.Name)', 'base': '%(OrchardCoreThemes.Base)', 'category': '%(OrchardCoreThemes.Category)', 'priority': '%(OrchardCoreThemes.Priority)', 'description': '%(OrchardCoreThemes.Description)', 'author': '%(OrchardCoreThemes.Author)', 'version': '%(OrchardCoreThemes.Version)', 'website': '%(OrchardCoreThemes.Website)', 'dependencies': '%(OrchardCoreThemes.Dependencies)', 'tags': '%(OrchardCoreThemes.Tags)', 'defaultTenant': '%(OrchardCoreThemes.DefaultTenant)', 'alwaysEnabled': '%(OrchardCoreThemes.AlwaysEnabled')}" />
+      Text="Embedding '@(OrchardCoreThemes)' theme: {'id': '%(OrchardCoreThemes.Identity)', 'name': '%(OrchardCoreThemes.Name)', 'base': '%(OrchardCoreThemes.Base)', 'category': '%(OrchardCoreThemes.Category)', 'priority': '%(OrchardCoreThemes.Priority)', 'description': '%(OrchardCoreThemes.Description)', 'author': '%(OrchardCoreThemes.Author)', 'version': '%(OrchardCoreThemes.Version)', 'website': '%(OrchardCoreThemes.Website)', 'dependencies': '%(OrchardCoreThemes.Dependencies)', 'tags': '%(OrchardCoreThemes.Tags)', 'defaultTenant': '%(OrchardCoreThemes.DefaultTenant)', 'alwaysEnabled': '%(OrchardCoreThemes.AlwaysEnabled'), 'enabledByDependencyOnly': '%(OrchardCoreThemes.EnabledByDependencyOnly')}" />
     <ItemGroup>
       <AssemblyAttribute Include="OrchardCore.DisplayManagement.Manifest.ThemeAttribute">
         <_Parameter1>@(OrchardCoreThemes)</_Parameter1>
@@ -76,6 +77,7 @@
         <_Parameter11>%(OrchardCoreThemes.Tags)</_Parameter11>
         <_Parameter12>%(OrchardCoreThemes.DefaultTenant)</_Parameter12>
         <_Parameter13>%(OrchardCoreThemes.AlwaysEnabled)</_Parameter13>
+        <_Parameter14>%(OrchardCoreThemes.EnabledByDependencyOnly)</_Parameter14>
       </AssemblyAttribute>
     </ItemGroup>
   </Target>

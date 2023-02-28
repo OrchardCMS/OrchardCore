@@ -96,7 +96,7 @@ namespace OrchardCore.Users.Services
 
         public async Task<IUser> CreateUserAsync(IUser user, string password, Action<string, string> reportError)
         {
-            if (!(user is User newUser))
+            if (user is not User newUser)
             {
                 throw new ArgumentException("Expected a User instance.", nameof(user));
             }

@@ -103,7 +103,17 @@ namespace OrchardCore.Shells.Azure.Configuration
                     }
                 }
             }
+        }
 
+        public async Task RemoveAsync(string tenant)
+        {
+            var appsettings = IFileStoreExtensions.Combine(null, _container, tenant, "appsettings.json");
+
+            var fileInfo = await _shellsFileStore.GetFileInfoAsync(appsettings);
+            if (fileInfo != null)
+            {
+                await _shellsFileStore.RemoveFileAsync(appsettings);
+            }
         }
 
         private async Task<bool> TryMigrateFromFileAsync(string tenant, string destFile)

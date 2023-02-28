@@ -109,7 +109,8 @@ namespace OrchardCore.Modules.Manifest
             var allAttributeCtorWithParameterTypes = allAttributeCtors.Select(ctor => new
             {
                 Callback = ctor
-                , Types = ctor.GetParameters().Select(_ => _.ParameterType).ToArray()
+                ,
+                Types = ctor.GetParameters().Select(_ => _.ParameterType).ToArray()
             }).ToArray();
 
             var attributeCtor = allAttributeCtorWithParameterTypes.SingleOrDefault(_ => _.Types.SequenceEqual(types))?.Callback;
@@ -126,46 +127,46 @@ namespace OrchardCore.Modules.Manifest
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="FeatureAttribute(string, string, string, bool, bool)"/>, arguments in
-        /// order, <c>id, description, featureDependencies, defaultTenant, alwaysEnabled</c>.
+        /// <see cref="FeatureAttribute(string, string, string, bool, bool, bool)"/>, arguments in
+        /// order, <c>id, description, featureDependencies, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
         /// <param name="index"></param>
         /// <param name="arg"></param>
         /// <returns></returns>
-        protected virtual Type FeatureString3Object2CtorClassifier(int index, object arg) =>
+        protected virtual Type FeatureString3Object3CtorClassifier(int index, object arg) =>
             index switch
             {
-                3 or 4 => typeof(object),
+                3 or 4 or 5 => typeof(object),
                 _ => typeof(string),
             };
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="FeatureAttribute(string, string, string, string, bool, bool)"/>, arguments in
-        /// order, <c>id, name, description, featureDependencies, defaultTenant, alwaysEnabled</c>.
+        /// <see cref="FeatureAttribute(string, string, string, string, bool, bool, bool)"/>, arguments in
+        /// order, <c>id, name, description, featureDependencies, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
         /// <param name="index"></param>
         /// <param name="arg"></param>
         /// <returns></returns>
-        protected virtual Type FeatureString4Object2CtorClassifier(int index, object arg) =>
+        protected virtual Type FeatureString4Object3CtorClassifier(int index, object arg) =>
             index switch
             {
-                4 or 5 => typeof(object),
+                4 or 5 or 6 => typeof(object),
                 _ => typeof(string),
             };
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="FeatureAttribute(string, string, string, string, string, string, bool, bool)"/>, arguments in
-        /// order, <c>id, name, category, priority, description, featureDependencies, defaultTenant, alwaysEnabled</c>.
+        /// <see cref="FeatureAttribute(string, string, string, string, string, string, bool, bool, bool)"/>, arguments in
+        /// order, <c>id, name, category, priority, description, featureDependencies, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
         /// <param name="index"></param>
         /// <param name="arg"></param>
         /// <returns></returns>
-        protected virtual Type FeatureString6Object2CtorClassifier(int index, object arg) =>
+        protected virtual Type FeatureString6Object3CtorClassifier(int index, object arg) =>
             index switch
             {
-                6 or 7 => typeof(object),
+                6 or 7 or 8 => typeof(object),
                 _ => typeof(string),
             };
 
@@ -318,7 +319,7 @@ namespace OrchardCore.Modules.Manifest
             }
 
             /// <inheritdoc/>
-            public override string ToString() => string.Join(": ", $"\"{Key}\"", Render.Invoke(Value));
+            public override string ToString() => String.Join(": ", $"\"{Key}\"", Render.Invoke(Value));
         }
 
         /// <summary>
@@ -327,8 +328,8 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="pairs"></param>
         /// <returns></returns>
         protected virtual string RenderKeyValuePairs(params RenderKeyValuePair[] pairs) =>
-            string.Join(
-                string.Join(", ", pairs.Select(_ => $"{_}")), "{}".ToCharArray().Select(_ => $"{_}")
+            String.Join(
+                String.Join(", ", pairs.Select(_ => $"{_}")), "{}".ToCharArray().Select(_ => $"{_}")
             );
 
         /// <summary>

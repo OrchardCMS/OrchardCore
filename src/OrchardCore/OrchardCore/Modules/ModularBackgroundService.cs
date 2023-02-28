@@ -60,8 +60,15 @@ namespace OrchardCore.Modules
 
             if (_options.ShellWarmup)
             {
-                // Ensure all ShellContext are loaded and available.
-                await _shellHost.InitializeAsync();
+                try
+                {
+                    // Ensure all tenants are pre-loaded.
+                    await _shellHost.InitializeAsync();
+                }
+                catch (Exception ex) when (!ex.IsFatal())
+                {
+                    _logger.LogError(ex, "Failed to warm up the tenants from '{ServiceName}'.", nameof(ModularBackgroundService));
+                }
             }
 
             while (GetRunningShells().Count() < 1)
@@ -93,7 +100,7 @@ namespace OrchardCore.Modules
                 }
                 catch (Exception ex) when (!ex.IsFatal())
                 {
-                    _logger.LogError(ex, "Error while executing '{ServiceName}'", nameof(ModularBackgroundService));
+                    _logger.LogError(ex, "Error while executing '{ServiceName}'.", nameof(ModularBackgroundService));
                 }
             }
         }
@@ -358,63 +365,6 @@ namespace OrchardCore.Modules
                     _schedulers.TryRemove(key, out var scheduler);
                 }
             }
-        }
-    }
-
-    internal static class HttpContextExtensions
-    {
-        public static void SetBaseUrl(this HttpContext context, string baseUrl)
-        {
-            if (Uri.TryCreate(baseUrl, UriKind.Absolute, out var uri))
-            {
-                context.Request.Scheme = uri.Scheme;
-                context.Request.Host = new HostString(uri.Host, uri.Port);
-                context.Request.PathBase = uri.AbsolutePath;
-
-                if (!String.IsNullOrWhiteSpace(uri.Query))
-                {
-                    context.Request.QueryString = new QueryString(uri.Query);
-                }
-            }
-        }
-    }
-
-    internal static class ShellExtensions
-    {
-        public static HttpContext CreateHttpContext(this ShellContext shell)
-        {
-            var context = shell.Settings.CreateHttpContext();
-
-            context.Features.Set(new ShellContextFeature
-            {
-                ShellContext = shell,
-                OriginalPathBase = String.Empty,
-                OriginalPath = "/"
-            });
-
-            return context;
-        }
-
-        public static HttpContext CreateHttpContext(this ShellSettings settings)
-        {
-            var context = new DefaultHttpContext().UseShellScopeServices();
-
-            context.Request.Scheme = "https";
-
-            var urlHost = settings.RequestUrlHost?.Split(new[] { ',', ' ' },
-                StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-
-            context.Request.Host = new HostString(urlHost ?? "localhost");
-
-            if (!String.IsNullOrWhiteSpace(settings.RequestUrlPrefix))
-            {
-                context.Request.PathBase = "/" + settings.RequestUrlPrefix;
-            }
-
-            context.Request.Path = "/";
-            context.Items["IsBackground"] = true;
-
-            return context;
         }
     }
 }

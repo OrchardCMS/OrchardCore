@@ -12,7 +12,6 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Layers.Services;
 using OrchardCore.Layers.ViewModels;
 using OrchardCore.Rules;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Layers.Controllers
 {
@@ -24,7 +23,6 @@ namespace OrchardCore.Layers.Controllers
         private readonly IEnumerable<IConditionFactory> _factories;
         private readonly ILayerService _layerService;
         private readonly IConditionIdGenerator _conditionIdGenerator;
-        private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IHtmlLocalizer H;
@@ -36,7 +34,6 @@ namespace OrchardCore.Layers.Controllers
             IEnumerable<IConditionFactory> factories,
             ILayerService layerService,
             IConditionIdGenerator conditionIdGenerator,
-            ISiteService siteService,
             IShapeFactory shapeFactory,
             IHtmlLocalizer<LayerRuleController> htmlLocalizer,
             INotifier notifier,
@@ -47,7 +44,6 @@ namespace OrchardCore.Layers.Controllers
             _authorizationService = authorizationService;
             _layerService = layerService;
             _conditionIdGenerator = conditionIdGenerator;
-            _siteService = siteService;
             _notifier = notifier;
             _updateModelAccessor = updateModelAccessor;
             New = shapeFactory;
@@ -88,7 +84,7 @@ namespace OrchardCore.Layers.Controllers
                 Name = name,
                 ConditionGroupId = conditionGroup.ConditionId,
                 ConditionType = type,
-                Editor = await _displayManager.BuildEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: true)
+                Editor = await _displayManager.BuildEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "")
             };
 
             return View(model);
@@ -124,7 +120,7 @@ namespace OrchardCore.Layers.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: true);
+            var editor = await _displayManager.UpdateEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
 
             if (ModelState.IsValid)
             {
@@ -166,7 +162,7 @@ namespace OrchardCore.Layers.Controllers
             var model = new LayerRuleEditViewModel
             {
                 Name = name,
-                Editor = await _displayManager.BuildEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: false)
+                Editor = await _displayManager.BuildEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "")
             };
 
             return View(model);
@@ -195,7 +191,7 @@ namespace OrchardCore.Layers.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: false);
+            var editor = await _displayManager.UpdateEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
 
             if (ModelState.IsValid)
             {
@@ -262,7 +258,7 @@ namespace OrchardCore.Layers.Controllers
             var conditionParent = FindConditionParent(layer.LayerRule, conditionId);
             var toCondition = FindCondition(layer.LayerRule, toConditionId);
 
-            if (condition == null || conditionParent == null || toCondition == null || !(toCondition is ConditionGroup toGroupCondition))
+            if (condition == null || conditionParent == null || toCondition == null || toCondition is not ConditionGroup toGroupCondition)
             {
                 return NotFound();
             }
@@ -282,7 +278,7 @@ namespace OrchardCore.Layers.Controllers
                 return condition;
             }
 
-            if (!(condition is ConditionGroup conditionGroup))
+            if (condition is not ConditionGroup conditionGroup)
             {
                 return null;
             }

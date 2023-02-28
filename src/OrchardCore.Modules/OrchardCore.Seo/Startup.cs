@@ -15,7 +15,7 @@ namespace OrchardCore.Seo
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
 
             services.AddContentPart<SeoMetaPart>()
                 .UseDisplayDriver<SeoMetaPartDisplayDriver>()

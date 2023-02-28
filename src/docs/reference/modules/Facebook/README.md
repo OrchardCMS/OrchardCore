@@ -59,3 +59,24 @@ It defines the following widgets:
 - Quote
 - Save
 - Share
+
+## Facebook Settings Configuration
+
+The `OrchardCore.Facebook` module allows the user to use configuration values to override the settings configured from the admin area by calling the `ConfigureFacebookSettings()` extension method on `OrchardCoreBuilder` when initializing the app.
+
+The following configuration values can be customized:
+
+```json
+    "OrchardCore_Facebook": {
+      "AppId": "",
+      "AppSecret": "",
+      "FBInit": false,
+      "FBInitParams": "status:true,
+xfbml:true,
+autoLogAppEvents:true",
+      "SdkJs": "sdk.js",
+      "Version": "v3.2"
+    }
+```
+
+For more information please refer to [Configuration](../../core/Configuration/README.md).

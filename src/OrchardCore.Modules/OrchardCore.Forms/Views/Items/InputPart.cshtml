@@ -5,14 +5,14 @@
     var formInputElementPart = Model.Value.ContentItem.As<FormInputElementPart>();
     var elementId = formElementPart.Id;
     var fieldName = formInputElementPart.Name;
-    var fieldId = !string.IsNullOrEmpty(elementId) ? elementId : !string.IsNullOrEmpty(fieldName) ? Html.GenerateIdFromName(fieldName) : default(string);
+    var fieldId = !String.IsNullOrEmpty(elementId) ? elementId : !String.IsNullOrEmpty(fieldName) ? Html.GenerateIdFromName(fieldName) : default(string);
     var fieldValue = Model.Value.DefaultValue;
     var fieldClass = "form-control";
     var isChecked = false;
 
     if (ViewData.ModelState.TryGetValue(fieldName, out var fieldEntry))
     {
-        if (Model.Value.Type == "checkbox" || Model.Value.Type == "radio")
+        if (Model.Value.Type == "checkbox")
         {
             isChecked = fieldEntry.AttemptedValue == fieldValue;
         }
@@ -27,4 +27,5 @@
         }
     }
 }
-<input id="@fieldId" name="@fieldName" type="@Model.Value.Type" class="@fieldClass" value="@fieldValue" placeholder="@Model.Value.Placeholder" @(isChecked ? "checked" :  "") />
+
+<input id="@fieldId" name="@fieldName" type="@Model.Value.Type" class="@fieldClass" value="@fieldValue" placeholder="@Model.Value.Placeholder" @(isChecked ? "checked" : "") />

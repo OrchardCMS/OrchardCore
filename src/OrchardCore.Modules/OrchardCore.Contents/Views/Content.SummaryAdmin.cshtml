@@ -1,5 +1,6 @@
 @using OrchardCore.Contents
 @using OrchardCore.ContentManagement
+@using Microsoft.AspNetCore.Html
 @inject IAuthorizationService AuthorizationService
 @{
     ContentItem contentItem = Model.ContentItem;
@@ -23,7 +24,7 @@
             <div class="contentitem me-2">
                 @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
                 {
-                    <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath"/>
+                    <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath" />
                 }
                 else
                 {
@@ -59,7 +60,8 @@
             {
                 @await DisplayAsync(Model.Actions)
             }
-            @if (Model.ActionsMenu != null)
+
+            @if (Model.ActionsMenu != null && Model.ActionsMenu.HasItems)
             {
                 <div class="btn-group" title="@T["Actions"]">
                     <button type="button" class="btn btn-sm btn-secondary dropdown-toggle actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

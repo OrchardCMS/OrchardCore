@@ -98,7 +98,7 @@ namespace OrchardCore.Seo.Drivers
             return Combine(results);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(SeoMetaPart part, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(SeoMetaPart part, IUpdateModel updater, UpdatePartEditorContext context)
         {
             var partViewModel = new SeoMetaPartViewModel();
             if (await updater.TryUpdateModelAsync(partViewModel, Prefix))
@@ -155,7 +155,7 @@ namespace OrchardCore.Seo.Drivers
                 }
             }
 
-            return Edit(part);
+            return Edit(part, context);
         }
     }
 }

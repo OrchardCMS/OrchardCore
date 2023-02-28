@@ -70,7 +70,12 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            if (TryValidateModel(model))
+            if (String.IsNullOrEmpty(model.Email))
+            {
+                ModelState.AddModelError("Email", S["Email is required."]);
+            }
+
+            if (ModelState.IsValid)
             {
                 // Check if user with same email already exists
                 var userWithEmail = await _userManager.FindByEmailAsync(model.Email);
@@ -147,7 +152,7 @@ namespace OrchardCore.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SendVerificationEmail(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageUsers))
             {
                 return Forbid();
             }

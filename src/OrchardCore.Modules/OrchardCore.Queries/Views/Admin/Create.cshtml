@@ -9,7 +9,7 @@
         @await DisplayAsync(Model.Editor.Content)
     }
 
-    @if (Model.Editor.Content != null)
+    @if (Model.Editor.Actions != null)
     {
         <div class="mb-3">
             @await DisplayAsync(Model.Editor.Actions)

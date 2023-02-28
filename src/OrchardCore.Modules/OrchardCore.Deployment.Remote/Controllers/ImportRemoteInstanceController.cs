@@ -43,9 +43,14 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             var remoteClient = remoteClientList.RemoteClients.FirstOrDefault(x => x.ClientName == model.ClientName);
 
+            if (remoteClient == null)
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest, "The remote client was not provided");
+            }
+
             var apiKey = Encoding.UTF8.GetString(_dataProtector.Unprotect(remoteClient.ProtectedApiKey));
 
-            if (remoteClient == null || model.ApiKey != apiKey || model.ClientName != remoteClient.ClientName)
+            if (model.ApiKey != apiKey || model.ClientName != remoteClient.ClientName)
             {
                 return StatusCode((int)HttpStatusCode.BadRequest, "The Api Key was not recognized");
             }

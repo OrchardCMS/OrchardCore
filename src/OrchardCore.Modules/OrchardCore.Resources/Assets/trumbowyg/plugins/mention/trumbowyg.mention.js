@@ -23,6 +23,12 @@
             en: {
                 mention: 'Mention'
             },
+            sl: {
+                mention: 'Omeni'
+            },
+            by: {
+                mention: 'Згадаць'
+            },
             da: {
                 mention: 'Nævn'
             },

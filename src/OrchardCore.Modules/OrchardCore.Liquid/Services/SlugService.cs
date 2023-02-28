@@ -1,15 +1,21 @@
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using Cysharp.Text;
+using OrchardCore.Modules.Services;
 
 namespace OrchardCore.Liquid.Services
 {
+    [Obsolete("This class has been deprecated and will be removed in the next major release, please use OrchardCore.Modules.Services instead.", false)]
     public class SlugService : ISlugService
     {
         private const char Hyphen = '-';
         private const int MaxLength = 1000;
+
+        public string Slugify(string text, char separator)
+        {
+            throw new NotImplementedException();
+        }
 
         public string Slugify(string text)
         {
@@ -61,7 +67,25 @@ namespace OrchardCore.Liquid.Services
                 }
             }
 
-            return new string(slug.AsSpan()[..Math.Min(slug.Length, MaxLength)]).Normalize(NormalizationForm.FormC);
+            var length = Math.Min(slug.Length - GetTrailingHyphenCount(slug.AsSpan()), MaxLength);
+
+            return new string(slug.AsSpan()[..length]).Normalize(NormalizationForm.FormC);
+        }
+
+        private static int GetTrailingHyphenCount(ReadOnlySpan<char> input)
+        {
+            var hyphenCount = 0;
+            for (var i = input.Length - 1; i >= 0; i--)
+            {
+                if (input[i] != Hyphen)
+                {
+                    break;
+                }
+
+                ++hyphenCount;
+            }
+
+            return hyphenCount;
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace OrchardCore.FileStorage.AmazonS3;
+using Amazon.Extensions.NETCore.Setup;
+
+namespace OrchardCore.FileStorage.AmazonS3;
 
 /// <summary>
 /// AWS storage options.
@@ -16,40 +18,17 @@ public class AwsStorageOptions
     public string BasePath { get; set; }
 
     /// <summary>
-    /// Indicates if bucket should be created on module startup
+    /// Indicates if bucket should be created on module startup.
     /// </summary>
     public bool CreateBucket { get; set; }
 
     /// <summary>
-    /// Gets or sets the credentials.
-    /// <remarks>
-    /// Credentials section can be set directly via configuration or get loaded from the configured ProfileName.
-    /// For development purposes, it is recommended to specify just ProfileName.
-    /// For a production environment this section should be null, AWS SDK Services will get the default credentials
-    /// from environment variables.
-    /// </remarks>
+    /// Gets or sets the AWS Options.
     /// </summary>
-    public AwsStorageCredentials Credentials { get; set; }
-
-}
-
-/// <summary>
-/// The AWS storage credentials.
-/// </summary>
-public class AwsStorageCredentials
-{
-    /// <summary>
-    /// AWS region name
-    /// </summary>
-    public string RegionEndpoint { get; set; }
+    public AWSOptions AwsOptions { get; set; }
 
     /// <summary>
-    /// AWS account secret key. Do not use root's user secret key!
+    /// Indicates if bucket should be removed on tenant removal.
     /// </summary>
-    public string SecretKey { get; set; }
-
-    /// <summary>
-    /// AWS account access key Id.
-    /// </summary>
-    public string AccessKeyId { get; set; }
+    public bool RemoveBucket { get; set; }
 }

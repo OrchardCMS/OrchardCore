@@ -9,7 +9,7 @@ namespace OrchardCore.Email
     public class SmtpResult
     {
         /// <summary>
-        /// Returns an <see cref="SmtpResult"/>indicating a successful Smtp operation.
+        /// Returns an <see cref="SmtpResult"/> indicating a successful Smtp operation.
         /// </summary>
         public static SmtpResult Success { get; } = new SmtpResult { Succeeded = true };
 
@@ -19,7 +19,7 @@ namespace OrchardCore.Email
         public IEnumerable<LocalizedString> Errors { get; protected set; }
 
         /// <summary>
-        /// Get or sets thet response text from the SMTP server.
+        /// Get or sets the response text from the SMTP server.
         /// </summary>
         public string Response { get; set; }
 

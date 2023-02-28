@@ -125,7 +125,7 @@
 
                         <div class="mb-3" asp-validation-class-for="Password">
                             <label asp-for="Password">@T["Password"]</label>
-                            <input asp-for="Password" class="form-control" type="password" />
+                            <input asp-for="Password" class="form-control" type="password" autocomplete="off" />
                             <span asp-validation-for="Password"></span>
                             <span class="hint">@T["The password for authentication."]</span>
                         </div>

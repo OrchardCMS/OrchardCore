@@ -13,6 +13,9 @@ namespace OrchardCore.Search.Abstractions.ViewModels
         public string Index { get; set; }
 
         [BindNever]
+        public string PageTitle { get; set; }
+
+        [BindNever]
         public SearchFormViewModel SearchForm { get; set; }
 
         [BindNever]

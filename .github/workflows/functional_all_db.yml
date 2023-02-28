@@ -12,17 +12,13 @@ jobs:
     container:
       image: cypress/included:9.6.1
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
       with:
         node-version: "15"
-    - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.x
-    - name: Fix nuget restore issue
-      run: |
-          apt update && apt --only-upgrade install ca-certificates -y
+#    - name: Fix nuget restore issue
+#      run: |
+#          apt update && apt --only-upgrade install ca-certificates -y
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
@@ -41,11 +37,7 @@ jobs:
     container:
       image: cypress/included:9.6.1
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.x
+    - uses: actions/checkout@v3
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -85,11 +77,7 @@ jobs:
       OrchardCore__ConnectionString: "User ID=postgres;Password=admin;Host=postgres;Port=5432;Database=app;"
       OrchardCore__DatabaseProvider: "Postgres"
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.x
+    - uses: actions/checkout@v3
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -125,11 +113,7 @@ jobs:
       OrchardCore__ConnectionString: "server=mariadb;uid=root;pwd=test123;database=test"
       OrchardCore__DatabaseProvider: "MySql"
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.x
+    - uses: actions/checkout@v3
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -161,14 +145,10 @@ jobs:
           ACCEPT_EULA: Y
           MSSQL_SA_PASSWORD: Password12!
     env:
-      OrchardCore__ConnectionString: "Server=mssql;Database=tempdb;User Id=sa;Password=Password12!"
+      OrchardCore__ConnectionString: "Server=mssql;Database=tempdb;User Id=sa;Password=Password12!;Encrypt=False"
       OrchardCore__DatabaseProvider: "SqlConnection"
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.x
+    - uses: actions/checkout@v3
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
