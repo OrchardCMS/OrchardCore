@@ -4,9 +4,11 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Zones;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Localization;
 
+[Feature("OrchardCore.Localization.AdminCulturePicker")]
 public class AdminCulturePickerShapes : IShapeTableProvider
 {
     public void Discover(ShapeTableBuilder builder)

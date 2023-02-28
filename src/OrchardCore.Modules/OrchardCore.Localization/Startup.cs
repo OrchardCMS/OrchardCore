@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Localization.Drivers;
 using OrchardCore.Localization.Models;
 using OrchardCore.Localization.Services;
@@ -40,30 +41,10 @@ public class Startup : StartupBase
         services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization").
             AddDataAnnotationsPortableObjectLocalization();
 
-            services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization").
-                AddDataAnnotationsPortableObjectLocalization();
+        services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization").
+            AddDataAnnotationsPortableObjectLocalization();
 
-            services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
-        }
-
-        /// <inheritdocs />
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var localizationService = serviceProvider.GetService<ILocalizationService>();
-
-            var defaultCulture = localizationService.GetDefaultCultureAsync().GetAwaiter().GetResult();
-            var supportedCultures = localizationService.GetSupportedCulturesAsync().GetAwaiter().GetResult();
-
-            var localizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
-            var ignoreSystemSettings = serviceProvider.GetService<IOptions<CultureOptions>>().Value.IgnoreSystemSettings;
-
-            new LocalizationOptionsUpdater(localizationOptions, ignoreSystemSettings)
-                .SetDefaultCulture(defaultCulture)
-                .AddSupportedCultures(supportedCultures)
-                .AddSupportedUICultures(supportedCultures);
-
-            app.UseRequestLocalization(localizationOptions);
-        }
+        services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
     }
 
     /// <inheritdocs />
@@ -74,14 +55,15 @@ public class Startup : StartupBase
         var defaultCulture = localizationService.GetDefaultCultureAsync().GetAwaiter().GetResult();
         var supportedCultures = localizationService.GetSupportedCulturesAsync().GetAwaiter().GetResult();
 
-        var options = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
-        options.SetDefaultCulture(defaultCulture);
-        options
-            .AddSupportedCultures(supportedCultures)
-            .AddSupportedUICultures(supportedCultures)
-            ;
+        var localizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
+        var ignoreSystemSettings = serviceProvider.GetService<IOptions<CultureOptions>>().Value.IgnoreSystemSettings;
 
-        app.UseRequestLocalization(options);
+        new LocalizationOptionsUpdater(localizationOptions, ignoreSystemSettings)
+            .SetDefaultCulture(defaultCulture)
+            .AddSupportedCultures(supportedCultures)
+            .AddSupportedUICultures(supportedCultures);
+
+        app.UseRequestLocalization(localizationOptions);
     }
 }
 
@@ -104,36 +86,23 @@ public class ContentLanguageHeaderStartup : StartupBase
 }
 
 [Feature("OrchardCore.Localization.AdminCulturePicker")]
-public class AdminCulturePickerStartup : StartupBase
+public class CulturePickerStartup : StartupBase
 {
-    private static readonly Task<ProviderCultureResult> NullProviderCultureResult = Task.FromResult(default(ProviderCultureResult));
+    private readonly ShellSettings _shellSettings;
+    private readonly AdminOptions _adminOptions;
 
-    private readonly PathString _adminPath;
-
-    public AdminCulturePickerStartup(IOptions<AdminOptions> adminOptions)
+    public CulturePickerStartup(IOptions<AdminOptions> adminOptions, ShellSettings shellSettings)
     {
-        _adminPath = new PathString("/" + adminOptions.Value.AdminUrlPrefix.Trim('/'));
+        _shellSettings = shellSettings;
+        _adminOptions = adminOptions.Value;
     }
 
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IShapeTableProvider, AdminCulturePickerShapes>();
 
-        services.Configure<RequestLocalizationOptions>(options => options.AddInitialRequestCultureProvider(new CustomRequestCultureProvider(context =>
-        {
-            if (context.Request.Path.StartsWithNormalizedSegments(_adminPath))
-            {
-                var cookie = context.Request.Cookies[LocalizationCookieName.Admin];
-
-                if (!String.IsNullOrEmpty(cookie))
-                {
-                    var providerResultCulture = CookieRequestCultureProvider.ParseCookieValue(cookie);
-
-                    return Task.FromResult(providerResultCulture);
-                }
-            }
-
-            return NullProviderCultureResult;
-        })));
+        services.Configure<RequestLocalizationOptions>(options =>
+            options.AddInitialRequestCultureProvider(
+                new AdminCookieCultureProvider(_shellSettings, _adminOptions)));
     }
 }
