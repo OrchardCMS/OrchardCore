@@ -1,6 +1,6 @@
 ﻿namespace OrchardCore.Environment.Cache
 {
-    public struct CacheContextEntry
+    public readonly struct CacheContextEntry
     {
         public CacheContextEntry(string key, string value)
         {
@@ -8,8 +8,7 @@
             Value = value;
         }
 
-        public string Key { get; }
-
-        public string Value { get; }
+        public string Key { get; init; }
+        public string Value { get; init; }
     }
 }
