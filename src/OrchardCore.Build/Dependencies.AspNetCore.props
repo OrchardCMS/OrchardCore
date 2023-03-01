@@ -5,8 +5,9 @@
 
     <!-- TFM used when coding in Visual Studio and when creating templates -->
     <DefaultTargetFramework>net7.0</DefaultTargetFramework>
-    
-    <!-- TFMs used to build the abstractions and modules-->
+
+    <!-- TFMs used to build the abstractions and modules, by convention the default TFM is at the first position -->
+    <!-- In a cross-targeting build, some assets are only copied on the first TFM, by convention the default TFM -->
     <CommonTargetFrameworks Condition="'$(CommonTargetFrameworks)' == ''">net7.0;net6.0</CommonTargetFrameworks>
   </PropertyGroup>
 
@@ -16,6 +17,7 @@
   </PropertyGroup>
 
   <!-- These versions are used for the NuGet packages that are dependent on the current TFM -->
+  <!-- The TFM may be empty in the evaluation phase, so the versions are preset for the default TFM -->
   <PropertyGroup>
     <AspNetCorePackagesVersion>7.0.3</AspNetCorePackagesVersion>
     <MicrosoftExtensionsPackagesVersion>7.0.3</MicrosoftExtensionsPackagesVersion>
