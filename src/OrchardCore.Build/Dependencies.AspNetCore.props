@@ -4,6 +4,7 @@
   <PropertyGroup>
 
     <!-- TFM used when coding in Visual Studio and when creating templates -->
+    <!-- All 'template.json' should provide a 'choice' for the default TFM -->
     <DefaultTargetFramework>net7.0</DefaultTargetFramework>
 
     <!-- TFMs used to build the abstractions and modules, by convention the default TFM is at the first position -->
@@ -17,7 +18,7 @@
   </PropertyGroup>
 
   <!-- These versions are used for the NuGet packages that are dependent on the current TFM -->
-  <!-- The TFM may be empty in the evaluation phase, so the versions are preset for the default TFM -->
+  <!-- Versions are preset for the default TFM (there may be no TFM in an evaluation phase) -->
   <PropertyGroup>
     <AspNetCorePackagesVersion>7.0.3</AspNetCorePackagesVersion>
     <MicrosoftExtensionsPackagesVersion>7.0.3</MicrosoftExtensionsPackagesVersion>
