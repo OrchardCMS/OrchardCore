@@ -24,7 +24,7 @@ namespace OrchardCore.Email
         public string Response { get; set; }
 
         /// <summary>
-        /// Whether if the operation succeeded or not.
+        /// Whether the operation succeeded or not.
         /// </summary>
         public bool Succeeded { get; protected set; }
 
