@@ -292,7 +292,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             }
 
             var charsToRemove = new List<char>();
-            charsToRemove.AddRange(new List<char>(){ 
+            charsToRemove.AddRange(new List<char>(){
                 '\\',
                 '/',
                 '*',
@@ -309,7 +309,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             });
 
             charsToRemove.ForEach(c => indexName = indexName.Replace(c.ToString(), String.Empty));
-            
+
             return indexName;
         }
 

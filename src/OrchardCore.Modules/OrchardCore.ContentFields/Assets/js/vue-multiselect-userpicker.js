@@ -63,6 +63,18 @@ function initVueMultiselectUserPicker(element) {
                 var self = this;
                 self.asyncFind();
             },
+            mounted: function () {
+                // Store a reference to the div containing the search box used to select users
+                // so we can hide/show it later (in onSelect and remove). We use the "mounted"
+                // lifecycle method rather than "created" so we know the component has been attached 
+                // to the DOM and we can therefore travese the DOM to find the desired div.
+                this.searchBoxContainer = $(this.$el).children().last();
+
+                // If we're loading an existing content item, we may already have a user picker
+                // configured to only allow a single user and that user has already been selected.
+                // In this case, we need to hide the search box now and not wait for onSelect or remove.
+                this.searchBoxContainer.css("display", multiple || this.arrayOfUsers.length === 0 ? "block" : "none");
+            },
             methods: {
                 asyncFind: function (query) {
                     var self = this;
@@ -78,9 +90,24 @@ function initVueMultiselectUserPicker(element) {
                     }
 
                     self.arrayOfUsers.push(selectedOption);
+
+                    // We don't want to show the search box if we are only allowing a single user 
+                    // and a user has already been selected. We don't need that search box again 
+                    // unless and until we delete the currently selected user. So here we 
+                    // set the display mode accordingly. We always show the select list if allowing 
+                    // multiple users and do not show it if we're only allowing a single user 
+                    // and we've just selected that one user.
+                    this.searchBoxContainer.css("display", multiple ? "block" : "none");
                 },
                 remove: function (user) {
-                    this.arrayOfUsers.splice(this.arrayOfUsers.indexOf(user), 1)
+                    this.arrayOfUsers.splice(this.arrayOfUsers.indexOf(user), 1);
+
+                    // After removing a selected user, we always want to show the search box 
+                    // since (1) if we are allowing multiple users to be selected, we always 
+                    // want to show it, and (2) if we are only allowing a single user to be 
+                    // selected, and we've just removed that user, we now need to show the 
+                    // search box so we are able to add a new one.
+                    this.searchBoxContainer.css("display", "block");
                 }
             }
         })
