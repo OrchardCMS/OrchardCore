@@ -1,6 +1,7 @@
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Remote.ViewModels;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Tests.Apis.Context
 {
@@ -35,7 +36,9 @@ namespace OrchardCore.Tests.Apis.Context
             OriginalBlogPost = await content.Content.ReadAsAsync<ContentItem>();
             OriginalBlogPostVersionId = OriginalBlogPost.ContentItemVersionId;
 
-            await UsingTenantScopeAsync(async scope =>
+            var shellScope = await ShellHost.GetScopeAsync(TenantName);
+
+            await shellScope.UsingAsync(async scope =>
             {
                 var remoteClientService = scope.ServiceProvider.GetRequiredService<RemoteClientService>();
 

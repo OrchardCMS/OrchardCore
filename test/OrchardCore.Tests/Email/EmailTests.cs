@@ -1,6 +1,7 @@
 using MimeKit;
 using OrchardCore.Email;
 using OrchardCore.Email.Services;
+using OrchardCore.Testing.Mocks;
 
 namespace OrchardCore.Tests.Email
 {
@@ -197,7 +198,7 @@ namespace OrchardCore.Tests.Email
                 DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory
             };
 
-            var smtp = CreateSmtpService(settings);
+            var smtp = OrchardCoreMock.CreateSmtpService(settings);
 
             // Act
             var result = await smtp.SendAsync(message);
@@ -221,7 +222,7 @@ namespace OrchardCore.Tests.Email
                 DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory
             };
 
-            var smtp = CreateSmtpService(settings);
+            var smtp = OrchardCoreMock.CreateSmtpService(settings);
 
             // Act
             var result = await smtp.SendAsync(message);
@@ -248,7 +249,7 @@ namespace OrchardCore.Tests.Email
                 DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
                 PickupDirectoryLocation = pickupDirectoryPath
             };
-            var smtp = CreateSmtpService(settings);
+            var smtp = OrchardCoreMock.CreateSmtpService(settings);
 
             var result = await smtp.SendAsync(message);
 
@@ -261,18 +262,6 @@ namespace OrchardCore.Tests.Email
             var content = File.ReadAllText(file.FullName);
 
             return content;
-        }
-
-        private static ISmtpService CreateSmtpService(SmtpSettings settings)
-        {
-            var options = new Mock<IOptions<SmtpSettings>>();
-            options.Setup(o => o.Value).Returns(settings);
-
-            var logger = new Mock<ILogger<SmtpService>>();
-            var localizer = new Mock<IStringLocalizer<SmtpService>>();
-            var smtp = new SmtpService(options.Object, logger.Object, localizer.Object);
-
-            return smtp;
         }
     }
 }

@@ -4,7 +4,7 @@ using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Extensions;
-using OrchardCore.Tests.Stubs;
+using OrchardCore.Testing.Stubs;
 
 namespace OrchardCore.Tests.DisplayManagement
 {
@@ -20,8 +20,8 @@ namespace OrchardCore.Tests.DisplayManagement
             serviceCollection.AddScoped<ILoggerFactory, NullLoggerFactory>();
             serviceCollection.AddScoped<IThemeManager, ThemeManager>();
             serviceCollection.AddScoped<IShapeFactory, DefaultShapeFactory>();
-            serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
-            serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
+            serviceCollection.AddScoped<IExtensionManager, NullExtensionManager>();
+            serviceCollection.AddScoped<IShapeTableManager, ShapeTableManagerStub>();
 
             _shapeTable = new ShapeTable
             (

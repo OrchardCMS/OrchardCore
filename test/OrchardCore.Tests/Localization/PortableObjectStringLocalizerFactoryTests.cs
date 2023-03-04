@@ -1,4 +1,5 @@
 using OrchardCore.Localization;
+using OrchardCore.Testing.Stubs;
 
 namespace OrchardCore.Tests.Localization
 {
@@ -15,7 +16,7 @@ namespace OrchardCore.Tests.Localization
                 services.AddMvc();
                 services.AddLocalization();
                 services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization/PoFiles");
-                services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, StubPoFileLocationProvider>());
+                services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, PoFileLocationProviderStub>());
             }
 
             public void Configure(

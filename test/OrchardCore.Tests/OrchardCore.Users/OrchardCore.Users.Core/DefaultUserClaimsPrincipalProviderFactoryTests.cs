@@ -1,4 +1,5 @@
 using OrchardCore.Security;
+using OrchardCore.Testing.Mocks;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
@@ -13,7 +14,7 @@ namespace OrchardCore.Tests.OrchardCore.Users.Core
         public async Task EnsurePrincipalHasExpectedClaims(bool emailVerified)
         {
             //Arrange
-            var userManager = UsersMockHelper.MockUserManager<IUser>();
+            var userManager = OrchardCoreMock.CreateUserManager<IUser>();
             var user = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "Foo", Email = "foo@foo.com" };
             userManager.Setup(m => m.GetUserIdAsync(user)).ReturnsAsync(user.UserId);
             userManager.Setup(m => m.GetUserNameAsync(user)).ReturnsAsync(user.UserName);
@@ -24,7 +25,7 @@ namespace OrchardCore.Tests.OrchardCore.Users.Core
                 userManager.Setup(m => m.IsEmailConfirmedAsync(user)).ReturnsAsync(emailVerified);
             }
 
-            var roleManager = UsersMockHelper.MockRoleManager<IRole>().Object;
+            var roleManager = OrchardCoreMock.CreateRoleManager<IRole>().Object;
 
             var options = new Mock<IOptions<IdentityOptions>>();
             options.Setup(a => a.Value).Returns(new IdentityOptions());

@@ -1,5 +1,6 @@
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Tests.Apis.Context;
 using YesSql;
 using ISession = YesSql.ISession;
@@ -28,7 +29,9 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                     await context.PostRecipeAsync(recipe);
 
                     // Test
-                    await context.UsingTenantScopeAsync(async scope =>
+                    var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
+
+                    await shellScope.UsingAsync(async scope =>
                     {
                         var session = scope.ServiceProvider.GetRequiredService<ISession>();
                         var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
@@ -68,7 +71,9 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                     await context.PostRecipeAsync(recipe);
 
                     // Test
-                    await context.UsingTenantScopeAsync(async scope =>
+                    var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
+
+                    await shellScope.UsingAsync(async scope =>
                     {
                         var session = scope.ServiceProvider.GetRequiredService<ISession>();
                         var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>

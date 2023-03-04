@@ -2,6 +2,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email;
 using OrchardCore.Settings;
+using OrchardCore.Testing.Mocks;
 using OrchardCore.Users;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Events;
@@ -98,27 +99,6 @@ namespace OrchardCore.Tests.OrchardCore.Users
             Assert.Equal("ConfirmEmailSent", ((RedirectToActionResult)result).ActionName);
         }
 
-        private static Mock<SignInManager<TUser>> MockSignInManager<TUser>(UserManager<TUser> userManager = null) where TUser : class, IUser
-        {
-            var context = new Mock<HttpContext>();
-            var manager = userManager ?? UsersMockHelper.MockUserManager<TUser>().Object;
-
-            var signInManager = new Mock<SignInManager<TUser>>(
-                manager,
-                new HttpContextAccessor { HttpContext = context.Object },
-                Mock.Of<IUserClaimsPrincipalFactory<TUser>>(),
-                null,
-                null,
-                null,
-                null)
-            { CallBase = true };
-
-            signInManager.Setup(x => x.SignInAsync(It.IsAny<TUser>(), It.IsAny<bool>(), It.IsAny<string>()))
-                .Returns(Task.CompletedTask);
-
-            return signInManager;
-        }
-
         private static RegistrationController SetupRegistrationController()
             => SetupRegistrationController(new RegistrationSettings
             {
@@ -128,7 +108,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
         private static RegistrationController SetupRegistrationController(RegistrationSettings registrationSettings)
         {
             var users = new List<IUser>();
-            var mockUserManager = UsersMockHelper.MockUserManager<IUser>();
+            var mockUserManager = OrchardCoreMock.CreateUserManager<IUser>();
             mockUserManager.Setup(um => um.FindByEmailAsync(It.IsAny<string>()))
                 .Returns<string>(e =>
                 {
@@ -151,6 +131,8 @@ namespace OrchardCore.Tests.OrchardCore.Users
             userService.Setup(u => u.CreateUserAsync(It.IsAny<IUser>(), It.IsAny<string>(), It.IsAny<Action<string, string>>()))
                 .Callback<IUser, string, Action<string, string>>((u, p, e) => users.Add(u))
                 .ReturnsAsync<IUser, string, Action<string, string>, IUserService, IUser>((u, p, e) => u);
+
+            var signInManagerMock = OrchardCoreMock.CreateSignInManager(mockUserManager.Object);
 
             var urlHelperMock = new Mock<IUrlHelper>();
             urlHelperMock.Setup(urlHelper => urlHelper.Action(It.IsAny<UrlActionContext>()));
@@ -193,7 +175,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 .Returns(userService.Object);
             mockServiceProvider
                 .Setup(x => x.GetService(typeof(SignInManager<IUser>)))
-                .Returns(MockSignInManager(mockUserManager.Object).Object);
+                .Returns(signInManagerMock.Object);
             mockServiceProvider
                 .Setup(x => x.GetService(typeof(ITempDataDictionaryFactory)))
                 .Returns(Mock.Of<ITempDataDictionaryFactory>());

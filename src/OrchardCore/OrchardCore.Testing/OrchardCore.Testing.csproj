@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Testing</Title>
+    <Description>
+      $(OCFrameworkDescription)
+
+      Implementation of OrchardCore testing APIs
+    </Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="OrchardCore.Testing.Tests" />
+    <InternalsVisibleTo Include="OrchardCore.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Workflows\OrchardCore.Workflows.csproj" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Tenants\OrchardCore.Tenants.csproj" />
+    <ProjectReference Include="..\OrchardCore.Apis.GraphQL.Client\OrchardCore.Apis.GraphQL.Client.csproj" />
+    <ProjectReference Include="..\OrchardCore.Autoroute.Core\OrchardCore.Autoroute.Core.csproj" />
+    <ProjectReference Include="..\OrchardCore.Deployment.Abstractions\OrchardCore.Deployment.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Email.Core\OrchardCore.Email.Core.csproj" />
+    <ProjectReference Include="..\OrchardCore.Infrastructure\OrchardCore.Infrastructure.csproj" />
+    <ProjectReference Include="..\OrchardCore.Localization.Abstractions\OrchardCore.Localization.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Scripting.JavaScript\OrchardCore.Scripting.JavaScript.csproj" />
+    <ProjectReference Include="..\OrchardCore.Users.Abstractions\OrchardCore.Users.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>
