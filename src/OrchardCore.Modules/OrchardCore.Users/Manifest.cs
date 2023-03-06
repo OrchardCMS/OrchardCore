@@ -11,6 +11,7 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Users",
     Name = "Users",
     Description = "The users module enables authentication UI and user management.",
+    Dependencies = new[] { "OrchardCore.Roles.Core" },
     Category = "Security"
 )]
 

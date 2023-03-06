@@ -830,7 +830,7 @@ namespace OrchardCore.Queries.Sql
                 {
                     _builder.Append(", ");
                 }
-                
+
                 var expressionName = cte.ChildNodes[0].Token.ValueString;
                 var optionalColumns = cte.ChildNodes[1];
                 _builder.Append(expressionName);

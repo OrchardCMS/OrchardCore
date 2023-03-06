@@ -13,6 +13,15 @@
                     '2.0': 'Extra large'
                 }
             },
+            sl: {
+                lineheight: 'Višina vrstice',
+                lineheights: {
+                    '0.9': 'Majhna',
+                    'normal': 'Navadna',
+                    '1.5': 'Velika',
+                    '2.0': 'Ekstra velika'
+                }
+            },
             by: {
                 lineheight: 'Міжрадковы інтэрвал',
                 lineheights: {

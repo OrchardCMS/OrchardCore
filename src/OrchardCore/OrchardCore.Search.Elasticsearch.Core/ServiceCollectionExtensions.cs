@@ -3,9 +3,7 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Queries;
 using OrchardCore.Recipes;
-using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Elasticsearch.Core.Handlers;
-using OrchardCore.Search.Elasticsearch.Core.Providers;
 using OrchardCore.Search.Elasticsearch.Core.Recipes;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 

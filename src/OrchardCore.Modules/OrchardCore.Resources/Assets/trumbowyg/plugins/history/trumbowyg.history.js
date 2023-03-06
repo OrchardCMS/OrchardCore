@@ -17,6 +17,12 @@
                     undo: 'Undo'
                 }
             },
+            sl: {
+                history: {
+                    redo: 'Ponovno uveljavi',
+                    undo: 'Razveljavi'
+                }
+            },
             by: {
                 history: {
                     redo: 'Паўтарыць',
@@ -87,6 +93,9 @@
         },
         plugins: {
             history: {
+                destroy: function (t) {
+                    t.$c.off('tbwinit.history tbwchange.history');
+                },
                 init: function (t) {
                     t.o.plugins.history = $.extend(true, {
                         _stack: [],
@@ -235,7 +244,7 @@
                         }
                     };
 
-                    t.$c.on('tbwinit tbwchange', pushToHistory);
+                    t.$c.on('tbwinit.history tbwchange.history', pushToHistory);
 
                     t.addBtnDef('historyRedo', btnBuildDefRedo);
                     t.addBtnDef('historyUndo', btnBuildDefUndo);

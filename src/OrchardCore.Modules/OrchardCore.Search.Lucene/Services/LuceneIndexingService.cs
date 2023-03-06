@@ -9,8 +9,8 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
-using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Modules;
+using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Lucene

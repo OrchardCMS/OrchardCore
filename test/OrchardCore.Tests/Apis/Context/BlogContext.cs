@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace OrchardCore.Tests.Apis.Context
 {
     public class BlogContext : SiteContext

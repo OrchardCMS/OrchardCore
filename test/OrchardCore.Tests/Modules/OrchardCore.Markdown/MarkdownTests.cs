@@ -1,7 +1,5 @@
 using Markdig;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Markdown.Services;
-using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Markdown
 {
