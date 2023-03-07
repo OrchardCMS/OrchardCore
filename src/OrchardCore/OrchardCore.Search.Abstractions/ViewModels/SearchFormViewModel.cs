@@ -5,7 +5,13 @@ namespace OrchardCore.Search.Abstractions.ViewModels
 {
     public class SearchFormViewModel : ShapeViewModel
     {
-        public SearchFormViewModel(string shapeType) : base(shapeType)
+        public SearchFormViewModel()
+            : base("Search__Form")
+        {
+        }
+
+        public SearchFormViewModel(string shapeType)
+            : base(shapeType)
         {
         }
 

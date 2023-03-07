@@ -7,11 +7,19 @@ namespace OrchardCore.Search.Abstractions.ViewModels
 {
     public class SearchResultsViewModel : ShapeViewModel
     {
-        public SearchResultsViewModel(string shapeType) : base(shapeType)
+        public SearchResultsViewModel()
+            : base("Search__Results")
+        {
+        }
+
+        public SearchResultsViewModel(string shapeType)
+            : base(shapeType)
         {
         }
 
         [BindNever]
         public IEnumerable<ContentItem> ContentItems { get; set; }
+
+        public string Index { get; set; }
     }
 }
