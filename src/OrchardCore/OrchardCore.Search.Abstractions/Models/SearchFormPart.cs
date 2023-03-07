@@ -2,7 +2,7 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Search.Model;
 
-public class SearchPart : ContentPart
+public class SearchFormPart : ContentPart
 {
     public string IndexName { get; set; }
 

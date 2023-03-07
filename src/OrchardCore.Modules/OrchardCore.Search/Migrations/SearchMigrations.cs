@@ -15,6 +15,7 @@ public class SearchMigrations : DataMigration
     {
         _contentDefinitionManager.AlterPartDefinition("SearchFormPart", part => part
             .WithDisplayName("Search Form Part")
+            .Attachable()
         );
 
         _contentDefinitionManager.AlterTypeDefinition("SearchForm", type => type
