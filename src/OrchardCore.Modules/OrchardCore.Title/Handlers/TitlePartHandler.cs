@@ -103,9 +103,9 @@ namespace OrchardCore.Title.Handlers
         private TitlePartSettings GetSettings(TitlePart part)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(TitlePart)));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => x.PartDefinition.Name == nameof(TitlePart));
 
-            return contentTypePartDefinition.GetSettings<TitlePartSettings>();
+            return contentTypePartDefinition?.GetSettings<TitlePartSettings>() ?? new TitlePartSettings();
         }
     }
 }
