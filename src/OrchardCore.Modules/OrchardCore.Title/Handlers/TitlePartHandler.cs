@@ -19,7 +19,7 @@ namespace OrchardCore.Title.Handlers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IStringLocalizer S;
-        private readonly HashSet<string> _contentItemIds = new();
+        private readonly HashSet<ContentItem> _contentItems = new();
 
         public TitlePartHandler(
             ILiquidTemplateManager liquidTemplateManager,
@@ -55,13 +55,12 @@ namespace OrchardCore.Title.Handlers
 
         private async Task SetTitleAsync(TitlePart part)
         {
-            if (_contentItemIds.Contains(part.ContentItem.ContentItemId))
+            if (!_contentItems.Add(part.ContentItem))
             {
+                // At this point we know that the contentItem was already processed. No need to process it again.
+
                 return;
             }
-
-            // Save the processed contentItemId to prevent it from being processed more than once.
-            _contentItemIds.Add(part.ContentItem.ContentItemId);
 
             var settings = GetSettings(part);
 
@@ -88,7 +87,10 @@ namespace OrchardCore.Title.Handlers
                 };
 
                 var title = await _liquidTemplateManager.RenderStringAsync(settings.Pattern, NullEncoder.Default, model,
-                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
+                    new Dictionary<string, FluidValue>()
+                    {
+                        ["ContentItem"] = new ObjectValue(model.ContentItem)
+                    });
 
                 title = title.Replace("\r", String.Empty).Replace("\n", String.Empty);
 
