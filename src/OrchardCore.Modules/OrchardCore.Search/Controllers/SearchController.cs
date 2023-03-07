@@ -13,8 +13,8 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
 using OrchardCore.Navigation;
 using OrchardCore.Search.Abstractions;
-using OrchardCore.Search.Abstractions.ViewModels;
 using OrchardCore.Search.Model;
+using OrchardCore.Search.ViewModels;
 using OrchardCore.Settings;
 using YesSql;
 using YesSql.Services;
@@ -27,7 +27,6 @@ public class SearchController : Controller
     private readonly ISiteService _siteService;
     private readonly ISession _session;
     private readonly IServiceProvider _serviceProvider;
-    private readonly IShapeFactory _shapeFactory;
     private readonly dynamic New;
     private readonly INotifier _notifier;
     private readonly IHtmlLocalizer H;
@@ -46,14 +45,13 @@ public class SearchController : Controller
         _siteService = siteService;
         _session = session;
         _serviceProvider = serviceProvider;
-        _shapeFactory = shapeFactory;
         _notifier = notifier;
 
         New = shapeFactory;
         H = htmlLocalizer;
     }
 
-    public async Task<IActionResult> Search(SearchIndexViewModel viewModel, PagerSlimParameters pagerParameters)
+    public async Task<IActionResult> Search(SearchViewModel viewModel, PagerSlimParameters pagerParameters)
     {
         var searchServices = _serviceProvider.GetServices<ISearchService>();
 
@@ -83,7 +81,17 @@ public class SearchController : Controller
 
         if (String.IsNullOrWhiteSpace(viewModel.Terms))
         {
-            return View(await GetEmptyShape(viewModel, searchSettings));
+            return View(new SearchIndexViewModel()
+            {
+                Index = viewModel.Index,
+                PageTitle = searchSettings.PageTitle,
+                SearchForm = new SearchFormViewModel()
+                {
+                    Terms = viewModel.Terms,
+                    Placeholder = searchSettings.Placeholder,
+                    Index = viewModel.Index,
+                }
+            });
         }
 
         var pager = new PagerSlim(pagerParameters, siteSettings.PageSize);
@@ -107,10 +115,20 @@ public class SearchController : Controller
 
         if (!searchResult.Success || !searchResult.ContentItemIds.Any())
         {
-            return View(await GetEmptyShape(viewModel, searchSettings));
+            return View(new SearchIndexViewModel()
+            {
+                Index = viewModel.Index,
+                PageTitle = searchSettings.PageTitle,
+                SearchForm = new SearchFormViewModel()
+                {
+                    Terms = viewModel.Terms,
+                    Placeholder = searchSettings.Placeholder,
+                    Index = viewModel.Index,
+                }
+            });
         }
 
-        // Query database to retrieve content items.
+        // Query the database to retrieve content items.
         IQuery<ContentItem> query;
 
         if (searchResult.Latest)
@@ -145,44 +163,31 @@ public class SearchController : Controller
             pager.After = (size - 1).ToString();
         }
 
-        var shape = await _shapeFactory.CreateAsync<SearchIndexViewModel>("Search__List", async model =>
+        var shape = new SearchIndexViewModel()
         {
-            model.PageTitle = searchSettings.PageTitle;
-            model.Terms = viewModel.Terms;
-            model.SearchForm = new SearchFormViewModel("Search__Form")
+            Index = viewModel.Index,
+            PageTitle = searchSettings.PageTitle,
+            Terms = viewModel.Terms,
+            SearchForm = new SearchFormViewModel()
             {
                 Terms = viewModel.Terms,
                 Placeholder = searchSettings.Placeholder,
                 Index = viewModel.Index,
-            };
-            model.SearchResults = new SearchResultsViewModel("Search__Results")
+            },
+            SearchResults = new SearchResultsViewModel()
             {
+                Index = viewModel.Index,
                 ContentItems = containedItems.OrderBy(x => searchResult.ContentItemIds.IndexOf(x.ContentItemId))
                 .Take(pager.PageSize)
                 .ToList(),
-            };
-            model.Pager = (await New.PagerSlim(pager)).UrlParams(new Dictionary<string, string>()
+            },
+            Pager = (await New.PagerSlim(pager)).UrlParams(new Dictionary<string, string>()
             {
-                { "Terms", viewModel.Terms },
-                { "Index", viewModel.Index },
-            });
-        });
+                { nameof(viewModel.Terms), viewModel.Terms },
+                { nameof(viewModel.Index), viewModel.Index },
+            }),
+        };
 
         return View(shape);
-    }
-
-    private async Task<IShape> GetEmptyShape(SearchIndexViewModel viewModel, SearchSettings searchSettings)
-    {
-        return await _shapeFactory.CreateAsync<SearchIndexViewModel>("Search__List", model =>
-        {
-            model.PageTitle = searchSettings.PageTitle;
-            model.Index = viewModel.Index;
-            model.SearchForm = new SearchFormViewModel("Search__Form")
-            {
-                Terms = viewModel.Terms,
-                Placeholder = searchSettings.Placeholder,
-                Index = viewModel.Index,
-            };
-        });
     }
 }
