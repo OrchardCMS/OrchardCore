@@ -19,6 +19,7 @@ namespace OrchardCore.Title.Handlers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IStringLocalizer S;
+        private readonly HashSet<string> _contentItemIds = new();
 
         public TitlePartHandler(
             ILiquidTemplateManager liquidTemplateManager,
@@ -30,9 +31,40 @@ namespace OrchardCore.Title.Handlers
             S = stringLocalizer;
         }
 
-        public override async Task UpdatedAsync(UpdateContentContext context, TitlePart part)
+        public override Task UpdatedAsync(UpdateContentContext context, TitlePart part)
         {
+            return SetTitleAsync(part);
+        }
+
+        public override Task CreatedAsync(CreateContentContext context, TitlePart part)
+        {
+            return SetTitleAsync(part);
+        }
+
+        protected override Task ValidatingAsync(ValidateContentPartContext context, TitlePart part)
+        {
+            var settings = context.ContentTypePartDefinition.GetSettings<TitlePartSettings>();
+
+            if (settings.Options == TitlePartOptions.EditableRequired && String.IsNullOrEmpty(part.Title))
+            {
+                context.Fail(S["A value is required for Title."], nameof(part.Title));
+            }
+
+            return Task.CompletedTask;
+        }
+
+        private async Task SetTitleAsync(TitlePart part)
+        {
+            if (_contentItemIds.Contains(part.ContentItem.ContentItemId))
+            {
+                return;
+            }
+
+            // Save the processed contentItemId to prevent it from being processed more than once.
+            _contentItemIds.Add(part.ContentItem.ContentItemId);
+
             var settings = GetSettings(part);
+
             // Do not compute the title if the user can modify it.
             if (settings.Options == TitlePartOptions.Editable || settings.Options == TitlePartOptions.EditableRequired)
             {
@@ -66,22 +98,11 @@ namespace OrchardCore.Title.Handlers
             }
         }
 
-        protected override Task ValidatingAsync(ValidateContentPartContext context, TitlePart part)
-        {
-            var settings = context.ContentTypePartDefinition.GetSettings<TitlePartSettings>();
-
-            if (settings.Options == TitlePartOptions.EditableRequired && String.IsNullOrEmpty(part.Title))
-            {
-                context.Fail(S["A value is required for Title."], nameof(part.Title));
-            }
-
-            return Task.CompletedTask;
-        }
-
         private TitlePartSettings GetSettings(TitlePart part)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(TitlePart)));
+
             return contentTypePartDefinition.GetSettings<TitlePartSettings>();
         }
     }

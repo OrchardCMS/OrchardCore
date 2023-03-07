@@ -13,8 +13,8 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
 using OrchardCore.Navigation;
 using OrchardCore.Search.Abstractions;
-using OrchardCore.Search.Abstractions.ViewModels;
 using OrchardCore.Search.Model;
+using OrchardCore.Search.ViewModels;
 using OrchardCore.Settings;
 using YesSql;
 using YesSql.Services;
@@ -128,7 +128,7 @@ public class SearchController : Controller
             });
         }
 
-        // Query database to retrieve content items.
+        // Query the database to retrieve content items.
         IQuery<ContentItem> query;
 
         if (searchResult.Latest)

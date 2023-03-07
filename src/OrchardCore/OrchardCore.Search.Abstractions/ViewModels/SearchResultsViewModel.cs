@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Search.Abstractions.ViewModels
+namespace OrchardCore.Search.ViewModels
 {
     public class SearchResultsViewModel : ShapeViewModel
     {

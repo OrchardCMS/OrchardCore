@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Search.Abstractions.ViewModels
+namespace OrchardCore.Search.ViewModels
 {
     public class SearchFormViewModel : ShapeViewModel
     {
