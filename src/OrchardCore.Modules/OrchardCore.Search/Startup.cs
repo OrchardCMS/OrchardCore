@@ -36,8 +36,8 @@ namespace OrchardCore.Search
             services.AddScoped<IShapeTableProvider, SearchShapesTableProvider>();
             services.AddShapeAttributes<SearchShapes>();
 
-            services.AddContentPart<SearchPart>()
-                    .UseDisplayDriver<SearchPartDisplayDriver>();
+            services.AddContentPart<SearchFormPart>()
+                    .UseDisplayDriver<SearchFormPartDisplayDriver>();
 
             services.AddDataMigration<SearchMigrations>();
         }
