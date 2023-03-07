@@ -19,6 +19,7 @@ namespace OrchardCore.Title.Handlers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IStringLocalizer S;
+        private readonly HashSet<string> _contentItemIds = new();
 
         public TitlePartHandler(
             ILiquidTemplateManager liquidTemplateManager,
@@ -55,6 +56,14 @@ namespace OrchardCore.Title.Handlers
         private async Task SetTitleAsync(TitlePart part)
         {
             var settings = GetSettings(part);
+
+            if (_contentItemIds.Contains(part.ContentItem.ContentItemId))
+            {
+                return;
+            }
+
+            // Save the processed contentItemId to prevent it from being processed more than once.
+            _contentItemIds.Add(part.ContentItem.ContentItemId);
 
             // Do not compute the title if the user can modify it.
             if (settings.Options == TitlePartOptions.Editable || settings.Options == TitlePartOptions.EditableRequired)
