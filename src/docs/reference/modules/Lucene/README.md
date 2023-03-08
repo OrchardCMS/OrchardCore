@@ -9,20 +9,24 @@ Here is a sample step:
 
 ```json
 {
-  "name": "lucene-index",
-  "Indices": [
-    {
-      "Search": {
-        "AnalyzerName": "standardanalyzer",
-        "IndexLatest": false,
-        "IndexedContentTypes": [
-          "Article",
-          "BlogPost"
-        ]
-      }
-    }
-  ]
-},
+    "steps":[
+        {
+            "name":"lucene-index",
+            "Indices":[
+                {
+                    "Search":{
+                        "AnalyzerName":"standardanalyzer",
+                        "IndexLatest":false,
+                        "IndexedContentTypes":[
+                            "Article",
+                            "BlogPost"
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}
 ```
 
 ### Queries recipe step
@@ -31,11 +35,15 @@ Here is an example for creating a Lucene query from a Queries recipe step:
 
 ```json
 {
-    "Source": "Lucene",
-    "Name": "RecentBlogPosts",
-    "Index": "Search",
-    "Template": "...", // json encoded query template
-    "ReturnContentItems": true
+    "steps":[
+        {
+            "Source":"Lucene",
+            "Name":"RecentBlogPosts",
+            "Index":"Search",
+            "Template":"...", // JSON encoded query template.
+            "ReturnContentItems":true
+        }
+    ]
 }
 ```
 
@@ -87,14 +95,22 @@ Here is an example of a filtered query:
 
 ```json
 {
-  "query": {
-    "bool": {
-      "filter": [
-        { "term": { "Content.ContentItem.Published" : "true" }},
-        { "wildcard": { "Content.ContentItem.DisplayText" : "Main*" }}
-      ]
+    "query":{
+        "bool":{
+            "filter":[
+                {
+                    "term":{
+                        "Content.ContentItem.Published":"true"
+                    }
+                },
+                {
+                    "wildcard":{
+                        "Content.ContentItem.DisplayText":"Main*"
+                    }
+                }
+            ]
+        }
     }
-  }
 }
 ```
 
@@ -102,17 +118,27 @@ With a must query in the bool Query. "finding specific content type(s)"
 
 ```json
 {
-  "query": {
-    "bool": {
-      "must" : {
-          "term" : { "Content.ContentItem.ContentType.keyword" : "Menu" }
-      },
-      "filter": [
-        { "term": { "Content.ContentItem.Published" : "true" }},
-        { "wildcard": { "Content.ContentItem.DisplayText" : "Main*" }}
-      ]
+    "query":{
+        "bool":{
+            "must":{
+                "term":{
+                    "Content.ContentItem.ContentType.keyword":"Menu"
+                }
+            },
+            "filter":[
+                {
+                    "term":{
+                        "Content.ContentItem.Published":"true"
+                    }
+                },
+                {
+                    "wildcard":{
+                        "Content.ContentItem.DisplayText":"Main*"
+                    }
+                }
+            ]
+        }
     }
-  }
 }
 ```
 
@@ -120,12 +146,11 @@ Using the [`query_string` Lucene query](https://www.elastic.co/guide/en/elastics
 
 ```json
 {
-  "query":
-  {
-    "query_string": {
-      "query": "Content.ContentItem.FullText:\"exploration\""
+    "query":{
+        "query_string":{
+            "query":"Content.ContentItem.FullText:\"exploration\""
+        }
     }
-  }
 }
 ```
 
@@ -133,13 +158,12 @@ Or in a way that you don't have to select the fields in the query (to allow user
 
 ```json
 {
-  "query":
-  {
-    "query_string": {
-      "query": "\"exploration\"",
-      "default_field": "Content.ContentItem.FullText"
+    "query":{
+        "query_string":{
+            "query":"\"exploration\"",
+            "default_field":"Content.ContentItem.FullText"
+        }
     }
-  }
 }
 ```
 
@@ -147,12 +171,14 @@ An alternative to the previous one with [`simple_query_string`](https://www.elas
 
 ```json
 {
-  "query": {
-    "simple_query_string" : {
-        "query": "\"exploration\"",
-        "fields": ["Content.ContentItem.FullText"]
+    "query":{
+        "simple_query_string":{
+            "query":"\"exploration\"",
+            "fields":[
+                "Content.ContentItem.FullText"
+            ]
+        }
     }
-  }
 }
 ```
 

@@ -83,6 +83,7 @@ Here is an example for setting default search settings:
 {
     "steps":[
         {
+            // Create the search settings.
             "name":"Settings",
             "ElasticSettings":{
                 "SearchIndex":"search",
@@ -90,7 +91,7 @@ Here is an example for setting default search settings:
                     "Content.ContentItem.FullText"
                 ],
                 "AllowElasticQueryStringQueryInSearch":false,
-                "SyncWithLucene":"true // Allows to sync content index settings"
+                "SyncWithLucene": true // Allows to sync content index settings.
             }
         }
     ]
