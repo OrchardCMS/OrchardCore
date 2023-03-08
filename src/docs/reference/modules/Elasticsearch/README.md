@@ -55,20 +55,24 @@ Here is a sample step:
 
 ```json
 {
-  "name": "ElasticIndexSettings",
-  "Indices": [
-    {
-      "Search": {
-        "AnalyzerName": "standardanalyzer",
-        "IndexLatest": false,
-        "IndexedContentTypes": [
-          "Article",
-          "BlogPost"
-        ]
-      }
-    }
-  ]
-},
+    "steps":[
+        {
+            "name":"ElasticIndexSettings",
+            "Indices":[
+                {
+                    "Search":{
+                        "AnalyzerName":"standardanalyzer",
+                        "IndexLatest":false,
+                        "IndexedContentTypes":[
+                            "Article",
+                            "BlogPost"
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}
 ```
 
 ## Elasticsearch settings recipe step
@@ -77,17 +81,20 @@ Here is an example for setting default search settings:
 
 ```json
 {
-  // Create the search settings.
-  "name": "Settings",
-  "ElasticSettings": {
-    "SearchIndex": "search",
-    "DefaultSearchFields": [
-      "Content.ContentItem.FullText"
-    ],
-    "AllowElasticQueryStringQueryInSearch": false,
-    "SyncWithLucene":  true // Allows to sync content index settings
-  }
-},
+    "steps":[
+        {
+            "name":"Settings",
+            "ElasticSettings":{
+                "SearchIndex":"search",
+                "DefaultSearchFields":[
+                    "Content.ContentItem.FullText"
+                ],
+                "AllowElasticQueryStringQueryInSearch":false,
+                "SyncWithLucene":"true // Allows to sync content index settings"
+            }
+        }
+    ]
+}
 ```
 
 ### Reset Elasticsearch Index Step
@@ -97,21 +104,30 @@ Restarts the indexing process from the beginning in order to update current cont
 It doesn't delete existing entries from the index.
 
 ```json
-    {
-      "name": "lucene-index-reset",
-      "Indices": [
-        "IndexName1", "IndexName2"
-      ]
-    }
+{
+    "steps":[
+        {
+            "name":"lucene-index-reset",
+            "Indices":[
+                "IndexName1",
+                "IndexName2"
+            ]
+        }
+    ]
+}
 ```
 
 To reset all indices:   
 
 ```json
-    {
-      "name": "lucene-index-reset",
-      "IncludeAll": true
-    }
+{
+    "steps":[
+        {
+            "name":"lucene-index-reset",
+            "IncludeAll":true
+        }
+    ]
+}
 ```
 
 ### Rebuild Elasticsearch Index Step
@@ -120,21 +136,30 @@ This Rebuild Index Step rebuilds an Elasticsearch index.
 Deletes and recreates the full index content.
 
 ```json
-    {
-      "name": "lucene-index-rebuild",
-      "Indices": [
-        "IndexName1", "IndexName2"
-      ]
-    }
+{
+    "steps":[
+        {
+            "name":"lucene-index-rebuild",
+            "Indices":[
+                "IndexName1",
+                "IndexName2"
+            ]
+        }
+    ]
+}
 ```
 
 To rebuild all indices:   
 
 ```json
-    {
-      "name": "lucene-index-rebuild",
-      "IncludeAll": true
-    }
+{
+    "steps":[
+        {
+            "name":"lucene-index-rebuild",
+            "IncludeAll":true
+        }
+    ]
+}
 ```
 
 ## Queries recipe step
@@ -187,16 +212,16 @@ See: https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.h
 The Elasticsearch module connection configuration can be set globally in the appsettings.json file or per tenant.
 
 ```json
-    "OrchardCore_Elasticsearch": {
-      "ConnectionType": "SingleNodeConnectionPool",
-      "Url": "http://localhost",
-      "Ports": [ 9200 ],
-      "CloudId": "Orchard_Core_deployment:ZWFzdHVzMi5henVyZS5lbGFzdGljLWNsb3VkLmNvbTo0NDMkNmMxZGQ4YzBrQ2Y2NDI5ZDkyNzc1MTUxN2IyYjZkYTgkMTJmMjA1MzBlOTU0NDgyNDlkZWVmZWYzNmZlY2Q5Yjc="
-      "Username": "admin",
-      "Password": "admin",
-      "CertificateFingerprint": "75:21:E7:92:8F:D5:7A:27:06:38:8E:A4:35:FE:F5:17:D7:37:F4:DF:F0:9A:D2:C0:C4:B6:FF:EE:D1:EA:2B:A7",
-      "EnableApiVersioningHeader": false
-    }
+"OrchardCore_Elasticsearch": {
+    "ConnectionType": "SingleNodeConnectionPool",
+    "Url": "http://localhost",
+    "Ports": [ 9200 ],
+    "CloudId": "Orchard_Core_deployment:ZWFzdHVzMi5henVyZS5lbGFzdGljLWNsb3VkLmNvbTo0NDMkNmMxZGQ4YzBrQ2Y2NDI5ZDkyNzc1MTUxN2IyYjZkYTgkMTJmMjA1MzBlOTU0NDgyNDlkZWVmZWYzNmZlY2Q5Yjc=",
+    "Username": "admin",
+    "Password": "admin",
+    "CertificateFingerprint": "75:21:E7:92:8F:D5:7A:27:06:38:8E:A4:35:FE:F5:17:D7:37:F4:DF:F0:9A:D2:C0:C4:B6:FF:EE:D1:EA:2B:A7",
+    "EnableApiVersioningHeader": false
+}
 ```
 
 The connection types documentation and examples can be found at this url : 
@@ -214,7 +239,7 @@ The Lucene module though will always only return `stored` fields from Lucene Que
 
 Here is one example of a Query that will return only specific fields from Elasticsearch.
 
-```
+```json
 {
   "query": {
     "match_all": { }
