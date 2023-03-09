@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Elasticsearch.Net;
 using Fluid;
@@ -127,25 +126,7 @@ namespace OrchardCore.Search.Elasticsearch
                     o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.PatternAnalyzer, new PatternAnalyzer()));
                     o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.LanguageAnalyzers, new LanguageAnalyzer()));
                     o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.FingerprintAnalyzer, new FingerprintAnalyzer()));
-                    o.Analyzers.Add(new ElasticAnalyzer("knowledge_base_analyzer", () =>
-                    {
-                        return new CustomAnalyzer
-                        {
-                            Tokenizer = "standard",
-                            Filter = new List<string>
-                            {
-                                        "lowercase",
-                                        "stop",
-                            },
-                            CharFilter = new List<string>()
-                            {
-                                        "html_strip",
-                            }
-                        };
-                    }));
                 });
-
-
 
                 try
                 {

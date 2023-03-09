@@ -105,6 +105,7 @@ public class ElasticsearchService : ISearchService
 
     private static string GetAnalyzer(string analyzerName, IAnalyzer analyzer)
     {
+        // When the analyzer's type is "custom", we must use the defined custom name instead of passing the type "custom".
         return analyzer.Type == _customAnalyzer.Type ? analyzerName : analyzer.Type;
     }
 
