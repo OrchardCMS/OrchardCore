@@ -55,7 +55,7 @@ namespace OrchardCore.Recipes.Services
 
             foreach (var recipeFile in recipeFiles)
             {
-                var recipeDescriptor = await _recipeReader.GetRecipeDescriptor(path, recipeFile, _hostingEnvironment.ContentRootFileProvider);
+                var recipeDescriptor = await _recipeReader.GetRecipeDescriptorAsync(path, recipeFile, _hostingEnvironment.ContentRootFileProvider);
 
                 recipeDescriptors.Add(recipeDescriptor);
             }
