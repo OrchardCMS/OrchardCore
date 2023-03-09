@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Elasticsearch.Net;
 using Fluid;
@@ -117,7 +118,34 @@ namespace OrchardCore.Search.Elasticsearch
                 var client = new ElasticClient(settings);
                 services.AddSingleton<IElasticClient>(client);
                 services.Configure<ElasticOptions>(o =>
-                    o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.StandardAnalyzer, new StandardAnalyzer())));
+                {
+                    o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.StandardAnalyzer, new StandardAnalyzer()));
+                    o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.SimpleAnalyzer, new SimpleAnalyzer()));
+                    o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.WhitespaceAnalyzer, new WhitespaceAnalyzer()));
+                    o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.StopAnalyzer, new StopAnalyzer()));
+                    o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.KeywordAnalyzer, new KeywordAnalyzer()));
+                    o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.PatternAnalyzer, new PatternAnalyzer()));
+                    o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.LanguageAnalyzers, new LanguageAnalyzer()));
+                    o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.FingerprintAnalyzer, new FingerprintAnalyzer()));
+                    o.Analyzers.Add(new ElasticAnalyzer("knowledge_base_analyzer", () =>
+                    {
+                        return new CustomAnalyzer
+                        {
+                            Tokenizer = "standard",
+                            Filter = new List<string>
+                            {
+                                        "lowercase",
+                                        "stop",
+                            },
+                            CharFilter = new List<string>()
+                            {
+                                        "html_strip",
+                            }
+                        };
+                    }));
+                });
+
+
 
                 try
                 {

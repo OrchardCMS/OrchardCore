@@ -12,6 +12,8 @@ namespace OrchardCore.Search.Elasticsearch.Services;
 
 public class ElasticsearchService : ISearchService
 {
+    private static readonly IAnalyzer _customAnalyzer = new CustomAnalyzer();
+
     private readonly ISiteService _siteService;
     private readonly ElasticIndexManager _elasticIndexManager;
     private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
@@ -54,7 +56,8 @@ public class ElasticsearchService : ISearchService
         var elasticIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync(index);
         result.Latest = elasticIndexSettings.IndexLatest;
 
-        var analyzer = _elasticAnalyzerManager.CreateAnalyzer(await _elasticIndexSettingsService.GetIndexAnalyzerAsync(index));
+        var analyzerName = await _elasticIndexSettingsService.GetIndexAnalyzerAsync(index);
+        var analyzer = _elasticAnalyzerManager.CreateAnalyzer(analyzerName);
 
         var siteSettings = await _siteService.GetSiteSettingsAsync();
         var searchSettings = siteSettings.As<ElasticSettings>();
@@ -75,7 +78,7 @@ public class ElasticsearchService : ISearchService
                 query = new QueryStringQuery
                 {
                     Fields = searchSettings.DefaultSearchFields,
-                    Analyzer = analyzer.Type,
+                    Analyzer = GetAnalyzer(analyzerName, analyzer),
                     Query = term
                 };
             }
@@ -84,7 +87,7 @@ public class ElasticsearchService : ISearchService
                 query = new MultiMatchQuery
                 {
                     Fields = searchSettings.DefaultSearchFields,
-                    Analyzer = analyzer.Type,
+                    Analyzer = GetAnalyzer(analyzerName, analyzer),
                     Query = term
                 };
             }
@@ -98,6 +101,11 @@ public class ElasticsearchService : ISearchService
         }
 
         return result;
+    }
+
+    private static string GetAnalyzer(string analyzerName, IAnalyzer analyzer)
+    {
+        return analyzer.Type == _customAnalyzer.Type ? analyzerName : analyzer.Type;
     }
 
     private async Task<string> DefaultIndexAsync()
