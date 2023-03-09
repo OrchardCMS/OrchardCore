@@ -13,6 +13,9 @@ namespace OrchardCore.Recipes.Services
 {
     public class RecipeHarvester : IRecipeHarvester
     {
+        private static readonly string _recipesFolderName = "Recipes";
+        private static readonly string _recipeExtension = ".recipe.json";
+
         private readonly IRecipeReader _recipeReader;
         private readonly IExtensionManager _extensionManager;
         private readonly IHostEnvironment _hostingEnvironment;
@@ -30,16 +33,9 @@ namespace OrchardCore.Recipes.Services
             _logger = logger;
         }
 
+        /// <inheritdoc/>
         public virtual Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync()
-        {
-            return _extensionManager.GetExtensions().InvokeAsync(HarvestRecipes, _logger);
-        }
-
-        private Task<IEnumerable<RecipeDescriptor>> HarvestRecipes(IExtensionInfo extension)
-        {
-            var folderSubPath = PathExtensions.Combine(extension.SubPath, "Recipes");
-            return HarvestRecipesAsync(folderSubPath);
-        }
+            => _extensionManager.GetExtensions().InvokeAsync(HarvestRecipes, _logger);
 
         /// <summary>
         /// Returns a list of recipes for a content path.
@@ -51,7 +47,7 @@ namespace OrchardCore.Recipes.Services
             var recipeDescriptors = new List<RecipeDescriptor>();
 
             var recipeFiles = _hostingEnvironment.ContentRootFileProvider.GetDirectoryContents(path)
-                .Where(x => !x.IsDirectory && x.Name.EndsWith(".recipe.json", StringComparison.Ordinal));
+                .Where(f => !f.IsDirectory && f.Name.EndsWith(_recipeExtension, StringComparison.OrdinalIgnoreCase));
 
             foreach (var recipeFile in recipeFiles)
             {
@@ -61,6 +57,13 @@ namespace OrchardCore.Recipes.Services
             }
 
             return recipeDescriptors;
+        }
+
+        private Task<IEnumerable<RecipeDescriptor>> HarvestRecipes(IExtensionInfo extension)
+        {
+            var folderSubPath = PathExtensions.Combine(extension.SubPath, _recipesFolderName);
+
+            return HarvestRecipesAsync(folderSubPath);
         }
     }
 }
