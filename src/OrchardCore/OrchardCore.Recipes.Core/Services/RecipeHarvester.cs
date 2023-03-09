@@ -13,9 +13,6 @@ namespace OrchardCore.Recipes.Services
 {
     public class RecipeHarvester : IRecipeHarvester
     {
-        private static readonly string _recipesFolderName = "Recipes";
-        private static readonly string _recipeExtension = ".recipe.json";
-
         private readonly IRecipeReader _recipeReader;
         private readonly IExtensionManager _extensionManager;
         private readonly IHostEnvironment _hostingEnvironment;
@@ -61,7 +58,7 @@ namespace OrchardCore.Recipes.Services
 
         private Task<IEnumerable<RecipeDescriptor>> HarvestRecipes(IExtensionInfo extension)
         {
-            var folderSubPath = PathExtensions.Combine(extension.SubPath, _recipesFolderName);
+            var folderSubPath = PathExtensions.Combine(extension.SubPath, RecipesConstants.RecipesFolderName);
 
             return HarvestRecipesAsync(folderSubPath);
         }
