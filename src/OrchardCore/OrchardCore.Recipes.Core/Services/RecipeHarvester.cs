@@ -47,7 +47,7 @@ namespace OrchardCore.Recipes.Services
             var recipeDescriptors = new List<RecipeDescriptor>();
 
             var recipeFiles = _hostingEnvironment.ContentRootFileProvider.GetDirectoryContents(path)
-                .Where(f => !f.IsDirectory && f.Name.EndsWith(_recipeExtension, StringComparison.OrdinalIgnoreCase));
+                .Where(f => !f.IsDirectory && f.Name.EndsWith(RecipesConstants.RecipeExtension, StringComparison.Ordinal));
 
             foreach (var recipeFile in recipeFiles)
             {
