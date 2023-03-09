@@ -46,16 +46,21 @@ namespace OrchardCore.Recipes.Services
         /// </summary>
         /// <param name="path">A path string relative to the content root of the application.</param>
         /// <returns>The list of <see cref="RecipeDescriptor"/> instances.</returns>
-        protected Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(string path)
+        protected async Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(string path)
         {
             var recipeDescriptors = new List<RecipeDescriptor>();
 
             var recipeFiles = _hostingEnvironment.ContentRootFileProvider.GetDirectoryContents(path)
                 .Where(x => !x.IsDirectory && x.Name.EndsWith(".recipe.json", StringComparison.Ordinal));
 
-            recipeDescriptors.AddRange(recipeFiles.Select(recipeFile => _recipeReader.GetRecipeDescriptor(path, recipeFile, _hostingEnvironment.ContentRootFileProvider).Result));
+            foreach (var recipeFile in recipeFiles)
+            {
+                var recipeDescriptor = await _recipeReader.GetRecipeDescriptor(path, recipeFile, _hostingEnvironment.ContentRootFileProvider);
 
-            return Task.FromResult<IEnumerable<RecipeDescriptor>>(recipeDescriptors);
+                recipeDescriptors.Add(recipeDescriptor);
+            }
+
+            return recipeDescriptors;
         }
     }
 }
