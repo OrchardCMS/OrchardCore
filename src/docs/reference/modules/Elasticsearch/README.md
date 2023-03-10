@@ -230,7 +230,7 @@ The Elasticsearch module connection configuration can be set globally in the app
 
 The connection types documentation and examples can be found at this url: 
 
-https://www.elastic.co/guide/en/elasticsearch/client/net-api/current/connection-pooling.html
+https://www.elastic.co/guide/en/elasticsearch/client/net-api/7.17/connection-pooling.html
 
 ## Elasticsearch vs Lucene
 
