@@ -55,15 +55,15 @@ Here is a sample step:
 
 ```json
 {
-    "steps":[
+    "steps": [
         {
-            "name":"ElasticIndexSettings",
-            "Indices":[
+            "name": "ElasticIndexSettings",
+            "Indices": [
                 {
-                    "Search":{
-                        "AnalyzerName":"standardanalyzer",
-                        "IndexLatest":false,
-                        "IndexedContentTypes":[
+                    "Search": {
+                        "AnalyzerName": "standardanalyzer",
+                        "IndexLatest": false,
+                        "IndexedContentTypes": [
                             "Article",
                             "BlogPost"
                         ]
@@ -81,16 +81,16 @@ Here is an example for setting default search settings:
 
 ```json
 {
-    "steps":[
+    "steps": [
         {
             // Create the search settings.
-            "name":"Settings",
-            "ElasticSettings":{
-                "SearchIndex":"search",
-                "DefaultSearchFields":[
+            "name": "Settings",
+            "ElasticSettings": {
+                "SearchIndex": "search",
+                "DefaultSearchFields": [
                     "Content.ContentItem.FullText"
                 ],
-                "AllowElasticQueryStringQueryInSearch":false,
+                "AllowElasticQueryStringQueryInSearch": false,
                 "SyncWithLucene": true // Allows to sync content index settings.
             }
         }
@@ -106,10 +106,10 @@ It doesn't delete existing entries from the index.
 
 ```json
 {
-    "steps":[
+    "steps": [
         {
-            "name":"lucene-index-reset",
-            "Indices":[
+            "name": "lucene-index-reset",
+            "Indices": [
                 "IndexName1",
                 "IndexName2"
             ]
@@ -122,10 +122,10 @@ To reset all indices:
 
 ```json
 {
-    "steps":[
+    "steps": [
         {
-            "name":"lucene-index-reset",
-            "IncludeAll":true
+            "name": "lucene-index-reset",
+            "IncludeAll": true
         }
     ]
 }
@@ -138,10 +138,10 @@ Deletes and recreates the full index content.
 
 ```json
 {
-    "steps":[
+    "steps": [
         {
-            "name":"lucene-index-rebuild",
-            "Indices":[
+            "name": "lucene-index-rebuild",
+            "Indices": [
                 "IndexName1",
                 "IndexName2"
             ]
@@ -154,10 +154,10 @@ To rebuild all indices:
 
 ```json
 {
-    "steps":[
+    "steps": [
         {
-            "name":"lucene-index-rebuild",
-            "IncludeAll":true
+            "name": "lucene-index-rebuild",
+            "IncludeAll": true
         }
     ]
 }
@@ -225,7 +225,10 @@ The Elasticsearch module connection configuration can be set globally in the app
 }
 ```
 
-The connection types documentation and examples can be found at this url : 
+!!! note
+    When `CloudConnectionPool` connection type is used, `CertificateFingerprint` is not needed.
+
+The connection types documentation and examples can be found at this url: 
 
 https://www.elastic.co/guide/en/elasticsearch/client/net-api/current/connection-pooling.html
 
