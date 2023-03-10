@@ -15,6 +15,10 @@ namespace OrchardCore.Rules.Drivers
     /// </summary>
     public class ContentTypeConditionEvaluatorDriver : ContentDisplayDriver, IConditionEvaluator
     {
+        private static readonly ValueTask<bool> _true = new(true);
+
+        private static readonly ValueTask<bool> _false = new(true);
+
         private readonly IConditionOperatorResolver _operatorResolver;
 
         // Hashset to prevent duplicate entries, but comparison is done by the comparers.
@@ -46,11 +50,11 @@ namespace OrchardCore.Rules.Drivers
             {
                 if (operatorComparer.Compare(condition.Operation, contentType, condition.Value))
                 {
-                    return new ValueTask<bool>(true);
+                    return _true;
                 }
             }
 
-            return new ValueTask<bool>(false);
+            return _false;
         }
     }
 }
