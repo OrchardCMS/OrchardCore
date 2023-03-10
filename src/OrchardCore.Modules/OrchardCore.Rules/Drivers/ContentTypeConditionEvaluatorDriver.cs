@@ -15,9 +15,6 @@ namespace OrchardCore.Rules.Drivers
     /// </summary>
     public class ContentTypeConditionEvaluatorDriver : ContentDisplayDriver, IConditionEvaluator
     {
-        private static ValueTask<bool> _true => new(true);
-        private static ValueTask<bool> _false => new(false);
-
         private readonly IConditionOperatorResolver _operatorResolver;
 
         // Hashset to prevent duplicate entries, but comparison is done by the comparers.
@@ -30,7 +27,7 @@ namespace OrchardCore.Rules.Drivers
 
         public override Task<IDisplayResult> DisplayAsync(ContentItem contentItem, BuildDisplayContext context)
         {
-            // Do not include Widgets or any display type other than detail.
+            // Do not include Widgets or any display type other than Detail.
             if (context.DisplayType == "Detail" && (!context.Shape.TryGetProperty(nameof(ContentTypeSettings.Stereotype), out string stereotype) || stereotype != "Widget"))
             {
                 _contentTypes.Add(contentItem.ContentType);
@@ -49,11 +46,11 @@ namespace OrchardCore.Rules.Drivers
             {
                 if (operatorComparer.Compare(condition.Operation, contentType, condition.Value))
                 {
-                    return _true;
+                    return new ValueTask<bool>(true);
                 }
             }
 
-            return _false;
+            return new ValueTask<bool>(false);
         }
     }
 }
