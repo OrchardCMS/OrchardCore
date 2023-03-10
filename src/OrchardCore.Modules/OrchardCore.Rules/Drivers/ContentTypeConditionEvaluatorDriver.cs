@@ -17,7 +17,7 @@ namespace OrchardCore.Rules.Drivers
     {
         private static readonly ValueTask<bool> _true = new(true);
 
-        private static readonly ValueTask<bool> _false = new(true);
+        private static readonly ValueTask<bool> _false = new(false);
 
         private readonly IConditionOperatorResolver _operatorResolver;
 
