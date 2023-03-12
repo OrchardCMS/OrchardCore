@@ -6,5 +6,5 @@ public class SearchContext
 
     public string Terms { get; set; }
 
-    public int Hits { get; set; }
+    public int TotalHits { get; set; }
 }
