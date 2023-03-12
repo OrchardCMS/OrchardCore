@@ -150,7 +150,7 @@ public class SearchController : Controller
                 .Where(x => x.ContentItemId.IsIn(searchResult.ContentItemIds) && x.Published);
         }
 
-        var searchContext = new SearchContext()
+        var searchContext = new SearchContext
         {
             Index = viewModel.Index,
             Terms = viewModel.Terms,
