@@ -157,7 +157,7 @@ public class SearchController : Controller
             Hits = await query.CountAsync(),
         };
 
-        await _searchHandlers.InvokeAsync((handler) => handler.SearchedAsync(searchContext), _logger);
+        await _searchHandlers.InvokeAsync(async handler => await handler.SearchedAsync(searchContext), _logger);
 
         // Sort the content items by their position in the search results returned by search service.
         var containedItems = await query.Take(pager.PageSize + 1).ListAsync();
