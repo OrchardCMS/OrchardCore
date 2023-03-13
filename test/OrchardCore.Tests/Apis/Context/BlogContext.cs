@@ -1,9 +1,11 @@
+using OrchardCore.Recipes;
+
 namespace OrchardCore.Tests.Apis.Context
 {
     public class BlogContext : SiteContext
     {
-        public const string luceneRecipePath = "Areas/TheBlogTheme/Recipes";
-        public const string luceneRecipeName = "blog.lucene.query.recipe.json";
+        public const string luceneRecipePath = $"Areas/TheBlogTheme/{RecipesConstants.RecipesFolderName}";
+        public const string luceneRecipeName = $"blog.lucene.query{RecipesConstants.RecipeExtension}";
         public const string luceneIndexName = "Search";
 
         public string BlogContentItemId { get; private set; }

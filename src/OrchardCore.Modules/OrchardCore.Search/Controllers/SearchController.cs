@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
+using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Model;
@@ -30,6 +32,8 @@ public class SearchController : Controller
     private readonly dynamic New;
     private readonly INotifier _notifier;
     private readonly IHtmlLocalizer H;
+    private readonly IEnumerable<ISearchHandler> _searchHandlers;
+    private readonly ILogger _logger;
 
     public SearchController(
         IAuthorizationService authorizationService,
@@ -38,7 +42,9 @@ public class SearchController : Controller
         IServiceProvider serviceProvider,
         INotifier notifier,
         IShapeFactory shapeFactory,
-        IHtmlLocalizer<SearchController> htmlLocalizer
+        IHtmlLocalizer<SearchController> htmlLocalizer,
+        IEnumerable<ISearchHandler> searchHandlers,
+        ILogger<SearchController> logger
         )
     {
         _authorizationService = authorizationService;
@@ -49,6 +55,8 @@ public class SearchController : Controller
 
         New = shapeFactory;
         H = htmlLocalizer;
+        _searchHandlers = searchHandlers;
+        _logger = logger;
     }
 
     public async Task<IActionResult> Search(SearchViewModel viewModel, PagerSlimParameters pagerParameters)
@@ -141,6 +149,17 @@ public class SearchController : Controller
             query = _session.Query<ContentItem, ContentItemIndex>()
                 .Where(x => x.ContentItemId.IsIn(searchResult.ContentItemIds) && x.Published);
         }
+
+        var searchContext = new SearchContext
+        {
+            Index = viewModel.Index,
+            Terms = viewModel.Terms,
+            ContentItemIds = searchResult.ContentItemIds,
+            SearchService = searchService,
+            TotalHits = await query.CountAsync(),
+        };
+
+        await _searchHandlers.InvokeAsync((handler, context) => handler.SearchedAsync(context), searchContext, _logger);
 
         // Sort the content items by their position in the search results returned by search service.
         var containedItems = await query.Take(pager.PageSize + 1).ListAsync();
