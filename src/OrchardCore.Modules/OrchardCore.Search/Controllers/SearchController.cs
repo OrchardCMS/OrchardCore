@@ -154,6 +154,8 @@ public class SearchController : Controller
         {
             Index = viewModel.Index,
             Terms = viewModel.Terms,
+            ContentItemIds = searchResult.ContentItemIds,
+            SearchService = searchService,
             TotalHits = await query.CountAsync(),
         };
 
