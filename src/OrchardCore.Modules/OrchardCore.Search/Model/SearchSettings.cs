@@ -1,4 +1,4 @@
-namespace OrchardCore.Search.Model
+namespace OrchardCore.Search.Models
 {
     public class SearchSettings
     {

@@ -9,7 +9,7 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Search.Abstractions;
-using OrchardCore.Search.Model;
+using OrchardCore.Search.Models;
 using OrchardCore.Search.ViewModels;
 using OrchardCore.Settings;
 

@@ -4,7 +4,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Search.Model;
+using OrchardCore.Search.Models;
 using OrchardCore.Search.ViewModels;
 
 namespace OrchardCore.Search.Drivers;
