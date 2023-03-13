@@ -119,13 +119,13 @@ namespace OrchardCore.Search.Elasticsearch
                 services.Configure<ElasticOptions>(o =>
                 {
                     o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.StandardAnalyzer, new StandardAnalyzer()));
-                    o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.SimpleAnalyzer, new SimpleAnalyzer()));
-                    o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.WhitespaceAnalyzer, new WhitespaceAnalyzer()));
-                    o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.StopAnalyzer, new StopAnalyzer()));
-                    o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.KeywordAnalyzer, new KeywordAnalyzer()));
-                    o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.PatternAnalyzer, new PatternAnalyzer()));
-                    o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.LanguageAnalyzers, new LanguageAnalyzer()));
-                    o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.FingerprintAnalyzer, new FingerprintAnalyzer()));
+                    o.Analyzers.Add(new ElasticAnalyzer("Simple Analyzer", new SimpleAnalyzer()));
+                    o.Analyzers.Add(new ElasticAnalyzer("Whitespace Analyzer", new WhitespaceAnalyzer()));
+                    o.Analyzers.Add(new ElasticAnalyzer("Stop Analyzer", new StopAnalyzer()));
+                    o.Analyzers.Add(new ElasticAnalyzer("Keyword Analyzer", new KeywordAnalyzer()));
+                    o.Analyzers.Add(new ElasticAnalyzer("Pattern Analyzer", new PatternAnalyzer()));
+                    o.Analyzers.Add(new ElasticAnalyzer("Language Analyzers", new LanguageAnalyzer()));
+                    o.Analyzers.Add(new ElasticAnalyzer("Fingerprint Analyzer", new FingerprintAnalyzer()));
                 });
 
                 try
