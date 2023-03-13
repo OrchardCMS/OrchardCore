@@ -232,6 +232,33 @@ The connection types documentation and examples can be found at this url:
 
 https://www.elastic.co/guide/en/elasticsearch/client/net-api/7.17/connection-pooling.html
 
+## Elasticsearch Analyzers
+
+The module is shipped with all the [Built-in analyzers](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html) which can be used when adding or editing an index. Additionally, you can define your own custom analyzers if needed. For example, to define a custom analyzer named `english_analyzer`, simply register the following in the `Startup` class
+
+```
+services.Configure<ElasticOptions>(o =>
+    o.Analyzers.Add(
+            new ElasticAnalyzer("english_analyzer", () =>
+            {
+                return new CustomAnalyzer
+                {
+                    Tokenizer = "standard",
+                    Filter = new List<string>
+                    {
+                        "lowercase",
+                        "stop",
+                    },
+                    CharFilter = new List<string>()
+                    {
+                        "html_strip",
+                    }
+                };
+            })
+        )
+    );
+```
+
 ## Elasticsearch vs Lucene
 
 Both modules are complementary and can be enabled at the same time.
