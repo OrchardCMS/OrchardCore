@@ -156,7 +156,7 @@ public class SearchController : Controller
             Terms = viewModel.Terms,
             ContentItemIds = searchResult.ContentItemIds,
             SearchService = searchService,
-            TotalHits = await query.CountAsync(),
+            TotalHits = searchResult.ContentItemIds.Count,
         };
 
         await _searchHandlers.InvokeAsync((handler, context) => handler.SearchedAsync(context), searchContext, _logger);
