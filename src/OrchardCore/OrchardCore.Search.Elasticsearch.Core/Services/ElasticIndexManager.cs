@@ -388,11 +388,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                         var hit = searchResponse.Hits.ElementAt(i);
 
-                        if (hit == null)
-                        {
-                            continue;
-                        }
-
                         var topDoc = new Dictionary<string, object>
                         {
                             { "ContentItemId", hit.Id }
