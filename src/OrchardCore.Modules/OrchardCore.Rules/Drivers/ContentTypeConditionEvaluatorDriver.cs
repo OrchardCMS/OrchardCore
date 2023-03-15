@@ -46,11 +46,11 @@ namespace OrchardCore.Rules.Drivers
             {
                 if (operatorComparer.Compare(condition.Operation, contentType, condition.Value))
                 {
-                    return new ValueTask<bool>(true);
+                    return ValueTask.FromResult(true);
                 }
             }
 
-            return new ValueTask<bool>(false);
+            return ValueTask.FromResult(false);
         }
     }
 }
