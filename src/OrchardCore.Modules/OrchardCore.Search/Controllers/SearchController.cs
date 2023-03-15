@@ -15,7 +15,7 @@ using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Search.Abstractions;
-using OrchardCore.Search.Model;
+using OrchardCore.Search.Models;
 using OrchardCore.Search.ViewModels;
 using OrchardCore.Settings;
 using YesSql;

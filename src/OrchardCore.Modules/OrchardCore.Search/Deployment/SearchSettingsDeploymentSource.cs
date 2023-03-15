@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Entities;
-using OrchardCore.Search.Model;
+using OrchardCore.Search.Models;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Deployment
