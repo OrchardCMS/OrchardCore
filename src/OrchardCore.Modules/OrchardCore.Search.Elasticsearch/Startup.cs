@@ -118,16 +118,8 @@ namespace OrchardCore.Search.Elasticsearch
                 services.AddSingleton<IElasticClient>(client);
                 services.Configure<ElasticOptions>(o =>
                 {
-                    o.Analyzers.Add(new ElasticAnalyzer(ElasticsearchConstants.StandardAnalyzer, new StandardAnalyzer()));
-                    o.Analyzers.Add(new ElasticAnalyzer(ElasticsearchConstants.SimpleAnalyzer, new SimpleAnalyzer()));
-                    o.Analyzers.Add(new ElasticAnalyzer(ElasticsearchConstants.WhitespaceAnalyzer, new WhitespaceAnalyzer()));
-                    o.Analyzers.Add(new ElasticAnalyzer(ElasticsearchConstants.StopAnalyzer, new StopAnalyzer()));
-                    o.Analyzers.Add(new ElasticAnalyzer(ElasticsearchConstants.KeywordAnalyzer, new KeywordAnalyzer()));
-                    o.Analyzers.Add(new ElasticAnalyzer(ElasticsearchConstants.PatternAnalyzer, new PatternAnalyzer()));
-                    o.Analyzers.Add(new ElasticAnalyzer(ElasticsearchConstants.LanguageAnalyzers, new LanguageAnalyzer()));
-                    o.Analyzers.Add(new ElasticAnalyzer(ElasticsearchConstants.FingerprintAnalyzer, new FingerprintAnalyzer()));
+                    o.Analyzers.Add(new ElasticAnalyzer(ElasticsearchConstants.StandardAnalyzer, () => new StandardAnalyzer()));
                 });
-
                 try
                 {
                     var response = client.Ping();
