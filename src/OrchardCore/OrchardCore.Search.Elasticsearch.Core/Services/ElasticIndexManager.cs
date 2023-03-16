@@ -377,7 +377,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                     for (var i = 0; i < searchResponse.Hits.Count; i++)
                     {
-                        var document = searchResponse.Documents.ElementAtOrDefault(i);
+                        var document = searchResponse.Documents[i];
 
                         if (document != null)
                         {
