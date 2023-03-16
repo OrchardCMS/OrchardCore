@@ -28,6 +28,7 @@ Update the source so everything looks like on the new version.
 - [ ] Update the `OrchardCore.Commons.props` file with `<VersionSuffix></VersionSuffix>` such that preview build numbers are not injected in packages. Verify the `VersionPrefix` tag matches the released version.
 - [ ] Update module versions in `src/OrchardCore/OrchardCore.Abstractions/Modules/Manifest/ManifestConstants.cs`.
 - [ ] Update the version in the command lines in from all documentation files.
+- [ ] Create a new milestone.
 
 ### Test the release
 
