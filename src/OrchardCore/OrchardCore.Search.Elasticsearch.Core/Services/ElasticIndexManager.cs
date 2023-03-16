@@ -386,7 +386,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                             continue;
                         }
 
-                        var hit = searchResponse.Hits.ElementAt(i);
+                        var hit = searchResponse.Hits[i];
 
                         var topDoc = new Dictionary<string, object>
                         {
