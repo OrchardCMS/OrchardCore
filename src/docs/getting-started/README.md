@@ -46,7 +46,7 @@ When you are done, the `Program.cs` file will something like this
 ```csharp
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddOrchardCms()
+builder.Services.AddOrchardCms();
 
 var app = builder.Build();
 
