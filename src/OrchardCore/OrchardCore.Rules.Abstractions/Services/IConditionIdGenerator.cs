@@ -1,4 +1,4 @@
-namespace OrchardCore.Rules
+namespace OrchardCore.Rules.Services
 {
     public interface IConditionIdGenerator
     {
