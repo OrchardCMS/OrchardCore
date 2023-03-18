@@ -110,6 +110,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             var taskItems = items.ToList();
             var routeData = new RouteData();
+
             routeData.Values.Add($"{nameof(BackgroundTaskIndexViewModel.Options)}.{nameof(options.Search)}", options.Search);
             routeData.Values.Add($"{nameof(BackgroundTaskIndexViewModel.Options)}.{nameof(options.Status)}", options.Status);
 
@@ -144,13 +145,13 @@ namespace OrchardCore.BackgroundTasks.Controllers
             }
 
             var task = _backgroundTasks.GetTaskByName(name);
-
             if (task == null)
             {
                 return NotFound();
             }
 
             var document = await _backgroundTaskManager.GetDocumentAsync();
+
             var defaultSettings = task.GetDefaultSettings();
             if (!document.Settings.TryGetValue(name, out var settings))
             {
@@ -181,24 +182,23 @@ namespace OrchardCore.BackgroundTasks.Controllers
             }
 
             var task = _backgroundTasks.GetTaskByName(model.Name);
-
             if (task == null)
             {
                 return NotFound();
             }
+
             var defaultSettings = task.GetDefaultSettings();
 
             if (ModelState.IsValid)
             {
                 var document = await _backgroundTaskManager.LoadDocumentAsync();
-
                 if (!document.Settings.TryGetValue(model.Name, out var settings))
                 {
                     settings = defaultSettings;
                 }
 
                 settings.Title = defaultSettings.Title;
-                settings.Description = defaultSettings.Description;
+                settings.Description = model.Description;
                 settings.Schedule = model.Schedule?.Trim();
                 settings.LockTimeout = model.LockTimeout;
                 settings.LockExpiration = model.LockExpiration;
@@ -225,14 +225,12 @@ namespace OrchardCore.BackgroundTasks.Controllers
             }
 
             var task = _backgroundTasks.GetTaskByName(name);
-
             if (task == null)
             {
                 return NotFound();
             }
 
             var document = await _backgroundTaskManager.LoadDocumentAsync();
-
             if (!document.Settings.TryGetValue(name, out var settings))
             {
                 settings = task.GetDefaultSettings();
@@ -256,14 +254,12 @@ namespace OrchardCore.BackgroundTasks.Controllers
             }
 
             var task = _backgroundTasks.GetTaskByName(name);
-
             if (task == null)
             {
                 return NotFound();
             }
 
             var document = await _backgroundTaskManager.LoadDocumentAsync();
-
             if (!document.Settings.TryGetValue(name, out var settings))
             {
                 settings = task.GetDefaultSettings();
