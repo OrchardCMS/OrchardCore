@@ -56,17 +56,11 @@ namespace OrchardCore.XmlRpc.Services
                 members.Set("faultCode", rpcMethodResponse.Fault.Code);
                 members.Set("faultString", rpcMethodResponse.Fault.Message);
 
-                return new XElement("methodResponse",
-                    new XElement("fault",
-                        new XElement("value", MapStruct(members))
-                    )
-                );
+                return new XElement("methodResponse", new XElement("fault", new XElement("value", MapStruct(members))));
             }
 
-            return new XElement("methodResponse",
-                new XElement("params",
-                    rpcMethodResponse.Params.Select(
-                        p => new XElement("param", MapValue(p)))));
+            return new XElement("methodResponse", new XElement("params", rpcMethodResponse.Params
+                .Select(p => new XElement("param", MapValue(p)))));
         }
 
         /// <summary>
@@ -89,39 +83,21 @@ namespace OrchardCore.XmlRpc.Services
         /// </summary>
         /// <param name="rpcStruct">The rpc struct.</param>
         /// <returns>The XML element.</returns>
-        public XElement MapStruct(XRpcStruct rpcStruct)
-        {
-            return new XElement(
-                "struct",
-                rpcStruct.Members.Select(
-                    kv => new XElement(
-                              "member",
-                              new XElement("name", kv.Key),
-                              MapValue(kv.Value))));
-        }
+        public XElement MapStruct(XRpcStruct rpcStruct) => new("struct",  rpcStruct.Members
+            .Select(kv => new XElement("member", new XElement("name", kv.Key), MapValue(kv.Value))));
 
         /// <summary>
         /// Maps a rpc array to XML.
         /// </summary>
         /// <param name="rpcArray">The rpc array.</param>
         /// <returns>The XML element.</returns>
-        public XElement MapArray(XRpcArray rpcArray)
-        {
-            return new XElement(
-                "array",
-                new XElement(
-                    "data",
-                    rpcArray.Data.Select(MapValue)));
-        }
+        public XElement MapArray(XRpcArray rpcArray) => new("array", new XElement("data", rpcArray.Data.Select(MapValue)));
 
         /// <summary>
         /// Maps rpc data to XML.
         /// </summary>
         /// <param name="rpcData">The rpc data.</param>
         /// <returns>The XML element.</returns>
-        private XElement MapValue(XRpcData rpcData)
-        {
-            return new XElement("value", _dispatch[rpcData.Type](rpcData));
-        }
+        private XElement MapValue(XRpcData rpcData) => new("value", _dispatch[rpcData.Type](rpcData));
     }
 }

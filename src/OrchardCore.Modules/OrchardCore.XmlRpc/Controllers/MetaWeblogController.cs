@@ -30,8 +30,7 @@ namespace OrchardCore.XmlRpc.Controllers
                 _logger.LogDebug("Manifest requested");
             }
 
-            var options = new XElement(
-                XName.Get("options", ManifestUri),
+            var options = new XElement(XName.Get("options", ManifestUri),
                 new XElement(XName.Get("supportsAutoUpdate", ManifestUri), "Yes"),
                 new XElement(XName.Get("clientType", ManifestUri), "MetaWeblog"),
                 new XElement(XName.Get("supportsKeywords", ManifestUri), "No"),
@@ -44,10 +43,7 @@ namespace OrchardCore.XmlRpc.Controllers
                 handler.SetCapabilities(options);
             }
 
-            var doc = new XDocument(
-                        new XElement(
-                            XName.Get("manifest", ManifestUri),
-                            options));
+            var doc = new XDocument(new XElement(XName.Get("manifest", ManifestUri), options));
 
             return Content(doc.ToString(), "text/xml");
         }

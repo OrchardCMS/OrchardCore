@@ -40,7 +40,7 @@ namespace OrchardCore.XmlRpc.Controllers
 
             if (methodResponse == null)
             {
-                return StatusCode(500, "TODO: xmlrpc fault");
+                return StatusCode(500, "TODO: XmlRpc fault");
             }
 
             var settings = new XmlWriterSettings
@@ -51,17 +51,14 @@ namespace OrchardCore.XmlRpc.Controllers
             };
 
             // save to an intermediate MemoryStream to preserve the encoding declaration
-            using (var stream = new MemoryStream())
-            {
-                using (XmlWriter w = XmlWriter.Create(stream, settings))
-                {
-                    var result = _writer.MapMethodResponse(methodResponse);
-                    result.Save(w);
-                }
+            using var stream = new MemoryStream();
+            using var writer = XmlWriter.Create(stream, settings);
+            var result = _writer.MapMethodResponse(methodResponse);
+            result.Save(writer);
 
-                var content = Encoding.UTF8.GetString(stream.ToArray());
-                return Content(content, "text/xml");
-            }
+            var content = Encoding.UTF8.GetString(stream.ToArray());
+
+            return Content(content, "text/xml");
         }
 
         private async Task<XRpcMethodResponse> DispatchAsync(XRpcMethodCall request)
@@ -84,7 +81,7 @@ namespace OrchardCore.XmlRpc.Controllers
             catch (Exception e)
             {
                 // if a core exception is raised, report the error message, otherwise signal a 500
-                context.RpcMethodResponse = context.RpcMethodResponse ?? new XRpcMethodResponse();
+                context.RpcMethodResponse ??= new XRpcMethodResponse();
                 context.RpcMethodResponse.Fault = new XRpcFault(0, e.Message);
             }
 

@@ -8,16 +8,15 @@ namespace OrchardCore.XmlRpc.Models
         {
             Data = new List<XRpcData>();
         }
-        public IList<XRpcData> Data { get; set; }
 
-        public object this[int index]
-        {
-            get { return Data[index].Value; }
-        }
+        public IList<XRpcData> Data { get; }
+
+        public object this[int index] => Data[index].Value;
 
         public XRpcArray Add<T>(T value)
         {
             Data.Add(XRpcData.For(value));
+
             return this;
         }
     }
