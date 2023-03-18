@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Shells Database</Title>
+    <Description>$(OCFrameworkDescription)
+
+      Enables support for loading site and shell settings from Database.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework Database</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Data.YesSql\OrchardCore.Data.YesSql.csproj" />
+  </ItemGroup>
+
+</Project>

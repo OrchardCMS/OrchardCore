@@ -18,16 +18,15 @@ namespace OrchardCore.Shells.Database.Extensions
                     "The 'OrchardCore.Shells.Database' configuration section should define a 'DatabaseProvider'");
             }
 
-            var settings = new ShellSettings()
+            var settings = new ShellSettings
             {
                 Name = ShellHelper.DefaultShellName,
-                State = TenantState.Running
+                State = TenantState.Running,
+                ["DatabaseProvider"] = options.DatabaseProvider,
+                ["ConnectionString"] = options.ConnectionString,
+                ["TablePrefix"] = options.TablePrefix,
+                ["Schema"] = options.Schema
             };
-
-            settings["DatabaseProvider"] = options.DatabaseProvider;
-            settings["ConnectionString"] = options.ConnectionString;
-            settings["TablePrefix"] = options.TablePrefix;
-            settings["Schema"] = options.Schema;
 
             return shellContextFactory.CreateDescribedContextAsync(settings, new ShellDescriptor());
         }
