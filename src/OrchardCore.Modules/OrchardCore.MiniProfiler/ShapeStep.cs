@@ -8,7 +8,7 @@ namespace OrchardCore.MiniProfiler
 {
     public class ShapeStep : IShapeDisplayEvents
     {
-        private Dictionary<object, IDisposable> _timings = new Dictionary<object, IDisposable>();
+        private readonly Dictionary<object, IDisposable> _timings = new();
 
         public Task DisplayedAsync(ShapeDisplayContext context)
         {
@@ -25,6 +25,7 @@ namespace OrchardCore.MiniProfiler
         {
             var timing = StackExchange.Profiling.MiniProfiler.Current.Step($"Shape: {context.Shape.Metadata.Type}");
             _timings.Add(context, timing);
+
             return Task.CompletedTask;
         }
 

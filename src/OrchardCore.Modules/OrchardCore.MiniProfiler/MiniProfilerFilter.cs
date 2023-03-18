@@ -31,7 +31,7 @@ namespace OrchardCore.MiniProfiler
             var viewMiniProfilerOnFrontEnd = await _authorizationService.AuthorizeAsync(context.HttpContext.User, Permissions.ViewMiniProfilerOnFrontEnd);
             var viewMiniProfilerOnBackEnd = await _authorizationService.AuthorizeAsync(context.HttpContext.User, Permissions.ViewMiniProfilerOnBackEnd);
             if (
-                    (context.Result is ViewResult || context.Result is PageResult) &&
+                    context.Result is ViewResult or PageResult &&
                     (
                         (viewMiniProfilerOnFrontEnd && !AdminAttribute.IsApplied(context.HttpContext)) ||
                         (viewMiniProfilerOnBackEnd && AdminAttribute.IsApplied(context.HttpContext))

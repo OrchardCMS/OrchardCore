@@ -17,10 +17,7 @@ namespace OrchardCore.MiniProfiler
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<MvcOptions>((options) =>
-            {
-                options.Filters.Add(typeof(MiniProfilerFilter));
-            });
+            services.Configure<MvcOptions>(options => options.Filters.Add(typeof(MiniProfilerFilter)));
 
             services.AddScoped<IShapeDisplayEvents, ShapeStep>();
 
