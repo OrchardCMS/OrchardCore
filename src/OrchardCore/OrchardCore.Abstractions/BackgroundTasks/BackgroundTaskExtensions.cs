@@ -16,8 +16,8 @@ namespace OrchardCore.BackgroundTasks
             {
                 return new BackgroundTaskSettings
                 {
-                    Title = !String.IsNullOrWhiteSpace(attribute.Title) ? attribute.Title : technicalName,
                     Name = technicalName,
+                    Title = !String.IsNullOrWhiteSpace(attribute.Title) ? attribute.Title : technicalName,
                     Enable = attribute.Enable,
                     Schedule = attribute.Schedule,
                     Description = attribute.Description,
@@ -28,8 +28,8 @@ namespace OrchardCore.BackgroundTasks
 
             return new BackgroundTaskSettings()
             {
-                Title = technicalName,
                 Name = technicalName,
+                Title = technicalName,
             };
         }
 
