@@ -36,7 +36,7 @@ namespace OrchardCore.Shells.Azure.Configuration
 
         public async Task AddSourcesAsync(string tenant, IConfigurationBuilder builder)
         {
-            var appSettings = IFileStoreExtensions.Combine(null, _container, tenant, "appsettings.json");
+            var appSettings = IFileStoreExtensions.Combine(null, _container, tenant, OrchardCoreConstants.ApplicationSettingsFileName);
             var fileInfo = await _shellsFileStore.GetFileInfoAsync(appSettings);
 
             if (fileInfo == null && _blobOptions.MigrateFromFiles)
@@ -55,7 +55,7 @@ namespace OrchardCore.Shells.Azure.Configuration
 
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)
         {
-            var appsettings = IFileStoreExtensions.Combine(null, _container, tenant, "appsettings.json");
+            var appsettings = IFileStoreExtensions.Combine(null, _container, tenant, OrchardCoreConstants.ApplicationSettingsFileName);
 
             JObject config;
             var fileInfo = await _shellsFileStore.GetFileInfoAsync(appsettings);
@@ -107,7 +107,7 @@ namespace OrchardCore.Shells.Azure.Configuration
 
         public async Task RemoveAsync(string tenant)
         {
-            var appsettings = IFileStoreExtensions.Combine(null, _container, tenant, "appsettings.json");
+            var appsettings = IFileStoreExtensions.Combine(null, _container, tenant, OrchardCoreConstants.ApplicationSettingsFileName);
 
             var fileInfo = await _shellsFileStore.GetFileInfoAsync(appsettings);
             if (fileInfo != null)
@@ -118,7 +118,7 @@ namespace OrchardCore.Shells.Azure.Configuration
 
         private async Task<bool> TryMigrateFromFileAsync(string tenant, string destFile)
         {
-            var tenantFile = Path.Combine(_fileStoreContainer, tenant, "appsettings.json");
+            var tenantFile = Path.Combine(_fileStoreContainer, tenant, OrchardCoreConstants.ApplicationSettingsFileName);
             if (!File.Exists(tenantFile))
             {
                 return false;

@@ -11,6 +11,9 @@ namespace OrchardCore.Shells.Azure.Configuration
 {
     public class BlobShellsConfigurationSources : IShellsConfigurationSources
     {
+        private static readonly string _appSettings =
+            Path.GetFileNameWithoutExtension(OrchardCoreConstants.ApplicationSettingsFileName);
+
         private readonly IShellsFileStore _shellsFileStore;
         private readonly BlobShellStorageOptions _blobOptions;
 
@@ -27,28 +30,28 @@ namespace OrchardCore.Shells.Azure.Configuration
             _shellsFileStore = shellsFileStore;
             _environment = hostingEnvironment.EnvironmentName;
             _blobOptions = blobOptions;
-            _fileSystemAppSettings = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, "appsettings");
+            _fileSystemAppSettings = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, _appSettings);
         }
 
         public async Task AddSourcesAsync(IConfigurationBuilder builder)
         {
-            var appSettingsFileInfo = await _shellsFileStore.GetFileInfoAsync("appsettings.json");
+            var appSettingsFileInfo = await _shellsFileStore.GetFileInfoAsync(OrchardCoreConstants.ApplicationSettingsFileName);
 
             if (appSettingsFileInfo == null && _blobOptions.MigrateFromFiles)
             {
-                if (await TryMigrateFromFileAsync($"{_fileSystemAppSettings}.json", "appsettings.json"))
+                if (await TryMigrateFromFileAsync($"{_fileSystemAppSettings}.json", OrchardCoreConstants.ApplicationSettingsFileName))
                 {
-                    appSettingsFileInfo = await _shellsFileStore.GetFileInfoAsync("appsettings.json");
+                    appSettingsFileInfo = await _shellsFileStore.GetFileInfoAsync(OrchardCoreConstants.ApplicationSettingsFileName);
                 }
             }
 
             if (appSettingsFileInfo != null)
             {
-                var stream = await _shellsFileStore.GetFileStreamAsync("appsettings.json");
+                var stream = await _shellsFileStore.GetFileStreamAsync(OrchardCoreConstants.ApplicationSettingsFileName);
                 builder.AddJsonStream(stream);
             }
 
-            var environmentAppSettingsFileName = $"appsettings.{_environment}.json";
+            var environmentAppSettingsFileName = $"{_appSettings}.{_environment}.json";
             var environmentAppSettingsFileInfo = await _shellsFileStore.GetFileInfoAsync(environmentAppSettingsFileName);
             if (environmentAppSettingsFileInfo == null && _blobOptions.MigrateFromFiles)
             {
