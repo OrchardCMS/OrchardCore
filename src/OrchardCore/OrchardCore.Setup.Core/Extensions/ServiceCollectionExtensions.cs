@@ -1,7 +1,6 @@
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Setup.Services;
 
-namespace OrchardCore.Setup
+namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
     /// Provides extension methods for <see cref="IServiceCollection"/>.

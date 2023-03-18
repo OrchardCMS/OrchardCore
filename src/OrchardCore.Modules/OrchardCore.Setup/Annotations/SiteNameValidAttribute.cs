@@ -1,6 +1,9 @@
+using System;
+using System.ComponentModel.DataAnnotations;
+
 namespace OrchardCore.Setup.Annotations
 {
-    public class SiteNameValidAttribute : System.ComponentModel.DataAnnotations.RangeAttribute
+    public class SiteNameValidAttribute : RangeAttribute
     {
         private string _value;
 
@@ -11,16 +14,13 @@ namespace OrchardCore.Setup.Annotations
 
         public override bool IsValid(object value)
         {
-            _value = (value as string) ?? "";
+            _value = (value as string) ?? String.Empty;
+
             return base.IsValid(_value.Trim().Length);
         }
 
-        public override string FormatErrorMessage(string name)
-        {
-            if (string.IsNullOrWhiteSpace(_value))
-                return "Site name is required.";
-
-            return $"Site name can be no longer than {Maximum} characters.";
-        }
+        public override string FormatErrorMessage(string name) => String.IsNullOrWhiteSpace(_value)
+            ? "Site name is required."
+            : $"Site name can be no longer than {Maximum} characters.";
     }
 }
