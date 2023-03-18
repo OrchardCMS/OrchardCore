@@ -9,6 +9,7 @@ using OrchardCore.Layers.Services;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Rules;
+using OrchardCore.Rules.Services;
 
 namespace OrchardCore.Layers.Recipes
 {
