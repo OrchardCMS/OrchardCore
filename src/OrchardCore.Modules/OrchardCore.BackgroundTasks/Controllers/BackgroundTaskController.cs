@@ -70,8 +70,8 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 {
                     return new BackgroundTaskEntry()
                     {
+                        Name = defaultSettings.Name,
                         Title = defaultSettings.Title,
-                        Name = settings.Name,
                         Description = settings.Description,
                         Enable = settings.Enable,
                     };
@@ -79,8 +79,8 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
                 return new BackgroundTaskEntry()
                 {
-                    Title = defaultSettings.Title,
                     Name = defaultSettings.Name,
+                    Title = defaultSettings.Title,
                     Description = defaultSettings.Description,
                     Enable = defaultSettings.Enable,
                 };
@@ -163,7 +163,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 Name = defaultSettings.Name,
                 Title = defaultSettings.Title,
                 DefaultSchedule = defaultSettings.Schedule,
-                Enable = settings.Enable,
                 Schedule = settings.Schedule,
                 Description = settings.Description,
                 LockTimeout = settings.LockTimeout,
@@ -198,8 +197,8 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 }
 
                 settings.Title = defaultSettings.Title;
-                settings.Description = model.Description;
                 settings.Schedule = model.Schedule?.Trim();
+                settings.Description = model.Description;
                 settings.LockTimeout = model.LockTimeout;
                 settings.LockExpiration = model.LockExpiration;
 
