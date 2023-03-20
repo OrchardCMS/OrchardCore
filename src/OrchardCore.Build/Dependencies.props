@@ -37,7 +37,7 @@
     <PackageManagement Include="Microsoft.Identity.Web" Version="2.5.0" />
     <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
     <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
-    <PackageManagement Include="MimeKit" Version="3.6.0" />
+    <PackageManagement Include="MimeKit" Version="3.6.1" />
     <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.2.22" />
     <PackageManagement Include="Moq" Version="4.18.4" />
     <PackageManagement Include="ncrontab" Version="3.3.1" />
