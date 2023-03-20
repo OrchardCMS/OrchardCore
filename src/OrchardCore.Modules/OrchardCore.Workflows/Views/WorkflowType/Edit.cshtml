@@ -11,19 +11,21 @@
         </ol>
     </nav>
 </zone>
-<div class="card mb-3">
-    <div class="card-body bg-primary p-3">
-        <div class="input-group input-group-sm w-lg-50 d-inline-flex">
-            <button type="button" class="btn btn-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#activity-picker" data-picker-title="@T["Available Events"]" data-activity-type="Event">
-                @T["Add Event"]
-            </button>
-            <button type="button" id="add-task-button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#activity-picker" data-picker-title="@T["Available Tasks"]" data-activity-type="Task">
-                @T["Add Task"]
-            </button>
-        </div>
-        <div class="btn-group float-end">
-            <a class="btn btn-secondary btn-sm" asp-action="EditProperties" asp-route-id="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Properties"]</a>
-            <a class="btn btn-secondary btn-sm" asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Instances"] <span class="badge ta-badge">@Model.WorkflowCount</span></a>
+<div class="card bg-primary mb-3">
+    <div class="card-body">
+        <div class="d-flex justify-content-between">
+            <div>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#activity-picker" data-picker-title="@T["Available Events"]" data-activity-type="Event">
+                    @T["Add Event"]
+                </button>
+                <button type="button" id="add-task-button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#activity-picker" data-picker-title="@T["Available Tasks"]" data-activity-type="Task">
+                    @T["Add Task"]
+                </button>
+            </div>
+            <div>
+                <a class="btn btn-sm btn-secondary" asp-action="EditProperties" asp-route-id="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Properties"]</a>
+                <a class="btn btn-sm btn-secondary" asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Instances"] <span class="badge ta-badge">@Model.WorkflowCount</span></a>
+            </div>
         </div>
     </div>
 </div>

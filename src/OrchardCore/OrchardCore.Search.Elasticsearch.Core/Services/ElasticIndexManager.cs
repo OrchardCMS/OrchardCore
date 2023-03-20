@@ -371,8 +371,35 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                 if (searchResponse.IsValid)
                 {
-                    elasticTopDocs.Count = searchResponse.Documents.Count;
-                    elasticTopDocs.TopDocs = searchResponse.Documents.ToList();
+                    elasticTopDocs.Count = searchResponse.Hits.Count;
+
+                    var topDocs = new List<Dictionary<string, object>>();
+                    
+                    var documents = searchResponse.Documents.GetEnumerator();
+                    var hits = searchResponse.Hits.GetEnumerator();
+                    
+                    while (documents.MoveNext() && hits.MoveNext())
+                    {
+                        var document = documents.Current;
+
+                        if (document != null)
+                        {
+                            topDocs.Add(document);
+
+                            continue;
+                        }
+
+                        var hit = hits.Current;
+
+                        var topDoc = new Dictionary<string, object>
+                        {
+                            { "ContentItemId", hit.Id }
+                        };
+
+                        topDocs.Add(topDoc);
+                    }
+
+                    elasticTopDocs.TopDocs = topDocs;
                 }
 
                 _timestamps[_indexPrefix + indexName] = _clock.UtcNow;

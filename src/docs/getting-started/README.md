@@ -46,7 +46,7 @@ When you are done, the `Program.cs` file will something like this
 ```csharp
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddOrchardCms()
+builder.Services.AddOrchardCms();
 
 var app = builder.Build();
 
@@ -62,15 +62,15 @@ app.UseOrchardCore();
 app.Run();
 ```
 
-### Getting Started Using `Startup.cs` file?
+### Getting Started Using `Program.cs` file?
 
-Open `Startup.cs` file, then modify the `ConfigureServices` method by adding this line:
+Open `Program.cs` file, then add the OrchardCore CMS services by adding this line:
 
 ```csharp
 builder.Services.AddOrchardCms();
 ```
 
-After the `app` initialization, replace this line:
+After building the `WebApplication`, replace this line:
 
 ```csharp
 app.MapGet("/", () => "Hello World!");

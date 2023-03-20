@@ -10,21 +10,23 @@ namespace OrchardCore.Redis.Services
 {
     public class RedisService : ModularTenantEvents, IRedisService, IDisposable
     {
-        private readonly IOptions<RedisOptions> _options;
+        private readonly RedisOptions _options;
         private readonly ILogger _logger;
 
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
         public RedisService(IOptions<RedisOptions> options, ILogger<RedisService> logger)
         {
-            _options = options;
+            _options = options.Value;
             _logger = logger;
 
             InstancePrefix = options.Value.InstancePrefix;
         }
 
         public IConnectionMultiplexer Connection { get; private set; }
-        public string InstancePrefix { get; private set; }
+
+        public string InstancePrefix { get; }
+
         public IDatabase Database { get; private set; }
 
         public override Task ActivatingAsync() => ConnectAsync();
@@ -42,7 +44,8 @@ namespace OrchardCore.Redis.Services
             {
                 if (Database == null)
                 {
-                    Connection = await ConnectionMultiplexer.ConnectAsync(_options.Value.ConfigurationOptions);
+                    Connection = await ConnectionMultiplexer.ConnectAsync(_options.ConfigurationOptions);
+
                     Database = Connection.GetDatabase();
                 }
             }
@@ -58,10 +61,7 @@ namespace OrchardCore.Redis.Services
 
         public void Dispose()
         {
-            if (Connection != null)
-            {
-                Connection.Close();
-            }
+            Connection?.Close();
         }
     }
 }

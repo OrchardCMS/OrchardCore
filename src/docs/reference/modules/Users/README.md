@@ -11,6 +11,7 @@ The module contains the following features apart from the base feature:
 - Reset Password: Allows users to reset their password.
 - User Time Zone: Provides a way to set the time zone per user.
 - Custom User Settings: See [its own documentation page](CustomUserSettings/README.md).
+- [Users Authentication Ticket Store](./TicketStore.md): Stores users authentication tickets on server in memory cache instead of cookies. If distributed cache feature is enabled it will store authentication tickets on distributed cache.
 
 ## Custom Paths
 
