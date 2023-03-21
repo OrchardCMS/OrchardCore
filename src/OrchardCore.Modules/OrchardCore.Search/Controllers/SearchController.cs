@@ -121,8 +121,19 @@ public class SearchController : Controller
 
         var searchResult = await searchService.SearchAsync(viewModel.Index, viewModel.Terms, from, size);
 
+        var searchContext = new SearchContext
+        {
+            Index = viewModel.Index,
+            Terms = viewModel.Terms,
+            ContentItemIds = searchResult.ContentItemIds,
+            SearchService = searchService,
+            TotalHits = searchResult.ContentItemIds.Count,
+        };
+
         if (!searchResult.Success || !searchResult.ContentItemIds.Any())
         {
+            await _searchHandlers.InvokeAsync((handler, context) => handler.SearchedAsync(context), searchContext, _logger);
+
             return View(new SearchIndexViewModel()
             {
                 Index = viewModel.Index,
@@ -132,7 +143,12 @@ public class SearchController : Controller
                     Terms = viewModel.Terms,
                     Placeholder = searchSettings.Placeholder,
                     Index = viewModel.Index,
-                }
+                },
+                SearchResults = new SearchResultsViewModel()
+                {
+                    Index = viewModel.Index,
+                    ContentItems = Enumerable.Empty<ContentItem>(),
+                },
             });
         }
 
@@ -149,15 +165,6 @@ public class SearchController : Controller
             query = _session.Query<ContentItem, ContentItemIndex>()
                 .Where(x => x.ContentItemId.IsIn(searchResult.ContentItemIds) && x.Published);
         }
-
-        var searchContext = new SearchContext
-        {
-            Index = viewModel.Index,
-            Terms = viewModel.Terms,
-            ContentItemIds = searchResult.ContentItemIds,
-            SearchService = searchService,
-            TotalHits = searchResult.ContentItemIds.Count,
-        };
 
         await _searchHandlers.InvokeAsync((handler, context) => handler.SearchedAsync(context), searchContext, _logger);
 
