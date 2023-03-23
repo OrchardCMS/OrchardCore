@@ -125,9 +125,9 @@ public class SearchController : Controller
         {
             Index = viewModel.Index,
             Terms = viewModel.Terms,
-            ContentItemIds = searchResult.ContentItemIds,
+            ContentItemIds = searchResult.ContentItemIds ?? Enumerable.Empty<string>(),
             SearchService = searchService,
-            TotalHits = searchResult.ContentItemIds.Count,
+            TotalHits = searchResult.ContentItemIds?.Count ?? 0,
         };
 
         if (!searchResult.Success || !searchResult.ContentItemIds.Any())
