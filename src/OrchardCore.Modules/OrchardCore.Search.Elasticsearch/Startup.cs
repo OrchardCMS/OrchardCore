@@ -120,9 +120,9 @@ namespace OrchardCore.Search.Elasticsearch
                 services.AddSingleton<IElasticClient>(client);
                 services.Configure<ElasticsearchOptions>(o =>
                 {
-                    o.IndexPrefix = configuration.GetValue<string>("IndexPrefix");
+                    o.IndexPrefix = configuration.GetValue<string>(nameof(o.IndexPrefix));
 
-                    var analyzersToken = configuration.GetSection("Analyzers").ToJToken();
+                    var analyzersToken = configuration.GetSection(nameof(o.Analyzers)).ToJToken();
 
                     var analyzersObject = analyzersToken.ToObject<JObject>();
 

@@ -240,7 +240,7 @@ https://www.elastic.co/guide/en/elasticsearch/client/net-api/7.17/connection-poo
 
 ## Elasticsearch Analyzers
 
-All [Built-in](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html) and custom analyzers are supported. By default, only `standard` analyzer is available. You may configure the Elasticsearch service to make all the built-in and custom analyzers as needed. For example, to include the built in `stop` and `standard` analyzers, you may add the following to the [appsettings.json](../../core/Configuration/README.md) file
+All [Built-in](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html) and custom analyzers are supported. By default, only `standard` analyzer is available. You may update the Elasticsearch configurations to enable any of the built-in and any custom analyzers. For example, to enable the built in `stop` and `standard` analyzers, you may add the following to the [appsettings.json](../../core/Configuration/README.md) file
 
 ```json
 "OrchardCore_Elasticsearch": {
@@ -249,19 +249,13 @@ All [Built-in](https://www.elastic.co/guide/en/elasticsearch/reference/current/a
       "type": "standard"
     },
     "stop": {
-      "type": "stop",
-      "stopwords": [
-         "a", 
-         "the", 
-         "and",
-         "or" 
-       ]
+      "type": "stop"
     }
   }
 }
 ```
 
-At the same time, you may define custom analyzers using the [appsettings.json](../../core/Configuration/README.md) file as well. The following example, we are defining the [standard](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-standard-analyzer.html) analyzer, customizing the [stop](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-stop-analyzer.html) analyzer and creating a [custom analyzer](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-custom-analyzer.html) called `english_analyzer`. 
+At the same time, you may define custom analyzers using the [appsettings.json](../../core/Configuration/README.md) file as well. In the following example, we are enabling the [standard](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-standard-analyzer.html) analyzer, customizing the [stop](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-stop-analyzer.html) analyzer and creating a [custom analyzer](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-custom-analyzer.html) named `english_analyzer`. 
 
 ```json
 "OrchardCore_Elasticsearch": {

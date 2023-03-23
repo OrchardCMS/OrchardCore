@@ -12,12 +12,12 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// <summary>
         /// Loads the index settings document from the store for updating and that should not be cached.
         /// </summary>
-        public static Task<ElasticIndexSettingsDocument> LoadDocumentAsync() => DocumentManager.GetOrCreateMutableAsync();
+        public Task<ElasticIndexSettingsDocument> LoadDocumentAsync() => DocumentManager.GetOrCreateMutableAsync();
 
         /// <summary>
         /// Gets the index settings document from the cache for sharing and that should not be updated.
         /// </summary>
-        public static async Task<ElasticIndexSettingsDocument> GetDocumentAsync()
+        public async Task<ElasticIndexSettingsDocument> GetDocumentAsync()
         {
             var document = await DocumentManager.GetOrCreateImmutableAsync();
 
@@ -29,12 +29,12 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             return document;
         }
 
-        public static async Task<IEnumerable<ElasticIndexSettings>> GetSettingsAsync()
+        public async Task<IEnumerable<ElasticIndexSettings>> GetSettingsAsync()
         {
             return (await GetDocumentAsync()).ElasticIndexSettings.Values;
         }
 
-        public static async Task<ElasticIndexSettings> GetSettingsAsync(string indexName)
+        public async Task<ElasticIndexSettings> GetSettingsAsync(string indexName)
         {
             var document = await GetDocumentAsync();
 
@@ -46,28 +46,28 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             return null;
         }
 
-        public static async Task<string> GetIndexAnalyzerAsync(string indexName)
+        public async Task<string> GetIndexAnalyzerAsync(string indexName)
         {
             var document = await GetDocumentAsync();
 
             return GetAnalyzerName(document, indexName);
         }
 
-        public static async Task<string> LoadIndexAnalyzerAsync(string indexName)
+        public async Task<string> LoadIndexAnalyzerAsync(string indexName)
         {
             var document = await LoadDocumentAsync();
 
             return GetAnalyzerName(document, indexName);
         }
 
-        public static async Task UpdateIndexAsync(ElasticIndexSettings settings)
+        public async Task UpdateIndexAsync(ElasticIndexSettings settings)
         {
             var document = await LoadDocumentAsync();
             document.ElasticIndexSettings[settings.IndexName] = settings;
             await DocumentManager.UpdateAsync(document);
         }
 
-        public static async Task DeleteIndexAsync(string indexName)
+        public async Task DeleteIndexAsync(string indexName)
         {
             var document = await LoadDocumentAsync();
             document.ElasticIndexSettings.Remove(indexName);
