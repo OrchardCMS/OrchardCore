@@ -18,7 +18,6 @@ namespace OrchardCore.Search.Elasticsearch
         {
             services.AddSingleton<ElasticIndexSettingsService>();
             services.AddSingleton<ElasticIndexManager>();
-            services.AddSingleton<ElasticAnalyzerManager>();
             services.AddScoped<ElasticIndexingService>();
             services.AddScoped<IModularTenantEvents, ElasticIndexInitializerService>();
             services.AddScoped<IElasticSearchQueryService, ElasticSearchQueryService>();

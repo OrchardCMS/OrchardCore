@@ -9,19 +9,15 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 {
     public class ElasticIndexSettingsService
     {
-        public ElasticIndexSettingsService()
-        {
-        }
-
         /// <summary>
         /// Loads the index settings document from the store for updating and that should not be cached.
         /// </summary>
-        public Task<ElasticIndexSettingsDocument> LoadDocumentAsync() => DocumentManager.GetOrCreateMutableAsync();
+        public static Task<ElasticIndexSettingsDocument> LoadDocumentAsync() => DocumentManager.GetOrCreateMutableAsync();
 
         /// <summary>
         /// Gets the index settings document from the cache for sharing and that should not be updated.
         /// </summary>
-        public async Task<ElasticIndexSettingsDocument> GetDocumentAsync()
+        public static async Task<ElasticIndexSettingsDocument> GetDocumentAsync()
         {
             var document = await DocumentManager.GetOrCreateImmutableAsync();
 
@@ -33,12 +29,12 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             return document;
         }
 
-        public async Task<IEnumerable<ElasticIndexSettings>> GetSettingsAsync()
+        public static async Task<IEnumerable<ElasticIndexSettings>> GetSettingsAsync()
         {
             return (await GetDocumentAsync()).ElasticIndexSettings.Values;
         }
 
-        public async Task<ElasticIndexSettings> GetSettingsAsync(string indexName)
+        public static async Task<ElasticIndexSettings> GetSettingsAsync(string indexName)
         {
             var document = await GetDocumentAsync();
 
@@ -50,28 +46,28 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             return null;
         }
 
-        public async Task<string> GetIndexAnalyzerAsync(string indexName)
+        public static async Task<string> GetIndexAnalyzerAsync(string indexName)
         {
             var document = await GetDocumentAsync();
 
             return GetAnalyzerName(document, indexName);
         }
 
-        public async Task<string> LoadIndexAnalyzerAsync(string indexName)
+        public static async Task<string> LoadIndexAnalyzerAsync(string indexName)
         {
             var document = await LoadDocumentAsync();
 
             return GetAnalyzerName(document, indexName);
         }
 
-        public async Task UpdateIndexAsync(ElasticIndexSettings settings)
+        public static async Task UpdateIndexAsync(ElasticIndexSettings settings)
         {
             var document = await LoadDocumentAsync();
             document.ElasticIndexSettings[settings.IndexName] = settings;
             await DocumentManager.UpdateAsync(document);
         }
 
-        public async Task DeleteIndexAsync(string indexName)
+        public static async Task DeleteIndexAsync(string indexName)
         {
             var document = await LoadDocumentAsync();
             document.ElasticIndexSettings.Remove(indexName);
@@ -81,6 +77,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         private static IDocumentManager<ElasticIndexSettingsDocument> DocumentManager =>
             ShellScope.Services.GetRequiredService<IDocumentManager<ElasticIndexSettingsDocument>>();
 
+        // Returns the name of the analyzer configured for the given index name.
         private static string GetAnalyzerName(ElasticIndexSettingsDocument document, string indexName)
         {
             // The name "standardanalyzer" is a legacy used prior OC 1.6 release. It can be removed in future releases.

@@ -12,12 +12,9 @@ namespace OrchardCore.Search.Elasticsearch.Services;
 
 public class ElasticsearchService : ISearchService
 {
-    private static readonly IAnalyzer _customAnalyzer = new CustomAnalyzer();
-
     private readonly ISiteService _siteService;
     private readonly ElasticIndexManager _elasticIndexManager;
     private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
-    private readonly ElasticAnalyzerManager _elasticAnalyzerManager;
     private readonly IElasticSearchQueryService _elasticsearchQueryService;
     private readonly ILogger _logger;
 
@@ -25,7 +22,6 @@ public class ElasticsearchService : ISearchService
         ISiteService siteService,
         ElasticIndexManager elasticIndexManager,
         ElasticIndexSettingsService elasticIndexSettingsService,
-        ElasticAnalyzerManager elasticAnalyzerManager,
         IElasticSearchQueryService elasticsearchQueryService,
         ILogger<ElasticsearchService> logger
         )
@@ -33,7 +29,6 @@ public class ElasticsearchService : ISearchService
         _siteService = siteService;
         _elasticIndexManager = elasticIndexManager;
         _elasticIndexSettingsService = elasticIndexSettingsService;
-        _elasticAnalyzerManager = elasticAnalyzerManager;
         _elasticsearchQueryService = elasticsearchQueryService;
         _logger = logger;
     }
@@ -56,9 +51,6 @@ public class ElasticsearchService : ISearchService
         var elasticIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync(index);
         result.Latest = elasticIndexSettings.IndexLatest;
 
-        var analyzerName = await _elasticIndexSettingsService.GetIndexAnalyzerAsync(index);
-        var analyzer = _elasticAnalyzerManager.CreateAnalyzer(analyzerName);
-
         var siteSettings = await _siteService.GetSiteSettingsAsync();
         var searchSettings = siteSettings.As<ElasticSettings>();
 
@@ -78,7 +70,7 @@ public class ElasticsearchService : ISearchService
                 query = new QueryStringQuery
                 {
                     Fields = searchSettings.DefaultSearchFields,
-                    Analyzer = GetAnalyzer(analyzerName, analyzer),
+                    Analyzer = await _elasticIndexSettingsService.GetIndexAnalyzerAsync(index),
                     Query = term
                 };
             }
@@ -87,7 +79,7 @@ public class ElasticsearchService : ISearchService
                 query = new MultiMatchQuery
                 {
                     Fields = searchSettings.DefaultSearchFields,
-                    Analyzer = GetAnalyzer(analyzerName, analyzer),
+                    Analyzer = await _elasticIndexSettingsService.GetIndexAnalyzerAsync(index),
                     Query = term
                 };
             }
@@ -101,12 +93,6 @@ public class ElasticsearchService : ISearchService
         }
 
         return result;
-    }
-
-    private static string GetAnalyzer(string analyzerName, IAnalyzer analyzer)
-    {
-        // When the analyzer's type is "custom", we must use the defined custom name instead of passing the type "custom".
-        return analyzer.Type == _customAnalyzer.Type ? analyzerName : analyzer.Type;
     }
 
     private async Task<string> DefaultIndexAsync()

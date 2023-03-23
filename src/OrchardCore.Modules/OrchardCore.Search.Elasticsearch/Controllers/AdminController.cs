@@ -43,12 +43,12 @@ namespace OrchardCore.Search.Elasticsearch
         private readonly IElasticQueryService _queryService;
         private readonly ElasticIndexManager _elasticIndexManager;
         private readonly ElasticIndexingService _elasticIndexingService;
-        private readonly ElasticAnalyzerManager _elasticAnalyzerManager;
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
         private readonly dynamic New;
         private readonly JavaScriptEncoder _javaScriptEncoder;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
+        private readonly ElasticsearchOptions _elasticSearchOptions;
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
         private readonly IOptions<TemplateOptions> _templateOptions;
@@ -63,12 +63,12 @@ namespace OrchardCore.Search.Elasticsearch
             IElasticQueryService queryService,
             ElasticIndexManager elasticIndexManager,
             ElasticIndexingService elasticIndexingService,
-            ElasticAnalyzerManager elasticAnalyzerManager,
             ElasticIndexSettingsService elasticIndexSettingsService,
             IShapeFactory shapeFactory,
             JavaScriptEncoder javaScriptEncoder,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
+            IOptions<ElasticsearchOptions> elasticSearchOptions,
             INotifier notifier,
             ILogger<AdminController> logger,
             IOptions<TemplateOptions> templateOptions,
@@ -83,12 +83,12 @@ namespace OrchardCore.Search.Elasticsearch
             _queryService = queryService;
             _elasticIndexManager = elasticIndexManager;
             _elasticIndexingService = elasticIndexingService;
-            _elasticAnalyzerManager = elasticAnalyzerManager;
             _elasticIndexSettingsService = elasticIndexSettingsService;
             New = shapeFactory;
             _javaScriptEncoder = javaScriptEncoder;
             S = stringLocalizer;
             H = htmlLocalizer;
+            _elasticSearchOptions = elasticSearchOptions.Value;
             _notifier = notifier;
             _logger = logger;
             _templateOptions = templateOptions;
@@ -176,8 +176,8 @@ namespace OrchardCore.Search.Elasticsearch
                 Culture = settings.Culture,
                 Cultures = ILocalizationService.GetAllCulturesAndAliases()
                     .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" }),
-                Analyzers = _elasticAnalyzerManager.GetAnalyzers()
-                    .Select(x => new SelectListItem { Text = x.Name, Value = x.Name }),
+                Analyzers = _elasticSearchOptions.Analyzers
+                    .Select(x => new SelectListItem { Text = x.Key, Value = x.Key }),
                 IndexedContentTypes = IsCreate ? _contentDefinitionManager.ListTypeDefinitions()
                     .Select(x => x.Name).ToArray() : settings.IndexedContentTypes,
                 StoreSourceData = settings.StoreSourceData
@@ -214,9 +214,12 @@ namespace OrchardCore.Search.Elasticsearch
             if (!ModelState.IsValid)
             {
                 model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
-                    .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" });
-                model.Analyzers = _elasticAnalyzerManager.GetAnalyzers()
-                    .Select(x => new SelectListItem { Text = x.Name, Value = x.Name });
+                    .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name })
+                    .Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" });
+
+                model.Analyzers = _elasticSearchOptions.Analyzers
+                    .Select(x => new SelectListItem { Text = x.Key, Value = x.Key });
+
                 return View(model);
             }
 

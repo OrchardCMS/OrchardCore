@@ -19,7 +19,9 @@ else
 
     <div class="mb-3" asp-validation-class-for="AnalyzerName">
         <label asp-for="AnalyzerName">@T["Analyzer Name"]</label>
-        <select asp-for="AnalyzerName" asp-items="Model.Analyzers" class="form-control"></select>
+        <select asp-for="AnalyzerName" asp-items="Model.Analyzers" class="form-control">
+            <option value="">@T["Select an analyzer"]</option>
+        </select>
         <span asp-validation-for="AnalyzerName" class="text-danger"></span>
     </div>
 

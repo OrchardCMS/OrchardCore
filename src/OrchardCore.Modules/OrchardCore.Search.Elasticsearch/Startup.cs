@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Elasticsearch.Net;
 using Fluid;
+using GraphQL;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nest;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
@@ -38,7 +40,7 @@ namespace OrchardCore.Search.Elasticsearch
 {
     public class Startup : StartupBase
     {
-        private const string ConfigSectionName = "OrchardCore_Elasticsearch";
+        private const string _configSectionName = "OrchardCore_Elasticsearch";
         private readonly AdminOptions _adminOptions;
         private readonly IShellConfiguration _shellConfiguration;
         private readonly ILogger<Startup> _logger;
@@ -54,7 +56,7 @@ namespace OrchardCore.Search.Elasticsearch
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            var configuration = _shellConfiguration.GetSection(ConfigSectionName);
+            var configuration = _shellConfiguration.GetSection(_configSectionName);
             var elasticConfiguration = configuration.Get<ElasticConnectionOptions>();
 
             if (CheckOptions(elasticConfiguration, _logger))
@@ -116,10 +118,37 @@ namespace OrchardCore.Search.Elasticsearch
 
                 var client = new ElasticClient(settings);
                 services.AddSingleton<IElasticClient>(client);
-                services.Configure<ElasticOptions>(o =>
+                services.Configure<ElasticsearchOptions>(o =>
                 {
-                    o.Analyzers.Add(new ElasticAnalyzer(ElasticsearchConstants.StandardAnalyzer, () => new StandardAnalyzer()));
+                    o.IndexPrefix = configuration.GetValue<string>("IndexPrefix");
+
+                    var analyzersToken = configuration.GetSection("Analyzers").ToJToken();
+
+                    var analyzersObject = analyzersToken.ToObject<JObject>();
+
+                    if (analyzersObject != null)
+                    {
+                        foreach (var analyzer in analyzersObject)
+                        {
+                            if (analyzer.Value == null)
+                            {
+                                continue;
+                            }
+
+                            o.Analyzers.Add(analyzer.Key, analyzer.Value.ToObject<JObject>());
+                        }
+                    }
+
+                    if (o.Analyzers.Count == 0)
+                    {
+                        // When no analyzers are configured, we'll define a default analyzer.
+                        o.Analyzers.Add(ElasticsearchConstants.DefaultAnalyzer, new JObject
+                        {
+                            ["type"] = "standard",
+                        });
+                    }
                 });
+
                 try
                 {
                     var response = client.Ping();
