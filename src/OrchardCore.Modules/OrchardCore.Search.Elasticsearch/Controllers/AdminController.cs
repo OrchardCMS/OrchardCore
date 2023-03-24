@@ -175,7 +175,7 @@ namespace OrchardCore.Search.Elasticsearch
                 IndexLatest = settings.IndexLatest,
                 Culture = settings.Culture,
                 Cultures = ILocalizationService.GetAllCulturesAndAliases()
-                    .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" }),
+                    .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }),
                 Analyzers = _elasticSearchOptions.Analyzers
                     .Select(x => new SelectListItem { Text = x.Key, Value = x.Key }),
                 IndexedContentTypes = IsCreate ? _contentDefinitionManager.ListTypeDefinitions()
@@ -214,8 +214,7 @@ namespace OrchardCore.Search.Elasticsearch
             if (!ModelState.IsValid)
             {
                 model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
-                    .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name })
-                    .Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" });
+                    .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name });
 
                 model.Analyzers = _elasticSearchOptions.Analyzers
                     .Select(x => new SelectListItem { Text = x.Key, Value = x.Key });
