@@ -117,7 +117,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             var IndexingState = new FluentDictionary<string, object>() {
                     { _lastTaskId, 0 }
                 };
-            var fullIndexName = GetIndexName(elasticIndexSettings.IndexName);
+            var fullIndexName = GetFullIndexName(elasticIndexSettings.IndexName);
             var createIndexDescriptor = new CreateIndexDescriptor(fullIndexName)
                 .Settings(s => indexSettingsDescriptor)
                 .Map(m => m
@@ -270,7 +270,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         public async Task<string> GetIndexMappings(string indexName)
         {
-            var response = await _elasticClient.LowLevel.Indices.GetMappingAsync<StringResponse>(GetIndexName(indexName));
+            var response = await _elasticClient.LowLevel.Indices.GetMappingAsync<StringResponse>(GetFullIndexName(indexName));
 
             return response.Body;
         }
@@ -286,7 +286,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 { _lastTaskId, lastTaskId }
             };
 
-            var putMappingRequest = new PutMappingRequest(GetIndexName(indexName))
+            var putMappingRequest = new PutMappingRequest(GetFullIndexName(indexName))
             {
                 Meta = IndexingState
             };
@@ -301,7 +301,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         public async Task<int> GetLastTaskId(string indexName)
         {
             var jsonDocument = JsonDocument.Parse(await GetIndexMappings(indexName));
-            jsonDocument.RootElement.TryGetProperty(GetIndexName(indexName), out var jsonElement);
+            jsonDocument.RootElement.TryGetProperty(GetFullIndexName(indexName), out var jsonElement);
             jsonElement.TryGetProperty("mappings", out var mappings);
             mappings.TryGetProperty("_meta", out var meta);
             meta.TryGetProperty(_lastTaskId, out var lastTaskId);
@@ -320,7 +320,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                 foreach (var id in contentItemIds)
                     descriptor.Delete<Dictionary<string, object>>(d => d
-                        .Index(GetIndexName(indexName))
+                        .Index(GetFullIndexName(indexName))
                         .Id(id)
                     );
 
@@ -344,7 +344,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         public async Task<bool> DeleteAllDocumentsAsync(string indexName)
         {
             var response = await _elasticClient.DeleteByQueryAsync<Dictionary<string, object>>(del => del
-                .Index(GetIndexName(indexName))
+                .Index(GetFullIndexName(indexName))
                 .Query(q => q.MatchAll())
             );
 
@@ -355,7 +355,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         {
             if (await Exists(indexName))
             {
-                var result = await _elasticClient.Indices.DeleteAsync(GetIndexName(indexName));
+                var result = await _elasticClient.Indices.DeleteAsync(GetFullIndexName(indexName));
 
                 return result.Acknowledged;
             }
@@ -373,7 +373,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 return false;
             }
 
-            var existResponse = await _elasticClient.Indices.ExistsAsync(GetIndexName(indexName));
+            var existResponse = await _elasticClient.Indices.ExistsAsync(GetFullIndexName(indexName));
 
             return existResponse.Exists;
         }
@@ -414,7 +414,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     descriptor.Index<Dictionary<string, object>>(op => op
                         .Id(document.GetValueOrDefault("ContentItemId").ToString())
                         .Document(document)
-                        .Index(GetIndexName(indexName))
+                        .Index(GetFullIndexName(indexName))
                     );
                 }
 
@@ -442,7 +442,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
             if (await Exists(indexName))
             {
-                var fullIndexName = GetIndexName(indexName);
+                var fullIndexName = GetFullIndexName(indexName);
 
                 var searchRequest = new SearchRequest(fullIndexName)
                 {
@@ -475,7 +475,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             {
                 await elasticClient(_elasticClient);
 
-                _timestamps[GetIndexName(indexName)] = _clock.UtcNow;
+                _timestamps[GetFullIndexName(indexName)] = _clock.UtcNow;
             }
         }
 
@@ -543,6 +543,16 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             return entries;
         }
 
+        public string GetFullIndexName(string indexName)
+        {
+            if (String.IsNullOrEmpty(indexName))
+            {
+                throw new ArgumentException($"{nameof(indexName)} cannot be null or empty.");
+            }
+
+            return GetIndexPrefix() + "_" + indexName;
+        }
+
         private string GetIndexPrefix()
         {
             if (_indexPrefix == null)
@@ -560,11 +570,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             }
 
             return _indexPrefix;
-        }
-
-        private string GetIndexName(string name)
-        {
-            return GetIndexPrefix() + name;
         }
 
         public void Dispose()

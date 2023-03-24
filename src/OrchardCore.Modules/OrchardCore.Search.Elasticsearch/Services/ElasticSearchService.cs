@@ -70,7 +70,7 @@ public class ElasticsearchService : ISearchService
                 query = new QueryStringQuery
                 {
                     Fields = searchSettings.DefaultSearchFields,
-                    Analyzer = await _elasticIndexSettingsService.GetIndexAnalyzerAsync(index),
+                    Analyzer = await _elasticIndexSettingsService.GetQueryAnalyzerAsync(index),
                     Query = term
                 };
             }
@@ -79,7 +79,7 @@ public class ElasticsearchService : ISearchService
                 query = new MultiMatchQuery
                 {
                     Fields = searchSettings.DefaultSearchFields,
-                    Analyzer = await _elasticIndexSettingsService.GetIndexAnalyzerAsync(index),
+                    Analyzer = await _elasticIndexSettingsService.GetQueryAnalyzerAsync(index),
                     Query = term
                 };
             }
@@ -93,6 +93,11 @@ public class ElasticsearchService : ISearchService
         }
 
         return result;
+    }
+
+    private ElasticIndexSettings GetQueryAnalyzerAsync(string index)
+    {
+        throw new NotImplementedException();
     }
 
     private async Task<string> DefaultIndexAsync()

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,11 +47,33 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             return null;
         }
 
+        /// <summary>
+        /// Returns the name of he index-time analyzer.
+        /// </summary>
+        /// <param name="indexName"></param>
+        /// <returns></returns>
         public async Task<string> GetIndexAnalyzerAsync(string indexName)
         {
             var document = await GetDocumentAsync();
 
             return GetAnalyzerName(document, indexName);
+        }
+
+        /// <summary>
+        /// Returns the name of the query-time analyzer.
+        /// </summary>
+        /// <param name="indexName"></param>
+        /// <returns></returns>
+        public async Task<string> GetQueryAnalyzerAsync(string indexName)
+        {
+            var document = await GetDocumentAsync();
+
+            if (document.ElasticIndexSettings.TryGetValue(indexName, out var settings) && !String.IsNullOrEmpty(settings.QueryAnalyzerName))
+            {
+                return settings.QueryAnalyzerName;
+            }
+
+            return ElasticsearchConstants.DefaultAnalyzer;
         }
 
         public async Task<string> LoadIndexAnalyzerAsync(string indexName)
