@@ -95,11 +95,6 @@ public class ElasticsearchService : ISearchService
         return result;
     }
 
-    private ElasticIndexSettings GetQueryAnalyzerAsync(string index)
-    {
-        throw new NotImplementedException();
-    }
-
     private async Task<string> DefaultIndexAsync()
     {
         var siteSettings = await _siteService.GetSiteSettingsAsync();
