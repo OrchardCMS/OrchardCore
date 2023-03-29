@@ -152,7 +152,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                         JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                         : new Dictionary<string, object>();
 
-                    var result = (await queryManager.ExecuteQueryAsync(iquery, queryParameters)) as LuceneQueryResults;
+                    var result = (await queryManager.ExecuteQueryAsync(iquery, queryParameters)) as Search.Lucene.LuceneQueryResults;
                     return result.Items;
                 }),
                 Type = typeof(ListGraphType<ObjectGraphType<JObject>>)
