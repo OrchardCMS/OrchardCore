@@ -55,7 +55,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var settings = await _validationService.GetSettingsAsync();
-            var shape = await _validationSettingsDisplayManager.BuildEditorAsync(settings, updater: _updateModelAccessor.ModelUpdater, isNew: false);
+            var shape = await _validationSettingsDisplayManager.BuildEditorAsync(settings, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
 
             return View(shape);
         }
@@ -70,7 +70,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var settings = await _validationService.GetSettingsAsync();
-            var shape = await _validationSettingsDisplayManager.UpdateEditorAsync(settings, updater: _updateModelAccessor.ModelUpdater, isNew: false);
+            var shape = await _validationSettingsDisplayManager.UpdateEditorAsync(settings, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
 
             if (!ModelState.IsValid)
             {

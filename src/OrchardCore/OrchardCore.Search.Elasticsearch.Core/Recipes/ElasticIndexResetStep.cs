@@ -26,7 +26,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
 
             if (model != null && (model.IncludeAll || model.Indices.Length > 0))
             {
-                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("elastic-index-reset", async scope => {
+                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("elastic-index-reset", async scope =>
+                {
 
                     var elasticIndexingService = scope.ServiceProvider.GetService<ElasticIndexingService>();
                     var elasticIndexSettingsService = scope.ServiceProvider.GetService<ElasticIndexSettingsService>();
@@ -35,7 +36,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
                     var indices = model.IncludeAll ? (await elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray() : model.Indices;
 
                     foreach (var indexName in indices)
-                    { 
+                    {
                         var elasticIndexSettings = await elasticIndexSettingsService.GetSettingsAsync(indexName);
 
                         if (elasticIndexSettings != null)

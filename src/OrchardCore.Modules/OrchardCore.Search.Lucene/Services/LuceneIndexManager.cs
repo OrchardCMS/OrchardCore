@@ -199,8 +199,11 @@ namespace OrchardCore.Search.Lucene
             var doc = new Document
             {
                 // Always store the content item id and version id
-                new StoredField("ContentItemId", documentIndex.ContentItemId.ToString()),
-                new StoredField("ContentItemVersionId", documentIndex.ContentItemVersionId.ToString())
+                // These fields need to be indexed as a StringField because it needs to be searchable for the writer.DeleteDocuments method.
+                // Else it won't be able to prune oldest draft from the indexes.
+                // Maybe eventually find a way to remove a document from a StoredDocument.
+                new StringField("ContentItemId", documentIndex.ContentItemId.ToString(), Field.Store.YES),
+                new StringField("ContentItemVersionId", documentIndex.ContentItemVersionId.ToString(), Field.Store.YES)
             };
 
             if (indexSettings.StoreSourceData)

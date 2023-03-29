@@ -53,6 +53,11 @@
                 file: 'File',
                 uploadError: 'Error'
             },
+            sl: {
+                upload: 'Naloži datoteko',
+                file: 'Datoteka',
+                uploadError: 'Napaka'
+            },
             by: {
                 upload: 'Загрузка',
                 file: 'Файл',

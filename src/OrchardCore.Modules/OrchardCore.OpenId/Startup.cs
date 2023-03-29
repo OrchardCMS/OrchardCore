@@ -19,7 +19,6 @@ using OpenIddict.Validation.DataProtection;
 using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;

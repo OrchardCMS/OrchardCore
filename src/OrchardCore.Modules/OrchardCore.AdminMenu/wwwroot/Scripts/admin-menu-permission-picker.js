@@ -30,13 +30,11 @@ function initAdminMenuPermissionsPicker(element) {
       methods: {
         onSelect: function onSelect(selectedOption, name) {
           var self = this;
-
           for (i = 0; i < self.arrayOfItems.length; i++) {
             if (self.arrayOfItems[i].name === selectedOption.name) {
               return;
             }
           }
-
           self.arrayOfItems.push(selectedOption);
         },
         remove: function remove(item) {
@@ -44,8 +42,8 @@ function initAdminMenuPermissionsPicker(element) {
         }
       }
     });
-    /*Hook for other scripts that might want to have access to the view model*/
 
+    /*Hook for other scripts that might want to have access to the view model*/
     var event = new CustomEvent("admin-menu-permission-picker-created", {
       detail: {
         vm: vm

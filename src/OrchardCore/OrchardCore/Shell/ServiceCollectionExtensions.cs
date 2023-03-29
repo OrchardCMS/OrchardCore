@@ -7,6 +7,7 @@ using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Settings;
 using OrchardCore.Environment.Shell.Distributed;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Removing;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -33,6 +34,11 @@ namespace OrchardCore.Environment.Shell
             services.AddSingleton<IRunningShellTable, RunningShellTable>();
 
             services.AddHostedService<DistributedShellHostedService>();
+
+            services.AddSingleton<IShellRemovalManager, ShellRemovalManager>();
+            services.AddSingleton<IShellRemovingHandler, ShellWebRootRemovingHandler>();
+            services.AddSingleton<IShellRemovingHandler, ShellSiteFolderRemovingHandler>();
+            services.AddSingleton<IShellRemovingHandler, ShellSettingsRemovingHandler>();
 
             return services;
         }

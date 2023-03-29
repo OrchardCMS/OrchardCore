@@ -8,7 +8,9 @@ namespace OrchardCore.Facebook.Services
     public interface IFacebookService
     {
         Task<FacebookSettings> GetSettingsAsync();
+
         Task UpdateSettingsAsync(FacebookSettings settings);
-        Task<IEnumerable<ValidationResult>> ValidateSettingsAsync(FacebookSettings settings);
+
+        IEnumerable<ValidationResult> ValidateSettings(FacebookSettings settings);
     }
 }

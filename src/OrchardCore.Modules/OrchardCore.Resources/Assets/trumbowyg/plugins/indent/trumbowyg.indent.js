@@ -18,6 +18,10 @@
                 indent: 'Indent',
                 outdent: 'Outdent'
             },
+            sl: {
+                indent: 'Povečaj zamik',
+                outdent: 'Zmanjšaj zamik'
+            },
             by: {
                 indent: 'Водступ',
                 outdent: 'Выступ'

@@ -10,39 +10,41 @@
     var useFormFloating = String.IsNullOrWhiteSpace(settings.UrlPlaceholder) || String.IsNullOrWhiteSpace(settings.TextPlaceholder);
 }
 
-<div class="row field-wrapper field-wrapper-@uniqueName.HtmlClassify()" id="@Html.IdFor(x => x.Text)_FieldWrapper">
-    <div class="mb-1 col-md-12">
-        <label asp-for="Url">@Model.PartFieldDefinition.DisplayName()</label>
-    </div>
-    <div class="mb-3 col-md-6" asp-validation-class-for="Url">
-        <div class="@(useFormFloating ? "form-floating" : String.Empty)">
-            <input asp-for="Url" class="form-control content-preview-text" placeholder="@settings.UrlPlaceholder" required="@isRequired" />
-            @if (useFormFloating)
-            {
-                <label asp-for="Url" class="@urlClass">@T["Url"]</label>
-            }
-        </div>
+<div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x.Text)_FieldWrapper">
+    <label asp-for="Url" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndCssClasses()">
+        <div class="row">
+            <div class="col-md-6" asp-validation-class-for="Url">
+                <div class="@(useFormFloating ? "form-floating" : String.Empty)">
+                    <input asp-for="Url" class="form-control content-preview-text" placeholder="@settings.UrlPlaceholder" required="@isRequired" />
+                    @if (useFormFloating)
+                    {
+                        <label asp-for="Url" class="@urlClass">@T["Url"]</label>
+                    }
+                </div>
 
-        @if (!String.IsNullOrWhiteSpace(settings.Hint))
-        {
-            <span class="hint">@settings.Hint</span>
-        }
-    </div>
-    @if (settings.LinkTextMode == LinkTextMode.Optional || settings.LinkTextMode == LinkTextMode.Required)
-    {
-        <div class="mb-3 col-md-6" asp-validation-class-for="Text">
-            <div class="@(useFormFloating ? "form-floating" : String.Empty)">
-                <input asp-for="Text" type="text" class="form-control content-preview-text" placeholder="@settings.TextPlaceholder" required="@isTextRequired" />
-                @if (useFormFloating)
+                @if (!String.IsNullOrWhiteSpace(settings.Hint))
                 {
-                    <label asp-for="Text" class="@textClass">@T["Link text"]</label>
+                    <span class="hint">@settings.Hint</span>
                 }
             </div>
-
-            @if (!String.IsNullOrWhiteSpace(settings.HintLinkText))
+            @if (settings.LinkTextMode == LinkTextMode.Optional || settings.LinkTextMode == LinkTextMode.Required)
             {
-                <span class="hint">@settings.HintLinkText</span>
+                <div class="col-md-6" asp-validation-class-for="Text">
+                    <div class="@(useFormFloating ? "form-floating" : String.Empty)">
+                        <input asp-for="Text" type="text" class="form-control content-preview-text" placeholder="@settings.TextPlaceholder" required="@isTextRequired" />
+                        @if (useFormFloating)
+                        {
+                            <label asp-for="Text" class="@textClass">@T["Link text"]</label>
+                        }
+                    </div>
+
+                    @if (!String.IsNullOrWhiteSpace(settings.HintLinkText))
+                    {
+                        <span class="hint">@settings.HintLinkText</span>
+                    }
+                </div>
             }
         </div>
-    }
+    </div>
 </div>

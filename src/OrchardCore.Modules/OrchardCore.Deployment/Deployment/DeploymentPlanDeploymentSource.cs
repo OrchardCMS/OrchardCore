@@ -20,7 +20,7 @@ namespace OrchardCore.Deployment.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep deploymentStep, DeploymentPlanResult result)
         {
-            if (!(deploymentStep is DeploymentPlanDeploymentStep deploymentPlanStep))
+            if (deploymentStep is not DeploymentPlanDeploymentStep deploymentPlanStep)
             {
                 return;
             }

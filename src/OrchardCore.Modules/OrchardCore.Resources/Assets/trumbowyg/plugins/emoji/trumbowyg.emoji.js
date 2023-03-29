@@ -1389,6 +1389,9 @@
             en: {
                 emoji: 'Add an emoji'
             },
+            sl: {
+                emoji: 'Vstavi emotikon'
+            },
             da: {
                 emoji: 'Tilføj et humørikon'
             },

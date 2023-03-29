@@ -7,6 +7,9 @@
             en: {
                 fontFamily: 'Font'
             },
+            sl: {
+                fontFamily: 'Pisava'
+            },
             by: {
                 fontFamily: 'Шрыфт'
             },
