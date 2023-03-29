@@ -5,6 +5,10 @@ namespace OrchardCore.Environment.Shell.Models
 {
     public class FeatureProfile
     {
+        public string Id { get; set; }
+
+        public string Name { get; set; }
+
         public List<FeatureRule> FeatureRules = new List<FeatureRule>();
     }
 

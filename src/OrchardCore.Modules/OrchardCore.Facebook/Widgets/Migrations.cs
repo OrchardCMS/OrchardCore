@@ -4,6 +4,7 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 using OrchardCore.Facebook.Widgets.Models;
 using OrchardCore.Modules;
+using OrchardCore.Recipes;
 using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.Facebook.Widgets
@@ -26,7 +27,7 @@ namespace OrchardCore.Facebook.Widgets
                 .Attachable()
                 .WithDescription("Provides a facebook plugin part to create facebook social plugin widgets."));
 
-            await _recipeMigrator.ExecuteAsync("Widgets/migration.recipe.json", this);
+            await _recipeMigrator.ExecuteAsync($"Widgets/migration{RecipesConstants.RecipeExtension}", this);
             return 1;
         }
     }

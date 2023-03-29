@@ -42,13 +42,13 @@ namespace OrchardCore.Modules
                 var moduleInfos = Assembly.GetCustomAttributes<ModuleAttribute>();
 
                 ModuleInfo =
-                    moduleInfos.Where(f => !(f is ModuleMarkerAttribute)).FirstOrDefault() ??
+                    moduleInfos.Where(f => f is not ModuleMarkerAttribute).FirstOrDefault() ??
                     moduleInfos.Where(f => f is ModuleMarkerAttribute).FirstOrDefault() ??
                     // This is better use the default parameterless ctor and assign the property
                     new ModuleAttribute() { Name = assyName };
 
                 var features = Assembly.GetCustomAttributes<Manifest.FeatureAttribute>()
-                    .Where(f => !(f is ModuleAttribute)).ToList();
+                    .Where(f => f is not ModuleAttribute).ToList();
 
                 if (isApplication)
                 {

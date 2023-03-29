@@ -10,6 +10,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Data.YesSql;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using YesSql;
@@ -27,11 +28,13 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class OrchardCoreBuilderExtensions
     {
         /// <summary>
-        /// Adds tenant level data access services.
+        /// Adds host and tenant level data access services.
         /// </summary>
         /// <param name="builder">The <see cref="OrchardCoreBuilder"/>.</param>
         public static OrchardCoreBuilder AddDataAccess(this OrchardCoreBuilder builder)
         {
+            builder.ApplicationServices.AddSingleton<IShellRemovingHandler, ShellDbTablesRemovingHandler>();
+
             builder.ConfigureServices(services =>
             {
                 services.AddScoped<IDbConnectionValidator, DbConnectionValidator>();
@@ -102,18 +105,30 @@ namespace Microsoft.Extensions.DependencyInjection
                         storeConfiguration = storeConfiguration.SetTablePrefix(tablePrefix);
                     }
 
-                    var store = StoreFactory.CreateAndInitializeAsync(storeConfiguration).GetAwaiter().GetResult();
-                    var options = sp.GetService<IOptions<StoreCollectionOptions>>().Value;
-                    foreach (var collection in options.Collections)
-                    {
-                        store.InitializeCollectionAsync(collection).GetAwaiter().GetResult();
-                    }
+                    var store = StoreFactory.Create(storeConfiguration);
 
                     var indexes = sp.GetServices<IIndexProvider>();
 
                     store.RegisterIndexes(indexes);
 
                     return store;
+                });
+
+                services.Initialize(async sp =>
+                {
+                    var store = sp.GetService<IStore>();
+                    if (store == null)
+                    {
+                        return;
+                    }
+
+                    await store.InitializeAsync();
+
+                    var storeCollectionOptions = sp.GetService<IOptions<StoreCollectionOptions>>().Value;
+                    foreach (var collection in storeCollectionOptions.Collections)
+                    {
+                        await store.InitializeCollectionAsync(collection);
+                    }
                 });
 
                 services.AddScoped(sp =>

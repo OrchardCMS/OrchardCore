@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using GraphQL.Language.AST;
 using GraphQL.Validation;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

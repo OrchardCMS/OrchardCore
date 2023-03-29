@@ -50,7 +50,7 @@ namespace OrchardCore.Indexing.Services
         {
             if (contentItem == null)
             {
-                throw new ArgumentNullException("contentItem");
+                throw new ArgumentNullException(nameof(contentItem));
             }
 
             // Do not index a preview content item.

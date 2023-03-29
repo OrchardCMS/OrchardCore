@@ -1,3 +1,5 @@
+using System;
+
 namespace OrchardCore.Notifications;
 
 public class NotificationContext
@@ -10,7 +12,7 @@ public class NotificationContext
 
     public NotificationContext(INotificationMessage notificationMessage, object notify)
     {
-        NotificationMessage = notificationMessage;
-        Notify = notify;
+        NotificationMessage = notificationMessage ?? throw new ArgumentNullException(nameof(notificationMessage));
+        Notify = notify ?? throw new ArgumentNullException(nameof(notify));
     }
 }

@@ -28,7 +28,7 @@ namespace OrchardCore.Users.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
+            if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
             {
                 return null;
             }
@@ -43,7 +43,7 @@ namespace OrchardCore.Users.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
+            if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
             {
                 return null;
             }

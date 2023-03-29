@@ -1,5 +1,4 @@
 using OrchardCore.Modules;
-using OrchardCore.Settings;
 using OrchardCore.Twitter.Services;
 using OrchardCore.Twitter.Settings;
 using OrchardCore.Twitter.Signin.Settings;
@@ -13,7 +12,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Twitter
 
         private Mock<TwitterClientMessageHandler> mockHttpMessageHandler;
         private Mock<FakeHttpMessageHandler> mockFakeHttpMessageHandler;
-        private ISiteService mockSiteService;
         private IDataProtectionProvider mockDataProtectionProvider;
         public TwitterClientTests()
         {
@@ -36,12 +34,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Twitter
                 CallbackPath = null
             };
 
-            mockSiteService = Mock.Of<ISiteService>(ss =>
-                ss.GetSiteSettingsAsync() == Task.FromResult(
-                    Mock.Of<ISite>(s => s.Properties == JObject.FromObject(new { TwitterSettings = settings, TwitterSignInSettings = signinSettings }))
-                )
-            );
-
             mockDataProtectionProvider = Mock.Of<IDataProtectionProvider>(dpp =>
                 dpp.CreateProtector(It.IsAny<string>()) == fakeDataProtector
             );
@@ -49,7 +41,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Twitter
             var ticks = 13186229580000000 + 621355968000000000;
             mockHttpMessageHandler = new Mock<TwitterClientMessageHandler>(
                 Mock.Of<IClock>(i => i.UtcNow == new DateTime(ticks)),
-                mockSiteService, mockDataProtectionProvider);
+                Options.Create(settings),
+                mockDataProtectionProvider);
         }
 
         [Fact]

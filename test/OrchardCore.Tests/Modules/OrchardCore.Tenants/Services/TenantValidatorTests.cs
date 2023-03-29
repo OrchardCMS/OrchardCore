@@ -46,7 +46,7 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
                 Name = name,
                 RequestUrlPrefix = urlPrefix,
                 RequestUrlHost = hostName,
-                FeatureProfile = featureProfile,
+                FeatureProfiles = new[] { featureProfile },
                 IsNewTenant = true
             };
 
@@ -77,7 +77,7 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
                 Name = "Tenant5",
                 RequestUrlPrefix = "tenant4",
                 RequestUrlHost = "example5.com",
-                FeatureProfile = "Feature Profile",
+                FeatureProfiles = new[] { "Feature Profile" },
                 IsNewTenant = isNewTenant
             };
 

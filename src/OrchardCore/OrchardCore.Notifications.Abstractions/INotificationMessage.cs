@@ -3,11 +3,10 @@ namespace OrchardCore.Notifications;
 public interface INotificationMessage
 {
     string Summary { get; }
-}
 
-public interface INotificationBodyMessage
-{
-    string Body { get; }
+    string TextBody { get; }
 
-    bool IsHtmlBody { get; }
+    string HtmlBody { get; }
+
+    bool IsHtmlPreferred { get; }
 }

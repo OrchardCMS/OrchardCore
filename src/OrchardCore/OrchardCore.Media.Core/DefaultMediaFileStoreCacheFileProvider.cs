@@ -10,11 +10,11 @@ using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.Core
 {
-    public class DefaultMediaFileStoreCacheFileProvider : PhysicalFileProvider, IMediaFileProvider, IMediaFileStoreCacheFileProvider
+    public class DefaultMediaFileStoreCacheFileProvider : PhysicalFileProvider, IMediaFileStoreCacheFileProvider
     {
         /// <summary>
         /// The path in the wwwroot folder containing the asset cache.
-        /// The tenants name will be appended to this path.
+        /// The tenants name will be prepended to this path.
         /// </summary>
         public static readonly string AssetsCachePath = "ms-cache";
 
