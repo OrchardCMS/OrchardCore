@@ -22,6 +22,13 @@
         <span class="hint dashed">@T["Check to return the corresponding content items."]</span>
     </div>
 </div>
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="HasTotal" checked="@Model.HasTotal" />
+        <label class="form-check-label" asp-for="HasTotal">@T["Include Total field"]</label>
+        <span class="hint dashed">@T["Check to return the total of the query."]</span>
+    </div>
+</div>
 
 <div class="mb-3">
     <label asp-for="Query">@T["Query"]</label>

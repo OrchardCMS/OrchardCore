@@ -57,17 +57,16 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                     FieldType fieldType;
 
                     var fieldTypeName = querySchema["fieldTypeName"]?.ToString() ?? query.Name;
-                    var hasTotal = querySchema.ContainsKey("hasTotal") && querySchema["hasTotal"].ToString().Equals("true", StringComparison.OrdinalIgnoreCase);
                     if (query.ReturnContentItems && type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
                     {
                         var contentType = type.Remove(0, 12);
-                        fieldType = hasTotal
+                        fieldType = query.HasTotal
                           ? BuildTotalContentTypeFieldType(schema, contentType, query, fieldTypeName)
                           : BuildContentTypeFieldType(schema, contentType, query, fieldTypeName);
                     }
                     else
                     {
-                        fieldType = hasTotal
+                        fieldType = query.HasTotal
                           ? BuildTotalSchemaBasedFieldType(query, querySchema, fieldTypeName)
                           : BuildSchemaBasedFieldType(query, querySchema, fieldTypeName);
                     }
