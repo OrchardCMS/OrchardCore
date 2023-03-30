@@ -1,5 +1,7 @@
 using System;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Elasticsearch.Net;
 using Fluid;
 using GraphQL;
@@ -11,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nest;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
@@ -122,9 +123,13 @@ namespace OrchardCore.Search.Elasticsearch
                 {
                     o.IndexPrefix = configuration.GetValue<string>(nameof(o.IndexPrefix));
 
-                    var analyzersToken = configuration.GetSection(nameof(o.Analyzers)).ToJToken();
+                    var jsonNode = configuration.GetSection(nameof(o.Analyzers)).AsJsonNode();
+                    var jsonElement = JsonSerializer.Deserialize<JsonElement>(jsonNode);
 
-                    var analyzersObject = analyzersToken.ToObject<JObject>();
+                    var analyzersObject = JsonObject.Create(jsonElement, new JsonNodeOptions()
+                    {
+                        PropertyNameCaseInsensitive = true,
+                    });
 
                     if (analyzersObject != null)
                     {
@@ -135,14 +140,14 @@ namespace OrchardCore.Search.Elasticsearch
                                 continue;
                             }
 
-                            o.Analyzers.Add(analyzer.Key, analyzer.Value.ToObject<JObject>());
+                            o.Analyzers.Add(analyzer.Key, analyzer.Value.AsObject());
                         }
                     }
 
                     if (o.Analyzers.Count == 0)
                     {
                         // When no analyzers are configured, we'll define a default analyzer.
-                        o.Analyzers.Add(ElasticsearchConstants.DefaultAnalyzer, new JObject
+                        o.Analyzers.Add(ElasticsearchConstants.DefaultAnalyzer, new JsonObject
                         {
                             ["type"] = "standard",
                         });

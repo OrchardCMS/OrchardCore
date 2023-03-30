@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Elasticsearch.Net;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nest;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
@@ -200,11 +200,11 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             return response.Acknowledged;
         }
 
-        private IAnalyzer CreateAnalyzer(JObject analyzerProperties)
+        private IAnalyzer CreateAnalyzer(JsonObject analyzerProperties)
         {
             IAnalyzer analyzer = null;
 
-            if (analyzerProperties.TryGetValue("type", StringComparison.OrdinalIgnoreCase, out var typeObject)
+            if (analyzerProperties.TryGetPropertyValue("type", out var typeObject)
                 && _analyzerGetter.TryGetValue(typeObject.ToString(), out var getter))
             {
                 analyzer = getter.Invoke();
@@ -231,21 +231,26 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     {
                         if (property.PropertyType == typeof(StopWords))
                         {
-                            if (analyzerProperty.Value is JArray values)
+                            if (analyzerProperty.Value is JsonArray)
                             {
-                                property.SetValue(analyzer, new StopWords(values.ToObject<string[]>()));
+                                var values = JsonSerializer.Deserialize<string[]>(analyzerProperty.Value);
+
+                                property.SetValue(analyzer, new StopWords(values));
                             }
 
                             continue;
                         }
 
-                        if (analyzerProperty.Value is JArray array)
+                        if (analyzerProperty.Value is JsonArray)
                         {
-                            property.SetValue(analyzer, array.ToObject<string[]>());
+                            var values = JsonSerializer.Deserialize<string[]>(analyzerProperty.Value);
+
+                            property.SetValue(analyzer, values);
                         }
                         else
                         {
-                            var value = Convert.ChangeType(analyzerProperty.Value, property.PropertyType);
+                            var value = JsonSerializer.Deserialize(analyzerProperty.Value, property.PropertyType);
+
                             property.SetValue(analyzer, value);
                         }
                     }

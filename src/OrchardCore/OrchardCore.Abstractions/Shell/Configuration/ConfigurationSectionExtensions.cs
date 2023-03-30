@@ -1,6 +1,7 @@
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Environment.Shell.Configuration
 {
@@ -25,36 +26,36 @@ namespace OrchardCore.Environment.Shell.Configuration
                     : section;
         }
 
-        public static JToken ToJToken(this IConfiguration configuration)
+        public static JsonNode AsJsonNode(this IConfiguration configuration)
         {
             if (configuration is IConfigurationSection configurationSection && configurationSection.Value != null)
             {
-                return JValue.CreateString(configurationSection.Value);
+                return JsonValue.Create(configurationSection.Value);
             }
 
             var children = configuration.GetChildren().ToList();
 
             if (children.Count == 0)
             {
-                return JValue.CreateNull();
+                return JsonValue.Create<string>(null);
             }
 
             if (children[0].Key == "0")
             {
-                var array = new JArray();
+                var array = new JsonArray();
 
                 foreach (var child in children)
                 {
-                    array.Add(child.ToJToken());
+                    array.Add(child.AsJsonNode());
                 }
 
                 return array;
             }
 
-            var result = new JObject();
+            var result = new JsonObject();
             foreach (var child in children)
             {
-                result.Add(new JProperty(child.Key, child.ToJToken()));
+                result.TryAdd(child.Key, child.AsJsonNode());
             }
 
             return result;
