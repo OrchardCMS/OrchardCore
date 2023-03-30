@@ -27,7 +27,7 @@ namespace OrchardCore.Admin
         public async Task OnResultExecutionAsync(ResultExecutingContext filterContext, ResultExecutionDelegate next)
         {
             // Should only run on a full view rendering result
-            if (!(filterContext.Result is ViewResult) && !(filterContext.Result is PageResult))
+            if (filterContext.Result is not ViewResult && filterContext.Result is not PageResult)
             {
                 await next();
                 return;
@@ -41,7 +41,7 @@ namespace OrchardCore.Admin
             }
 
             // Should only run for authenticated users
-            if (!filterContext.HttpContext.User.Identity.IsAuthenticated)
+            if (!(filterContext.HttpContext.User?.Identity?.IsAuthenticated ?? false))
             {
                 await next();
                 return;

@@ -23,8 +23,17 @@
             en: {
                 mention: 'Mention'
             },
+            sl: {
+                mention: 'Omeni'
+            },
+            by: {
+                mention: 'Згадаць'
+            },
             da: {
                 mention: 'Nævn'
+            },
+            et: {
+                mention: 'Maini'
             },
             fr: {
                 mention: 'Mentionner'

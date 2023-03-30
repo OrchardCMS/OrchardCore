@@ -26,7 +26,10 @@ The `ContentCulturePicker` selects the url to redirect using the following rules
 
 ### Localization Cookie
 
-By default, the `ContentCulturePicker` sets a cookie for the `CookieRequestCultureProvider`. This can be disabled in the  `Configuration/Settings/ContentCulturePicker` settings page.
+By default, the `ContentCulturePicker` sets a cookie for the `CookieRequestCultureProvider`. This can be disabled in the  `Configuration/Settings/Localization/Content Culture Picker` settings page.
+
+The `ContentRequestCultureProvider` can set the cookie based on the ContentItem that matches the current url. This setting can be edited in the  `Configuration/Settings/Localization/Content Request Culture Provider` settings page.
+
 
 #### Recipe Step
 
@@ -38,6 +41,9 @@ The cookie can be set during recipes using the settings step. Here is a sample s
   "ContentCulturePickerSettings": {
     "SetCookie": true
   },
+  "ContentRequestCultureProvider": {
+      "SetCookie": true
+  }
 },
 ```
 
@@ -62,7 +68,7 @@ You should always render this shape in your theme:
 
 #### `ContentCulturePickerContainer`
 
-The `ContentCulturePickerContainer` shape is used to render the CulturePicker.
+The `ContentCulturePickerContainer` shape is used to render the `ContentCulturePicker`.
 You should override this shape in your theme.
 
 | Property                  | Description                                                 |
@@ -77,7 +83,7 @@ You should override this shape in your theme.
     ``` liquid
     <ul>
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{Model.CurrentCulture.DisplayName}}</a>
+            <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{Model.CurrentCulture.DisplayName}}</a>
             <div class="dropdown-menu" aria-labelledby="oc-culture-picker">
             {% for culture in Model.SupportedCultures %}
                 {% if culture.Name != Model.CurrentCulture.Name  %}
@@ -94,7 +100,7 @@ You should override this shape in your theme.
     ``` html
     <ul>
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@Model.CurrentCulture.DisplayName</a>
+            <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@Model.CurrentCulture.DisplayName</a>
             <div class="dropdown-menu" aria-labelledby="oc-culture-picker">
                 @foreach (var culture in Model.SupportedCultures)
                 {
@@ -153,7 +159,7 @@ The following configuration is used by default and can be customized:
 ```json
 {
    "OrchardCore": {
-    "OrchardCore_ContentLocalization_CulturePicker": {
+    "OrchardCore_ContentLocalization_CulturePickerOptions": {
      "CookieLifeTime": 14 // Set the culture picker cookie life time (in days).
     }
   }

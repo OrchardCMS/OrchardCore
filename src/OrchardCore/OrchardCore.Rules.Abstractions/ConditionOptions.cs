@@ -13,14 +13,14 @@ namespace OrchardCore.Rules
             if (!typeof(Condition).IsAssignableFrom(condition))
             {
                 throw new ArgumentException("The type must implement " + nameof(Condition));
-            }   
+            }
 
             if (!typeof(IConditionEvaluator).IsAssignableFrom(conditionEvaluator))
             {
                 throw new ArgumentException("The type must implement " + nameof(conditionEvaluator));
-            }    
+            }
 
-            _evaluators[condition] = conditionEvaluator;               
+            _evaluators[condition] = conditionEvaluator;
         }
     }
 }

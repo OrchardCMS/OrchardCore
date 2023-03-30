@@ -22,3 +22,5 @@ Orchard Core allows you to add Parts to a content type.
 | [`Preview`](../../modules/ContentPreview/README.md) | Allows you to add a preview button. |
 | [`PublishLater`](../../modules/PublishLater/README.md) | Allows you to set a date in order to publish later. |
 | [`ReCaptcha`](../../modules/ReCaptcha/README.md) | Allows you to add a ReCaptcha. |
+| [`SeoMeta`](../../modules/Seo/README.md) | Allows you to configure SEO meta tags. |
+| [`AuditTrail`](../../modules/AuditTrail/README.md) | Allows you to add a comment describing the changes of a content item, to be recorded to the Audit Trail. |

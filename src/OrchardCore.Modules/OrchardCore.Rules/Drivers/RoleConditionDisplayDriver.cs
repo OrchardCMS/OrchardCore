@@ -1,12 +1,11 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using OrchardCore.Rules.Models;
-using OrchardCore.Rules.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Rules.Models;
+using OrchardCore.Rules.ViewModels;
 
 namespace OrchardCore.Rules.Drivers
 {
@@ -18,7 +17,7 @@ namespace OrchardCore.Rules.Drivers
         {
             _options = options.Value;
         }
-        
+
         public override IDisplayResult Display(RoleCondition condition)
         {
             return

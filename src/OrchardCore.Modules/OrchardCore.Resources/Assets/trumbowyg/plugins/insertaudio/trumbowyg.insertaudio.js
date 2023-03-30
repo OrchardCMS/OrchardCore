@@ -37,8 +37,17 @@
             en: {
                 insertAudio: 'Insert Audio'
             },
+            sl: {
+                insertAudio: 'Vstavi zvočno datoteko'
+            },
+            by: {
+                insertAudio: 'Уставіць аўдыё'
+            },
             da: {
                 insertAudio: 'Indsæt lyd'
+            },
+            et: {
+                insertAudio: 'Lisa helifail'
             },
             fr: {
                 insertAudio: 'Insérer un son'

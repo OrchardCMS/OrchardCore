@@ -39,7 +39,7 @@ namespace OrchardCore.Admin.Drivers
                 model.DisplayMenuFilter = settings.DisplayMenuFilter;
                 model.DisplayNewMenu = settings.DisplayNewMenu;
                 model.DisplayTitlesInTopbar = settings.DisplayTitlesInTopbar;
-                }).Location("Content:3").OnGroup(GroupId);
+            }).Location("Content:3").OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(AdminSettings settings, BuildEditorContext context)

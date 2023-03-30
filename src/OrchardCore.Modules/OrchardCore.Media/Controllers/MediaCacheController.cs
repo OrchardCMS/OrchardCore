@@ -58,18 +58,18 @@ namespace OrchardCore.Media.Controllers
 
             if (_mediaFileStoreCache == null)
             {
-                _notifier.Error(H["The asset cache feature is enabled, but a remote media store feature is not enabled, or not configured with appsettings.json."]);
+                await _notifier.ErrorAsync(H["The asset cache feature is enabled, but a remote media store feature is not enabled, or not configured with appsettings.json."]);
                 RedirectToAction(nameof(Index));
             }
 
             var hasErrors = await _mediaFileStoreCache.PurgeAsync();
             if (hasErrors)
             {
-                _notifier.Error(H["Asset cache purged, with errors."]);
+                await _notifier.ErrorAsync(H["Asset cache purged, with errors."]);
             }
             else
             {
-                _notifier.Information(H["Asset cache purged."]);
+                await _notifier.InformationAsync(H["Asset cache purged."]);
             }
 
             return RedirectToAction(nameof(Index));

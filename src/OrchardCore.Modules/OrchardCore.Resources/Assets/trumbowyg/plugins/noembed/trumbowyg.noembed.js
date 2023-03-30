@@ -24,11 +24,22 @@
                 noembed: 'Noembed',
                 noembedError: 'Error'
             },
+            sl: {
+                noembed: 'Noembed',
+                noembedError: 'Napaka'
+            },
+            by: {
+                noembedError: 'Памылка'
+            },
             cs: {
                 noembedError: 'Chyba'
             },
             da: {
                 noembedError: 'Fejl'
+            },
+            et: {
+                noembed: 'Noembed',
+                noembedError: 'Viga'
             },
             fr: {
                 noembedError: 'Erreur'
@@ -92,18 +103,24 @@
                                         cache: false,
                                         dataType: 'json',
 
-                                        success: trumbowyg.o.plugins.noembed.success || function (data) {
-                                            if (data.html) {
-                                                trumbowyg.execCmd('insertHTML', data.html);
-                                                setTimeout(function () {
-                                                    trumbowyg.closeModal();
-                                                }, 250);
-                                            } else {
+                                        success: function (data) {
+                                            if (trumbowyg.o.plugins.noembed.success) {
+                                                trumbowyg.o.plugins.noembed.success(data, trumbowyg, $modal);
+                                                return;
+                                            }
+
+                                            if (!data.html) {
                                                 trumbowyg.addErrorOnModalField(
                                                     $('input[type=text]', $modal),
                                                     data.error
                                                 );
+                                                return;
                                             }
+
+                                            trumbowyg.execCmd('insertHTML', data.html);
+                                            setTimeout(function () {
+                                                trumbowyg.closeModal();
+                                            }, 250);
                                         },
                                         error: trumbowyg.o.plugins.noembed.error || function () {
                                             trumbowyg.addErrorOnModalField(

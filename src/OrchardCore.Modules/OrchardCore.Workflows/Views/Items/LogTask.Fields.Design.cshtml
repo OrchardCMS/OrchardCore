@@ -22,6 +22,6 @@
     }
 }
 <header>
-    <h4><i class="fa fa-@className"></i>@Model.Activity.GetTitleOrDefault(() => T["Log"])</h4>
+    <h4><i class="fa fa-@className" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Log"])</h4>
 </header>
 <span>@Model.Activity.LogLevel</span> <em>&quot;@Model.Activity.Text&quot;</em>

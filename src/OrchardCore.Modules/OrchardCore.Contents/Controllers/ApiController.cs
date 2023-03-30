@@ -1,13 +1,15 @@
 using System;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
-using OrchardCore.Mvc.Utilities;
+using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentManagement.Metadata;
 
 namespace OrchardCore.Contents.Controllers
 {
@@ -16,19 +18,22 @@ namespace OrchardCore.Contents.Controllers
     [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
     public class ApiController : Controller
     {
-        private static readonly JsonMergeSettings UpdateJsonMergeSettings = new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace };
+        private static readonly JsonMergeSettings UpdateJsonMergeSettings = new() { MergeArrayHandling = MergeArrayHandling.Replace };
 
         private readonly IContentManager _contentManager;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IStringLocalizer S;
 
         public ApiController(
             IContentManager contentManager,
+            IContentDefinitionManager contentDefinitionManager,
             IAuthorizationService authorizationService,
             IStringLocalizer<ApiController> stringLocalizer)
         {
-            _authorizationService = authorizationService;
             _contentManager = contentManager;
+            _contentDefinitionManager = contentDefinitionManager;
+            _authorizationService = authorizationService;
             S = stringLocalizer;
         }
 
@@ -68,7 +73,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (contentItem == null)
             {
-                return StatusCode(204);
+                return NoContent();
             }
 
             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.DeleteContent, contentItem))
@@ -96,34 +101,40 @@ namespace OrchardCore.Contents.Controllers
 
             if (contentItem == null)
             {
-                if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent))
+                if (String.IsNullOrEmpty(model?.ContentType) || _contentDefinitionManager.GetTypeDefinition(model.ContentType) == null)
+                {
+                    return BadRequest();
+                }
+
+                contentItem = await _contentManager.NewAsync(model.ContentType);
+                contentItem.Owner = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, contentItem))
                 {
                     return this.ChallengeOrForbid("Api");
                 }
 
-                var newContentItem = await _contentManager.NewAsync(model.ContentType);
-                newContentItem.Merge(model);
+                contentItem.Merge(model);
 
-                var result = await _contentManager.UpdateValidateAndCreateAsync(newContentItem, VersionOptions.Draft);
+                var result = await _contentManager.UpdateValidateAndCreateAsync(contentItem, VersionOptions.Draft);
 
                 if (!result.Succeeded)
                 {
-                    return Problem(
-                        title: S["One or more validation errors occurred."],
-                        detail: string.Join(',', result.Errors),
-                        statusCode: (int)HttpStatusCode.BadRequest);
-                }
-                // We check the model state after calling all handlers because they trigger WF content events so, even they are not
-                // intended to add model errors (only drivers), a WF content task may be executed inline and add some model errors.
-                else if (!ModelState.IsValid)
-                {
-                    return Problem(
-                        title: S["One or more validation errors occurred."],
-                        detail: String.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
-                        statusCode: (int)HttpStatusCode.BadRequest);
+                    // Add the validation results to the ModelState to present the errors as part of the response.
+                    AddValidationErrorsToModelState(result);
                 }
 
-                contentItem = newContentItem;
+                // We check the model state after calling all handlers because they trigger WF content events so, even they are not
+                // intended to add model errors (only drivers), a WF content task may be executed inline and add some model errors.
+                if (!ModelState.IsValid)
+                {
+                    return ValidationProblem(new ValidationProblemDetails(ModelState)
+                    {
+                        Title = S["One or more validation errors occurred."],
+                        Detail = String.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
+                        Status = (int)HttpStatusCode.BadRequest,
+                    });
+                }
             }
             else
             {
@@ -139,19 +150,20 @@ namespace OrchardCore.Contents.Controllers
 
                 if (!result.Succeeded)
                 {
-                    return Problem(
-                        title: S["One or more validation errors occurred."],
-                        detail: string.Join(',', result.Errors),
-                        statusCode: (int)HttpStatusCode.BadRequest);
+                    // Add the validation results to the ModelState to present the errors as part of the response.
+                    AddValidationErrorsToModelState(result);
                 }
+
                 // We check the model state after calling all handlers because they trigger WF content events so, even they are not
                 // intended to add model errors (only drivers), a WF content task may be executed inline and add some model errors.
-                else if (!ModelState.IsValid)
+                if (!ModelState.IsValid)
                 {
-                    return Problem(
-                        title: S["One or more validation errors occurred."],
-                        detail: String.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
-                        statusCode: (int)HttpStatusCode.BadRequest);
+                    return ValidationProblem(new ValidationProblemDetails(ModelState)
+                    {
+                        Title = S["One or more validation errors occurred."],
+                        Detail = String.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
+                        Status = (int)HttpStatusCode.BadRequest,
+                    });
                 }
             }
 
@@ -165,6 +177,24 @@ namespace OrchardCore.Contents.Controllers
             }
 
             return Ok(contentItem);
+        }
+
+        private void AddValidationErrorsToModelState(ContentValidateResult result)
+        {
+            foreach (var error in result.Errors)
+            {
+                if (error.MemberNames != null && error.MemberNames.Any())
+                {
+                    foreach (var memberName in error.MemberNames)
+                    {
+                        ModelState.AddModelError(memberName, error.ErrorMessage);
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError(String.Empty, error.ErrorMessage);
+                }
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 @using OrchardCore.DisplayManagement.Zones
+@using OrchardCore
 
 <style asp-src="~/OrchardCore.Contents/Styles/Contents.min.css" debug-src="~/OrchardCore.Contents/Styles/Contents.css"></style>
 
@@ -21,20 +22,20 @@
 
         @if (Model.Actions != null)
         {
-        <div class="edit-item-secondary group">
-            <div class="edit-item-actions form-group">
-                @await DisplayAsync(Model.Actions)
+            <div class="@Orchard.GetWrapperCssClasses("edit-item-secondary","group")">
+                <div class="@Orchard.GetEndCssClasses(true, "edit-item-actions")">
+                    @await DisplayAsync(Model.Actions)
 
-                @{
-                    var returnUrl = Context.Request.Query["returnUrl"];
-                }
+                    @{
+                        var returnUrl = Context.Request.Query["returnUrl"];
+                    }
 
-                @if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
-                {
-                    <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
-                }
+                    @if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    {
+                        <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
+                    }
+                </div>
             </div>
-        </div>
         }
     </div>
     @if (Model.Sidebar != null)

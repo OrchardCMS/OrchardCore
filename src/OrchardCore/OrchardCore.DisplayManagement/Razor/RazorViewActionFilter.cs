@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Settings;
 
 namespace OrchardCore.DisplayManagement.Razor
@@ -14,10 +16,18 @@ namespace OrchardCore.DisplayManagement.Razor
     /// </summary>
     public class RazorViewActionFilter : IAsyncViewActionFilter
     {
-        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        public Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            await OnActionExecutionAsync(context);
-            await next();
+            static async Task Awaited(Task task, ActionExecutionDelegate next)
+            {
+                await task;
+                await next();
+            }
+
+            var task = OnActionExecutionAsync(context);
+            return !task.IsCompletedSuccessfully
+                ? Awaited(task, next)
+                : next();
         }
 
         public async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
@@ -44,10 +54,11 @@ namespace OrchardCore.DisplayManagement.Razor
 
             if (razorViewFeature.Site == null)
             {
+                var shellSettings = context.HttpContext.RequestServices.GetService<ShellSettings>();
                 var siteService = context.HttpContext.RequestServices.GetService<ISiteService>();
 
-                // siteService can be null during Setup
-                if (siteService != null)
+                // 'ISiteService' may be null during a setup and can't be used if the tenant is 'Uninitialized'.
+                if (siteService != null && shellSettings.State != TenantState.Uninitialized)
                 {
                     razorViewFeature.Site = await siteService.GetSiteSettingsAsync();
                 }

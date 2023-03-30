@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Navigation
@@ -19,6 +21,7 @@ namespace OrchardCore.Navigation
         protected readonly ShellSettings _shellSettings;
         private readonly IUrlHelperFactory _urlHelperFactory;
         private readonly IAuthorizationService _authorizationService;
+        private readonly AdminOptions _adminOptions;
 
         private IUrlHelper _urlHelper;
 
@@ -27,7 +30,8 @@ namespace OrchardCore.Navigation
             ILogger<NavigationManager> logger,
             ShellSettings shellSettings,
             IUrlHelperFactory urlHelperFactory,
-            IAuthorizationService authorizationService
+            IAuthorizationService authorizationService,
+            IOptions<AdminOptions> adminOptions
             )
         {
             _navigationProviders = navigationProviders;
@@ -35,6 +39,7 @@ namespace OrchardCore.Navigation
             _shellSettings = shellSettings;
             _urlHelperFactory = urlHelperFactory;
             _authorizationService = authorizationService;
+            _adminOptions = adminOptions.Value;
         }
 
         public async Task<IEnumerable<MenuItem>> BuildMenuAsync(string name, ActionContext actionContext)
@@ -203,8 +208,13 @@ namespace OrchardCore.Navigation
                 menuItemUrl = menuItemUrl.Substring(2);
             }
 
+            if (menuItemUrl.StartsWith($"{_adminOptions.AdminUrlPrefix}/", StringComparison.OrdinalIgnoreCase))
+            {
+                return actionContext.HttpContext.Request.PathBase.Add($"/{menuItemUrl}").Value;
+            }
+
             // Use the unescaped 'Value' to not encode some possible reserved delimiters.
-            return actionContext.HttpContext.Request.PathBase.Add('/' + menuItemUrl).Value;
+            return actionContext.HttpContext.Request.PathBase.Add($"/{_adminOptions.AdminUrlPrefix}/{menuItemUrl}").Value;
         }
 
         /// <summary>
@@ -231,7 +241,7 @@ namespace OrchardCore.Navigation
                     var isAuthorized = true;
                     foreach (var permission in item.Permissions)
                     {
-                        if(!(await _authorizationService.AuthorizeAsync(user, permission, item.Resource)))
+                        if (!(await _authorizationService.AuthorizeAsync(user, permission, item.Resource)))
                         {
                             isAuthorized = false;
                             break;

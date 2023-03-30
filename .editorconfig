@@ -26,6 +26,11 @@ csharp_new_line_before_members_in_anonymous_types     = true
 # Sort using and Import directives with System.* appearing first
 dotnet_sort_system_directives_first                        = true
 
+# Code-block preferences
+csharp_prefer_braces = true
+csharp_prefer_simple_using_statement = true
+csharp_style_namespace_declarations = file_scoped
+
 # Avoid "this." if not necessary
 dotnet_style_qualification_for_field                       = false : suggestion
 dotnet_style_qualification_for_property                    = false : suggestion
@@ -51,3 +56,12 @@ dotnet_style_explicit_tuple_names                          = true : suggestion
 
 trim_trailing_whitespace = true
 insert_final_newline = true
+
+# Suggest to use "_" instead of "this." when creating new private fields
+dotnet_naming_style.camel_case_leading_underscore.capitalization = camel_case
+dotnet_naming_style.camel_case_leading_underscore.required_prefix = _
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+dotnet_naming_rule.private_fields_should_be_camel_case_leading_underscore.severity = suggestion
+dotnet_naming_rule.private_fields_should_be_camel_case_leading_underscore.symbols = private_fields
+dotnet_naming_rule.private_fields_should_be_camel_case_leading_underscore.style = camel_case_leading_underscore

@@ -1,7 +1,7 @@
 @model ContentTaskViewModel<RetrieveContentTask>
 
 <header>
-    <h4><i class="fa fa-search"></i>@Model.Activity.GetTitleOrDefault(() => T["Retrieve Content"])</h4>
+    <h4><i class="fa fa-search" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Retrieve Content"])</h4>
 </header>
 
 @if (string.IsNullOrWhiteSpace(Model.Activity.Content?.Expression))

@@ -1,0 +1,22 @@
+@model SearchSettingsViewModel
+
+@if (Model.SearchServices != null && Model.SearchServices.Count > 0)
+{
+    <div class="mb-3" asp-validation-class-for="ProviderName">
+        <label asp-for="ProviderName">@T["Default search provider"]</label>
+        <select asp-for="ProviderName" asp-items="Model.SearchServices" class="form-select"></select>
+        <span asp-validation-for="ProviderName"></span>
+        <span class="hint">@T["The default search provider to use for the search page."]</span>
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="Placeholder">
+        <label asp-for="Placeholder">@T["Placeholder"]</label>
+        <input type="text" class="form-control" asp-for="Placeholder" required />
+        <span class="hint">@T["The placeholder text to use in the search bar."]</span>
+    </div>
+}
+else
+{
+    <div class="alert alert-warning">@T["You need to enable at least one search provider (Lucene, Elasticsearch)."]</div>
+}
+

@@ -7,7 +7,7 @@ namespace OrchardCore.Shortcodes.Services
 {
     public class OptionsShortcodeProvider : IShortcodeProvider
     {
-        private static readonly ValueTask<string> Null = new ValueTask<string>((string)null);
+        private static ValueTask<string> Null => new ValueTask<string>((string)null);
 
         private readonly ShortcodeOptions _options;
 

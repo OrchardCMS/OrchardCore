@@ -1,0 +1,18 @@
+// bootstrap-select customizations
+
+.multiselect__content-wrapper ul {
+    padding-left: unset;
+}
+
+.bootstrap-select {
+    .popover-header {
+        .close {
+            @extend .btn;
+            @extend .btn-close;
+            @extend .float-end;
+            padding-top: 0px;
+            padding-right: 0px;
+            background: unset;
+        }
+    }
+}

@@ -27,7 +27,7 @@ namespace OrchardCore.Sitemaps.Cache
             ILogger<DefaultSitemapCacheProvider> logger
             )
         {
-            var path = GetSitemapCachePath(webHostEnvironment, SitemapCachePath, shellSettings);
+            var path = GetSitemapCachePath(webHostEnvironment, shellSettings, SitemapCachePath);
 
             if (!Directory.Exists(path))
             {
@@ -184,9 +184,9 @@ namespace OrchardCore.Sitemaps.Cache
             return Task.FromResult<IEnumerable<string>>(results);
         }
 
-        private string GetSitemapCachePath(IWebHostEnvironment webHostEnvironment, string cachePath, ShellSettings shellSettings)
+        private static string GetSitemapCachePath(IWebHostEnvironment webHostEnvironment, ShellSettings shellSettings, string cachePath)
         {
-            return PathExtensions.Combine(webHostEnvironment.WebRootPath, cachePath, shellSettings.Name);
+            return PathExtensions.Combine(webHostEnvironment.WebRootPath, shellSettings.Name, cachePath);
         }
     }
 }

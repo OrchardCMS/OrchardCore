@@ -26,6 +26,18 @@
                 errFileReaderNotSupported: 'FileReader is not supported by your browser.',
                 errInvalidImage: 'Invalid image file.'
             },
+            sl: {
+                base64: 'Slika kot base64',
+                file: 'Datoteka',
+                errFileReaderNotSupported: 'FileReader ni podprt v tem brskalniku.',
+                errInvalidImage: 'Neveljavna datoteka s sliko.'
+            },
+            by: {
+                base64: 'Выява (фармат base64)',
+                file: 'Файл',
+                errFileReaderNotSupported: 'FileReader не падтрымліваецца вашым браўзэрам.',
+                errInvalidImage: 'Несапраўдны файл выявы.'
+            },
             cs: {
                 base64: 'Vložit obrázek',
                 file: 'Soubor'
@@ -35,6 +47,12 @@
                 file: 'Fil',
                 errFileReaderNotSupported: 'FileReader er ikke understøttet af din browser.',
                 errInvalidImage: 'Ugyldig billedfil.'
+            },
+            et: {
+                base64: 'Pilt base64 formaadis',
+                file: 'Fail',
+                errFileReaderNotSupported: 'Teie veebilehitseja ei toeta FileReader funktsiooni.',
+                errInvalidImage: 'Vigane pildifail.'
             },
             fr: {
                 base64: 'Image en base64',

@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Menu.Models;
@@ -81,7 +81,7 @@ namespace OrchardCore.Menu.Controllers
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Menu");
 
-            if (!contentTypeDefinition.GetSettings<ContentTypeSettings>().Draftable)
+            if (!contentTypeDefinition.IsDraftable())
             {
                 menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
             }
@@ -186,7 +186,7 @@ namespace OrchardCore.Menu.Controllers
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Menu");
 
-            if (!contentTypeDefinition.GetSettings<ContentTypeSettings>().Draftable)
+            if (!contentTypeDefinition.IsDraftable())
             {
                 menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
             }
@@ -252,7 +252,7 @@ namespace OrchardCore.Menu.Controllers
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Menu");
 
-            if (!contentTypeDefinition.GetSettings<ContentTypeSettings>().Draftable)
+            if (!contentTypeDefinition.IsDraftable())
             {
                 menu = await _contentManager.GetAsync(menuContentItemId, VersionOptions.Latest);
             }
@@ -279,7 +279,7 @@ namespace OrchardCore.Menu.Controllers
 
             await _contentManager.SaveDraftAsync(menu);
 
-            _notifier.Success(H["Menu item deleted successfully."]);
+            await _notifier.SuccessAsync(H["Menu item deleted successfully."]);
 
             return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = menuContentItemId });
         }

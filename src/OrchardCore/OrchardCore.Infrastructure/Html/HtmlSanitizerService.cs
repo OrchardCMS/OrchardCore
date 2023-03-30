@@ -1,4 +1,4 @@
-using Ganss.XSS;
+using Ganss.Xss;
 using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Infrastructure.Html

@@ -1,5 +1,3 @@
-using System.ComponentModel;
-
 namespace OrchardCore.Seo.Models
 {
     public class SeoMetaPartSettings

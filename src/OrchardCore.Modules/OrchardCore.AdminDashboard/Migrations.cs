@@ -3,6 +3,7 @@ using OrchardCore.AdminDashboard.Indexes;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using OrchardCore.Recipes;
 using OrchardCore.Recipes.Services;
 using YesSql.Sql;
 
@@ -36,7 +37,7 @@ namespace OrchardCore.AdminDashboard
                 .WithDescription("Provides a way to add widgets to a dashboard.")
                 );
 
-            await _recipeMigrator.ExecuteAsync("dashboard-widgets.recipe.json", this);
+            await _recipeMigrator.ExecuteAsync($"dashboard-widgets{RecipesConstants.RecipeExtension}", this);
 
             // Shortcut other migration steps on new content definition schemas.
             return 3;
@@ -44,7 +45,7 @@ namespace OrchardCore.AdminDashboard
 
         public async Task<int> UpdateFrom1Async()
         {
-            await _recipeMigrator.ExecuteAsync("dashboard-widgets.recipe.json", this);
+            await _recipeMigrator.ExecuteAsync($"dashboard-widgets{RecipesConstants.RecipeExtension}", this);
 
             return 2;
         }
@@ -59,6 +60,6 @@ namespace OrchardCore.AdminDashboard
             );
 
             return 3;
-        }        
+        }
     }
 }

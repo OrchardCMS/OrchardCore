@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -9,12 +8,10 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.Contents.Security;
 using OrchardCore.Contents.ViewModels;
-using YesSql.Filters.Query;
 using YesSql;
+using YesSql.Filters.Query;
 using YesSql.Services;
 
 namespace OrchardCore.Contents.Services
@@ -25,7 +22,7 @@ namespace OrchardCore.Contents.Services
         {
             builder
                 .WithNamedTerm("status", builder => builder
-                    .OneCondition<ContentItem>((val, query, ctx) =>
+                    .OneCondition((val, query, ctx) =>
                     {
                         var context = (ContentQueryContext)ctx;
                         if (Enum.TryParse<ContentsStatus>(val, true, out var contentsStatus))
@@ -48,13 +45,13 @@ namespace OrchardCore.Contents.Services
                                     break;
                                 default:
                                     query.With<ContentItemIndex>(x => x.Latest);
-                                    break;                                    
+                                    break;
                             }
                         }
                         else
                         {
                             // Draft is the default value.
-                            query.With<ContentItemIndex>(x => x.Latest);                        
+                            query.With<ContentItemIndex>(x => x.Latest);
                         }
 
                         return new ValueTask<IQuery<ContentItem>>(query);
@@ -78,7 +75,7 @@ namespace OrchardCore.Contents.Services
                     .AlwaysRun()
                 )
                 .WithNamedTerm("sort", builder => builder
-                    .OneCondition<ContentItem>((val, query) =>
+                    .OneCondition((val, query) =>
                     {
                         if (Enum.TryParse<ContentsOrder>(val, true, out var contentsOrder))
                         {
@@ -125,97 +122,65 @@ namespace OrchardCore.Contents.Services
                     .AlwaysRun()
                 )
                 .WithNamedTerm("type", builder => builder
-                    .OneCondition<ContentItem>(async (contentType, query, ctx) =>
+                    .OneCondition(async (contentType, query, ctx) =>
                     {
                         var context = (ContentQueryContext)ctx;
                         var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
                         var authorizationService = context.ServiceProvider.GetRequiredService<IAuthorizationService>();
-                        var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
                         var contentDefinitionManager = context.ServiceProvider.GetRequiredService<IContentDefinitionManager>();
                         var user = httpContextAccessor.HttpContext.User;
                         var userNameIdentifier = user?.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                        var canListAllContent = await authorizationService.AuthorizeAsync(user, Permissions.ListContent);
-
                         // Filter for a specific type.
-                        if (!string.IsNullOrEmpty(contentType))
+                        if (!String.IsNullOrEmpty(contentType))
                         {
                             var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(contentType);
                             if (contentTypeDefinition != null)
                             {
                                 // We display a specific type even if it's not listable so that admin pages
                                 // can reuse the Content list page for specific types.
-                                var contentItem = await contentManager.NewAsync(contentTypeDefinition.Name);
-                                contentItem.Owner = userNameIdentifier;
 
-                                var hasContentListPermission = await authorizationService.AuthorizeAsync(user, ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.ListContent.Name], contentTypeDefinition), contentItem);
-                                if (hasContentListPermission)
+                                // It is important to pass null to the owner parameter. This will check if the user can view content that belongs to others.
+                                if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, contentTypeDefinition.Name, owner: null))
                                 {
-                                    query.With<ContentItemIndex>(x => x.ContentType == contentType);
+                                    return query.With<ContentItemIndex>(x => x.ContentType == contentType);
                                 }
-                                else
-                                {
-                                    query.With<ContentItemIndex>(x => x.ContentType == contentType && x.Owner == userNameIdentifier);
-                                }
+
+                                return query.With<ContentItemIndex>(x => x.ContentType == contentType && x.Owner == userNameIdentifier);
                             }
+                            // At this point the given contentType is invalid. Ignore it.
                         }
-                        else
+
+                        var listAnyContentTypes = new List<string>();
+                        var listOwnContentTypes = new List<string>();
+
+                        foreach (var ctd in contentDefinitionManager.ListTypeDefinitions())
                         {
-                            var listableTypes = new List<ContentTypeDefinition>();
-                            var authorizedContentTypes = new List<ContentTypeDefinition>();
-                            var unauthorizedContentTypes = new List<ContentTypeDefinition>();
-
-                            foreach (var ctd in contentDefinitionManager.ListTypeDefinitions())
+                            if (!ctd.IsListable())
                             {
-                                if (ctd.GetSettings<ContentTypeSettings>().Listable)
-                                {
-                                    // We want to list the content item if the user can edit their own items at least.
-                                    // It might display content items the user won't be able to edit though.
-                                    var contentItem = await contentManager.NewAsync(ctd.Name);
-                                    contentItem.Owner = userNameIdentifier;
-
-                                    var hasEditPermission = await authorizationService.AuthorizeAsync(user, CommonPermissions.EditContent, contentItem);
-                                    if (hasEditPermission)
-                                    {
-                                        listableTypes.Add(ctd);
-                                    }
-
-                                    if (!canListAllContent)
-                                    {
-                                        var hasContentListPermission = await authorizationService.AuthorizeAsync(user, ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.ListContent.Name], ctd), contentItem);
-                                        if (hasContentListPermission)
-                                        {
-                                            authorizedContentTypes.Add(ctd);
-                                        }
-                                        else
-                                        {
-                                            unauthorizedContentTypes.Add(ctd);
-                                        }
-                                    }
-                                }
+                                continue;
                             }
 
-                            if (authorizedContentTypes.Any() && !canListAllContent)
+                            // It is important to pass null to the owner parameter. This will check if the user can view content that belongs to others.
+                            if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, ctd.Name, owner: null))
                             {
-                                query.With<ContentItemIndex>().Where(x => (x.ContentType.IsIn(authorizedContentTypes.Select(t => t.Name).ToArray())) || (x.ContentType.IsIn(unauthorizedContentTypes.Select(t => t.Name).ToArray()) && x.Owner == userNameIdentifier));
-                            }
-                            else
-                            {
-                                query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes.Select(t => t.Name).ToArray()));
+                                listAnyContentTypes.Add(ctd.Name);
 
-                                // If we set the ListContent permission
-                                // to false we can only view our own content and
-                                // we bypass and force the corresponding ContentsStatus by owned content filtering
-                                if (!canListAllContent)
-                                {
-                                    query.With<ContentItemIndex>(x => x.Owner == userNameIdentifier);
-                                }
+                                continue;
+                            }
+
+                            // It is important to pass the current user ID to the owner parameter. This will check if the user can view their own content.
+                            if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, ctd.Name, userNameIdentifier))
+                            {
+                                listOwnContentTypes.Add(ctd.Name);
+
+                                continue;
                             }
                         }
 
-                        return query;
+                        return query.With<ContentItemIndex>().Where(x => x.ContentType.IsIn(listAnyContentTypes) || (x.ContentType.IsIn(listOwnContentTypes) && x.Owner == userNameIdentifier));
                     })
-                    .MapTo<ContentOptionsViewModel>((val, model) => 
+                    .MapTo<ContentOptionsViewModel>((val, model) =>
                     {
                         if (!String.IsNullOrEmpty(val))
                         {
@@ -234,11 +199,11 @@ namespace OrchardCore.Contents.Services
                     .AlwaysRun()
                 )
                 .WithDefaultTerm("text", builder => builder
-                        .ManyCondition<ContentItem>(
-                            ((val, query) => query.With<ContentItemIndex>(x => x.DisplayText.Contains(val))),
-                            ((val, query) => query.With<ContentItemIndex>(x => x.DisplayText.IsNotIn<ContentItemIndex>(s => s.DisplayText, w => w.DisplayText.Contains(val))))
-                        )
-                    );
+                    .ManyCondition(
+                        (val, query) => query.With<ContentItemIndex>(x => x.DisplayText.Contains(val)),
+                        (val, query) => query.With<ContentItemIndex>(x => x.DisplayText.NotContains(val))
+                    )
+                );
         }
     }
 }

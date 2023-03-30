@@ -1,7 +1,7 @@
 @model ShapePlacementViewModel
-<div class="properties">
+<div class="w-100">
     <a asp-route-action="Edit" asp-route-area="OrchardCore.Placements" asp-route-shapeType="@Model.ShapeType" asp-route-returnUrl="@FullRequestPath">@Model.ShapeType</a>
-    <div class="related">
+    <div class="float-end">
         <a asp-route-action="Edit" asp-route-area="OrchardCore.Placements" asp-route-shapeType="@Model.ShapeType" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
         <a asp-route-action="Delete" asp-route-area="OrchardCore.Placements" asp-route-shapeType="@Model.ShapeType" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Delete"]</a>
     </div>

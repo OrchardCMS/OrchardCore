@@ -53,6 +53,8 @@ namespace OrchardCore.Email.Drivers
                     model.PickupDirectoryLocation = settings.PickupDirectoryLocation;
                     model.Host = settings.Host;
                     model.Port = settings.Port;
+                    model.ProxyHost = settings.ProxyHost;
+                    model.ProxyPort = settings.ProxyPort;
                     model.EncryptionMethod = settings.EncryptionMethod;
                     model.AutoSelectEncryption = settings.AutoSelectEncryption;
                     model.RequireCredentials = settings.RequireCredentials;

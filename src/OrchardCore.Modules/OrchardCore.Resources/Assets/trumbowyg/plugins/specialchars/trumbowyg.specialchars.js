@@ -28,6 +28,15 @@
             en: {
                 specialChars: 'Special characters'
             },
+            sl: {
+                specialChars: 'Posebni znaki'
+            },
+            by: {
+                specialChars: 'Спецыяльныя сімвалы'
+            },
+            et: {
+                specialChars: 'Erimärgid'
+            },
             fr: {
                 specialChars: 'Caractères spéciaux'
             },
@@ -36,6 +45,12 @@
             },
             ko: {
                 specialChars: '특수문자'
+            },
+            ru: {
+                specialChars: 'Специальные символы'
+            },
+            tr: {
+                specialChars: 'Özel karakterler'
             },
         },
         plugins: {

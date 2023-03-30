@@ -23,7 +23,7 @@ namespace OrchardCore.Media.Recipes
         private readonly static HttpClient _httpClient = new HttpClient();
 
         public MediaStep(
-            IMediaFileStore mediaFileStore, 
+            IMediaFileStore mediaFileStore,
             IOptions<MediaOptions> options,
             ILogger<MediaStep> logger)
         {
@@ -48,7 +48,7 @@ namespace OrchardCore.Media.Recipes
                     _logger.LogWarning("File extension not allowed: '{Path}'", file.TargetPath);
 
                     continue;
-                }          
+                }
 
                 Stream stream = null;
 

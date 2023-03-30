@@ -21,15 +21,18 @@ namespace OrchardCore.Settings
                 return Task.CompletedTask;
             }
 
-            builder.Add(S["Configuration"], configuration => configuration
-                .Add(S["Settings"], "1", settings => settings
+            builder
+                .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, configuration => configuration
+                .AddClass("menu-configuration")
+                .Id("configuration")
+                    .Add(S["Settings"], "1", settings => settings
                     .Add(S["General"], "1", entry => entry
                     .AddClass("general").Id("general")
                         .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" })
                         .Permission(Permissions.ManageGroupSettings)
                         .LocalNav()
                     )
-                )
+                , priority: 1)
             );
 
             return Task.CompletedTask;

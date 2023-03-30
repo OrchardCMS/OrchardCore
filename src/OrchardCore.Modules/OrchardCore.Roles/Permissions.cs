@@ -19,12 +19,12 @@ namespace OrchardCore.Roles
         {
             _roleService = roleService;
         }
-        
+
         public async Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {            
+        {
             var list = new List<Permission>
             {
-                ManageRoles, 
+                ManageRoles,
                 AssignRoles,
                 StandardPermissions.SiteOwner
             };

@@ -17,6 +17,6 @@
     }
 }
 <header>
-    <h4><i class="fa fa-@className"></i>@Model.Activity.GetTitleOrDefault(() => T["{0} Notification", Model.Activity.NotificationType])</h4>
+    <h4><i class="fa fa-@className" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["{0} Notification", Model.Activity.NotificationType])</h4>
 </header>
 <em>&quot;@Model.Activity.Message&quot;</em>

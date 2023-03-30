@@ -28,7 +28,7 @@ namespace OrchardCore.Users.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
+            if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
             {
                 return null;
             }
@@ -37,6 +37,7 @@ namespace OrchardCore.Users.Drivers
             {
                 model.UsersCanRegister = settings.UsersCanRegister;
                 model.UsersMustValidateEmail = settings.UsersMustValidateEmail;
+                model.UsersAreModerated = settings.UsersAreModerated;
                 model.UseSiteTheme = settings.UseSiteTheme;
                 model.NoPasswordForExternalUsers = settings.NoPasswordForExternalUsers;
                 model.NoUsernameForExternalUsers = settings.NoUsernameForExternalUsers;
@@ -50,7 +51,7 @@ namespace OrchardCore.Users.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
+            if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
             {
                 return null;
             }

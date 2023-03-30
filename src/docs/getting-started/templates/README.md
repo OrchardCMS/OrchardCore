@@ -9,13 +9,13 @@ More information about `dotnet new` can be found at <https://docs.microsoft.com/
 Once the .NET Core SDK has been installed, type the following command to install the templates for creating Orchard Core web applications:
 
 ```CMD
-dotnet new -i "OrchardCore.ProjectTemplates::1.0.0-rc2-*"
+dotnet new install OrchardCore.ProjectTemplates::1.5.0
 ```
 
-This will use the most stable release of Orchard Core. In order to use the latest `dev` branch of Orchard Core, the following command can be used:
+This will use the most stable release of Orchard Core. In order to use the latest `main` branch of Orchard Core, the following command can be used:
 
 ```CMD
-dotnet new -i "OrchardCore.ProjectTemplates::1.0.0-rc2-*" --nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json  
+dotnet new install OrchardCore.ProjectTemplates::1.5.0-* --nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json  
 ```
 
 ## Create a new website
@@ -24,8 +24,11 @@ dotnet new -i "OrchardCore.ProjectTemplates::1.0.0-rc2-*" --nuget-source https:/
 
 #### Generate an Orchard Cms Web Application
 
+!!! warning
+    Due to a bug in the current published version, the following `dotnet new` commands will require the extra argument `--orchard-version 1.5.0`. For instance, instead of typing `dotnet new occms` use `dotnet new occms --orchard-version 1.5.0`
+
 ```CMD
-dotnet new occms  
+dotnet new occms
 ```
 
 The above command will use the default options.
@@ -36,12 +39,7 @@ You can pass the following CLI parameters to setup options:
 Orchard Core Cms Web App (C#)
 Author: Orchard Project
 Options:
-  -fm|--framework        Configures the Framework.
-                             netcoreapp3.1 - Configures the 3.1 .NET Core Framework.
-                             net5.0        - Configures the 5.0 .NET Framework.
-                         Default: netcoreapp3.1
-
-  -lg|--logger               Configures the logger component.
+  -lo|--logger           Configures the logger component.
                              nlog       - Configures NLog as the logger component.
                              serilog    - Configures Serilog as the logger component.
                              none       - Do not use a logger.
@@ -49,13 +47,7 @@ Options:
 
   -ov|--orchard-version  Specifies which version of Orchard Core packages to use.
                          string - Optional
-                         Default: 1.0.0-rc2
-```
-
-The .NET Framework `5.0` can be used with this command:
-
-```CMD
-dotnet new occms --framework net5.0
+                         Default: 1.5.0
 ```
 
 Logging can be ignored with this command:
@@ -72,13 +64,7 @@ dotnet new ocmvc
 
 ### From Visual Studio (New Project dialog)
 
-The templates can also be used from the 'New Project' dialog in Visual Studio.
-
-![image](../assets/images/templates/new-project.png)
-
-In order to display these templates, you need to have a recent version of Visual Studio and check 'Show all .NET Core templates in the New project dialog' in 'Tools > Options'.
-
-![image](../assets/images/templates/new-project-option.png)
+The templates can also be used from the New Project dialog in Visual Studio.
 
 ### From Visual Studio (manual way)
 
@@ -93,37 +79,31 @@ Now that we created a new Web Application we need to add proper dependencies so 
 
 ![image](../assets/images/templates/orchard-screencast-2.gif)
 
-Finally, we will need to register Orchard CMS service in our `Startup.cs` file like this:
+Finally, we will need to register Orchard CMS service in our `Program.cs` file like this:
 
 ```csharp
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using OrchardCore.Logging;
 
-namespace MyNewWebsite
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseNLogHost();
+
+builder.Services
+    .AddOrchardCms()
+    .AddSetupFeatures("OrchardCore.AutoSetup");
+
+var app = builder.Build();
+
+if (!app.Environment.IsDevelopment())
 {
-    public class Startup
-    {
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddOrchardCms();
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.UseStaticFiles();
-            app.UseOrchardCore();
-        }
-    }
+    app.UseExceptionHandler("/Error");
 }
+
+app.UseStaticFiles();
+
+app.UseOrchardCore();
+
+app.Run();
 ```
 
 ## Create a new CMS module
@@ -144,7 +124,7 @@ You can pass the following CLI parameters to setup options:
 Orchard Core Module (C#)
 Author: Orchard Project
 Options:
-  -A|--AddPart           Add dependency injection for part in Startup.cs. If PartName is not provided, default name will be used
+  -A|--AddPart           Add dependency injection for part in Program.cs. If PartName is not provided, default name will be used
                          bool - Optional
                          Default: false / (*) true
 
@@ -154,7 +134,7 @@ Options:
 
   -ov|--orchard-version  Specifies which version of Orchard Core packages to use.
                          string - Optional
-                         Default: 1.0.0-rc2
+                         Default: 1.5.0
 ```
 
 ```CMD

@@ -14,7 +14,7 @@ namespace OrchardCore.Workflows.Http.ViewModels
 
         public IList<SelectListItem> GetAvailableHttpMethods()
         {
-            var availableHttpMethods = new[] { "GET", "POST", "PUT", "DELETE", "OPTIONS" };
+            var availableHttpMethods = new[] { "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS" };
             return availableHttpMethods.Select(x => new SelectListItem { Text = x, Value = x }).ToList();
         }
     }

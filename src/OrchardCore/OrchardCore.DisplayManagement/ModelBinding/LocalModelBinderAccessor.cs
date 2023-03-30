@@ -5,22 +5,22 @@ namespace OrchardCore.DisplayManagement.ModelBinding
     public class LocalModelBinderAccessor : IUpdateModelAccessor
     {
         private readonly static object Key = typeof(LocalModelBinderAccessor);
-        private readonly HttpContext _httpContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public LocalModelBinderAccessor(IHttpContextAccessor httpContextAccessor)
         {
-            _httpContext = httpContextAccessor.HttpContext;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public IUpdateModel ModelUpdater
         {
             get
             {
-                var updateModel = _httpContext.Items[Key] as IUpdateModel;
+                var updateModel = _httpContextAccessor.HttpContext.Items[Key] as IUpdateModel;
                 return updateModel ?? new NullModelUpdater();
             }
 
-            set { _httpContext.Items[Key] = value; }
+            set { _httpContextAccessor.HttpContext.Items[Key] = value; }
         }
     }
 }

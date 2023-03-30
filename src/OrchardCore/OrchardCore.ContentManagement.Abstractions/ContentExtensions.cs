@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Builders;
 
@@ -23,7 +24,19 @@ namespace OrchardCore.ContentManagement
         /// <returns>The content element instance or <code>null</code> if it doesn't exist.</returns>
         public static TElement Get<TElement>(this ContentElement contentElement, string name) where TElement : ContentElement
         {
-            return (TElement)contentElement.Get(typeof(TElement), name);
+            var result = contentElement.Get(typeof(TElement), name);
+
+            if (result == null)
+            {
+                return null;
+            }
+
+            if (result is TElement te)
+            {
+                return te;
+            }
+
+            throw new InvalidCastException($"Failed casting content to '{typeof(TElement).Name}', check you have registered your content part with AddContentPart?");
         }
 
         /// <summary>
@@ -221,6 +234,25 @@ namespace OrchardCore.ContentManagement
         {
             var element = contentElement.GetOrCreate<TElement>(name);
             action(element);
+            contentElement.Apply(name, element);
+
+            return contentElement;
+        }
+
+        /// <summary>
+        /// Modifies a new or existing content element by name.
+        /// </summary>
+        /// <param name="contentElement">The <see cref="ContentElement"/>.</param>
+        /// <param name="name">The name of the content element to update.</param>
+        /// <param name="action">An action to apply on the content element.</param>
+        /// <typeparam name="TElement">The type of the part to be altered.</typeparam>
+        /// <returns>The current <see cref="ContentElement"/> instance.</returns>
+        public static async Task<ContentElement> AlterAsync<TElement>(this ContentElement contentElement, string name, Func<TElement, Task> action) where TElement : ContentElement, new()
+        {
+            var element = contentElement.GetOrCreate<TElement>(name);
+
+            await action(element);
+
             contentElement.Apply(name, element);
 
             return contentElement;

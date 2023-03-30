@@ -17,6 +17,18 @@
                     undo: 'Undo'
                 }
             },
+            sl: {
+                history: {
+                    redo: 'Ponovno uveljavi',
+                    undo: 'Razveljavi'
+                }
+            },
+            by: {
+                history: {
+                    redo: 'Паўтарыць',
+                    undo: 'Скасаваць'
+                }
+            },
             da: {
                 history: {
                     redo: 'Annuller fortryd',
@@ -27,6 +39,12 @@
                 history: {
                     redo: 'Wiederholen',
                     undo: 'Rückgängig'
+                }
+            },
+            et: {
+                history: {
+                    redo: 'Võta tagasi',
+                    undo: 'Tee uuesti'
                 }
             },
             fr: {
@@ -53,6 +71,18 @@
                     undo: 'Desfazer'
                 }
             },
+            ru: {
+                history: {
+                    redo: 'Повторить',
+                    undo: 'Отменить'
+                }
+            },
+            tr: {
+                history: {
+                    redo: 'Geri al',
+                    undo: 'Yinele'
+                }
+            },
             zh_tw: {
                history: {
                    redo: '重做',
@@ -63,6 +93,9 @@
         },
         plugins: {
             history: {
+                destroy: function (t) {
+                    t.$c.off('tbwinit.history tbwchange.history');
+                },
                 init: function (t) {
                     t.o.plugins.history = $.extend(true, {
                         _stack: [],
@@ -211,7 +244,7 @@
                         }
                     };
 
-                    t.$c.on('tbwinit tbwchange', pushToHistory);
+                    t.$c.on('tbwinit.history tbwchange.history', pushToHistory);
 
                     t.addBtnDef('historyRedo', btnBuildDefRedo);
                     t.addBtnDef('historyUndo', btnBuildDefUndo);

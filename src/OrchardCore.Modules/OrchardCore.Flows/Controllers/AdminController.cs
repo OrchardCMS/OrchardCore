@@ -7,7 +7,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Flows.Models;
@@ -37,7 +36,7 @@ namespace OrchardCore.Flows.Controllers
             _updateModelAccessor = updateModelAccessor;
         }
 
-        public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string targetId, bool flowmetadata, string parentContentType, string partName)
+        public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string contentItemsName, string targetId, bool flowmetadata, string parentContentType, string partName)
         {
             if (String.IsNullOrWhiteSpace(id))
             {
@@ -83,12 +82,15 @@ namespace OrchardCore.Flows.Controllers
                 CanDelete: true,
                 //Input hidden
                 //Prefixes
-                HtmlFieldPrefix: prefix,
+                PrefixValue: prefix,
                 PrefixesId: prefixesName.Replace('.', '_'),
                 PrefixesName: prefixesName,
                 //ContentTypes
                 ContentTypesId: contentTypesName.Replace('.', '_'),
-                ContentTypesName: contentTypesName
+                ContentTypesName: contentTypesName,
+                //ContentItems
+                ContentItemsId: contentItemsName.Replace('.', '_'),
+                ContentItemsName: contentItemsName
             );
             //Only Add ColumnSize Property if Part has FlowMetadata
             if (flowmetadata)
@@ -109,12 +111,12 @@ namespace OrchardCore.Flows.Controllers
 
             if (settings == null || settings.ContainedContentTypes == null || !settings.ContainedContentTypes.Any())
             {
-                return _contentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
+                return _contentDefinitionManager.ListTypeDefinitions().Where(t => t.GetStereotype() == "Widget");
             }
 
             return settings.ContainedContentTypes
                 .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
-                .Where(t => t != null && t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
+                .Where(t => t != null && t.GetStereotype() == "Widget");
         }
     }
 }

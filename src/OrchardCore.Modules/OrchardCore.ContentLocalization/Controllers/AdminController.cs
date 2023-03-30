@@ -72,19 +72,19 @@ namespace OrchardCore.ContentLocalization.Controllers
 
             if (alreadyLocalizedContent != null)
             {
-                _notifier.Warning(H["A localization already exists for '{0}'.", targetCulture]);
+                await _notifier.WarningAsync(H["A localization already exists for '{0}'.", targetCulture]);
                 return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = contentItemId });
             }
 
             try
             {
                 var newContent = await _contentLocalizationManager.LocalizeAsync(contentItem, targetCulture);
-                _notifier.Information(H["Localized version of the content created successfully."]);
+                await _notifier.InformationAsync(H["Localized version of the content created successfully."]);
                 return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = newContent.ContentItemId });
             }
             catch (InvalidOperationException)
             {
-                _notifier.Warning(H["Could not create localized version of the content item."]);
+                await _notifier.WarningAsync(H["Could not create localized version of the content item."]);
                 return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = contentItem.ContentItemId });
             }
         }

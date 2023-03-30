@@ -62,7 +62,7 @@ namespace OrchardCore.Email.Controllers
                 }
                 else
                 {
-                    _notifier.Success(H["Message sent successfully."]);
+                    await _notifier.SuccessAsync(H["Message sent successfully."]);
 
                     return Redirect(Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmtpSettingsDisplayDriver.GroupId }));
                 }

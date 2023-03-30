@@ -6,6 +6,7 @@ namespace OrchardCore.Google
         {
             public const string GoogleAuthentication = "OrchardCore.Google.GoogleAuthentication";
             public const string GoogleAnalytics = "OrchardCore.Google.Analytics";
+            public const string GoogleTagManager = "OrchardCore.Google.TagManager";
         }
     }
 }

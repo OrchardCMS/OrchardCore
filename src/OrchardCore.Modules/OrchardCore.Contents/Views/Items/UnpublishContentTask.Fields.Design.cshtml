@@ -1,7 +1,7 @@
 @model ContentTaskViewModel<UnpublishContentTask>
 
 <header>
-    <h4><i class="fa fa-cloud-download"></i>@Model.Activity.GetTitleOrDefault(() => T["Unpublish Content"])</h4>
+    <h4><i class="fa fa-cloud-download" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Unpublish Content"])</h4>
 </header>
 
 @if (string.IsNullOrWhiteSpace(Model.Activity.Content?.Expression))

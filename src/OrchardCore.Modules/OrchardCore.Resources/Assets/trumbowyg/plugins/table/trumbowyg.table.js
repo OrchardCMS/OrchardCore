@@ -4,6 +4,7 @@
  * http://alex-d.github.com/Trumbowyg
  * ===========================================================
  * Author : Sven Dunemann [dunemann@forelabs.eu]
+ * Mod : Uros Gaber [uros@powercom.si] - Added Slovenian (sl) translations
  */
 
 (function ($) {
@@ -28,6 +29,17 @@
                 tableDeleteColumn: 'Delete column',
                 tableDestroy: 'Delete table',
                 error: 'Error'
+            },
+            sl: {
+                table: 'Dodaj tabelo',
+                tableAddRow: 'Dodaj vrstico',
+                tableAddRowAbove: 'Vrini vrstico',
+                tableAddColumnLeft: 'Vrini stolpec',
+                tableAddColumn: 'Dodaj stolpec',
+                tableDeleteRow: 'Izbriši vrstico',
+                tableDeleteColumn: 'Izbriši stolpec',
+                tableDestroy: 'Izbriši tabelo',
+                error: 'Napaka'
             },
             cs: {
                 table: 'Vytvořit příkaz Table',
@@ -58,6 +70,17 @@
                 tableDeleteColumn: 'Spalte löschen',
                 tableDestroy: 'Tabelle löschen',
                 error: 'Error'
+            },
+            et: {
+                table: 'Sisesta tabel',
+                tableAddRow: 'Lisa rida',
+                tableAddRowAbove: 'Lisa rida üles',
+                tableAddColumnLeft: 'Lisa tulp vasakule',
+                tableAddColumn: 'Lisa tulp paremale',
+                tableDeleteRow: 'Kustuta rida',
+                tableDeleteColumn: 'Kustuta tulp',
+                tableDestroy: 'Kustuta tabel',
+                error: 'Viga'
             },
             fr: {
                 table: 'Insérer un tableau',
@@ -144,9 +167,12 @@
             tr: {
                 table: 'Tablo ekle',
                 tableAddRow: 'Satır ekle',
-                tableAddRowAbove: 'Satır ekle',
-                tableAddColumnLeft: 'Kolon ekle',
-                tableAddColumn: 'Kolon ekle',
+                tableAddRowAbove: 'Yukarıya satır ekle',
+                tableAddColumnLeft: 'Sola sütun ekle',
+                tableAddColumn: 'Sağa sütun ekle',
+                tableDeleteRow: 'Satırı sil',
+                tableDeleteColumn: 'Sütunu sil',
+                tableDestroy: 'Tabloyu sil',
                 error: 'Hata'
             },
             zh_tw: {
@@ -160,7 +186,17 @@
                 tableDestroy: '刪除表格',
                 error: '錯誤'
             },
-            // jshint camelcase:true
+            es: {
+                table: 'Insertar tabla',
+                tableAddRow: 'Agregar fila',
+                tableAddRowAbove: 'Agregar fila arriba',
+                tableAddColumnLeft: 'Agregar columna a la izquierda',
+                tableAddColumn: 'Agregar columna a la derecha',
+                tableDeleteRow: 'Borrar fila',
+                tableDeleteColumn: 'Borrar columna',
+                tableDestroy: 'Borrar tabla',
+                error: 'Error'
+            }// jshint camelcase:true
         },
 
         plugins: {
@@ -277,9 +313,9 @@
                             if(table.length > 0) {
                                 var row = $('<tr/>');
                                 // add columns according to current columns count
-                                for (var i = 0; i < table.find('tr')[0].childElementCount; i += 1) {
-                                    $('<td/>').appendTo(row);
-                                }
+                                $('td,th', focusedRow).each(function(){
+                                    $(this).clone().appendTo(row).text('');
+                                });
                                 // add row to table
                                 focusedRow.after(row);
                             }
@@ -303,9 +339,9 @@
                             if(table.length > 0) {
                                 var row = $('<tr/>');
                                 // add columns according to current columns count
-                                for (var i = 0; i < table.find('tr')[0].childElementCount; i += 1) {
-                                    $('<td/>').appendTo(row);
-                                }
+                                $('td,th', focusedRow).each(function(){
+                                    $(this).clone().appendTo(row).text('');
+                                });
                                 // add row to table
                                 focusedRow.before(row);
                             }

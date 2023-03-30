@@ -1,0 +1,59 @@
+@model AuditTrailListViewModel
+
+<script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
+<style asp-name="audittrailui" asp-src="~/OrchardCore.AuditTrail/Styles/audittrailui.min.css" debug-src="~/OrchardCore.AuditTrail/Styles/audittrailui.css" at="Head" depends-on="admin"></style>
+
+<!-- Hidden submit button do not remove -->
+<input type="submit" name="submit.Filter" id="submitFilter" class="sr-only" />
+
+<div class="card mb-3 bg-primary position-sticky action-bar">
+    <div class="card-body">
+        <div class="row gx-3">
+            <div class="col">
+                @await DisplayAsync(Model.Header.Search)
+            </div>
+        </div>
+    </div>
+</div>
+
+<ul class="list-group with-checkbox">
+    <li class="list-group-item bg-primary">
+        <div class="row gx-3">
+            <div class="col">
+                @await DisplayAsync(Model.Header.Summary)
+            </div>
+            <div class="col col-md-auto text-end">
+                @await DisplayAsync(Model.Header.Actions)
+            </div>
+        </div>
+    </li>
+    @if (Model.Events.Count > 0)
+    {
+        @foreach (var shape in Model.Events)
+        {
+            <li class="list-group-item">
+                @await DisplayAsync(shape)
+            </li>
+        }
+    }
+    else
+    {
+        <li class="list-group-item">
+            <div class="alert alert-info mb-0">
+                @T["No results found."]
+            </div>
+        </li>
+    }
+</ul>
+
+@await DisplayAsync(Model.Pager)
+
+<script at="Foot">
+    $(function () {
+        $('.selectpicker').selectpicker();
+
+        $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+            $("[name='submit.Filter']").click();
+        });
+    });
+</script>

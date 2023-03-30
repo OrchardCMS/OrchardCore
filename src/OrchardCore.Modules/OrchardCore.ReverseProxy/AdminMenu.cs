@@ -24,7 +24,7 @@ namespace OrchardCore.ReverseProxy
                             .Add(S["Reverse Proxy"], S["Reverse Proxy"].PrefixPosition(), entry => entry
                             .AddClass("reverseproxy").Id("reverseproxy")
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "ReverseProxy" })
-                                .Permission(Permissions.ReverseProxySettings)
+                                .Permission(Permissions.ManageReverseProxySettings)
                                 .LocalNav()
                             )
                         )

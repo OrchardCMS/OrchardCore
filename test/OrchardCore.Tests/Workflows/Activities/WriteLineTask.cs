@@ -1,7 +1,3 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -42,7 +38,7 @@ namespace OrchardCore.Tests.Workflows.Activities
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var text = await _scriptEvaluator.EvaluateAsync(Text, workflowContext);
-            _output.WriteLine(text);
+            await _output.WriteLineAsync(text);
             return Outcomes("Done");
         }
     }

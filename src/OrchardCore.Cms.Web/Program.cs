@@ -1,23 +1,22 @@
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using OrchardCore.Logging;
 
-namespace OrchardCore.Cms.Web
-{
-    public class Program
-    {
-        public static Task Main(string[] args)
-            => BuildHost(args).RunAsync();
+var builder = WebApplication.CreateBuilder(args);
 
-        public static IHost BuildHost(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureLogging(logging => logging.ClearProviders())
-                .ConfigureWebHostDefaults(webBuilder => webBuilder
-                    .UseStartup<Startup>()
-                    .UseNLogWeb())
-                .Build()
-            ;
-    }
+builder.Host.UseNLogHost();
+
+builder.Services
+    .AddOrchardCms()
+    .AddSetupFeatures("OrchardCore.AutoSetup");
+
+var app = builder.Build();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
 }
+
+app.UseStaticFiles();
+
+app.UseOrchardCore();
+
+app.Run();

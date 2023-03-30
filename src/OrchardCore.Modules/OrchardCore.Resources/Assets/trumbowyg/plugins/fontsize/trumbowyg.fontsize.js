@@ -20,6 +20,38 @@
                     value: '48px'
                 }
             },
+            sl: {
+                fontsize: 'Velikost pisave',
+                fontsizes: {
+                    'x-small': 'Ekstra majhna',
+                    'small': 'Majhna',
+                    'medium': 'Navadno',
+                    'large': 'Velika',
+                    'x-large': 'Ekstra velika',
+                    'custom': 'Poljubna'
+                },
+                fontCustomSize: {
+                    title: 'Poljubna velikost pisave',
+                    label: 'Velikost pisave',
+                    value: '48px'
+                }
+            },
+            by: {
+                fontsize: 'Памер шрыфта',
+                fontsizes: {
+                    'x-small': 'Вельмі маленькі',
+                    'small': 'Маленькі',
+                    'medium': 'Звычайны',
+                    'large': 'Вялікі',
+                    'x-large': 'Вельмі вялікі',
+                    'custom': 'Карыстальніцкі'
+                },
+                fontCustomSize: {
+                    title: 'Карыстальніцкі Памер Шрыфта',
+                    label: 'Памер Шрыфта',
+                    value: '48px'
+                }
+            },
             da: {
                 fontsize: 'Skriftstørrelse',
                 fontsizes: {
@@ -60,6 +92,22 @@
                 fontCustomSize: {
                     title: 'Tamaño de Fuente Customizada',
                     label: 'Tamaño de Fuente',
+                    value: '48px'
+                }
+            },
+            et: {
+                fontsize: 'Teksti suurus',
+                fontsizes: {
+                    'x-small': 'Väga väike',
+                    'small': 'Väike',
+                    'medium': 'Tavaline',
+                    'large': 'Suur',
+                    'x-large': 'Väga suur',
+                    'custom': 'Määra ise'
+                },
+                fontCustomSize: {
+                    title: 'Kohandatud teksti suurus',
+                    label: 'Teksti suurus',
                     value: '48px'
                 }
             },
@@ -135,7 +183,12 @@
                     'medium': 'Normaal',
                     'large': 'Groot',
                     'x-large': 'Extra groot',
-                    'custom': 'Tilpasset'
+                    'custom': 'Handmatig'
+                },
+                fontCustomSize: {
+                    title: 'Handmatige lettergrootte',
+                    label: 'Lettergrootte',
+                    value: '48px'
                 }
             },
             pt_br: {
@@ -154,15 +207,36 @@
                     value: '48px'
                 }
             },
-            tr: {
-                fontsize: 'Yazı Boyutu',
+            ru: {
+                fontsize: 'Размер шрифта',
                 fontsizes: {
-                    'x-small': 'Çok Küçük',
+                    'x-small': 'Очень маленький',
+                    'small': 'Маленький',
+                    'medium': 'Обычный',
+                    'large': 'Большой',
+                    'x-large': 'Очень большой',
+                    'custom': 'Пользовательский'
+                },
+                fontCustomSize: {
+                    title: 'Пользовательский Размер Шрифта',
+                    label: 'Размер Шрифта',
+                    value: '48px'
+                }
+            },
+            tr: {
+                fontsize: 'Yazı boyutu',
+                fontsizes: {
+                    'x-small': 'Çok küçük',
                     'small': 'Küçük',
                     'medium': 'Normal',
                     'large': 'Büyük',
-                    'x-large': 'Çok Büyük',
-                    'custom': 'Görenek'
+                    'x-large': 'Çok büyük',
+                    'custom': 'Özel'
+                },
+                fontCustomSize: {
+                    title: 'Özel Yazı Boyutu',
+                    label: 'Yazı Boyutu',
+                    value: '48px'
                 }
             },
             zh_tw: {
@@ -221,8 +295,15 @@
         // Temporary size
         trumbowyg.execCmd('fontSize', '1');
 
+        var fontElements = trumbowyg.$ed.find('font[size="1"]');
+
+        // Remove previous font-size span tags. Needed to prevent Firefox from
+        // nesting multiple spans on font-size changes.
+        // (see https://github.com/Alex-D/Trumbowyg/issues/1252)
+        fontElements.find('span[style*="font-size"]').contents().unwrap();
+
         // Find <font> elements that were added and change to <span> with chosen size
-        trumbowyg.$ed.find('font[size="1"]').replaceWith(function() {
+        fontElements.replaceWith(function() {
             return $('<span/>', {
                 css: { 'font-size': size },
                 html: this.innerHTML,
@@ -233,6 +314,8 @@
         $(trumbowyg.range.startContainer.parentElement).find('span[style=""]').contents().unwrap();
 
         trumbowyg.restoreRange();
+        trumbowyg.syncCode();
+        trumbowyg.$c.trigger('tbwchange');
     }
 
     function buildDropdown(trumbowyg) {

@@ -17,6 +17,9 @@ namespace OrchardCore.Users.Models
         public string SecurityStamp { get; set; }
         public bool EmailConfirmed { get; set; }
         public bool IsEnabled { get; set; } = true;
+        public bool IsLockoutEnabled { get; set; }
+        public DateTime? LockoutEndUtc { get; set; }
+        public int AccessFailedCount { get; set; }
         public string ResetToken { get; set; }
         public IList<string> RoleNames { get; set; } = new List<string>();
         public IList<UserClaim> UserClaims { get; set; } = new List<UserClaim>();

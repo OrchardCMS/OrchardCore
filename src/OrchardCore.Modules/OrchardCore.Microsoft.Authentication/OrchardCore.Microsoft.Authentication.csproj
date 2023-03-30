@@ -27,8 +27,8 @@
   </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" />
       <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" />
+      <PackageReference Include="Microsoft.Identity.Web" />
     </ItemGroup>
 
   </Project>

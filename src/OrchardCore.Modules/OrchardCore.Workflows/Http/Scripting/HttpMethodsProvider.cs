@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Mvc.Core.Utilities;
@@ -129,21 +128,18 @@ namespace OrchardCore.Workflows.Http.Scripting
                 })
             };
 
+            // This should be deprecated
             _queryStringAsJsonMethod = new GlobalMethod
             {
                 Name = "queryStringAsJson",
-                Method = serviceProvider => (Func<JObject>)(() =>
-                    new JObject((from param in httpContextAccessor.HttpContext.Request.Query
-                                 select new JProperty(param.Key, JArray.FromObject(param.Value.ToArray()))).ToArray()))
+                Method = serviceProvider => _deserializeRequestDataMethod.Method.Invoke(serviceProvider)
             };
 
             // This should be deprecated
             _requestFormAsJsonMethod = new GlobalMethod
             {
                 Name = "requestFormAsJson",
-                Method = serviceProvider => (Func<JObject>)(() =>
-                    new JObject((from field in httpContextAccessor.HttpContext.Request.Form
-                                 select new JProperty(field.Key, JArray.FromObject(field.Value.ToArray()))).ToArray()))
+                Method = serviceProvider => _deserializeRequestDataMethod.Method.Invoke(serviceProvider)
             };
 
             _deserializeRequestDataMethod = new GlobalMethod
@@ -153,44 +149,68 @@ namespace OrchardCore.Workflows.Http.Scripting
                 {
                     Dictionary<string, object> result = null;
 
-                    if(httpContextAccessor.HttpContext != null)
+                    if (httpContextAccessor.HttpContext != null)
                     {
-                        if (httpContextAccessor.HttpContext.Request.HasFormContentType)
+                        var method = httpContextAccessor.HttpContext.Request.Method;
+                        if (method.Equals("POST", StringComparison.OrdinalIgnoreCase) || method.Equals("PUT", StringComparison.OrdinalIgnoreCase) || method.Equals("PATCH", StringComparison.OrdinalIgnoreCase))
                         {
-                            var formData = httpContextAccessor.HttpContext.Request.Form;
+                            if (httpContextAccessor.HttpContext.Request.HasFormContentType)
+                            {
+                                var formData = httpContextAccessor.HttpContext.Request.Form;
 
-                            // If we can parse first request form element key as JSON then we throw
-                            if(isValidJSON(formData.First().Key.ToString()))
-                            {
-                                throw new Exception("Invalid form data passed in the request. The data passed was JSON while it should be form data.");
-                            }
+                                // If we can parse first request form element key as JSON then we throw
+                                if (isValidJSON(formData.First().Key.ToString()))
+                                {
+                                    throw new Exception("Invalid form data passed in the request. The data passed was JSON while it should be form data.");
+                                }
 
-                            try
-                            {
-                                result = formData.ToDictionary(x => x.Key, x => (object) x.Value);
+                                try
+                                {
+                                    result = formData.ToDictionary(x => x.Key, x => (object)x.Value);
+                                }
+                                catch
+                                {
+                                    throw new Exception("Invalid form data passed in the request.");
+                                }
                             }
-                            catch
+                            else if (httpContextAccessor.HttpContext.Request.HasJsonContentType())
                             {
-                                throw new Exception("Invalid form data passed in the request.");
+                                string json;
+                                using (var sr = new StreamReader(httpContextAccessor.HttpContext.Request.Body))
+                                {
+                                    // Async read of the request body is mandatory.
+                                    json = sr.ReadToEndAsync().GetAwaiter().GetResult();
+                                }
+
+                                try
+                                {
+                                    result = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                                }
+                                catch
+                                {
+                                    throw new Exception("Invalid JSON passed in the request.");
+                                }
                             }
                         }
-                        else if (HasJsonContentType(httpContextAccessor.HttpContext.Request))
+                        else if (httpContextAccessor.HttpContext.Request.Method.Equals("GET", StringComparison.OrdinalIgnoreCase))
                         {
-                            string json;
-                            using (var sr = new StreamReader(httpContextAccessor.HttpContext.Request.Body))
-                            {
-                                // Async read of the request body is mandatory.
-                                json = sr.ReadToEndAsync().GetAwaiter().GetResult();
-                            }
+                            var queryData = httpContextAccessor.HttpContext.Request.Query;
 
                             try
                             {
-                                result = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                                result = queryData.ToDictionary(x => x.Key, x => (object)x.Value);
+
+                                // We never need to keep the Workflow token
+                                result.Remove("token");
                             }
                             catch
                             {
-                                throw new Exception("Invalid JSON passed in the request.");
+                                throw new Exception("Invalid query string data passed in the request.");
                             }
+                        }
+                        else
+                        {
+                            throw new Exception("The request method is not supported");
                         }
                     }
 
@@ -210,41 +230,6 @@ namespace OrchardCore.Workflows.Http.Scripting
             {
                 return false;
             }
-        }
-
-        /// <summary>
-        /// Checks the Content-Type header for JSON types.
-        /// This method needs to be removed after we drop support for netcoreapp3.1
-        /// It is now part of net5.0 see :
-        /// https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.httprequestjsonextensions.hasjsoncontenttype?view=aspnetcore-5.0
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        private static bool HasJsonContentType(HttpRequest request)
-        {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            if (!MediaTypeHeaderValue.TryParse(request.ContentType, out var mt))
-            {
-                return false;
-            }
-
-            // Matches application/json
-            if (mt.MediaType.Equals("application/json", StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-
-            // Matches +json, e.g. application/ld+json
-            if (mt.Suffix.Equals("json", StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-
-            return false;
         }
 
         public IEnumerable<GlobalMethod> GetMethods()

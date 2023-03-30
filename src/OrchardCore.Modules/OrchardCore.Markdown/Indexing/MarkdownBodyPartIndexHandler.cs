@@ -8,10 +8,7 @@ namespace OrchardCore.Markdown.Indexing
     {
         public override Task BuildIndexAsync(MarkdownBodyPart part, BuildPartIndexContext context)
         {
-            var options = context.Settings.ToOptions()
-                | DocumentIndexOptions.Sanitize
-                | DocumentIndexOptions.Analyze
-                ;
+            var options = context.Settings.ToOptions() | DocumentIndexOptions.Sanitize;
 
             foreach (var key in context.Keys)
             {

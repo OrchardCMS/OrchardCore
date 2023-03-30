@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -29,7 +29,7 @@ namespace OrchardCore.Contents.AdminNodes
         public override IDisplayResult Edit(ContentTypesAdminNode treeNode)
         {
             var listable = _contentDefinitionManager.ListTypeDefinitions()
-                .Where(ctd => ctd.GetSettings<ContentTypeSettings>().Listable)
+                .Where(ctd => ctd.IsListable())
                 .OrderBy(ctd => ctd.DisplayName).ToList();
 
             var entries = listable.Select(x => new ContentTypeEntryViewModel

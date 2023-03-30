@@ -1,0 +1,23 @@
+@model LuceneContentIndexSettingsViewModel
+
+<h4>Lucene @T["Index settings"]</h4>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="LuceneContentIndexSettings.Included" data-bs-toggle="collapse" data-bs-target="#lucene-index-settings" checked="@Model.LuceneContentIndexSettings.Included" />
+        <label class="form-check-label" asp-for="LuceneContentIndexSettings.Included">@T["Include this element in the index"]</label>
+        <span class="hint dashed">@T["Check to include the value of this element in the index."]</span>
+    </div>
+    <div id="lucene-index-settings" class="collapse@(Model.LuceneContentIndexSettings.Included ? " show": "")">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="LuceneContentIndexSettings.Keyword" checked="@Model.LuceneContentIndexSettings.Keyword" />
+            <label class="form-check-label" asp-for="LuceneContentIndexSettings.Keyword">@T["Keyword"]</label>
+            <span class="hint dashed">@T["Check to index as a keyword value (indexed as a single token)."]</span>
+        </div>
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="LuceneContentIndexSettings.Stored" checked="@Model.LuceneContentIndexSettings.Stored" />
+            <label class="form-check-label" asp-for="LuceneContentIndexSettings.Stored">@T["Stored"]</label>
+            <span class="hint dashed">@T["Check to be able to retrieve the original value from the index."]</span>
+        </div>
+    </div>
+</div>

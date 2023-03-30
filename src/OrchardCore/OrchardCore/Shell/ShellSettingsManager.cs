@@ -118,7 +118,7 @@ namespace OrchardCore.Environment.Shell
                 await EnsureConfigurationAsync();
 
                 var tenantsSettings = (await new ConfigurationBuilder()
-                    .AddSourcesAsync(_settingsSources))
+                    .AddSourcesAsync(tenant, _settingsSources))
                     .Build();
 
                 var tenantSettings = new ConfigurationBuilder()
@@ -223,6 +223,36 @@ namespace OrchardCore.Environment.Shell
             }
         }
 
+        public async Task RemoveSettingsAsync(ShellSettings settings)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                await EnsureConfigurationAsync();
+
+                if (settings == null)
+                {
+                    throw new ArgumentNullException(nameof(settings));
+                }
+
+                await _settingsSources.RemoveAsync(settings.Name);
+
+                await _tenantConfigSemaphore.WaitAsync();
+                try
+                {
+                    await _tenantConfigSources.RemoveAsync(settings.Name);
+                }
+                finally
+                {
+                    _tenantConfigSemaphore.Release();
+                }
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
         private async Task EnsureConfigurationAsync()
         {
             if (_configuration != null)
@@ -239,7 +269,7 @@ namespace OrchardCore.Environment.Shell
                 .AddConfiguration(_applicationConfiguration)
                 .AddSourcesAsync(_tenantsConfigSources);
 
-            if (lastProviders.Count() > 0)
+            if (lastProviders?.Length > 0)
             {
                 configurationBuilder.AddConfiguration(new ConfigurationRoot(lastProviders));
             }

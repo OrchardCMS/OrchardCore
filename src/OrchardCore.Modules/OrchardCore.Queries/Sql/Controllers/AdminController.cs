@@ -82,7 +82,7 @@ namespace OrchardCore.Queries.Sql.Controllers
 
             model.FactoryName = _store.Configuration.ConnectionFactory.GetType().FullName;
 
-            if (SqlParser.TryParse(tokenizedQuery, dialect, _store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
+            if (SqlParser.TryParse(tokenizedQuery, _store.Configuration.Schema, dialect, _store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {
                 model.RawSql = rawQuery;
                 model.Parameters = JsonConvert.SerializeObject(parameters, Formatting.Indented);

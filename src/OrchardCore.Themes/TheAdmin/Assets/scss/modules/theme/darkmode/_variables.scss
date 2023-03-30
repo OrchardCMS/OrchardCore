@@ -99,7 +99,7 @@ $dropdown-link-hover-bg: $primary !default;
 
 // Navs
 
-$nav-link-padding-x: 2rem !default;
+$nav-link-padding-x: 1rem !default;
 $nav-link-disabled-color: $gray-500 !default;
 
 $nav-tabs-border-color: $gray-700 !default;
@@ -189,3 +189,12 @@ $close-text-shadow: none !default;
 // Code
 
 $pre-color: inherit !default;
+
+// Custom checkbox
+
+$form-check-input-bg: #181a1b;
+$form-check-input-border: 1px solid #3c4144;
+
+// List Group
+
+$list-group-color: $white;

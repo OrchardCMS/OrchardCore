@@ -73,7 +73,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
             return false;
         }
-        
+
         public bool Match(string helper, IEnumerable<string> arguments)
         {
             foreach (var rule in _rules)

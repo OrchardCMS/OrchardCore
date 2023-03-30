@@ -30,11 +30,6 @@ namespace OrchardCore.Localization
                 {
                     Name = "Administrator",
                     Permissions = new[] { ManageCultures }
-                },
-                new PermissionStereotype
-                {
-                    Name = "Editor",
-                    Permissions = new[] { ManageCultures }
                 }
             };
         }

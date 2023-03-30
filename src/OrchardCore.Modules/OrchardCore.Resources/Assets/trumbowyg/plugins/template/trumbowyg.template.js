@@ -8,11 +8,20 @@
             en: {
                 template: 'Template'
             },
+            sl: {
+                template: 'Predloga'
+            },
+            by: {
+                template: 'Шаблон'
+            },
             da: {
                 template: 'Skabelon'
             },
             de: {
                 template: 'Vorlage'
+            },
+            et: {
+                template: 'Mall'
             },
             fr: {
                 template: 'Patron'

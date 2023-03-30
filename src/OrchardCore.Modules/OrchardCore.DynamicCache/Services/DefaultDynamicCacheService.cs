@@ -5,7 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Abstractions.Pooling;
 using OrchardCore.DynamicCache.Models;
@@ -15,11 +17,17 @@ namespace OrchardCore.DynamicCache.Services
 {
     public class DefaultDynamicCacheService : IDynamicCacheService
     {
+        public const string FailoverKey = "OrchardCore_DynamicCache_FailoverKey";
+        public static TimeSpan DefaultFailoverRetryLatency = TimeSpan.FromSeconds(30);
+
         private readonly PoolingJsonSerializer _serializer;
         private readonly ICacheContextManager _cacheContextManager;
         private readonly IDynamicCache _dynamicCache;
+        private readonly IMemoryCache _memoryCache;
         private readonly IServiceProvider _serviceProvider;
+        private readonly DynamicCacheOptions _dynamicCacheOptions;
         private readonly CacheOptions _cacheOptions;
+        private readonly ILogger _logger;
 
         private readonly Dictionary<string, string> _localCache = new Dictionary<string, string>();
         private ITagCache _tagcache;
@@ -28,14 +36,21 @@ namespace OrchardCore.DynamicCache.Services
             ArrayPool<char> _arrayPool,
             ICacheContextManager cacheContextManager,
             IDynamicCache dynamicCache,
+            IMemoryCache memoryCache,
             IServiceProvider serviceProvider,
-            IOptions<CacheOptions> options)
+            IOptions<DynamicCacheOptions> dynamicCacheOptions,
+            IOptions<CacheOptions> options,
+            ILogger<DefaultDynamicCacheService> logger)
         {
             _serializer = new PoolingJsonSerializer(_arrayPool);
             _cacheContextManager = cacheContextManager;
             _dynamicCache = dynamicCache;
+            _memoryCache = memoryCache;
             _serviceProvider = serviceProvider;
+            _dynamicCacheOptions = dynamicCacheOptions.Value;
+            _dynamicCacheOptions.FailoverRetryLatency ??= DefaultFailoverRetryLatency;
             _cacheOptions = options.Value;
+            _logger = logger;
         }
 
         public async Task<string> GetCachedValueAsync(CacheContext context)
@@ -84,6 +99,12 @@ namespace OrchardCore.DynamicCache.Services
 
         private async Task SetCachedValueAsync(string cacheKey, string value, CacheContext context)
         {
+            var failover = _memoryCache.Get<bool>(FailoverKey);
+            if (failover)
+            {
+                return;
+            }
+
             var bytes = Encoding.UTF8.GetBytes(value);
 
             var options = new DistributedCacheEntryOptions
@@ -99,7 +120,21 @@ namespace OrchardCore.DynamicCache.Services
                 options.SlidingExpiration = new TimeSpan(0, 1, 0);
             }
 
-            await _dynamicCache.SetAsync(cacheKey, bytes, options);
+            try
+            {
+                await _dynamicCache.SetAsync(cacheKey, bytes, options);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to write the '{CacheKey}' to the dynamic cache", cacheKey);
+
+                _memoryCache.Set(FailoverKey, true, new MemoryCacheEntryOptions()
+                {
+                    AbsoluteExpirationRelativeToNow = _dynamicCacheOptions.FailoverRetryLatency
+                });
+
+                return;
+            }
 
             // Lazy load to prevent cyclic dependency
             _tagcache ??= _serviceProvider.GetRequiredService<ITagCache>();
@@ -133,13 +168,33 @@ namespace OrchardCore.DynamicCache.Services
                 return content;
             }
 
-            var bytes = await _dynamicCache.GetAsync(cacheKey);
-            if (bytes == null)
+            var failover = _memoryCache.Get<bool>(FailoverKey);
+            if (failover)
             {
                 return null;
             }
 
-            return Encoding.UTF8.GetString(bytes);
+            try
+            {
+                var bytes = await _dynamicCache.GetAsync(cacheKey);
+                if (bytes == null)
+                {
+                    return null;
+                }
+
+                return Encoding.UTF8.GetString(bytes);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to read the '{CacheKey}' from the dynamic cache", cacheKey);
+
+                _memoryCache.Set(FailoverKey, true, new MemoryCacheEntryOptions()
+                {
+                    AbsoluteExpirationRelativeToNow = _dynamicCacheOptions.FailoverRetryLatency
+                });
+            }
+
+            return null;
         }
 
         private async Task<CacheContext> GetCachedContextAsync(string cacheKey)

@@ -1,15 +1,9 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Tests.Apis.Context;
-using Xunit;
 using YesSql;
+using ISession = YesSql.ISession;
 
 namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
 {
@@ -33,8 +27,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 await context.PostRecipeAsync(recipe);
 
                 // Test
-                var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
-                await shellScope.UsingAsync(async scope =>
+                await context.UsingTenantScopeAsync(async scope =>
                 {
                     var session = scope.ServiceProvider.GetRequiredService<ISession>();
                     var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
@@ -75,8 +68,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 await context.PostRecipeAsync(recipe);
 
                 // Test
-                var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
-                await shellScope.UsingAsync(async scope =>
+                await context.UsingTenantScopeAsync(async scope =>
                 {
                     var session = scope.ServiceProvider.GetRequiredService<ISession>();
                     var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
@@ -92,7 +84,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                     Assert.False(draftVersion?.Published);
 
                     var newVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == "newversion");
-                    Assert.Equal("new version", newVersion.DisplayText);
+                    Assert.Equal("new version", newVersion?.DisplayText);
                     Assert.True(newVersion?.Latest);
                     Assert.True(newVersion?.Published);
                 });
@@ -121,8 +113,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 await context.PostRecipeAsync(recipe);
 
                 // Test
-                var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
-                await shellScope.UsingAsync(async scope =>
+                await context.UsingTenantScopeAsync(async scope =>
                 {
                     var session = scope.ServiceProvider.GetRequiredService<ISession>();
                     var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
@@ -166,8 +157,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 await context.PostRecipeAsync(recipe);
 
                 // Test
-                var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
-                await shellScope.UsingAsync(async scope =>
+                await context.UsingTenantScopeAsync(async scope =>
                 {
                     var session = scope.ServiceProvider.GetRequiredService<ISession>();
                     var blogPostsCount = await session.Query<ContentItem, ContentItemIndex>(x =>
@@ -212,8 +202,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 await context.PostRecipeAsync(firstRecipe);
 
                 // Test
-                var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
-                await shellScope.UsingAsync(async scope =>
+                await context.UsingTenantScopeAsync(async scope =>
                 {
                     var session = scope.ServiceProvider.GetRequiredService<ISession>();
                     var blogPostsCount = await session.Query<ContentItem, ContentItemIndex>(x =>

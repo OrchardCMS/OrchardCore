@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OrchardCore.Deployment;
+using OrchardCore.Admin;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Localization.Drivers;
 using OrchardCore.Localization.Models;
 using OrchardCore.Localization.Services;
@@ -33,7 +34,9 @@ namespace OrchardCore.Localization
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<ILocalizationService, LocalizationService>();
 
-            services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization");
+            services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization").
+                AddDataAnnotationsPortableObjectLocalization();
+
             services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
         }
 
@@ -45,14 +48,15 @@ namespace OrchardCore.Localization
             var defaultCulture = localizationService.GetDefaultCultureAsync().GetAwaiter().GetResult();
             var supportedCultures = localizationService.GetSupportedCulturesAsync().GetAwaiter().GetResult();
 
-            var options = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
-            options.SetDefaultCulture(defaultCulture);
-            options
-                .AddSupportedCultures(supportedCultures)
-                .AddSupportedUICultures(supportedCultures)
-                ;
+            var localizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
+            var ignoreSystemSettings = serviceProvider.GetService<IOptions<CultureOptions>>().Value.IgnoreSystemSettings;
 
-            app.UseRequestLocalization(options);
+            new LocalizationOptionsUpdater(localizationOptions, ignoreSystemSettings)
+                .SetDefaultCulture(defaultCulture)
+                .AddSupportedCultures(supportedCultures)
+                .AddSupportedUICultures(supportedCultures);
+
+            app.UseRequestLocalization(localizationOptions);
         }
     }
 
@@ -61,13 +65,37 @@ namespace OrchardCore.Localization
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<LocalizationSettings>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
-            {
-                var S = sp.GetService<IStringLocalizer<LocalizationDeploymentStartup>>();
-                return new SiteSettingsPropertyDeploymentStepDriver<LocalizationSettings>(S["Culture settings"], S["Exports the culture settings."]);
-            });
-            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<LocalizationSettings>());
+            services.AddSiteSettingsPropertyDeploymentStep<LocalizationSettings, LocalizationDeploymentStartup>(S => S["Culture settings"], S => S["Exports the culture settings."]);
         }
-    }    
+    }
+
+    [Feature("OrchardCore.Localization.ContentLanguageHeader")]
+    public class ContentLanguageHeaderStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.Configure<RequestLocalizationOptions>(options => options.ApplyCurrentCultureToResponseHeaders = true);
+        }
+    }
+
+    [Feature("OrchardCore.Localization.AdminCulturePicker")]
+    public class CulturePickerStartup : StartupBase
+    {
+        private readonly ShellSettings _shellSettings;
+        private readonly AdminOptions _adminOptions;
+
+        public CulturePickerStartup(IOptions<AdminOptions> adminOptions, ShellSettings shellSettings)
+        {
+            _shellSettings = shellSettings;
+            _adminOptions = adminOptions.Value;
+        }
+
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IShapeTableProvider, AdminCulturePickerShapes>();
+
+            services.Configure<RequestLocalizationOptions>(options =>
+                options.AddInitialRequestCultureProvider(new AdminCookieCultureProvider(_shellSettings, _adminOptions)));
+        }
+    }
 }
