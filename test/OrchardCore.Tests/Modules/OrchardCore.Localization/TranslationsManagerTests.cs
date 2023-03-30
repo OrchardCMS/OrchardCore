@@ -1,10 +1,5 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Moq;
 using OrchardCore.DataLocalization.Models;
 using OrchardCore.DataLocalization.Services;
-using Xunit;
 
 namespace OrchardCore.Modules.Localization.Tests
 {

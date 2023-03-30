@@ -1,7 +1,4 @@
-using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Localization;
 using OrchardCore.Localization.Data;
-using Xunit;
 
 namespace OrchardCore.Localization.Tests
 {

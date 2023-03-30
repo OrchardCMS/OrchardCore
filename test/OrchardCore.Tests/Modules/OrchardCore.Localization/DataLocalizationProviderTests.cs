@@ -1,12 +1,7 @@
-using System.Collections.Generic;
-using System.Linq;
-using Moq;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Services;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.DataLocalization.Services;
-using Xunit;
 
 namespace OrchardCore.Modules.Localization.Tests
 {

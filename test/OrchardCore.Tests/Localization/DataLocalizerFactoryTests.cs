@@ -1,13 +1,4 @@
-using System.Collections.Generic;
-using System.Globalization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Moq;
-using OrchardCore.Localization;
 using OrchardCore.Localization.Data;
-using Xunit;
 
 namespace OrchardCore.Localization.Tests
 {
