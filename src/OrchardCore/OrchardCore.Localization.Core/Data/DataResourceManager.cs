@@ -1,24 +1,29 @@
-using Microsoft.Extensions.Caching.Memory;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System;
 using System.Threading;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace OrchardCore.Localization.Data;
 
 public class DataResourceManager
 {
-    private const string CacheKeyPrefix = "OCC-CultureDictionary-";
+    private const string _cacheKeyPrefix = "CultureDictionary-";
 
-    private static readonly PluralizationRuleDelegate NoPluralRule = n => 0;
+    private static readonly PluralizationRuleDelegate DefaultPluralRule = n => (n != 1 ? 1 : 0);
 
     private readonly IDataTranslationProvider _translationProvider;
+    private readonly IList<IPluralRuleProvider> _pluralRuleProviders;
     private readonly IMemoryCache _cache;
 
-    public DataResourceManager(IDataTranslationProvider translationProvider, IMemoryCache cache)
+    public DataResourceManager(
+        IDataTranslationProvider translationProvider,
+        IEnumerable<IPluralRuleProvider> pluralRuleProviders,
+        IMemoryCache cache)
     {
         _translationProvider = translationProvider;
+        _pluralRuleProviders = pluralRuleProviders.OrderBy(o => o.Order).ToArray();
         _cache = cache;
     }
 
@@ -36,10 +41,7 @@ public class DataResourceManager
             throw new ArgumentException($"'{nameof(context)}' cannot be null or empty.", nameof(context));
         }
 
-        if (culture == null)
-        {
-            culture = CultureInfo.CurrentUICulture;
-        }
+        culture ??= CultureInfo.CurrentUICulture;
 
         string value = null;
         var dictionary = GetCultureDictionary(culture);
@@ -91,10 +93,19 @@ public class DataResourceManager
 
     private CultureDictionary GetCultureDictionary(CultureInfo culture)
     {
-        var cachedDictionary = _cache.GetOrCreate(CacheKeyPrefix + culture.Name, k => new Lazy<CultureDictionary>(() =>
+        var cachedDictionary = _cache.GetOrCreate(_cacheKeyPrefix + culture.Name, k => new Lazy<CultureDictionary>(() =>
         {
-            var dictionary = new CultureDictionary(culture.Name, NoPluralRule);
+            var rule = DefaultPluralRule;
 
+            foreach (var provider in _pluralRuleProviders)
+            {
+                if (provider.TryGetRule(culture, out rule))
+                {
+                    break;
+                }
+            }
+
+            var dictionary = new CultureDictionary(culture.Name, rule ?? DefaultPluralRule);
             _translationProvider.LoadTranslations(culture.Name, dictionary);
 
             return dictionary;
