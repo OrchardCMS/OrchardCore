@@ -58,8 +58,6 @@ public class DataLocalizer : IDataLocalizer
             : GetAllStrings(culture);
     }
 
-    public IStringLocalizer WithCulture(CultureInfo culture) => this;
-
     public (LocalizedString, object[]) GetTranslation(string name, params object[] arguments)
     {
         if (name == null)
