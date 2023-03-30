@@ -1,7 +1,6 @@
-namespace OrchardCore.Localization
+namespace OrchardCore.Localization;
+
+public interface IDataLocalizerFactory
 {
-    public interface IDataLocalizerFactory
-    {
-        IDataLocalizer Create();
-    }
+    IDataLocalizer Create();
 }

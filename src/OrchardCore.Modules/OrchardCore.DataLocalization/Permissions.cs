@@ -3,40 +3,39 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.DataLocalization
+namespace OrchardCore.DataLocalization;
+
+/// <summary>
+/// Represents the localization module permissions.
+/// </summary>
+public class Permissions : IPermissionProvider
 {
     /// <summary>
-    /// Represents the localization module permissions.
+    /// Gets a permission for managing the cultures.
     /// </summary>
-    public class Permissions : IPermissionProvider
+    public static readonly Permission ManageLocalization = new Permission("ManageLocalization", "Manage dynamic localizations");
+
+    /// <inheritdocs />
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        /// <summary>
-        /// Gets a permission for managing the cultures.
-        /// </summary>
-        public static readonly Permission ManageLocalization = new Permission("ManageLocalization", "Manage dynamic localizations");
+        return Task.FromResult(new[] { ManageLocalization }.AsEnumerable());
+    }
 
-        /// <inheritdocs />
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+    /// <inheritdocs />
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    {
+        return new[]
         {
-            return Task.FromResult(new[] { ManageLocalization }.AsEnumerable());
-        }
-
-        /// <inheritdocs />
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        {
-            return new[]
+            new PermissionStereotype
             {
-                new PermissionStereotype
-                {
-                    Name = "Administrator",
-                    Permissions = new[] { ManageLocalization }
-                },
-                new PermissionStereotype
-                {
-                    Name = "Editor",
-                    Permissions = new[] { ManageLocalization }
-                }
-            };
-        }
+                Name = "Administrator",
+                Permissions = new[] { ManageLocalization }
+            },
+            new PermissionStereotype
+            {
+                Name = "Editor",
+                Permissions = new[] { ManageLocalization }
+            }
+        };
     }
 }

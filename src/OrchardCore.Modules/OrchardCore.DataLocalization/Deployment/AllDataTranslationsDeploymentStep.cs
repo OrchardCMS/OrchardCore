@@ -1,12 +1,11 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.DataLocalization.Deployment
+namespace OrchardCore.DataLocalization.Deployment;
+
+public class AllDataTranslationsDeploymentStep : DeploymentStep
 {
-    public class AllDataTranslationsDeploymentStep : DeploymentStep
+    public AllDataTranslationsDeploymentStep()
     {
-        public AllDataTranslationsDeploymentStep()
-        {
-            Name = "AllDataTranslations";
-        }
+        Name = "AllDataTranslations";
     }
 }

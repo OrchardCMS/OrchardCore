@@ -8,29 +8,28 @@ using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Recipes;
 
-namespace OrchardCore.DataLocalization
+namespace OrchardCore.DataLocalization;
+
+/// <summary>
+/// Represents a localization module entry point.
+/// </summary>
+public class Startup : StartupBase
 {
-    /// <summary>
-    /// Represents a localization module entry point.
-    /// </summary>
-    public class Startup : StartupBase
+    public override int ConfigureOrder => -100;
+
+    /// <inheritdocs />
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override int ConfigureOrder => -100;
+        services.AddScoped<TranslationsManager>();
+        services.AddRecipeExecutionStep<TranslationsStep>();
 
-        /// <inheritdocs />
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<TranslationsManager>();
-            services.AddRecipeExecutionStep<TranslationsStep>();
+        services.AddTransient<IDeploymentSource, AllDataTranslationsDeploymentSource>();
+        services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllDataTranslationsDeploymentStep>());
+        services.AddScoped<IDisplayDriver<DeploymentStep>, AllDataTranslationsDeploymentStepDriver>();
 
-            services.AddTransient<IDeploymentSource, AllDataTranslationsDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllDataTranslationsDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllDataTranslationsDeploymentStepDriver>();
+        services.AddScoped<ILocalizationDataProvider, ContentTypeDataLocalizationProvider>();
+        services.AddScoped<ILocalizationDataProvider, ContentFieldDataLocalizationProvider>();
 
-            services.AddScoped<ILocalizationDataProvider, ContentTypeDataLocalizationProvider>();
-            services.AddScoped<ILocalizationDataProvider, ContentFieldDataLocalizationProvider>();
-
-            services.AddDataLocalization();
-        }
+        services.AddDataLocalization();
     }
 }

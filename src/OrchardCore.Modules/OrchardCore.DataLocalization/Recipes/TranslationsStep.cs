@@ -6,33 +6,32 @@ using OrchardCore.Recipes.Services;
 using OrchardCore.DataLocalization.Models;
 using OrchardCore.DataLocalization.Services;
 
-namespace OrchardCore.DataLocalization.Recipes
-{
-    public class TranslationsStep : IRecipeStepHandler
-    {
-        private readonly TranslationsManager _translationsManager;
+namespace OrchardCore.DataLocalization.Recipes;
 
-        public TranslationsStep(TranslationsManager translationsManager)
+public class TranslationsStep : IRecipeStepHandler
+{
+    private readonly TranslationsManager _translationsManager;
+
+    public TranslationsStep(TranslationsManager translationsManager)
+    {
+        _translationsManager = translationsManager;
+    }
+
+    public async Task ExecuteAsync(RecipeExecutionContext context)
+    {
+        if (!String.Equals(context.Name, "DynamicDataTranslations", StringComparison.OrdinalIgnoreCase))
         {
-            _translationsManager = translationsManager;
+            return;
         }
 
-        public async Task ExecuteAsync(RecipeExecutionContext context)
+        if (context.Step.Property("DynamicDataTranslations").Value is JObject translations)
         {
-            if (!String.Equals(context.Name, "DynamicDataTranslations", StringComparison.OrdinalIgnoreCase))
+            foreach (var property in translations.Properties())
             {
-                return;
-            }
+                var name = property.Name;
+                var value = property.Value.ToObject<Translation>();
 
-            if (context.Step.Property("DynamicDataTranslations").Value is JObject translations)
-            {
-                foreach (var property in translations.Properties())
-                {
-                    var name = property.Name;
-                    var value = property.Value.ToObject<Translation>();
-
-                    await _translationsManager.UpdateTranslationAsync(name, new[] { value });
-                }
+                await _translationsManager.UpdateTranslationAsync(name, new[] { value });
             }
         }
     }

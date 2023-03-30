@@ -4,40 +4,39 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.DataLocalization.Services;
 
-namespace OrchardCore.DataLocalization.Deployment
+namespace OrchardCore.DataLocalization.Deployment;
+
+public class AllDataTranslationsDeploymentSource : IDeploymentSource
 {
-    public class AllDataTranslationsDeploymentSource : IDeploymentSource
+    private readonly TranslationsManager _translationsManager;
+
+    public AllDataTranslationsDeploymentSource(TranslationsManager translationsManager)
     {
-        private readonly TranslationsManager _translationsManager;
+        _translationsManager = translationsManager ?? throw new ArgumentNullException(nameof(translationsManager));
+    }
 
-        public AllDataTranslationsDeploymentSource(TranslationsManager translationsManager)
+    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    {
+        var allDataTranslationsState = step as AllDataTranslationsDeploymentStep;
+
+        if (allDataTranslationsState == null)
         {
-            _translationsManager = translationsManager ?? throw new ArgumentNullException(nameof(translationsManager));
+            return;
         }
 
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        var translationObjects = new JObject();
+        var translationsDocument = await _translationsManager.GetTranslationsDocumentAsync();
+
+        foreach (var translation in translationsDocument.Translations)
         {
-            var allDataTranslationsState = step as AllDataTranslationsDeploymentStep;
-
-            if (allDataTranslationsState == null)
-            {
-                return;
-            }
-
-            var translationObjects = new JObject();
-            var translationsDocument = await _translationsManager.GetTranslationsDocumentAsync();
-
-            foreach (var translation in translationsDocument.Translations)
-            {
-                translationObjects[translation.Key] = JObject.FromObject(translation.Value);
-            }
-
-            result.Steps.Add(new JObject(
-                new JProperty("name", "DynamicDataTranslations"),
-                new JProperty("DynamicDataTranslations", translationObjects)
-            ));
-
-            await Task.CompletedTask;
+            translationObjects[translation.Key] = JObject.FromObject(translation.Value);
         }
+
+        result.Steps.Add(new JObject(
+            new JProperty("name", "DynamicDataTranslations"),
+            new JProperty("DynamicDataTranslations", translationObjects)
+        ));
+
+        await Task.CompletedTask;
     }
 }

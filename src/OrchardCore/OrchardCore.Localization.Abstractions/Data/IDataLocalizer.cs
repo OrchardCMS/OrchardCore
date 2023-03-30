@@ -1,6 +1,5 @@
-namespace OrchardCore.Localization
+namespace OrchardCore.Localization;
+
+public interface IDataLocalizer : IPluralStringLocalizer
 {
-    public interface IDataLocalizer : IPluralStringLocalizer
-    {
-    }
 }
