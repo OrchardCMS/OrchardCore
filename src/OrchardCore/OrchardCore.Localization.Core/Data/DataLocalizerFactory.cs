@@ -20,7 +20,6 @@ namespace OrchardCore.Localization.Data
             _logger = logger;
         }
 
-        public IDataLocalizer Create()
-            => new DataLocalizer(_localizationManager, _fallBackToParentCulture, _logger);
+        public IDataLocalizer Create() => new DataLocalizer(_localizationManager, _fallBackToParentCulture, _logger);
     }
 }

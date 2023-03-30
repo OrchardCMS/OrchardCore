@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using OrchardCore.Documents;
 using OrchardCore.DataLocalization.Models;
+using System.Collections.Generic;
 
 namespace OrchardCore.DataLocalization.Services
 {
@@ -17,15 +18,17 @@ namespace OrchardCore.DataLocalization.Services
         public async Task RemoveTranslationAsync(string name)
         {
             var document = await LoadTranslationsDocumentAsync();
+
             document.Translations.Remove(name);
 
             await _documentManager.UpdateAsync(document);
         }
 
-        public async Task UpdateTranslationAsync(string name, Translation translation)
+        public async Task UpdateTranslationAsync(string name, IEnumerable<Translation> translations)
         {
             var document = await LoadTranslationsDocumentAsync();
-            document.Translations[name] = translation;
+
+            document.Translations[name] = translations;
 
             await _documentManager.UpdateAsync(document);
         }

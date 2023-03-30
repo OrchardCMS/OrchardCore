@@ -31,7 +31,7 @@ namespace OrchardCore.DataLocalization.Recipes
                     var name = property.Name;
                     var value = property.Value.ToObject<Translation>();
 
-                    await _translationsManager.UpdateTranslationAsync(name, value);
+                    await _translationsManager.UpdateTranslationAsync(name, new[] { value });
                 }
             }
         }

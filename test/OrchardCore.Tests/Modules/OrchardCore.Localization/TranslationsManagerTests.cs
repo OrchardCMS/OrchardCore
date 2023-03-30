@@ -10,96 +10,111 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Localization
 {
     public class TranslationsManagerTests
     {
+        private readonly Mock<ITranslationsManager>  _translationsManager;
+
+        public TranslationsManagerTests()
+        {
+            _translationsManager = new Mock<ITranslationsManager>();
+            _translationsManager.Setup(tm => tm.GetTranslationsDocumentAsync())
+                .ReturnsAsync(() => GetDefaultTranslationsDocument());
+        }
+
         [Fact]
         public async Task GetTranslationsDocument()
         {
-            var translationsManager = new Mock<ITranslationsManager>();
-            translationsManager.Setup(tm => tm.GetTranslationsDocumentAsync())
-                .ReturnsAsync(() => {
-                    var translationsDocument = new TranslationsDocument();
-                    foreach (var translation in GetTranslations())
-                    {
-                        var key = $"{translation.Context}:{translation.Key}";
-                        translationsDocument.Translations.Add(key, translation);
-                    }
-
-                    return translationsDocument;
-                });
-            var translationsDocument = await translationsManager.Object.GetTranslationsDocumentAsync();
+            var translationsDocument = await _translationsManager.Object.GetTranslationsDocumentAsync();
 
             Assert.NotNull(translationsDocument);
-            Assert.Equal(4, translationsDocument.Translations.Count);
-            var firstTranslation = translationsDocument.Translations.First();
-            Assert.Equal("Article1", firstTranslation.Value.Key);
-            Assert.Equal("es", firstTranslation.Value.Values.Last().Key);
-            Assert.Equal("Artículo1", firstTranslation.Value.Values.Last().Value);
+            Assert.Equal(3, translationsDocument.Translations.Count);
+            var spanishTranslations = translationsDocument.Translations["es"];
+            var frenchTranslations = translationsDocument.Translations["fr"];
+            Assert.Equal("Artículo1", spanishTranslations.First().Value);
+            Assert.Equal("Article1", frenchTranslations.First().Value);
+            Assert.Equal("Nombre", spanishTranslations.Last().Value);
+            Assert.Equal("Nome", frenchTranslations.Last().Value);
         }
 
         [Fact]
         public async Task GetTranslationsDocument_GroupByContext()
         {
-            var translationsManager = new Mock<ITranslationsManager>();
-            translationsManager.Setup(tm => tm.GetTranslationsDocumentAsync())
-                .ReturnsAsync(() => {
-                    var translationsDocument = new TranslationsDocument();
-                    foreach (var translation in GetTranslations())
-                    {
-                        var key = $"{translation.Context}:{translation.Key}";
-                        translationsDocument.Translations.Add(key, translation);
-                    }
-
-                    return translationsDocument;
-                });
-            var translationsDocument = await translationsManager.Object.GetTranslationsDocumentAsync();
-            var groups = translationsDocument.Translations.GroupBy(t => t.Value.Context);
+            var translationsDocument = await _translationsManager.Object.GetTranslationsDocumentAsync();
+            var groups = translationsDocument.Translations
+                .SelectMany(t => t.Value)
+                .GroupBy(t => t.Context);
 
             Assert.Equal(2, groups.Count());
             Assert.StartsWith("Content Type", groups.First().Key);
-            Assert.Equal(3, (int)groups.First().Count());
+            Assert.Equal(8, groups.First().Count());
             Assert.StartsWith("Content Field", groups.Last().Key);
-            Assert.Equal(1, (int)groups.Last().Count());
+            Assert.Equal(3, groups.Last().Count());
         }
 
-        private IEnumerable<Translation> GetTranslations()
+        private static TranslationsDocument GetDefaultTranslationsDocument()
         {
-            return new List<Translation>{
-                new Translation {
+            var document = new TranslationsDocument();
+            document.Translations.Add("en", new List<Translation> {
+                 new Translation {
                     Context = "Content Type",
-                    Key = "Article1",
-                    Values = new Dictionary<string, string> {
-                        { "en", "Article1" },
-                        { "fr", "Article1" },
-                        { "es", "Artículo1" }
-                    }
+                    Key = "Content Type:Article1",
+                    Value = "Article1",
                 },
-                new Translation {
+                  new Translation {
                     Context = "Content Type",
-                    Key = "Article2",
-                    Values = new Dictionary<string, string> {
-                        { "en", "Article2" },
-                        { "fr", "Article2" },
-                        { "es", "" }
-                    }
+                    Key = "Content Type:Article2",
+                    Value = "Article2",
                 },
-                new Translation {
+                   new Translation {
                     Context = "Content Type",
-                    Key = "Article3",
-                    Values = new Dictionary<string, string> {
-                        { "en", "" },
-                        { "fr", "" },
-                        { "es", "Artículo3" }
-                    }
+                    Key = "Content Type:Article3",
+                    Value = "",
                 },
-                new Translation {
+                   new Translation {
                     Context = "Content Field",
-                    Key = "Name",
-                    Values = new Dictionary<string, string> {
-                        { "en", "Name" },
-                        { "fr", "Nome" },
-                        { "es", "Nombre" }
-                    }
+                    Key = "Content Field:Name",
+                    Value = "Name",
+                }
+            });
+            document.Translations.Add("es", new List<Translation> {
+                 new Translation {
+                    Context = "Content Type",
+                    Key = "Content Type:Article1",
+                    Value = "Artículo1",
                 },
-            };
+                   new Translation {
+                    Context = "Content Type",
+                    Key = "Content Type:Article3",
+                    Value = "Artículo3",
+                },
+                   new Translation {
+                    Context = "Content Field",
+                    Key = "Content Field:Name",
+                    Value = "Nombre",
+                }
+            });
+            document.Translations.Add("fr", new List<Translation> {
+                 new Translation {
+                    Context = "Content Type",
+                    Key = "Content Type:Article1",
+                    Value = "Article1",
+                },
+                  new Translation {
+                    Context = "Content Type",
+                    Key = "Content Type:Article2",
+                    Value = "Article2",
+                },
+                   new Translation {
+                    Context = "Content Type",
+                    Key = "Content Type:Article3",
+                    Value = "",
+                },
+                   new Translation {
+                    Context = "Content Field",
+                    Key = "Content Field:Name",
+                    Value = "Nome",
+                }
+            });
+
+            return document;
         }
     }
 }

@@ -75,10 +75,10 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(services));
             }
 
-            services.AddSingleton<IPluralRuleProvider, DefaultPluralRuleProvider>();
-            services.AddSingleton<ITranslationProvider, DataTranslationsProvider>();
-            services.AddSingleton<ILocalizationManager, LocalizationManager>();
+            services.AddSingleton<IDataTranslationProvider, NullDataTranslationProvider>();
+            services.AddTransient<DataResourceManager>();
             services.AddSingleton<IDataLocalizerFactory, DataLocalizerFactory>();
+
             services.AddTransient(sp => {
                 var dataLocalizerFactory = sp.GetService<IDataLocalizerFactory>();
 

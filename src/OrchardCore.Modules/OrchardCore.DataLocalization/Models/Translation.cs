@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.DataLocalization.Models
 {
     public class Translation
@@ -8,6 +6,6 @@ namespace OrchardCore.DataLocalization.Models
 
         public string Key { get; set; }
 
-        public IDictionary<string, string> Values { get; set; }
+        public string Value { get; set; }
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.DataLocalization.Models;
 
@@ -11,6 +12,6 @@ namespace OrchardCore.DataLocalization.Services
 
         Task RemoveTranslationAsync(string name);
 
-        Task UpdateTranslationAsync(string name, Translation translation);
+        Task UpdateTranslationAsync(string name, IEnumerable<Translation> translations);
     }
 }

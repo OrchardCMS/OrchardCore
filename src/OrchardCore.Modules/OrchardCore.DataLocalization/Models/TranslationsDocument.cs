@@ -6,6 +6,11 @@ namespace OrchardCore.DataLocalization.Models
 {
     public class TranslationsDocument : Document
     {
-        public Dictionary<string, Translation> Translations { get; set; } = new Dictionary<string, Translation>(StringComparer.OrdinalIgnoreCase);
+        public TranslationsDocument()
+        {
+            Translations = new Dictionary<string, IEnumerable<Translation>>(StringComparer.OrdinalIgnoreCase);
+        }
+
+        public Dictionary<string, IEnumerable<Translation>> Translations { get; }
     }
 }
