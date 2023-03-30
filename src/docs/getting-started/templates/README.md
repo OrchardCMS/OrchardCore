@@ -79,37 +79,31 @@ Now that we created a new Web Application we need to add proper dependencies so 
 
 ![image](../assets/images/templates/orchard-screencast-2.gif)
 
-Finally, we will need to register Orchard CMS service in our `Startup.cs` file like this:
+Finally, we will need to register Orchard CMS service in our `Program.cs` file like this:
 
 ```csharp
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using OrchardCore.Logging;
 
-namespace MyNewWebsite
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseNLogHost();
+
+builder.Services
+    .AddOrchardCms()
+    .AddSetupFeatures("OrchardCore.AutoSetup");
+
+var app = builder.Build();
+
+if (!app.Environment.IsDevelopment())
 {
-    public class Startup
-    {
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddOrchardCms();
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.UseStaticFiles();
-            app.UseOrchardCore();
-        }
-    }
+    app.UseExceptionHandler("/Error");
 }
+
+app.UseStaticFiles();
+
+app.UseOrchardCore();
+
+app.Run();
 ```
 
 ## Create a new CMS module
@@ -130,7 +124,7 @@ You can pass the following CLI parameters to setup options:
 Orchard Core Module (C#)
 Author: Orchard Project
 Options:
-  -A|--AddPart           Add dependency injection for part in Startup.cs. If PartName is not provided, default name will be used
+  -A|--AddPart           Add dependency injection for part in Program.cs. If PartName is not provided, default name will be used
                          bool - Optional
                          Default: false / (*) true
 

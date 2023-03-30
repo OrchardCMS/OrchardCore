@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-288-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-289-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -393,6 +393,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/DotCat1985"><img src="https://avatars.githubusercontent.com/u/61869142?v=4?s=100" width="100px;" alt=""/><br /><sub><b>DotCat</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=DotCat1985" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/kylgarmor"><img src="https://avatars.githubusercontent.com/u/63015960?v=4?s=100" width="100px;" alt=""/><br /><sub><b>kylgarmor</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=kylgarmor" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/fuzl-llc"><img src="https://avatars.githubusercontent.com/u/62618663?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Brent</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=fuzl-llc" title="Code">💻</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/tbolon"><img src="https://avatars.githubusercontent.com/u/127185?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Thomas Bolon</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=tbolon" title="Documentation">📖</a></td>
   </tr>
 </table>
 
