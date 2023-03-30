@@ -3,7 +3,7 @@ using OrchardCore.Localization;
 using OrchardCore.Localization.Data;
 using Xunit;
 
-namespace OrchardCore.Tests.Localization
+namespace OrchardCore.Localization.Tests
 {
     public class LocalizationServiceCollectionExtensionsTests
     {

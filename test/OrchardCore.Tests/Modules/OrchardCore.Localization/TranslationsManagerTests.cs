@@ -6,7 +6,7 @@ using OrchardCore.DataLocalization.Models;
 using OrchardCore.DataLocalization.Services;
 using Xunit;
 
-namespace OrchardCore.Tests.Modules.OrchardCore.Localization
+namespace OrchardCore.Modules.Localization.Tests
 {
     public class TranslationsManagerTests
     {

@@ -8,7 +8,7 @@ using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.DataLocalization.Services;
 using Xunit;
 
-namespace OrchardCore.Tests.Modules.OrchardCore.Localization
+namespace OrchardCore.Modules.Localization.Tests
 {
     public class DataLocalizationProviderTests
     {
