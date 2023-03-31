@@ -175,30 +175,30 @@ namespace OrchardCore.Search.Lucene
                                 logger.LogDebug("Updating Lucene indices settings and queries");
                             }
                             var quotedTableName = dialect.QuoteForTableName(table, session.Store.Configuration.Schema);
-                            var quotedContentColName = dialect.QuoteForColumnName("Content");
-                            var quotedTypeColName = dialect.QuoteForColumnName("Type");
+                            var quotedContentColumnName = dialect.QuoteForColumnName("Content");
+                            var quotedTypeColumnName = dialect.QuoteForColumnName("Type");
 
-                            var updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColName} = REPLACE({quotedContentColName}, '\"$type\":\"OrchardCore.Lucene.LuceneQuery, OrchardCore.Lucene\"', '\"$type\":\"OrchardCore.Search.Lucene.LuceneQuery, OrchardCore.Search.Lucene\"') WHERE {quotedTypeColName}  = 'OrchardCore.Queries.Services.QueriesDocument, OrchardCore.Queries'";
-
-                            await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
-
-                            updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColName} = REPLACE({quotedContentColName}, '\"$type\":\"OrchardCore.Lucene.Deployment.LuceneIndexDeploymentStep, OrchardCore.Lucene\"', '\"$type\":\"OrchardCore.Search.Lucene.Deployment.LuceneIndexDeploymentStep, OrchardCore.Search.Lucene\"') WHERE {quotedTypeColName}  = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
+                            var updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, '\"$type\":\"OrchardCore.Lucene.LuceneQuery, OrchardCore.Lucene\"', '\"$type\":\"OrchardCore.Search.Lucene.LuceneQuery, OrchardCore.Search.Lucene\"') WHERE {quotedTypeColumnName}  = 'OrchardCore.Queries.Services.QueriesDocument, OrchardCore.Queries'";
 
                             await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
 
-                            updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColName} = REPLACE({quotedContentColName}, '\"$type\":\"OrchardCore.Lucene.Deployment.LuceneSettingsDeploymentStep, OrchardCore.Lucene\"', '\"$type\":\"OrchardCore.Search.Lucene.Deployment.LuceneSettingsDeploymentStep, OrchardCore.Search.Lucene\"') WHERE {quotedTypeColName}  = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
+                            updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, '\"$type\":\"OrchardCore.Lucene.Deployment.LuceneIndexDeploymentStep, OrchardCore.Lucene\"', '\"$type\":\"OrchardCore.Search.Lucene.Deployment.LuceneIndexDeploymentStep, OrchardCore.Search.Lucene\"') WHERE {quotedTypeColumnName}  = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
 
                             await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
 
-                            updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColName} = REPLACE({quotedContentColName}, '\"$type\":\"OrchardCore.Lucene.Deployment.LuceneIndexResetDeploymentStep, OrchardCore.Lucene\"', '\"$type\":\"OrchardCore.Search.Lucene.Deployment.LuceneIndexResetDeploymentStep, OrchardCore.Search.Lucene\"') WHERE {quotedTypeColName}  = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
+                            updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, '\"$type\":\"OrchardCore.Lucene.Deployment.LuceneSettingsDeploymentStep, OrchardCore.Lucene\"', '\"$type\":\"OrchardCore.Search.Lucene.Deployment.LuceneSettingsDeploymentStep, OrchardCore.Search.Lucene\"') WHERE {quotedTypeColumnName}  = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
 
                             await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
 
-                            updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColName} = REPLACE({quotedContentColName}, '\"$type\":\"OrchardCore.Lucene.Deployment.LuceneIndexRebuildDeploymentStep, OrchardCore.Lucene\"', '\"$type\":\"OrchardCore.Search.Lucene.Deployment.LuceneIndexRebuildDeploymentStep, OrchardCore.Search.Lucene\"') WHERE {quotedTypeColName}  = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
+                            updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, '\"$type\":\"OrchardCore.Lucene.Deployment.LuceneIndexResetDeploymentStep, OrchardCore.Lucene\"', '\"$type\":\"OrchardCore.Search.Lucene.Deployment.LuceneIndexResetDeploymentStep, OrchardCore.Search.Lucene\"') WHERE {quotedTypeColumnName}  = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
 
                             await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
 
-                            updateCmd = $"UPDATE {quotedTableName} SET {quotedTypeColName} = 'OrchardCore.Search.Lucene.Model.LuceneIndexSettingsDocument, OrchardCore.Search.Lucene' WHERE {quotedTypeColName}  = 'OrchardCore.Lucene.Model.LuceneIndexSettingsDocument, OrchardCore.Lucene'";
+                            updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, '\"$type\":\"OrchardCore.Lucene.Deployment.LuceneIndexRebuildDeploymentStep, OrchardCore.Lucene\"', '\"$type\":\"OrchardCore.Search.Lucene.Deployment.LuceneIndexRebuildDeploymentStep, OrchardCore.Search.Lucene\"') WHERE {quotedTypeColumnName}  = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
+
+                            await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
+
+                            updateCmd = $"UPDATE {quotedTableName} SET {quotedTypeColumnName} = 'OrchardCore.Search.Lucene.Model.LuceneIndexSettingsDocument, OrchardCore.Search.Lucene' WHERE {quotedTypeColumnName}  = 'OrchardCore.Lucene.Model.LuceneIndexSettingsDocument, OrchardCore.Lucene'";
 
                             await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
 
