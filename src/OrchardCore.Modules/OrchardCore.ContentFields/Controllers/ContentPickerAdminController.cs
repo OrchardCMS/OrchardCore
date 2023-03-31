@@ -29,7 +29,7 @@ namespace OrchardCore.ContentFields.Controllers
 
         public async Task<IActionResult> SearchContentItems(string part, string field, string query)
         {
-            if (string.IsNullOrWhiteSpace(part) || String.IsNullOrWhiteSpace(field))
+            if (String.IsNullOrWhiteSpace(part) || String.IsNullOrWhiteSpace(field))
             {
                 return BadRequest("Part and field are required parameters");
             }
@@ -53,11 +53,25 @@ namespace OrchardCore.ContentFields.Controllers
                 return new ObjectResult(new List<ContentPickerResult>());
             }
 
+            var contentTypes = fieldSettings.DisplayedContentTypes;
+
+            if (fieldSettings.DisplayedStereotypes != null && fieldSettings.DisplayedStereotypes.Length > 0)
+            {
+                contentTypes = _contentDefinitionManager.ListTypeDefinitions()
+                    .Where(contentType =>
+                    {
+                        var hasStereotype = contentType.TryGetStereotype(out var stereotype);
+
+                        return hasStereotype && fieldSettings.DisplayedStereotypes.Contains(stereotype);
+                    }).Select(contentType => contentType.Name)
+                    .ToArray();
+            }
+
             var results = await resultProvider.Search(new ContentPickerSearchContext
             {
                 Query = query,
                 DisplayAllContentTypes = fieldSettings.DisplayAllContentTypes,
-                ContentTypes = fieldSettings.DisplayedContentTypes,
+                ContentTypes = contentTypes,
                 PartFieldDefinition = partFieldDefinition
             });
 

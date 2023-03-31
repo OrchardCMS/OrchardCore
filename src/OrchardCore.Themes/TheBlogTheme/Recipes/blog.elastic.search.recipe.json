@@ -1,0 +1,87 @@
+{
+  "name": "Blog.Elasticsearch.Search",
+  "displayName": "Blog - Elasticsearch Search",
+  "description": "Creates Elasticsearch settings, permission and indices.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
+  "issetuprecipe": false,
+  "categories": [ "default" ],
+  "tags": [ "blog", "Elasticsearch" ],
+
+  "steps": [
+    {
+      "name": "feature",
+      "enable": [
+        "OrchardCore.Search.Elasticsearch",
+        "OrchardCore.Search"
+      ]
+    },
+    {
+      // Create the indices before the content items so they are indexed automatically.
+      "name": "ElasticIndexSettings",
+      "Indices": [
+        {
+          "search": {
+            "AnalyzerName": "standardanalyzer",
+            "IndexLatest": false,
+            "IndexedContentTypes": [
+              "Article",
+              "Blockquote",
+              "Blog",
+              "BlogPost",
+              "Button",
+              "Container",
+              "Form",
+              "ImageWidget",
+              "Image",
+              "Input",
+              "Label",
+              "LinkMenuItem",
+              "Menu",
+              "Page",
+              "Paragraph",
+              "RawHtml",
+              "Select",
+              "TextArea",
+              "Validation",
+              "ValidationSummary"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      // Create the search settings.
+      "name": "Settings",
+      "ElasticSettings": {
+        "SearchIndex": "search",
+        "DefaultSearchFields": [
+          "Content.ContentItem.FullText"
+        ],
+        "AllowElasticQueryStringQueryInSearch": false,
+        "SyncWithLucene":  true
+      }
+    },
+    {
+      "name": "elastic-index-rebuild",
+      "Indices": [
+        "search"
+      ]
+    },
+    {
+      // Create the search index permissions.
+      "name": "Roles",
+      "Roles": [
+        {
+          "Name": "Anonymous",
+          "Description": "Anonymous role",
+          "Permissions": [
+            "ViewContent",
+            "QueryElasticsearchSearchIndex"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -30,8 +30,8 @@ function initMultiTextFieldPicker(element) {
         }
       }
     });
-    /*Hook for other scripts that might want to have access to the view model*/
 
+    /*Hook for other scripts that might want to have access to the view model*/
     var event = new CustomEvent("multitextfield-picker-created", {
       detail: {
         vm: vm

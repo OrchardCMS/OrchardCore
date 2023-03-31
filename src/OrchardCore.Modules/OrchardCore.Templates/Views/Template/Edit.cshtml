@@ -17,8 +17,8 @@ else
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" asp-route-returnUrl="@ViewData["returnUrl"]" method="post" class="no-multisubmit">
-    <div class="card mb-3 position-sticky action-bar">
-        <div class="card-body bg-primary p-3 text-end">
+    <div class="card bg-primary mb-3 position-sticky action-bar">
+        <div class="card-body p-3 text-end">
             <div class="btn-group">
                 <button type="submit" name="submit" class="btn btn-sm btn-primary save">@T["Save"]</button>
                 <button type="button" class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

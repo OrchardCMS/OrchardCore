@@ -7,11 +7,9 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.BackgroundTasks;
 
-internal static class ShellContextExtensions
+public static class ShellContextExtensions
 {
-    private const string Localhost = "localhost";
-
-    private static readonly char[] _urlHostSeparators = new[] { ',', ' ' };
+    private const string _localhost = "localhost";
 
     public static HttpContext CreateHttpContext(this ShellContext shell)
     {
@@ -19,7 +17,7 @@ internal static class ShellContextExtensions
         context.Features.Set(new ShellContextFeature
         {
             ShellContext = shell,
-            OriginalPathBase = String.Empty,
+            OriginalPathBase = PathString.Empty,
             OriginalPath = "/"
         });
 
@@ -31,8 +29,8 @@ internal static class ShellContextExtensions
         var context = new DefaultHttpContext().UseShellScopeServices();
 
         context.Request.Scheme = "https";
-        var urlHost = settings.RequestUrlHost?.Split(_urlHostSeparators, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-        context.Request.Host = new HostString(urlHost ?? Localhost);
+        var urlHost = settings.RequestUrlHosts.FirstOrDefault();
+        context.Request.Host = new HostString(urlHost ?? _localhost);
 
         if (!String.IsNullOrWhiteSpace(settings.RequestUrlPrefix))
         {

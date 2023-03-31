@@ -15,6 +15,8 @@ namespace OrchardCore.Environment.Shell
     /// </summary>
     public class ShellSettings
     {
+        private static readonly char[] _hostSeparators = new[] { ',', ' ' };
+
         private readonly ShellConfiguration _settings;
         private readonly ShellConfiguration _configuration;
 
@@ -42,14 +44,25 @@ namespace OrchardCore.Environment.Shell
         public string VersionId
         {
             get => _settings["VersionId"];
-            set => _settings["VersionId"] = value;
+            set
+            {
+                _settings["TenantId"] ??= _settings["VersionId"] ?? value;
+                _settings["VersionId"] = value;
+            }
         }
+
+        public string TenantId => _settings["TenantId"] ?? _settings ["VersionId"];
 
         public string RequestUrlHost
         {
             get => _settings["RequestUrlHost"];
             set => _settings["RequestUrlHost"] = value;
         }
+
+        [JsonIgnore]
+        public string[] RequestUrlHosts => _settings["RequestUrlHost"]
+            ?.Split(_hostSeparators, StringSplitOptions.RemoveEmptyEntries)
+            ?? Array.Empty<string>();
 
         public string RequestUrlPrefix
         {
@@ -76,7 +89,6 @@ namespace OrchardCore.Environment.Shell
 
         public Task EnsureConfigurationAsync() => _configuration.EnsureConfigurationAsync();
 
-        public bool IsDefaultShell()
-            => String.Equals(Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
+        public bool IsDefaultShell() => Name == ShellHelper.DefaultShellName;
     }
 }

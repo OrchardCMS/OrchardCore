@@ -122,6 +122,22 @@ namespace OrchardCore.Shells.Database.Configuration
             });
         }
 
+        public async Task RemoveAsync(string tenant)
+        {
+            using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
+            await context.CreateScope().UsingServiceScopeAsync(async scope =>
+            {
+                var session = scope.ServiceProvider.GetRequiredService<ISession>();
+
+                var document = await session.Query<DatabaseShellConfigurations>().FirstOrDefaultAsync();
+                if (document != null)
+                {
+                    document.ShellConfigurations.Remove(tenant);
+                    session.Save(document, checkConcurrency: true);
+                }
+            });
+        }
+
         private async Task<bool> TryMigrateFromFileAsync(string tenant, JObject configurations)
         {
             var tenantFolder = Path.Combine(_container, tenant);

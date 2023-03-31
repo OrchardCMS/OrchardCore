@@ -20,7 +20,6 @@
   display: -ms-flexbox;
   display: flex;
   flex-direction: column;
-  padding: 8px;
 }
 
 .edit-sidebar-handler {

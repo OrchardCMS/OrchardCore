@@ -3,34 +3,74 @@ using System.Globalization;
 
 namespace OrchardCore.Localization
 {
+    /// <summary>
+    /// Represents a scope that you can change the current culture within.
+    /// </summary>
+    /// <remarks>
+    /// The scope disallow the current culture depends on local computer settings by default.
+    /// For more information refer to https://github.com/OrchardCMS/OrchardCore/issues/11228
+    /// </remarks>
     public sealed class CultureScope : IDisposable
     {
         private readonly CultureInfo _originalCulture;
         private readonly CultureInfo _originalUICulture;
 
-        private CultureScope(CultureInfo culture, CultureInfo uiCulture)
+        private CultureScope(string culture, string uiCulture, bool ignoreSystemSettings)
         {
-            Culture = culture;
-            UICulture = uiCulture;
+            var useUserOverride = !ignoreSystemSettings;
+            Culture = new CultureInfo(culture, useUserOverride);
+            UICulture = new CultureInfo(uiCulture, useUserOverride);
             _originalCulture = CultureInfo.CurrentCulture;
             _originalUICulture = CultureInfo.CurrentUICulture;
 
-            SetCultures(culture, uiCulture);
+            SetCultures(Culture, UICulture);
         }
 
+        /// <summary>
+        /// Gets the current culture.
+        /// </summary>
         public CultureInfo Culture { get; }
 
+        /// <summary>
+        /// Get the current UI culture.
+        /// </summary>
         public CultureInfo UICulture { get; }
 
-        public static CultureScope Create(string culture) => Create(culture, culture);
+        /// <summary>
+        /// Creates a scope with a given culture.
+        /// </summary>
+        /// <param name="culture">The culture that will be used within the scope.</param>
+        /// <param name="ignoreSystemSettings">Whether to ignore the system culture settings or not. Defaults to <c>false</c>.</param>
+        public static CultureScope Create(string culture, bool ignoreSystemSettings = false)
+            => Create(culture, culture, ignoreSystemSettings);
 
-        public static CultureScope Create(string culture, string uiCulture)
-            => Create(CultureInfo.GetCultureInfo(culture), CultureInfo.GetCultureInfo(uiCulture));
+        /// <summary>
+        /// Creates a scope with a given culture.
+        /// </summary>
+        /// <param name="culture">The culture that will be used within the scope.</param>
+        /// <param name="uiCulture">The UI culture that will be used within the scope.</param>
+        /// <param name="ignoreSystemSettings">Whether to ignore the system culture settings or not. Defaults to <c>false</c>.</param>
+        public static CultureScope Create(string culture, string uiCulture, bool ignoreSystemSettings = false)
+            => new(culture, uiCulture, ignoreSystemSettings);
 
-        public static CultureScope Create(CultureInfo culture) => Create(culture, culture);
+        /// <summary>
+        /// Creates a scope with a given culture.
+        /// </summary>
+        /// <param name="culture">The culture that will be used within the scope.</param>
+        /// <param name="ignoreSystemSettings">Whether to ignore the system culture settings or not. Defaults to <c>false</c>.</param>
+        public static CultureScope Create(CultureInfo culture, bool ignoreSystemSettings = false)
+            => Create(culture, culture, ignoreSystemSettings);
 
-        public static CultureScope Create(CultureInfo culture, CultureInfo uiCulture) => new CultureScope(culture, uiCulture);
+        /// <summary>
+        /// Creates a scope with a given culture.
+        /// </summary>
+        /// <param name="culture">The culture that will be used within the scope.</param>
+        /// <param name="uiCulture">The UI culture that will be used within the scope.</param>
+        /// <param name="ignoreSystemSettings">Whether to ignore the system culture settings or not. Defaults to <c>false</c>.</param>
+        public static CultureScope Create(CultureInfo culture, CultureInfo uiCulture, bool ignoreSystemSettings = false)
+            => new(culture.Name, uiCulture.Name, ignoreSystemSettings);
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             SetCultures(_originalCulture, _originalUICulture);

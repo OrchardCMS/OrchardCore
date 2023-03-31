@@ -4,6 +4,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
+using OrchardCore.Recipes;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Settings;
 
@@ -29,7 +30,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 
         public async Task<int> CreateAsync()
         {
-            await _recipeMigrator.ExecuteAsync("exportcontenttodeploymenttarget.recipe.json", this);
+            await _recipeMigrator.ExecuteAsync($"exportcontenttodeploymenttarget{RecipesConstants.RecipeExtension}", this);
 
             var deploymentPlans = await _deploymentPlanService.GetAllDeploymentPlansAsync();
             var exportContentToDeploymentTargetPlan = deploymentPlans.FirstOrDefault(x => x.DeploymentSteps.Any(x => x.Name == nameof(ExportContentToDeploymentTargetDeploymentStep)));

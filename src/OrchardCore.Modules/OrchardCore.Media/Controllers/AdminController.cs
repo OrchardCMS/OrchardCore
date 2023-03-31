@@ -280,12 +280,12 @@ namespace OrchardCore.Media.Controllers
 
             if (!_allowedFileExtensions.Contains(Path.GetExtension(newPath), StringComparer.OrdinalIgnoreCase))
             {
-                return StatusCode(StatusCodes.Status400BadRequest, S["This file extension is not allowed: {0}", Path.GetExtension(newPath)]);
+                return BadRequest(S["This file extension is not allowed: {0}", Path.GetExtension(newPath)]);
             }
 
             if (await _mediaFileStore.GetFileInfoAsync(newPath) != null)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, S["Cannot move media because a file already exists with the same name"]);
+                return BadRequest(S["Cannot move media because a file already exists with the same name"]);
             }
 
             await _mediaFileStore.MoveFileAsync(oldPath, newPath);
@@ -296,6 +296,11 @@ namespace OrchardCore.Media.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteMediaList(string[] paths)
         {
+            if (paths == null)
+            {
+                return NotFound();
+            }
+
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
             {
                 return Forbid();
@@ -309,15 +314,12 @@ namespace OrchardCore.Media.Controllers
                 }
             }
 
-            if (paths == null)
-            {
-                return NotFound();
-            }
-
             foreach (var p in paths)
             {
                 if (await _mediaFileStore.TryDeleteFileAsync(p) == false)
+                {
                     return NotFound();
+                }
             }
 
             return Ok();
@@ -383,7 +385,7 @@ namespace OrchardCore.Media.Controllers
 
             if (_invalidFolderNameCharacters.Any(invalidChar => name.Contains(invalidChar)))
             {
-                return StatusCode(StatusCodes.Status400BadRequest, S["Cannot create folder because the folder name contains invalid characters"]);
+                return BadRequest(S["Cannot create folder because the folder name contains invalid characters"]);
             }
 
             var newPath = _mediaFileStore.Combine(path, name);
@@ -397,13 +399,13 @@ namespace OrchardCore.Media.Controllers
             var mediaFolder = await _mediaFileStore.GetDirectoryInfoAsync(newPath);
             if (mediaFolder != null)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, S["Cannot create folder because a folder already exists with the same name"]);
+                return BadRequest(S["Cannot create folder because a folder already exists with the same name"]);
             }
 
             var existingFile = await _mediaFileStore.GetFileInfoAsync(newPath);
             if (existingFile != null)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, S["Cannot create folder because a file already exists with the same name"]);
+                return BadRequest(S["Cannot create folder because a file already exists with the same name"]);
             }
 
             await _mediaFileStore.TryCreateDirectoryAsync(newPath);
@@ -427,7 +429,8 @@ namespace OrchardCore.Media.Controllers
                 mediaPath = mediaFile.Path,
                 mime = contentType ?? "application/octet-stream",
                 mediaText = String.Empty,
-                anchor = new { x = 0.5f, y = 0.5f }
+                anchor = new { x = 0.5f, y = 0.5f },
+                attachedFileName = String.Empty
             };
         }
 

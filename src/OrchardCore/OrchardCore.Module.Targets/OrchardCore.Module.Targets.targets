@@ -137,6 +137,7 @@
     6: , string featureDependencies
     7: , object defaultTenant
     8: , object alwaysEnabled
+    9: , object enabledByDependencyOnly
     -->
   <Target Name="OrchardCoreEmbedFeatures"
           DependsOnTargets="OrchardCoreErrorsFeatureNoErrors"
@@ -157,6 +158,7 @@
         <_Parameter6>%(OrchardCoreFeatures.Dependencies)</_Parameter6>
         <_Parameter7>%(OrchardCoreFeatures.DefaultTenant)</_Parameter7>
         <_Parameter8>%(OrchardCoreFeatures.AlwaysEnabled)</_Parameter8>
+        <_Parameter9>%(OrchardCoreFeatures.EnabledByDependencyOnly)</_Parameter9>
       </AssemblyAttribute>
     </ItemGroup>
   </Target>
@@ -185,6 +187,7 @@
     11: , string tags
     12: , object defaultTenant
     13: , object alwaysEnabled
+    14: , object enabledByDependencyOnly
     -->
   <Target Name="OrchardCoreEmbedModules"
           DependsOnTargets="OrchardCoreErrorsModuleAtMostOne"
@@ -210,6 +213,7 @@
         <_Parameter11>%(OrchardCoreModules.Tags)</_Parameter11>
         <_Parameter12>%(OrchardCoreModules.DefaultTenant)</_Parameter12>
         <_Parameter13>%(OrchardCoreModules.AlwaysEnabled)</_Parameter13>
+        <_Parameter14>%(OrchardCoreModules.EnabledByDependencyOnly)</_Parameter14>
       </AssemblyAttribute>
     </ItemGroup>
   </Target>

@@ -1,4 +1,4 @@
-# Lucene (`OrchardCore.Lucene`)
+# Lucene (`OrchardCore.Search.Lucene`)
 
 The Lucene module allows you to manage Lucene indices.
 
@@ -9,20 +9,24 @@ Here is a sample step:
 
 ```json
 {
-  "name": "lucene-index",
-  "Indices": [
+  "steps":[
     {
-      "Search": {
-        "AnalyzerName": "standardanalyzer",
-        "IndexLatest": false,
-        "IndexedContentTypes": [
-          "Article",
-          "BlogPost"
-        ]
-      }
+      "name":"lucene-index",
+      "Indices":[
+        {
+          "Search":{
+            "AnalyzerName":"standardanalyzer",
+            "IndexLatest":false,
+            "IndexedContentTypes":[
+              "Article",
+              "BlogPost"
+            ]
+          }
+        }
+      ]
     }
   ]
-},
+}
 ```
 
 ### Queries recipe step
@@ -31,11 +35,15 @@ Here is an example for creating a Lucene query from a Queries recipe step:
 
 ```json
 {
-    "Source": "Lucene",
-    "Name": "RecentBlogPosts",
-    "Index": "Search",
-    "Template": "...", // json encoded query template
-    "ReturnContentItems": true
+  "steps": [
+    {
+      "Source": "Lucene",
+      "Name": "RecentBlogPosts",
+      "Index": "Search",
+      "Template":"...", // JSON encoded query template.
+      "ReturnContentItems": true
+    }
+  ]
 }
 ```
 
@@ -66,7 +74,7 @@ Verbs: `POST` and `GET`
 | `query` | `{ "query": { "match_all": {} } }` | A JSON object representing the query. |
 | `parameters` | `{ size: 3}` | A JSON object representing the parameters of the query. |
 
-## Lucene Worker (`OrchardCore.Lucene.Worker`)
+## Lucene Worker (`OrchardCore.Search.Lucene.Worker`)
 
 This feature creates a background task that will keep the local file system index synchronized with
 other instances that could have their own local index.  
@@ -87,11 +95,19 @@ Here is an example of a filtered query:
 
 ```json
 {
-  "query": {
-    "bool": {
-      "filter": [
-        { "term": { "Content.ContentItem.Published" : "true" }},
-        { "wildcard": { "Content.ContentItem.DisplayText" : "Main*" }}
+  "query":{
+    "bool":{
+      "filter":[
+        {
+          "term":{
+            "Content.ContentItem.Published":"true"
+          }
+        },
+        {
+          "wildcard":{
+            "Content.ContentItem.DisplayText":"Main*"
+          }
+        }
       ]
     }
   }
@@ -102,14 +118,24 @@ With a must query in the bool Query. "finding specific content type(s)"
 
 ```json
 {
-  "query": {
-    "bool": {
-      "must" : {
-          "term" : { "Content.ContentItem.ContentType" : "Menu" }
+  "query":{
+    "bool":{
+      "must":{
+        "term":{
+          "Content.ContentItem.ContentType.keyword":"Menu"
+        }
       },
-      "filter": [
-        { "term": { "Content.ContentItem.Published" : "true" }},
-        { "wildcard": { "Content.ContentItem.DisplayText" : "Main*" }}
+      "filter":[
+        {
+          "term":{
+            "Content.ContentItem.Published":"true"
+          }
+        },
+        {
+          "wildcard":{
+            "Content.ContentItem.DisplayText":"Main*"
+          }
+        }
       ]
     }
   }
@@ -120,12 +146,11 @@ Using the [`query_string` Lucene query](https://www.elastic.co/guide/en/elastics
 
 ```json
 {
-  "query":
-  {
-    "query_string": {
-      "query": "Content.ContentItem.FullText:\"exploration\""
+    "query": {
+        "query_string": {
+            "query": "Content.ContentItem.FullText:\"exploration\""
+        }
     }
-  }
 }
 ```
 
@@ -133,11 +158,10 @@ Or in a way that you don't have to select the fields in the query (to allow user
 
 ```json
 {
-  "query":
-  {
-    "query_string": {
-      "query": "\"exploration\"",
-      "default_field": "Content.ContentItem.FullText"
+  "query":{
+    "query_string":{
+      "query":"\"exploration\"",
+      "default_field":"Content.ContentItem.FullText"
     }
   }
 }
@@ -147,10 +171,12 @@ An alternative to the previous one with [`simple_query_string`](https://www.elas
 
 ```json
 {
-  "query": {
-    "simple_query_string" : {
-        "query": "\"exploration\"",
-        "fields": ["Content.ContentItem.FullText"]
+  "query":{
+    "simple_query_string":{
+      "query":"\"exploration\"",
+      "fields":[
+        "Content.ContentItem.FullText"
+      ]
     }
   }
 }
@@ -178,6 +204,10 @@ So you can use:
 
 See ElasticSearch documentation for more details: 
 https://www.elastic.co/guide/en/elasticsearch/reference/current/query-filter-context.html
+
+## Automatic mapping
+
+Starting from OC version 1.5 the Lucene module will automatically map text fields with a  `.keyword` suffix as a `stored` value in the index unless the document is already set to be `stored` explicitly. It will ignore any value that has a length higher than 256 chars. This way, any TextField can be used as a technical value and searched by using a term query.
 
 ## Video
 

@@ -38,7 +38,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                         if (x.mediaPath === 'not-found') {
                             return;
                         }
-                        mediaPaths.push({ path: x.mediaPath, isRemoved: x.isRemoved, isNew: x.isNew, mediaText: x.mediaText, anchor: x.anchor });
+                        mediaPaths.push({ path: x.mediaPath, isRemoved: x.isRemoved, isNew: x.isNew, mediaText: x.mediaText, anchor: x.anchor, attachedFileName: x.attachedFileName });
                     });
                     return JSON.stringify(mediaPaths);
                 },
@@ -49,7 +49,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                     var items = [];
                     var length = 0;
                     mediaPaths.forEach(function (x, i) {
-                        items.push({ name: ' ' + x.path, mime: '', mediaPath: '', anchor: x.anchor }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
+                        items.push({ name: ' ' + x.path, mime: '', mediaPath: '', anchor: x.anchor, attachedFileName: x.attachedFileName }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
                         promise = $.when(signal).done(function () {
                             $.ajax({
                                 url: mediaItemUrl + "?path=" + encodeURIComponent(x.path),
@@ -58,6 +58,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                                     data.vuekey = data.name + i.toString(); // Because a unique key is required by Vue on v-for 
                                     data.mediaText = x.mediaText; // This value is not returned from the ajax call.
                                     data.anchor = x.anchor; // This value is not returned from the ajax call.
+                                    data.attachedFileName = x.attachedFileName;// This value is not returned from the ajax call.
                                     items.splice(i, 1, data);
                                     if (items.length === ++length) {
                                         items.forEach(function (x) {
@@ -68,7 +69,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                                 },
                                 error: function (error) {
                                     console.log(JSON.stringify(error));
-                                    items.splice(i, 1, { name: x.path, mime: '', mediaPath: 'not-found', mediaText: '', anchor: { x: 0.5, y: 0.5 } });
+                                    items.splice(i, 1, { name: x.path, mime: '', mediaPath: 'not-found', mediaText: '', anchor: { x: 0.5, y: 0.5 }, attachedFileName: x.attachedFileName });
                                     if (items.length === ++length) {
                                         items.forEach(function (x) {
                                             self.mediaItems.push(x);
@@ -140,6 +141,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                     for (i = 0; i < count; i++) {
                         data.files[i].uploadName =
                             self.getUniqueId() + data.files[i].name;
+                        data.files[i].attachedFileName = data.files[i].name;
                     }
                     data.submit();
                 },
@@ -159,8 +161,10 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                         for (var i = 0; i < data.result.files.length; i++) {
                             data.result.files[i].isNew = true;
                             //if error is defined probably the file type is not allowed
-                            if(data.result.files[i].error === undefined || data.result.files[i].error === null)
+                            if (data.result.files[i].error === undefined || data.result.files[i].error === null) {
+                                data.result.files[i].attachedFileName = data.files[i].attachedFileName;
                                 newMediaItems.push(data.result.files[i]);
+                            }
                             else
                                 errormsg += data.result.files[i].error + "\n";
                         }

@@ -281,7 +281,7 @@ The following example queries content items that are related to the current cont
 by the term category, but excluding the current content item.
 
 ```csharp
-@using YesSql.Services;
+@using YesSql.Services
 @{
     var termContentItemIds = Model.TermContentItemIds;
     var contentItems = await Orchard.QueryCategorizedContentItemsAsync(

@@ -1,5 +1,5 @@
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
@@ -15,9 +15,11 @@ namespace OrchardCore.Documents
     /// <summary>
     /// A <see cref="DocumentManager{TDocument}"/> using a multi level cache but without any persistent storage.
     /// </summary>
-    public class VolatileDocumentManager<TDocument> : DocumentManager<TDocument>, IVolatileDocumentManager<TDocument> where TDocument : class, IDocument, new()
+    public class VolatileDocumentManager<TDocument> : DocumentManager<TDocument>, IVolatileDocumentManager<TDocument>
+        where TDocument : class, IDocument, new()
     {
         private readonly IDistributedLock _distributedLock;
+        private readonly ILogger _logger;
 
         private delegate Task<TDocument> UpdateDelegate();
         private delegate Task AfterUpdateDelegate(TDocument document);
@@ -32,6 +34,7 @@ namespace OrchardCore.Documents
         {
             _isVolatile = true;
             _distributedLock = distributedLock;
+            _logger = logger;
         }
 
         public async Task UpdateAtomicAsync(Func<Task<TDocument>> updateAsync, Func<TDocument, Task> afterUpdateAsync = null)
@@ -46,22 +49,27 @@ namespace OrchardCore.Documents
                 {
                     await DocumentStore.CancelAsync();
 
-                    throw new InvalidOperationException($"Can't update the '{typeof(TDocument).Name}' if not able to access the distributed cache");
+                    _logger.LogError("Can't update the '{DocumentName}' if not able to access the distributed cache", typeof(TDocument).Name);
+
+                    throw;
                 }
             }
 
             var delegates = ShellScope.GetOrCreateFeature<UpdateDelegates>();
-            if (delegates.UpdateDelegateAsync == null ||
-                !delegates.UpdateDelegateAsync.GetInvocationList().Contains(updateAsync))
+
+            var updateDelegate = new UpdateDelegate(updateAsync);
+            if (delegates.Targets.Add(updateDelegate.Target))
             {
-                delegates.UpdateDelegateAsync += () => updateAsync();
+                delegates.UpdateDelegateAsync += updateDelegate;
             }
 
-            if (afterUpdateAsync != null &&
-                (delegates.AfterUpdateDelegateAsync == null ||
-                !delegates.AfterUpdateDelegateAsync.GetInvocationList().Contains(afterUpdateAsync)))
+            if (afterUpdateAsync != null)
             {
-                delegates.AfterUpdateDelegateAsync += document => afterUpdateAsync(document);
+                var afterUpdateDelegate = new AfterUpdateDelegate(afterUpdateAsync);
+                if (delegates.Targets.Add(afterUpdateDelegate.Target))
+                {
+                    delegates.AfterUpdateDelegateAsync += afterUpdateDelegate;
+                }
             }
 
             DocumentStore.AfterCommitSuccess<TDocument>(async () =>
@@ -84,6 +92,11 @@ namespace OrchardCore.Documents
                     document = await ((UpdateDelegate)d)();
                 }
 
+                if (document == null)
+                {
+                    return;
+                }
+
                 document.Identifier ??= IdGenerator.GenerateId();
 
                 await SetInternalAsync(document);
@@ -98,10 +111,11 @@ namespace OrchardCore.Documents
             });
         }
 
-        private class UpdateDelegates
+        private sealed class UpdateDelegates
         {
             public UpdateDelegate UpdateDelegateAsync;
             public AfterUpdateDelegate AfterUpdateDelegateAsync;
+            public HashSet<object> Targets = new();
         }
     }
 }

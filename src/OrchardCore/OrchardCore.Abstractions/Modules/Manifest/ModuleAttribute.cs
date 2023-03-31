@@ -58,6 +58,8 @@ namespace OrchardCore.Modules.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
+        /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ModuleAttribute(
             string id
             , string description
@@ -68,6 +70,7 @@ namespace OrchardCore.Modules.Manifest
             , string tags
             , object defaultTenant
             , object alwaysEnabled
+            , object enabledByDependencyOnly
         ) : this(
             id
             , default
@@ -81,6 +84,7 @@ namespace OrchardCore.Modules.Manifest
             , tags
             , defaultTenant
             , alwaysEnabled
+            , enabledByDependencyOnly
         )
         {
         }
@@ -107,6 +111,8 @@ namespace OrchardCore.Modules.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
+        /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ModuleAttribute(
             string id
             , string name
@@ -118,6 +124,7 @@ namespace OrchardCore.Modules.Manifest
             , string tags
             , object defaultTenant
             , object alwaysEnabled
+            , object enabledByDependencyOnly
         ) : this(
             id
             , name
@@ -131,6 +138,7 @@ namespace OrchardCore.Modules.Manifest
             , tags
             , defaultTenant
             , alwaysEnabled
+            , enabledByDependencyOnly
         )
         {
         }
@@ -159,6 +167,8 @@ namespace OrchardCore.Modules.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
+        /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ModuleAttribute(
             string id
             , string name
@@ -172,6 +182,7 @@ namespace OrchardCore.Modules.Manifest
             , string tags
             , object defaultTenant
             , object alwaysEnabled
+            , object enabledByDependencyOnly
         ) : base(
             id
             , name
@@ -181,6 +192,7 @@ namespace OrchardCore.Modules.Manifest
             , featureDependencies
             , defaultTenant
             , alwaysEnabled
+            , enabledByDependencyOnly
         )
         {
             Author = author;
@@ -214,6 +226,8 @@ namespace OrchardCore.Modules.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
+        /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ModuleAttribute(
             string id
             , string name
@@ -228,6 +242,7 @@ namespace OrchardCore.Modules.Manifest
             , string tags
             , object defaultTenant
             , object alwaysEnabled
+            , object enabledByDependencyOnly
         ) : this(
             id
             , name
@@ -241,10 +256,11 @@ namespace OrchardCore.Modules.Manifest
             , tags
             , defaultTenant
             , alwaysEnabled
+            , enabledByDependencyOnly
         )
         {
-            type = (type ?? string.Empty).Trim();
-            _type = string.IsNullOrEmpty(type) ? null : type;
+            type = (type ?? String.Empty).Trim();
+            _type = String.IsNullOrEmpty(type) ? null : type;
         }
 
         /// <summary>

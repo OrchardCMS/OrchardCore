@@ -15,6 +15,7 @@ using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.Recipes.Events;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.ContentTypes
@@ -47,6 +48,8 @@ namespace OrchardCore.ContentTypes
             services.AddRecipeExecutionStep<ContentDefinitionStep>();
             services.AddRecipeExecutionStep<ReplaceContentDefinitionStep>();
             services.AddRecipeExecutionStep<DeleteContentDefinitionStep>();
+
+            services.AddTransient<IRecipeEventHandler, LuceneRecipeEventHandler>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

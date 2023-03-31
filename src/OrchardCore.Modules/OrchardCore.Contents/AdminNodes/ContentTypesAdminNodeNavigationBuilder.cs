@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Contents.Security;
 using OrchardCore.Navigation;
 
@@ -86,7 +85,7 @@ namespace OrchardCore.Contents.AdminNodes
         private IEnumerable<ContentTypeDefinition> GetContentTypesToShow(ContentTypesAdminNode node)
         {
             var typesToShow = _contentDefinitionManager.ListTypeDefinitions()
-                .Where(ctd => ctd.GetSettings<ContentTypeSettings>().Listable);
+                .Where(ctd => ctd.IsListable());
 
             if (!node.ShowAll)
             {
@@ -98,7 +97,7 @@ namespace OrchardCore.Contents.AdminNodes
             return typesToShow.OrderBy(t => t.DisplayName);
         }
 
-        private List<string> GetIconClasses(ContentTypeDefinition contentType, ContentTypesAdminNode node)
+        private static List<string> GetIconClasses(ContentTypeDefinition contentType, ContentTypesAdminNode node)
         {
             if (node.ShowAll)
             {
@@ -114,12 +113,12 @@ namespace OrchardCore.Contents.AdminNodes
             }
         }
 
-        private List<string> AddPrefixToClasses(string unprefixed)
+        private static List<string> AddPrefixToClasses(string unprefixed)
         {
             return unprefixed?.Split(' ')
                 .ToList()
                 .Select(c => "icon-class-" + c)
-                .ToList<string>()
+                .ToList()
                 ?? new List<string>();
         }
     }

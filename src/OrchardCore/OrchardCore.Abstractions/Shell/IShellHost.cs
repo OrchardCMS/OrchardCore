@@ -70,5 +70,15 @@ namespace OrchardCore.Environment.Shell
         /// Retrieves all shell settings.
         /// </summary>
         IEnumerable<ShellSettings> GetAllSettings();
+
+        /// <summary>
+        /// Removes a shell configuration.
+        /// </summary>
+        Task RemoveShellSettingsAsync(ShellSettings settings);
+
+        /// <summary>
+        /// Removes a shell.
+        /// </summary>
+        Task RemoveShellContextAsync(ShellSettings settings, bool eventSource = true);
     }
 }

@@ -10,7 +10,7 @@ namespace OrchardCore.ContentFields.Indexing
     {
         public override Task BuildIndexAsync(LocalizationSetContentPickerField field, BuildFieldIndexContext context)
         {
-            var options = DocumentIndexOptions.Store;
+            var options = DocumentIndexOptions.Keyword | DocumentIndexOptions.Store;
 
             if (field.LocalizationSets.Length > 0)
             {

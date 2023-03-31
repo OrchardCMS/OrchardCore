@@ -28,7 +28,6 @@ function updateContentItemOrders(oldIndex, newIndex) {
     }
   });
 }
-
 $(function () {
   var sortable = document.getElementById("ci-sortable");
   var sortable = Sortable.create(sortable, {

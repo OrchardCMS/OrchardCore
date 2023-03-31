@@ -36,6 +36,14 @@ namespace OrchardCore.Lists.Feeds
                 return null;
             }
 
+            var contentItem = await _contentManager.GetAsync(model.ContentItemId);
+            var feedMetadata = await _contentManager.PopulateAspectAsync<FeedMetadata>(contentItem);
+
+            if (feedMetadata.DisableRssFeed)
+            {
+                return null;
+            }
+
             return new FeedQueryMatch { FeedQuery = this, Priority = -5 };
         }
 

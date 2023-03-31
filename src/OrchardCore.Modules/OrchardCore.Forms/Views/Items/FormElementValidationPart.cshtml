@@ -1,0 +1,21 @@
+@using OrchardCore.Forms.ViewModels
+@using OrchardCore.Forms.Models
+@model ShapeViewModel<FormElementValidationPart>
+@{
+    var formElementPart = Model.Value.ContentItem.As<FormElementPart>();
+    var formInputElementPart = Model.Value.ContentItem.As<FormInputElementPart>();
+    var elementId = formElementPart.Id;
+    var fieldName = formInputElementPart.Name;
+    var fieldId = !String.IsNullOrEmpty(elementId) ? elementId : !String.IsNullOrEmpty(fieldName) ? Html.GenerateIdFromName(fieldName) : default(string);
+}
+
+@if (Model.Value.Option == ValidationOptions.Standard)
+{
+    // HtmlFieldPrefix is the PartName i.e. ValidationPart, which is not needed in Display.
+    var htmlFieldPrefix = ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
+    ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = String.Empty;
+
+    @Html.ValidationMessage(fieldName)
+
+    ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = htmlFieldPrefix;
+}

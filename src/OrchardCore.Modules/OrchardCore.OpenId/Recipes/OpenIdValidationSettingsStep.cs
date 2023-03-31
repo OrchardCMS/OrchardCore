@@ -28,6 +28,7 @@ namespace OrchardCore.OpenId.Recipes
             var settings = await _validationService.LoadSettingsAsync();
 
             settings.Tenant = model.Tenant;
+            settings.MetadataAddress = !string.IsNullOrEmpty(model.MetadataAddress) ? new Uri(model.MetadataAddress, UriKind.Absolute) : null;
             settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
             settings.Audience = model.Audience;
             settings.DisableTokenTypeValidation = model.DisableTokenTypeValidation;

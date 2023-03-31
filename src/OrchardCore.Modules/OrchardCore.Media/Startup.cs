@@ -57,11 +57,15 @@ namespace OrchardCore.Media
 {
     public class Startup : StartupBase
     {
-        private readonly AdminOptions _adminOptions;
+        private const string _imageSharpCacheFolder = "is-cache";
 
-        public Startup(IOptions<AdminOptions> adminOptions)
+        private readonly AdminOptions _adminOptions;
+        private readonly ShellSettings _shellSettings;
+
+        public Startup(IOptions<AdminOptions> adminOptions, ShellSettings shellSettings)
         {
             _adminOptions = adminOptions.Value;
+            _shellSettings = shellSettings;
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -113,8 +117,9 @@ namespace OrchardCore.Media
 
                 var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath);
 
-                var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>()
-                    .HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? null;
+                var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext
+                    ?.Features.Get<ShellContextFeature>()
+                    ?.OriginalPathBase ?? PathString.Empty;
 
                 if (originalPathBase.HasValue)
                 {
@@ -140,6 +145,7 @@ namespace OrchardCore.Media
                 .SetCacheKey<BackwardsCompatibleCacheKey>()
                 .Configure<PhysicalFileSystemCacheOptions>(options =>
                 {
+                    options.CacheFolder = $"{_shellSettings.Name}/{_imageSharpCacheFolder}";
                     options.CacheFolderDepth = 12;
                 })
                 .AddProvider<MediaResizingFileProvider>()
@@ -159,7 +165,7 @@ namespace OrchardCore.Media
             services.AddScoped<AttachedMediaFieldFileService, AttachedMediaFieldFileService>();
             services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();
             services.AddScoped<IModularTenantEvents, TempDirCleanerService>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
             services.AddScoped<IContentFieldIndexHandler, MediaFieldIndexHandler>();
             services.AddMediaFileTextProvider<PdfMediaFileTextProvider>(".pdf");
 

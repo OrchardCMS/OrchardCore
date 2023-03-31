@@ -37,7 +37,7 @@ namespace OrchardCore.Documents
             _options = options.Get(typeof(TDocument).FullName);
             _logger = logger;
 
-            if (!(_distributedCache is MemoryDistributedCache))
+            if (_distributedCache is not MemoryDistributedCache)
             {
                 _isDistributed = true;
             }
@@ -169,7 +169,9 @@ namespace OrchardCore.Documents
                 {
                     await DocumentStore.CancelAsync();
 
-                    throw new InvalidOperationException($"Can't update the '{typeof(TDocument).Name}' if not able to access the distributed cache");
+                    _logger.LogError("Can't update the '{DocumentName}' if not able to access the distributed cache", typeof(TDocument).Name);
+
+                    throw;
                 }
             }
 

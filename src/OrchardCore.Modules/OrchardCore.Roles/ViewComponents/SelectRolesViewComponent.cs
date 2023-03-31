@@ -20,7 +20,7 @@ namespace OrchardCore.Roles.ViewComponents
         {
             if (selectedRoles == null)
             {
-                selectedRoles = new string[0];
+                selectedRoles = Array.Empty<string>();
             }
 
             var roleSelections = await BuildRoleSelectionsAsync(selectedRoles, except);
