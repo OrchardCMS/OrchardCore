@@ -54,7 +54,7 @@ namespace OrchardCore.Search.Lucene
                 o.MemberAccessStrategy.Register<SearchResultsViewModel>();
             });
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
             services.AddSingleton<LuceneIndexingState>();
             services.AddSingleton<LuceneIndexSettingsService>();
             services.AddSingleton<LuceneIndexManager>();
