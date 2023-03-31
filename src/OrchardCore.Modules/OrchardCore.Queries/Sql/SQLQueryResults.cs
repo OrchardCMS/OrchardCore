@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using OrchardCore.Queries;
 
-namespace OrchardCore.Data
+namespace OrchardCore.Queries.Sql
 {
     public class SQLQueryResults : IQueryResults
     {
