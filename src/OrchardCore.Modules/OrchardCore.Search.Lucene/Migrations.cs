@@ -166,7 +166,7 @@ namespace OrchardCore.Search.Lucene
 
                     using (var transaction = connection.BeginTransaction(session.Store.Configuration.IsolationLevel))
                     {
-                        var dialect = SchemaBuilder.Dialect;
+                        var dialect = session.Store.Configuration.SqlDialect;
 
                         try
                         {
