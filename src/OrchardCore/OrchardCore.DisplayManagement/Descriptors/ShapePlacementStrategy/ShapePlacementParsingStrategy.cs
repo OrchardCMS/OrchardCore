@@ -77,7 +77,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
                     {
                         Location = filter.Location,
                         ShapeType = filter.ShapeType,
-                        Source = featureDescriptor.Id,
                     };
 
                     if (filter.Alternates?.Length > 0)
