@@ -156,7 +156,6 @@ namespace OrchardCore.Search.Lucene
                 var logger = scope.ServiceProvider.GetService<ILogger<Migrations>>();
                 var tablePrefix = session.Store.Configuration.TablePrefix;
                 var documentTableName = session.Store.Configuration.TableNameConvention.GetDocumentTable();
-                
                 var table = $"{session.Store.Configuration.TablePrefix}{documentTableName}";
 
                 using (var connection = dbConnectionAccessor.CreateConnection())
