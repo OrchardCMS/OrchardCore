@@ -1,3 +1,4 @@
+using System;
 using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.Descriptors
@@ -19,27 +20,29 @@ namespace OrchardCore.DisplayManagement.Descriptors
             {
                 return second;
             }
-            else if (second != null)
+
+            if (second != null)
             {
                 first.Alternates = first.Alternates.Combine(second.Alternates);
                 first.Wrappers = first.Wrappers.Combine(second.Wrappers);
-                if (!string.IsNullOrEmpty(second.ShapeType))
+                if (!String.IsNullOrEmpty(second.ShapeType))
                 {
                     first.ShapeType = second.ShapeType;
                 }
-                if (!string.IsNullOrEmpty(second.Location))
+                if (!String.IsNullOrEmpty(second.Location))
                 {
                     first.Location = second.Location;
                 }
-                if (!string.IsNullOrEmpty(second.DefaultPosition))
+                if (!String.IsNullOrEmpty(second.DefaultPosition))
                 {
                     first.DefaultPosition = second.DefaultPosition;
                 }
-                if (!string.IsNullOrEmpty(second.Source))
+                if (!String.IsNullOrEmpty(second.Source))
                 {
                     first.Source += "," + second.Source;
                 }
             }
+
             return first;
         }
 
@@ -58,10 +61,12 @@ namespace OrchardCore.DisplayManagement.Descriptors
             {
                 return second;
             }
-            else if (second != null)
+
+            if (second != null)
             {
                 first.AddRange(second);
             }
+
             return first;
         }
     }

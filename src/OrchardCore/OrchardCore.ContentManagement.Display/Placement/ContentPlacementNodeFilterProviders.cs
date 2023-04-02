@@ -11,7 +11,13 @@ namespace OrchardCore.ContentManagement.Display.Placement
 {
     public class ContentPartPlacementNodeFilterProvider : ContentPlacementParseFilterProviderBase, IPlacementNodeFilterProvider
     {
-        public string Key { get { return "contentPart"; } }
+        public string Key
+        {
+            get
+            {
+                return "contentPart";
+            }
+        }
 
         public bool IsMatch(ShapePlacementContext context, JToken expression)
         {
@@ -25,35 +31,30 @@ namespace OrchardCore.ContentManagement.Display.Placement
             {
                 return expression.Any(p => contentItem.Has(p.Value<string>()));
             }
-            else
-            {
-                return contentItem.Has(expression.Value<string>());
-            }
+
+            return contentItem.Has(expression.Value<string>());
         }
     }
 
     public class ContentTypePlacementNodeFilterProvider : ContentPlacementParseFilterProviderBase, IPlacementNodeFilterProvider
     {
-        public string Key { get { return "contentType"; } }
+        public string Key
+        {
+            get
+            {
+                return "contentType";
+            }
+        }
 
         public bool IsMatch(ShapePlacementContext context, JToken expression)
         {
             var contentItem = GetContent(context);
-            if (contentItem == null)
+            if (contentItem?.ContentType == null)
             {
                 return false;
             }
 
-            IEnumerable<string> contentTypes;
-
-            if (expression is JArray)
-            {
-                contentTypes = expression.Values<string>();
-            }
-            else
-            {
-                contentTypes = new string[] { expression.Value<string>() };
-            }
+            var contentTypes = GetContentTypes(expression);
 
             return contentTypes.Any(ct =>
             {
@@ -61,41 +62,52 @@ namespace OrchardCore.ContentManagement.Display.Placement
                 {
                     var prefix = ct.Substring(0, ct.Length - 1);
 
-                    return (contentItem.ContentType ?? "").StartsWith(prefix, StringComparison.OrdinalIgnoreCase) || (GetStereotype(context) ?? "").StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
+                    return contentItem.ContentType.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)
+                    || (GetStereotype(context) ?? String.Empty).StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
                 }
 
                 return contentItem.ContentType == ct || GetStereotype(context) == ct;
             });
         }
 
-        private string GetStereotype(ShapePlacementContext context)
+        private static IEnumerable<string> GetContentTypes(JToken expression)
         {
-            var shape = context.ZoneShape as Shape;
-            object stereotypeVal = null;
-            shape?.Properties?.TryGetValue("Stereotype", out stereotypeVal);
-            return stereotypeVal?.ToString();
+            if (expression is JArray)
+            {
+                return expression.Values<string>();
+            }
+
+            return new string[] { expression.Value<string>() };
+        }
+
+        private static string GetStereotype(ShapePlacementContext context)
+        {
+            if (context.ZoneShape is Shape shape && shape.Properties.TryGetValue("Stereotype", out var stereotypeVal))
+            {
+                return stereotypeVal?.ToString();
+            }
+
+            return null;
         }
     }
 
     public class ContentPlacementParseFilterProviderBase
     {
-        protected bool HasContent(ShapePlacementContext context)
+        protected static bool HasContent(ShapePlacementContext context)
         {
-            var shape = context.ZoneShape as Shape;
-            return shape != null && shape.TryGetProperty("ContentItem", out object contentItem) && contentItem != null;
+            return context.ZoneShape is Shape shape
+                && shape.TryGetProperty("ContentItem", out object contentItem)
+                && contentItem != null;
         }
 
-        protected ContentItem GetContent(ShapePlacementContext context)
+        protected static ContentItem GetContent(ShapePlacementContext context)
         {
-            if (!HasContent(context))
+            if (HasContent(context) && context.ZoneShape is Shape shape && shape.TryGetProperty("ContentItem", out ContentItem contentItem))
             {
-                return null;
+                return contentItem;
             }
 
-            var shape = context.ZoneShape as Shape;
-            shape.TryGetProperty("ContentItem", out ContentItem contentItem);
-
-            return contentItem;
+            return null;
         }
     }
 }

@@ -54,7 +54,7 @@ namespace OrchardCore.ContentTypes.Editors
                 contentTypeDefinitionShape,
                 groupId,
                 false,
-                "",
+                String.Empty,
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),
                 updater
@@ -112,7 +112,7 @@ namespace OrchardCore.ContentTypes.Editors
                 contentPartDefinitionShape,
                 groupId,
                 false,
-                "",
+                String.Empty,
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),
                 updater
@@ -171,7 +171,7 @@ namespace OrchardCore.ContentTypes.Editors
                 typePartDefinitionShape,
                 groupId,
                 false,
-                "",
+                String.Empty,
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),
                 updater
@@ -233,7 +233,7 @@ namespace OrchardCore.ContentTypes.Editors
                 partFieldDefinitionShape,
                 groupId,
                 false,
-                "",
+                String.Empty,
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),
                 updater

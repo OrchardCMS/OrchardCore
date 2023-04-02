@@ -155,12 +155,12 @@ namespace OrchardCore.ContentManagement.Display
 
                     await shapeResult.ApplyAsync(context);
 
-                    var contentPartShape = shapeResult.Shape;
-
-                    // Make the ContentPart name property available on the shape
-                    contentPartShape.Properties[partTypeName] = part.Content;
-                    contentPartShape.Properties["ContentItem"] = part.ContentItem;
-
+                    if (shapeResult.Shape != null)
+                    {
+                        // Make the ContentPart name property available on the shape
+                        shapeResult.Shape.Properties[partTypeName] = part.Content;
+                        shapeResult.Shape.Properties["ContentItem"] = part.ContentItem;
+                    }
                     context = new BuildDisplayContext(shapeResult.Shape, context.DisplayType, context.GroupId, context.ShapeFactory, context.Layout, context.Updater)
                     {
                         // With a new display context we have the default FindPlacementDelegate that returns null, so we reuse the delegate from the temp context.

@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
@@ -20,17 +18,16 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
     {
         private readonly IHostEnvironment _hostingEnvironment;
         private readonly IShellFeaturesManager _shellFeaturesManager;
-        private readonly IEnumerable<IPlacementNodeFilterProvider> _placementParseMatchProviders;
+        private readonly IEnumerable<IPlacementNodeFilterProvider> _placementNodeFilterProviders;
 
         public ShapePlacementParsingStrategy(
             IHostEnvironment hostingEnvironment,
             IShellFeaturesManager shellFeaturesManager,
-            ILogger<ShapePlacementParsingStrategy> logger,
-            IEnumerable<IPlacementNodeFilterProvider> placementParseMatchProviders)
+            IEnumerable<IPlacementNodeFilterProvider> placementNodeFilterProviders)
         {
             _hostingEnvironment = hostingEnvironment;
             _shellFeaturesManager = shellFeaturesManager;
-            _placementParseMatchProviders = placementParseMatchProviders;
+            _placementNodeFilterProviders = placementNodeFilterProviders;
         }
 
         public void Discover(ShapeTableBuilder builder)
@@ -51,23 +48,20 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
             var virtualFileInfo = _hostingEnvironment
                 .GetExtensionFileInfo(featureDescriptor.Extension, "placement.json");
 
-            if (virtualFileInfo.Exists)
+            if (!virtualFileInfo.Exists)
             {
-                using (var stream = virtualFileInfo.CreateReadStream())
-                {
-                    using (var reader = new StreamReader(stream))
-                    {
-                        using (var jtr = new JsonTextReader(reader))
-                        {
-                            JsonSerializer serializer = new JsonSerializer();
-                            var placementFile = serializer.Deserialize<PlacementFile>(jtr);
-                            if (placementFile != null)
-                            {
-                                ProcessPlacementFile(builder, featureDescriptor, placementFile);
-                            }
-                        }
-                    }
-                }
+                return;
+            }
+
+            using var stream = virtualFileInfo.CreateReadStream();
+            using var reader = new StreamReader(stream);
+            using var jtr = new JsonTextReader(reader);
+
+            var serializer = new JsonSerializer();
+            var placementFile = serializer.Deserialize<PlacementFile>(jtr);
+            if (placementFile != null)
+            {
+                ProcessPlacementFile(builder, featureDescriptor, placementFile);
             }
         }
 
@@ -79,18 +73,13 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
                 foreach (var filter in entry.Value)
                 {
-                    var matches = filter.Filters.ToList();
-
-                    Func<ShapePlacementContext, bool> predicate = ctx => CheckFilter(ctx, filter);
-
-                    if (matches.Any())
+                    var placement = new PlacementInfo
                     {
-                        predicate = matches.Aggregate(predicate, BuildPredicate);
-                    }
+                        Location = filter.Location,
+                        ShapeType = filter.ShapeType,
+                        Source = featureDescriptor.Id,
+                    };
 
-                    var placement = new PlacementInfo();
-
-                    placement.Location = filter.Location;
                     if (filter.Alternates?.Length > 0)
                     {
                         placement.Alternates = new AlternatesCollection(filter.Alternates);
@@ -101,49 +90,11 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
                         placement.Wrappers = new AlternatesCollection(filter.Wrappers);
                     }
 
-                    placement.ShapeType = filter.ShapeType;
-
                     builder.Describe(shapeType)
                         .From(featureDescriptor)
-                        .Placement(ctx => predicate(ctx), placement);
+                        .Placement(context => PlacementHelper.MatchesAllFilters(context, filter, _placementNodeFilterProviders), placement);
                 }
             }
-        }
-
-        public static bool CheckFilter(ShapePlacementContext ctx, PlacementNode filter)
-        {
-            if (!String.IsNullOrEmpty(filter.DisplayType) && filter.DisplayType != ctx.DisplayType)
-            {
-                return false;
-            }
-
-            if (!String.IsNullOrEmpty(filter.Differentiator) && filter.Differentiator != ctx.Differentiator)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        private Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
-              KeyValuePair<string, JToken> term)
-        {
-            return BuildPredicate(predicate, term, _placementParseMatchProviders);
-        }
-
-        public static Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
-                KeyValuePair<string, JToken> term, IEnumerable<IPlacementNodeFilterProvider> placementMatchProviders)
-        {
-            if (placementMatchProviders != null)
-            {
-                var providersForTerm = placementMatchProviders.Where(x => x.Key.Equals(term.Key));
-                if (providersForTerm.Any())
-                {
-                    var expression = term.Value;
-                    return ctx => providersForTerm.Any(x => x.IsMatch(ctx, expression)) && predicate(ctx);
-                }
-            }
-            return predicate;
         }
     }
 }
