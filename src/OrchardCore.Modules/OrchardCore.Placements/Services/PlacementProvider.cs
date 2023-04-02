@@ -6,7 +6,7 @@ using OrchardCore.DisplayManagement.Handlers;
 
 namespace OrchardCore.Placements.Services
 {
-    public partial class PlacementProvider : IShapePlacementProvider
+    public class PlacementProvider : IShapePlacementProvider
     {
         private readonly PlacementsManager _placementsManager;
         private readonly IEnumerable<IPlacementNodeFilterProvider> _placementNodeFilterProviders;
