@@ -153,7 +153,6 @@ namespace OrchardCore.Search.Lucene
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
                 var dbConnectionAccessor = scope.ServiceProvider.GetService<IDbConnectionAccessor>();
-                var shellSettings = scope.ServiceProvider.GetService<ShellSettings>();
                 var logger = scope.ServiceProvider.GetService<ILogger<Migrations>>();
                 var tablePrefix = session.Store.Configuration.TablePrefix;
                 var documentTableName = session.Store.Configuration.TableNameConvention.GetDocumentTable();
