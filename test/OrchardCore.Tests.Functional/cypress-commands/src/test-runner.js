@@ -12,7 +12,7 @@ global.log = function(msg) {
 export function build(dir) {
   global.log("Building ...");
   var result = child_process.spawnSync("dotnet", ["build", "-c", "Release"], { cwd: dir });
-  global.log(result.stdout.toString());
+  global.log(result.stderr.toString());
 }
 
 // destructive action that deletes the App_Data folder
