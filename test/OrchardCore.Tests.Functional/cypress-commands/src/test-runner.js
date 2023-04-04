@@ -11,7 +11,8 @@ global.log = function(msg) {
 // Build the dotnet application in release mode
 export function build(dir) {
   global.log("Building ...");
-  child_process.spawnSync("dotnet", ["build", "-c", "Release"], { cwd: dir });
+  var result = child_process.spawnSync("dotnet", ["build", "-c", "Release"], { cwd: dir });
+  global.log(result.stdout.toString());
 }
 
 // destructive action that deletes the App_Data folder
