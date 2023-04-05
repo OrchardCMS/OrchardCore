@@ -83,8 +83,18 @@ namespace OrchardCore.Workflows
                     "WorkflowCorrelationId")
             );
 
+            SchemaBuilder.CreateReduceIndexTable<WorkflowsByTypeIndex>(
+                table => table
+                    .Column<string>(nameof(WorkflowsByTypeIndex.WorkflowTypeId))
+                    .Column<int>(nameof(WorkflowsByTypeIndex.Count)));
+
+            SchemaBuilder.AlterIndexTable<WorkflowsByTypeIndex>(table => table
+                .CreateIndex("IDX_WorkflowsByTypeIndex_WorkflowTypeId",
+                    nameof(WorkflowsByTypeIndex.WorkflowTypeId))
+            );
+
             // Shortcut other migration steps on new content definition schemas.
-            return 3;
+            return 4;
         }
 
         // This code can be removed in a later version.
@@ -145,6 +155,21 @@ namespace OrchardCore.Workflows
             );
 
             return 3;
+        }
+
+        public int UpdateFrom3()
+        {
+            SchemaBuilder.CreateReduceIndexTable<WorkflowsByTypeIndex>(
+                table => table
+                    .Column<string>(nameof(WorkflowsByTypeIndex.WorkflowTypeId))
+                    .Column<int>(nameof(WorkflowsByTypeIndex.Count)));
+
+            SchemaBuilder.AlterIndexTable<WorkflowsByTypeIndex>(table => table
+                .CreateIndex("IDX_WorkflowsByTypeIndex_WorkflowTypeId",
+                    nameof(WorkflowsByTypeIndex.WorkflowTypeId))
+            );
+
+            return 4;
         }
     }
 }

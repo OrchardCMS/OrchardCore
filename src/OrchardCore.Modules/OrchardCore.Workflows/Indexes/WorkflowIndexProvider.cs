@@ -24,6 +24,13 @@ namespace OrchardCore.Workflows.Indexes
         public string WorkflowCorrelationId { get; set; }
     }
 
+    public class WorkflowsByTypeIndex : ReduceIndex
+    {
+        public string WorkflowTypeId { get; set; }
+
+        public int Count { get; set; }
+    }
+
     public class WorkflowIndexProvider : IndexProvider<Workflow>
     {
         public override void Describe(DescribeContext<Workflow> context)
@@ -52,6 +59,24 @@ namespace OrchardCore.Workflows.Indexes
                         WorkflowCorrelationId = workflow.CorrelationId ?? ""
                     })
                 );
+
+            context.For<WorkflowsByTypeIndex, string>()
+                .Map(workflow => new WorkflowsByTypeIndex
+                {
+                    WorkflowTypeId = workflow.WorkflowTypeId,
+                    Count = 1,
+                })
+                .Group(index => index.WorkflowTypeId)
+                .Reduce(group => new WorkflowsByTypeIndex
+                {
+                    WorkflowTypeId = group.Key,
+                    Count = group.Sum(type => type.Count),
+                })
+                .Delete((index, map) =>
+                {
+                    index.Count -= map.Sum(x => x.Count);
+                    return index.Count > 0 ? index : null;
+                });
         }
     }
 }
