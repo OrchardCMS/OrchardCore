@@ -20,7 +20,6 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Liquid;
 using OrchardCore.Localization;
 using OrchardCore.Navigation;
@@ -43,16 +42,15 @@ namespace OrchardCore.Search.Elasticsearch
         private readonly IElasticQueryService _queryService;
         private readonly ElasticIndexManager _elasticIndexManager;
         private readonly ElasticIndexingService _elasticIndexingService;
-        private readonly ElasticAnalyzerManager _elasticAnalyzerManager;
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
         private readonly dynamic New;
         private readonly JavaScriptEncoder _javaScriptEncoder;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
+        private readonly ElasticsearchOptions _elasticSearchOptions;
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
         private readonly IOptions<TemplateOptions> _templateOptions;
-        private readonly string _indexPrefix;
 
         public AdminController(
             ISession session,
@@ -63,16 +61,15 @@ namespace OrchardCore.Search.Elasticsearch
             IElasticQueryService queryService,
             ElasticIndexManager elasticIndexManager,
             ElasticIndexingService elasticIndexingService,
-            ElasticAnalyzerManager elasticAnalyzerManager,
             ElasticIndexSettingsService elasticIndexSettingsService,
             IShapeFactory shapeFactory,
             JavaScriptEncoder javaScriptEncoder,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
+            IOptions<ElasticsearchOptions> elasticSearchOptions,
             INotifier notifier,
             ILogger<AdminController> logger,
-            IOptions<TemplateOptions> templateOptions,
-            ShellSettings shellSettings
+            IOptions<TemplateOptions> templateOptions
             )
         {
             _session = session;
@@ -83,16 +80,15 @@ namespace OrchardCore.Search.Elasticsearch
             _queryService = queryService;
             _elasticIndexManager = elasticIndexManager;
             _elasticIndexingService = elasticIndexingService;
-            _elasticAnalyzerManager = elasticAnalyzerManager;
             _elasticIndexSettingsService = elasticIndexSettingsService;
             New = shapeFactory;
             _javaScriptEncoder = javaScriptEncoder;
             S = stringLocalizer;
             H = htmlLocalizer;
+            _elasticSearchOptions = elasticSearchOptions.Value;
             _notifier = notifier;
             _logger = logger;
             _templateOptions = templateOptions;
-            _indexPrefix = shellSettings.Name.ToLowerInvariant() + "_";
         }
 
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
@@ -175,9 +171,9 @@ namespace OrchardCore.Search.Elasticsearch
                 IndexLatest = settings.IndexLatest,
                 Culture = settings.Culture,
                 Cultures = ILocalizationService.GetAllCulturesAndAliases()
-                    .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" }),
-                Analyzers = _elasticAnalyzerManager.GetAnalyzers()
-                    .Select(x => new SelectListItem { Text = x.Name, Value = x.Name }),
+                    .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }),
+                Analyzers = _elasticSearchOptions.Analyzers
+                    .Select(x => new SelectListItem { Text = x.Key, Value = x.Key }),
                 IndexedContentTypes = IsCreate ? _contentDefinitionManager.ListTypeDefinitions()
                     .Select(x => x.Name).ToArray() : settings.IndexedContentTypes,
                 StoreSourceData = settings.StoreSourceData
@@ -200,23 +196,25 @@ namespace OrchardCore.Search.Elasticsearch
             {
                 if (await _elasticIndexManager.Exists(model.IndexName))
                 {
-                    ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["An index named {0} already exists.", _indexPrefix + model.IndexName]);
+                    ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["An index named {0} already exists.", _elasticIndexManager.GetFullIndexName(model.IndexName)]);
                 }
             }
             else
             {
                 if (!await _elasticIndexManager.Exists(model.IndexName))
                 {
-                    ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["An index named {0} doesn't exist.", _indexPrefix + model.IndexName]);
+                    ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["An index named {0} doesn't exist.", _elasticIndexManager.GetFullIndexName(model.IndexName)]);
                 }
             }
 
             if (!ModelState.IsValid)
             {
                 model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
-                    .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" });
-                model.Analyzers = _elasticAnalyzerManager.GetAnalyzers()
-                    .Select(x => new SelectListItem { Text = x.Name, Value = x.Name });
+                    .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name });
+
+                model.Analyzers = _elasticSearchOptions.Analyzers
+                    .Select(x => new SelectListItem { Text = x.Key, Value = x.Key });
+
                 return View(model);
             }
 
@@ -224,7 +222,16 @@ namespace OrchardCore.Search.Elasticsearch
             {
                 try
                 {
-                    var settings = new ElasticIndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexLatest = model.IndexLatest, IndexedContentTypes = indexedContentTypes, Culture = model.Culture ?? "", StoreSourceData = model.StoreSourceData };
+                    var settings = new ElasticIndexSettings
+                    {
+                        IndexName = model.IndexName,
+                        AnalyzerName = model.AnalyzerName,
+                        QueryAnalyzerName = model.AnalyzerName,
+                        IndexLatest = model.IndexLatest,
+                        IndexedContentTypes = indexedContentTypes,
+                        Culture = model.Culture ?? String.Empty,
+                        StoreSourceData = model.StoreSourceData
+                    };
 
                     // We call Rebuild in order to reset the index state cursor too in case the same index
                     // name was also used previously.
@@ -237,13 +244,21 @@ namespace OrchardCore.Search.Elasticsearch
                     return View(model);
                 }
 
-                await _notifier.SuccessAsync(H["Index <em>{0}</em> created successfully.", _indexPrefix + model.IndexName]);
+                await _notifier.SuccessAsync(H["Index <em>{0}</em> created successfully.", _elasticIndexManager.GetFullIndexName(model.IndexName)]);
             }
             else
             {
                 try
                 {
-                    var settings = new ElasticIndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexLatest = model.IndexLatest, IndexedContentTypes = indexedContentTypes, Culture = model.Culture ?? "", StoreSourceData = model.StoreSourceData };
+                    var settings = new ElasticIndexSettings
+                    {
+                        IndexName = model.IndexName,
+                        AnalyzerName = model.AnalyzerName,
+                        IndexLatest = model.IndexLatest,
+                        IndexedContentTypes = indexedContentTypes,
+                        Culture = model.Culture ?? String.Empty,
+                        StoreSourceData = model.StoreSourceData
+                    };
 
                     await _elasticIndexingService.UpdateIndexAsync(settings);
                 }
@@ -254,7 +269,7 @@ namespace OrchardCore.Search.Elasticsearch
                     return View(model);
                 }
 
-                await _notifier.SuccessAsync(H["Index <em>{0}</em> modified successfully, <strong>please consider doing a rebuild on the index.</strong>", _indexPrefix + model.IndexName]);
+                await _notifier.SuccessAsync(H["Index <em>{0}</em> modified successfully, <strong>please consider doing a rebuild on the index.</strong>", _elasticIndexManager.GetFullIndexName(model.IndexName)]);
             }
 
             return RedirectToAction("Index");
@@ -294,7 +309,19 @@ namespace OrchardCore.Search.Elasticsearch
                 return NotFound();
             }
 
-            await _elasticIndexingService.RebuildIndexAsync(await _elasticIndexSettingsService.GetSettingsAsync(id));
+            var settings = await _elasticIndexSettingsService.GetSettingsAsync(id);
+
+            await _elasticIndexingService.RebuildIndexAsync(settings);
+
+            if (settings.QueryAnalyzerName != settings.AnalyzerName)
+            {
+                // Query Analyzer may be different until the index in rebuilt.
+                // Since the index is rebuilt, lets make sure we query using the same analyzer.
+                settings.QueryAnalyzerName = settings.AnalyzerName;
+
+                await _elasticIndexSettingsService.UpdateIndexAsync(settings);
+            }
+
             await _elasticIndexingService.ProcessContentItemsAsync(id);
 
             await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", id]);
@@ -312,7 +339,7 @@ namespace OrchardCore.Search.Elasticsearch
 
             if (!await _elasticIndexManager.Exists(model.IndexName))
             {
-                await _notifier.SuccessAsync(H["Index not found on Elasticsearch server.", _indexPrefix + model.IndexName]);
+                await _notifier.SuccessAsync(H["Index not found on Elasticsearch server.", _elasticIndexManager.GetFullIndexName(model.IndexName)]);
                 return RedirectToAction("Index");
             }
 
@@ -320,12 +347,12 @@ namespace OrchardCore.Search.Elasticsearch
             {
                 await _elasticIndexingService.DeleteIndexAsync(model.IndexName);
 
-                await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", _indexPrefix + model.IndexName]);
+                await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", _elasticIndexManager.GetFullIndexName(model.IndexName)]);
             }
             catch (Exception e)
             {
                 await _notifier.ErrorAsync(H["An error occurred while deleting the index."]);
-                _logger.LogError(e, "An error occurred while deleting the index {indexname}", _indexPrefix + model.IndexName);
+                _logger.LogError(e, "An error occurred while deleting the index {indexname}", _elasticIndexManager.GetFullIndexName(model.IndexName));
             }
 
             return RedirectToAction("Index");
@@ -343,12 +370,12 @@ namespace OrchardCore.Search.Elasticsearch
             {
                 await _elasticIndexingService.DeleteIndexAsync(model.IndexName);
 
-                await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", _indexPrefix + model.IndexName]);
+                await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", _elasticIndexManager.GetFullIndexName(model.IndexName)]);
             }
             catch (Exception e)
             {
                 await _notifier.ErrorAsync(H["An error occurred while deleting the index."]);
-                _logger.LogError(e, "An error occurred while deleting the index {indexName}", _indexPrefix + model.IndexName);
+                _logger.LogError(e, "An error occurred while deleting the index {indexName}", _elasticIndexManager.GetFullIndexName(model.IndexName));
             }
 
             return RedirectToAction("Index");
@@ -358,7 +385,11 @@ namespace OrchardCore.Search.Elasticsearch
         {
             var mappings = await _elasticIndexManager.GetIndexMappings(indexName);
             var formattedJson = JValue.Parse(mappings).ToString(Formatting.Indented);
-            return View(new MappingsViewModel { IndexName = _indexPrefix + indexName, Mappings = formattedJson });
+            return View(new MappingsViewModel
+            {
+                IndexName = _elasticIndexManager.GetFullIndexName(indexName),
+                Mappings = formattedJson
+            });
         }
 
         public async Task<IActionResult> SyncSettings()
@@ -375,8 +406,12 @@ namespace OrchardCore.Search.Elasticsearch
 
         public Task<IActionResult> Query(string indexName, string query)
         {
-            query = String.IsNullOrWhiteSpace(query) ? "" : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query));
-            return Query(new AdminQueryViewModel { IndexName = indexName, DecodedQuery = query });
+            query = String.IsNullOrWhiteSpace(query) ? String.Empty : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query));
+            return Query(new AdminQueryViewModel
+            {
+                IndexName = indexName,
+                DecodedQuery = query
+            });
         }
 
         [HttpPost]
@@ -479,7 +514,7 @@ namespace OrchardCore.Search.Elasticsearch
                             await _elasticIndexingService.ResetIndexAsync(item.IndexName);
                             await _elasticIndexingService.ProcessContentItemsAsync(item.IndexName);
 
-                            await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", _indexPrefix + item.IndexName]);
+                            await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", _elasticIndexManager.GetFullIndexName(item.IndexName)]);
                         }
                         break;
                     case ContentsBulkAction.Rebuild:
@@ -492,11 +527,11 @@ namespace OrchardCore.Search.Elasticsearch
 
                             await _elasticIndexingService.RebuildIndexAsync(await _elasticIndexSettingsService.GetSettingsAsync(item.IndexName));
                             await _elasticIndexingService.ProcessContentItemsAsync(item.IndexName);
-                            await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", _indexPrefix + item.IndexName]);
+                            await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", _elasticIndexManager.GetFullIndexName(item.IndexName)]);
                         }
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Unknown bulk action");
                 }
             }
 
