@@ -18,7 +18,7 @@ function build(dir, dotnetVersion) {
 
   // "dotnet" command arguments.
   let runArgs = [
-      'build', dir
+      'build', dir,
       '--configuration', 'Release',
       '--framework', dotnetVersion
   ];
