@@ -4,6 +4,7 @@ using OrchardCore.Caching.Distributed;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Cache.CacheContextProviders;
 using OrchardCore.Modules;
+using OrchardCore.Redis.Services;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -49,6 +50,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 // MemoryDistributedCache needs to be registered as a singleton as it owns a MemoryCache instance.
                 services.AddSingleton<IDistributedCache, MemoryDistributedCache>();
             });
+
+            builder.ApplicationServices.AddSingleton<IRedisConnectionFactory, RedisConnectionFactory>();
 
             // Adds services to keep in sync any document type between a document store and a multi level cache.
             return builder.AddDocumentManagement();

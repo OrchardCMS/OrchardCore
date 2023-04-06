@@ -1,26 +1,20 @@
-using System;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 using StackExchange.Redis;
 
 namespace OrchardCore.Redis.Services
 {
-    public class RedisService : ModularTenantEvents, IRedisService, IDisposable
+    public class RedisService : ModularTenantEvents, IRedisService
     {
         private readonly RedisOptions _options;
-        private readonly ILogger _logger;
+        private readonly IRedisConnectionFactory _factory;
 
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
-
-        public RedisService(IOptions<RedisOptions> options, ILogger<RedisService> logger)
+        public RedisService(IOptions<RedisOptions> options, IRedisConnectionFactory factory)
         {
             _options = options.Value;
-            _logger = logger;
-
-            InstancePrefix = options.Value.InstancePrefix;
+            InstancePrefix = _options.InstancePrefix;
+            _factory = factory;
         }
 
         public IConnectionMultiplexer Connection { get; private set; }
@@ -38,30 +32,7 @@ namespace OrchardCore.Redis.Services
                 return;
             }
 
-            await _semaphore.WaitAsync();
-
-            try
-            {
-                if (Database == null)
-                {
-                    Connection = await ConnectionMultiplexer.ConnectAsync(_options.ConfigurationOptions);
-
-                    Database = Connection.GetDatabase();
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Unable to connect to Redis.");
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
-        }
-
-        public void Dispose()
-        {
-            Connection?.Close();
+            (Connection, Database) = await _factory.ConnectAsync(_options.ConfigurationOptions);
         }
     }
 }

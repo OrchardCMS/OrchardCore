@@ -19,7 +19,6 @@ namespace OrchardCore.Redis.Options
         public void Configure(KeyManagementOptions options)
         {
             var redis = _redis;
-
             options.XmlRepository = new RedisXmlRepository(() =>
             {
                 if (redis.Database == null)

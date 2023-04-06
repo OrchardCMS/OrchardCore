@@ -6,19 +6,32 @@ namespace OrchardCore.Redis.Options
 {
     public class RedisCacheOptionsSetup : IConfigureOptions<RedisCacheOptions>
     {
+        private readonly IRedisService _redis;
         private readonly string _tenant;
-        private readonly IOptions<RedisOptions> _redisOptions;
+        private readonly RedisOptions _redisOptions;
 
-        public RedisCacheOptionsSetup(ShellSettings shellSettings, IOptions<RedisOptions> redisOptions)
+        public RedisCacheOptionsSetup(IRedisService redis, ShellSettings shellSettings, IOptions<RedisOptions> redisOptions)
         {
+            _redis = redis;
             _tenant = shellSettings.Name;
-            _redisOptions = redisOptions;
+            _redisOptions = redisOptions.Value;
         }
 
         public void Configure(RedisCacheOptions options)
         {
-            options.InstanceName = _redisOptions.Value.InstancePrefix + _tenant;
-            options.ConfigurationOptions = _redisOptions.Value.ConfigurationOptions;
+            options.InstanceName = _redisOptions.InstancePrefix + _tenant;
+            options.ConfigurationOptions = _redisOptions.ConfigurationOptions;
+
+            var redis = _redis;
+            options.ConnectionMultiplexerFactory = async () =>
+            {
+                if (redis.Connection == null)
+                {
+                    await redis.ConnectAsync();
+                }
+
+                return redis.Connection;
+            };
         }
     }
 }
