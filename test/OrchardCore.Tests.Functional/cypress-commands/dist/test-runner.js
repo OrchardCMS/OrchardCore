@@ -15,9 +15,10 @@ global.log = function(msg) {
 // Build the dotnet application in release mode
 function build(dir, dotnetVersion) {
   global.log("version: 2");
-  global.log(JSON.stringify(child_process.spawnSync("dotnet", ["--list-sdks"], { cwd: dir })));
+  const ocEnv = {};
+  global.log(JSON.stringify(child_process.spawnSync("dotnet", ["--list-sdks"], { cwd: dir, env: {...process.env, ...ocEnv} })));
   global.log("Building ...");
-  var result = child_process.spawnSync("dotnet", ["build", "-c", "Release", "--framework", dotnetVersion], { cwd: dir });
+  var result = child_process.spawnSync("dotnet", ["build", "-c", "Release", "--framework", dotnetVersion], { cwd: dir, env: {...process.env, ...ocEnv} });
   global.log(JSON.stringify(result));
 }
 
