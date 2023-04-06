@@ -7,32 +7,28 @@ namespace OrchardCore.Redis.Services
 {
     public class RedisService : ModularTenantEvents, IRedisService
     {
-        private readonly RedisOptions _options;
         private readonly IRedisConnectionFactory _factory;
+        private readonly RedisOptions _options;
+        private IDatabase _database;
 
-        public RedisService(IOptions<RedisOptions> options, IRedisConnectionFactory factory)
+        public RedisService(IRedisConnectionFactory factory, IOptions<RedisOptions> options)
         {
+            _factory = factory;
             _options = options.Value;
             InstancePrefix = _options.InstancePrefix;
-            _factory = factory;
         }
-
-        public IConnectionMultiplexer Connection { get; private set; }
 
         public string InstancePrefix { get; }
 
-        public IDatabase Database { get; private set; }
+        public IConnectionMultiplexer Connection { get; private set; }
+
+        public IDatabase Database => _database ??= Connection?.GetDatabase();
 
         public override Task ActivatingAsync() => ConnectAsync();
 
         public async Task ConnectAsync()
         {
-            if (Database != null)
-            {
-                return;
-            }
-
-            (Connection, Database) = await _factory.ConnectAsync(_options.ConfigurationOptions);
+            Connection ??= await _factory.CreateAsync(_options.ConfigurationOptions);
         }
     }
 }

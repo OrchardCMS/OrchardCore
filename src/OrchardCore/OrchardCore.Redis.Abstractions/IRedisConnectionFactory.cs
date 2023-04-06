@@ -5,6 +5,6 @@ namespace OrchardCore.Redis.Services
 {
     public interface IRedisConnectionFactory
     {
-        Task<(IConnectionMultiplexer Connection, IDatabase Database)> ConnectAsync(ConfigurationOptions options);
+        Task<IConnectionMultiplexer> CreateAsync(ConfigurationOptions options);
     }
 }

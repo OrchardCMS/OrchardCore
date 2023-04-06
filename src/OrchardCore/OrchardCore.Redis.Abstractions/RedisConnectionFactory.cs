@@ -19,20 +19,17 @@ namespace OrchardCore.Redis.Services
 
         public IConnectionMultiplexer Connection { get; private set; }
 
-        public IDatabase Database { get; private set; }
-
-        public async Task<(IConnectionMultiplexer Connection, IDatabase Database)> ConnectAsync(ConfigurationOptions options)
+        public async Task<IConnectionMultiplexer> CreateAsync(ConfigurationOptions options)
         {
-            if (Database != null)
+            if (Connection != null)
             {
-                return (Connection, Database);
+                return Connection;
             }
 
             await _semaphore.WaitAsync();
             try
             {
                 Connection ??= await ConnectionMultiplexer.ConnectAsync(options);
-                Database ??= Connection.GetDatabase();
             }
             catch (Exception e)
             {
@@ -44,7 +41,7 @@ namespace OrchardCore.Redis.Services
                 _semaphore.Release();
             }
 
-            return (Connection, Database);
+            return Connection;
         }
 
         public void Dispose()
