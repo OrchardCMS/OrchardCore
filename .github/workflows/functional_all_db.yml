@@ -16,6 +16,7 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: "15"
+    - uses: actions/setup-dotnet@v3
 #    - name: Fix nuget restore issue
 #      run: |
 #          apt update && apt --only-upgrade install ca-certificates -y
