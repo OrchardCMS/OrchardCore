@@ -9,14 +9,10 @@ namespace OrchardCore.Redis.Services
     public sealed class RedisConnectionFactory : IRedisConnectionFactory, IDisposable
     {
         private readonly ILogger _logger;
-
         private readonly SemaphoreSlim _semaphore = new(1);
         private IConnectionMultiplexer _connection;
 
-        public RedisConnectionFactory(ILogger<RedisConnectionFactory> logger)
-        {
-            _logger = logger;
-        }
+        public RedisConnectionFactory(ILogger<RedisConnectionFactory> logger) => _logger = logger;
 
         public async Task<IConnectionMultiplexer> CreateAsync(ConfigurationOptions options)
         {
@@ -43,9 +39,6 @@ namespace OrchardCore.Redis.Services
             return _connection;
         }
 
-        public void Dispose()
-        {
-            _connection?.Close();
-        }
+        public void Dispose() => _connection?.Close();
     }
 }
