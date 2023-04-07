@@ -11,25 +11,24 @@ namespace OrchardCore.Redis.Services
         private readonly ILogger _logger;
 
         private readonly SemaphoreSlim _semaphore = new(1);
+        private IConnectionMultiplexer _connection;
 
         public RedisConnectionFactory(ILogger<RedisConnectionFactory> logger)
         {
             _logger = logger;
         }
 
-        public IConnectionMultiplexer Connection { get; private set; }
-
         public async Task<IConnectionMultiplexer> CreateAsync(ConfigurationOptions options)
         {
-            if (Connection != null)
+            if (_connection != null)
             {
-                return Connection;
+                return _connection;
             }
 
             await _semaphore.WaitAsync();
             try
             {
-                Connection ??= await ConnectionMultiplexer.ConnectAsync(options);
+                _connection ??= await ConnectionMultiplexer.ConnectAsync(options);
             }
             catch (Exception e)
             {
@@ -41,12 +40,12 @@ namespace OrchardCore.Redis.Services
                 _semaphore.Release();
             }
 
-            return Connection;
+            return _connection;
         }
 
         public void Dispose()
         {
-            Connection?.Close();
+            _connection?.Close();
         }
     }
 }
