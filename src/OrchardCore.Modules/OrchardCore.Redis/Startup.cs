@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -35,18 +36,18 @@ namespace OrchardCore.Redis
             try
             {
                 var configurationString = _configuration["OrchardCore_Redis:Configuration"];
-                var _ = ConfigurationOptions.Parse(configurationString);
+                var configurationOptions = ConfigurationOptions.Parse(configurationString);
                 var instancePrefix = _configuration["OrchardCore_Redis:InstancePrefix"];
 
                 services.Configure<RedisOptions>(options =>
                 {
-                    options.Configuration = configurationString;
+                    options.ConfigurationOptions = configurationOptions;
                     options.InstancePrefix = instancePrefix;
                 });
             }
             catch (Exception e)
             {
-                _logger.LogError("'Redis' features are not active on tenant '{TenantName}' as the 'Configuration' string is missing or invalid: " + e.Message, _tenant);
+                _logger.LogError(e, "'Redis' features are not active on tenant '{TenantName}' as the 'Configuration' string is missing or invalid.", _tenant);
                 return;
             }
 
@@ -62,7 +63,7 @@ namespace OrchardCore.Redis
         {
             if (services.Any(d => d.ServiceType == typeof(IRedisService)))
             {
-                services.AddStackExchangeRedisCache(o => { });
+                services.AddSingleton<IDistributedCache, RedisCacheWrapper>();
                 services.AddTransient<IConfigureOptions<RedisCacheOptions>, RedisCacheOptionsSetup>();
                 services.AddScoped<ITagCache, RedisTagCache>();
             }

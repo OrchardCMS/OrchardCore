@@ -10,12 +10,7 @@ namespace OrchardCore.Redis
         /// <summary>
         /// The configuration used to connect to Redis.
         /// </summary>
-        public ConfigurationOptions ConfigurationOptions => ConfigurationOptions.Parse(Configuration);
-
-        /// <summary>
-        /// The configuration string used to connect to Redis.
-        /// </summary>
-        public string Configuration { get; set; }
+        public ConfigurationOptions ConfigurationOptions { get; set; }
 
         /// <summary>
         /// Prefix alowing a Redis instance to be shared.

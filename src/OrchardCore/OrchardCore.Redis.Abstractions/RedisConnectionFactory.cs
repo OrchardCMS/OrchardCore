@@ -6,7 +6,7 @@ using StackExchange.Redis;
 
 namespace OrchardCore.Redis.Services
 {
-    public sealed class RedisConnectionFactory : IRedisConnectionFactory, IDisposable
+    public sealed class RedisConnectionFactory : IRedisConnectionFactory, IDisposable, IAsyncDisposable
     {
         private readonly ILogger _logger;
         private readonly SemaphoreSlim _semaphore = new(1);
@@ -39,6 +39,8 @@ namespace OrchardCore.Redis.Services
             return _connection;
         }
 
-        public void Dispose() => _connection?.Close();
+        public void Dispose() => _connection?.Dispose();
+
+        public ValueTask DisposeAsync() => _connection?.DisposeAsync() ?? default;
     }
 }
