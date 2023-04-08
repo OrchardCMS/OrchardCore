@@ -20,9 +20,9 @@ namespace OrchardCore.Redis.Services
 
         public IConnectionMultiplexer Connection { get; private set; }
 
-        public IDatabase Database => _database ??= Connection?.GetDatabase();
-
         public string InstancePrefix => _options.InstancePrefix;
+
+        public IDatabase Database => _database ??= Connection?.GetDatabase();
 
         public async Task ConnectAsync() => Connection ??= await _factory.CreateAsync(_options.ConfigurationOptions);
 
