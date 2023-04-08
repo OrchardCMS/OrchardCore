@@ -9,7 +9,6 @@ namespace OrchardCore.Redis.Services
     {
         private readonly IRedisConnectionFactory _factory;
         private readonly RedisOptions _options;
-
         private IDatabase _database;
 
         public RedisService(IRedisConnectionFactory factory, IOptions<RedisOptions> options)
