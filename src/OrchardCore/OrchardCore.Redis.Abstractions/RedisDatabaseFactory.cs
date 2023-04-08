@@ -6,6 +6,9 @@ using StackExchange.Redis;
 
 namespace OrchardCore.Redis
 {
+    /// <summary>
+    /// Host level factory allowing to share a <see cref="IDatabase"/> across tenants.
+    /// </summary>
     public sealed class RedisDatabaseFactory : IRedisDatabaseFactory, IDisposable, IAsyncDisposable
     {
         private readonly ILogger _logger;
