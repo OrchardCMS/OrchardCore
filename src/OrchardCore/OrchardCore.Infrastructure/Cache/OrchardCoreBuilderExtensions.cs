@@ -4,7 +4,7 @@ using OrchardCore.Caching.Distributed;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Cache.CacheContextProviders;
 using OrchardCore.Modules;
-using OrchardCore.Redis.Services;
+using OrchardCore.Redis;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -51,7 +51,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddSingleton<IDistributedCache, MemoryDistributedCache>();
             });
 
-            builder.ApplicationServices.AddSingleton<IRedisConnectionFactory, RedisConnectionFactory>();
+            builder.ApplicationServices.AddSingleton<IRedisDatabaseFactory, RedisDatabaseFactory>();
 
             // Adds services to keep in sync any document type between a document store and a multi level cache.
             return builder.AddDocumentManagement();

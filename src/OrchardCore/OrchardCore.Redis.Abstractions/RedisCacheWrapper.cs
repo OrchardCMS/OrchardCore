@@ -1,10 +1,11 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
-namespace Microsoft.Extensions.Caching.StackExchangeRedis;
+namespace OrchardCore.Redis;
 
 /// <summary>
 /// Wrapper preventing the <see cref="RedisCache"/> to dispose the shared <see cref="IConnectionMultiplexer"/>.
