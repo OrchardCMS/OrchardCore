@@ -37,7 +37,7 @@
     "gulp-babel": "8.0.0",
     "gulp-cli": "^2.3.0",
     "gulp-concat": "2.6.1",
-    "gulp-dart-sass": "1.0.2",
+    "gulp-dart-sass": "1.1.0",
     "gulp-debug": "4.0.0",
     "gulp-eol": "0.2.0",
     "gulp-header": "2.0.9",
