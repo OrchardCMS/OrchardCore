@@ -5,8 +5,8 @@ The below table lists the different .NET libraries used in Orchard Core:
 | Library | Usage | Version | License |
 |--- | --- | --- | --- |
 | [Angle Sharp](https://github.com/AngleSharp/AngleSharp) | Angle brackets parser library. | 0.17.1 |[MIT](https://github.com/AngleSharp/AngleSharp/blob/devel/LICENSE) |
-| [AWSSDK S3](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | 3.7.103.36 |[Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
-| [AWSSDK SecurityToken](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | 3.7.101.34 |[Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
+| [AWSSDK S3](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | 3.7.103.44 |[Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
+| [AWSSDK SecurityToken](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | 3.7.101.42 |[Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
 | [AWSSDK Extensions Setup](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | 3.7.5 |[Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
 | [Azure Identity](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/identity/Azure.Identity/README.md) | Azure Active Directory token authentication support. | 1.8.2 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
 | [Azure Configuration Secrets](https://github.com/Azure/azure-sdk-for-net/blob/Azure.Extensions.AspNetCore.Configuration.Secrets_1.2.2/sdk/extensions/Azure.Extensions.AspNetCore.Configuration.Secrets/README.md) | Azure Key Vault configuration provider implementation for Microsoft.Extensions.Configuration. | 1.2.2 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
@@ -18,13 +18,13 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [HtmlSanitizer](https://github.com/mganss/HtmlSanitizer) | Cleans HTML to avoid XSS attacks. | 8.0.645 | [MIT](https://github.com/mganss/HtmlSanitizer/blob/master/LICENSE.md) |
 | [Image Sharp](https://github.com/SixLabors/ImageSharp.Web) | Middleware for ASP.NET-Core for image manipulation. | 2.0.2 |[Apache-2.0](https://github.com/SixLabors/ImageSharp.Web/blob/master/LICENSE) |
 | [Irony.Core](https://github.com/daxnet/irony) | A modified version of the Irony project with .NET Core support | 1.0.7 | [MIT](https://github.com/daxnet/irony/blob/master/LICENSE) |
-| [Jint](https://github.com/sebastienros/jint) | Javascript Interpreter for .NET. | 3.0.0-beta-2048 | [MIT](https://github.com/sebastienros/jint/blob/dev/LICENSE) |
+| [Jint](https://github.com/sebastienros/jint) | Javascript Interpreter for .NET. | 3.0.0-beta-2049 | [MIT](https://github.com/sebastienros/jint/blob/dev/LICENSE) |
 | [Lorem.NET for netstandard](https://github.com/trichards57/Lorem.Universal.NET) | A .NET library for all things random! | 4.0.80 | [MIT](https://github.com/trichards57/Lorem.Universal.NET/blob/master/license.md) |
 | [Lucene.Net](https://github.com/apache/lucenenet) | .NET full-text search engine. | 4.8.0-beta00016 | [Apache-2.0](https://github.com/apache/lucenenet/blob/master/LICENSE.txt) |
 | [MailKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | 3.6.0 | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |
 | [Markdig](https://github.com/lunet-io/markdig) | .NET Markdown engine. | 0.31.0 | [BSD-2-Clause](https://github.com/lunet-io/markdig/blob/master/license.txt) |
 | [MessagePack](https://github.com/neuecc/MessagePack-CSharp) | Extremely Fast MessagePack Serializer for C# | 2.2.60 | [MIT](https://github.com/neuecc/MessagePack-CSharp/blob/master/LICENSE) |
-| [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web) | Helps creating protected web apps and web APIs with Microsoft identity platform and Azure AD B2C. | 2.6.1 | [MIT](https://github.com/AzureAD/microsoft-identity-web/blob/master/LICENSE) |
+| [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web) | Helps creating protected web apps and web APIs with Microsoft identity platform and Azure AD B2C. | 2.7.0 | [MIT](https://github.com/AzureAD/microsoft-identity-web/blob/master/LICENSE) |
 | [Microsoft.SourceLink.GitHub](https://github.com/dotnet/sourcelink) | Source Link enables a great source debugging experience. | 1.1.1 | [MIT](https://github.com/dotnet/sourcelink/blob/main/License.txt) |
 | [MimeKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | 3.6.1 | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |
 | [MiniProfiler](https://github.com/MiniProfiler/dotnet) | A simple but effective mini-profiler for ASP.NET (and Core) websites | 4.2.22 | [MIT](https://github.com/MiniProfiler/dotnet/blob/main/LICENSE.txt) |

@@ -49,7 +49,7 @@ namespace OrchardCore.Deployment
             services.AddScoped<IDisplayDriver<DeploymentStep>, RecipeFileDeploymentStepDriver>();
 
             services.AddIndexProvider<DeploymentPlanIndexProvider>();
-            services.AddTransient<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
 
             services.AddScoped<IDeploymentPlanService, DeploymentPlanService>();
 
