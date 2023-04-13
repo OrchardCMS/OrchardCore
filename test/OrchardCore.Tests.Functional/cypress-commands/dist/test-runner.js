@@ -18,14 +18,14 @@ function build(dir, dotnetVersion) {
 
   // "dotnet" command arguments.
   let runArgs = [
-      'build', dir,
+      'build',
       '--configuration', 'Release',
       '--framework', dotnetVersion
   ];
 
   // "dotnet" process options.
   let runOpts = {
-      cwd: '/usr/share/dotnet'
+      cwd: dir
   };
 
   try {
