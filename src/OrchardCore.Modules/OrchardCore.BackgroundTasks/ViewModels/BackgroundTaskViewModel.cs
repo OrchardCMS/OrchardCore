@@ -6,16 +6,16 @@ namespace OrchardCore.BackgroundTasks.ViewModels
     {
         public string Name { get; set; }
 
-        [BindNever]
-        public string DefaultSchedule { get; set; }
-
         public string Title { get; set; }
 
-        public bool Enable { get; set; } = true;
+        [BindNever]
+        public string DefaultSchedule { get; set; }
 
         public string Schedule { get; set; }
 
         public string Description { get; set; }
+
+        public bool Enable { get; set; } = true;
 
         public int LockTimeout { get; set; }
 
