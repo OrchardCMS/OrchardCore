@@ -12,41 +12,30 @@ namespace OrchardCore.BackgroundTasks
             var technicalName = task.GetTaskName();
 
             var attribute = task.GetType().GetCustomAttribute<BackgroundTaskAttribute>();
-
             if (attribute != null)
             {
                 return new BackgroundTaskSettings
                 {
-                    Title = !String.IsNullOrWhiteSpace(attribute.Title) ? attribute.Title : technicalName,
                     Name = technicalName,
+                    Title = !String.IsNullOrWhiteSpace(attribute.Title) ? attribute.Title : technicalName,
                     Enable = attribute.Enable,
                     Schedule = attribute.Schedule,
                     Description = attribute.Description,
                     LockTimeout = attribute.LockTimeout,
-                    LockExpiration = attribute.LockExpiration
+                    LockExpiration = attribute.LockExpiration,
                 };
             }
 
             return new BackgroundTaskSettings()
             {
                 Name = technicalName,
-                Title = technicalName
+                Title = technicalName,
             };
         }
 
         public static IBackgroundTask GetTaskByName(this IEnumerable<IBackgroundTask> tasks, string name)
-        {
-            if (String.IsNullOrEmpty(name))
-            {
-                return null;
-            }
+            => tasks.LastOrDefault(task => task.GetTaskName() == name);
 
-            return tasks.LastOrDefault(task => String.Equals(task.GetTaskName(), name, StringComparison.OrdinalIgnoreCase));
-        }
-
-        public static string GetTaskName(this IBackgroundTask task)
-        {
-            return task.GetType().FullName;
-        }
+        public static string GetTaskName(this IBackgroundTask task) => task.GetType().FullName;
     }
 }
