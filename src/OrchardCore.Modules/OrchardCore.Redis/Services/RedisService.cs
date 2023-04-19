@@ -24,6 +24,6 @@ namespace OrchardCore.Redis.Services
 
         public override Task ActivatingAsync() => ConnectAsync();
 
-        public async Task ConnectAsync() => Database ??= await _factory.CreateAsync(_options.ConfigurationOptions);
+        public async Task ConnectAsync() => Database ??= await _factory.CreateAsync(_options);
     }
 }

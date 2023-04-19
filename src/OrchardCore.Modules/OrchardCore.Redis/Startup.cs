@@ -35,12 +35,13 @@ namespace OrchardCore.Redis
         {
             try
             {
-                var configurationString = _configuration["OrchardCore_Redis:Configuration"];
-                var configurationOptions = ConfigurationOptions.Parse(configurationString);
+                var configuration = _configuration["OrchardCore_Redis:Configuration"];
+                var configurationOptions = ConfigurationOptions.Parse(configuration);
                 var instancePrefix = _configuration["OrchardCore_Redis:InstancePrefix"];
 
                 services.Configure<RedisOptions>(options =>
                 {
+                    options.Configuration = configuration;
                     options.ConfigurationOptions = configurationOptions;
                     options.InstancePrefix = instancePrefix;
                 });
@@ -53,6 +54,7 @@ namespace OrchardCore.Redis
 
             services.AddSingleton<IRedisService, RedisService>();
             services.AddSingleton<IModularTenantEvents>(sp => sp.GetRequiredService<IRedisService>());
+            services.AddSingleton<IRedisDatabaseFactory, RedisDatabaseFactory>();
         }
     }
 

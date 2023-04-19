@@ -5,10 +5,10 @@ using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
-namespace OrchardCore.Redis;
+namespace OrchardCore.Redis.Services;
 
 /// <summary>
-/// Wrapper preventing the <see cref="RedisCache"/> to dispose the shared <see cref="IConnectionMultiplexer"/>.
+/// Wrapper preventing the <see cref="RedisCache"/> to dispose a shared <see cref="IConnectionMultiplexer"/>.
 /// </summary>
 public class RedisCacheWrapper : IDistributedCache
 {

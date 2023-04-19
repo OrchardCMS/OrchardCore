@@ -51,9 +51,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddSingleton<IDistributedCache, MemoryDistributedCache>();
             });
 
-            // Host level factory allowing to share a 'Redis' database across tenants.
-            builder.ApplicationServices.AddSingleton<IRedisDatabaseFactory, RedisDatabaseFactory>();
-
             // Adds services to keep in sync any document type between a document store and a multi level cache.
             return builder.AddDocumentManagement();
         }

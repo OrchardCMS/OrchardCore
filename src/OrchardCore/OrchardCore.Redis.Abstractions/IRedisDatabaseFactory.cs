@@ -1,13 +1,12 @@
 using System.Threading.Tasks;
 using StackExchange.Redis;
 
-namespace OrchardCore.Redis
+namespace OrchardCore.Redis;
+
+/// <summary>
+/// Factory allowing to share <see cref="IDatabase"/> instances across tenants.
+/// </summary>
+public interface IRedisDatabaseFactory
 {
-    /// <summary>
-    /// Host level factory allowing to share a <see cref="IDatabase"/> across tenants.
-    /// </summary>
-    public interface IRedisDatabaseFactory
-    {
-        Task<IDatabase> CreateAsync(ConfigurationOptions options);
-    }
+    Task<IDatabase> CreateAsync(RedisOptions options);
 }
