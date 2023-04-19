@@ -73,17 +73,17 @@ public sealed class RedisDatabaseFactory : IRedisDatabaseFactory, IDisposable
         }
     }
 
-    public static void Release()
+    internal static void Release()
     {
         if (Interlocked.CompareExchange(ref _refCount, 0, 0) == 0)
         {
-            var databases = _databases.Values.ToArray();
-
-            _databases.Clear();
-
-            foreach (var database in databases)
+            var keys = _databases.Keys.ToArray();
+            foreach (var key in keys)
             {
-                database.Multiplexer.Dispose();
+                if (_databases.TryRemove(key, out var database))
+                {
+                    database.Multiplexer.Dispose();
+                }
             }
         }
     }
