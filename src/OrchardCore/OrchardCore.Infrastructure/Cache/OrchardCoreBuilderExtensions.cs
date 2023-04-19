@@ -4,7 +4,6 @@ using OrchardCore.Caching.Distributed;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Cache.CacheContextProviders;
 using OrchardCore.Modules;
-using OrchardCore.Redis;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

@@ -22,7 +22,6 @@
     <ProjectReference Include="..\OrchardCore\OrchardCore.csproj" />
     <ProjectReference Include="..\OrchardCore.Data.YesSql\OrchardCore.Data.YesSql.csproj" />
     <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
-    <ProjectReference Include="..\OrchardCore.Redis.Abstractions\OrchardCore.Redis.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>
