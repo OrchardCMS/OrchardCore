@@ -14,8 +14,7 @@ namespace OrchardCore.Redis.Services;
 /// </summary>
 public sealed class RedisDatabaseFactory : IRedisDatabaseFactory, IDisposable
 {
-    private static readonly ConcurrentDictionary<string, IDatabase> _databases = new();
-    private static readonly SemaphoreSlim _semaphore = new(1);
+    private static readonly ConcurrentDictionary<string, Lazy<Task<IDatabase>>> _factories = new();
     private static volatile int _registered;
     private static volatile int _refCount;
 
@@ -35,34 +34,20 @@ public sealed class RedisDatabaseFactory : IRedisDatabaseFactory, IDisposable
         _logger = logger;
     }
 
-    public async Task<IDatabase> CreateAsync(RedisOptions options)
+    public Task<IDatabase> CreateAsync(RedisOptions options)
     {
-        if (_databases.TryGetValue(options.Configuration, out var database))
+        return _factories.GetOrAdd(options.Configuration, new Lazy<Task<IDatabase>>(async () =>
         {
-            return database;
-        }
-
-        await _semaphore.WaitAsync();
-        try
-        {
-            if (_databases.TryGetValue(options.Configuration, out database))
+            try
             {
-                return database;
+                return (await ConnectionMultiplexer.ConnectAsync(options.ConfigurationOptions)).GetDatabase();
             }
-
-            database = (await ConnectionMultiplexer.ConnectAsync(options.ConfigurationOptions)).GetDatabase();
-
-            return _databases[options.Configuration] = database;
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Unable to connect to Redis.");
-            throw;
-        }
-        finally
-        {
-            _semaphore.Release();
-        }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Unable to connect to Redis.");
+                throw;
+            }
+        })).Value;
     }
 
     public void Dispose()
@@ -77,12 +62,13 @@ public sealed class RedisDatabaseFactory : IRedisDatabaseFactory, IDisposable
     {
         if (Interlocked.CompareExchange(ref _refCount, 0, 0) == 0)
         {
-            var databases = _databases.Values.ToArray();
+            var factories = _factories.Values.ToArray();
 
-            _databases.Clear();
+            _factories.Clear();
 
-            foreach (var database in databases)
+            foreach (var factory in factories)
             {
+                var database = factory.Value.GetAwaiter().GetResult();
                 database.Multiplexer.Dispose();
             }
         }
