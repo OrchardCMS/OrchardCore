@@ -13,6 +13,6 @@ assetPaths.forEach(function (assetPath) {
     exec('npm install', {
         'cwd': path
     }, (error, stdout, stderr) => {
-         console.log(error, stdout, stderr);
+        console.log(error, stdout, stderr);
     })
 });
