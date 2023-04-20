@@ -3,7 +3,7 @@
 'use strict';
 
 var glob = require("glob"),
-	exec = require('child_process').exec;
+    exec = require('child_process').exec;
 
 var assetPaths = glob.sync("./src/OrchardCore.{Modules,Themes}/*/package.json", {});
 
