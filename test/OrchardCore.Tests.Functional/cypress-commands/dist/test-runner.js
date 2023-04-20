@@ -25,7 +25,8 @@ function build(dir, dotnetVersion) {
 
   // "dotnet" process options.
   let runOpts = {
-      cwd: dir
+      cwd: dir,
+      shell: true,
   };
 
   try {
@@ -49,7 +50,7 @@ function build(dir, dotnetVersion) {
   catch (error) {
     console.error(error);
     console.error('Failed to build.');
-  }  
+  }
 }
 
 // destructive action that deletes the App_Data folder
@@ -65,11 +66,11 @@ function host(dir, assembly, { appDataLocation='./App_Data', dotnetVersion='net7
   } else {
     build(dir, dotnetVersion);
   }
-  global.log("Starting application ..."); 
-  
+  global.log("Starting application ...");
+
   const ocEnv = {};
   ocEnv["ORCHARD_APP_DATA"] = appDataLocation;
-  
+
   let server = child_process.spawn(
     "dotnet",
     [`bin/Release/${dotnetVersion}/` + assembly],
