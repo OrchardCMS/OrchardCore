@@ -41,7 +41,7 @@ if(projects.length > 1) {
     return;
 }
 
-const path = projects[0].substring(0, projects[0].length - 12);
+const path = projects[0].substring(0, projects[0].length - 'package.json'.length);
 
 console.log(actionName + 'ing: ' + projects[0]);
 
