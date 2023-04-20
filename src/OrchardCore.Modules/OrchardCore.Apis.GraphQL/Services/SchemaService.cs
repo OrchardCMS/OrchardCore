@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using GraphQL;
 using GraphQL.MicrosoftDI;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
@@ -96,7 +95,7 @@ namespace OrchardCore.Apis.GraphQL.Services
                     await builder.BuildAsync(schema);
                 }
 
-        
+
                 // Clean Query, Mutation and Subscription if they have no fields
                 // to prevent GraphQL configuration errors.
 

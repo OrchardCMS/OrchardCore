@@ -11,7 +11,9 @@ global.log = function(msg) {
 // Build the dotnet application in release mode
 export function build(dir) {
   global.log("Building ...");
-  child_process.spawnSync("dotnet", ["build", "-c", "Release"], { cwd: dir });
+  var result = child_process.spawnSync("dotnet", ["build", "-c", "Release"], { cwd: dir });
+  global.log("Built ...");
+  global.log(result.output);
 }
 
 // destructive action that deletes the App_Data folder
@@ -21,7 +23,7 @@ export function deleteDirectory(dir) {
 }
 
 // Host the dotnet application, does not rebuild
-export function host(dir, assembly, { appDataLocation='./App_Data', dotnetVersion='net6.0' }={}) {
+export function host(dir, assembly, { appDataLocation='./App_Data', dotnetVersion='net7.0' }={}) {
   if (fs.existsSync(path.join(dir, `bin/Release/${dotnetVersion}/`, assembly))) {
     global.log("Application already built, skipping build");
   } else {
@@ -53,7 +55,7 @@ export function host(dir, assembly, { appDataLocation='./App_Data', dotnetVersio
 }
 
 // combines the functions above, useful when triggering tests from CI
-export function e2e(dir, assembly, { dotnetVersion='net6.0' }={}) {
+export function e2e(dir, assembly, { dotnetVersion='net7.0' }={}) {
   deleteDirectory(path.join(dir, "App_Data_Tests"));
   var server = host(dir, assembly, { appDataLocation: "./App_Data_Tests", dotnetVersion });
 

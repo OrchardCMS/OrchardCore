@@ -45,7 +45,7 @@ namespace OrchardCore.ContentFields.Drivers
                 // is created (not for APIs). Since we may want to render the editor of a content
                 // item that was created by code, we only set the default value in the <input>
                 // of the field if it doesn't already have a value.
-                
+
                 if (field.Value.HasValue)
                 {
                     model.Value = Convert.ToString(field.Value, CultureInfo.CurrentUICulture);

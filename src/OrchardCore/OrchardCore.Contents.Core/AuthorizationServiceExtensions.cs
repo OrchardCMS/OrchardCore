@@ -57,7 +57,7 @@ namespace Microsoft.AspNetCore.Authorization
             ArgumentNullException.ThrowIfNull(requiredPermission);
             ArgumentNullException.ThrowIfNull(contentManager);
 
-            var permission = GetOwnerVariation(requiredPermission);
+            var permission = GetOwnerVariation(requiredPermission) ?? requiredPermission;
 
             var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(permission);
 

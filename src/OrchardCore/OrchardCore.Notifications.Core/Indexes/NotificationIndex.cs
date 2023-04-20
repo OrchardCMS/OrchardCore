@@ -40,9 +40,9 @@ public class NotificationIndexProvider : IndexProvider<Notification>
 
                 var bodyInfo = notification.As<NotificationBodyInfo>();
 
-                if (!String.IsNullOrEmpty(bodyInfo?.Body))
+                if (!String.IsNullOrEmpty(bodyInfo?.TextBody))
                 {
-                    content += $" {bodyInfo.Body}";
+                    content += $" {bodyInfo.TextBody}";
                 }
 
                 content = StripHTML(content);

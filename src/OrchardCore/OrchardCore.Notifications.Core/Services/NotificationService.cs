@@ -31,7 +31,7 @@ public class NotificationService : INotificationService
     {
         var notificationContext = new NotificationContext(message, notify);
 
-        var notification = await CreateNotificationAsync(message, notificationContext);
+        var notification = await CreateNotificationAsync(notificationContext);
 
         await _notificationEvents.InvokeAsync((handler, context) => handler.SendingAsync(context), notificationContext, _logger);
 
@@ -60,13 +60,13 @@ public class NotificationService : INotificationService
         return totalSent;
     }
 
-    private async Task<Notification> CreateNotificationAsync(INotificationMessage message, NotificationContext context)
+    private async Task<Notification> CreateNotificationAsync(NotificationContext context)
     {
         var notification = new Notification()
         {
             NotificationId = IdGenerator.GenerateId(),
             CreatedUtc = _clock.UtcNow,
-            Summary = message.Summary,
+            Summary = context.NotificationMessage.Summary,
         };
 
         context.Notification = notification;

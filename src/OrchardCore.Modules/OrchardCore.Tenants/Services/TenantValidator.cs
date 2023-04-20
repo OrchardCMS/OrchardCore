@@ -8,6 +8,7 @@ using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Tenants.Models;
 using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Services
@@ -36,7 +37,7 @@ namespace OrchardCore.Tenants.Services
             S = stringLocalizer;
         }
 
-        public async Task<IEnumerable<ModelError>> ValidateAsync(TenantViewModel model)
+        public async Task<IEnumerable<ModelError>> ValidateAsync(TenantModelBase model)
         {
             var errors = new List<ModelError>();
 
@@ -45,12 +46,16 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.Name), S["The tenant name is mandatory."]));
             }
 
-            if (!String.IsNullOrWhiteSpace(model.FeatureProfile))
+            if (model.FeatureProfiles != null && model.FeatureProfiles.Length > 0)
             {
                 var featureProfiles = await _featureProfilesService.GetFeatureProfilesAsync();
-                if (!featureProfiles.ContainsKey(model.FeatureProfile))
+
+                foreach (var featureProfile in model.FeatureProfiles)
                 {
-                    errors.Add(new ModelError(nameof(model.FeatureProfile), S["The feature profile does not exist."]));
+                    if (!featureProfiles.ContainsKey(featureProfile))
+                    {
+                        errors.Add(new ModelError(nameof(model.FeatureProfiles), S["The feature profile does not exist."]));
+                    }
                 }
             }
 

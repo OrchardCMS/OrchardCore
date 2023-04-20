@@ -604,7 +604,7 @@ namespace OrchardCore.ContentTypes.Controllers
             var viewModel = new AddFieldViewModel
             {
                 Part = partViewModel.PartDefinition,
-                Fields = fields.Select(field => field .Name).OrderBy(name  => name).ToList()
+                Fields = fields.Select(field => field.Name).OrderBy(name => name).ToList()
             };
 
             ViewData["ReturnUrl"] = returnUrl;

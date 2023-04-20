@@ -202,7 +202,7 @@ namespace OrchardCore.ContentFields
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDataMigration, Indexing.SQL.Migrations>();
+            services.AddDataMigration<Indexing.SQL.Migrations>();
             services.AddScopedIndexProvider<TextFieldIndexProvider>();
             services.AddScopedIndexProvider<BooleanFieldIndexProvider>();
             services.AddScopedIndexProvider<NumericFieldIndexProvider>();
@@ -261,7 +261,7 @@ namespace OrchardCore.ContentFields
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDataMigration, UserPickerMigrations>();
+            services.AddDataMigration<UserPickerMigrations>();
             services.AddScopedIndexProvider<UserPickerFieldIndexProvider>();
         }
     }

@@ -11,8 +11,10 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.AuditTrail.Services
 {
-    [BackgroundTask(Schedule = "0 0 * * *",
-        Description = "A background task that regularly deletes old Audit Trail Events.",
+    [BackgroundTask(
+        Title = "Audit Trail Events Purger",
+        Schedule = "0 0 * * *",
+        Description = "Regularly purges old Audit Trail events.",
         LockTimeout = 3_000, LockExpiration = 30_000)]
 
     public class AuditTrailBackgroundTask : IBackgroundTask

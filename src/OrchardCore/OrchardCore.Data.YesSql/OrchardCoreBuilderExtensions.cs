@@ -105,18 +105,30 @@ namespace Microsoft.Extensions.DependencyInjection
                         storeConfiguration = storeConfiguration.SetTablePrefix(tablePrefix);
                     }
 
-                    var store = StoreFactory.CreateAndInitializeAsync(storeConfiguration).GetAwaiter().GetResult();
-                    var options = sp.GetService<IOptions<StoreCollectionOptions>>().Value;
-                    foreach (var collection in options.Collections)
-                    {
-                        store.InitializeCollectionAsync(collection).GetAwaiter().GetResult();
-                    }
+                    var store = StoreFactory.Create(storeConfiguration);
 
                     var indexes = sp.GetServices<IIndexProvider>();
 
                     store.RegisterIndexes(indexes);
 
                     return store;
+                });
+
+                services.Initialize(async sp =>
+                {
+                    var store = sp.GetService<IStore>();
+                    if (store == null)
+                    {
+                        return;
+                    }
+
+                    await store.InitializeAsync();
+
+                    var storeCollectionOptions = sp.GetService<IOptions<StoreCollectionOptions>>().Value;
+                    foreach (var collection in storeCollectionOptions.Collections)
+                    {
+                        await store.InitializeCollectionAsync(collection);
+                    }
                 });
 
                 services.AddScoped(sp =>

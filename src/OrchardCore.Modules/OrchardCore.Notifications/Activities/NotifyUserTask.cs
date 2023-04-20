@@ -1,8 +1,11 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Users;
+using OrchardCore.Users.Models;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
@@ -28,13 +31,13 @@ public class NotifyUserTask : NotifyUserTaskActivity
 
     public override LocalizedString DisplayText => S["Notify User Task"];
 
-    protected override Task<IUser> GetUserAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    protected override Task<IEnumerable<IUser>> GetUsersAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        if (workflowContext.Input.TryGetValue("User", out var userObject) && userObject is IUser user)
+        if (workflowContext.Input.TryGetValue("User", out var userObject) && userObject is User user && user.IsEnabled)
         {
-            return Task.FromResult(user);
+            return Task.FromResult<IEnumerable<IUser>>(new[] { user });
         }
 
-        return Task.FromResult<IUser>(null);
+        return Task.FromResult(Enumerable.Empty<IUser>());
     }
 }

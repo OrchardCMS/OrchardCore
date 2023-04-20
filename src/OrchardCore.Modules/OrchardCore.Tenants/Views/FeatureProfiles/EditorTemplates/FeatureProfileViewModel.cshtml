@@ -1,0 +1,56 @@
+@model FeatureProfileViewModel
+@inject OrchardCore.Tenants.Services.IFeatureProfilesSchemaService SchemaService
+
+@{
+    var schema = SchemaService.GetJsonSchema();
+}
+
+<input type="hidden" asp-for="Id" />
+
+<div class="row">
+    <div class="col-12 col-md-6">
+        <div class="mb-3" asp-validation-class-for="Name">
+            <label asp-for="Name">@T["Name"]</label>
+            <input asp-for="Name" class="form-control" autofocus />
+            <span asp-validation-for="Name"></span>
+            <span class="hint">@T["The name of the feature profile."]</span>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="mb-3" asp-validation-class-for="FeatureRules">
+            <label asp-for="FeatureRules">@T["Rules"]</label>
+            <div class="form-control" style="min-height: 400px;">
+                <div id="@Html.IdFor(x => x.FeatureRules)_editor" asp-for="FeatureRules" style="min-height: 385px;" dir="@Orchard.CultureDir()" data-schema="@schema"></div>
+            </div>
+            <textarea asp-for="FeatureRules" hidden></textarea>
+            <span asp-validation-for="FeatureRules"></span>
+            <span class="hint">
+                @T["The feature rules. Here is an example if a rule that would exclude '{0}' feature.", "OrchardCore.Flows"]
+
+<pre>
+[
+  {
+    "Rule": "Exclude",
+    "Expression": "OrchardCore.Flows"
+  }
+]
+</pre>
+            </span>
+
+        </div>
+    </div>
+</div>
+
+<div class="mb-3">
+    <div class="btn-group">
+        <button type="submit" name="submit" class="btn btn-primary save">@T["Save"]</button>
+        <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="sr-only">@T["Toggle Dropdown"]</span>
+        </button>
+        <div class="dropdown-menu">
+            <button class="dropdown-item save-continue" name="submit" type="submit" value="SaveAndContinue">@T["and continue"]</button>
+        </div>
+    </div>
+
+    <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
+</div>

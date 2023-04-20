@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -48,7 +46,7 @@ public class CacheTicketStore : ITicketStore
             var protectedBytes = DataProtector.Protect(SerializeTicket(ticket));
             await cache.SetAsync(cacheKey, protectedBytes, new DistributedCacheEntryOptions() { AbsoluteExpiration = ticket.Properties.ExpiresUtc.Value });
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             // Data Protection Error
             Logger.LogError(e, "{methodName} failed  for '{key}'.", nameof(RenewAsync), cacheKey);
@@ -65,15 +63,15 @@ public class CacheTicketStore : ITicketStore
             return null;
         }
 
-       try
+        try
         {
             var ticket = DeserializeTicket(DataProtector.Unprotect(bytes));
             return ticket;
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             // Data Protection Error
-            Logger.LogError(e, "{methodName} failed  for '{key}'.", nameof(RetrieveAsync) ,cacheKey);
+            Logger.LogError(e, "{methodName} failed  for '{key}'.", nameof(RetrieveAsync), cacheKey);
             return null;
         }
     }
@@ -90,9 +88,9 @@ public class CacheTicketStore : ITicketStore
             await cache.SetAsync(cacheKey, protectedBytes, new DistributedCacheEntryOptions() { AbsoluteExpiration = ticket.Properties.ExpiresUtc.Value });
             return key;
         }
-        catch(Exception e)
+        catch (Exception e)
         {
-            Logger.LogError(e, "{methodName} failed  for '{key}'.", nameof(StoreAsync) ,cacheKey);
+            Logger.LogError(e, "{methodName} failed  for '{key}'.", nameof(StoreAsync), cacheKey);
             return null;
         }
     }

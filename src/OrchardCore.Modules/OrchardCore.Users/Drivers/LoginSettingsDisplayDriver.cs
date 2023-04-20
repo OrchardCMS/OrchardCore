@@ -26,7 +26,7 @@ namespace OrchardCore.Users.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
+            if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
             {
                 return null;
             }
@@ -38,14 +38,14 @@ namespace OrchardCore.Users.Drivers
                 model.DisableLocalLogin = settings.DisableLocalLogin;
                 model.UseScriptToSyncRoles = settings.UseScriptToSyncRoles;
                 model.SyncRolesScript = settings.SyncRolesScript;
+                model.AllowChangingEmail = settings.AllowChangingEmail;
+                model.AllowChangingUsername = settings.AllowChangingUsername;
             }).Location("Content:5").OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(LoginSettings section, BuildEditorContext context)
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
+            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
             {
                 return null;
             }

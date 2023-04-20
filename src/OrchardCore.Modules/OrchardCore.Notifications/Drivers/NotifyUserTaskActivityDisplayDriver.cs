@@ -50,9 +50,10 @@ public class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewModel> : Ac
     /// </summary>
     protected override void EditActivity(TActivity activity, TEditViewModel model)
     {
-        model.Summary = activity.Summary.Expression;
-        model.Body = activity.Body.Expression;
-        model.IsHtmlBody = activity.IsHtmlBody;
+        model.Subject = activity.Subject.Expression;
+        model.TextBody = activity.TextBody.Expression;
+        model.HtmlBody = activity.HtmlBody.Expression;
+        model.IsHtmlPreferred = activity.IsHtmlPreferred;
     }
 
     /// <summary>
@@ -70,9 +71,10 @@ public class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewModel> : Ac
     /// </summary>
     protected override void UpdateActivity(TEditViewModel model, TActivity activity)
     {
-        activity.Summary = new WorkflowExpression<string>(model.Summary);
-        activity.Body = new WorkflowExpression<string>(model.Body);
-        activity.IsHtmlBody = model.IsHtmlBody;
+        activity.Subject = new WorkflowExpression<string>(model.Subject);
+        activity.TextBody = new WorkflowExpression<string>(model.TextBody);
+        activity.HtmlBody = new WorkflowExpression<string>(model.HtmlBody);
+        activity.IsHtmlPreferred = model.IsHtmlPreferred;
     }
 
     public override IDisplayResult Display(TActivity activity)

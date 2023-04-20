@@ -20,6 +20,7 @@ public class NotificationMethodProviderAccessor : INotificationMethodProviderAcc
     public Task<IEnumerable<INotificationMethodProvider>> GetProvidersAsync(object notify)
     {
         var user = notify as User;
+
         if (user != null)
         {
             var notificationPart = user.As<UserNotificationPreferencesPart>();
@@ -27,16 +28,17 @@ public class NotificationMethodProviderAccessor : INotificationMethodProviderAcc
             var selectedMethods = ((notificationPart?.Methods) ?? Array.Empty<string>()).ToList();
             var optout = notificationPart.Optout ?? Array.Empty<string>();
 
+            var methods = _notificationMethodProviders.Where(provider => !optout.Contains(provider.Method));
             if (selectedMethods.Count > 0)
             {
-                return Task.FromResult<IEnumerable<INotificationMethodProvider>>(_notificationMethodProviders.Where(provider => !optout.Contains(provider.Method, StringComparer.OrdinalIgnoreCase))
+                return Task.FromResult<IEnumerable<INotificationMethodProvider>>(methods
                     // Priority matters to horor user preferences.
                     .OrderBy(provider => selectedMethods.IndexOf(provider.Method))
-                    .ThenBy(provider => provider.Name).ToList());
+                    .ThenBy(provider => provider.Name.ToString())
+                    .ToList());
             }
 
-            return Task.FromResult<IEnumerable<INotificationMethodProvider>>(_notificationMethodProviders.Where(provider => !optout.Contains(provider.Method, StringComparer.OrdinalIgnoreCase))
-                    .OrderBy(provider => provider.Name).ToList());
+            return Task.FromResult<IEnumerable<INotificationMethodProvider>>(methods.OrderBy(provider => provider.Name.ToString()).ToList());
         }
 
         return Task.FromResult(_notificationMethodProviders);

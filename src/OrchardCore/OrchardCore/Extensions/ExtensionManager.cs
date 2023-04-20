@@ -38,7 +38,7 @@ namespace OrchardCore.Environment.Extensions
         private readonly ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _dependentFeatures
             = new ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>>();
 
-        private bool _isInitialized = false;
+        private bool _isInitialized;
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
         public ExtensionManager(
@@ -51,7 +51,7 @@ namespace OrchardCore.Environment.Extensions
         {
             _applicationContext = applicationContext;
             _extensionDependencyStrategies = extensionDependencyStrategies as IExtensionDependencyStrategy[] ?? extensionDependencyStrategies.ToArray();
-            _extensionPriorityStrategies = extensionPriorityStrategies as IExtensionPriorityStrategy[] ?? _extensionPriorityStrategies.ToArray();
+            _extensionPriorityStrategies = extensionPriorityStrategies as IExtensionPriorityStrategy[] ?? extensionPriorityStrategies.ToArray();
             _typeFeatureProvider = typeFeatureProvider;
             _featuresProvider = featuresProvider;
             L = logger;
@@ -288,14 +288,14 @@ namespace OrchardCore.Environment.Extensions
             }
 
             await _semaphore.WaitAsync();
-
-            if (_isInitialized)
-            {
-                return;
-            }
-
             try
             {
+
+                if (_isInitialized)
+                {
+                    return;
+                }
+
                 var modules = _applicationContext.Application.Modules;
                 var loadedExtensions = new ConcurrentDictionary<string, ExtensionEntry>();
 
@@ -365,7 +365,7 @@ namespace OrchardCore.Environment.Extensions
 
                         loadedFeatures.Add(feature.Id, new FeatureEntry(feature, featureTypes));
                     }
-                };
+                }
 
                 // Feature infos and entries are ordered by priority and dependencies.
                 _featureInfos = Order(loadedFeatures.Values.Select(f => f.FeatureInfo));
