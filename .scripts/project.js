@@ -21,9 +21,10 @@ if(actionName != 'install' && actionName != 'update') {
 const projectName = process.argv[3];
 
 const glob = require("glob"),
-      exec = require('child_process').exec;
+      exec = require('child_process').exec,
+      packageFileName = 'package.json';
 
-const projects = glob.sync("./src/OrchardCore.{Modules,Themes}/*" + projectName + "*/package.json", {});
+const projects = glob.sync("./src/OrchardCore.{Modules,Themes}/*" + projectName + "*/" + packageFileName, {});
 
 if(projects.length == 0) {
 
@@ -41,12 +42,14 @@ if(projects.length > 1) {
     return;
 }
 
-const path = projects[0].substring(0, projects[0].length - 'package.json'.length);
+const path = projects[0].substring(0, projects[0].length - packageFileName.length);
 
 console.log(`Running 'npm ${actionName}' on '${projects[0]}'`);
 
 exec('npm ' + actionName, {
     'cwd': path
 }, (error, stdout, stderr) => {
-    console.log(error, stdout, stderr);
+	if (error) {
+    	console.log(`Failed to run 'npm ${actionName}' on '${projects[0]}'`, error);
+	}
 });

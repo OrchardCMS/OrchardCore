@@ -6,7 +6,7 @@
     "rebuild": "gulp rebuild",
     "watch": " gulp watch",
     "postinstall": "node .scripts/install.js",
-    "update": "node .scripts/update.js",
+    "update-projects": "node .scripts/update.js",
     "install-project": "node .scripts/project.js install",
     "update-project": "node .scripts/project.js update"
   },
