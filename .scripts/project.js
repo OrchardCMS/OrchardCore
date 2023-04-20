@@ -2,8 +2,6 @@
 
 'use strict';
 
-console.log(process.argv.length, process.argv);
-
 if(process.argv.length !== 4) {
 
 	console.log('Invalid arguments. This command accepts a single project-name argument.');
@@ -11,7 +9,7 @@ if(process.argv.length !== 4) {
 	return;
 }
 
-var actionName = process.argv[2];
+const actionName = process.argv[2];
 
 if(actionName != 'install' && actionName != 'update') {
 
@@ -33,7 +31,6 @@ if(projects.length == 0) {
 
 	return;
 }
-
 
 if(projects.length > 1) {
 
