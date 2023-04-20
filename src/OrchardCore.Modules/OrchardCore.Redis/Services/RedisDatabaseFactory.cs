@@ -34,9 +34,8 @@ public sealed class RedisDatabaseFactory : IRedisDatabaseFactory, IDisposable
         _logger = logger;
     }
 
-    public Task<IDatabase> CreateAsync(RedisOptions options)
-    {
-        return _factories.GetOrAdd(options.Configuration, new Lazy<Task<IDatabase>>(async () =>
+    public Task<IDatabase> CreateAsync(RedisOptions options) =>
+        _factories.GetOrAdd(options.Configuration, new Lazy<Task<IDatabase>>(async () =>
         {
             try
             {
@@ -48,7 +47,6 @@ public sealed class RedisDatabaseFactory : IRedisDatabaseFactory, IDisposable
                 throw;
             }
         })).Value;
-    }
 
     public void Dispose()
     {
