@@ -111,7 +111,7 @@ jobs:
     container:
       image: cypress/included:9.6.1
     services:
-      mariadb:
+      mysql:
         image: mysql:latest
         ports:
           - 3306
