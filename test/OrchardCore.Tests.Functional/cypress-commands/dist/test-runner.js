@@ -23,13 +23,32 @@ function build(dir, dotnetVersion) {
       '--framework', dotnetVersion
   ];
 
+  let runArgs1 = [
+      '--version', ''
+  ];
+
   // "dotnet" process options.
   let runOpts = {
-      cwd: dir,
-      shell: true,
+      cwd: dir
   };
 
   try {
+    let { status1, error1, stderr1, stdout1 } = child_process.spawnSync('dotnet', runArgs1, runOpts);
+
+    if (error1) {
+      throw error;
+    }
+
+    if (status1 !== 0) {
+      if (stderr1.length > 0) {
+        throw new Error(stderr1.toString());
+      }
+      throw new Error(stdout1.toString());
+    }
+
+    console.log(stdout1.toString());
+    console.log('Testing successful.');
+
     // Run dotnet build process, blocks until process completes.
     let { status, error, stderr, stdout } = child_process.spawnSync('dotnet', runArgs, runOpts);
 
