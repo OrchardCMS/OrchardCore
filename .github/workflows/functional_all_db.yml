@@ -42,9 +42,14 @@ jobs:
       image: cypress/included:9.6.1
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '7.0.x'
+    - name: Show default environment variables
+      run: |
+        echo "The job_id is: $GITHUB_JOB"   # reference the default environment variables
+        echo "The id of this action is: $GITHUB_ACTION"   # reference the default environment variables
+        echo "The run id is: $GITHUB_RUN_ID"
+        echo "The GitHub Actor's username is: $GITHUB_ACTOR"
+        echo "GitHub SHA: $GITHUB_SHA"
+        echo "PATH: $PATH"
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
