@@ -40,3 +40,11 @@ using OrchardCore.Modules.Manifest;
     Dependencies = new[] { "OrchardCore.Workflows" },
     Category = "Workflows"
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.Workflows.SaveFormAttachments",
+    Name = "Save Form Attachments Activities",
+    Description = "Provides Save Form Attachments activity.",
+    Dependencies = new[] { "OrchardCore.Workflows", "OrchardCore.Media", "OrchardCore.FileStorage" },
+    Category = "Workflows"
+)]

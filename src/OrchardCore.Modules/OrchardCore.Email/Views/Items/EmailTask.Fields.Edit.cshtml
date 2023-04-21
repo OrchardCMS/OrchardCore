@@ -52,6 +52,22 @@
 
 <div class="mb-3">
     <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="IncludeStoredAttachments" />
+        <label class="form-check-label" asp-for="IncludeStoredAttachments">@T["Include attachments from Save Form Attachments Task."]</label>
+        <span class="hint dashed">@T["If checked, attachments are included into email. They are also stored in predefined folder."]</span>
+    </div>
+</div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="RemoveStoredAttachments" />
+        <label class="form-check-label" asp-for="RemoveStoredAttachments">@T["Remove attachments from Save Form Attachments Task after sending email."]</label>
+        <span class="hint dashed">@T["If checked, attachments are removed from file storage after email is sent."]</span>
+    </div>
+</div>
+
+<div class="mb-3">
+    <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="IsBodyHtml" />
         <label class="form-check-label" asp-for="IsBodyHtml">@T["Does the Body contain HTML?"]</label>
         <span class="hint dashed">@T["If checked, indicates the body of the email message will be sent as HTML."]</span>

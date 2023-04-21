@@ -20,6 +20,8 @@ namespace OrchardCore.Email.Workflows.Drivers
             model.IsBodyText = activity.IsBodyText;
             model.BccExpression = activity.Bcc.Expression;
             model.CcExpression = activity.Cc.Expression;
+            model.IncludeStoredAttachments = activity.IncludeStoredAttachments;
+            model.RemoveStoredAttachments = activity.RemoveStoredAttachments;
         }
 
         protected override void UpdateActivity(EmailTaskViewModel model, EmailTask activity)
@@ -35,6 +37,8 @@ namespace OrchardCore.Email.Workflows.Drivers
             activity.IsBodyText = model.IsBodyText;
             activity.Bcc = new WorkflowExpression<string>(model.BccExpression);
             activity.Cc = new WorkflowExpression<string>(model.CcExpression);
+            activity.IncludeStoredAttachments = model.IncludeStoredAttachments;
+            activity.RemoveStoredAttachments = model.RemoveStoredAttachments;
         }
     }
 }

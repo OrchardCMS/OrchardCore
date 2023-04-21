@@ -1,6 +1,8 @@
 using OrchardCore.Email;
 using OrchardCore.Email.Services;
 using OrchardCore.Email.Workflows.Activities;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Media;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
@@ -18,6 +20,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
                 smtpService,
                 new SimpleWorkflowExpressionEvaluator(),
                 Mock.Of<IStringLocalizer<EmailTask>>(),
+                Mock.Of<IMediaFileStore>(),
+                Mock.Of<IOptions<ShellOptions>>(),
+                Mock.Of<ShellSettings>(),
                 HtmlEncoder.Default)
             {
                 Subject = new WorkflowExpression<string>("Test"),
