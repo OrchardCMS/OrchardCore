@@ -14,6 +14,9 @@ jobs:
       image: cypress/included:9.6.1
     steps:
     - uses: actions/checkout@v3
+    - uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '7.0.x'
     - uses: actions/setup-node@v3
       with:
         node-version: "15"
