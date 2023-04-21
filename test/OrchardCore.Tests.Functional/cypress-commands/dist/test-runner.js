@@ -31,7 +31,10 @@ function build(dir, dotnetVersion) {
   try {
     var result = child_process.spawnSync("dotnet", ["build", "--help"], { cwd: dir });
     global.log("Testing ...");
-    global.log(result.stdout);
+    global.log("Status: " + result.status);
+    global.log("Error: " + result.error);
+    global.log("StdErr: " + result.stderr);
+    global.log("StdOut: " + result.stdout);
 
     // Run dotnet build process, blocks until process completes.
     let { status, error, stderr, stdout } = child_process.spawnSync('dotnet', runArgs, runOpts);
