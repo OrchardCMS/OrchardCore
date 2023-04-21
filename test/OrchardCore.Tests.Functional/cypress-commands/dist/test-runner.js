@@ -23,17 +23,13 @@ function build(dir, dotnetVersion) {
       '--framework', dotnetVersion
   ];
 
-  let runArgs1 = [
-      '--version'
-  ];
-
   // "dotnet" process options.
   let runOpts = {
       cwd: dir
   };
 
   try {
-    var result = child_process.spawnSync("dotnet", ["--version"], { cwd: dir });
+    var result = child_process.spawnSync("dotnet", ["build", "--help"], { cwd: dir });
     global.log("Testing ...");
     global.log(result.output);
 
