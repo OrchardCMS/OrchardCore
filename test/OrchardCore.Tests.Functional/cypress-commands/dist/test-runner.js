@@ -29,13 +29,6 @@ function build(dir, dotnetVersion) {
   };
 
   try {
-    var result = child_process.spawnSync("dotnet", ["build", "--help"], { cwd: dir });
-    global.log("Testing ...");
-    global.log("Status: " + result.status);
-    global.log("Error: " + result.error);
-    global.log("StdErr: " + result.stderr);
-    global.log("StdOut: " + result.stdout);
-
     // Run dotnet build process, blocks until process completes.
     let { status, error, stderr, stdout } = child_process.spawnSync('dotnet', runArgs, runOpts);
 
@@ -44,10 +37,13 @@ function build(dir, dotnetVersion) {
     }
 
     if (status !== 0) {
-      if (stderr.length > 0) {
+      if (stderr) {
         throw new Error(stderr.toString());
       }
-      throw new Error(stdout.toString());
+      if (stdout) {
+        throw new Error(stdout.toString());
+      }
+      throw new Error('Failed to build without any message.');
     }
 
     console.log(stdout.toString());

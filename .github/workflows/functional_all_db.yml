@@ -42,6 +42,9 @@ jobs:
       image: cypress/included:9.6.1
     steps:
     - uses: actions/checkout@v3
+    - uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '7.0.x'
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -82,6 +85,9 @@ jobs:
       OrchardCore__DatabaseProvider: "Postgres"
     steps:
     - uses: actions/checkout@v3
+    - uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '7.0.x'
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -118,6 +124,9 @@ jobs:
       OrchardCore__DatabaseProvider: "MySql"
     steps:
     - uses: actions/checkout@v3
+    - uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '7.0.x'
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -153,6 +162,9 @@ jobs:
       OrchardCore__DatabaseProvider: "SqlConnection"
     steps:
     - uses: actions/checkout@v3
+    - uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '7.0.x'
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
