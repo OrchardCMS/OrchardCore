@@ -24,7 +24,7 @@ function build(dir, dotnetVersion) {
   ];
 
   let runArgs1 = [
-      '--version', ''
+      '--version'
   ];
 
   // "dotnet" process options.
@@ -40,7 +40,7 @@ function build(dir, dotnetVersion) {
     }
 
     if (status1 !== 0) {
-      if (stderr1.length > 0) {
+      if (stderr1) {
         throw new Error(stderr1.toString());
       }
       throw new Error(stdout1.toString());
