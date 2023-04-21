@@ -14,45 +14,8 @@ global.log = function(msg) {
 
 // Build the dotnet application in release mode
 function build(dir, dotnetVersion) {
-  global.log("version: 3");
-
-  // "dotnet" command arguments.
-  let runArgs = [
-      'build',
-      '--configuration', 'Release',
-      '--framework', dotnetVersion
-  ];
-
-  // "dotnet" process options.
-  let runOpts = {
-      cwd: dir
-  };
-
-  try {
-    // Run dotnet build process, blocks until process completes.
-    let { status, error, stderr, stdout } = child_process.spawnSync('dotnet', runArgs, runOpts);
-
-    if (error) {
-      throw error;
-    }
-
-    if (status !== 0) {
-      if (stderr) {
-        throw new Error(stderr.toString());
-      }
-      if (stdout) {
-        throw new Error(stdout.toString());
-      }
-      throw new Error('Failed to build without any message.');
-    }
-
-    console.log(stdout.toString());
-    console.log('Build successful.');
-  }
-  catch (error) {
-    console.error(error);
-    console.error('Failed to build.');
-  }
+    global.log("Building ...");
+    var result = child_process.spawnSync("dotnet", ["build", "-c", "Release", "-f", dotnetVersion], { cwd: dir });
 }
 
 // destructive action that deletes the App_Data folder

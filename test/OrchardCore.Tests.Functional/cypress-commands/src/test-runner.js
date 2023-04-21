@@ -9,11 +9,9 @@ global.log = function(msg) {
 };
 
 // Build the dotnet application in release mode
-export function build(dir) {
+export function build(dir, dotnetVersion) {
   global.log("Building ...");
-  var result = child_process.spawnSync("dotnet", ["build", "-c", "Release"], { cwd: dir });
-  global.log("Built ...");
-  global.log(result.output);
+    var result = child_process.spawnSync("dotnet", ["build", "-c", "Release", "-f", dotnetVersion], { cwd: dir });
 }
 
 // destructive action that deletes the App_Data folder
@@ -27,7 +25,7 @@ export function host(dir, assembly, { appDataLocation='./App_Data', dotnetVersio
   if (fs.existsSync(path.join(dir, `bin/Release/${dotnetVersion}/`, assembly))) {
     global.log("Application already built, skipping build");
   } else {
-    build(dir);
+    build(dir, dotnetVersion);
   }
   global.log("Starting application ..."); 
   
