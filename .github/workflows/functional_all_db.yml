@@ -105,44 +105,44 @@ jobs:
           src/OrchardCore.Cms.Web/App_Data/logs
         retention-days: 3
   
-  #test_functional_cms_mysql:
-  #  name: Functional Tests - CMS MySql
-  #  runs-on: ubuntu-latest
-  #  container:
-  #    image: cypress/included:9.6.1
-  #  services:
-  #    mariadb:
-  #      image: mariadb:latest
-  #      ports:
-  #        - 3306
-  #      env:
-  #        MYSQL_DATABASE: test
-  #        MYSQL_ROOT_PASSWORD: test123
-  #      options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
-  #  env:
-  #    OrchardCore__ConnectionString: "server=mariadb;uid=root;pwd=test123;database=test"
-  #    OrchardCore__DatabaseProvider: "MySql"
-  #  steps:
-  #  - uses: actions/checkout@v3
-  #  - uses: actions/setup-dotnet@v3
-  #    with:
-  #      dotnet-version: '7.0.x'
-  #  - name: Fix nuget restore issue
-  #    run: |
-  #        apt update && apt --only-upgrade install ca-certificates -y
-  #  - name: Functional Tests
-  #    run: |
-  #      cd test/OrchardCore.Tests.Functional
-  #      npm install
-  #      npm run cms:test
-  #  - uses: actions/upload-artifact@v2
-  #    if: failure()
-  #    with:
-  #      name: functional-cms-mysql-failure
-  #      path: |
-  #        test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
-  #        src/OrchardCore.Cms.Web/App_Data/logs
-  #      retention-days: 3
+  test_functional_cms_mysql:
+    name: Functional Tests - CMS MySql
+    runs-on: ubuntu-latest
+    container:
+      image: cypress/included:9.6.1
+    services:
+      mariadb:
+        image: mysql:latest
+        ports:
+          - 3306
+        env:
+          MYSQL_DATABASE: test
+          MYSQL_ROOT_PASSWORD: test123
+        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+    env:
+      OrchardCore__ConnectionString: "server=mysql;uid=root;pwd=test123;database=test"
+      OrchardCore__DatabaseProvider: "MySql"
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '7.0.x'
+    - name: Fix nuget restore issue
+      run: |
+          apt update && apt --only-upgrade install ca-certificates -y
+    - name: Functional Tests
+      run: |
+        cd test/OrchardCore.Tests.Functional
+        npm install
+        npm run cms:test
+    - uses: actions/upload-artifact@v2
+      if: failure()
+      with:
+        name: functional-cms-mysql-failure
+        path: |
+          test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
+          src/OrchardCore.Cms.Web/App_Data/logs
+        retention-days: 3
 
   test_functional_cms_mssql:
     name: Functional Tests - CMS SqlServer 2019
