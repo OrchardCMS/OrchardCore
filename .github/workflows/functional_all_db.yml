@@ -118,7 +118,7 @@ jobs:
         env:
           MYSQL_DATABASE: test
           MYSQL_ROOT_PASSWORD: test123
-        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     env:
       OrchardCore__ConnectionString: "server=mysql;uid=root;pwd=test123;database=test"
       OrchardCore__DatabaseProvider: "MySql"
