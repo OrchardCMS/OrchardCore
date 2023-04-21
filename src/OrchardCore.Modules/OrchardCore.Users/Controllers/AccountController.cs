@@ -455,7 +455,7 @@ namespace OrchardCore.Users.Controllers
                     return View(nameof(LinkExternalLogin));
                 }
 
-                // no user could be matched, check if a new user can register
+                // No user could be matched, check if a new user can register.
                 if (registrationSettings.UsersCanRegister == UserRegistrationType.NoRegistration)
                 {
                     string message = S["Site does not allow user registration."];
@@ -475,11 +475,11 @@ namespace OrchardCore.Users.Controllers
                         Email = email
                     };
 
-                    // The user doesn't exist, if no information required, we can create the account locally
-                    // instead of redirecting to the ExternalLogin
+                    // The user doesn't exist and no information required, we can create the account locally
+                    // instead of redirecting to the ExternalLogin.
                     var noInformationRequired = externalLoginViewModel.NoPassword
-                                                    && externalLoginViewModel.NoEmail
-                                                    && externalLoginViewModel.NoUsername;
+                        && externalLoginViewModel.NoEmail
+                        && externalLoginViewModel.NoUsername;
 
                     if (noInformationRequired)
                     {
