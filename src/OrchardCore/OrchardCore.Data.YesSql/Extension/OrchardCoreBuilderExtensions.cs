@@ -51,12 +51,20 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.TryAddDataProvider(name: "Postgres", value: DatabaseProviderValue.Postgres, hasConnectionString: true, sampleConnectionString: "Server=localhost;Port=5432;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
 
                 // Configuring data access
-                services.AddSingleton(sp =>
+                services.AddSingleton(async sp =>
                 {
                     var shellSettings = sp.GetService<ShellSettings>();
+                    var dbConnectionValidator = sp.GetService<IDbConnectionValidator>();
 
                     // Before the setup, a 'DatabaseProvider' may be configured without a required 'ConnectionString'.
                     if (shellSettings.State == TenantState.Uninitialized || shellSettings["DatabaseProvider"] == null)
+                    {
+                        return null;
+                    }
+
+                    var result = await dbConnectionValidator.ValidateAsync(new DbConnectionValidatorContext(shellSettings));
+
+                    if (result == DbConnectionValidatorResult.InvalidConnection)
                     {
                         return null;
                     }
