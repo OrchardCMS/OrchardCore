@@ -2690,6 +2690,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "rros",
+      "name": "Robert Ros",
+      "avatar_url": "https://avatars.githubusercontent.com/u/279664?v=4",
+      "profile": "https://www.robertros.nl/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
