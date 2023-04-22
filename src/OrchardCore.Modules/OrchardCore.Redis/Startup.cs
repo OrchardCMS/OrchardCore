@@ -55,6 +55,10 @@ namespace OrchardCore.Redis
             services.AddSingleton<IRedisService, RedisService>();
             services.AddSingleton<IModularTenantEvents>(sp => sp.GetRequiredService<IRedisService>());
             services.AddSingleton<IRedisDatabaseFactory, RedisDatabaseFactory>();
+
+            services
+                .AddHealthChecks()
+                .AddRedisCheck();
         }
     }
 
