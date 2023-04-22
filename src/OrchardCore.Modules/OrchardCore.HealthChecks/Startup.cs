@@ -37,7 +37,7 @@ namespace OrchardCore.HealthChecks
             {
                 var healthChecksResponseWriter = serviceProvider.GetService<IHealthChecksResponseWriter>();
 
-                routes.MapHealthChecks(healthChecksOptions.Url, new HealthCheckOptions
+                app.UseHealthChecks(healthChecksOptions.Url, new HealthCheckOptions
                 {
                     AllowCachingResponses = false,
                     ResultStatusCodes =
@@ -51,7 +51,7 @@ namespace OrchardCore.HealthChecks
             }
             else
             {
-                routes.MapHealthChecks(healthChecksOptions.Url);
+                app.UseHealthChecks(healthChecksOptions.Url);
             }
         }
     }
