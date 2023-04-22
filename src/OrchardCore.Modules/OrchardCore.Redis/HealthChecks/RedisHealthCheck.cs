@@ -1,25 +1,23 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using StackExchange.Redis;
 using System.Threading.Tasks;
 using System.Threading;
-using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Redis.HealthChecks;
 
 public class RedisHealthCheck : IHealthCheck
 {
-    private readonly RedisOptions _redisOptions;
+    private readonly IRedisService _redisService;
 
-    public RedisHealthCheck(IOptions<RedisOptions> redisOptions)
+    public RedisHealthCheck(IRedisService redisService)
     {
-        _redisOptions = redisOptions.Value;
+        _redisService = redisService;
     }
 
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
         try
         {
-            await ConnectionMultiplexer.ConnectAsync(_redisOptions.Configuration);
+            await _redisService.ConnectAsync();
 
             return HealthCheckResult.Healthy();
         }
