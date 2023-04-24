@@ -12,7 +12,7 @@
     "jquery": "3.6.1",
     "jquery-resizable-dom": "0.35.0",
     "jquery.easing": "1.4.1",
-    "js-cookie": "3.0.1",
+    "js-cookie": "3.0.4",
     "monaco-editor": "^0.35.0",
     "sortablejs": "^1.14.0",
     "trumbowyg": "2.26.0",
