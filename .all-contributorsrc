@@ -2699,6 +2699,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "0liver",
+      "name": "0liver",
+      "avatar_url": "https://avatars.githubusercontent.com/u/164360?v=4",
+      "profile": "https://github.com/0liver",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "skipCi": true
