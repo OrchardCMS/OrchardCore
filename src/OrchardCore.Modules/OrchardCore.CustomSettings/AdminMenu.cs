@@ -33,6 +33,8 @@ namespace OrchardCore.CustomSettings
                         .Add(S["Settings"], settings => settings
                             .Add(new LocalizedString(type.DisplayName, type.DisplayName), type.DisplayName.PrefixPosition(), layers => layers
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = type.Name })
+                                .AddClass(type.Name)
+                                .Id(type.Name)
                                 .Permission(Permissions.CreatePermissionForType(type))
                                 .Resource(type.Name)
                                 .LocalNav()
