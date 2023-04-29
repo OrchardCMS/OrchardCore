@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.CustomSettings.Services;
+using OrchardCore.Mvc.Utilities;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.CustomSettings
@@ -33,8 +34,8 @@ namespace OrchardCore.CustomSettings
                         .Add(S["Settings"], settings => settings
                             .Add(new LocalizedString(type.DisplayName, type.DisplayName), type.DisplayName.PrefixPosition(), layers => layers
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = type.Name })
-                                .AddClass(type.Name)
-                                .Id(type.Name)
+                                .AddClass(type.Name.HtmlClassify())
+                                .Id(type.Name.HtmlClassify())
                                 .Permission(Permissions.CreatePermissionForType(type))
                                 .Resource(type.Name)
                                 .LocalNav()
