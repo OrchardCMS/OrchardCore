@@ -41,7 +41,6 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 
             options.AddScheme(AzureAdOpenIdConnectScheme, builder =>
             {
-                builder.DisplayName = null;
                 builder.HandlerType = typeof(OpenIdConnectHandler);
             });
         }
