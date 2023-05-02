@@ -31,9 +31,9 @@ namespace OrchardCore.Tenants
             }
 
             builder
-                .Add(S["Multi Tenancy"], "after", tenancy => tenancy
-                    .AddClass("menu-multitenancy").Id("multitenancy")
-                    .Add(S["Tenant Feature Profiles"], S["Tenant Feature Profiles"].PrefixPosition(), featureProfiles => featureProfiles
+                .Add(S["Multi-Tenancy"], "after", tenancy => tenancy
+                    .AddClass("menu-multitenancy")
+                    .Add(S["Feature Profiles"], S["Feature Profiles"].PrefixPosition(), featureProfiles => featureProfiles
                         .Action("Index", "FeatureProfiles", new { area = "OrchardCore.Tenants" })
                         .Permission(Permissions.ManageTenantFeatureProfiles)
                         .LocalNav()
