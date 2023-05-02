@@ -20,8 +20,8 @@ public class ClustersOptionsSetup : IConfigureOptions<ClustersOptions>
             return;
         }
 
-        options.UseAsProxy = _configuration.UseAsProxy;
-        options.ProxyHosts = _configuration.ProxyHosts ?? Array.Empty<string>();
+        options.Enabled = _configuration.Enabled;
+        options.Hosts = _configuration.Hosts ?? Array.Empty<string>();
 
         foreach (var cluster in _configuration.Clusters)
         {

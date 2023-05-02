@@ -29,7 +29,7 @@ public class ModularTenantRouterMiddleware
 
     public Task Invoke(HttpContext httpContext)
     {
-        if (httpContext.UseAsClustersProxy(_clustersOptions))
+        if (httpContext.AsClustersProxy(_clustersOptions))
         {
             return _next(httpContext);
         }

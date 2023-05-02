@@ -39,7 +39,7 @@ public class ModularTenantContainerMiddleware
         // We only serve the next request if the tenant has been resolved.
         if (shellSettings is not null)
         {
-            if (httpContext.UseAsClustersProxy(_clustersOptions))
+            if (httpContext.AsClustersProxy(_clustersOptions))
             {
                 httpContext.Features.Set(new ClusterFeature
                 {

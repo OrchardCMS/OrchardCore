@@ -5,7 +5,7 @@ namespace OrchardCore.Clusters;
 
 public class ClustersOptions
 {
-    public bool UseAsProxy { get; set; }
-    public string[] ProxyHosts { get; set; } = Array.Empty<string>();
+    public bool Enabled { get; set; }
+    public string[] Hosts { get; set; } = Array.Empty<string>();
     public List<ClusterOptions> Clusters { get; set; } = new();
 }
