@@ -64,7 +64,7 @@ namespace OrchardCore.Recipes.Controllers
             }
 
             var features = await _shellFeaturesManager.GetAvailableFeaturesAsync();
-            var recipes = (await GetRecipesAsync(features)).ToList();
+            var recipes = await GetRecipesAsync(features);
 
             var model = recipes.Select(recipe => new RecipeViewModel
             {
