@@ -13,6 +13,7 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
+        //"OrchardCore:UseAsProxy": "true"
       }
     },
     "Kestrel": {
@@ -21,6 +22,7 @@
       "launchUrl": "https://localhost:5001",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
+        //"OrchardCore:UseAsProxy": "false"
       },
       "applicationUrl": "https://localhost:5001;http://localhost:5000"
     }

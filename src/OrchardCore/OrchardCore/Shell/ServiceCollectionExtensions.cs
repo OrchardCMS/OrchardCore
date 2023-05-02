@@ -2,6 +2,7 @@ using System.IO.Enumeration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OrchardCore.Clusters;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Settings;
@@ -32,7 +33,7 @@ namespace OrchardCore.Environment.Shell
             }
 
             services.AddSingleton<IRunningShellTable, RunningShellTable>();
-
+            services.AddSingleton<IConfigureOptions<ClustersOptions>, ClustersOptionsSetup>();
             services.AddHostedService<DistributedShellHostedService>();
 
             services.AddSingleton<IShellRemovalManager, ShellRemovalManager>();

@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using OrchardCore.Clusters;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Scope;
 
@@ -21,21 +23,35 @@ namespace OrchardCore.Modules
     /// </summary>
     public class ModularTenantRouterMiddleware
     {
+        private readonly RequestDelegate _next;
         private readonly IFeatureCollection _features;
+        private readonly ClustersOptions _clustersOptions;
         private readonly ILogger _logger;
-        private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
+
+        private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new();
 
         public ModularTenantRouterMiddleware(
-            IFeatureCollection features,
             RequestDelegate next,
+            IFeatureCollection features,
+            IOptions<ClustersOptions> clustersOptions,
             ILogger<ModularTenantRouterMiddleware> logger)
         {
+            _next = next;
             _features = features;
+            _clustersOptions = clustersOptions.Value;
             _logger = logger;
         }
 
         public async Task Invoke(HttpContext httpContext)
         {
+            // If this instance is used as a reverse proxy...
+            if (httpContext.UseAsClustersProxy(_clustersOptions))
+            {
+                // Bypass the routing middleware.
+                await _next(httpContext);
+                return;
+            }
+
             if (_logger.IsEnabled(LogLevel.Information))
             {
                 _logger.LogInformation("Begin Routing Request");
@@ -54,7 +70,7 @@ namespace OrchardCore.Modules
                 httpContext.Request.Path = remainingPath;
             }
 
-            // Do we need to rebuild the pipeline ?
+            // Do we need to rebuild the pipeline?
             if (shellContext.Pipeline == null)
             {
                 await InitializePipelineAsync(shellContext);
@@ -83,12 +99,12 @@ namespace OrchardCore.Modules
             }
         }
 
-        // Build the middleware pipeline for the current tenant
+        // Build the middleware pipeline for the current tenant.
         private IShellPipeline BuildTenantPipeline()
         {
             var appBuilder = new ApplicationBuilder(ShellScope.Context.ServiceProvider, _features);
 
-            // Create a nested pipeline to configure the tenant middleware pipeline
+            // Create a nested pipeline to configure the tenant middleware pipeline.
             var startupFilters = appBuilder.ApplicationServices.GetService<IEnumerable<IStartupFilter>>();
 
             var shellPipeline = new ShellRequestPipeline();
@@ -110,11 +126,11 @@ namespace OrchardCore.Modules
             return shellPipeline;
         }
 
-        private void ConfigureTenantPipeline(IApplicationBuilder appBuilder)
+        private static void ConfigureTenantPipeline(IApplicationBuilder appBuilder)
         {
             var startups = appBuilder.ApplicationServices.GetServices<IStartup>();
 
-            // IStartup instances are ordered by module dependency with an 'ConfigureOrder' of 0 by default.
+            // IStartup instances are ordered by module dependency with a 'ConfigureOrder' of 0 by default.
             // OrderBy performs a stable sort so order is preserved among equal 'ConfigureOrder' values.
             startups = startups.OrderBy(s => s.ConfigureOrder);
 

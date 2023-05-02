@@ -1,29 +1,34 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
+using OrchardCore.Clusters;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Modules
 {
     /// <summary>
-    /// This middleware replaces the default service provider by the one for the current tenant
+    /// This middleware replaces the default service provider by the one for the current tenant.
     /// </summary>
     public class ModularTenantContainerMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly IShellHost _shellHost;
         private readonly IRunningShellTable _runningShellTable;
+        private readonly ClustersOptions _clustersOptions;
 
         public ModularTenantContainerMiddleware(
             RequestDelegate next,
             IShellHost shellHost,
-            IRunningShellTable runningShellTable)
+            IRunningShellTable runningShellTable,
+            IOptions<ClustersOptions> clustersOptions)
         {
             _next = next;
             _shellHost = shellHost;
             _runningShellTable = runningShellTable;
+            _clustersOptions = clustersOptions.Value;
         }
 
         public async Task Invoke(HttpContext httpContext)
@@ -36,6 +41,20 @@ namespace OrchardCore.Modules
             // We only serve the next request if the tenant has been resolved.
             if (shellSettings != null)
             {
+                // If this instance is used as a reverse proxy...
+                if (httpContext.UseAsClustersProxy(_clustersOptions))
+                {
+                    // Capture the current 'ShellSettings.TenantId'.
+                    httpContext.Features.Set(new ClusterFeature
+                    {
+                        TenantId = shellSettings.TenantId,
+                    });
+
+                    // And bypass the container middleware.
+                    await _next(httpContext);
+                    return;
+                }
+
                 if (shellSettings.State == TenantState.Initializing)
                 {
                     httpContext.Response.Headers.Add(HeaderNames.RetryAfter, "10");

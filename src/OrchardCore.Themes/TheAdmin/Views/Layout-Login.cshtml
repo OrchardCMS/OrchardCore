@@ -25,6 +25,8 @@
         @await RenderSectionAsync("Messages", required: false)
 
         <div class="auth-wrapper">
+            <div>Host: @Context.Request.Host</div>
+            <div>X-Original-Host: @Context.Request.Headers["X-Original-Host"]</div>
             @await RenderBodyAsync()
         </div>
     </div>
