@@ -39,7 +39,7 @@ namespace OrchardCore.Tenants
                         .Permission(Permissions.ManageTenants)
                         .LocalNav()
                     )
-                );
+                , priority: 1);
 
             return Task.CompletedTask;
         }
