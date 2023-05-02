@@ -64,7 +64,7 @@ namespace OrchardCore.Recipes.Controllers
             }
 
             var features = await _shellFeaturesManager.GetAvailableFeaturesAsync();
-            var recipes = await GetRecipesAsync(features);
+            var recipes = (await GetRecipesAsync(features)).ToList();
 
             var model = recipes.Select(recipe => new RecipeViewModel
             {
@@ -130,9 +130,9 @@ namespace OrchardCore.Recipes.Controllers
         {
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
             var recipes = recipeCollections.SelectMany(x => x)
-                .Where(r => r.IsSetupRecipe == false &&
+                .Where(r => r.IsSetupRecipe == false && r.Tags != null &&
                     !r.Tags.Contains("hidden", StringComparer.InvariantCultureIgnoreCase) &&
-                    features.Any(f => r.BasePath.Contains(f.Extension.SubPath, StringComparison.OrdinalIgnoreCase)));
+                    features.Any(f => r.BasePath != null && f.Extension?.SubPath != null && r.BasePath.Contains(f.Extension.SubPath, StringComparison.OrdinalIgnoreCase)));
 
             return recipes;
         }
