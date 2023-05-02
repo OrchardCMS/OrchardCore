@@ -16,7 +16,6 @@ using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid;
@@ -83,7 +82,7 @@ namespace OrchardCore.Autoroute.Handlers
                 await SetHomeRouteAsync(part, homeRoute =>
                 {
                     homeRoute[_options.ContentItemIdKey] = context.ContentItem.ContentItemId;
-                    homeRoute[_options.JsonPathKey] = "";
+                    homeRoute.Remove(_options.JsonPathKey);
                 });
             }
 

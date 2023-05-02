@@ -1,8 +1,4 @@
-using System;
-using System.Globalization;
-using System.Threading.Tasks;
 using OrchardCore.Localization;
-using Xunit;
 
 namespace OrchardCore.Tests.Localization
 {

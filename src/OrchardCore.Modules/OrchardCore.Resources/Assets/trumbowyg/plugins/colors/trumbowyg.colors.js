@@ -20,6 +20,12 @@
                 foreColorRemove: 'Remove text color',
                 backColorRemove: 'Remove background color'
             },
+            sl: {
+                foreColor: 'Barva teksta',
+                backColor: 'Barva ozadja',
+                foreColorRemove: 'Ponastavi barvo teksta',
+                backColorRemove: 'Ponastavi barvo ozadja',
+            },
             by: {
                 foreColor: 'Колер тэксту',
                 backColor: 'Колер фону тэксту',

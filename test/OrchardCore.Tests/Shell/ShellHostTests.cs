@@ -1,8 +1,6 @@
-using System.Threading.Tasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Tests.Apis.Context;
-using Xunit;
 
 namespace OrchardCore.Tests.Shell;
 

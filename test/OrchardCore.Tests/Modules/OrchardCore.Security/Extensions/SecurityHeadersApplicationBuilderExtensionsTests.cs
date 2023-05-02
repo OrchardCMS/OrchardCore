@@ -1,9 +1,4 @@
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Security.Options;
-using Xunit;
 
 namespace OrchardCore.Security.Extensions.Tests
 {
@@ -37,14 +32,14 @@ namespace OrchardCore.Security.Extensions.Tests
             var context = new DefaultHttpContext();
             var options = new SecurityHeadersOptions
             {
-                ContentSecurityPolicy = new []
+                ContentSecurityPolicy = new[]
                 {
                     $"{ContentSecurityPolicyValue.ChildSource} {ContentSecurityPolicyOriginValue.None}",
                     $"{ContentSecurityPolicyValue.ConnectSource} {ContentSecurityPolicyOriginValue.Self} https://www.domain1.com https://www.domain2.com",
                     $"{ContentSecurityPolicyValue.DefaultSource} {ContentSecurityPolicyOriginValue.Any}",
                 },
                 ContentTypeOptions = ContentTypeOptionsValue.NoSniff,
-                PermissionsPolicy = new []
+                PermissionsPolicy = new[]
                 {
                     $"{PermissionsPolicyValue.Camera}={PermissionsPolicyOriginValue.Self}",
                     $"{PermissionsPolicyValue.Microphone}={PermissionsPolicyOriginValue.Any}",

@@ -31,8 +31,9 @@ namespace OrchardCore.Tenants
             }
 
             builder
-                .Add(S["Multi Tenancy"], "after", tenancy => tenancy
-                    .AddClass("menu-multitenancy").Id("multitenancy")
+                .Add(S["Multi-Tenancy"], "after", tenancy => tenancy
+                    .AddClass("menu-multitenancy")
+                    .Id("multitenancy")
                     .Add(S["Tenants"], S["Tenants"].PrefixPosition(), tenant => tenant
                         .Action("Index", "Admin", new { area = "OrchardCore.Tenants" })
                         .Permission(Permissions.ManageTenants)

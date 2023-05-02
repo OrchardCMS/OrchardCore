@@ -55,7 +55,7 @@ namespace OrchardCore.Users.Drivers
                     {
                         var isNew = false;
                         var contentItem = await GetUserSettingsAsync(user, contentTypeDefinition, () => isNew = true);
-                        model.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew);
+                        model.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew, context.GroupId, Prefix);
                     })
                     .Location($"Content:10#{contentTypeDefinition.DisplayName}")
                     .Differentiator($"CustomUserSettings-{contentTypeDefinition.Name}")
@@ -77,7 +77,7 @@ namespace OrchardCore.Users.Drivers
 
                 var isNew = false;
                 var contentItem = await GetUserSettingsAsync(user, contentTypeDefinition, () => isNew = true);
-                await _contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, isNew);
+                await _contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, isNew, context.GroupId, Prefix);
                 user.Properties[contentTypeDefinition.Name] = JObject.FromObject(contentItem);
             }
 

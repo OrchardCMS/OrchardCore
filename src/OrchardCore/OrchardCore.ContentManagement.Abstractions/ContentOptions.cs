@@ -9,22 +9,25 @@ namespace OrchardCore.ContentManagement
     /// </summary>
     public class ContentOptions
     {
-        private readonly List<ContentPartOption> _contentParts = new List<ContentPartOption>();
-        private readonly List<ContentFieldOption> _contentFields = new List<ContentFieldOption>();
+        private readonly List<ContentPartOption> _contentParts = new();
+        private readonly List<ContentFieldOption> _contentFields = new();
 
         private IReadOnlyDictionary<string, ContentPartOption> _contentPartOptionsLookup;
         public IReadOnlyDictionary<string, ContentPartOption> ContentPartOptionsLookup => _contentPartOptionsLookup ??= ContentPartOptions.ToDictionary(k => k.Type.Name);
 
+        private IReadOnlyDictionary<string, ContentFieldOption> _contentFieldOptionsLookup;
+        public IReadOnlyDictionary<string, ContentFieldOption> ContentFieldOptionsLookup => _contentFieldOptionsLookup ??= ContentFieldOptions.ToDictionary(k => k.Type.Name);
+
         public IReadOnlyList<ContentPartOption> ContentPartOptions => _contentParts;
         public IReadOnlyList<ContentFieldOption> ContentFieldOptions => _contentFields;
 
-        internal void AddHandler(Type contentPartType, Type handlerType)
+        internal void AddPartHandler(Type contentPartType, Type handlerType)
         {
             var option = GetOrAddContentPart(contentPartType);
             option.AddHandler(handlerType);
         }
 
-        internal void RemoveHandler(Type contentPartType, Type handlerType)
+        internal void RemovePartHandler(Type contentPartType, Type handlerType)
         {
             var option = GetOrAddContentPart(contentPartType);
             option.RemoveHandler(handlerType);
@@ -47,6 +50,18 @@ namespace OrchardCore.ContentManagement
             return option;
         }
 
+        internal void AddFieldHandler(Type contentFieldType, Type handlerType)
+        {
+            var option = GetOrAddContentField(contentFieldType);
+            option.AddHandler(handlerType);
+        }
+
+        internal void RemoveFieldHandler(Type contentFieldType, Type handlerType)
+        {
+            var option = GetOrAddContentField(contentFieldType);
+            option.RemoveHandler(handlerType);
+        }
+
         internal ContentFieldOption GetOrAddContentField(Type contentFieldType)
         {
             if (!contentFieldType.IsSubclassOf(typeof(ContentField)))
@@ -54,7 +69,7 @@ namespace OrchardCore.ContentManagement
                 throw new ArgumentException("The type must inherit from " + nameof(ContentField));
             }
 
-            var option = _contentFields.FirstOrDefault(o => o.Type == contentFieldType);
+            var option = _contentFields.FirstOrDefault(x => x.Type == contentFieldType);
             if (option == null)
             {
                 option = new ContentFieldOption(contentFieldType);

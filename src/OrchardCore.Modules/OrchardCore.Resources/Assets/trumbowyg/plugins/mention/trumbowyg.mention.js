@@ -23,6 +23,9 @@
             en: {
                 mention: 'Mention'
             },
+            sl: {
+                mention: 'Omeni'
+            },
             by: {
                 mention: 'Згадаць'
             },

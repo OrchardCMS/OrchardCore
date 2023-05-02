@@ -9,8 +9,8 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
-using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Modules;
+using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Lucene
@@ -129,7 +129,7 @@ namespace OrchardCore.Search.Lucene
                     var allPublishedContentItems = await contentManager.GetAsync(updatedContentItemIds);
                     allPublished = allPublishedContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId, v => v);
                     var allLatestContentItems = await contentManager.GetAsync(updatedContentItemIds, latest: true);
-                    allLatest = allLatestContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemVersionId, v => v);
+                    allLatest = allLatestContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId, v => v);
 
                     // Group all DocumentIndex by index to batch update them
                     var updatedDocumentsByIndex = new Dictionary<string, List<DocumentIndex>>();

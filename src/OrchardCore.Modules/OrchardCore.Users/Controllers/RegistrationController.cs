@@ -152,7 +152,7 @@ namespace OrchardCore.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SendVerificationEmail(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageUsers))
             {
                 return Forbid();
             }
