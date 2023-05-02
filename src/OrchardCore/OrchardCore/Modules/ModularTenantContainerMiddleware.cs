@@ -39,7 +39,7 @@ namespace OrchardCore.Modules
             var shellSettings = _runningShellTable.Match(httpContext);
 
             // We only serve the next request if the tenant has been resolved.
-            if (shellSettings != null)
+            if (shellSettings is not null)
             {
                 // If this instance is used as a reverse proxy...
                 if (httpContext.UseAsClustersProxy(_clustersOptions))
@@ -81,7 +81,7 @@ namespace OrchardCore.Modules
                     await _next.Invoke(httpContext);
 
                     var feature = httpContext.Features.Get<IExceptionHandlerFeature>();
-                    if (feature?.Error != null)
+                    if (feature?.Error is not null)
                     {
                         await scope.HandleExceptionAsync(feature.Error);
                     }

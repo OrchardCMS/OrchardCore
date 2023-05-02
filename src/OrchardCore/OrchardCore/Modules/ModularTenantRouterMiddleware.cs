@@ -71,7 +71,7 @@ namespace OrchardCore.Modules
             }
 
             // Do we need to rebuild the pipeline?
-            if (shellContext.Pipeline == null)
+            if (shellContext.Pipeline is null)
             {
                 await InitializePipelineAsync(shellContext);
             }
@@ -88,10 +88,7 @@ namespace OrchardCore.Modules
 
             try
             {
-                if (shellContext.Pipeline == null)
-                {
-                    shellContext.Pipeline = BuildTenantPipeline();
-                }
+                shellContext.Pipeline ??= BuildTenantPipeline();
             }
             finally
             {
