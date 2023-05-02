@@ -5,16 +5,16 @@ namespace OrchardCore.Clusters;
 
 public static class HttpContextExtensions
 {
-    public static bool UseAsClustersProxy(this HttpContext context, ClustersOptions options)
+    public static bool AsClustersProxy(this HttpContext context, ClustersOptions options)
     {
-        if (!options.UseAsProxy || context.IsFromClustersProxy())
+        if (!options.Enabled || context.IsFromClustersProxy())
         {
             return false;
         }
 
         var host = GetRequestHost(context);
 
-        return options.ProxyHosts.Contains(host);
+        return options.Hosts.Contains(host);
     }
 
     public static bool IsFromClustersProxy(this HttpContext context) =>

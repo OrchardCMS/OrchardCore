@@ -4,7 +4,7 @@ namespace OrchardCore.Clusters;
 
 public class ClustersConfiguration
 {
-    public bool UseAsProxy { get; init; }
-    public string[] ProxyHosts { get; init; }
+    public bool Enabled { get; init; }
+    public string[] Hosts { get; init; }
     public IReadOnlyDictionary<string, ClusterConfiguration> Clusters { get; init; }
 }

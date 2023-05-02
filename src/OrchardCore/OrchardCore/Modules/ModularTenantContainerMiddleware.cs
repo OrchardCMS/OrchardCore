@@ -42,7 +42,7 @@ namespace OrchardCore.Modules
             if (shellSettings is not null)
             {
                 // If this instance is used as a reverse proxy...
-                if (httpContext.UseAsClustersProxy(_clustersOptions))
+                if (httpContext.AsClustersProxy(_clustersOptions))
                 {
                     // Capture the current 'ShellSettings.TenantId'.
                     httpContext.Features.Set(new ClusterFeature

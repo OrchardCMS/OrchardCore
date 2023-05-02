@@ -7,11 +7,11 @@ using Yarp.ReverseProxy.Transforms;
 
 namespace OrchardCore.Clusters;
 
-public class ClustersConfigFilter : IProxyConfigFilter
+public class ClustersProxyConfigFilter : IProxyConfigFilter
 {
     private readonly ClustersOptions _options;
 
-    public ClustersConfigFilter(IOptions<ClustersOptions> options) => _options = options.Value;
+    public ClustersProxyConfigFilter(IOptions<ClustersOptions> options) => _options = options.Value;
 
     public ValueTask<ClusterConfig> ConfigureClusterAsync(ClusterConfig origCluster, CancellationToken cancel) => new(origCluster);
 
@@ -23,8 +23,8 @@ public class ClustersConfigFilter : IProxyConfigFilter
             {
                 new RouteHeader
                 {
-                    Name = "From-Clusters-Proxy",
-                    Mode = HeaderMatchMode.NotExists,
+                    Name = _options.Enabled ? "From-Clusters-Proxy" : "Check-Clusters-Proxy",
+                    Mode = _options.Enabled ? HeaderMatchMode.NotExists : HeaderMatchMode.Exists,
                 }
             };
 
@@ -37,7 +37,7 @@ public class ClustersConfigFilter : IProxyConfigFilter
             {
                 Match = route.Match with
                 {
-                    Hosts = _options.ProxyHosts,
+                    Hosts = _options.Hosts,
                     Headers = headers,
                 },
             })
