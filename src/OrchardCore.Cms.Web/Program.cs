@@ -14,7 +14,8 @@ if (builder.Configuration.UseAsClustersProxy())
     builder.Services
         .AddReverseProxy()
         .AddClusters()
-        .LoadFromConfig(builder.Configuration.GetClustersSection());
+        .LoadFromConfig(builder.Configuration.GetClustersSection())
+        ;
 }
 
 var app = builder.Build();
