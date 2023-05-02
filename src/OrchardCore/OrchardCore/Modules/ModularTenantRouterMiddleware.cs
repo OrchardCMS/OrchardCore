@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using OrchardCore.Clusters;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 
@@ -11,13 +13,27 @@ namespace OrchardCore.Modules;
 /// </summary>
 public class ModularTenantRouterMiddleware
 {
+    private readonly RequestDelegate _next;
+    private readonly ClustersOptions _clustersOptions;
     private readonly ILogger _logger;
 
-    public ModularTenantRouterMiddleware(RequestDelegate _, ILogger<ModularTenantRouterMiddleware> logger)
-        => _logger = logger;
+    public ModularTenantRouterMiddleware(
+        RequestDelegate next,
+        IOptions<ClustersOptions> clustersOptions,
+        ILogger<ModularTenantRouterMiddleware> logger)
+    {
+        _next = next;
+        _clustersOptions = clustersOptions.Value;
+        _logger = logger;
+    }
 
     public Task Invoke(HttpContext httpContext)
     {
+        if (httpContext.UseAsClustersProxy(_clustersOptions))
+        {
+            return _next(httpContext);
+        }
+
         if (_logger.IsEnabled(LogLevel.Information))
         {
             _logger.LogInformation("Begin Routing Request");

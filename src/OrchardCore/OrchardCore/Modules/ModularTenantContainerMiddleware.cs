@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
+using OrchardCore.Clusters;
 using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Modules;
@@ -13,15 +15,18 @@ public class ModularTenantContainerMiddleware
     private readonly RequestDelegate _next;
     private readonly IShellHost _shellHost;
     private readonly IRunningShellTable _runningShellTable;
+    private readonly ClustersOptions _clustersOptions;
 
     public ModularTenantContainerMiddleware(
         RequestDelegate next,
         IShellHost shellHost,
-        IRunningShellTable runningShellTable)
+        IRunningShellTable runningShellTable,
+        IOptions<ClustersOptions> clustersOptions)
     {
         _next = next;
         _shellHost = shellHost;
         _runningShellTable = runningShellTable;
+        _clustersOptions = clustersOptions.Value;
     }
 
     public async Task Invoke(HttpContext httpContext)
@@ -34,6 +39,17 @@ public class ModularTenantContainerMiddleware
         // We only serve the next request if the tenant has been resolved.
         if (shellSettings is not null)
         {
+            if (httpContext.UseAsClustersProxy(_clustersOptions))
+            {
+                httpContext.Features.Set(new ClusterFeature
+                {
+                    TenantId = shellSettings.TenantId,
+                });
+
+                await _next(httpContext);
+                return;
+            }
+
             if (shellSettings.IsInitializing())
             {
                 httpContext.Response.Headers.Append(HeaderNames.RetryAfter, "10");
