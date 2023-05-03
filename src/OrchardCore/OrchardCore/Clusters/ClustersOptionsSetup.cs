@@ -4,6 +4,9 @@ using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Clusters;
 
+/// <summary>
+/// Configures the <see cref="ClustersOptions"/> from the application configuration.
+/// </summary>
 public class ClustersOptionsSetup : IConfigureOptions<ClustersOptions>
 {
     private readonly ClustersConfiguration _configuration;
@@ -15,19 +18,23 @@ public class ClustersOptionsSetup : IConfigureOptions<ClustersOptions>
 
     public void Configure(ClustersOptions options)
     {
+        // Check if there is at least one configured cluster.
         if (_configuration is null || _configuration.Clusters is null || _configuration.Clusters.Count == 0)
         {
             return;
         }
 
+        // Configure global clusters options.
         options.Enabled = _configuration.Enabled;
         options.Hosts = _configuration.Hosts ?? Array.Empty<string>();
 
+        // Configure dedicated options per cluster.
         foreach (var cluster in _configuration.Clusters)
         {
             var slotRange = cluster.Value.SlotRange;
             if (slotRange is not null && slotRange.Length == 2)
             {
+                // Set the slot limits from the configured slot range.
                 options.Clusters.Add(new ClusterOptions
                 {
                     ClusterId = cluster.Key,

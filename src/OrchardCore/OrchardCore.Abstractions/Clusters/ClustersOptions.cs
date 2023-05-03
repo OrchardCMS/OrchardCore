@@ -8,13 +8,16 @@ namespace OrchardCore.Clusters;
 /// </summary>
 public class ClustersOptions
 {
+    // The identifier of the route template used by the clusters proxy.
+    public static readonly string RouteTemplate = nameof(RouteTemplate);
+
     /// <summary>
     /// Wether tenant clustering is enabled or not.
     /// </summary>
     public bool Enabled { get; set; }
 
     /// <summary>
-    /// Hosts of instances running as clusters proxy.
+    /// The uri hosts that incoming requests should match.
     /// </summary>
     public string[] Hosts { get; set; } = Array.Empty<string>();
 
