@@ -41,7 +41,7 @@ namespace OrchardCore.Modules
             // We only serve the next request if the tenant has been resolved.
             if (shellSettings is not null)
             {
-                // If this instance is used as a reverse proxy...
+                // Check if this instance is used as a clusters proxy.
                 if (httpContext.AsClustersProxy(_clustersOptions))
                 {
                     // Capture the current 'ShellSettings.TenantId'.

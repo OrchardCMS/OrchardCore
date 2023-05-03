@@ -11,6 +11,7 @@ namespace OrchardCore.Clusters;
 public class ClustersProxyMiddleware
 {
     const int _slotsCount = 16384;
+
     private readonly RequestDelegate _next;
     private readonly IProxyStateLookup _lookup;
     private readonly ClustersOptions _options;
@@ -27,30 +28,36 @@ public class ClustersProxyMiddleware
 
     public async Task Invoke(HttpContext context)
     {
-        // If this instance is used as a reverse proxy.
-        if (context.AsClustersProxy(_options))
+        // Check if this instance is not used as a reverse proxy.
+        if (!context.AsClustersProxy(_options))
         {
-            var tenantId = context.GetClusterFeature()?.TenantId;
-            if (tenantId is not null)
+            // Bypass the clusters proxy middleware.
+            await _next(context);
+            return;
+        }
+
+        // Get the tenant identifier from the cluster feature.
+        var tenantId = context.GetClusterFeature()?.TenantId;
+        if (tenantId is not null)
+        {
+            // Compute the hash of the current tenant from its identifier.
+            var tenantHash = Crc16XModem.Compute(tenantId) % _slotsCount;
+            foreach (var clusterOptions in _options.Clusters)
             {
-                var slotHash = Crc16XModem.Compute(tenantId) % _slotsCount;
-                foreach (var clusterOptions in _options.Clusters)
+                // Check if the slot of the current tenant belongs to this cluster.
+                if (clusterOptions.SlotMin > tenantHash || clusterOptions.SlotMax < tenantHash)
                 {
-                    // Check if the slot of the current tenant belongs to this cluster.
-                    if (clusterOptions.SlotMin > slotHash || clusterOptions.SlotMax < slotHash)
-                    {
-                        continue;
-                    }
-
-                    // Check if a configured cluster with the same identifier exists.
-                    if (_lookup.TryGetCluster(clusterOptions.ClusterId, out var cluster))
-                    {
-                        // Distribute the proxy request to this tenant cluster.
-                        context.ReassignProxyRequest(cluster);
-                    }
-
-                    break;
+                    continue;
                 }
+
+                // Check if a configured cluster with the same identifier exists.
+                if (_lookup.TryGetCluster(clusterOptions.ClusterId, out var cluster))
+                {
+                    // Distribute the proxy request to this tenant cluster.
+                    context.ReassignProxyRequest(cluster);
+                }
+
+                break;
             }
         }
 
