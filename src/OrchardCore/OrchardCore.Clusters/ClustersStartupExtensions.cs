@@ -4,12 +4,12 @@ using Microsoft.Extensions.DependencyInjection;
 namespace OrchardCore.Clusters;
 
 /// <summary>
-/// Extension methods for configuring clusters proxy components on startup.
+/// Extension methods for configuring tenant clusters proxy components on startup.
 /// </summary>
 public static class ClustersStartupExtensions
 {
     /// <summary>
-    /// Registers tenant clusters components.
+    /// Registers tenant clusters proxy components.
     /// </summary>
     public static IReverseProxyBuilder AddClusters(this IReverseProxyBuilder builder)
     {
@@ -17,7 +17,7 @@ public static class ClustersStartupExtensions
     }
 
     /// <summary>
-    /// Distributes requests across tenant clusters, should be placed first in the proxy pipeline.
+    /// Distributes proxy requests across tenant clusters, should be placed first in the proxy pipeline.
     /// </summary>
     public static IReverseProxyApplicationBuilder UseClusters(this IReverseProxyApplicationBuilder builder)
     {
