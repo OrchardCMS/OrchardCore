@@ -6,13 +6,13 @@ using Yarp.ReverseProxy;
 namespace OrchardCore.Clusters;
 
 /// <summary>
-/// Distributes tenant requests across shell clusters.
+/// Distributes proxy requests across tenant clusters.
 /// </summary>
 public class ClustersProxyMiddleware
 {
     const int _slotsCount = 16384;
     private readonly RequestDelegate _next;
-    private readonly IProxyStateLookup _proxyStateLookup;
+    private readonly IProxyStateLookup _lookup;
     private readonly ClustersOptions _options;
 
     public ClustersProxyMiddleware(
@@ -21,7 +21,7 @@ public class ClustersProxyMiddleware
         IOptions<ClustersOptions> options)
     {
         _next = next;
-        _proxyStateLookup = proxyStateLookup;
+        _lookup = proxyStateLookup;
         _options = options.Value;
     }
 
@@ -33,19 +33,23 @@ public class ClustersProxyMiddleware
             var tenantId = context.GetClusterFeature()?.TenantId;
             if (tenantId is not null)
             {
-                var reverseProxyFeature = context.GetReverseProxyFeature();
                 var slotHash = Crc16XModem.Compute(tenantId) % _slotsCount;
                 foreach (var clusterOptions in _options.Clusters)
                 {
-                    if (clusterOptions.SlotMin <= slotHash &&
-                        clusterOptions.SlotMax >= slotHash &&
-                        clusterOptions.ClusterId != reverseProxyFeature.Cluster.Config.ClusterId &&
-                        _proxyStateLookup.TryGetCluster(clusterOptions.ClusterId, out var cluster))
+                    // Check if the slot of the current tenant belongs to this cluster.
+                    if (clusterOptions.SlotMin > slotHash || clusterOptions.SlotMax < slotHash)
                     {
-                        context.ReassignProxyRequest(cluster);
-
-                        break;
+                        continue;
                     }
+
+                    // Check if a configured cluster with the same identifier exists.
+                    if (_lookup.TryGetCluster(clusterOptions.ClusterId, out var cluster))
+                    {
+                        // Distribute the proxy request to this tenant cluster.
+                        context.ReassignProxyRequest(cluster);
+                    }
+
+                    break;
                 }
             }
         }
