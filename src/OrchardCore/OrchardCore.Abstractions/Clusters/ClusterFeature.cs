@@ -3,7 +3,7 @@ using OrchardCore.Environment.Shell;
 namespace OrchardCore.Clusters;
 
 /// <summary>
-/// Used to capture the current <see cref="ShellSettings.TenantId"/>.
+/// Used to capture the <see cref="ShellSettings.TenantId"/> at the start of the tenant pipeline.
 /// </summary>
 public class ClusterFeature
 {
