@@ -50,7 +50,7 @@ public class ClustersProxyMiddleware
                     continue;
                 }
 
-                // Check if a configured cluster with the same identifier exists.
+                // Try to get the configured cluster with the same identifier.
                 if (_lookup.TryGetCluster(clusterOptions.ClusterId, out var cluster))
                 {
                     // Distribute the proxy request to this tenant cluster.

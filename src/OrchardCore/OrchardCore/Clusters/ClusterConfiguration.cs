@@ -6,8 +6,7 @@ namespace OrchardCore.Clusters;
 public class ClusterConfiguration
 {
     /// <summary>
-    /// The tenant slot range that should be configured with 2 integers,
-    /// the minimum and the maximum slot numbers that define the range.
+    /// The tenant slot range that should be configured with 2 min and max integers.
     /// </summary>
     public int[] SlotRange { get; init; }
 }

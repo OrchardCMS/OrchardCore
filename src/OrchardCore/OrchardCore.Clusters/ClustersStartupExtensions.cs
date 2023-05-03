@@ -3,6 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.Clusters;
 
+/// <summary>
+/// Extension methods for configuring clusters proxy components on startup.
+/// </summary>
 public static class ClustersStartupExtensions
 {
     /// <summary>
