@@ -1,0 +1,29 @@
+@model EditTenantViewModel
+
+<div class="mb-3 col">
+    <label asp-for="Category">@T["Category"]</label>
+    <input asp-for="Category" class="form-control" />
+    <span class="hint">@T["The category of the tenant."]</span>
+</div>
+
+<div class="mb-3 col" asp-validation-class-for="RequestUrlPrefix">
+    <label asp-for="RequestUrlPrefix">@T["Url Prefix"]</label>
+    <input asp-for="RequestUrlPrefix" class="form-control" autofocus />
+    <span asp-validation-for="RequestUrlPrefix" class="text-danger"></span>
+    <span class="hint">@T["(Optional) Example: If prefix is \"site1\", the tenant URL prefix is \"https://orchardcore.net/site1\"."]</span>
+</div>
+
+<div class="mb-3 col" asp-validation-class-for="Description">
+    <label asp-for="Description">@T["Description"]</label>
+    <input asp-for="Description" class="form-control" autofocus />
+    <span asp-validation-for="Description" class="text-danger"></span>
+    <span class="hint">@T["The description of the tenant."]</span>
+</div>
+
+<div class="mb-3 col" asp-validation-class-for="RequestUrlHost">
+    <label asp-for="RequestUrlHost">@T["Hostname"]</label>
+    <input asp-for="RequestUrlHost" class="form-control" autofocus />
+    <span asp-validation-for="RequestUrlHost" class="text-danger"></span>
+    <span class="hint">@T["Example: If host is \"orchardproject.net\", the tenant site URL is \"https://orchardcore.net/\"."]</span>
+    <span class="hint">@T["You may define multiple domains using the comma (,) as a separator. Use the '*.' prefix to map all subdomains."]</span>
+</div>

@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using OrchardCore.OpenId.Abstractions.Descriptors;
-using Xunit;
 using static OpenIddict.Abstractions.OpenIddictConstants.Permissions;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.OpenId

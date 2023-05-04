@@ -1,8 +1,16 @@
 @using Microsoft.AspNetCore.Html
-@using OrchardCore.Modules;
+@using OrchardCore.Features
+@using OrchardCore.Modules
 @model FeaturesViewModel
+@{
+    var title = T["Features"];
+    if (!String.IsNullOrEmpty(Model.Name))
+    {
+        title = T["Features for {0} tenant", Model.Name];
+    }
+}
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Features"])</h1></zone>
+<zone Name="Title"><h1>@RenderTitleSegments(title)</h1></zone>
 
 <form autocomplete="off" class="position-sticky action-bar">
     <div class="card bg-primary mb-3">
@@ -42,7 +50,7 @@
         foreach (var featureGroup in featureGroups)
         {
             var categoryName = featureGroup.First().Descriptor.Category ?? T["Uncategorized"].Value;
-            var categoryClassName = string.Format("category {0}", Html.Encode(categoryName.ToString()));
+            var categoryClassName = String.Format("category {0}", Html.Encode(categoryName.ToString()));
             if (featureGroup == featureGroups.First())
             {
                 categoryClassName += " first";
@@ -51,12 +59,10 @@
             {
                 categoryClassName += " last";
             }
+            var features = featureGroup.OrderBy(f => f.Descriptor.Name);
+            var categoryFeatureNames = String.Join(" ", features.Select(f => f.Descriptor.Name));
 
             <div class="feature-group">
-                @{
-                    var features = featureGroup.OrderBy(f => f.Descriptor.Name);
-                    var categoryFeatureNames = String.Join(" ", features.Select(f => f.Descriptor.Name));
-                }
                 <h4 class="mb-2 mt-3" data-filter-value="@categoryName @categoryFeatureNames">@categoryName</h4>
                 <ul class="list-group" data-filter-value="@categoryName @categoryFeatureNames">
                     @{
@@ -65,14 +71,20 @@
                             //var lifecycleStatus = feature.Descriptor.Extension.LifecycleStatus;
                             var featureId = feature.Descriptor.Id;
                             var featureName = feature.Descriptor.Name;
+                            var isAlwaysEnabled = feature.IsAlwaysEnabled;
+
+                            if (Model.IsProxy && featureId == FeaturesConstants.FeatureId)
+                            {
+                                isAlwaysEnabled = false;
+                            }
 
                             var dependencies = (from d in feature.FeatureDependencies
                                                 select (from f in Model.Features where f.Descriptor.Id == d.Id select f).SingleOrDefault()).Where(f => f != null).OrderBy(f => f.Descriptor.Name);
                             var dependenciesNames = String.Join(" ", dependencies.Select(d => d.Descriptor.Name));
                             var missingDependencies = feature.FeatureDependencies
                             .Where(d => !Model.Features.Any(f => f.Descriptor.Id == d.Id));
-                            var showDisable = !feature.EnabledByDependencyOnly && !feature.IsAlwaysEnabled && categoryName != "Core" && feature.Descriptor.Name != Application.ModuleName;
-                            var showEnable = !feature.EnabledByDependencyOnly && !missingDependencies.Any() && feature.Descriptor.Id != "OrchardCore.Setup" && feature.Descriptor.Id != "OrchardCore.AutoSetup";
+                            var showDisable = !feature.Descriptor.EnabledByDependencyOnly && !isAlwaysEnabled && categoryName != "Core" && featureName != Application.ModuleName;
+                            var showEnable = !feature.Descriptor.EnabledByDependencyOnly && !missingDependencies.Any() && featureId != "OrchardCore.Setup" && featureId != "OrchardCore.AutoSetup";
 
                             <li class="list-group-item" data-filter-value="@categoryName @dependenciesNames @featureName">
                                 <div class="row">
@@ -81,8 +93,8 @@
                                         @if ((showEnable && !feature.IsEnabled) || (showDisable && feature.IsEnabled))
                                         {
                                             <div class="form-check">
-                                                <input type="checkbox" class="form-check-input" name="featureIds" id="@feature.Descriptor.Id" value="@feature.Descriptor.Id">
-                                                <label class="form-check-label h6" for="@feature.Descriptor.Id">@featureName</label>
+                                                <input type="checkbox" class="form-check-input" name="featureIds" id="@featureId" value="@featureId">
+                                                <label class="form-check-label h6" for="@featureId">@featureName</label>
                                             </div>
                                         }
                                         else
@@ -97,7 +109,7 @@
                                                 @foreach (var d in dependencies)
                                                 {
                                                     <span class="badge ta-badge">
-                                                        @(string.IsNullOrEmpty(d.Descriptor.Name) ? d.Descriptor.Id : d.Descriptor.Name)
+                                                        @(String.IsNullOrEmpty(d.Descriptor.Name) ? d.Descriptor.Id : d.Descriptor.Name)
                                                     </span>
                                                 }
                                                 @foreach (var d in missingDependencies)
@@ -110,22 +122,22 @@
                                         </div>
                                     </div>
                                     <div class="col-md-2 text-end">
-                                        @if (feature.EnabledByDependencyOnly)
+                                        @if (feature.Descriptor.EnabledByDependencyOnly)
                                         {
                                             @if (feature.IsEnabled)
                                             {
-                                                <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is automaticlly enabled based on dependency and cannot be manually disabled."]">
+                                                <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is automatically enabled based on dependency and cannot be manually disabled."]">
                                                     <button class="btn btn-danger btn-sm" disabled>@T["Disable"]</button>
                                                 </div>
                                             }
                                             else
                                             {
-                                                <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is automaticlly disabled based on dependency and cannot be manually enabled."]">
+                                                <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is automatically disabled based on dependency and cannot be manually enabled."]">
                                                     <button class="btn btn-primary btn-sm" disabled>@T["Enable"]</button>
                                                 </div>
                                             }
                                         }
-                                        else if (feature.IsAlwaysEnabled && feature.IsEnabled)
+                                        else if (feature.IsEnabled && isAlwaysEnabled)
                                         {
                                             <div data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="@T["This feature is always enabled and cannot be manually disabled."]">
                                                 <button class="btn btn-danger btn-sm" disabled>@T["Disable"]</button>
@@ -135,17 +147,17 @@
                                         {
                                             if (showEnable && !feature.IsEnabled)
                                             {
-                                                <a id="btn-enable-@Html.GenerateIdFromName(feature.Descriptor.Id)" asp-action="Enable" asp-route-id="@feature.Descriptor.Id" class="btn btn-primary btn-sm" data-url-af="UnsafeUrl">@T["Enable"]</a>
+                                                <a id="btn-enable-@Html.GenerateIdFromName(featureId)" asp-action="Enable" asp-route-id="@featureId" asp-route-tenant="@Model.Name" class="btn btn-primary btn-sm" data-url-af="UnsafeUrl">@T["Enable"]</a>
                                             }
                                             @if (showDisable && feature.IsEnabled)
                                             {
-                                                var confirmationMessage = T["Are you sure you want to disable the {0} feature? Continue?", feature.Descriptor.Name];
+                                                var confirmationMessage = T["Are you sure you want to disable the {0} feature? Continue?", featureName];
                                                 if (feature.EnabledDependentFeatures.Any())
                                                 {
                                                     var enabledDependentFeatures = new HtmlString($"<ul>{String.Join("", feature.EnabledDependentFeatures.Select(f => $"<li>{f.Name}</li>"))}</ul>");
-                                                    confirmationMessage = T["Disabling the {0} feature will also disable the following dependent features:{1}Continue?", feature.Descriptor.Name, enabledDependentFeatures];
+                                                    confirmationMessage = T["Disabling the {0} feature will also disable the following dependent features:{1}Continue?", featureName, enabledDependentFeatures];
                                                 }
-                                                <a id="btn-disable-@Html.GenerateIdFromName(feature.Descriptor.Id)" asp-action="Disable" asp-route-id="@feature.Descriptor.Id" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-url-af="UnsafeUrl RemoveUrl">@T["Disable"]</a>
+                                                <a id="btn-disable-@Html.GenerateIdFromName(featureId)" asp-action="Disable" asp-route-id="@featureId" asp-route-tenant="@Model.Name" class="btn btn-danger btn-sm" data-title="@T["Disable Feature"]" data-message="@confirmationMessage" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-url-af="UnsafeUrl RemoveUrl">@T["Disable"]</a>
                                             }
                                         }
                                     </div>

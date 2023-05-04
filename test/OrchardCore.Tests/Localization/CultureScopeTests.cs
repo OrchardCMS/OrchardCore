@@ -1,8 +1,4 @@
-using System;
-using System.Globalization;
-using System.Threading.Tasks;
 using OrchardCore.Localization;
-using Xunit;
 
 namespace OrchardCore.Tests.Localization
 {
@@ -72,6 +68,7 @@ namespace OrchardCore.Tests.Localization
                     throw new Exception("Something goes wrong!!");
                 }
             });
+
             Assert.Equal(culture, CultureInfo.CurrentCulture);
             Assert.Equal(uiCulture, CultureInfo.CurrentUICulture);
         }

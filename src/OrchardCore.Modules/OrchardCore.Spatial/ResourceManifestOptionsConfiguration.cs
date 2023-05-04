@@ -14,16 +14,16 @@ namespace OrchardCore.Spatial
             _manifest
                 .DefineScript("leaflet")
                 .SetUrl("/OrchardCore.Spatial/Scripts/leaflet/leaflet.js", "/OrchardCore.Spatial/Scripts/leaflet/leaflet-src.js")
-                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.js", "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet-src.js")
-                .SetCdnIntegrity("sha384-vdvDM6Rl/coCrMsKwhal4uc9MUUFNrYa+cxp+nJQHy3TvozEpVKVexz/NTbE5VSO", "sha384-mc6rNK5V0bzWGJ1EUEAR2o+a/oH6qaVl+NCF63Et+mVpGnlSnyVSBhSP/wp4ir+O")
-                .SetVersion("1.7.1");
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.js", "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet-src.js")
+                .SetCdnIntegrity("sha384-okbbMvvx/qfQkmiQKfd5VifbKZ/W8p1qIsWvE1ROPUfHWsDcC8/BnHohF7vPg2T6", "sha384-x7PoOOpgJGgUPTj6ajie0SBQfPZ8S2FtDd8L0gQn3s+Sz9dvzwoSWvqbltR97ThL")
+                .SetVersion("1.9.3");
 
             _manifest
                 .DefineStyle("leaflet")
                 .SetUrl("/OrchardCore.Spatial/Styles/leaflet.min.css", "/OrchardCore.Spatial/Styles/leaflet.css")
-                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.css", "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css")
-                .SetCdnIntegrity("sha384-d7pQbIswLsqVbYoAoHHlzPt+fmjkMwiXW/fvtIgK2r1u1bZXvGzL9HICUg4DKSgO", "sha384-VzLXTJGPSyTLX6d96AxgkKvE/LRb7ECGyTxuwtpjHnVWVZs2gp5RDjeM/tgBnVdM")
-                .SetVersion("1.7.1");
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.min.css", "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.css")
+                .SetCdnIntegrity("sha384-cTNLivltikBj6gZvv7PqNudNArGkBGBg1p7ZM56VRY0iSLEdQW8AVLZkMCHCcyc+", "sha384-o/2yZuJZWGJ4s/adjxVW71R+EO/LyCwdQfP5UWSgX/w87iiTXuvDZaejd3TsN7mf")
+                .SetVersion("1.9.3");
         }
 
         public void Configure(ResourceManagementOptions options)

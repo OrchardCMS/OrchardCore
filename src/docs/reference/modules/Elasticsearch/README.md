@@ -55,20 +55,24 @@ Here is a sample step:
 
 ```json
 {
-  "name": "ElasticIndexSettings",
-  "Indices": [
+  "steps":[
     {
-      "Search": {
-        "AnalyzerName": "standardanalyzer",
-        "IndexLatest": false,
-        "IndexedContentTypes": [
-          "Article",
-          "BlogPost"
-        ]
-      }
+      "name":"ElasticIndexSettings",
+      "Indices":[
+        {
+          "Search":{
+            "AnalyzerName":"standardanalyzer",
+            "IndexLatest":false,
+            "IndexedContentTypes":[
+              "Article",
+              "BlogPost"
+            ]
+          }
+        }
+      ]
     }
   ]
-},
+}
 ```
 
 ## Elasticsearch settings recipe step
@@ -77,17 +81,21 @@ Here is an example for setting default search settings:
 
 ```json
 {
-  // Create the search settings.
-  "name": "Settings",
-  "ElasticSettings": {
-    "SearchIndex": "search",
-    "DefaultSearchFields": [
-      "Content.ContentItem.FullText"
-    ],
-    "AllowElasticQueryStringQueryInSearch": false,
-    "SyncWithLucene":  true // Allows to sync content index settings
-  }
-},
+  "steps":[
+    {
+      // Create the search settings.
+      "name":"Settings",
+      "ElasticSettings":{
+        "SearchIndex":"search",
+        "DefaultSearchFields":[
+          "Content.ContentItem.FullText"
+        ],
+        "AllowElasticQueryStringQueryInSearch":false,
+        "SyncWithLucene":true // Allows to sync content index settings.
+      }
+    }
+  ]
+}
 ```
 
 ### Reset Elasticsearch Index Step
@@ -97,21 +105,30 @@ Restarts the indexing process from the beginning in order to update current cont
 It doesn't delete existing entries from the index.
 
 ```json
+{
+  "steps":[
     {
-      "name": "lucene-index-reset",
-      "Indices": [
-        "IndexName1", "IndexName2"
+      "name":"lucene-index-reset",
+      "Indices":[
+        "IndexName1",
+        "IndexName2"
       ]
     }
+  ]
+}
 ```
 
 To reset all indices:   
 
 ```json
+{
+  "steps":[
     {
-      "name": "lucene-index-reset",
-      "IncludeAll": true
+      "name":"lucene-index-reset",
+      "IncludeAll":true
     }
+  ]
+}
 ```
 
 ### Rebuild Elasticsearch Index Step
@@ -120,21 +137,30 @@ This Rebuild Index Step rebuilds an Elasticsearch index.
 Deletes and recreates the full index content.
 
 ```json
+{
+  "steps":[
     {
-      "name": "lucene-index-rebuild",
-      "Indices": [
-        "IndexName1", "IndexName2"
+      "name":"lucene-index-rebuild",
+      "Indices":[
+        "IndexName1",
+        "IndexName2"
       ]
     }
+  ]
+}
 ```
 
 To rebuild all indices:   
 
 ```json
+{
+  "steps":[
     {
-      "name": "lucene-index-rebuild",
-      "IncludeAll": true
+      "name":"lucene-index-rebuild",
+      "IncludeAll":true
     }
+  ]
+}
 ```
 
 ## Queries recipe step
@@ -143,11 +169,11 @@ Here is an example for creating a Elasticsearch query from a Queries recipe step
 
 ```json
 {
-    "Source": "Elasticsearch",
-    "Name": "RecentBlogPosts",
-    "Index": "Search",
-    "Template": "...", // json encoded query template
-    "ReturnContentItems": true
+  "Source": "Elasticsearch",
+  "Name": "RecentBlogPosts",
+  "Index": "Search",
+  "Template": "...", // json encoded query template
+  "ReturnContentItems": true
 }
 ```
 
@@ -187,21 +213,79 @@ See: https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.h
 The Elasticsearch module connection configuration can be set globally in the appsettings.json file or per tenant.
 
 ```json
-    "OrchardCore_Elasticsearch": {
-      "ConnectionType": "SingleNodeConnectionPool",
-      "Url": "http://localhost",
-      "Ports": [ 9200 ],
-      "CloudId": "Orchard_Core_deployment:ZWFzdHVzMi5henVyZS5lbGFzdGljLWNsb3VkLmNvbTo0NDMkNmMxZGQ4YzBrQ2Y2NDI5ZDkyNzc1MTUxN2IyYjZkYTgkMTJmMjA1MzBlOTU0NDgyNDlkZWVmZWYzNmZlY2Q5Yjc="
-      "Username": "admin",
-      "Password": "admin",
-      "CertificateFingerprint": "75:21:E7:92:8F:D5:7A:27:06:38:8E:A4:35:FE:F5:17:D7:37:F4:DF:F0:9A:D2:C0:C4:B6:FF:EE:D1:EA:2B:A7",
-      "EnableApiVersioningHeader": false
+"OrchardCore_Elasticsearch": {
+  "ConnectionType": "SingleNodeConnectionPool",
+  "Url": "http://localhost",
+  "Ports": [ 9200 ],
+  "CloudId": "Orchard_Core_deployment:ZWFzdHVzMi5henVyZS5lbGFzdGljLWNsb3VkLmNvbTo0NDMkNmMxZGQ4YzBrQ2Y2NDI5ZDkyNzc1MTUxN2IyYjZkYTgkMTJmMjA1MzBlOTU0NDgyNDlkZWVmZWYzNmZlY2Q5Yjc=",
+  "Username": "admin",
+  "Password": "admin",
+  "CertificateFingerprint": "75:21:E7:92:8F:D5:7A:27:06:38:8E:A4:35:FE:F5:17:D7:37:F4:DF:F0:9A:D2:C0:C4:B6:FF:EE:D1:EA:2B:A7",
+  "EnableApiVersioningHeader": false,
+  "IndexPrefix": "",
+  "Analyzers": {
+    "standard": {
+      "type": "standard"
     }
+  }
+}
 ```
 
-The connection types documentation and examples can be found at this url : 
+!!! note
+    When `CloudConnectionPool` connection type is used, `CertificateFingerprint` is not needed.
 
-https://www.elastic.co/guide/en/elasticsearch/client/net-api/current/connection-pooling.html
+The connection types documentation and examples can be found at this url: 
+
+https://www.elastic.co/guide/en/elasticsearch/client/net-api/7.17/connection-pooling.html
+
+## Elasticsearch Analyzers
+
+As of version 1.6, [built-in](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html) and custom analyzers are supported. By default, only `standard` analyzer is available. You may update the Elasticsearch configurations to enable any of the built-in and any custom analyzers. For example, to enable the built in `stop` and `standard` analyzers, you may add the following to the [appsettings.json](../../core/Configuration/README.md) file
+
+```json
+"OrchardCore_Elasticsearch": {
+  "Analyzers": {
+    "standard": {
+      "type": "standard"
+    },
+    "stop": {
+      "type": "stop"
+    }
+  }
+}
+```
+
+At the same time, you may define custom analyzers using the [appsettings.json](../../core/Configuration/README.md) file as well. In the following example, we are enabling the [standard](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-standard-analyzer.html) analyzer, customizing the [stop](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-stop-analyzer.html) analyzer and creating a [custom analyzer](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-custom-analyzer.html) named `english_analyzer`. 
+
+```json
+"OrchardCore_Elasticsearch": {
+  "Analyzers": {
+    "standard": {
+      "type": "standard"
+    },
+    "stop": {
+      "type": "stop",
+      "stopwords": [
+         "a", 
+         "the", 
+         "and",
+         "or" 
+       ]
+    },
+    "english_analyzer": {
+      "type": "custom",
+      "tokenizer": "standard",
+      "filter": [
+        "lowercase",
+        "stop"
+      ],
+      "char_filter": [
+        "html_strip"
+      ]
+    }
+  }
+}
+```
 
 ## Elasticsearch vs Lucene
 
@@ -214,7 +298,7 @@ The Lucene module though will always only return `stored` fields from Lucene Que
 
 Here is one example of a Query that will return only specific fields from Elasticsearch.
 
-```
+```json
 {
   "query": {
     "match_all": { }

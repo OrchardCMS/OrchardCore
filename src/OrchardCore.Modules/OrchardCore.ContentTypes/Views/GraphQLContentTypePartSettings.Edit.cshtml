@@ -29,11 +29,11 @@
         <label class="form-check-label" asp-for="Settings.Hidden">@T["Hide"]</label>
         @if (hiddenByDefault)
         {
-            <span class="hint">@T["NB. Setting is collapsed by default, and cannot be overwritten."]</span>
+            <span class="hint">@T["Setting is hidden by default, and cannot be overwritten."]</span>
         }
         else
         {
-            <span class="hint">@T["Check to hide type from the GraphQL schema."]</span>
+            <span class="hint">@T["Check to hide part from the GraphQL schema."]</span>
         }
     </div>
 </div>

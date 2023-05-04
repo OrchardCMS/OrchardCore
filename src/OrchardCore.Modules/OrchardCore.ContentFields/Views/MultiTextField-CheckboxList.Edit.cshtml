@@ -1,4 +1,5 @@
 @model OrchardCore.ContentFields.ViewModels.EditMultiTextFieldViewModel
+@using OrchardCore
 @using OrchardCore.Mvc.Utilities
 @{
     var settings = Model.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
@@ -9,22 +10,24 @@
                     Value = option.Value,
                     Selected = Model.Values.Contains(option.Value)
                 }).ToList();
-    var fieldName = Model.PartFieldDefinition.Name;
+    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
-<div class="mb-3 field-wrapper field-wrapper-@fieldName.HtmlClassify()" id="@Html.IdFor(x => x.Values)_FieldWrapper">
-    <label>@Model.PartFieldDefinition.DisplayName()</label>
-    @for (int i = 0; i < options.Count; i++)
-    {
-        var option = options[i];
-        <div class="form-check">
-            <input type="checkbox" id="@(Html.IdFor(m => m.Values) + "_" + i)" name="@(Html.NameFor(m => m.Values))" class="form-check-input" value="@option.Value" @(option.Selected ? "checked='checked'" : "") />
-            <label class="form-check-label" for="@(Html.IdFor(m => m.Values) + "_" + i)">@option.Text</label>
-        </div>
-    }
+<div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x.Values)_FieldWrapper">
+    <label class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndCssClasses()">
+        @for (int i = 0; i < options.Count; i++)
+        {
+            var option = options[i];
+            <div class="form-check">
+                <input type="checkbox" id="@(Html.IdFor(m => m.Values) + "_" + i)" name="@(Html.NameFor(m => m.Values))" class="form-check-input" value="@option.Value" @(option.Selected ? "checked='checked'" : String.Empty) />
+                <label class="form-check-label" for="@(Html.IdFor(m => m.Values) + "_" + i)">@option.Text</label>
+            </div>
+        }
 
-    @if (!String.IsNullOrEmpty(settings.Hint))
-    {
-        <span class="hint">@settings.Hint</span>
-    }
+        @if (!String.IsNullOrEmpty(settings.Hint))
+        {
+            <span class="hint">@settings.Hint</span>
+        }
+    </div>
 </div>

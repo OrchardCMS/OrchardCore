@@ -109,13 +109,13 @@ namespace OrchardCore.Data.Migration
                 var uninstallMethod = GetUninstallMethod(migration);
                 if (uninstallMethod != null)
                 {
-                    uninstallMethod.Invoke(migration, new object[0]);
+                    uninstallMethod.Invoke(migration, Array.Empty<object>());
                 }
 
                 var uninstallAsyncMethod = GetUninstallAsyncMethod(migration);
                 if (uninstallAsyncMethod != null)
                 {
-                    await (Task)uninstallAsyncMethod.Invoke(migration, new object[0]);
+                    await (Task)uninstallAsyncMethod.Invoke(migration, Array.Empty<object>());
                 }
 
                 if (dataMigrationRecord == null)
@@ -197,7 +197,7 @@ namespace OrchardCore.Data.Migration
                         var createMethod = GetCreateMethod(migration);
                         if (createMethod != null)
                         {
-                            current = (int)createMethod.Invoke(migration, new object[0]);
+                            current = (int)createMethod.Invoke(migration, Array.Empty<object>());
                         }
 
                         // try to resolve a CreateAsync method
@@ -205,7 +205,7 @@ namespace OrchardCore.Data.Migration
                         var createAsyncMethod = GetCreateAsyncMethod(migration);
                         if (createAsyncMethod != null)
                         {
-                            current = await (Task<int>)createAsyncMethod.Invoke(migration, new object[0]);
+                            current = await (Task<int>)createAsyncMethod.Invoke(migration, Array.Empty<object>());
                         }
                     }
 
@@ -221,11 +221,11 @@ namespace OrchardCore.Data.Migration
                         var isAwaitable = methodInfo.ReturnType.GetMethod(nameof(Task.GetAwaiter)) != null;
                         if (isAwaitable)
                         {
-                            current = await (Task<int>)methodInfo.Invoke(migration, new object[0]);
+                            current = await (Task<int>)methodInfo.Invoke(migration, Array.Empty<object>());
                         }
                         else
                         {
-                            current = (int)methodInfo.Invoke(migration, new object[0]);
+                            current = (int)methodInfo.Invoke(migration, Array.Empty<object>());
                         }
                     }
 

@@ -31,8 +31,9 @@ jQuery.fn.extend({
   }
 });
 var shortcodeWrapperTemplate = "\n<div class=\"shortcode-modal-wrapper\"></div>\n";
-var shortcodeBtnTemplate = "\n<button type=\"button\" class=\"shortcode-modal-btn btn btn-sm\">\n    <span class=\"icon-shortcode\"></span>\n</button>\n"; // Wraps each .shortcode-modal-input class with a wrapper, and attaches detaches the shortcode app as required.
+var shortcodeBtnTemplate = "\n<button type=\"button\" class=\"shortcode-modal-btn btn btn-sm\">\n    <span class=\"icon-shortcode\"></span>\n</button>\n";
 
+// Wraps each .shortcode-modal-input class with a wrapper, and attaches detaches the shortcode app as required.
 $(function () {
   $('.shortcode-modal-input').each(function () {
     $(this).wrap(shortcodeWrapperTemplate);
@@ -46,7 +47,6 @@ $(function () {
   });
 });
 var shortcodesApp;
-
 function initializeShortcodesApp(element) {
   if (element && !shortcodesApp) {
     var elementId = element.id;
@@ -68,7 +68,6 @@ function initializeShortcodesApp(element) {
         filter: function filter(_filter) {
           if (_filter) {
             var lower = _filter.toLowerCase();
-
             this.filteredShortcodes = this.allShortcodes.filter(function (s) {
               return s.name.startsWith(lower);
             });
@@ -82,7 +81,6 @@ function initializeShortcodesApp(element) {
           if (onClose) {
             this.onClose = onClose;
           }
-
           this.selectedValue = '';
           this.modal = new bootstrap.Modal(this.$el);
           this.modal.show();
@@ -104,7 +102,6 @@ function initializeShortcodesApp(element) {
           } else {
             this.filteredShortcodes = this.allShortcodes;
           }
-
           this.filter = '';
         },
         isVisible: function isVisible(name) {
@@ -121,9 +118,9 @@ function initializeShortcodesApp(element) {
     });
     return shortcodesApp;
   }
-} // initializes a code mirror editor with a shortcode modal.
+}
 
-
+// initializes a code mirror editor with a shortcode modal.
 function initializeCodeMirrorShortcodeWrapper(editor) {
   var codemirrorWrapper = editor.display.wrapper;
   $(codemirrorWrapper).wrap(shortcodeWrapperTemplate);

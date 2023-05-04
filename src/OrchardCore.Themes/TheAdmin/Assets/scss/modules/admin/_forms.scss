@@ -60,10 +60,6 @@ label .field-validation-error::before {
     display: none;
 }
 
-select[multiple] {
-    min-height: 300px;
-}
-
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {
     display: none;
@@ -83,7 +79,6 @@ input[type="password"]::-ms-clear {
     line-height: 1rem;
     text-align: center;
     pointer-events: none;
-    color: #aaa;
 }
 
 .has-filter .form-control-feedback {

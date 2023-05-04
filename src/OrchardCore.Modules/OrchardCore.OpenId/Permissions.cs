@@ -20,7 +20,7 @@ namespace OrchardCore.OpenId
             = new Permission(nameof(ManageServerSettings), "View and edit the OpenID Connect server settings.");
 
         public static readonly Permission ManageValidationSettings
-            = new Permission(nameof(ManageValidationSettings), "View and edit the OpenID Connect server settings.");
+            = new Permission(nameof(ManageValidationSettings), "View and edit the OpenID Connect validation settings.");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {

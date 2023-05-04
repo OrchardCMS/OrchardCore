@@ -1,6 +1,4 @@
-using Newtonsoft.Json;
 using OrchardCore.ContentManagement;
-using Xunit;
 
 namespace OrchardCore.Tests.Data
 {
