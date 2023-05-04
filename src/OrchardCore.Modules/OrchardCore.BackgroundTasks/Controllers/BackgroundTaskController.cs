@@ -70,8 +70,8 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 {
                     return new BackgroundTaskEntry()
                     {
+                        Name = defaultSettings.Name,
                         Title = defaultSettings.Title,
-                        Name = settings.Name,
                         Description = settings.Description,
                         Enable = settings.Enable,
                     };
@@ -79,8 +79,8 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
                 return new BackgroundTaskEntry()
                 {
-                    Title = defaultSettings.Title,
                     Name = defaultSettings.Name,
+                    Title = defaultSettings.Title,
                     Description = defaultSettings.Description,
                     Enable = defaultSettings.Enable,
                 };
@@ -110,6 +110,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             var taskItems = items.ToList();
             var routeData = new RouteData();
+
             routeData.Values.Add($"{nameof(BackgroundTaskIndexViewModel.Options)}.{nameof(options.Search)}", options.Search);
             routeData.Values.Add($"{nameof(BackgroundTaskIndexViewModel.Options)}.{nameof(options.Status)}", options.Status);
 
@@ -144,13 +145,13 @@ namespace OrchardCore.BackgroundTasks.Controllers
             }
 
             var task = _backgroundTasks.GetTaskByName(name);
-
             if (task == null)
             {
                 return NotFound();
             }
 
             var document = await _backgroundTaskManager.GetDocumentAsync();
+
             var defaultSettings = task.GetDefaultSettings();
             if (!document.Settings.TryGetValue(name, out var settings))
             {
@@ -162,7 +163,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 Name = defaultSettings.Name,
                 Title = defaultSettings.Title,
                 DefaultSchedule = defaultSettings.Schedule,
-                Enable = settings.Enable,
                 Schedule = settings.Schedule,
                 Description = settings.Description,
                 LockTimeout = settings.LockTimeout,
@@ -181,25 +181,24 @@ namespace OrchardCore.BackgroundTasks.Controllers
             }
 
             var task = _backgroundTasks.GetTaskByName(model.Name);
-
             if (task == null)
             {
                 return NotFound();
             }
+
             var defaultSettings = task.GetDefaultSettings();
 
             if (ModelState.IsValid)
             {
                 var document = await _backgroundTaskManager.LoadDocumentAsync();
-
                 if (!document.Settings.TryGetValue(model.Name, out var settings))
                 {
                     settings = defaultSettings;
                 }
 
                 settings.Title = defaultSettings.Title;
-                settings.Description = defaultSettings.Description;
                 settings.Schedule = model.Schedule?.Trim();
+                settings.Description = model.Description;
                 settings.LockTimeout = model.LockTimeout;
                 settings.LockExpiration = model.LockExpiration;
 
@@ -225,14 +224,12 @@ namespace OrchardCore.BackgroundTasks.Controllers
             }
 
             var task = _backgroundTasks.GetTaskByName(name);
-
             if (task == null)
             {
                 return NotFound();
             }
 
             var document = await _backgroundTaskManager.LoadDocumentAsync();
-
             if (!document.Settings.TryGetValue(name, out var settings))
             {
                 settings = task.GetDefaultSettings();
@@ -256,14 +253,12 @@ namespace OrchardCore.BackgroundTasks.Controllers
             }
 
             var task = _backgroundTasks.GetTaskByName(name);
-
             if (task == null)
             {
                 return NotFound();
             }
 
             var document = await _backgroundTaskManager.LoadDocumentAsync();
-
             if (!document.Settings.TryGetValue(name, out var settings))
             {
                 settings = task.GetDefaultSettings();

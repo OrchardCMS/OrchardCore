@@ -1,8 +1,8 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Search.Model;
+namespace OrchardCore.Search.Models;
 
-public class SearchPart : ContentPart
+public class SearchFormPart : ContentPart
 {
     public string IndexName { get; set; }
 

@@ -16,7 +16,7 @@ using OrchardCore.Search.Configuration;
 using OrchardCore.Search.Deployment;
 using OrchardCore.Search.Drivers;
 using OrchardCore.Search.Migrations;
-using OrchardCore.Search.Model;
+using OrchardCore.Search.Models;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
@@ -36,8 +36,8 @@ namespace OrchardCore.Search
             services.AddScoped<IShapeTableProvider, SearchShapesTableProvider>();
             services.AddShapeAttributes<SearchShapes>();
 
-            services.AddContentPart<SearchPart>()
-                    .UseDisplayDriver<SearchPartDisplayDriver>();
+            services.AddContentPart<SearchFormPart>()
+                    .UseDisplayDriver<SearchFormPartDisplayDriver>();
 
             services.AddDataMigration<SearchMigrations>();
         }

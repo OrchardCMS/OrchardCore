@@ -2651,7 +2651,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/1770309?v=4",
       "profile": "https://github.com/stoyandimov",
       "contributions": [
-        "doc"
+        "doc",
+        "code"
       ]
     },
     {
@@ -2679,6 +2680,33 @@
       "profile": "https://github.com/fuzl-llc",
       "contributions": [
         "code"
+      ]
+    },
+    {
+      "login": "tbolon",
+      "name": "Thomas Bolon",
+      "avatar_url": "https://avatars.githubusercontent.com/u/127185?v=4",
+      "profile": "https://github.com/tbolon",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "rros",
+      "name": "Robert Ros",
+      "avatar_url": "https://avatars.githubusercontent.com/u/279664?v=4",
+      "profile": "https://www.robertros.nl/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "0liver",
+      "name": "0liver",
+      "avatar_url": "https://avatars.githubusercontent.com/u/164360?v=4",
+      "profile": "https://github.com/0liver",
+      "contributions": [
+        "doc"
       ]
     }
   ],

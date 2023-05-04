@@ -35,16 +35,16 @@ namespace OrchardCore.Resources
             manifest
                 .DefineScript("jQuery")
                 .SetUrl("~/OrchardCore.Resources/Scripts/jquery.min.js", "~/OrchardCore.Resources/Scripts/jquery.js")
-                .SetCdn("https://code.jquery.com/jquery-3.6.1.min.js", "https://code.jquery.com/jquery-3.6.1.js")
-                .SetCdnIntegrity("sha384-i61gTtaoovXtAbKjo903+O55Jkn2+RtzHtvNez+yI49HAASvznhe9sZyjaSHTau9", "sha384-Vvooey8iu18IIP2UsBgOl+DI0kQR66LQqPBthxB5y4YqaRgugWOu+vaqwY/AGNAb")
-                .SetVersion("3.6.1");
+                .SetCdn("https://code.jquery.com/jquery-3.6.4.min.js", "https://code.jquery.com/jquery-3.6.4.js")
+                .SetCdnIntegrity("sha384-UG8ao2jwOWB7/oDdObZc6ItJmwUkR/PfMyt9Qs5AwX7PsnYn1CRKCTWyncPTWvaS", "sha384-SCPawFAkxFucxzK6X4Gpg3lmBZqjjmM8ghZCRH8hW4C+k4wCVXFd862J1juShkQ7")
+                .SetVersion("3.6.4");
 
             manifest
                 .DefineScript("jQuery.slim")
                 .SetUrl("~/OrchardCore.Resources/Scripts/jquery.slim.min.js", "~/OrchardCore.Resources/Scripts/jquery.slim.js")
-                .SetCdn("https://code.jquery.com/jquery-3.6.1.slim.min.js", "https://code.jquery.com/jquery-3.6.1.slim.js")
-                .SetCdnIntegrity("sha384-MYL22lstpGhSa4+udJSGro5I+VfM13fdJfCbAzP9krCEoK5r2EDFdgTg2+DGXdj+", "sha384-C5oeR9crfHxhQiVxK5ZqDt+99WrluPZpYe8tzwmDl9len0uP9wsLY6YoXUOuZugs")
-                .SetVersion("3.6.1");
+                .SetCdn("https://code.jquery.com/jquery-3.6.4.slim.min.js", "https://code.jquery.com/jquery-3.6.4.slim.js")
+                .SetCdnIntegrity("sha384-m/qXs6Ta64ootdh3VSJsg0sw+LJ/eUdVto+qns9kekovxhjr8qMK/9UvaO0iXgg7", "sha384-1GSx4VcmKjs8RJmFe051yu6FdI3xF0YDYHlLoKhPqy/F110KkWakEaV/2CIUaT4M")
+                .SetVersion("3.6.4");
 
             manifest
                 .DefineScript("jQuery")

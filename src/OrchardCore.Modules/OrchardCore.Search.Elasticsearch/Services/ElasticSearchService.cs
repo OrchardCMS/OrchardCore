@@ -15,7 +15,6 @@ public class ElasticsearchService : ISearchService
     private readonly ISiteService _siteService;
     private readonly ElasticIndexManager _elasticIndexManager;
     private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
-    private readonly ElasticAnalyzerManager _elasticAnalyzerManager;
     private readonly IElasticSearchQueryService _elasticsearchQueryService;
     private readonly ILogger _logger;
 
@@ -23,7 +22,6 @@ public class ElasticsearchService : ISearchService
         ISiteService siteService,
         ElasticIndexManager elasticIndexManager,
         ElasticIndexSettingsService elasticIndexSettingsService,
-        ElasticAnalyzerManager elasticAnalyzerManager,
         IElasticSearchQueryService elasticsearchQueryService,
         ILogger<ElasticsearchService> logger
         )
@@ -31,7 +29,6 @@ public class ElasticsearchService : ISearchService
         _siteService = siteService;
         _elasticIndexManager = elasticIndexManager;
         _elasticIndexSettingsService = elasticIndexSettingsService;
-        _elasticAnalyzerManager = elasticAnalyzerManager;
         _elasticsearchQueryService = elasticsearchQueryService;
         _logger = logger;
     }
@@ -54,8 +51,6 @@ public class ElasticsearchService : ISearchService
         var elasticIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync(index);
         result.Latest = elasticIndexSettings.IndexLatest;
 
-        var analyzer = _elasticAnalyzerManager.CreateAnalyzer(await _elasticIndexSettingsService.GetIndexAnalyzerAsync(index));
-
         var siteSettings = await _siteService.GetSiteSettingsAsync();
         var searchSettings = siteSettings.As<ElasticSettings>();
 
@@ -75,7 +70,7 @@ public class ElasticsearchService : ISearchService
                 query = new QueryStringQuery
                 {
                     Fields = searchSettings.DefaultSearchFields,
-                    Analyzer = analyzer.Type,
+                    Analyzer = await _elasticIndexSettingsService.GetQueryAnalyzerAsync(index),
                     Query = term
                 };
             }
@@ -84,7 +79,7 @@ public class ElasticsearchService : ISearchService
                 query = new MultiMatchQuery
                 {
                     Fields = searchSettings.DefaultSearchFields,
-                    Analyzer = analyzer.Type,
+                    Analyzer = await _elasticIndexSettingsService.GetQueryAnalyzerAsync(index),
                     Query = term
                 };
             }

@@ -21,7 +21,6 @@ using OrchardCore.Navigation;
 using OrchardCore.Queries;
 using OrchardCore.Recipes;
 using OrchardCore.Search.Abstractions;
-using OrchardCore.Search.Abstractions.ViewModels;
 using OrchardCore.Search.Lucene.Controllers;
 using OrchardCore.Search.Lucene.Deployment;
 using OrchardCore.Search.Lucene.Drivers;
@@ -31,6 +30,7 @@ using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.Recipes;
 using OrchardCore.Search.Lucene.Services;
 using OrchardCore.Search.Lucene.Settings;
+using OrchardCore.Search.ViewModels;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
@@ -54,7 +54,7 @@ namespace OrchardCore.Search.Lucene
                 o.MemberAccessStrategy.Register<SearchResultsViewModel>();
             });
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
             services.AddSingleton<LuceneIndexingState>();
             services.AddSingleton<LuceneIndexSettingsService>();
             services.AddSingleton<LuceneIndexManager>();

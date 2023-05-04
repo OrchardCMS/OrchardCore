@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Search.ViewModel;
+namespace OrchardCore.Search.ViewModels;
 
 public class SearchPartViewModel
 {
