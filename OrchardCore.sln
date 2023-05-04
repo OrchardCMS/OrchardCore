@@ -490,7 +490,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Notifications.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Notifications", "src\OrchardCore.Modules\OrchardCore.Notifications\OrchardCore.Notifications.csproj", "{19594A96-A033-4820-820B-C6186D00D507}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Clusters", "src\OrchardCore\OrchardCore.Clusters\OrchardCore.Clusters.csproj", "{D27240A6-FFA4-402A-A85A-04E56A85C91C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Clusters.Yarp", "src\OrchardCore\OrchardCore.Clusters.Yarp\OrchardCore.Clusters.Yarp.csproj", "{CD7142CA-42DA-414A-ACC4-8CB5699B2915}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1304,10 +1304,10 @@ Global
 		{19594A96-A033-4820-820B-C6186D00D507}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19594A96-A033-4820-820B-C6186D00D507}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19594A96-A033-4820-820B-C6186D00D507}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D27240A6-FFA4-402A-A85A-04E56A85C91C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D27240A6-FFA4-402A-A85A-04E56A85C91C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D27240A6-FFA4-402A-A85A-04E56A85C91C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D27240A6-FFA4-402A-A85A-04E56A85C91C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD7142CA-42DA-414A-ACC4-8CB5699B2915}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD7142CA-42DA-414A-ACC4-8CB5699B2915}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD7142CA-42DA-414A-ACC4-8CB5699B2915}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD7142CA-42DA-414A-ACC4-8CB5699B2915}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1535,7 +1535,7 @@ Global
 		{307AA9CB-D62E-4E30-B715-53E3BF535D94} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{2A6E7DF9-E417-42F8-94F7-0060E252E4D6} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{19594A96-A033-4820-820B-C6186D00D507} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
-		{D27240A6-FFA4-402A-A85A-04E56A85C91C} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{CD7142CA-42DA-414A-ACC4-8CB5699B2915} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}
