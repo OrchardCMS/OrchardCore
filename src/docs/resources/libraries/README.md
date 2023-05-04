@@ -5,12 +5,12 @@ The below table lists the different .NET libraries used in Orchard Core:
 | Library | Usage | Version | License |
 |--- | --- | --- | --- |
 | [Angle Sharp](https://github.com/AngleSharp/AngleSharp) | Angle brackets parser library. | 0.17.1 |[MIT](https://github.com/AngleSharp/AngleSharp/blob/devel/LICENSE) |
-| [AWSSDK S3](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | 3.7.103.44 |[Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
-| [AWSSDK SecurityToken](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | 3.7.101.42 |[Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
-| [AWSSDK Extensions Setup](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | 3.7.5 |[Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
+| [AWSSDK S3](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | 3.7.104.7 |[Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
+| [AWSSDK SecurityToken](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | 3.7.101.57 |[Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
+| [AWSSDK Extensions Setup](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | 3.7.6 |[Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
 | [Azure Identity](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/identity/Azure.Identity/README.md) | Azure Active Directory token authentication support. | 1.8.2 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
 | [Azure Configuration Secrets](https://github.com/Azure/azure-sdk-for-net/blob/Azure.Extensions.AspNetCore.Configuration.Secrets_1.2.2/sdk/extensions/Azure.Extensions.AspNetCore.Configuration.Secrets/README.md) | Azure Key Vault configuration provider implementation for Microsoft.Extensions.Configuration. | 1.2.2 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
-| [Azure Storage Blobs](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/storage/Azure.Storage.Blobs/README.md) | Azure Storage Blobs client library for .NET. | 12.15.1 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
+| [Azure Storage Blobs](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/storage/Azure.Storage.Blobs/README.md) | Azure Storage Blobs client library for .NET. | 12.16.0 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
 | [Azure Storage Blobs for DataProtection](https://github.com/Azure/azure-sdk-for-net/blob/Azure.Extensions.AspNetCore.DataProtection.Blobs_1.3.2/sdk/extensions/Azure.Extensions.AspNetCore.DataProtection.Blobs/README.md) | Allows storing ASP.NET Core DataProtection keys in Azure Blob Storage. | 1.3.2 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
 | [Castle.Core](https://github.com/castleproject/Core) | Castle DynamicProxy. | 5.1.1 |[Apache-2.0](https://github.com/castleproject/Core/blob/master/LICENSE) |
 | [Fluid.Core](https://github.com/sebastienros/fluid) | .NET Liquid template engine. | 2.4.0 | [MIT](https://github.com/sebastienros/fluid/blob/dev/LICENSE) |
@@ -21,12 +21,12 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [Jint](https://github.com/sebastienros/jint) | Javascript Interpreter for .NET. | 3.0.0-beta-2049 | [MIT](https://github.com/sebastienros/jint/blob/dev/LICENSE) |
 | [Lorem.NET for netstandard](https://github.com/trichards57/Lorem.Universal.NET) | A .NET library for all things random! | 4.0.80 | [MIT](https://github.com/trichards57/Lorem.Universal.NET/blob/master/license.md) |
 | [Lucene.Net](https://github.com/apache/lucenenet) | .NET full-text search engine. | 4.8.0-beta00016 | [Apache-2.0](https://github.com/apache/lucenenet/blob/master/LICENSE.txt) |
-| [MailKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | 3.6.0 | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |
+| [MailKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | 4.0.0 | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |
 | [Markdig](https://github.com/lunet-io/markdig) | .NET Markdown engine. | 0.31.0 | [BSD-2-Clause](https://github.com/lunet-io/markdig/blob/master/license.txt) |
 | [MessagePack](https://github.com/neuecc/MessagePack-CSharp) | Extremely Fast MessagePack Serializer for C# | 2.2.60 | [MIT](https://github.com/neuecc/MessagePack-CSharp/blob/master/LICENSE) |
-| [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web) | Helps creating protected web apps and web APIs with Microsoft identity platform and Azure AD B2C. | 2.7.0 | [MIT](https://github.com/AzureAD/microsoft-identity-web/blob/master/LICENSE) |
+| [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web) | Helps creating protected web apps and web APIs with Microsoft identity platform and Azure AD B2C. | 2.9.0 | [MIT](https://github.com/AzureAD/microsoft-identity-web/blob/master/LICENSE) |
 | [Microsoft.SourceLink.GitHub](https://github.com/dotnet/sourcelink) | Source Link enables a great source debugging experience. | 1.1.1 | [MIT](https://github.com/dotnet/sourcelink/blob/main/License.txt) |
-| [MimeKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | 3.6.1 | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |
+| [MimeKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | 4.0.0 | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |
 | [MiniProfiler](https://github.com/MiniProfiler/dotnet) | A simple but effective mini-profiler for ASP.NET (and Core) websites | 4.2.22 | [MIT](https://github.com/MiniProfiler/dotnet/blob/main/LICENSE.txt) |
 | [Moq](https://github.com/moq/moq) | The most popular and friendly mocking framework for .NET. | 4.18.4 | [MIT](https://github.com/moq/moq/blob/main/LICENSE) |
 | [NCrontab](https://github.com/atifaziz/NCrontab) | Crontab for .NET | 3.3.1 | [Apache-2.0](https://github.com/atifaziz/NCrontab/blob/master/COPYING.txt) |
@@ -35,7 +35,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json) | Json.NET is a popular high-performance JSON framework for .NET | 13.0.3 | [MIT](https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md) |
 | [NJsonSchema](https://github.com/RicoSuter/NJsonSchema) | JSON Schema reader, generator and validator for .NET | 10.8.0 | [MIT](https://github.com/RicoSuter/NJsonSchema/blob/master/LICENSE.md) |
 | [Noda Time](https://github.com/nodatime/nodatime) | A better date and time API for .NET. | 3.1.9 | [Apache-2.0](https://github.com/nodatime/nodatime/blob/master/LICENSE.txt) |
-| [OpenIddict](https://github.com/openiddict/openiddict-core) | Versatile OpenID Connect stack for ASP.NET Core. | 4.2.0 | [Apache-2.0](https://github.com/openiddict/openiddict-core/blob/dev/LICENSE.md)) |
+| [OpenIddict](https://github.com/openiddict/openiddict-core) | Versatile OpenID Connect stack for ASP.NET Core. | 4.3.0 | [Apache-2.0](https://github.com/openiddict/openiddict-core/blob/dev/LICENSE.md)) |
 | [PdfPig](https://github.com/UglyToad/PdfPig/) | Library to read and extract text and other content from PDF files. | 0.1.7 | [Apache-2.0](https://github.com/UglyToad/PdfPig/blob/master/LICENSE) |
 | [Serilog.AspNetCore](https://github.com/serilog/serilog-aspnetcore) | Serilog integration for ASP.NET Core. | 6.1.0 | [Apache-2.0](https://github.com/serilog/serilog-aspnetcore/blob/dev/LICENSE) |
 | [Shortcodes](https://github.com/sebastienros/shortcodes) | Shortcodes processor for .NET. | 1.3.3 | [MIT](https://github.com/sebastienros/shortcodes/blob/dev/LICENSE) |
@@ -49,8 +49,8 @@ The below table lists the different libraries used as Resources:
 | [Bootstrap](https://github.com/twbs/bootstrap) | HTML, CSS, and JavaScript framework for developing responsive, mobile first projects on the web. | 5.1.3 | [MIT](https://github.com/twbs/bootstrap/blob/main/LICENSE) |
 | [bootstrap-select](https://github.com/snapappointments/bootstrap-select) | jQuery plugin for select elements. | 1.14.0-beta2 | [MIT](https://github.com/snapappointments/bootstrap-select/blob/v1.14-dev/LICENSE) |
 | [Code Mirror](https://github.com/codemirror/CodeMirror) | In-browser code editor. | 5.65.7 | [MIT](https://github.com/codemirror/CodeMirror/blob/master/LICENSE) |
-| [Font Awesome](https://github.com/FortAwesome/Font-Awesome) | The iconic SVG, font, and CSS toolkit. | 6.2.1 | [Font Awesome Free License](https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt) |
-| [jQuery](https://github.com/jquery/jquery) | jQuery JavaScript Library. | 3.6.1 | [MIT](https://github.com/jquery/jquery/blob/master/LICENSE.txt) |
+| [Font Awesome](https://github.com/FortAwesome/Font-Awesome) | The iconic SVG, font, and CSS toolkit. | 6.4.0 | [Font Awesome Free License](https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt) |
+| [jQuery](https://github.com/jquery/jquery) | jQuery JavaScript Library. | 3.6.4 | [MIT](https://github.com/jquery/jquery/blob/master/LICENSE.txt) |
 | [jQuery UI](https://github.com/jquery/jquery-ui) | jQuery user interface library. | 1.12.1 | [MIT](https://github.com/jquery/jquery-ui/blob/master/LICENSE.txt) |
 | [jQuery UI i18n](https://github.com/jquery/jquery-ui/tree/master/ui/i18n) | jQuery UI internationalization. | 1.7.2 | [MIT](https://github.com/jquery/jquery-ui/blob/master/LICENSE.txt) |
 | [jQuery Easing](https://github.com/gdsmith/jquery.easing) | jQuery Easing Plugin. | 1.4.1 | [MIT](https://github.com/gdsmith/jquery.easing/blob/master/LICENSE-BSD-3-Clause.txt) |
@@ -61,7 +61,7 @@ The below table lists the different libraries used as Resources:
 | [noUiSlider](https://github.com/leongersen/noUiSlider) | noUiSlider is a lightweight JavaScript range slider. | 15.6.1 | [MIT](https://github.com/leongersen/noUiSlider/blob/master/LICENSE.md) |
 | [Popper](https://github.com/popperjs/popper-core) | Positioning tooltips and popovers. | 2.11.5 | [MIT](https://github.com/popperjs/popper-core/blob/master/LICENSE.md) |
 | [Sortable](https://github.com/SortableJS/sortablejs) | Create and reorder lists with drag-and-drop. | 1.15.0 | [MIT](https://github.com/SortableJS/sortablejs/blob/master/LICENSE) |
-| [Trumbowyg](https://github.com/Alex-D/Trumbowyg) | A lightweight and amazing WYSIWYG JavaScript editor. | 2.25.2 | [MIT](https://github.com/Alex-D/Trumbowyg/blob/develop/LICENSE) |
+| [Trumbowyg](https://github.com/Alex-D/Trumbowyg) | A lightweight and amazing WYSIWYG JavaScript editor. | 2.27.3 | [MIT](https://github.com/Alex-D/Trumbowyg/blob/develop/LICENSE) |
 | [vue-multiselect](https://github.com/shentao/vue-multiselect) | Universal select/multiselect/tagging component for Vue.js. | 2.1.6 | [MIT](https://github.com/shentao/vue-multiselect/blob/master/LICENSE) |
 | [Vue.Draggable](https://github.com/SortableJS/Vue.Draggable) | Vue drag-and-drop component based on Sortable.js. | 2.24.3 | [MIT](https://github.com/SortableJS/Vue.Draggable/blob/master/LICENSE) |
 
@@ -69,7 +69,7 @@ The below table lists the different Client side libraries:
 
 | Library | Usage | Version | License |
 |--- | --- | --- | --- |
-| [EasyMDE](https://github.com/Ionaru/easy-markdown-editor) | A simple, beautiful, and embeddable JavaScript Markdown editor. | 2.17.0 | [MIT](https://github.com/Ionaru/easy-markdown-editor/blob/master/LICENSE) |
+| [EasyMDE](https://github.com/Ionaru/easy-markdown-editor) | A simple, beautiful, and embeddable JavaScript Markdown editor. | 2.18.0 | [MIT](https://github.com/Ionaru/easy-markdown-editor/blob/master/LICENSE) |
 | [GraphiQL](https://github.com/graphql/graphiql) | GraphQL editor. | 1.11.5 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
 | [GraphiQL explorer](https://github.com/onegraph/graphiql-explorer) | Explorer plugin for GraphiQL. | 0.6.3 | [MIT](https://github.com/OneGraph/graphiql-explorer/blob/master/LICENSE) |
 | [GraphQL](https://github.com/graphql/graphql-js) | A reference implementation of GraphQL for JavaScript. | 15.8.0 | [MIT](https://github.com/graphql/graphql-js/blob/main/LICENSE) |

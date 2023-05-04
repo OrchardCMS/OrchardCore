@@ -155,6 +155,29 @@ namespace OrchardCore.Tests.Localization
         }
 
         [Fact]
+        public void ParseReadsPluralAndMultilineText()
+        {
+            // msgid ""
+            // "Here is an example of how one might continue a very long string\n"
+            // "for the common case the string represents multi-line output."
+            // msgid_plural ""
+            // "Here are examples of how one might continue a very long string\n"
+            // "for the common case the string represents multi-line output."
+            // msgstr[0] ""
+            // "Here is an example of how one might continue a very long translation\n"
+            // "for the common case the string represents multi-line output."
+            // msgstr[1] ""
+            // "Here are examples of how one might continue a very long translation\n"
+            // "for the common case the string represents multi-line output."
+
+            var entries = ParseText("EntryWithPluralAndMultilineText");
+
+            Assert.Equal("Here is an example of how one might continue a very long string\nfor the common case the string represents multi-line output.", entries[0].Key);
+            Assert.Equal("Here is an example of how one might continue a very long translation\nfor the common case the string represents multi-line output.", entries[0].Translations[0]);
+            Assert.Equal("Here are examples of how one might continue a very long translation\nfor the common case the string represents multi-line output.", entries[0].Translations[1]);
+        }
+
+        [Fact]
         public void ParseReadsMultipleEntries()
         {
             // #. "File {0} does not exist"

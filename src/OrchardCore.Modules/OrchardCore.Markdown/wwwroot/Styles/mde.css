@@ -1,10 +1,13 @@
 @charset "UTF-8";
 :root[data-theme=default] .icon-shortcode, :root[data-theme=darkmode] .icon-shortcode {
   position: relative;
-  top: -5px;
+  top: 8px;
 }
 [dir]:root[data-theme=default] .icon-shortcode, [dir]:root[data-theme=darkmode] .icon-shortcode {
   margin-bottom: -5px !important;
+}
+:root[data-theme=default] .table, :root[data-theme=darkmode] .table {
+  top: 8px;
 }
 :root[data-theme=default] .EasyMDEContainer, :root[data-theme=darkmode] .EasyMDEContainer {
   display: block;

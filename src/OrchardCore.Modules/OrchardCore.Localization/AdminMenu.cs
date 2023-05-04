@@ -28,7 +28,7 @@ namespace OrchardCore.Localization
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 builder
-                    .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, localization => localization
+                    .Add(S["Configuration"], configuration => configuration
                         .Add(S["Settings"], settings => settings
                             .Add(S["Localization"], localization => localization
                                 .AddClass("localization").Id("localization")

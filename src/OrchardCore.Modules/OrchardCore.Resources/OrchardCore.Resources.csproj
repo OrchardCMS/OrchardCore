@@ -10,7 +10,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Remove="wwwroot\Styles\ui\icons.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\Styles\ui\icons.svg" />
   </ItemGroup>
 
   <ItemGroup>
