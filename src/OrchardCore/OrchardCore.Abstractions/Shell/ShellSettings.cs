@@ -22,9 +22,7 @@ namespace OrchardCore.Environment.Shell
 
         private readonly ShellConfiguration _settings;
         private readonly ShellConfiguration _configuration;
-
-        private int _clusterSlot = -1;
-        private bool _slotInitialized;
+        private volatile int _clusterSlot = -1;
 
         public ShellSettings()
         {
@@ -64,15 +62,12 @@ namespace OrchardCore.Environment.Shell
         {
             get
             {
-                if (!_slotInitialized)
+                if (_clusterSlot == -1)
                 {
-                    lock (this)
+                    var tenantId = TenantId;
+                    if (tenantId != null)
                     {
-                        if (!_slotInitialized)
-                        {
-                            _clusterSlot = Crc16XModem.Compute(TenantId) % ClusterSlotCount;
-                            _slotInitialized = true;
-                        }
+                        _clusterSlot = Crc16XModem.Compute(TenantId) % ClusterSlotCount;
                     }
                 }
 
