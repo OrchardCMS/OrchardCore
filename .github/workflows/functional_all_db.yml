@@ -163,9 +163,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Allows NodeJs to find the dotnet command
-      shell: pwsh
       run: |
-          $Env:Path += [IO.Path]::PathSeparator + "/usr/share/dotnet"
+          export PATH=/usr/share/dotnet:$PATH
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
