@@ -12,12 +12,6 @@ public static class ClustersExtensions
     /// </summary>
     public static string GetClusterId(this ClustersOptions options, ShellSettings settings)
     {
-        // Check if not yet initialized.
-        if (settings.ClusterSlot == -1)
-        {
-            return null;
-        }
-
         foreach (var cluster in options.Clusters)
         {
             // Check if the cluster slot of the current tenant is in the range.
