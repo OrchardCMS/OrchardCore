@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <RootNamespace>OrchardCore.Search.Abstractions</RootNamespace>
+    <RootNamespace>OrchardCore.Search</RootNamespace>
     <!-- NuGet properties-->
     <Title>OrchardCore Search Abstractions</Title>
     <Description>

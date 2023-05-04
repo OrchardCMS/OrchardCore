@@ -114,7 +114,7 @@ namespace OrchardCore.Lists.Drivers
                         results.Add(Initialize<ListPartNavigationAdminViewModel>("ListPartNavigationAdmin", async model =>
                         {
                             model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
-                            model.Container = await _contentManager.GetAsync(containerId);
+                            model.Container = await _contentManager.GetAsync(containerId, VersionOptions.Latest);
                             model.EnableOrdering = settings.EnableOrdering;
                             model.ContainerContentTypeDefinition = definition;
                         }).Location("Content:1.5"));

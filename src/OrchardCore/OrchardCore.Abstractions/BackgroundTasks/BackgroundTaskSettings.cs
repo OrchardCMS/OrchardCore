@@ -4,9 +4,9 @@ namespace OrchardCore.BackgroundTasks
 {
     public class BackgroundTaskSettings
     {
-        public string Title { get; set; }
-
         public string Name { get; set; } = String.Empty;
+
+        public string Title { get; set; }
 
         public bool Enable { get; set; } = true;
 

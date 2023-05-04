@@ -217,14 +217,13 @@ namespace OrchardCore.Email.Services
 
             var body = new BodyBuilder();
 
-            if (message.IsBodyHtml)
+            if (message.IsHtmlBody)
             {
                 body.HtmlBody = message.Body;
             }
-
-            if (message.IsBodyText)
+            else
             {
-                body.TextBody = message.BodyText;
+                body.TextBody = message.Body;
             }
 
             foreach (var attachment in message.Attachments)

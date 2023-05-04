@@ -24,7 +24,7 @@ builder.Services.AddRazorPages();
 Add the following line 
 
 ```csharp
-builder.Services.AddOrchardCms()
+builder.Services.AddOrchardCms();
 ```
 
 Additionally, remove the following lines
