@@ -13,7 +13,7 @@ namespace OrchardCore.Resources
         private readonly PathString _pathBase;
         // Versions
         private const string codeMirrorVersion = "5.65.7";
-        private const string monacoEditorVersion = "0.37.1";
+        private const string monacoEditorVersion = "0.38.0";
         // URLs
         private const string cloudflareUrl = "https://cdnjs.cloudflare.com/ajax/libs/";
         private const string codeMirrorUrl = cloudflareUrl + "codemirror/" + codeMirrorVersion + "/";
