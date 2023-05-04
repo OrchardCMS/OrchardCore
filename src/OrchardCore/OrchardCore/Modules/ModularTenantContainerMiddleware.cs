@@ -43,7 +43,7 @@ public class ModularTenantContainerMiddleware
             {
                 httpContext.Features.Set(new ClusterFeature
                 {
-                    TenantId = shellSettings.TenantId,
+                    ClusterId = shellSettings.GetClusterId(_clustersOptions),
                 });
 
                 await _next(httpContext);

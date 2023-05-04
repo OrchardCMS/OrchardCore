@@ -11,7 +11,7 @@ builder.Services
 
 builder.Services
     .AddReverseProxy()
-    .AddClusters()
+    .AddTenantClusters()
     .LoadFromConfig(builder.Configuration.GetSection("OrchardCore_Clusters"))
     ;
 
@@ -28,7 +28,7 @@ app.UseOrchardCore();
 app.MapReverseProxy(proxyPipeline =>
 {
     proxyPipeline
-        .UseClusters()
+        .UseTenantClusters()
         .UseSessionAffinity()
         .UseLoadBalancing()
         .UsePassiveHealthChecks()

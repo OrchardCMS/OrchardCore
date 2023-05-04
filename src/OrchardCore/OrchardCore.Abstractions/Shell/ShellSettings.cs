@@ -1,6 +1,8 @@
+using System.Threading;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using OrchardCore.Clusters;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Models;
 
@@ -19,6 +21,11 @@ public class ShellSettings : IDisposable
     public const string DefaultShellName = "Default";
 
     /// <summary>
+    /// The number of available tenant cluster slots.
+    /// </summary>
+    public const int ClusterSlotsCount = 16384;
+
+    /// <summary>
     /// The 'RequestUrlHost' string separators allowing to provide multiple hosts.
     /// </summary>
     public static readonly char[] HostSeparators = [',', ' '];
@@ -34,6 +41,7 @@ public class ShellSettings : IDisposable
     private string _requestUrlHost;
     private string[] _requestUrlHosts;
     private TenantState? _state;
+    private volatile int _clusterSlot = -1;
 
     /// <summary>
     /// Initializes a new <see cref="ShellSettings"/>.
@@ -98,6 +106,23 @@ public class ShellSettings : IDisposable
     /// The tenant identifier.
     /// </summary>
     public string TenantId => _tenantId ??= _settings["TenantId"] ?? _settings["VersionId"];
+
+    /// <summary>
+    /// The tenant cluster slot.
+    /// </summary>
+    [JsonIgnore]
+    public int ClusterSlot
+    {
+        get
+        {
+            if (_clusterSlot == -1 && TenantId is not null)
+            {
+                Interlocked.Exchange(ref _clusterSlot, Crc16XModem.Compute(TenantId) % ClusterSlotsCount);
+            }
+
+            return _clusterSlot;
+        }
+    }
 
     /// <summary>
     /// The tenant request url host, multiple separated hosts may be provided.

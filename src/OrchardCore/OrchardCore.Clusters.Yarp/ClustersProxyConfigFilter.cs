@@ -8,7 +8,7 @@ using Yarp.ReverseProxy.Transforms;
 namespace OrchardCore.Clusters;
 
 /// <summary>
-/// Proxy configuration filter that customizes the 'RouteTemplate' used by the clusters proxy.
+/// Proxy config filter that customizes the tenant clusters 'RouteTemplate'.
 /// </summary>
 public class ClustersProxyConfigFilter : IProxyConfigFilter
 {
@@ -19,11 +19,11 @@ public class ClustersProxyConfigFilter : IProxyConfigFilter
     public ValueTask<ClusterConfig> ConfigureClusterAsync(ClusterConfig origCluster, CancellationToken cancel) => new(origCluster);
 
     /// <summary>
-    /// Customizes the 'RouteTemplate' used by the clusters proxy.
+    /// Customizes the tenant clusters 'RouteTemplate'.
     /// </summary>
     public ValueTask<RouteConfig> ConfigureRouteAsync(RouteConfig route, ClusterConfig cluster, CancellationToken cancel)
     {
-        // Check if it is the route template used by the clusters proxy.
+        // Check if it is the tenant clusters 'RouteTemplate'.
         if (route.RouteId == ClustersOptions.RouteTemplate)
         {
             // Define the headers that incoming requests should match.
@@ -31,7 +31,7 @@ public class ClustersProxyConfigFilter : IProxyConfigFilter
             {
                 new RouteHeader
                 {
-                    Name = _options.Enabled ? RequestHeaderNames.FromClustersProxy : RequestHeaderNames.CheckClustersProxy,
+                    Name = _options.Enabled ? RequestHeaderNames.FromClustersProxy : RequestHeaderNames.FakeClustersHeader,
                     Mode = _options.Enabled ? HeaderMatchMode.NotExists : HeaderMatchMode.Exists,
                 }
             };
