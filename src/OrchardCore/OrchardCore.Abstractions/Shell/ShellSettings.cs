@@ -17,7 +17,7 @@ namespace OrchardCore.Environment.Shell
     /// </summary>
     public class ShellSettings
     {
-        public const int ClusterSlotCount = 16383;
+        public const int ClusterSlotsCount = 16384;
         private static readonly char[] _hostSeparators = new[] { ',', ' ' };
 
         private readonly ShellConfiguration _settings;
@@ -67,7 +67,7 @@ namespace OrchardCore.Environment.Shell
                     var tenantId = TenantId;
                     if (tenantId != null)
                     {
-                        _clusterSlot = Crc16XModem.Compute(tenantId) % ClusterSlotCount;
+                        _clusterSlot = Crc16XModem.Compute(tenantId) % ClusterSlotsCount;
                     }
                 }
 

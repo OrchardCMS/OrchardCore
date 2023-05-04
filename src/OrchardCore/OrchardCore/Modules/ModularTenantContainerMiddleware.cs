@@ -47,7 +47,7 @@ namespace OrchardCore.Modules
                     // Capture the 'ClusterId' of the current tenant.
                     httpContext.Features.Set(new ClusterFeature
                     {
-                        ClusterId = _clustersOptions.GetClusterId(shellSettings),
+                        ClusterId = shellSettings.GetClusterId(_clustersOptions),
                     });
 
                     // And bypass the container middleware.

@@ -5,12 +5,12 @@ namespace OrchardCore.Clusters;
 /// <summary>
 /// Extension methods for managing tenant clusters.
 /// </summary>
-public static class ClustersExtensions
+public static class ShellSettingsExtensions
 {
     /// <summary>
     /// Identifies the tenant cluster related to the provided <see cref="ShellSettings"/>.
     /// </summary>
-    public static string GetClusterId(this ClustersOptions options, ShellSettings settings)
+    public static string GetClusterId(this ShellSettings settings, ClustersOptions options)
     {
         foreach (var cluster in options.Clusters)
         {
