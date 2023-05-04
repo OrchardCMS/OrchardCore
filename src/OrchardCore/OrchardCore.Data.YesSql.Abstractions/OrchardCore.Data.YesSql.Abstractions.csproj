@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <RootNamespace>OrchardCore.Data</RootNamespace>
+    <RootNamespace>OrchardCore.Data.YesSql</RootNamespace>
     <!-- NuGet properties-->
     <Title>OrchardCore Data YesSql Abstractions</Title>
     <Description>

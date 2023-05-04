@@ -127,6 +127,7 @@ namespace OrchardCore.Localization.PortableObject
             {
                 case "msgctxt": return (PoContext.MessageContext, content);
                 case "msgid": return (PoContext.MessageId, content);
+                case "msgid_plural": return (PoContext.MessageIdPlural, content);
                 case var key when key.StartsWith("msgstr", StringComparison.Ordinal): return (PoContext.Translation, content);
                 default: return (PoContext.Other, content);
             }
@@ -210,6 +211,7 @@ namespace OrchardCore.Localization.PortableObject
         private enum PoContext
         {
             MessageId,
+            MessageIdPlural,
             MessageContext,
             Translation,
             Text,

@@ -9,8 +9,8 @@ namespace OrchardCore.Search.Elasticsearch
     {
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
 
-        public static readonly Permission ManageElasticIndexes = new Permission("ManageElasticIndexes", "Manage Elasticsearch Indexes");
-        public static readonly Permission QueryElasticApi = new Permission("QueryElasticsearchApi", "Query Elasticsearch Api", new[] { ManageElasticIndexes });
+        public static readonly Permission ManageElasticIndexes = ElasticsearchIndexPermissionHelper.ManageElasticIndexes;
+        public static readonly Permission QueryElasticApi = new("QueryElasticsearchApi", "Query Elasticsearch Api", new[] { ManageElasticIndexes });
 
         public Permissions(ElasticIndexSettingsService elasticIndexSettingsService)
         {
@@ -19,18 +19,20 @@ namespace OrchardCore.Search.Elasticsearch
 
         public async Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
+            var permissions = new List<Permission>()
+            {
+                ManageElasticIndexes,
+                QueryElasticApi
+            };
+
             var elasticIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
-            var result = new List<Permission>();
+
             foreach (var index in elasticIndexSettings)
             {
-                var permission = new Permission("QueryElasticsearch" + index.IndexName + "Index", "Query Elasticsearch " + index.IndexName + " Index", new[] { ManageElasticIndexes });
-                result.Add(permission);
+                permissions.Add(ElasticsearchIndexPermissionHelper.GetElasticIndexPermission(index.IndexName));
             }
 
-            result.Add(ManageElasticIndexes);
-            result.Add(QueryElasticApi);
-
-            return result;
+            return permissions;
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()

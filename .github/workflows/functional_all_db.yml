@@ -5,6 +5,7 @@ on:
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
+
 jobs:
   test_functional_mvc:
     name: Functional Tests - MVC
@@ -16,13 +17,9 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: "15"
-    - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 6.0.x
-    - name: Fix nuget restore issue
-      run: |
-          apt update && apt --only-upgrade install ca-certificates -y
+#    - name: Fix nuget restore issue
+#      run: |
+#          apt update && apt --only-upgrade install ca-certificates -y
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
@@ -42,10 +39,6 @@ jobs:
       image: cypress/included:9.6.1
     steps:
     - uses: actions/checkout@v3
-    - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 6.0.x
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -86,10 +79,6 @@ jobs:
       OrchardCore__DatabaseProvider: "Postgres"
     steps:
     - uses: actions/checkout@v3
-    - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 6.0.x
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -126,10 +115,6 @@ jobs:
       OrchardCore__DatabaseProvider: "MySql"
     steps:
     - uses: actions/checkout@v3
-    - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 6.0.x
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -165,10 +150,6 @@ jobs:
       OrchardCore__DatabaseProvider: "SqlConnection"
     steps:
     - uses: actions/checkout@v3
-    - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 6.0.x
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y

@@ -1,3 +1,4 @@
+using System;
 using OrchardCore.Contents.Indexing;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Models
@@ -6,6 +7,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Models
     {
         public static readonly string[] FullTextField = new string[] { IndexingConstants.FullTextKey };
 
+        [Obsolete("This property will be removed in future releases.")]
         public static string StandardAnalyzer = "standardanalyzer";
 
         public string SearchIndex { get; set; }

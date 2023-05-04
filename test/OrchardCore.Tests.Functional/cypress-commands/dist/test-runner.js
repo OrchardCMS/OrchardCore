@@ -13,9 +13,43 @@ global.log = function(msg) {
 };
 
 // Build the dotnet application in release mode
-function build(dir) {
-  global.log("Building ...");
-  child_process.spawnSync("dotnet", ["build", "-c", "Release"], { cwd: dir });
+function build(dir, dotnetVersion) {
+  global.log("version: 3");
+
+  // "dotnet" command arguments.
+  let runArgs = [
+      'build',
+      '--configuration', 'Release',
+      '--framework', dotnetVersion
+  ];
+
+  // "dotnet" process options.
+  let runOpts = {
+      cwd: dir
+  };
+
+  try {
+    // Run dotnet build process, blocks until process completes.
+    let { status, error, stderr, stdout } = child_process.spawnSync('dotnet', runArgs, runOpts);
+
+    if (error) {
+      throw error;
+    }
+
+    if (status !== 0) {
+      if (stderr.length > 0) {
+        throw new Error(stderr.toString());
+      }
+      throw new Error(stdout.toString());
+    }
+
+    console.log(stdout.toString());
+    console.log('Build successful.');
+  }
+  catch (error) {
+    console.error(error);
+    console.error('Failed to build.');
+  }  
 }
 
 // destructive action that deletes the App_Data folder
@@ -25,11 +59,11 @@ function deleteDirectory(dir) {
 }
 
 // Host the dotnet application, does not rebuild
-function host(dir, assembly, { appDataLocation='./App_Data', dotnetVersion='net6.0' }={}) {
+function host(dir, assembly, { appDataLocation='./App_Data', dotnetVersion='net7.0' }={}) {
   if (fs.existsSync(path.join(dir, `bin/Release/${dotnetVersion}/`, assembly))) {
     global.log("Application already built, skipping build");
   } else {
-    build(dir);
+    build(dir, dotnetVersion);
   }
   global.log("Starting application ..."); 
   
@@ -57,7 +91,7 @@ function host(dir, assembly, { appDataLocation='./App_Data', dotnetVersion='net6
 }
 
 // combines the functions above, useful when triggering tests from CI
-function e2e(dir, assembly, { dotnetVersion='net6.0' }={}) {
+function e2e(dir, assembly, { dotnetVersion='net7.0' }={}) {
   deleteDirectory(path.join(dir, "App_Data_Tests"));
   var server = host(dir, assembly, { appDataLocation: "./App_Data_Tests", dotnetVersion });
 
