@@ -62,7 +62,7 @@ namespace OrchardCore.Environment.Shell
         {
             get
             {
-                if (_clusterSlot == -1)
+                if (_clusterSlot == -1 && TenantId is not null)
                 {
                     Interlocked.Exchange(ref _clusterSlot, Crc16XModem.Compute(TenantId) % ClusterSlotCount);
                 }

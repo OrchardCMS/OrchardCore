@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.Clusters;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Scope;
@@ -25,7 +24,6 @@ namespace OrchardCore.Modules
     {
         private readonly RequestDelegate _next;
         private readonly IFeatureCollection _features;
-        private readonly ClustersOptions _clustersOptions;
         private readonly ILogger _logger;
 
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new();
@@ -33,19 +31,17 @@ namespace OrchardCore.Modules
         public ModularTenantRouterMiddleware(
             RequestDelegate next,
             IFeatureCollection features,
-            IOptions<ClustersOptions> clustersOptions,
             ILogger<ModularTenantRouterMiddleware> logger)
         {
             _next = next;
             _features = features;
-            _clustersOptions = clustersOptions.Value;
             _logger = logger;
         }
 
         public async Task Invoke(HttpContext httpContext)
         {
             // Check if this instance is used as a reverse proxy.
-            if (httpContext.AsClustersProxy(_clustersOptions))
+            if (httpContext.TryGetClusterFeature(out _))
             {
                 // Bypass the routing middleware.
                 await _next(httpContext);
