@@ -67,7 +67,7 @@ namespace OrchardCore.Environment.Shell
                     var tenantId = TenantId;
                     if (tenantId != null)
                     {
-                        _clusterSlot = Crc16XModem.Compute(TenantId) % ClusterSlotCount;
+                        _clusterSlot = Crc16XModem.Compute(tenantId) % ClusterSlotCount;
                     }
                 }
 
