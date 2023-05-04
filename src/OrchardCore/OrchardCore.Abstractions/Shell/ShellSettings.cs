@@ -22,7 +22,7 @@ namespace OrchardCore.Environment.Shell
 
         private readonly ShellConfiguration _settings;
         private readonly ShellConfiguration _configuration;
-        private volatile int _clusterSlot = -1;
+        private int _clusterSlot = -1;
 
         public ShellSettings()
         {
