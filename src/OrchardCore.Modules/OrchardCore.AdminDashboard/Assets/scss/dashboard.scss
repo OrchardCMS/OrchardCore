@@ -1,40 +1,42 @@
+@import '../../node_modules/bootstrap/scss/_functions';
+@import '../../node_modules/bootstrap/scss/_variables';
+@import '../../node_modules/bootstrap/scss/mixins/_breakpoints';
 
-// Extra small devices (portrait phones, less than 576px)
-@media (max-width: 567.98px) {
-    :root{
+// Small devices (landscape phones, 576px and up)
+@include media-breakpoint-only(sm) {
+    :root {
         --dashboard-columns: 1;
         --dashboard-columns-default: 1;
     }
 }
 
-// Small devices (landscape phones, 576px and up)
-@media (min-width: 576px) and (max-width: 767.98px) {
-    :root{
+// Medium devices (tablets, 768px and up)
+@include media-breakpoint-only(md) {
+    :root {
         --dashboard-columns: 2;
         --dashboard-columns-default: 2;
-
     }
 }
 
-// Medium devices (tablets, 768px and up)
-@media (min-width: 768px) and (max-width: 991.98px) {
-    :root{
+// Large devices (desktops, 992px and up)
+@include media-breakpoint-only(lg) {
+    :root {
         --dashboard-columns: 3;
         --dashboard-columns-default: 3;
     }
 }
 
-// Large devices (desktops, 992px and up)
-@media (min-width: 992px) and (max-width: 1199.98px) {
-    :root{
+// X-Large devices (large desktops, 1200px and up)
+@include media-breakpoint-only(xl) {
+    :root {
         --dashboard-columns: 4;
         --dashboard-columns-default: 4;
     }
 }
 
-// Extra large devices (large desktops, 1200px and up)
-@media (min-width: 1200px) {
-    :root{
+// XX-Large devices (larger desktops, 1400px and up)
+@include media-breakpoint-only(xxl) {
+    :root {
         --dashboard-columns: 6;
         --dashboard-columns-default: 6;
     }
@@ -50,16 +52,21 @@
         grid-column: span var(--dashboard-width);
         overflow-x: hidden;
         grid-row: span var(--dashboard-height);
-        overflow-y: hidden;
+        overflow-y: auto;
 
         & .card {
             & .card-header {
                 border-bottom: none !important;
             }
+
             & .card-footer {
                 border-top: none !important;
             }
         }
+    }
+
+    .dashboard-wrapper.ui-resizable {
+        overflow-y: hidden;
     }
 }
 
@@ -78,6 +85,7 @@
             & .card-header {
                 background-color: #fff !important;
             }
+
             & .card-footer {
                 background-color: #fff !important;
             }
@@ -91,6 +99,7 @@
             & .card-header {
                 background-color: rgb(24, 26, 27) !important;
             }
+
             & .card-footer {
                 background-color: rgb(24, 26, 27) !important;
             }
