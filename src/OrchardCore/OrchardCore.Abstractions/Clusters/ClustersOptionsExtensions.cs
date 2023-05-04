@@ -5,7 +5,7 @@ namespace OrchardCore.Clusters;
 /// <summary>
 /// Extension methods for managing tenant clusters.
 /// </summary>
-public static class ClustersExtensions
+public static class ClustersOptionsExtensions
 {
     /// <summary>
     /// Identifies the tenant cluster related to the provided <see cref="ShellSettings"/>.
