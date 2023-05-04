@@ -12,6 +12,12 @@ public static class ShellSettingsExtensions
     /// </summary>
     public static string GetClusterId(this ShellSettings settings, ClustersOptions options)
     {
+        // Check if the tenant id and then the slot is not yet initialized.
+        if (settings.ClusterSlot == -1)
+        {
+            return null;
+        }
+
         foreach (var cluster in options.Clusters)
         {
             // Check if the cluster slot of the current tenant is in the range.

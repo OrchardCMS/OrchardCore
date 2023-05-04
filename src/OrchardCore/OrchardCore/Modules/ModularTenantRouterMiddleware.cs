@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.Clusters;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
@@ -14,22 +13,19 @@ namespace OrchardCore.Modules;
 public class ModularTenantRouterMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly ClustersOptions _clustersOptions;
     private readonly ILogger _logger;
 
     public ModularTenantRouterMiddleware(
         RequestDelegate next,
-        IOptions<ClustersOptions> clustersOptions,
         ILogger<ModularTenantRouterMiddleware> logger)
     {
         _next = next;
-        _clustersOptions = clustersOptions.Value;
         _logger = logger;
     }
 
     public Task Invoke(HttpContext httpContext)
     {
-        if (httpContext.AsClustersProxy(_clustersOptions))
+        if (httpContext.TryGetClusterFeature(out _))
         {
             return _next(httpContext);
         }
