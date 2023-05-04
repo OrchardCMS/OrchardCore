@@ -104,7 +104,7 @@ jobs:
           test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
           src/OrchardCore.Cms.Web/App_Data/logs
         retention-days: 3
-  
+
   #test_functional_cms_mysql:
   #  name: Functional Tests - CMS MySql
   #  runs-on: ubuntu-latest
@@ -162,7 +162,10 @@ jobs:
       OrchardCore__DatabaseProvider: "SqlConnection"
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/setup-dotnet@v3
+    - name: Allows NodeJs to find the dotnet command
+      run: |
+      shell: pwsh
+          $Env:Path += [IO.Path]::PathSeparator + "/usr/share/dotnet"
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
