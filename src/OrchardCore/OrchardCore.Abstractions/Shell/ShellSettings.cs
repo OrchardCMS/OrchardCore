@@ -1,8 +1,10 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using OrchardCore.Clusters;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Models;
 
@@ -15,10 +17,12 @@ namespace OrchardCore.Environment.Shell
     /// </summary>
     public class ShellSettings
     {
+        public const int ClusterSlotCount = 16383;
         private static readonly char[] _hostSeparators = new[] { ',', ' ' };
 
         private readonly ShellConfiguration _settings;
         private readonly ShellConfiguration _configuration;
+        private volatile int _clusterSlot = -1;
 
         public ShellSettings()
         {
@@ -51,7 +55,21 @@ namespace OrchardCore.Environment.Shell
             }
         }
 
-        public string TenantId => _settings["TenantId"] ?? _settings ["VersionId"];
+        public string TenantId => _settings["TenantId"] ?? _settings["VersionId"];
+
+        [JsonIgnore]
+        public int ClusterSlot
+        {
+            get
+            {
+                if (_clusterSlot == -1)
+                {
+                    Interlocked.Exchange(ref _clusterSlot, Crc16XModem.Compute(TenantId) % ClusterSlotCount);
+                }
+
+                return _clusterSlot;
+            }
+        }
 
         public string RequestUrlHost
         {

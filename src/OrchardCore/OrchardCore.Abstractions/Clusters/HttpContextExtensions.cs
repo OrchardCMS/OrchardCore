@@ -1,9 +1,11 @@
 using System.Linq;
 using Microsoft.AspNetCore.Http;
-using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Clusters;
 
+/// <summary>
+/// Extension methods for checking clusters proxy requests.
+/// </summary>
 public static class HttpContextExtensions
 {
     /// <summary>
@@ -44,8 +46,11 @@ public static class HttpContextExtensions
     }
 
     /// <summary>
-    /// Gets the current <see cref="ClusterFeature"/> holding the current <see cref="ShellSettings.TenantId"/>.
+    /// Tries to get the <see cref="ClusterFeature"/> holding the slot of the current tenant.
     /// </summary>
-    public static ClusterFeature GetClusterFeature(this HttpContext context) =>
-        context.Features.Get<ClusterFeature>();
+    public static bool TryGetClusterFeature(this HttpContext context, out ClusterFeature feature)
+    {
+        feature = context.Features.Get<ClusterFeature>();
+        return feature != null;
+    }
 }

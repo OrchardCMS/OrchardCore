@@ -3,12 +3,12 @@ using OrchardCore.Environment.Shell;
 namespace OrchardCore.Clusters;
 
 /// <summary>
-/// Used to capture the <see cref="ShellSettings.TenantId"/> at the start of the tenant pipeline.
+/// Used to capture the cluster identifier to target for the current tenant.
 /// </summary>
 public class ClusterFeature
 {
     /// <summary>
-    /// The current <see cref="ShellSettings.TenantId"/>.
+    /// The cluster identifier related to the current tenant.
     /// </summary>
-    public string TenantId { get; set; }
+    public string ClusterId { get; set; }
 }

@@ -44,10 +44,10 @@ namespace OrchardCore.Modules
                 // Check if this instance is used as a clusters proxy.
                 if (httpContext.AsClustersProxy(_clustersOptions))
                 {
-                    // Capture the current 'ShellSettings.TenantId'.
+                    // Capture the current 'ShellSettings.ClusterSlot'.
                     httpContext.Features.Set(new ClusterFeature
                     {
-                        TenantId = shellSettings.TenantId,
+                        ClusterId = shellSettings.GetClusterId(_clustersOptions),
                     });
 
                     // And bypass the container middleware.
