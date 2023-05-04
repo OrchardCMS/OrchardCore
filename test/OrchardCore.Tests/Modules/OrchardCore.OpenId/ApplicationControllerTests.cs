@@ -33,7 +33,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
         public async Task UsersShouldBeAbleToCreateApplicationIfAllowed()
         {
             var mockOpenIdScopeManager = new Mock<IOpenIdScopeManager>();
-            object[] mockData = new object[0];
+            object[] mockData = Array.Empty<object>();
             mockOpenIdScopeManager.Setup(m => m.ListAsync(null, null, default)).Returns(mockData.ToAsyncEnumerable());
             var controller = new ApplicationController(
                 Mock.Of<IShapeFactory>(),

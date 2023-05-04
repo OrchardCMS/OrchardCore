@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using OrchardCore.Security;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;

@@ -19,12 +19,12 @@ namespace OrchardCore.Email
         public IEnumerable<LocalizedString> Errors { get; protected set; }
 
         /// <summary>
-        /// Get or sets thet response text from the SMTP server.
+        /// Get or sets the response text from the SMTP server.
         /// </summary>
         public string Response { get; set; }
 
         /// <summary>
-        /// Whether if the operation succeeded or not.
+        /// Whether the operation succeeded or not.
         /// </summary>
         public bool Succeeded { get; protected set; }
 

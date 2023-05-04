@@ -14,8 +14,12 @@ namespace OrchardCore.Tenants.ViewModels
 
     public class FeatureProfileEntry
     {
+        public string Id { get; set; }
+
         public string Name { get; set; }
+
         public FeatureProfile FeatureProfile { get; set; }
+
         public bool IsChecked { get; set; }
     }
 

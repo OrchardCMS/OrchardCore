@@ -69,39 +69,6 @@ namespace OrchardCore.ContentManagement.Utilities
             return trimmed + ellipsis;
         }
 
-        public static string HtmlClassify(this string text)
-        {
-            if (string.IsNullOrWhiteSpace(text))
-                return "";
-
-            var friendlier = text.CamelFriendly();
-
-            var result = new char[friendlier.Length];
-
-            var cursor = 0;
-            var previousIsNotLetter = false;
-            for (var i = 0; i < friendlier.Length; i++)
-            {
-                char current = friendlier[i];
-                if (IsLetter(current) || (char.IsDigit(current) && cursor > 0))
-                {
-                    if (previousIsNotLetter && i != 0 && cursor > 0)
-                    {
-                        result[cursor++] = '-';
-                    }
-
-                    result[cursor++] = char.ToLowerInvariant(current);
-                    previousIsNotLetter = false;
-                }
-                else
-                {
-                    previousIsNotLetter = true;
-                }
-            }
-
-            return new string(result, 0, cursor);
-        }
-
         public static LocalizedString OrDefault(this string text, LocalizedString defaultValue)
         {
             return string.IsNullOrEmpty(text)

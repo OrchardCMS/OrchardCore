@@ -2,10 +2,13 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Elasticsearch.Net;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Nest;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Environment.Shell;
@@ -22,28 +25,58 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
     public class ElasticIndexManager : IDisposable
     {
         private readonly IElasticClient _elasticClient;
-        private readonly ElasticAnalyzerManager _elasticAnalyzerManager;
-        private readonly string _indexPrefix;
+        private readonly ShellSettings _shellSettings;
         private readonly IClock _clock;
         private readonly ILogger _logger;
-        private bool _disposing;
+        private readonly ElasticsearchOptions _elasticsearchOptions;
         private readonly ConcurrentDictionary<string, DateTime> _timestamps = new(StringComparer.OrdinalIgnoreCase);
         private readonly string _lastTaskId = "last_task_id";
-        private readonly string[] IgnoredFields = Array.Empty<string>();
+        private readonly string[] _ignoredFields = Array.Empty<string>();
+        private readonly Dictionary<string, Func<IAnalyzer>> _analyzerGetter = new(StringComparer.OrdinalIgnoreCase)
+        {
+            { "standard", () => new StandardAnalyzer() },
+            { "simple", () => new SimpleAnalyzer() },
+            { "keyword" , () => new KeywordAnalyzer() },
+            { "whitespace", () => new WhitespaceAnalyzer() },
+            { "pattern", () => new PatternAnalyzer() },
+            { "language", () => new LanguageAnalyzer() },
+            { "fingerprint", () => new FingerprintAnalyzer() },
+            { "custom", () => new CustomAnalyzer() },
+            { "stop", () => new StopAnalyzer() },
+        };
+        private static readonly List<char> _charsToRemove = new()
+        {
+            '\\',
+            '/',
+            '*',
+            '\"',
+            '|',
+            '<',
+            '>',
+            '`',
+            '\'',
+            ' ',
+            '#',
+            ':',
+            '.',
+        };
+
+        private string _indexPrefix;
+        private bool _disposing;
 
         public ElasticIndexManager(
             IElasticClient elasticClient,
             ShellSettings shellSettings,
-            ElasticAnalyzerManager elasticAnalyzerManager,
+            IOptions<ElasticsearchOptions> elasticsearchOptions,
             IClock clock,
             ILogger<ElasticIndexManager> logger
             )
         {
             _elasticClient = elasticClient;
-            _indexPrefix = shellSettings.Name.ToLowerInvariant() + "_";
-            _elasticAnalyzerManager = elasticAnalyzerManager;
+            _shellSettings = shellSettings;
             _clock = clock;
             _logger = logger;
+            _elasticsearchOptions = elasticsearchOptions.Value;
         }
 
         /// <summary>
@@ -58,119 +91,192 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         public async Task<bool> CreateIndexAsync(ElasticIndexSettings elasticIndexSettings)
         {
             //Get Index name scoped by ShellName
-            if (!await Exists(elasticIndexSettings.IndexName))
-            {
-                var analysisDescriptor = new AnalysisDescriptor();
-                var analyzersDescriptor = new AnalyzersDescriptor();
-                var indexSettingsDescriptor = new IndexSettingsDescriptor();
-
-                var analyzers = _elasticAnalyzerManager.GetAnalyzers();
-
-                if (analyzers.Any())
-                {
-                    var currentAnalyzer = analyzers.FirstOrDefault(a => a.Name == elasticIndexSettings.AnalyzerName).CreateAnalyzer();
-                    analyzersDescriptor = new AnalyzersDescriptor();
-                    analysisDescriptor.Analyzers(a => a.UserDefined(elasticIndexSettings.AnalyzerName, currentAnalyzer));
-
-                    indexSettingsDescriptor = new IndexSettingsDescriptor();
-                    indexSettingsDescriptor.Analysis(an => analysisDescriptor);
-                }
-
-                // Custom metadata to store the last indexing task id
-                var IndexingState = new FluentDictionary<string, object>() {
-                    { _lastTaskId, 0 }
-                };
-
-                var createIndexDescriptor = new CreateIndexDescriptor(_indexPrefix + elasticIndexSettings.IndexName)
-                    .Settings(s => indexSettingsDescriptor)
-                    .Map(m => m
-                        .SourceField(s => s
-                            .Enabled(elasticIndexSettings.StoreSourceData)
-                            .Excludes(new string[] { IndexingConstants.DisplayTextAnalyzedKey }))
-                        .Meta(me => IndexingState));
-
-                var response = await _elasticClient.Indices.CreateAsync(createIndexDescriptor);
-
-                // We force some mappings for common fields.
-                await _elasticClient.MapAsync<string>(p => p
-                    .Index(_indexPrefix + elasticIndexSettings.IndexName)
-                    .Properties(p => p
-                        .Keyword(obj => obj
-                            .Name(IndexingConstants.ContentItemIdKey)
-                        )
-                        .Keyword(obj => obj
-                            .Name(IndexingConstants.ContentItemVersionIdKey)
-                        )
-                        .Keyword(obj => obj
-                            .Name(IndexingConstants.OwnerKey)
-                        )
-                        .Text(obj => obj
-                            .Name(IndexingConstants.FullTextKey)
-                        )
-                    ));
-
-                // ContainedPart mappings
-                await _elasticClient.MapAsync<ContainedPartModel>(p => p
-                    .Index(_indexPrefix + elasticIndexSettings.IndexName)
-                    .Properties(p => p
-                        .Object<ContainedPartModel>(obj => obj
-                            .Name(IndexingConstants.ContainedPartKey)
-                            .AutoMap()
-                        )
-                    ));
-
-                // We map DisplayText here because we have 3 different fields with it.
-                // We can't have Content.ContentItem.DisplayText as it is mapped as an Object in Elasticsearch.
-                await _elasticClient.MapAsync<DisplayTextModel>(p => p
-                    .Index(_indexPrefix + elasticIndexSettings.IndexName)
-                    .Properties(p => p
-                        .Object<DisplayTextModel>(obj => obj
-                            .Name(IndexingConstants.DisplayTextKey)
-                            .AutoMap()
-                        )
-                    ));
-
-                // We map ContentType as a keyword because else the automatic mapping will break the queries.
-                // We need to access it with Content.ContentItem.ContentType as a keyword
-                // for the ContentPickerResultProvider(s).
-                await _elasticClient.MapAsync<string>(p => p
-                    .Index(_indexPrefix + elasticIndexSettings.IndexName)
-                    .Properties(p => p
-                        .Keyword(obj => obj
-                            .Name(IndexingConstants.ContentTypeKey)
-                        )
-                    ));
-
-                // DynamicTemplates mapping for Taxonomy indexing mostly.
-                await _elasticClient.MapAsync<string>(p => p
-                    .Index(_indexPrefix + elasticIndexSettings.IndexName)
-                    .DynamicTemplates(d => d
-                        .DynamicTemplate("*.Inherited", dyn => dyn
-                            .MatchMappingType("string")
-                            .PathMatch("*" + IndexingConstants.InheritedKey)
-                            .Mapping(m => m
-                                .Keyword(k => k))
-                        )
-                        .DynamicTemplate("*.Ids", dyn => dyn
-                            .MatchMappingType("string")
-                            .PathMatch("*" + IndexingConstants.IdsKey)
-                            .Mapping(m => m
-                                .Keyword(k => k))
-                            )
-                        )
-                    );
-
-                return response.Acknowledged;
-            }
-            else
+            if (await Exists(elasticIndexSettings.IndexName))
             {
                 return true;
             }
+
+            var analysisDescriptor = new AnalysisDescriptor();
+            var analyzersDescriptor = new AnalyzersDescriptor();
+            var indexSettingsDescriptor = new IndexSettingsDescriptor();
+
+            // The name "standardanalyzer" is a legacy used prior OC 1.6 release. It can be removed in future releases.
+            var analyzerName = elasticIndexSettings.AnalyzerName == "standardanalyzer" ? "standard" : elasticIndexSettings.AnalyzerName;
+
+            if (_elasticsearchOptions.Analyzers.TryGetValue(analyzerName, out var analyzerProperties))
+            {
+                var analyzer = CreateAnalyzer(analyzerProperties);
+                analyzersDescriptor = new AnalyzersDescriptor();
+                analysisDescriptor.Analyzers(a => a.UserDefined(analyzerName, analyzer));
+
+                indexSettingsDescriptor = new IndexSettingsDescriptor();
+                indexSettingsDescriptor.Analysis(an => analysisDescriptor);
+            }
+
+            // Custom metadata to store the last indexing task id
+            var IndexingState = new FluentDictionary<string, object>() {
+                    { _lastTaskId, 0 }
+                };
+            var fullIndexName = GetFullIndexName(elasticIndexSettings.IndexName);
+            var createIndexDescriptor = new CreateIndexDescriptor(fullIndexName)
+                .Settings(s => indexSettingsDescriptor)
+                .Map(m => m
+                    .SourceField(s => s
+                        .Enabled(elasticIndexSettings.StoreSourceData)
+                        .Excludes(new string[] { IndexingConstants.DisplayTextAnalyzedKey }))
+                    .Meta(me => IndexingState));
+
+            var response = await _elasticClient.Indices.CreateAsync(createIndexDescriptor);
+
+            // We force some mappings for common fields.
+            await _elasticClient.MapAsync<string>(p => p
+                .Index(fullIndexName)
+                .Properties(p => p
+                    .Keyword(obj => obj
+                        .Name(IndexingConstants.ContentItemIdKey)
+                    )
+                    .Keyword(obj => obj
+                        .Name(IndexingConstants.ContentItemVersionIdKey)
+                    )
+                    .Keyword(obj => obj
+                        .Name(IndexingConstants.OwnerKey)
+                    )
+                    .Text(obj => obj
+                        .Name(IndexingConstants.FullTextKey)
+                    )
+                ));
+
+            // ContainedPart mappings
+            await _elasticClient.MapAsync<ContainedPartModel>(p => p
+                .Index(fullIndexName)
+                .Properties(p => p
+                    .Object<ContainedPartModel>(obj => obj
+                        .Name(IndexingConstants.ContainedPartKey)
+                        .AutoMap()
+                    )
+                ));
+
+            // We map DisplayText here because we have 3 different fields with it.
+            // We can't have Content.ContentItem.DisplayText as it is mapped as an Object in Elasticsearch.
+            await _elasticClient.MapAsync<DisplayTextModel>(p => p
+                .Index(fullIndexName)
+                .Properties(p => p
+                    .Object<DisplayTextModel>(obj => obj
+                        .Name(IndexingConstants.DisplayTextKey)
+                        .AutoMap()
+                    )
+                ));
+
+            // We map ContentType as a keyword because else the automatic mapping will break the queries.
+            // We need to access it with Content.ContentItem.ContentType as a keyword
+            // for the ContentPickerResultProvider(s).
+            await _elasticClient.MapAsync<string>(p => p
+                .Index(fullIndexName)
+                .Properties(p => p
+                    .Keyword(obj => obj
+                        .Name(IndexingConstants.ContentTypeKey)
+                    )
+                ));
+
+            // DynamicTemplates mapping for Taxonomy indexing mostly.
+            await _elasticClient.MapAsync<string>(p => p
+                .Index(fullIndexName)
+                .DynamicTemplates(d => d
+                    .DynamicTemplate("*.Inherited", dyn => dyn
+                        .MatchMappingType("string")
+                        .PathMatch("*" + IndexingConstants.InheritedKey)
+                        .Mapping(m => m
+                            .Keyword(k => k))
+                    )
+                    .DynamicTemplate("*.Ids", dyn => dyn
+                        .MatchMappingType("string")
+                        .PathMatch("*" + IndexingConstants.IdsKey)
+                        .Mapping(m => m
+                            .Keyword(k => k))
+                        )
+                    )
+                );
+
+            return response.Acknowledged;
+        }
+
+        private IAnalyzer CreateAnalyzer(JsonObject analyzerProperties)
+        {
+            IAnalyzer analyzer = null;
+
+            if (analyzerProperties.TryGetPropertyValue("type", out var typeObject)
+                && _analyzerGetter.TryGetValue(typeObject.ToString(), out var getter))
+            {
+                analyzer = getter.Invoke();
+
+                var properties = analyzer.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+                foreach (var analyzerProperty in analyzerProperties)
+                {
+                    if (analyzerProperty.Value == null || String.Equals(analyzerProperty.Key, "type", StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    var key = analyzerProperty.Key.Replace("_", String.Empty);
+
+                    var property = properties.FirstOrDefault(p => p.Name.Equals(key, StringComparison.OrdinalIgnoreCase));
+
+                    if (property == null)
+                    {
+                        continue;
+                    }
+
+                    try
+                    {
+                        if (property.PropertyType == typeof(StopWords))
+                        {
+                            if (analyzerProperty.Value is JsonArray)
+                            {
+                                var values = JsonSerializer.Deserialize<string[]>(analyzerProperty.Value);
+
+                                property.SetValue(analyzer, new StopWords(values));
+                            }
+
+                            continue;
+                        }
+
+                        if (analyzerProperty.Value is JsonArray)
+                        {
+                            var values = JsonSerializer.Deserialize<string[]>(analyzerProperty.Value);
+
+                            property.SetValue(analyzer, values);
+                        }
+                        else
+                        {
+                            var value = JsonSerializer.Deserialize(analyzerProperty.Value, property.PropertyType);
+
+                            property.SetValue(analyzer, value);
+                        }
+                    }
+                    catch { }
+                }
+            }
+
+            if (analyzer == null)
+            {
+                if (_analyzerGetter.TryGetValue(ElasticsearchConstants.DefaultAnalyzer, out getter))
+                {
+                    analyzer = getter.Invoke();
+                }
+                else
+                {
+                    analyzer = _analyzerGetter.First().Value.Invoke();
+                }
+            }
+
+            return analyzer;
         }
 
         public async Task<string> GetIndexMappings(string indexName)
         {
-            var response = await _elasticClient.LowLevel.Indices.GetMappingAsync<StringResponse>(_indexPrefix + indexName);
+            var response = await _elasticClient.LowLevel.Indices.GetMappingAsync<StringResponse>(GetFullIndexName(indexName));
+
             return response.Body;
         }
 
@@ -185,7 +291,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 { _lastTaskId, lastTaskId }
             };
 
-            var putMappingRequest = new PutMappingRequest(_indexPrefix + indexName)
+            var putMappingRequest = new PutMappingRequest(GetFullIndexName(indexName))
             {
                 Meta = IndexingState
             };
@@ -200,7 +306,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         public async Task<int> GetLastTaskId(string indexName)
         {
             var jsonDocument = JsonDocument.Parse(await GetIndexMappings(indexName));
-            jsonDocument.RootElement.TryGetProperty(_indexPrefix + indexName, out var jsonElement);
+            jsonDocument.RootElement.TryGetProperty(GetFullIndexName(indexName), out var jsonElement);
             jsonElement.TryGetProperty("mappings", out var mappings);
             mappings.TryGetProperty("_meta", out var meta);
             meta.TryGetProperty(_lastTaskId, out var lastTaskId);
@@ -219,7 +325,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                 foreach (var id in contentItemIds)
                     descriptor.Delete<Dictionary<string, object>>(d => d
-                        .Index(_indexPrefix + indexName)
+                        .Index(GetFullIndexName(indexName))
                         .Id(id)
                     );
 
@@ -243,7 +349,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         public async Task<bool> DeleteAllDocumentsAsync(string indexName)
         {
             var response = await _elasticClient.DeleteByQueryAsync<Dictionary<string, object>>(del => del
-                .Index(_indexPrefix + indexName)
+                .Index(GetFullIndexName(indexName))
                 .Query(q => q.MatchAll())
             );
 
@@ -254,13 +360,12 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         {
             if (await Exists(indexName))
             {
-                var result = await _elasticClient.Indices.DeleteAsync(_indexPrefix + indexName);
+                var result = await _elasticClient.Indices.DeleteAsync(GetFullIndexName(indexName));
+
                 return result.Acknowledged;
             }
-            else
-            {
-                return true;
-            }
+
+            return true;
         }
 
         /// <summary>
@@ -268,12 +373,12 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// </summary>
         public async Task<bool> Exists(string indexName)
         {
-            if (String.IsNullOrWhiteSpace(_indexPrefix + indexName))
+            if (String.IsNullOrWhiteSpace(indexName))
             {
                 return false;
             }
 
-            var existResponse = await _elasticClient.Indices.ExistsAsync(_indexPrefix + indexName);
+            var existResponse = await _elasticClient.Indices.ExistsAsync(GetFullIndexName(indexName));
 
             return existResponse.Exists;
         }
@@ -291,25 +396,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 indexName = indexName.Remove(0, 1);
             }
 
-            var charsToRemove = new List<char>();
-            charsToRemove.AddRange(new List<char>(){ 
-                '\\',
-                '/',
-                '*',
-                '\"',
-                '|',
-                '<',
-                '>',
-                '`',
-                '\'',
-                ' ',
-                '#',
-                ':',
-                '.',
-            });
+            _charsToRemove.ForEach(c => indexName = indexName.Replace(c.ToString(), String.Empty));
 
-            charsToRemove.ForEach(c => indexName = indexName.Replace(c.ToString(), String.Empty));
-            
             return indexName;
         }
 
@@ -331,7 +419,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     descriptor.Index<Dictionary<string, object>>(op => op
                         .Id(document.GetValueOrDefault("ContentItemId").ToString())
                         .Document(document)
-                        .Index(_indexPrefix + indexName)
+                        .Index(GetFullIndexName(indexName))
                     );
                 }
 
@@ -359,7 +447,9 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
             if (await Exists(indexName))
             {
-                var searchRequest = new SearchRequest(_indexPrefix + indexName)
+                var fullIndexName = GetFullIndexName(indexName);
+
+                var searchRequest = new SearchRequest(fullIndexName)
                 {
                     Query = query,
                     From = from,
@@ -371,11 +461,38 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                 if (searchResponse.IsValid)
                 {
-                    elasticTopDocs.Count = searchResponse.Documents.Count;
-                    elasticTopDocs.TopDocs = searchResponse.Documents.ToList();
+                    elasticTopDocs.Count = searchResponse.Hits.Count;
+
+                    var topDocs = new List<Dictionary<string, object>>();
+                    
+                    var documents = searchResponse.Documents.GetEnumerator();
+                    var hits = searchResponse.Hits.GetEnumerator();
+                    
+                    while (documents.MoveNext() && hits.MoveNext())
+                    {
+                        var document = documents.Current;
+
+                        if (document != null)
+                        {
+                            topDocs.Add(document);
+
+                            continue;
+                        }
+
+                        var hit = hits.Current;
+
+                        var topDoc = new Dictionary<string, object>
+                        {
+                            { "ContentItemId", hit.Id }
+                        };
+
+                        topDocs.Add(topDoc);
+                    }
+
+                    elasticTopDocs.TopDocs = topDocs;
                 }
 
-                _timestamps[_indexPrefix + indexName] = _clock.UtcNow;
+                _timestamps[fullIndexName] = _clock.UtcNow;
             }
 
             return elasticTopDocs;
@@ -390,7 +507,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             {
                 await elasticClient(_elasticClient);
 
-                _timestamps[_indexPrefix + indexName] = _clock.UtcNow;
+                _timestamps[GetFullIndexName(indexName)] = _clock.UtcNow;
             }
         }
 
@@ -405,7 +522,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             foreach (var entry in documentIndex.Entries)
             {
                 if (entries.ContainsKey(entry.Name)
-                    || Array.Exists(IgnoredFields, x => entry.Name.Contains(x)))
+                    || Array.Exists(_ignoredFields, x => entry.Name.Contains(x)))
                 {
                     continue;
                 }
@@ -453,9 +570,38 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                         }
                         break;
                 }
-
             }
+
             return entries;
+        }
+
+        public string GetFullIndexName(string indexName)
+        {
+            if (String.IsNullOrEmpty(indexName))
+            {
+                throw new ArgumentException($"{nameof(indexName)} cannot be null or empty.");
+            }
+
+            return GetIndexPrefix() + "_" + indexName;
+        }
+
+        private string GetIndexPrefix()
+        {
+            if (_indexPrefix == null)
+            {
+                var parts = new List<string>();
+
+                if (!String.IsNullOrWhiteSpace(_elasticsearchOptions.IndexPrefix))
+                {
+                    parts.Add(_elasticsearchOptions.IndexPrefix.ToLowerInvariant());
+                }
+
+                parts.Add(_shellSettings.Name.ToLowerInvariant());
+
+                _indexPrefix = String.Join("_", parts);
+            }
+
+            return _indexPrefix;
         }
 
         public void Dispose()

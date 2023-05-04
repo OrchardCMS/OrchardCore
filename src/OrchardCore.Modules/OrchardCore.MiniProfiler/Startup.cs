@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Modules;
+using OrchardCore.Security.Permissions;
 using YesSql;
 
 namespace OrchardCore.MiniProfiler
@@ -24,6 +25,8 @@ namespace OrchardCore.MiniProfiler
             services.AddScoped<IShapeDisplayEvents, ShapeStep>();
 
             services.AddMiniProfiler();
+
+            services.AddScoped<IPermissionProvider, Permissions>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

@@ -27645,7 +27645,7 @@ html[data-theme=default] .trumbowyg {
   font-size: 16px;
 }
 html[data-theme=default] .trumbowyg-fullscreen {
-  z-index: 1040;
+  z-index: 1050;
 }
 html[data-theme=default] #ui-datepicker-div {
   z-index: 100 !important;
