@@ -13,7 +13,7 @@ public static class HttpContextExtensions
     /// </summary>
     public static bool AsClustersProxy(this HttpContext context, ClustersOptions options)
     {
-        // Check if enabled and prevents request recursions.
+        // Check if enabled and prevents request loops.
         if (!options.Enabled || context.FromClustersProxy())
         {
             return false;

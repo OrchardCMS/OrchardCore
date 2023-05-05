@@ -28,13 +28,13 @@ public class ClustersOptionsSetup : IConfigureOptions<ClustersOptions>
         options.Enabled = _configuration.Enabled;
         options.Hosts = _configuration.Hosts ?? Array.Empty<string>();
 
-        // Configure dedicated options per cluster.
+        // Configure all single cluster options.
         foreach (var cluster in _configuration.Clusters)
         {
             var slotRange = cluster.Value.SlotRange;
             if (slotRange is not null && slotRange.Length == 2)
             {
-                // Set the slot limits from the configured slot range.
+                // Slot limits from the configured slot range.
                 options.Clusters.Add(new ClusterOptions
                 {
                     ClusterId = cluster.Key,

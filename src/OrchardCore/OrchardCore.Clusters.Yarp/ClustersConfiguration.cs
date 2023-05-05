@@ -8,17 +8,17 @@ namespace OrchardCore.Clusters;
 public class ClustersConfiguration
 {
     /// <summary>
-    /// Wether tenant clustering is enabled or not.
+    /// Wether tenant clusters is enabled or not.
     /// </summary>
     public bool Enabled { get; init; }
 
     /// <summary>
-    /// The uri hosts that incoming requests should match.
+    /// The hosts that incoming requests should match.
     /// </summary>
     public string[] Hosts { get; init; }
 
     /// <summary>
-    /// List of <see cref="ClusterConfiguration"/> for each cluster.
+    /// List of all single <see cref="ClusterConfiguration"/>.
     /// </summary>
     public IReadOnlyDictionary<string, ClusterConfiguration> Clusters { get; init; }
 }
