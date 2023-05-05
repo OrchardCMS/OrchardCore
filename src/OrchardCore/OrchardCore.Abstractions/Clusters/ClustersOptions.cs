@@ -12,7 +12,7 @@ public class ClustersOptions
     public static readonly string RouteTemplate = nameof(RouteTemplate);
 
     /// <summary>
-    /// Wether tenant clustering is enabled or not.
+    /// Wether tenant clusters is enabled or not.
     /// </summary>
     public bool Enabled { get; set; }
 

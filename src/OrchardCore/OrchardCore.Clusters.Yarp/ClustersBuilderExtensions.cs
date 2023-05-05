@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 namespace OrchardCore.Clusters;
 
 /// <summary>
-/// Extension methods for configuring tenant clusters proxy.
+/// Extension methods for configuring the tenant clusters proxy.
 /// </summary>
 public static class ClustersBuilderExtensions
 {
@@ -19,7 +19,7 @@ public static class ClustersBuilderExtensions
     }
 
     /// <summary>
-    /// Distributes proxy requests across tenant clusters, should be placed first in the proxy pipeline.
+    /// Distributes requests across tenant clusters, should be placed first in the proxy pipeline.
     /// </summary>
     public static IReverseProxyApplicationBuilder UseTenantClusters(this IReverseProxyApplicationBuilder builder)
     {

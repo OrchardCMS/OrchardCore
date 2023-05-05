@@ -19,7 +19,7 @@ public static class HttpContextExtensions
             return false;
         }
 
-        var host = GetRequestHost(context);
+        var host = GetClustersRequestHost(context);
 
         // Check if the request host matches one of the clusters proxy hosts.
         return options.Hosts.Contains(host);
@@ -31,11 +31,19 @@ public static class HttpContextExtensions
     public static bool FromClustersProxy(this HttpContext context) =>
         context.Request.Headers.TryGetValue(RequestHeaderNames.FromClustersProxy, out _);
 
+    /// <summary>
+    /// Tries to get the <see cref="ClusterFeature"/> holding the selected tenant cluster identifier.
+    /// </summary>
+    public static bool TryGetClusterFeature(this HttpContext context, out ClusterFeature feature)
+    {
+        feature = context.Features.Get<ClusterFeature>();
+        return feature != null;
+    }
 
     /// <summary>
     /// Returns the original host header if it exists otherwise the request host.
     /// </summary>
-    public static string GetRequestHost(this HttpContext context)
+    public static string GetClustersRequestHost(this HttpContext context)
     {
         if (!context.Request.Headers.TryGetValue(RequestHeaderNames.XOriginalHost, out var hosts))
         {
@@ -43,14 +51,5 @@ public static class HttpContextExtensions
         }
 
         return hosts.FirstOrDefault();
-    }
-
-    /// <summary>
-    /// Tries to get the <see cref="ClusterFeature"/> holding the slot of the current tenant.
-    /// </summary>
-    public static bool TryGetClusterFeature(this HttpContext context, out ClusterFeature feature)
-    {
-        feature = context.Features.Get<ClusterFeature>();
-        return feature != null;
     }
 }

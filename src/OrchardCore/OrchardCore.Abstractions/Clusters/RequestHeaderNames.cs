@@ -1,22 +1,22 @@
 namespace OrchardCore.Clusters;
 
 /// <summary>
-/// Request header names used by the clusters proxy.
+/// Request headers used by the clusters proxy.
 /// </summary>
 public class RequestHeaderNames
 {
     /// <summary>
-    /// Request header sent by any clusters proxy request.
+    /// Sent by any clusters proxy request, prevents network loops.
     /// </summary>
     public static readonly string FromClustersProxy = "From-Clusters-Proxy";
 
     /// <summary>
-    /// Request header to prevent proxy requests matching while clustering is disabled.
+    /// Prevents proxy requests matching while tenant clusters is disabled.
     /// </summary>
     public static readonly string FakeClustersHeader = "Fake-Clusters-Header";
 
     /// <summary>
-    /// Request header used to retrieve the original host while behind a proxy.
+    /// Used to retrieve the original host while behind a clusters proxy.
     /// </summary>
     public static readonly string XOriginalHost = "X-Original-Host";
 }
