@@ -41,14 +41,6 @@ namespace OrchardCore.Modules
             // We only serve the next request if the tenant has been resolved.
             if (shellSettings is not null)
             {
-                if (shellSettings.State == TenantState.Initializing)
-                {
-                    httpContext.Response.Headers.Add(HeaderNames.RetryAfter, "10");
-                    httpContext.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
-                    await httpContext.Response.WriteAsync("The requested tenant is currently initializing.");
-                    return;
-                }
-
                 // Check if this instance is used as a clusters proxy.
                 if (httpContext.AsClustersProxy(_clustersOptions))
                 {
@@ -60,6 +52,14 @@ namespace OrchardCore.Modules
 
                     // And bypass the container middleware.
                     await _next(httpContext);
+                    return;
+                }
+
+                if (shellSettings.State == TenantState.Initializing)
+                {
+                    httpContext.Response.Headers.Add(HeaderNames.RetryAfter, "10");
+                    httpContext.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+                    await httpContext.Response.WriteAsync("The requested tenant is currently initializing.");
                     return;
                 }
 
