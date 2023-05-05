@@ -44,12 +44,6 @@ namespace OrchardCore.Modules
                 // Check if this instance is used as a clusters proxy.
                 if (httpContext.AsClustersProxy(_clustersOptions))
                 {
-                    if (shellSettings.TenantId == null)
-                    {
-                        throw new System.InvalidOperationException(
-                            $"Testing:{shellSettings.Name}:{shellSettings.State}:{shellSettings.VersionId}");
-                    }
-
                     // Capture the 'ClusterId' of the current tenant.
                     httpContext.Features.Set(new ClusterFeature
                     {
