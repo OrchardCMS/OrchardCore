@@ -42,7 +42,7 @@ namespace OrchardCore.Modules
             if (shellSettings is not null)
             {
                 // Check if this instance is used as a clusters proxy.
-                if (httpContext.AsClustersProxy(_clustersOptions) && shellSettings.State != TenantState.Uninitialized)
+                if (httpContext.AsClustersProxy(_clustersOptions) && shellSettings.State != TenantState.Initializing)
                 {
                     // Capture the 'ClusterId' of the current tenant.
                     httpContext.Features.Set(new ClusterFeature
