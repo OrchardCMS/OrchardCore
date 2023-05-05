@@ -41,7 +41,7 @@ public static class HttpContextExtensions
     }
 
     /// <summary>
-    /// Returns the original host header if it exists otherwise the request host.
+    /// Returns the original host header if it exists, otherwise the request host.
     /// </summary>
     public static string GetClustersRequestHost(this HttpContext context)
     {
