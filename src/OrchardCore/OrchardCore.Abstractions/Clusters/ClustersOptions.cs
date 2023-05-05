@@ -22,7 +22,7 @@ public class ClustersOptions
     public string[] Hosts { get; set; } = Array.Empty<string>();
 
     /// <summary>
-    /// List of <see cref="ClusterOptions"/> for each cluster.
+    /// List of all single <see cref="ClusterOptions"/>.
     /// </summary>
     public List<ClusterOptions> Clusters { get; set; } = new();
 }
