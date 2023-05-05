@@ -230,7 +230,10 @@ namespace OrchardCore.Setup.Services
             }
 
             // Reloading the shell context as the recipe has probably updated its features
-            await (await _shellHost.GetScopeAsync(shellSettings)).UsingAsync(async scope =>
+            await (await _shellContextFactory.CreateShellContextAsync(shellSettings))
+                .CreateScope().UsingAsync(async scope =>
+
+            //await (await _shellHost.GetScopeAsync(shellSettings)).UsingAsync(async scope =>
             {
                 void reportError(string key, string message)
                 {

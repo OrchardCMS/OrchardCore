@@ -208,12 +208,12 @@ namespace OrchardCore.Environment.Shell
                     continue;
                 }
 
+                _shellSettings[settings.Name] = settings;
+
                 if (CanRegisterShell(settings))
                 {
                     _runningShellTable.Add(settings);
                 }
-
-                _shellSettings[settings.Name] = settings;
 
                 if (settings.State == TenantState.Initializing)
                 {
