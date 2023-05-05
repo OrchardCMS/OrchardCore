@@ -40,7 +40,7 @@ namespace OrchardCore.Modules
 
         public async Task Invoke(HttpContext httpContext)
         {
-            // Check if this instance is used as a reverse proxy.
+            // Check if this instance is used as a clusters proxy.
             if (httpContext.TryGetClusterFeature(out _))
             {
                 // Bypass the routing middleware.

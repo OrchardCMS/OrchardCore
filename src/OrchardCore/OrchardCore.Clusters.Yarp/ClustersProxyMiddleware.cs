@@ -20,7 +20,7 @@ public class ClustersProxyMiddleware
 
     public async Task Invoke(HttpContext context)
     {
-        // Check if this instance is not used as a reverse proxy.
+        // Check if this instance is not used as a clusters proxy.
         if (!context.TryGetClusterFeature(out var feature) || feature.ClusterId is null)
         {
             // Bypass the clusters proxy middleware.
