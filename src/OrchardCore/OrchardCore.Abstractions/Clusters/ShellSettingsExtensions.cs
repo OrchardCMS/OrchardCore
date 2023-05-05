@@ -8,7 +8,7 @@ namespace OrchardCore.Clusters;
 public static class ShellSettingsExtensions
 {
     /// <summary>
-    /// Identifies the tenant cluster related to the provided <see cref="ShellSettings"/>.
+    /// Returns the selected tenant cluster based on the provided <see cref="ShellSettings"/>.
     /// </summary>
     public static string GetClusterId(this ShellSettings settings, ClustersOptions options)
     {
