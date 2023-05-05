@@ -162,9 +162,7 @@ jobs:
       OrchardCore__DatabaseProvider: "SqlConnection"
     steps:
     - uses: actions/checkout@v3
-    - name: Allows NodeJs to find the dotnet command
-      run: |
-          export PATH=/usr/share/dotnet:$PATH
+    - uses: actions/setup-dotnet@v3
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
