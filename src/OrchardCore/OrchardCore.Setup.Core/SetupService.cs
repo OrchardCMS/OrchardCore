@@ -256,7 +256,7 @@ namespace OrchardCore.Setup.Services
             shellSettings.State = TenantState.Running;
             await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
-            await Task.Delay(1_000);
+            await Task.Delay(5_000);
 
             return executionId;
         }
