@@ -115,7 +115,7 @@ jobs:
       image: cypress/included:9.6.1
     services:
       mariadb:
-        image: mariadb:latest
+        image: mysql:latest
         ports:
           - 3306
         env:
@@ -134,9 +134,6 @@ jobs:
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
-    - name: Update Charset and Collation
-      run: |
-          mysqld --name mariadb --character-set-server=utf8 --collation-server=utf8_general_ci
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
