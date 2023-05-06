@@ -7,8 +7,8 @@
       en: {
         giphy: 'Insert GIF',
       },
-      sl: {
-        giphy: 'Vstavi GIF',
+      az: {
+        giphy: 'GIF yerləşdir',
       },
       by: {
         giphy: 'Уставіць GIF',
@@ -24,6 +24,9 @@
       },
       ru: {
         giphy: 'Вставить GIF',
+      },
+      sl: {
+        giphy: 'Vstavi GIF',
       },
       tr: {
         giphy: 'GIF ekle',

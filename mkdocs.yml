@@ -183,6 +183,7 @@ nav:
           - Users:
               - Overview: docs/reference/modules/Users/README.md
               - Custom User Settings: docs/reference/modules/Users/CustomUserSettings/README.md
+              - Notifications: docs/reference/modules/Notifications/README.md
           - Home Route: docs/reference/modules/HomeRoute/README.md
           - Feeds: docs/reference/modules/Feeds/README.md
       - Core Modules:
