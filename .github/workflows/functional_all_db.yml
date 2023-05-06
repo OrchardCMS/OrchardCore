@@ -115,7 +115,7 @@ jobs:
       image: cypress/included:9.6.1
     services:
       mariadb:
-        image: mysql:latest
+        image: mariadb:latest
         ports:
           - 3306
         env:
