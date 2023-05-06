@@ -177,5 +177,5 @@ The `AdminCulturePicker` shape loads data for the `AdminCulturePickerContainer` 
 
 The `AdminCulturePickerContainer` shape is used to render the `AdminCulturePicker`.
 
-The `AdminCulturePicker` will be rendered automatically on the admin once you enable `OrchardCore.Localization.AdminCulturePicker` feature.
+The `AdminCulturePicker` will be rendered automatically on the admin once you enable the `OrchardCore.Localization.AdminCulturePicker` feature.
 
