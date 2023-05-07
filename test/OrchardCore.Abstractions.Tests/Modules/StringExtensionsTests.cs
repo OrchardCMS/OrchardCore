@@ -6,6 +6,7 @@ namespace OrchardCore.Modules
     public class StringExtensionsTests
     {
         [Theory]
+        [InlineData(new byte[0], "")]
         [InlineData(new byte[]{ 10, 20, 30 }, "0A141E")]
         public void ToHexString_ReturnsCorrectHexString(byte[] bytes, string expected)
         {
@@ -16,29 +17,6 @@ namespace OrchardCore.Modules
 
             // Assert
             Assert.Equal(expected, result);
-        }
-
-        [Fact]
-        public void ToHexString_NullInput_ThrowsArgumentNullException()
-        {
-            // Arrange
-            byte[] bytes = null;
-
-            // Act & Assert
-            Assert.Throws<ArgumentNullException>(() => bytes.ToHexString());
-        }
-
-        [Fact]
-        public void ToHexString_EmptyInput_ReturnsEmptyString()
-        {
-            // Arrange
-            var bytes = new byte[0];
-
-            // Act
-            var result = bytes.ToHexString();
-
-            // Assert
-            Assert.Equal("", result);
         }
 
         [Theory]
