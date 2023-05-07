@@ -13,6 +13,8 @@ public class ShellContext : IDisposable, IAsyncDisposable
     private bool _disposed;
     private volatile int _refCount;
     private int _terminated;
+    internal volatile uint _requestsCount;
+    internal IShellPipeline _pipeline;
     private bool _released;
 
     /// <summary>
@@ -46,9 +48,27 @@ public class ShellContext : IDisposable, IAsyncDisposable
     public bool IsActivated { get; set; }
 
     /// <summary>
+    /// The number of requests on this shell.
+    /// </summary>
+    public uint RequestsCount => _requestsCount;
+
+    /// <summary>
     /// The Pipeline built for this shell.
     /// </summary>
-    public IShellPipeline Pipeline { get; set; }
+    public IShellPipeline Pipeline
+    {
+        get => _pipeline;
+        set
+        {
+            if (value == null)
+            {
+                _pipeline = null;
+                return;
+            }
+
+            _pipeline = new ShellPipeline(this, value);
+        }
+    }
 
     /// <summary>
     /// Whether or not this shell context has been disposed.
