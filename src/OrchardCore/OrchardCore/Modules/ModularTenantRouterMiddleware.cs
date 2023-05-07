@@ -64,7 +64,7 @@ public class ModularTenantRouterMiddleware
                 await shellContext.BuildPipelineAsync();
             }
 
-            // Manages the number of requests on this shell.
+            // Manage the number of requests on this shell.
             Interlocked.Increment(ref shellContext._requestsCount);
 
             await shellContext.Pipeline.Invoke(httpContext);
