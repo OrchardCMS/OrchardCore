@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
@@ -21,7 +19,6 @@ namespace OrchardCore.Environment.Shell.Builders
         internal volatile int _refCount;
         internal volatile int _terminated;
         internal volatile uint _requestsCount;
-        internal IShellPipeline _pipeline;
         internal bool _released;
 
         public ShellSettings Settings { get; set; }
@@ -41,20 +38,7 @@ namespace OrchardCore.Environment.Shell.Builders
         /// <summary>
         /// The Pipeline built for this shell.
         /// </summary>
-        public IShellPipeline Pipeline
-        {
-            get => _pipeline;
-            set
-            {
-                if (value == null)
-                {
-                    _pipeline = null;
-                    return;
-                }
-
-                _pipeline = new ShellPipeline(this, value);
-            }
-        }
+        public IShellPipeline Pipeline { get; set; }
 
         public class PlaceHolder : ShellContext
         {

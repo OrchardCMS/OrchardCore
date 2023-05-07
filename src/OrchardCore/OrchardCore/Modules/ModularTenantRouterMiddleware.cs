@@ -72,6 +72,9 @@ namespace OrchardCore.Modules
                 await InitializePipelineAsync(shellContext);
             }
 
+            // Manages the number of requests on this shell.
+            Interlocked.Increment(ref shellContext._requestsCount);
+
             await shellContext.Pipeline.Invoke(httpContext);
         }
 
