@@ -5,17 +5,17 @@ namespace OrchardCore.Modules
 {
     public class StringExtensionsTests
     {
-        [Fact]
-        public void ToHexString_ReturnsCorrectHexString()
+        [Theory]
+        [InlineData(new byte[]{ 10, 20, 30 }, "0A141E")]
+        public void ToHexString_ReturnsCorrectHexString(byte[] bytes, string expected)
         {
             // Arrange
-            byte[] bytes = { 10, 20, 30 };
 
             // Act
             var result = bytes.ToHexString();
 
             // Assert
-            Assert.Equal("0A141E", result);
+            Assert.Equal(expected, result);
         }
 
         [Fact]
