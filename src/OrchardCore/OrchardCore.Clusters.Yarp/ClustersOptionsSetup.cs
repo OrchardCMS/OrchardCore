@@ -34,12 +34,13 @@ public class ClustersOptionsSetup : IConfigureOptions<ClustersOptions>
             var slotRange = cluster.Value.SlotRange;
             if (slotRange is not null && slotRange.Length == 2)
             {
-                // Slot limits from the configured slot range.
+                // Set options per single ckuster.
                 options.Clusters.Add(new ClusterOptions
                 {
                     ClusterId = cluster.Key,
                     SlotMin = cluster.Value.SlotRange[0],
                     SlotMax = cluster.Value.SlotRange[1],
+                    MaxIdleTime = cluster.Value.MaxIdleTime,
                 });
             }
         }

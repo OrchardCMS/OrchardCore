@@ -1,3 +1,5 @@
+using System;
+
 namespace OrchardCore.Clusters;
 
 /// <summary>
@@ -6,7 +8,12 @@ namespace OrchardCore.Clusters;
 public class ClusterConfiguration
 {
     /// <summary>
-    /// The tenant slot range that should be configured with 2 limits (min and max).
+    /// The tenant slot range that should include 2 limits (min and max).
     /// </summary>
     public int[] SlotRange { get; init; }
+
+    /// <summary>
+    /// The maximum idle time before a tenant is released.
+    /// </summary>
+    public TimeSpan[] MaxIdleTime { get; init; }
 }
