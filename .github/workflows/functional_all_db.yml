@@ -117,7 +117,8 @@ jobs:
       mariadb:
         image: mariadb:latest
         ports:
-          - 3306
+          # Maps tcp port 3306 on service container to the host
+          - 3306:3306
         env:
           MYSQL_DATABASE: test
           MYSQL_ROOT_PASSWORD: test123
@@ -137,8 +138,8 @@ jobs:
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
-        apt-get install -y mysql-client
-        mysql --host 127.0.0.1 --port 3306 -uroot -ptest123 -e "SHOW DATABASES"
+        apt-get install -y mariadb-client
+        mariadb --host 127.0.0.1 --port 3306 -uroot -ptest123 -e "SHOW DATABASES"
         npm install
         npm run cms:test
     - uses: actions/upload-artifact@v2
