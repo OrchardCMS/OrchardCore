@@ -128,11 +128,11 @@ jobs:
     steps:
     - name: Update Charset
       run: |
-          cat /etc/my.cnf
-          echo '[mariadb]' >> /etc/my.cnf
-          echo 'character-set-server=utf8' >> /etc/my.cnf
-          echo 'collation-server=utf8_unicode_ci' >> /etc/my.cnf
-          cat /etc/my.cnf
+          cat /etc/mysql/my.cnf
+          echo '[mariadb]' >> /etc/mysql/my.cnf
+          echo 'character-set-server=utf8' >> /etc/mysql/my.cnf
+          echo 'collation-server=utf8_unicode_ci' >> /etc/mysql/my.cnf
+          cat /etc/mysql/my.cnf
     - uses: actions/checkout@v3
       # We need to install dotnet in the docker container.
     - uses: actions/setup-dotnet@v3
