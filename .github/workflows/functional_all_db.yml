@@ -118,7 +118,7 @@ jobs:
         image: mariadb:latest
         ports:
           # Maps tcp port 3306 on service container to the host
-          - 3306:3306
+          - 3306
         env:
           MYSQL_DATABASE: test
           MYSQL_ROOT_PASSWORD: test123
