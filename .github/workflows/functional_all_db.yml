@@ -138,8 +138,10 @@ jobs:
     - name: Set Database Collation
       run: |
         apt-get install mariadb-client -y
-        mariadb --host mariadb --port 3306 -uroot -ptest123 -e "alter database test collate = 'utf8mb3_general_ci';"
-        mariadb --host mariadb --port 3306 -uroot -ptest123 -e "select * from information_schema.schemata;"
+        mariadb --host mariadb --port 3306 --user=root --password=test123 \
+          --execute "alter database test collate = 'utf8mb3_general_ci';"
+        mariadb --host mariadb --port 3306 --user=root --password=test123 \
+          --execute "select * from information_schema.schemata;"
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
