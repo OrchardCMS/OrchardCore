@@ -126,9 +126,6 @@ jobs:
       OrchardCore__ConnectionString: "server=mariadb;uid=root;pwd=test123;database=test"
       OrchardCore__DatabaseProvider: "MySql"
     steps:
-    - name: Update Charset
-      run: |
-          /usr/bin/docker run -d mariadb:latest --character-set-server=utf8 --collation-server=utf8_unicode_ci
     - uses: actions/checkout@v3
       # We need to install dotnet in the docker container.
     - uses: actions/setup-dotnet@v3
