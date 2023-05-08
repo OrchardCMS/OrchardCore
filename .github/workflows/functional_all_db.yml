@@ -137,10 +137,9 @@ jobs:
           apt update && apt --only-upgrade install ca-certificates -y
     - name: Set Database Collation
       run: |
-        apt-get install -y mariadb-client
-        mariadb --host mariadb --port 3306 -uroot -ptest123 -e "SELECT * FROM INFORMATION_SCHEMA.SCHEMATA;"
-        mariadb --host mariadb --port 3306 -uroot -ptest123 -e "ALTER DATABASE test COLLATE = 'utf8mb3_general_ci';"
-        mariadb --host mariadb --port 3306 -uroot -ptest123 -e "SELECT * FROM INFORMATION_SCHEMA.SCHEMATA;"
+        apt-get install mariadb-client -y
+        mariadb --host mariadb --port 3306 -uroot -ptest123 -e "alter database test collate = 'utf8mb3_general_ci';"
+        mariadb --host mariadb --port 3306 -uroot -ptest123 -e "select * from information_schema.schemata;"
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
