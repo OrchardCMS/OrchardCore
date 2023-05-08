@@ -83,39 +83,44 @@ namespace OrchardCore.OpenId.Configuration
 
             if (settings.AuthorizationEndpointPath.HasValue)
             {
-                GetEndpointUri(settings);
+                var uri = GetEndpointUri(settings.Authority, settings.AuthorizationEndpointPath.ToUriComponent()[1..]);
 
                 options.AuthorizationEndpointUris.Add(uri);
             }
 
             if (settings.LogoutEndpointPath.HasValue)
             {
-                options.LogoutEndpointUris.Add(new Uri(
-                    settings.LogoutEndpointPath.ToUriComponent()[1..], UriKind.Relative));
+                var uri = GetEndpointUri(settings.Authority, settings.LogoutEndpointPath.ToUriComponent()[1..]);
+
+                options.LogoutEndpointUris.Add(uri);
             }
 
             if (settings.TokenEndpointPath.HasValue)
             {
-                options.TokenEndpointUris.Add(new Uri(
-                    settings.TokenEndpointPath.ToUriComponent()[1..], UriKind.Relative));
+                var uri = GetEndpointUri(settings.Authority, settings.TokenEndpointPath.ToUriComponent()[1..]);
+
+                options.TokenEndpointUris.Add(uri);
             }
 
             if (settings.UserinfoEndpointPath.HasValue)
             {
-                options.UserinfoEndpointUris.Add(new Uri(
-                    settings.UserinfoEndpointPath.ToUriComponent()[1..], UriKind.Relative));
+                var uri = GetEndpointUri(settings.Authority, settings.UserinfoEndpointPath.ToUriComponent()[1..]);
+
+                options.UserinfoEndpointUris.Add(uri);
             }
 
             if (settings.IntrospectionEndpointPath.HasValue)
             {
-                options.IntrospectionEndpointUris.Add(new Uri(
-                    settings.IntrospectionEndpointPath.ToUriComponent()[1..], UriKind.Relative));
+                var uri = GetEndpointUri(settings.Authority, settings.IntrospectionEndpointPath.ToUriComponent()[1..]);
+
+                options.IntrospectionEndpointUris.Add(uri);
             }
 
             if (settings.RevocationEndpointPath.HasValue)
             {
-                options.RevocationEndpointUris.Add(new Uri(
-                    settings.RevocationEndpointPath.ToUriComponent()[1..], UriKind.Relative));
+                var uri = GetEndpointUri(settings.Authority, settings.RevocationEndpointPath.ToUriComponent()[1..]);
+
+                options.RevocationEndpointUris.Add(uri);
             }
 
             // For now, response types and response modes are not directly
@@ -185,16 +190,6 @@ namespace OrchardCore.OpenId.Configuration
             options.Scopes.Add(Scopes.Roles);
         }
 
-        private static Uri GetEndpointUri(Uri authority, string endpointPath)
-        {
-            if (authority != null)
-            {
-                return new Uri(authority, endpointPath);
-            }
-
-            return new Uri(endpointPath, UriKind.Relative);
-        }
-
         public void Configure(OpenIddictServerDataProtectionOptions options)
         {
             var settings = GetServerSettingsAsync().GetAwaiter().GetResult();
@@ -251,6 +246,16 @@ namespace OrchardCore.OpenId.Configuration
             }
 
             return settings;
+        }
+
+        private static Uri GetEndpointUri(Uri authority, string endpointPath)
+        {
+            if (authority != null)
+            {
+                return new Uri(authority, endpointPath);
+            }
+
+            return new Uri(endpointPath, UriKind.Relative);
         }
     }
 }
