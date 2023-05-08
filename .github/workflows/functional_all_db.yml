@@ -130,7 +130,7 @@ jobs:
       env:
         PORT: ${{ job.services.mariadb.ports[3306] }}
       run: |
-          mysqld -umysql -ptest123 --character-set-server=utf8 --collation-server=utf8_unicode_ci
+          mysqld -h"127.0.0.1" -P"$PORT" -umysql -ptest123 --character-set-server=utf8 --collation-server=utf8_unicode_ci
     - uses: actions/checkout@v3
       # We need to install dotnet in the docker container.
     - uses: actions/setup-dotnet@v3
