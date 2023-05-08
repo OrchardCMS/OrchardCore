@@ -129,6 +129,7 @@ jobs:
     - name: Update Charset
       run: |
           printf '[mariadb]/ncharacter-set-server=utf8/ncollation-server=utf8_unicode_ci' >> /etc/my.cnf
+          cat /etc/my.cnf
     - uses: actions/checkout@v3
       # We need to install dotnet in the docker container.
     - uses: actions/setup-dotnet@v3
