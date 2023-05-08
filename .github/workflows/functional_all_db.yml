@@ -127,10 +127,8 @@ jobs:
       OrchardCore__DatabaseProvider: "MySql"
     steps:
     - name: Update Charset
-      env:
-        PORT: ${{ job.services.mariadb.ports[3306] }}
       run: |
-          mysqld -h"127.0.0.1" -P"$PORT" -umysql -ptest123 --character-set-server=utf8 --collation-server=utf8_unicode_ci
+          echo -e '[mariadb]/ncharacter-set-server=utf8' > /etc/my.cnf
     - uses: actions/checkout@v3
       # We need to install dotnet in the docker container.
     - uses: actions/setup-dotnet@v3
