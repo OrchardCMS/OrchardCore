@@ -83,8 +83,9 @@ namespace OrchardCore.OpenId.Configuration
 
             if (settings.AuthorizationEndpointPath.HasValue)
             {
-                options.AuthorizationEndpointUris.Add(new Uri(
-                    settings.AuthorizationEndpointPath.ToUriComponent()[1..], UriKind.Relative));
+                GetEndpointUri(settings);
+
+                options.AuthorizationEndpointUris.Add(uri);
             }
 
             if (settings.LogoutEndpointPath.HasValue)
@@ -182,6 +183,16 @@ namespace OrchardCore.OpenId.Configuration
             options.Scopes.Add(Scopes.Phone);
             options.Scopes.Add(Scopes.Profile);
             options.Scopes.Add(Scopes.Roles);
+        }
+
+        private static Uri GetEndpointUri(Uri authority, string endpointPath)
+        {
+            if (authority != null)
+            {
+                return new Uri(authority, endpointPath);
+            }
+
+            return new Uri(endpointPath, UriKind.Relative);
         }
 
         public void Configure(OpenIddictServerDataProtectionOptions options)
