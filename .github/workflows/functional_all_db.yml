@@ -128,7 +128,7 @@ jobs:
     steps:
     - name: Update Charset
       run: |
-          cat /etc/mysql/my.cnf
+          dir /etc
           echo '[mariadb]' >> /etc/mysql/my.cnf
           echo 'character-set-server=utf8' >> /etc/mysql/my.cnf
           echo 'collation-server=utf8_unicode_ci' >> /etc/mysql/my.cnf
