@@ -139,7 +139,7 @@ jobs:
       run: |
         cd test/OrchardCore.Tests.Functional
         apt-get install -y mariadb-client
-        mariadb --host 127.0.0.1 --port 3306 -uroot -ptest123 -e "SHOW DATABASES"
+        mariadb --host mariadb --port 3306 -uroot -ptest123 -e "SHOW DATABASES"
         npm install
         npm run cms:test
     - uses: actions/upload-artifact@v2
