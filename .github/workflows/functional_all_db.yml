@@ -135,13 +135,15 @@ jobs:
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
-    - name: Functional Tests
+    - name: Set Database Collation
       run: |
-        cd test/OrchardCore.Tests.Functional
         apt-get install -y mariadb-client
         mariadb --host mariadb --port 3306 -uroot -ptest123 -e "SELECT * FROM INFORMATION_SCHEMA.SCHEMATA;"
         mariadb --host mariadb --port 3306 -uroot -ptest123 -e "ALTER DATABASE test COLLATE = 'utf8mb3_general_ci';"
         mariadb --host mariadb --port 3306 -uroot -ptest123 -e "SELECT * FROM INFORMATION_SCHEMA.SCHEMATA;"
+    - name: Functional Tests
+      run: |
+        cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
     - uses: actions/upload-artifact@v2
