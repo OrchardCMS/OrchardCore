@@ -139,7 +139,9 @@ jobs:
       run: |
         cd test/OrchardCore.Tests.Functional
         apt-get install -y mariadb-client
+        mariadb --host mariadb --port 3306 -uroot -ptest123 -e "SELECT * FROM INFORMATION_SCHEMA.SCHEMATA;"
         mariadb --host mariadb --port 3306 -uroot -ptest123 -e "SET character_set_server = 'utf8';SET collation_server = 'utf8_unicode_ci';"
+        mariadb --host mariadb --port 3306 -uroot -ptest123 -e "SELECT * FROM INFORMATION_SCHEMA.SCHEMATA;"
         npm install
         npm run cms:test
     - uses: actions/upload-artifact@v2
