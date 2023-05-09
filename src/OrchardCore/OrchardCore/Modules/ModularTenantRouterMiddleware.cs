@@ -72,8 +72,8 @@ namespace OrchardCore.Modules
                 await InitializePipelineAsync(shellContext);
             }
 
-            // Manage the number of requests on this shell.
-            Interlocked.Increment(ref shellContext._requestsCount);
+            // Update the last request time (done atomically).
+            shellContext.LastRequestTimeUtc = DateTime.UtcNow;
 
             await shellContext.Pipeline.Invoke(httpContext);
         }

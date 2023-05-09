@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
@@ -18,7 +19,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
         internal volatile int _refCount;
         internal volatile int _terminated;
-        internal volatile uint _requestsCount;
+        internal long _requestTicks;
         internal bool _released;
 
         public ShellSettings Settings { get; set; }
@@ -31,9 +32,14 @@ namespace OrchardCore.Environment.Shell.Builders
         public bool IsActivated { get; set; }
 
         /// <summary>
-        /// The number of requests on this shell.
+        /// The UTC date and time of the last request.
+        /// Read and write operations are both atomic.
         /// </summary>
-        public uint RequestsCount => _requestsCount;
+        public DateTime LastRequestTimeUtc
+        {
+            get => new(Interlocked.Read(ref _requestTicks));
+            internal set => Interlocked.Exchange(ref _requestTicks, value.Ticks);
+        }
 
         /// <summary>
         /// The Pipeline built for this shell.
