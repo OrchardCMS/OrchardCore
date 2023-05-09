@@ -25,5 +25,5 @@ public class ClusterOptions
     /// <summary>
     /// The maximum idle time before a tenant is released.
     /// </summary>
-    public TimeSpan[] MaxIdleTime { get; init; }
+    public TimeSpan? MaxIdleTime { get; init; }
 }

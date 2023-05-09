@@ -7,7 +7,8 @@ builder.Host.UseNLogHost();
 
 builder.Services
     .AddOrchardCms()
-    .AddSetupFeatures("OrchardCore.AutoSetup");
+    .AddSetupFeatures("OrchardCore.AutoSetup")
+    .AddTenantInactivityCheck();
 
 builder.Services
     .AddReverseProxy()

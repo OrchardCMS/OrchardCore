@@ -13,7 +13,7 @@ public class ShellContext : IDisposable, IAsyncDisposable
     private bool _disposed;
     private volatile int _refCount;
     private int _terminated;
-    internal volatile uint _requestsCount;
+    internal long _requestTicks;
     private bool _released;
 
     /// <summary>
@@ -47,9 +47,14 @@ public class ShellContext : IDisposable, IAsyncDisposable
     public bool IsActivated { get; set; }
 
     /// <summary>
-    /// The number of requests on this shell.
+    /// The UTC date and time of the last request.
+    /// Read and write operations are both atomic.
     /// </summary>
-    public uint RequestsCount => _requestsCount;
+    public DateTime LastRequestTimeUtc
+    {
+        get => new(Interlocked.Read(ref _requestTicks));
+        internal set => Interlocked.Exchange(ref _requestTicks, value.Ticks);
+    }
 
     /// <summary>
     /// The Pipeline built for this shell.
