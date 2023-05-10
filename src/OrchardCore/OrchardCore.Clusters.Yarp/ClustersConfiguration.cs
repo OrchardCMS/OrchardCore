@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace OrchardCore.Clusters;
@@ -16,6 +17,11 @@ public class ClustersConfiguration
     /// The hosts that incoming requests should match.
     /// </summary>
     public string[] Hosts { get; init; }
+
+    /// <summary>
+    /// The maximum idle time before a tenant is released.
+    /// </summary>
+    public TimeSpan? MaxIdleTime { get; init; }
 
     /// <summary>
     /// List of all single <see cref="ClusterConfiguration"/>.

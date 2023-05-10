@@ -54,6 +54,9 @@ public class ModularTenantRouterMiddleware
             return Awaited(shellContext, httpContext);
         }
 
+        // Update the last request time (done atomically).
+        shellContext.LastRequestTimeUtc = DateTime.UtcNow;
+
         return shellContext.Pipeline.Invoke(httpContext);
 
         static async Task Awaited(ShellContext shellContext, HttpContext httpContext)

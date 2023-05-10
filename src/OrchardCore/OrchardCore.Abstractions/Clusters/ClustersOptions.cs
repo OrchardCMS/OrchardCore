@@ -22,6 +22,11 @@ public class ClustersOptions
     public string[] Hosts { get; set; } = Array.Empty<string>();
 
     /// <summary>
+    /// The maximum idle time before a tenant is released.
+    /// </summary>
+    public TimeSpan? MaxIdleTime { get; set; }
+
+    /// <summary>
     /// List of all single <see cref="ClusterOptions"/>.
     /// </summary>
     public List<ClusterOptions> Clusters { get; set; } = new();
