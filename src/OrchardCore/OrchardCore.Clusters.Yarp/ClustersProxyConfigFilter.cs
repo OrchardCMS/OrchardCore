@@ -46,8 +46,7 @@ public class ClustersProxyConfigFilter : IProxyConfigFilter
             {
                 Match = route.Match with
                 {
-                    // Set the uri hosts that incoming requests should match.
-                    Hosts = _options.Hosts,
+                    // Set the headers that incoming requests should match.
                     Headers = headers,
                 },
             })

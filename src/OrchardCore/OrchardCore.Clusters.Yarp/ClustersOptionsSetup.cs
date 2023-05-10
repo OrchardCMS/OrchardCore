@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
@@ -26,7 +25,6 @@ public class ClustersOptionsSetup : IConfigureOptions<ClustersOptions>
 
         // Configure global clusters options.
         options.Enabled = _configuration.Enabled;
-        options.Hosts = _configuration.Hosts ?? Array.Empty<string>();
         options.MaxIdleTime = _configuration.MaxIdleTime;
 
         // Configure all single cluster options.
