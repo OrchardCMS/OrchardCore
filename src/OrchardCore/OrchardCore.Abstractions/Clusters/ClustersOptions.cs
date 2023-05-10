@@ -17,11 +17,6 @@ public class ClustersOptions
     public bool Enabled { get; set; }
 
     /// <summary>
-    /// The uri hosts that incoming requests should match.
-    /// </summary>
-    public string[] Hosts { get; set; } = Array.Empty<string>();
-
-    /// <summary>
     /// The maximum idle time before a tenant is released.
     /// </summary>
     public TimeSpan? MaxIdleTime { get; set; }

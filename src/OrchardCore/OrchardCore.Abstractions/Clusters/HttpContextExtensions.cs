@@ -11,19 +11,8 @@ public static class HttpContextExtensions
     /// <summary>
     /// Checks if this instance runs as a clusters proxy.
     /// </summary>
-    public static bool AsClustersProxy(this HttpContext context, ClustersOptions options)
-    {
-        // Check if enabled and prevents request loops.
-        if (!options.Enabled || context.FromClustersProxy())
-        {
-            return false;
-        }
-
-        var host = GetClustersRequestHost(context);
-
-        // Check if the request host matches one of the clusters proxy hosts.
-        return options.Hosts.Contains(host);
-    }
+    public static bool AsClustersProxy(this HttpContext context, ClustersOptions options) =>
+        options.Enabled && !context.FromClustersProxy();
 
     /// <summary>
     /// Checks if the current request comes from a clusters proxy.
