@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Clusters;
 
 /// <summary>
@@ -21,9 +19,4 @@ public class ClusterOptions
     /// The maximum tenant slot number.
     /// </summary>
     public int SlotMax { get; set; }
-
-    /// <summary>
-    /// The maximum idle time before a tenant is released.
-    /// </summary>
-    public TimeSpan? MaxIdleTime { get; init; }
 }

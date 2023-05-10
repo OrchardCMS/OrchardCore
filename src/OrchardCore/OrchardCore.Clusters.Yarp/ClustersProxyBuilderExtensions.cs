@@ -7,7 +7,7 @@ namespace OrchardCore.Clusters;
 /// <summary>
 /// Extension methods for configuring the tenant clusters proxy.
 /// </summary>
-public static class ClustersBuilderExtensions
+public static class ClustersProxyBuilderExtensions
 {
     /// <summary>
     /// Registers tenant clusters proxy components.

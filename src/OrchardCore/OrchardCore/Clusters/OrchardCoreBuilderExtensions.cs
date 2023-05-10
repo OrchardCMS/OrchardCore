@@ -9,13 +9,13 @@ namespace OrchardCore.Clusters;
 public static class OrchardCoreBuilderExtensions
 {
     /// <summary>
-    /// Registers a tenant level component to auto release tenants after the max idle time of their cluster.
+    /// Add tenant level services to auto release clustered tenants on inactivity.
     /// </summary>
-    public static OrchardCoreBuilder AddTenantInactivityCheck(this OrchardCoreBuilder builder)
+    public static OrchardCoreBuilder AddClusteredTenantInactivityCheck(this OrchardCoreBuilder builder)
     {
         builder.ConfigureServices(services =>
         {
-            services.AddSingleton<IBackgroundTask, TenantInactivityBackgroundTask>();
+            services.AddSingleton<IBackgroundTask, ClusteredTenantInactivityCheck>();
         });
 
         return builder;

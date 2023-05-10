@@ -27,6 +27,7 @@ public class ClustersOptionsSetup : IConfigureOptions<ClustersOptions>
         // Configure global clusters options.
         options.Enabled = _configuration.Enabled;
         options.Hosts = _configuration.Hosts ?? Array.Empty<string>();
+        options.MaxIdleTime = _configuration.MaxIdleTime;
 
         // Configure all single cluster options.
         foreach (var cluster in _configuration.Clusters)
@@ -34,13 +35,11 @@ public class ClustersOptionsSetup : IConfigureOptions<ClustersOptions>
             var slotRange = cluster.Value.SlotRange;
             if (slotRange is not null && slotRange.Length == 2)
             {
-                // Set options per single ckuster.
                 options.Clusters.Add(new ClusterOptions
                 {
                     ClusterId = cluster.Key,
                     SlotMin = cluster.Value.SlotRange[0],
                     SlotMax = cluster.Value.SlotRange[1],
-                    MaxIdleTime = cluster.Value.MaxIdleTime,
                 });
             }
         }
