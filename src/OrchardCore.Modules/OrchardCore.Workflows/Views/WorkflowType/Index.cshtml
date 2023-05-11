@@ -78,9 +78,9 @@
                         {
                             <span class="badge text-danger"><i class="fa-solid fa-power-off" aria-hidden="true"></i> @T["Disabled"]</span>
                         }
-                        @if (entry.WorkflowCount > 0)
+                        @if (entry.HasInstances)
                         {
-                            <a asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@entry.WorkflowType.Id" class="badge ta-badge"><i class="fa-solid fa-list-ol" aria-hidden="true"></i> @T.Plural(entry.WorkflowCount, "1 instance", "{0} instances")</a>
+                            <a asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@entry.WorkflowType.Id" class="badge ta-badge"><i class="fa-solid fa-list-ol" aria-hidden="true"></i> @T["See instances"]</a>
                         }
 
                         <div class="metadata">

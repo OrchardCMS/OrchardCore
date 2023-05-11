@@ -126,10 +126,19 @@ namespace OrchardCore.Workflows.Controllers
                 .ToList();
 
             var workflowTypeIds = workflowTypes.Select(x => x.WorkflowTypeId).ToList();
-            var workflowGroups = (await _session.QueryIndex<WorkflowIndex>(x => x.WorkflowTypeId.IsIn(workflowTypeIds))
-                .ListAsync())
-                .GroupBy(x => x.WorkflowTypeId)
-                .ToDictionary(x => x.Key);
+
+            // Changing the workflowTypeIds list to array is needed to be able to modify the original list while going
+            // through it.
+            foreach (var workflowTypeId in workflowTypeIds.ToArray())
+            {
+                var workflowInstance = await _session.QueryIndex<WorkflowIndex>(index =>
+                        index.WorkflowTypeId == workflowTypeId)
+                    .FirstOrDefaultAsync();
+                if (workflowInstance == null)
+                {
+                    workflowTypeIds.Remove(workflowTypeId);
+                }
+            }
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
@@ -145,7 +154,7 @@ namespace OrchardCore.Workflows.Controllers
                     {
                         WorkflowType = x,
                         Id = x.Id,
-                        WorkflowCount = workflowGroups.ContainsKey(x.WorkflowTypeId) ? workflowGroups[x.WorkflowTypeId].Count() : 0,
+                        HasInstances = workflowTypeIds.Contains(x.WorkflowTypeId),
                         Name = x.Name
                     })
                     .ToList(),
