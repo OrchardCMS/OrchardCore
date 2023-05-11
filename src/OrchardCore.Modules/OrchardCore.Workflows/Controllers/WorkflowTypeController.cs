@@ -119,10 +119,11 @@ namespace OrchardCore.Workflows.Controllers
 
             var count = await query.CountAsync();
 
-            var workflowTypes = await query
+            var workflowTypes = (await query
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize)
-                .ListAsync();
+                .ListAsync())
+                .ToList();
 
             var workflowTypeIds = workflowTypes.Select(x => x.WorkflowTypeId).ToList();
             var workflowGroups = (await _session.QueryIndex<WorkflowIndex>(x => x.WorkflowTypeId.IsIn(workflowTypeIds))
