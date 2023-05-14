@@ -35,11 +35,17 @@ public class RedisHealthCheck : IHealthCheck
                 var time = await redisService.Database.PingAsync();
                 if (time > TimeSpan.FromSeconds(30))
                 {
+                    return HealthCheckResult.Unhealthy();
+                }
+                else
+                {
                     return HealthCheckResult.Healthy();
                 }
             }
-
-            return HealthCheckResult.Unhealthy();
+            else
+            {
+                return HealthCheckResult.Unhealthy();
+            }
         }
         catch
         {
