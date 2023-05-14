@@ -1,6 +1,7 @@
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using System.Threading.Tasks;
+using System;
 using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace OrchardCore.Redis.HealthChecks;
 
@@ -17,9 +18,21 @@ public class RedisHealthCheck : IHealthCheck
     {
         try
         {
-            await _redisService.ConnectAsync();
+            if (_redisService.Connection == null)
+            {
+                await _redisService.ConnectAsync();
+            }
 
-            return HealthCheckResult.Healthy();
+            if (_redisService.Connection.IsConnected)
+            {
+                var time = await _redisService.Database.PingAsync();
+                if (time > TimeSpan.FromSeconds(30))
+                {
+                    return HealthCheckResult.Healthy();
+                }
+            }
+
+            return HealthCheckResult.Unhealthy();
         }
         catch
         {
