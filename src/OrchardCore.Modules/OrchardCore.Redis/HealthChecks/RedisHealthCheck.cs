@@ -1,31 +1,38 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace OrchardCore.Redis.HealthChecks;
 
 public class RedisHealthCheck : IHealthCheck
 {
-    private readonly IRedisService _redisService;
+    private readonly IServiceProvider _serviceProvider;
 
-    public RedisHealthCheck(IRedisService redisService)
+    public RedisHealthCheck(IServiceProvider serviceProvider)
     {
-        _redisService = redisService;
+        _serviceProvider = serviceProvider;
     }
 
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
         try
         {
-            if (_redisService.Connection == null)
+            var redisService = _serviceProvider.GetService<IRedisService>();
+            if (redisService == null)
             {
-                await _redisService.ConnectAsync();
+                return HealthCheckResult.Unhealthy();
             }
 
-            if (_redisService.Connection.IsConnected)
+            if (redisService.Connection == null)
             {
-                var time = await _redisService.Database.PingAsync();
+                await redisService.ConnectAsync();
+            }
+
+            if (redisService.Connection.IsConnected)
+            {
+                var time = await redisService.Database.PingAsync();
                 if (time > TimeSpan.FromSeconds(30))
                 {
                     return HealthCheckResult.Healthy();
