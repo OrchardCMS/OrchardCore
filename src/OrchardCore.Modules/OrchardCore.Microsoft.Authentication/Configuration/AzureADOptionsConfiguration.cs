@@ -4,9 +4,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
-using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
-using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Microsoft.Authentication.Settings;
 using MicrosoftIdentityDefaults = Microsoft.Identity.Web.Constants;
 
@@ -18,6 +15,8 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
         IConfigureNamedOptions<PolicySchemeOptions>,
         IConfigureNamedOptions<MicrosoftIdentityOptions>
     {
+        public const string AzureAdOpenIdConnectScheme = MicrosoftIdentityDefaults.AzureAd + OpenIdConnectDefaults.AuthenticationScheme;
+
         private readonly AzureADSettings _azureADSettings;
 
         public AzureADOptionsConfiguration(IOptions<AzureADSettings> azureADSettings)
@@ -40,9 +39,8 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
                 builder.HandlerType = typeof(PolicySchemeHandler);
             });
 
-            options.AddScheme(OpenIdConnectDefaults.AuthenticationScheme, builder =>
+            options.AddScheme(AzureAdOpenIdConnectScheme, builder =>
             {
-                builder.DisplayName = "";
                 builder.HandlerType = typeof(OpenIdConnectHandler);
             });
         }
@@ -80,7 +78,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             }
 
             options.ForwardDefault = "Identity.External";
-            options.ForwardChallenge = OpenIdConnectDefaults.AuthenticationScheme;
+            options.ForwardChallenge = AzureAdOpenIdConnectScheme;
         }
         public void Configure(PolicySchemeOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
     }

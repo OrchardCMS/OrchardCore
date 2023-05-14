@@ -24,7 +24,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 
         public void Configure(string name, OpenIdConnectOptions options)
         {
-            if (name != OpenIdConnectDefaults.AuthenticationScheme)
+            if (name != AzureADOptionsConfiguration.AzureAdOpenIdConnectScheme)
             {
                 return;
             }
