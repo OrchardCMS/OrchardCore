@@ -85,10 +85,10 @@ text~a\ subscript~
 
 ## Snippets
 
---8<-- "src/docs/samples/snippet1.md"
+--8<-- "snippet1.md"
 
 --8<--
-src/docs/samples/snippet2.md
+snippet2.md
 
-src/docs/samples/snippet3.md
+snippet3.md
 --8<--
