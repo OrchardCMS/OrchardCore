@@ -15,8 +15,7 @@ The module contains the following features apart from the base feature:
 
 ## Two-factor Authentication
 
-Starting with version 1.7, the users module is shipped with everything you need to enable two-factor authentication. To enable two-factor authentication, go to the dashboard then navigate to `Security` >> `Settings` >> `User Login`. Click on the "Two-factor Authentication" tab and check "Enable two-factor authentication" option and save.
-
+Starting with version 1.7, the Users feature is shipped with everything you need to enable two-factor authentication. To enable two-factor authentication, go to the Dashboard then navigate to `Security` >> `Settings` >> `User Login`. Click on the "Two-factor Authentication" tab and check "Enable two-factor authentication" option and save.
 
 ## Custom Paths
 

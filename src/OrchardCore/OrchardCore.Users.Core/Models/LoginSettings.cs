@@ -30,7 +30,7 @@ namespace OrchardCore.Users.Models
 
         public bool UseEmailAsAuthenticatorDisplayName { get; set; }
 
-        public int NumberOfRecoveryCodesToGenerate { get; set; } = 10;
+        public int NumberOfRecoveryCodesToGenerate { get; set; } = 5;
 
         public int TokenLength { get; set; } = 6;
     }

@@ -2,10 +2,8 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
@@ -49,14 +47,6 @@ public class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthorizationFil
             && loginSettings.IsTwoFactorAuthenticationEnabled()
             && context.HttpContext.User.HasClaim(claim => claim.Type == TwoFactorAuthenticationClaimsProvider.TwoFactorAuthenticationClaimType))
         {
-            var notifier = context.HttpContext.RequestServices.GetService<INotifier>();
-            var H = context.HttpContext.RequestServices.GetService<IHtmlLocalizer<TwoFactorAuthenticationAuthorizationFilter>>();
-
-            if (notifier != null && H != null)
-            {
-                await notifier.WarningAsync(H["Two-factor authentication must be enabled before proceeding."]);
-            }
-
             context.Result = new RedirectResult("~/" + _userOptions.EnableAuthenticatorPath);
         }
     }

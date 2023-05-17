@@ -1,4 +1,5 @@
 @using Microsoft.AspNetCore.Http.Features
+@using OrchardCore.Users.Services
 
 @model TwoFactorAuthenticationViewModel
 
@@ -7,6 +8,13 @@
 }
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Two-factor Authentication"])</h1></zone>
+
+@if (User.HasClaim(claim => claim.Type == TwoFactorAuthenticationClaimsProvider.TwoFactorAuthenticationClaimType))
+{
+    <div class="text-center text-danger">
+        @T["Two-factor authentication must be enabled before proceeding."]
+    </div>
+}
 
 @if (canTrack)
 {
@@ -32,7 +40,7 @@
             else if (Model.RecoveryCodesLeft == 1)
             {
                 <div class="alert alert-danger text-center">
-                    <strong>You have 1 recovery code left.</strong>
+                    <strong>@T["You have 1 recovery code left."]</strong>
                     <p>@T["You can <a href=\"{0}\">generate a new set of recovery codes</a>.", Url.Action("GenerateRecoveryCodes")]</p>
                 </div>
             }

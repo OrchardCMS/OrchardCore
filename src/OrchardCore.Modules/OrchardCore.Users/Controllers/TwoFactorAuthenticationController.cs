@@ -209,8 +209,6 @@ public class TwoFactorAuthenticationController : AccountBaseController
 
             var recoveryCode = model.RecoveryCode.Replace(" ", String.Empty);
 
-            //recoveryCode = Regex.Replace(recoveryCode, ".{11}", "$0;");
-
             var result = await _signInManager.TwoFactorRecoveryCodeSignInAsync(recoveryCode);
 
             var userId = await _userManager.GetUserIdAsync(user);

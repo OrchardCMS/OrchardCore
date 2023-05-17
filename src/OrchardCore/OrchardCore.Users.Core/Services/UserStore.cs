@@ -841,7 +841,6 @@ namespace OrchardCore.Users.Services
         #endregion
 
         #region IUserLockoutStore<IUser>
-
         public Task<int> GetAccessFailedCountAsync(IUser user, CancellationToken cancellationToken)
         {
             if (user == null)
@@ -953,7 +952,6 @@ namespace OrchardCore.Users.Services
 
             return Task.CompletedTask;
         }
-
         #endregion IUserLockoutStore<IUser>
 
         #region IUserTwoFactorStore<IUser>
@@ -983,11 +981,9 @@ namespace OrchardCore.Users.Services
 
             return false;
         }
-
         #endregion
 
         #region IUserTwoFactorRecoveryCodeStore
-
         public Task ReplaceCodesAsync(IUser user, IEnumerable<string> recoveryCodes, CancellationToken cancellationToken)
         {
             if (user == null)
@@ -1059,17 +1055,14 @@ namespace OrchardCore.Users.Services
 
             return 0;
         }
-
         #endregion
 
         #region IUserAuthenticatorKeyStore<IUser>
-
         public virtual Task SetAuthenticatorKeyAsync(IUser user, string key, CancellationToken cancellationToken)
             => SetTokenAsync(user, _internalLoginProvider, _authenticatorKeyTokenName, key, cancellationToken);
 
         public virtual Task<string> GetAuthenticatorKeyAsync(IUser user, CancellationToken cancellationToken)
             => GetTokenAsync(user, _internalLoginProvider, _authenticatorKeyTokenName, cancellationToken);
-
         #endregion
     }
 }

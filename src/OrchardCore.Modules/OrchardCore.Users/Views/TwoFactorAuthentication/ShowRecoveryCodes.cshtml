@@ -9,10 +9,10 @@
 
 <div class="row">
     <div class="col-md-12">
-
+        <p>@T["Any of the following codes can be used to login."]</p>
         @foreach (var line in Model.RecoveryCodes)
         {
-            <p class="pb-0"><code class="recovery-code">@line</code></p>
+            <p class="mb-0"><code class="recovery-code">@line</code></p>
         }
     </div>
 </div>
