@@ -56,7 +56,7 @@ namespace OrchardCore.Users.Drivers
             }).Location("Content:5#Two-factor Authentication")
             .OnGroup(GroupId);
 
-            var twofaResult = Initialize<LoginSettings>("LoginSettingsTwoFactorAuthentication_Edit", model =>
+            var twoFaResult = Initialize<LoginSettings>("LoginSettingsTwoFactorAuthentication_Edit", model =>
             {
                 model.EnableTwoFactorAuthentication = settings.EnableTwoFactorAuthentication;
                 model.NumberOfRecoveryCodesToGenerate = settings.NumberOfRecoveryCodesToGenerate;
@@ -67,46 +67,26 @@ namespace OrchardCore.Users.Drivers
             }).Location("Content:10#Two-factor Authentication")
             .OnGroup(GroupId);
 
-            return Combine(contentResult, enableTwoFaResult, twofaResult);
+            return Combine(contentResult, enableTwoFaResult, twoFaResult);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(LoginSettings section, BuildEditorContext context)
         {
-            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
+            if (context.GroupId != GroupId || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
             {
                 return null;
             }
 
-            if (context.GroupId == GroupId)
+            await context.Updater.TryUpdateModelAsync(section, Prefix);
+
+            if (section.NumberOfRecoveryCodesToGenerate < 1)
             {
-                await context.Updater.TryUpdateModelAsync(section, Prefix);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(section.NumberOfRecoveryCodesToGenerate), S["Number of Recovery Codes to Generate should be grater than 0."]);
+            }
 
-                if (section.NumberOfRecoveryCodesToGenerate < 1)
-                {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(section.NumberOfRecoveryCodesToGenerate), S["Number of Recovery Codes to Generate should be grater than 0."]);
-                }
-
-                if (section.TokenLength != 6 && section.TokenLength != 8)
-                {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(section.TokenLength), S["The token length should be either 6 or 8."]);
-                }
-
-                if (context.Updater.ModelState.IsValid)
-                {
-                    section.UseSiteTheme = section.UseSiteTheme;
-                    section.UseExternalProviderIfOnlyOneDefined = section.UseExternalProviderIfOnlyOneDefined;
-                    section.DisableLocalLogin = section.DisableLocalLogin;
-                    section.UseScriptToSyncRoles = section.UseScriptToSyncRoles;
-                    section.SyncRolesScript = section.SyncRolesScript;
-                    section.AllowChangingEmail = section.AllowChangingEmail;
-                    section.AllowChangingUsername = section.AllowChangingUsername;
-                    section.EnableTwoFactorAuthentication = section.EnableTwoFactorAuthentication;
-                    section.NumberOfRecoveryCodesToGenerate = section.NumberOfRecoveryCodesToGenerate;
-                    section.UseEmailAsAuthenticatorDisplayName = section.UseEmailAsAuthenticatorDisplayName;
-                    section.RequireTwoFactorAuthentication = section.RequireTwoFactorAuthentication;
-                    section.AllowRememberClientTwoFactorAuthentication = section.AllowRememberClientTwoFactorAuthentication;
-                    section.TokenLength = section.TokenLength;
-                }
+            if (section.TokenLength != 6 && section.TokenLength != 8)
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(section.TokenLength), S["The token length should be either 6 or 8."]);
             }
 
             return await EditAsync(section, context);
