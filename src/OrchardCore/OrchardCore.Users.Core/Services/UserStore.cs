@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Security.Services;
+using OrchardCore.Settings;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
@@ -24,9 +26,15 @@ namespace OrchardCore.Users.Services
         IUserSecurityStampStore<IUser>,
         IUserLoginStore<IUser>,
         IUserLockoutStore<IUser>,
-        IUserAuthenticationTokenStore<IUser>
+        IUserAuthenticationTokenStore<IUser>,
+        IUserTwoFactorRecoveryCodeStore<IUser>,
+        IUserTwoFactorStore<IUser>,
+        IUserAuthenticatorKeyStore<IUser>
     {
-        private const string TokenProtector = "OrchardCore.UserStore.Token";
+        private const string _tokenProtector = "OrchardCore.UserStore.Token";
+        private const string _internalLoginProvider = "[OrchardCoreUserStore]";
+        private const string _recoveryCodeTokenName = "RecoveryCodes";
+        private const string _authenticatorKeyTokenName = "AuthenticatorKey";
 
         private readonly ISession _session;
         private readonly ILookupNormalizer _keyNormalizer;
@@ -34,6 +42,7 @@ namespace OrchardCore.Users.Services
         private readonly ILogger _logger;
         private readonly IRoleService _roleService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
+        private readonly ISiteService _siteService;
 
         public UserStore(ISession session,
             ILookupNormalizer keyNormalizer,
@@ -41,13 +50,15 @@ namespace OrchardCore.Users.Services
             ILogger<UserStore> logger,
             IEnumerable<IUserEventHandler> handlers,
             IRoleService roleService,
-            IDataProtectionProvider dataProtectionProvider)
+            IDataProtectionProvider dataProtectionProvider,
+            ISiteService siteService)
         {
             _session = session;
             _keyNormalizer = keyNormalizer;
             _userIdGenerator = userIdGenerator;
             _logger = logger;
             _dataProtectionProvider = dataProtectionProvider;
+            _siteService = siteService;
             Handlers = handlers;
             _roleService = roleService;
         }
@@ -740,7 +751,9 @@ namespace OrchardCore.Users.Services
             var userToken = GetUserToken(user, loginProvider, name);
             if (userToken != null)
             {
-                return Task.FromResult(_dataProtectionProvider.CreateProtector(TokenProtector).Unprotect(userToken.Value));
+                var value = _dataProtectionProvider.CreateProtector(_tokenProtector).Unprotect(userToken.Value);
+
+                return Task.FromResult(value);
             }
 
             return Task.FromResult<string>(null);
@@ -810,7 +823,7 @@ namespace OrchardCore.Users.Services
             // Encrypt the token.
             if (userToken != null)
             {
-                userToken.Value = _dataProtectionProvider.CreateProtector(TokenProtector).Protect(value);
+                userToken.Value = _dataProtectionProvider.CreateProtector(_tokenProtector).Protect(value);
             }
 
             return Task.CompletedTask;
@@ -942,5 +955,121 @@ namespace OrchardCore.Users.Services
         }
 
         #endregion IUserLockoutStore<IUser>
+
+        #region IUserTwoFactorStore<IUser>
+        public Task SetTwoFactorEnabledAsync(IUser user, bool enabled, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (user is User u)
+            {
+                u.TwoFactorEnabled = enabled;
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public async Task<bool> GetTwoFactorEnabledAsync(IUser user, CancellationToken cancellationToken)
+        {
+            var settings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
+
+            if (settings.IsTwoFactorAuthenticationEnabled() && user is User u)
+            {
+                return u.TwoFactorEnabled;
+            }
+
+            return false;
+        }
+
+        #endregion
+
+        #region IUserTwoFactorRecoveryCodeStore
+
+        public Task ReplaceCodesAsync(IUser user, IEnumerable<string> recoveryCodes, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (recoveryCodes == null)
+            {
+                throw new ArgumentNullException(nameof(recoveryCodes));
+            }
+
+            var mergedCodes = String.Join(";", recoveryCodes);
+
+            return SetTokenAsync(user, _internalLoginProvider, _recoveryCodeTokenName, mergedCodes, cancellationToken);
+        }
+
+        public async Task<bool> RedeemCodeAsync(IUser user, string code, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (String.IsNullOrWhiteSpace(code))
+            {
+                throw new ArgumentException($"{nameof(code)} cannot be null or empty.");
+            }
+
+            var mergedCodes = await GetTokenAsync(user, _internalLoginProvider, _recoveryCodeTokenName, cancellationToken).ConfigureAwait(false) ?? String.Empty;
+            var splitCodes = mergedCodes.Split(';');
+            if (splitCodes.Contains(code))
+            {
+                var updatedCodes = new List<string>(splitCodes.Where(s => s != code));
+                await ReplaceCodesAsync(user, updatedCodes, cancellationToken).ConfigureAwait(false);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task<int> CountCodesAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            var mergedCodes = await GetTokenAsync(user, _internalLoginProvider, _recoveryCodeTokenName, cancellationToken).ConfigureAwait(false) ?? "";
+            if (mergedCodes.Length > 0)
+            {
+                // non-allocating version of mergedCodes.Split(';').Length
+                var count = 1;
+                var index = 0;
+                while (index < mergedCodes.Length)
+                {
+                    var semiColonIndex = mergedCodes.IndexOf(';', index);
+                    if (semiColonIndex < 0)
+                    {
+                        break;
+                    }
+                    count++;
+                    index = semiColonIndex + 1;
+                }
+
+                return count;
+            }
+
+            return 0;
+        }
+
+        #endregion
+
+        #region IUserAuthenticatorKeyStore<IUser>
+
+        public virtual Task SetAuthenticatorKeyAsync(IUser user, string key, CancellationToken cancellationToken)
+            => SetTokenAsync(user, _internalLoginProvider, _authenticatorKeyTokenName, key, cancellationToken);
+
+        public virtual Task<string> GetAuthenticatorKeyAsync(IUser user, CancellationToken cancellationToken)
+            => GetTokenAsync(user, _internalLoginProvider, _authenticatorKeyTokenName, cancellationToken);
+
+        #endregion
     }
 }

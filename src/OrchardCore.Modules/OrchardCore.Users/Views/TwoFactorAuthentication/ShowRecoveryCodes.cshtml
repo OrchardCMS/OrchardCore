@@ -1,0 +1,22 @@
+@model ShowRecoveryCodesViewModel
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Recovery codes"])</h1></zone>
+
+<div class="alert alert-warning" role="alert">
+    <p>
+        <strong>@T["Store these codes in a safe place."]</strong>
+    </p>
+    <p>
+        @T["If you lose your device and don't have the recovery codes you will lose access to your account."]"
+    </p>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+
+        @foreach (var line in Model.RecoveryCodes)
+        {
+            <p class="pb-0"><code class="recovery-code">@line</code></p>
+        }
+    </div>
+</div>
