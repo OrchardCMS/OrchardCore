@@ -2,13 +2,10 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Reset authenticator key"])</h1></zone>
 
 <div class="alert alert-warning" role="alert">
-    <p>
-        <strong>@T["If you reset your authenticator key your authenticator app will not work until you reconfigure it."]</strong>
-    </p>
-    <p>
-        @T["This process disables 2FA until you verify your authenticator app. If you do not complete your authenticator app configuration you may lose access to your account."]
-    </p>
+    <p><strong>@T["If you reset your authenticator key your authenticator app will not work until you reconfigure it."]</strong></p>
+    <p>@T["This process disables 2FA until you verify your authenticator app. If you do not complete your authenticator app configuration you may lose access to your account."]</p>
 </div>
+
 <div>
     <form id="reset-authenticator-form" method="post">
         <button id="reset-authenticator-button" class="btn btn-danger" type="submit">@T["Reset authenticator key"]</button>

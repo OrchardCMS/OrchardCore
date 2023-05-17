@@ -42,7 +42,6 @@ public class TwoFactorAuthenticationClaimsProvider : IUserClaimsProvider
             && await loginSettings.CanEnableTwoFactorAuthenticationAsync(role => _userManager.IsInRoleAsync(user, role)))
         {
             // At this point, we know that the user must enable two-factor authentication.
-
             claims.AddClaim(new Claim(TwoFactorAuthenticationClaimType, "required"));
         }
     }

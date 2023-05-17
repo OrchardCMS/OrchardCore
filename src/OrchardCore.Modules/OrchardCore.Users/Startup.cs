@@ -314,7 +314,6 @@ namespace OrchardCore.Users
             services.AddScoped<IPermissionProvider, UserRolePermissions>();
             services.AddSingleton<IUsersAdminListFilterProvider, RolesAdminListFilterProvider>();
             services.AddScoped<IDisplayDriver<ISite>, RoleLoginSettingsDisplayDriver>();
-
         }
     }
 

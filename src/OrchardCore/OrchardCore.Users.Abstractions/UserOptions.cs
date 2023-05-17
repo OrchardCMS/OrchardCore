@@ -9,7 +9,6 @@ namespace OrchardCore.Users
         private string _externalLoginsUrl = "ExternalLogins";
         private string _enableAuthenticatorPath = "EnableAuthenticator";
 
-
         public string LoginPath
         {
             get => _loginPath;

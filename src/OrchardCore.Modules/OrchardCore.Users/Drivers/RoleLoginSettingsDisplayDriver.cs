@@ -54,7 +54,6 @@ public class RoleLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, LoginS
                 IsSelected = settings.Roles != null && settings.Roles.Contains(role.RoleName),
             }).OrderBy(entry => entry.Role)
             .ToArray();
-
         }).Location("Content:5.1#Two-factor Authentication")
         .OnGroup(GroupId);
     }
@@ -75,17 +74,17 @@ public class RoleLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, LoginS
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.Roles), S["Select at least one role."]);
         }
+
+        if (model.EnableTwoFactorAuthenticationForSpecificRoles)
+        {
+            section.EnableTwoFactorAuthenticationForSpecificRoles = true;
+            section.Roles = model.Roles.Where(x => x.IsSelected)
+                .Select(x => x.Role)
+                .ToArray();
+        }
         else
         {
             section.EnableTwoFactorAuthenticationForSpecificRoles = false;
-
-            if (model.EnableTwoFactorAuthenticationForSpecificRoles)
-            {
-                section.EnableTwoFactorAuthenticationForSpecificRoles = true;
-                section.Roles = model.Roles.Where(x => x.IsSelected)
-                    .Select(x => x.Role)
-                    .ToArray();
-            }
         }
 
         return await EditAsync(section, context);
