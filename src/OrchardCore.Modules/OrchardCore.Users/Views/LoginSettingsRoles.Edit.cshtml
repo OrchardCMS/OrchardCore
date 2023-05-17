@@ -5,12 +5,12 @@
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="EnableTwoFactorAuthenticationForSpecificRoles" data-bs-toggle="collapse" data-bs-target="#rolesContainer" aria-expanded="false" aria-controls="rolesContainer" />
             <span asp-validation-for="EnableTwoFactorAuthenticationForSpecificRoles"></span>
-            <label class="form-check-label" asp-for="EnableTwoFactorAuthenticationForSpecificRoles">@T["Enable Two Factor Authentication specific roles."]</label>
+            <label class="form-check-label" asp-for="EnableTwoFactorAuthenticationForSpecificRoles">@T["Enable two-factor authentication specific roles."]</label>
         </div>
     </div>
 
     <div class="mb-3 ps-3 collapse @(Model.EnableTwoFactorAuthenticationForSpecificRoles ? " show": String.Empty)" asp-validation-class-for="Roles" id="rolesContainer">
-        <span class="hint dashed">@T["Select the roles to enable Two Factor Authentication for."]</span>
+        <span class="hint dashed">@T["Select the roles to enable two-factor authentication for."]</span>
 
         @for (var i = 0; i < Model.Roles.Length; i++)
         {

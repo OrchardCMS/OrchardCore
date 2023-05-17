@@ -55,7 +55,7 @@ public class RoleLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, LoginS
             }).OrderBy(entry => entry.Role)
             .ToArray();
 
-        }).Location("Content:5.1#Two Factor Authentication")
+        }).Location("Content:5.1#Two-factor Authentication")
         .OnGroup(GroupId);
     }
 

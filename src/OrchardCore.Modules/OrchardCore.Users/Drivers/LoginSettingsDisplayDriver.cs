@@ -53,7 +53,7 @@ namespace OrchardCore.Users.Drivers
             var enableTwoFaResult = Initialize<LoginSettings>("LoginSettingsEnableTwoFactorAuthentication_Edit", model =>
             {
                 model.EnableTwoFactorAuthentication = settings.EnableTwoFactorAuthentication;
-            }).Location("Content:5#Two Factor Authentication")
+            }).Location("Content:5#Two-factor Authentication")
             .OnGroup(GroupId);
 
             var twofaResult = Initialize<LoginSettings>("LoginSettingsTwoFactorAuthentication_Edit", model =>
@@ -64,7 +64,7 @@ namespace OrchardCore.Users.Drivers
                 model.RequireTwoFactorAuthentication = settings.RequireTwoFactorAuthentication;
                 model.AllowRememberClientTwoFactorAuthentication = settings.AllowRememberClientTwoFactorAuthentication;
                 model.TokenLength = settings.TokenLength;
-            }).Location("Content:10#Two Factor Authentication")
+            }).Location("Content:10#Two-factor Authentication")
             .OnGroup(GroupId);
 
             return Combine(contentResult, enableTwoFaResult, twofaResult);

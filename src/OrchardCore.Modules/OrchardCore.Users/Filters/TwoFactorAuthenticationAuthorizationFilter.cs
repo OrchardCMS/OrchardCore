@@ -1,5 +1,4 @@
 using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,11 +11,11 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Filters;
 
-public class TwoFactorAcuthenticationAuthorizationFilter : IAsyncAuthorizationFilter
+public class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthorizationFilter
 {
     private readonly UserOptions _userOptions;
 
-    public TwoFactorAcuthenticationAuthorizationFilter(IOptions<UserOptions> userOptions)
+    public TwoFactorAuthenticationAuthorizationFilter(IOptions<UserOptions> userOptions)
     {
         _userOptions = userOptions.Value;
     }
@@ -42,24 +41,27 @@ public class TwoFactorAcuthenticationAuthorizationFilter : IAsyncAuthorizationFi
         var settings = (await siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
         if (settings.RequireTwoFactorAuthentication
-            && (context.HttpContext?.User?.Identity?.IsAuthenticated ?? false)
-            && !context.HttpContext.User.HasClaim(claim => claim.Type == "amr"))
+            && (context.HttpContext?.User?.Identity?.IsAuthenticated ?? false))
         {
             var userManager = context.HttpContext.RequestServices.GetService<UserManager<IUser>>();
 
-            if (await CanEnableTwoFactorAuthenticationAsync(settings, userManager, context.HttpContext.User))
+            if (userManager != null)
             {
-                context.Result = new RedirectResult("~/EnableAuthenticator");
+                var user = await userManager.GetUserAsync(context.HttpContext.User);
+
+                if (!await userManager.GetTwoFactorEnabledAsync(user)
+                    && await CanEnableTwoFactorAuthenticationAsync(settings, userManager, user))
+                {
+                    context.Result = new RedirectResult("~/EnableAuthenticator");
+                }
             }
         }
     }
 
-    protected async Task<bool> CanEnableTwoFactorAuthenticationAsync(LoginSettings loginSettings, UserManager<IUser> userManager, ClaimsPrincipal principal)
+    private async Task<bool> CanEnableTwoFactorAuthenticationAsync(LoginSettings loginSettings, UserManager<IUser> userManager, IUser user)
     {
-        if (loginSettings.EnableTwoFactorAuthenticationForSpecificRoles && userManager != null)
+        if (loginSettings.EnableTwoFactorAuthenticationForSpecificRoles)
         {
-            var user = await userManager.GetUserAsync(principal);
-
             foreach (var role in loginSettings.Roles)
             {
                 if (await userManager.IsInRoleAsync(user, role))

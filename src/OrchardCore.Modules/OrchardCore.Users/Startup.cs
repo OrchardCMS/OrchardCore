@@ -231,7 +231,7 @@ namespace OrchardCore.Users
 
             services.AddMvc(options =>
             {
-                options.Filters.Add<TwoFactorAcuthenticationAuthorizationFilter>();
+                options.Filters.Add<TwoFactorAuthenticationAuthorizationFilter>();
             });
 
             // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
