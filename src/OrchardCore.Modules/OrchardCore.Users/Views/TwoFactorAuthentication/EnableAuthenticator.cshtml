@@ -1,31 +1,30 @@
 @model EnableAuthenticatorViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Configure authenticator app"])</h1></zone>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Configure Authenticator App"])</h1></zone>
 
 <div>
     <p>@T["To use an authenticator app go through the following steps:"]</p>
     <ol class="list">
         <li>
             <p>
-                @T["Download a two-factor authenticator app like Microsoft Authenticator for <a href=\"{0}\">Android</a> and <a href=\"{1}\">iOS</a>","https://go.microsoft.com/fwlink/?Linkid=825072","https://go.microsoft.com/fwlink/?Linkid=825073"]
+                @T["Download a two-factor authenticator app like Microsoft Authenticator for <a href=\"{0}\">Android</a> and <a href=\"{1}\">iOS</a>.","https://go.microsoft.com/fwlink/?Linkid=825072","https://go.microsoft.com/fwlink/?Linkid=825073"]
 
-                Or, Google Authenticator for
-                <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en">Android</a> and
-                <a href="https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8">iOS</a>.
+                @T["Or, Google Authenticator for <a href=\"{0}\">Android</a> and <a href=\"{1}\">iOS</a>.","https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en", "https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8"]
             </p>
         </li>
         <li>
-            <p>Scan the QR Code or enter this key <kbd>@Model.SharedKey</kbd> into your two factor authenticator app. Spaces and casing do not matter.</p>
-            <div id="qrCode" class="text-center"></div>
+            <p>
+                @T["Scan the QR Code below, or enter this key {0} into your two factor authenticator app. You may ignore spaces and casing.", $"<kbd>{Model.SharedKey}</kbd>"]
+            </p>
+            <div id="qrCode" class="mb-3"></div>
             <div id="qrCodeData" data-url="@Model.AuthenticatorUri"></div>
         </li>
         <li>
             <p>
-                Once you have scanned the QR code or input the key above, your two factor authentication app will provide you
-                with a unique code. Enter the code in the confirmation box below.
+                @T["Once you have scanned the QR code or input the key above, your two factor authentication app will provide you with a unique code. Enter the code in the confirmation box below."]
             </p>
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-12 col-md-6 col-xl-5 col-xxl-4">
                     <form id="send-code" method="post">
                         <div class="form-floating mb-3">
                             <input asp-for="Code" class="form-control" autocomplete="off" placeholder="@T["Please enter the code"]" />

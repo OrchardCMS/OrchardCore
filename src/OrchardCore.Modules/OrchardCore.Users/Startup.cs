@@ -154,7 +154,7 @@ namespace OrchardCore.Users
             routes.MapAreaControllerRoute(
                 name: "EnableAuthenticator",
                 areaName: "OrchardCore.Users",
-                pattern: "EnableAuthenticator",
+                pattern: userOptions.EnableAuthenticatorPath,
                 defaults: new { controller = twoFaControllerName, action = nameof(TwoFactorAuthenticationController.EnableAuthenticator) }
             );
             routes.MapAreaControllerRoute(
@@ -208,8 +208,8 @@ namespace OrchardCore.Users
             // Add ILookupNormalizer as Singleton because it is needed by UserIndexProvider
             services.TryAddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
 
-            // Adds the default token providers used to generate tokens for reset passwords, change email
-            // and change telephone number operations, and for two factor authentication token generation.
+            // Add the default token providers used to generate tokens for reset passwords, change email,
+            // and for two-factor authentication token generation.
             var identityBuilder = services.AddIdentity<IUser, IRole>(options =>
             {
                 // Specify OrchardCore User requirements.
@@ -257,6 +257,7 @@ namespace OrchardCore.Users
 
             services.AddDataMigration<Migrations>();
 
+            services.AddScoped<IUserClaimsProvider, TwoFactorAuthenticationClaimsProvider>();
             services.AddScoped<IUserClaimsProvider, EmailClaimsProvider>();
             services.AddSingleton<IUserIdGenerator, DefaultUserIdGenerator>();
 

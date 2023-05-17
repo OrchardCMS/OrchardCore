@@ -6,37 +6,44 @@
     var canTrack = ViewContext.HttpContext.Features.Get<ITrackingConsentFeature>()?.CanTrack ?? true;
 }
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Two-factor authentication (2FA)"])</h1></zone>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Two-factor Authentication"])</h1></zone>
 
 @if (canTrack)
 {
-    if (Model.Is2faEnabled)
-    {
-        if (Model.RecoveryCodesLeft == 0)
+    <div class="mb-5 text-center">
+        @if (Model.Is2faEnabled)
         {
-            <div class="alert alert-danger">
-                <strong>@T["You have no recovery codes left."]</strong>
-                <p>@T["You must <a href=\"{0}\">generate a new set of recovery codes</a> before you can log in with a recovery code.", Url.Action("GenerateRecoveryCodes")]</p>
-            </div>
+            <h4 class="text-center text-success">@T["Two-factor authentication is enabled."]  </h4>
         }
-        else if (Model.RecoveryCodesLeft == 1)
+        else
         {
-            <div class="alert alert-danger">
-                <strong>You have 1 recovery code left.</strong>
-                <p>@T["You can <a href=\"{0}\">generate a new set of recovery codes</a>.", Url.Action("GenerateRecoveryCodes")]</p>
-            </div>
-        }
-        else if (Model.RecoveryCodesLeft <= 3)
-        {
-            <div class="alert alert-warning">
-                <strong>@T["You have {0} recovery {1} left.", Model.RecoveryCodesLeft, T.Plural(Model.RecoveryCodesLeft, "code", "codes")])</strong>
-                <p>@T["You should <a href=\"{0}\">generate a new set of recovery codes</a>.", Url.Action("GenerateRecoveryCodes")]</p>
-            </div>
+            <h4 class="text-center text-danger">@T["Two-factor authentication is not enabled yet."]  </h4>
         }
 
-        <div class="mb-3 text-center">
-            <h3 class="text-center">@T["Two-factor authentication"]</h3>
-            <h4 class="text-center">@T["Two-factor authentication is not enabled yet."]  </h4>
+        @if (Model.Is2faEnabled)
+        {
+            if (Model.RecoveryCodesLeft == 0)
+            {
+                <div class="alert alert-danger text-center">
+                    <strong>@T["You have no recovery codes left."]</strong>
+                    <p>@T["You must <a href=\"{0}\">generate a new set of recovery codes</a> before you can log in with a recovery code.", Url.Action("GenerateRecoveryCodes")]</p>
+                </div>
+            }
+            else if (Model.RecoveryCodesLeft == 1)
+            {
+                <div class="alert alert-danger text-center">
+                    <strong>You have 1 recovery code left.</strong>
+                    <p>@T["You can <a href=\"{0}\">generate a new set of recovery codes</a>.", Url.Action("GenerateRecoveryCodes")]</p>
+                </div>
+            }
+            else if (Model.RecoveryCodesLeft <= 3)
+            {
+                <div class="alert alert-warning text-center">
+                    <strong>@T["You have {0} recovery {1} left.", Model.RecoveryCodesLeft, T.Plural(Model.RecoveryCodesLeft, "code", "codes")])</strong>
+                    <p>@T["You should <a href=\"{0}\">generate a new set of recovery codes</a>.", Url.Action("GenerateRecoveryCodes")]</p>
+                </div>
+            }
+
             @if (Model.IsMachineRemembered)
             {
                 <form method="post" asp-action="ForgetTwoFactorClient" class="d-inline">
@@ -46,27 +53,30 @@
 
             @if (Model.CanDisable2Fa)
             {
-                <a asp-action="Disable2fa" class="btn btn-primary">@T["Disable 2FA"]</a>
+                <a asp-action="Disable2fa" class="btn btn-primary">@T["Disable two-factor authentication"]</a>
             }
 
             <a asp-action="GenerateRecoveryCodes" class="btn btn-primary">@T["Reset recovery codes"]</a>
-        </div>
-    }
 
-    <h3>@T["Authenticator app"]</h3>
-    @if (!Model.HasAuthenticator)
-    {
-        <a id="enable-authenticator" asp-action="EnableAuthenticator" class="btn btn-primary">@T["Add authenticator app"]</a>
-    }
-    else
-    {
-        <a id="enable-authenticator" asp-action="EnableAuthenticator" class="btn btn-primary">@T["Set up authenticator app"]</a>
-        <a id="reset-authenticator" asp-action="ResetAuthenticator" class="btn btn-primary">@T["Reset authenticator app"]</a>
-    }
+        }
+    </div>
+
+    <div class="text-center">
+        <h3 class="text-center">@T["Authenticator App"]</h3>
+        @if (!Model.HasAuthenticator)
+        {
+            <a id="enable-authenticator" asp-action="EnableAuthenticator" class="btn btn-primary">@T["Add authenticator app"]</a>
+        }
+        else
+        {
+            <a id="enable-authenticator" asp-action="EnableAuthenticator" class="btn btn-primary">@T["Set up authenticator app"]</a>
+            <a id="reset-authenticator" asp-action="ResetAuthenticator" class="btn btn-primary">@T["Reset authenticator app"]</a>
+        }
+    </div>
 }
 else
 {
-    <div class="alert alert-danger">
+    <div class="alert alert-danger text-center">
         <strong>@T["Privacy and cookie policy have not been accepted."]</strong>
         <p>@T["You must accept the policy before you can enable two factor authentication."]</p>
     </div>

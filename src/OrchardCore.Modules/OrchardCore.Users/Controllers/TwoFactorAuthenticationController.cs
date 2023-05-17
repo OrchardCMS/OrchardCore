@@ -23,6 +23,7 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
+using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Controllers;
@@ -153,7 +154,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
 
         _logger.LogWarning("Invalid authenticator code entered for user with ID '{UserId}'.", userId);
 
-        ModelState.AddModelError(String.Empty, "Invalid authenticator code.");
+        ModelState.AddModelError(String.Empty, S["Invalid authenticator code."]);
 
         // Login failed with a known user.
         await _accountEvents.InvokeAsync((e, user) => e.LoggingInFailedAsync(user), user, _logger);
@@ -235,7 +236,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
 
             _logger.LogWarning("Invalid recovery code entered for user with ID '{UserId}' ", userId);
 
-            ModelState.AddModelError(String.Empty, "Invalid recovery code entered.");
+            ModelState.AddModelError(String.Empty, S["Invalid recovery code entered."]);
         }
 
         return View(model);
@@ -263,7 +264,6 @@ public class TwoFactorAuthenticationController : AccountBaseController
 
         return View(model);
     }
-
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -306,6 +306,15 @@ public class TwoFactorAuthenticationController : AccountBaseController
 
         _logger.LogInformation("User with ID '{UserId}' has enabled 2FA with an authenticator app.", userId);
 
+        var twoFactorClaim = User.Claims
+            .FirstOrDefault(claim => claim.Type == TwoFactorAuthenticationClaimsProvider.TwoFactorAuthenticationClaimType);
+
+        if (twoFactorClaim != null)
+        {
+            await _userManager.RemoveClaimAsync(user, twoFactorClaim);
+            await _signInManager.RefreshSignInAsync(user);
+        }
+
         await _notifier.SuccessAsync(H["Your authenticator app has been verified."]);
 
         if (await _userManager.CountRecoveryCodesAsync(user) == 0)
@@ -341,7 +350,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
             Is2faEnabled = await _userManager.GetTwoFactorEnabledAsync(user),
             IsMachineRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
             RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user),
-            CanDisable2Fa = !await CanEnableTwoFactorAuthenticationAsync(loginSettings, user) && !loginSettings.RequireTwoFactorAuthentication,
+            CanDisable2Fa = !loginSettings.RequireTwoFactorAuthentication,
         };
 
         return View(model);
@@ -533,9 +542,9 @@ public class TwoFactorAuthenticationController : AccountBaseController
             return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
-        if (await CanEnableTwoFactorAuthenticationAsync(loginSettings, user) && loginSettings.RequireTwoFactorAuthentication)
+        if (loginSettings.RequireTwoFactorAuthentication)
         {
-            await _notifier.WarningAsync(H["Two factor authentication cannot be disabled for the current user."]);
+            await _notifier.WarningAsync(H["Two-factor authentication cannot be disabled for the current user."]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -562,9 +571,9 @@ public class TwoFactorAuthenticationController : AccountBaseController
             return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
-        if (await CanEnableTwoFactorAuthenticationAsync(loginSettings, user) && loginSettings.RequireTwoFactorAuthentication)
+        if (loginSettings.RequireTwoFactorAuthentication)
         {
-            await _notifier.WarningAsync(H["Two factor authentication cannot be disabled for the current user."]);
+            await _notifier.WarningAsync(H["Two-factor authentication cannot be disabled for the current user."]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -572,12 +581,12 @@ public class TwoFactorAuthenticationController : AccountBaseController
         var disable2faResult = await _userManager.SetTwoFactorEnabledAsync(user, false);
         if (!disable2faResult.Succeeded)
         {
-            await _notifier.ErrorAsync(H["Unexpected error occurred disabling two factor authentication."]);
+            await _notifier.ErrorAsync(H["Unexpected error occurred disabling two-factor authentication."]);
         }
         else
         {
             _logger.LogInformation("User with ID '{UserId}' has disabled 2fa.", _userManager.GetUserId(User));
-            await _notifier.WarningAsync(H["Two factor authentication has been disabled. You can re-enable it when you setup an authenticator app"]);
+            await _notifier.WarningAsync(H["Two-factor authentication has been disabled. You can re-enable it when you setup an authenticator app"]);
         }
 
         return RedirectToAction(nameof(Index));

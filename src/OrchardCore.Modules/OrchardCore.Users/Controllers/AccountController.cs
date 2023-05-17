@@ -210,20 +210,6 @@ namespace OrchardCore.Users.Controllers
 
                                     if (result.Succeeded)
                                     {
-                                        if (await CanEnableTwoFactorAuthenticationAsync(loginSettings, user)
-                                            && loginSettings.RequireTwoFactorAuthentication
-                                            && !await _userManager.GetTwoFactorEnabledAsync(user))
-                                        {
-                                            // The app requires 2FA and the user have not complied yet. Send the user to Authenticator enrollment.
-                                            return RedirectToAction(
-                                                nameof(TwoFactorAuthenticationController.EnableAuthenticator),
-                                                typeof(TwoFactorAuthenticationController).ControllerName(),
-                                                new
-                                                {
-                                                    returnUrl
-                                                });
-                                        }
-
                                         _logger.LogInformation(1, "User logged in.");
                                         await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
 

@@ -47,22 +47,4 @@ public class AccountBaseController : Controller
 
         return Redirect("~/");
     }
-
-    protected async Task<bool> CanEnableTwoFactorAuthenticationAsync(LoginSettings loginSettings, IUser user)
-    {
-        if (loginSettings.EnableTwoFactorAuthenticationForSpecificRoles)
-        {
-            foreach (var role in loginSettings.Roles)
-            {
-                if (await _userManager.IsInRoleAsync(user, role))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        return loginSettings.EnableTwoFactorAuthentication;
-    }
 }

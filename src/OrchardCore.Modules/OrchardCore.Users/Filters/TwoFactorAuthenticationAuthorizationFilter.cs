@@ -1,13 +1,15 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
+using OrchardCore.Users.Services;
 
 namespace OrchardCore.Users.Filters;
 
@@ -19,6 +21,7 @@ public class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthorizationFil
     {
         _userOptions = userOptions.Value;
     }
+
     public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
     {
         if (context == null)
@@ -26,8 +29,9 @@ public class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthorizationFil
             throw new ArgumentNullException(nameof(context));
         }
 
-        if (context.HttpContext.Request.Path.Equals("/" + _userOptions.LogoffPath, StringComparison.OrdinalIgnoreCase)
-            || context.HttpContext.Request.Path.Equals("/EnableAuthenticator", StringComparison.OrdinalIgnoreCase))
+        if (!(context.HttpContext?.User?.Identity?.IsAuthenticated ?? false)
+            || context.HttpContext.Request.Path.Equals("/" + _userOptions.LogoffPath, StringComparison.OrdinalIgnoreCase)
+            || context.HttpContext.Request.Path.Equals("/" + _userOptions.EnableAuthenticatorPath, StringComparison.OrdinalIgnoreCase))
         {
             return;
         }
@@ -38,41 +42,22 @@ public class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthorizationFil
         {
             return;
         }
-        var settings = (await siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
-        if (settings.RequireTwoFactorAuthentication
-            && (context.HttpContext?.User?.Identity?.IsAuthenticated ?? false))
+        var loginSettings = (await siteService.GetSiteSettingsAsync()).As<LoginSettings>();
+
+        if (loginSettings.RequireTwoFactorAuthentication
+            && loginSettings.IsTwoFactorAuthenticationEnabled()
+            && context.HttpContext.User.HasClaim(claim => claim.Type == TwoFactorAuthenticationClaimsProvider.TwoFactorAuthenticationClaimType))
         {
-            var userManager = context.HttpContext.RequestServices.GetService<UserManager<IUser>>();
+            var notifier = context.HttpContext.RequestServices.GetService<INotifier>();
+            var H = context.HttpContext.RequestServices.GetService<IHtmlLocalizer<TwoFactorAuthenticationAuthorizationFilter>>();
 
-            if (userManager != null)
+            if (notifier != null && H != null)
             {
-                var user = await userManager.GetUserAsync(context.HttpContext.User);
-
-                if (!await userManager.GetTwoFactorEnabledAsync(user)
-                    && await CanEnableTwoFactorAuthenticationAsync(settings, userManager, user))
-                {
-                    context.Result = new RedirectResult("~/EnableAuthenticator");
-                }
-            }
-        }
-    }
-
-    private async Task<bool> CanEnableTwoFactorAuthenticationAsync(LoginSettings loginSettings, UserManager<IUser> userManager, IUser user)
-    {
-        if (loginSettings.EnableTwoFactorAuthenticationForSpecificRoles)
-        {
-            foreach (var role in loginSettings.Roles)
-            {
-                if (await userManager.IsInRoleAsync(user, role))
-                {
-                    return true;
-                }
+                await notifier.WarningAsync(H["Two-factor authentication must be enabled before proceeding."]);
             }
 
-            return false;
+            context.Result = new RedirectResult("~/" + _userOptions.EnableAuthenticatorPath);
         }
-
-        return loginSettings.EnableTwoFactorAuthentication;
     }
 }
