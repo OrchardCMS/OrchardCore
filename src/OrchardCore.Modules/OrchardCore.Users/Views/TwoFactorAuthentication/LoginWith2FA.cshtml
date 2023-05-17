@@ -2,12 +2,11 @@
 @using OrchardCore.Users.Models
 @using OrchardCore.Entities
 
-@model LoginWith2FAViewModel
+@model LoginWithTwoFaViewModel
 
 @inject ISiteService SiteService
 @{
     ViewLayout = "Layout__Login";
-    var loginSettings = (await SiteService.GetSiteSettingsAsync()).As<LoginSettings>();
 }
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Two-factor authentication"])</h1></zone>
@@ -34,7 +33,7 @@
                     <label asp-for="TwoFactorCode">@T["Authenticator code"]</label>
                     <span asp-validation-for="TwoFactorCode" class="text-danger"></span>
                 </div>
-                @if (loginSettings.AllowRememberClientTwoFactorAuthentication)
+                @if (Model.AllowRememberClient)
                 {
                     <div class="mb-3">
                         <div class="form-check">

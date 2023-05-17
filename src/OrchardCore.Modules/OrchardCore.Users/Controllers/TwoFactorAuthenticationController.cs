@@ -31,7 +31,7 @@ namespace OrchardCore.Users.Controllers;
 [Authorize]
 public class TwoFactorAuthenticationController : AccountBaseController
 {
-    private const string _authenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits={3}";
+    private const string _authenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&digits={3}&issuer={0}";
 
     private readonly SignInManager<IUser> _signInManager;
     private readonly ILogger _logger;
@@ -92,10 +92,11 @@ public class TwoFactorAuthenticationController : AccountBaseController
             return RedirectToAction(nameof(AccountController.Login), typeof(AccountController).ControllerName());
         }
 
-        var model = new LoginWith2FAViewModel()
+        var model = new LoginWithTwoFaViewModel()
         {
             RememberMe = rememberMe,
             ReturnUrl = returnUrl,
+            AllowRememberClient = loginSettings.AllowRememberClientTwoFactorAuthentication,
         };
 
         return View(model);
@@ -104,7 +105,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
     [HttpPost]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> LoginWith2FA(LoginWith2FAViewModel model)
+    public async Task<IActionResult> LoginWith2FA(LoginWithTwoFaViewModel model)
     {
         var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
@@ -112,6 +113,8 @@ public class TwoFactorAuthenticationController : AccountBaseController
         {
             return NotFound();
         }
+
+        model.AllowRememberClient = loginSettings.AllowRememberClientTwoFactorAuthentication;
 
         if (!ModelState.IsValid)
         {
@@ -653,10 +656,10 @@ public class TwoFactorAuthenticationController : AccountBaseController
     {
         if (showEmail)
         {
-            return await _userManager.GetUserNameAsync(user);
+            return await _userManager.GetEmailAsync(user);
         }
 
-        return await _userManager.GetEmailAsync(user);
+        return await _userManager.GetUserNameAsync(user);
     }
 
     private static string FormatKey(string unformattedKey)
@@ -682,22 +685,17 @@ public class TwoFactorAuthenticationController : AccountBaseController
         return code.Replace(" ", String.Empty).Replace("-", String.Empty);
     }
 
-    private async Task<string> GenerateQrCodeUriAsync(string username, string unformattedKey, int tokenLength)
+    private async Task<string> GenerateQrCodeUriAsync(string displayName, string unformattedKey, int tokenLength)
     {
         var site = await _siteService.GetSiteSettingsAsync();
 
-        var name = site.SiteName;
-
-        if (String.IsNullOrWhiteSpace(name))
-        {
-            name = _shellSettings.Name;
-        }
+        var issuer = String.IsNullOrWhiteSpace(site.SiteName) ? _shellSettings.Name : site.SiteName.Trim();
 
         return String.Format(
             CultureInfo.InvariantCulture,
             _authenticatorUriFormat,
-            _urlEncoder.Encode(name),
-            _urlEncoder.Encode(username),
+            _urlEncoder.Encode(issuer),
+            _urlEncoder.Encode(displayName),
             unformattedKey,
             tokenLength);
     }

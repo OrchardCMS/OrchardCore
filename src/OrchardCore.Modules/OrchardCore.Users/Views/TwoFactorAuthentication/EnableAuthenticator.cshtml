@@ -25,6 +25,8 @@
             </p>
             <div class="row">
                 <div class="col-12 col-md-6 col-xl-5 col-xxl-4">
+                    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
                     <form id="send-code" method="post">
                         <div class="form-floating mb-3">
                             <input asp-for="Code" class="form-control" autocomplete="off" placeholder="@T["Please enter the code"]" />
@@ -32,7 +34,6 @@
                             <span asp-validation-for="Code" class="text-danger"></span>
                         </div>
                         <button type="submit" class="w-100 btn btn-lg btn-primary">@T["Verify"]</button>
-                        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                     </form>
                 </div>
             </div>

@@ -186,9 +186,8 @@ namespace OrchardCore.Users.Controllers
 
             if (TryValidateModel(model) && ModelState.IsValid)
             {
-                var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
-
-                if (loginSettings.DisableLocalLogin)
+                var disableLocalLogin = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().DisableLocalLogin;
+                if (disableLocalLogin)
                 {
                     ModelState.AddModelError(String.Empty, S["Local login is disabled."]);
                 }
