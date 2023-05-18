@@ -5,7 +5,8 @@ namespace OrchardCore.Users.Models
 {
     public static class LoginSettingsExtensions
     {
-        public static bool IsTwoFactorAuthenticationEnabled(this LoginSettings settings)
+        public static bool IsTwoFactorAuthenticationEnabled(this LoginSettings settings) => settings.EnableTwoFactorAuthentication
+                || settings.EnableTwoFactorAuthenticationForSpecificRoles;
         {
             return settings.EnableTwoFactorAuthentication
                 || settings.EnableTwoFactorAuthenticationForSpecificRoles;
