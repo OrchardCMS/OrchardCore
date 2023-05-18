@@ -218,7 +218,7 @@ namespace OrchardCore.Users.Controllers
 
                             if (result.RequiresTwoFactor)
                             {
-                                return RedirectToAction(nameof(TwoFactorAuthenticationController.LoginWith2FA),
+                                return RedirectToAction(nameof(TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication),
                                     typeof(TwoFactorAuthenticationController).ControllerName(),
                                     new
                                     {

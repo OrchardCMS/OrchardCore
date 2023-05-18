@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Users.ViewModels;
 
-public class LoginWithTwoFaViewModel
+public class LoginWithTwoFactorAuthenticationViewModel
 {
     public bool RememberMe { get; set; }
 
