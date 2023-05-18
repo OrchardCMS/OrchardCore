@@ -11,7 +11,7 @@ namespace OrchardCore.Workflows
         {
             SchemaBuilder.CreateMapIndexTable<WorkflowTypeIndex>(table => table
                 .Column<string>("WorkflowTypeId", c => c.WithLength(26))
-                .Column<string>("Name", c => c.WithLength(255))
+                .Column<string>("Name")
                 .Column<bool>("IsEnabled")
                 .Column<bool>("HasStart")
             );

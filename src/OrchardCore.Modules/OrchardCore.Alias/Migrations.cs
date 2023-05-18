@@ -2,9 +2,7 @@ using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.Data;
 using OrchardCore.Data.Migration;
-using OrchardCore.Environment.Shell;
 using YesSql.Sql;
 
 namespace OrchardCore.Alias
@@ -12,12 +10,10 @@ namespace OrchardCore.Alias
     public class Migrations : DataMigration
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly bool _isMySql;
 
-        public Migrations(IContentDefinitionManager contentDefinitionManager, ShellSettings shellSettings)
+        public Migrations(IContentDefinitionManager contentDefinitionManager)
         {
             _contentDefinitionManager = contentDefinitionManager;
-            _isMySql = shellSettings["DatabaseProvider"] == DatabaseProviderValue.MySql;
         }
 
         public int Create()
@@ -28,9 +24,9 @@ namespace OrchardCore.Alias
 
             // NOTE: The Alias Length has been upgraded from 64 characters to 767.
             // For existing SQL databases update the AliasPartIndex tables Alias column length manually.
-            // INFO: The Alias Length is now of 740 chars, but this is only used on a new installation.
+            // INFO: The Alias Length is now of 739 chars, but this is only used on a new installation.
             SchemaBuilder.CreateMapIndexTable<AliasPartIndex>(table => table
-                .Column<string>("Alias", col => col.WithLength(!_isMySql ? AliasPart.MaxAliasLength : 700))
+                .Column<string>("Alias", col => col.WithLength(AliasPart.MaxAliasLength))
                 .Column<string>("ContentItemId", c => c.WithLength(26))
                 .Column<bool>("Latest", c => c.WithDefault(false))
                 .Column<bool>("Published", c => c.WithDefault(true))
