@@ -200,7 +200,6 @@ namespace OrchardCore.Users.Controllers
                         if (user != null)
                         {
                             var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
-
                             if (result.Succeeded)
                             {
                                 if (!await AddConfirmEmailError(user) && !AddUserEnabledError(user))

@@ -13,5 +13,5 @@ public class TwoFactorAuthenticationViewModel
     public int RecoveryCodesLeft { get; set; }
 
     [BindNever]
-    public bool CanDisable2Fa { get; set; }
+    public bool CanDisableTwoFa { get; set; }
 }

@@ -351,7 +351,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
             Is2faEnabled = await _userManager.GetTwoFactorEnabledAsync(user),
             IsMachineRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
             RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user),
-            CanDisable2Fa = !loginSettings.RequireTwoFactorAuthentication,
+            CanDisableTwoFa = !loginSettings.RequireTwoFactorAuthentication,
         };
 
         return View(model);
@@ -652,14 +652,14 @@ public class TwoFactorAuthenticationController : AccountBaseController
         };
     }
 
-    private async Task<string> GetUserDisplayName(IUser user, bool showEmail)
+    private Task<string> GetUserDisplayName(IUser user, bool showEmail)
     {
         if (showEmail)
         {
-            return await _userManager.GetEmailAsync(user);
+            return _userManager.GetEmailAsync(user);
         }
 
-        return await _userManager.GetUserNameAsync(user);
+        return _userManager.GetUserNameAsync(user);
     }
 
     private static string FormatKey(string unformattedKey)

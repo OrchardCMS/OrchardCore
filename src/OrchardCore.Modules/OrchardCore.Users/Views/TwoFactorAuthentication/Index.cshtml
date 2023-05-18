@@ -59,7 +59,7 @@
                 </form>
             }
 
-            @if (Model.CanDisable2Fa)
+            @if (Model.CanDisableTwoFa)
             {
                 <a asp-action="Disable2fa" class="btn btn-primary">@T["Disable two-factor authentication"]</a>
             }
