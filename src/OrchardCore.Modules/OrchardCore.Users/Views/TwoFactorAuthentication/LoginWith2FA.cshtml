@@ -1,0 +1,61 @@
+@using OrchardCore.Settings
+@using OrchardCore.Users.Models
+@using OrchardCore.Entities
+
+@model LoginWithTwoFaViewModel
+
+@inject ISiteService SiteService
+@{
+    ViewLayout = "Layout__Login";
+}
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Two-factor authentication"])</h1></zone>
+
+<div class="container">
+
+    <p>@T["Your login is protected with a second authentication code. Enter your authenticator code below."]</p>
+
+    <div class="row">
+
+        @if (!ViewContext.ModelState.IsValid)
+        {
+            <div class="col-12">
+                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            </div>
+        }
+
+        <div class="offset-md-3 col-md-6">
+
+            <form method="post" asp-route-returnUrl="@Model.ReturnUrl">
+                <input asp-for="RememberMe" type="hidden" />
+                <div class="form-floating mb-3">
+                    <input asp-for="TwoFactorCode" class="form-control" autocomplete="off" />
+                    <label asp-for="TwoFactorCode">@T["Authenticator code"]</label>
+                    <span asp-validation-for="TwoFactorCode" class="text-danger"></span>
+                </div>
+                @if (Model.AllowRememberClient)
+                {
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input asp-for="RememberClient" class="form-check-input" />
+                            <label asp-for="RememberClient" class="form-check-label">@T["Remember this machine"]</label>
+                        </div>
+                    </div>
+                }
+                <div>
+                    <button type="submit" class="w-100 btn btn-lg btn-primary">@T["Log in"]</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <p class="p-3 pt-1">
+        @{
+            var url = Url.ActionLink("LoginWithRecoveryCode", controller: null, new
+            {
+                returnUrl = Model.ReturnUrl
+            });
+        }
+
+        @T["Don't have access to your authenticator device? You can <a id=\"recovery-code-login\" href=\"{0}\">log in with a recovery code</a>.", url]
+    </p>
+</div>
