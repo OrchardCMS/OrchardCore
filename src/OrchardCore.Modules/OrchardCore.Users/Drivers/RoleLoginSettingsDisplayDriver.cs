@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -16,7 +17,6 @@ namespace OrchardCore.Users.Drivers;
 
 public class RoleLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, LoginSettings>
 {
-    public const string GroupId = "userLogin";
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IRoleService _roleService;
@@ -55,12 +55,13 @@ public class RoleLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, LoginS
             }).OrderBy(entry => entry.Role)
             .ToArray();
         }).Location("Content:5.1#Two-factor Authentication")
-        .OnGroup(GroupId);
+        .OnGroup(LoginSettingsDisplayDriver.GroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(LoginSettings section, BuildEditorContext context)
     {
-        if (context.GroupId != GroupId || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
+        if (!context.GroupId.Equals(LoginSettingsDisplayDriver.GroupId, StringComparison.OrdinalIgnoreCase)
+            || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
         {
             return null;
         }

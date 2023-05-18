@@ -27,16 +27,22 @@
     </div>
 </div>
 
+@*
+
+// A possible issue in Identity prevents from validation token that are not 6 in length.
+// If this limitation is lifted, the following line can be removed.
+// For more info read https://github.com/dotnet/aspnetcore/issues/48317
+
 <div class="mb-3 two-fa-settings collapse@(Model.EnableTwoFactorAuthentication ? " show": String.Empty)" asp-validation-class-for="TokenLength">
     <label class="form-check-label" asp-for="TokenLength">@T["Token Length"]</label>
     <select asp-for="TokenLength" class="form-select">
-        <option value="6">@T["Six Digits"]</option>
-        <option value="8">@T["Eight Digits"]</option>
+        <option value="6">@T["Six digits"]</option>
+        <option value="8">@T["Eight digits"]</option>
     </select>
     <span asp-validation-for="TokenLength"></span>
     <span class="hint dashed">@T["The length token length that the authenticator app should generate. Default is 6."]</span>
 </div>
-
+*@
 <div class="mb-3 two-fa-settings collapse@(Model.EnableTwoFactorAuthentication ? " show": String.Empty)" asp-validation-class-for="NumberOfRecoveryCodesToGenerate">
     <span asp-validation-for="NumberOfRecoveryCodesToGenerate"></span>
     <label class="form-check-label" asp-for="NumberOfRecoveryCodesToGenerate">@T["Number of recovery codes to generate"]</label>

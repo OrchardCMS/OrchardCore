@@ -30,7 +30,7 @@
             @if (loginSettings.IsTwoFactorAuthenticationEnabled())
             {
                 <li>
-                    <a class="dropdown-item" asp-route-area="OrchardCore.Users" asp-controller="TwoFactorAuthentication" asp-action="Index"><i class="fa-solid fa-shield-halved fa-fw" aria-hidden="true"></i> @T["Two Factor Authentication"]</a>
+                    <a class="dropdown-item" asp-route-area="OrchardCore.Users" asp-controller="TwoFactorAuthentication" asp-action="Index"><i class="fa-solid fa-shield-halved fa-fw" aria-hidden="true"></i> @T["Security"]</a>
                 </li>
             }
             <li><button type="submit" class="dropdown-item"><span><i class="fa-solid fa-sign-out-alt" aria-hidden="true"></i></span>&nbsp;<span> @T["Log off"]</span></button></li>

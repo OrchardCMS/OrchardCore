@@ -131,7 +131,6 @@ public class TwoFactorAuthenticationController : AccountBaseController
 
         if (result.Succeeded)
         {
-            _logger.LogInformation(1, "User with ID '{UserId}' logged in with 2FA.", userId);
             await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
 
             return await LoggedInActionResult(user, model.ReturnUrl);
@@ -140,14 +139,12 @@ public class TwoFactorAuthenticationController : AccountBaseController
         if (result.IsLockedOut)
         {
             _logger.LogWarning("User account locked out.");
-
             ModelState.AddModelError(String.Empty, S["The account is locked out"]);
             await _accountEvents.InvokeAsync((e, user) => e.IsLockedOutAsync(user), user, _logger);
 
             return RedirectToAction(nameof(AccountController.Login), typeof(AccountController).ControllerName());
         }
 
-        _logger.LogWarning("Invalid authenticator code entered for user with ID '{UserId}'.", userId);
         ModelState.AddModelError(String.Empty, S["Invalid authenticator code."]);
 
         // Login failed with a known user.
@@ -209,7 +206,6 @@ public class TwoFactorAuthenticationController : AccountBaseController
 
             if (result.Succeeded)
             {
-                _logger.LogInformation("User with ID '{UserId}' logged in with a recovery code.", userId);
                 await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
 
                 return await LoggedInActionResult(user, model.ReturnUrl);
@@ -290,9 +286,6 @@ public class TwoFactorAuthenticationController : AccountBaseController
         }
 
         await _userManager.SetTwoFactorEnabledAsync(user, true);
-        var userId = await _userManager.GetUserIdAsync(user);
-
-        _logger.LogInformation("User with ID '{UserId}' has enabled 2FA with an authenticator app.", userId);
 
         var twoFactorClaim = User.Claims
             .FirstOrDefault(claim => claim.Type == TwoFactorAuthenticationClaimsProvider.TwoFactorAuthenticationClaimType);
@@ -308,7 +301,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
         if (await _userManager.CountRecoveryCodesAsync(user) == 0)
         {
             var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, loginSettings.NumberOfRecoveryCodesToGenerate);
-            await SetRecoveryCodes(recoveryCodes.ToArray(), userId);
+            await SetRecoveryCodes(recoveryCodes.ToArray(), await _userManager.GetUserIdAsync(user));
 
             return RedirectToAction(nameof(ShowRecoveryCodes));
         }
@@ -338,7 +331,8 @@ public class TwoFactorAuthenticationController : AccountBaseController
             IsTwoFaEnabled = await _userManager.GetTwoFactorEnabledAsync(user),
             IsMachineRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
             RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user),
-            CanDisableTwoFa = !loginSettings.RequireTwoFactorAuthentication,
+            CanDisableTwoFa = !loginSettings.RequireTwoFactorAuthentication
+            || !await loginSettings.CanEnableTwoFactorAuthenticationAsync(role => _userManager.IsInRoleAsync(user, role)),
         };
 
         return View(model);
@@ -423,10 +417,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
         }
 
         var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, loginSettings.NumberOfRecoveryCodesToGenerate);
-        var userId = await _userManager.GetUserIdAsync(user);
-        await SetRecoveryCodes(recoveryCodes.ToArray(), userId);
-
-        _logger.LogInformation("User with ID '{UserId}' has generated new 2FA recovery codes.", userId);
+        await SetRecoveryCodes(recoveryCodes.ToArray(), await _userManager.GetUserIdAsync(user));
 
         await _notifier.SuccessAsync(H["You have generated new recovery codes."]);
 
@@ -504,9 +495,6 @@ public class TwoFactorAuthenticationController : AccountBaseController
 
         await _userManager.SetTwoFactorEnabledAsync(user, false);
         await _userManager.ResetAuthenticatorKeyAsync(user);
-
-        _logger.LogInformation("User with ID '{UserId}' has reset their authentication app key.", await _userManager.GetUserIdAsync(user));
-
         await _signInManager.RefreshSignInAsync(user);
         await _notifier.SuccessAsync(H["Your authenticator app key has been reset, you will need to configure your authenticator app using the new key."]);
 
@@ -529,7 +517,8 @@ public class TwoFactorAuthenticationController : AccountBaseController
             return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
-        if (loginSettings.RequireTwoFactorAuthentication)
+        if (loginSettings.RequireTwoFactorAuthentication
+            && await loginSettings.CanEnableTwoFactorAuthenticationAsync(role => _userManager.IsInRoleAsync(user, role)))
         {
             await _notifier.WarningAsync(H["Two-factor authentication cannot be disabled for the current user."]);
 
@@ -558,7 +547,8 @@ public class TwoFactorAuthenticationController : AccountBaseController
             return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
-        if (loginSettings.RequireTwoFactorAuthentication)
+        if (loginSettings.RequireTwoFactorAuthentication
+            && await loginSettings.CanEnableTwoFactorAuthenticationAsync(role => _userManager.IsInRoleAsync(user, role)))
         {
             await _notifier.WarningAsync(H["Two-factor authentication cannot be disabled for the current user."]);
 
@@ -572,7 +562,6 @@ public class TwoFactorAuthenticationController : AccountBaseController
         }
         else
         {
-            _logger.LogInformation("User with ID '{UserId}' has disabled 2fa.", _userManager.GetUserId(User));
             await _notifier.WarningAsync(H["Two-factor authentication has been disabled. You can re-enable it when you setup an authenticator app"]);
         }
 
@@ -676,8 +665,8 @@ public class TwoFactorAuthenticationController : AccountBaseController
     }
 
     private static string StripToken(string code) =>
-     code.Replace(" ", String.Empty).Replace("-", String.Empty);
+        code.Replace(" ", String.Empty).Replace("-", String.Empty);
 
     private static string GetRecoveryCodesCacheKey(string userId)
-    => $"TwoFactorAuthenticationRecoveryCodes_{userId}";
+        => $"TwoFactorAuthenticationRecoveryCodes_{userId}";
 }

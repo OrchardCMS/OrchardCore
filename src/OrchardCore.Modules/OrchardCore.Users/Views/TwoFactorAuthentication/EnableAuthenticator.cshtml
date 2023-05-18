@@ -1,6 +1,14 @@
+@using OrchardCore.Users.Services
 @model EnableAuthenticatorViewModel
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Configure Authenticator App"])</h1></zone>
+
+@if (User.HasClaim(claim => claim.Type == TwoFactorAuthenticationClaimsProvider.TwoFactorAuthenticationClaimType))
+{
+    <div class="alert alert-danger text-center py-3">
+        @T["Two-factor authentication must be enabled before proceeding."]
+    </div>
+}
 
 <div>
     <p>@T["To use an authenticator app go through the following steps:"]</p>

@@ -1,5 +1,4 @@
 @using Microsoft.AspNetCore.Http.Features
-@using OrchardCore.Users.Services
 
 @model TwoFactorAuthenticationViewModel
 
@@ -8,13 +7,6 @@
 }
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Two-factor Authentication"])</h1></zone>
-
-@if (User.HasClaim(claim => claim.Type == TwoFactorAuthenticationClaimsProvider.TwoFactorAuthenticationClaimType))
-{
-    <div class="text-center text-danger">
-        @T["Two-factor authentication must be enabled before proceeding."]
-    </div>
-}
 
 @if (canTrack)
 {

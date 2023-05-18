@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -72,7 +73,8 @@ namespace OrchardCore.Users.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(LoginSettings section, BuildEditorContext context)
         {
-            if (context.GroupId != GroupId || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
+            if (!context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase)
+                || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
             {
                 return null;
             }
@@ -84,10 +86,15 @@ namespace OrchardCore.Users.Drivers
                 context.Updater.ModelState.AddModelError(Prefix, nameof(section.NumberOfRecoveryCodesToGenerate), S["Number of Recovery Codes to Generate should be grater than 0."]);
             }
 
+            // A possible issue in Identity prevents from validation token that are not 6 in length.
+            // If this limitation is lifted, the following block can be uncommented.
+            // For more info read https://github.com/dotnet/aspnetcore/issues/48317
+            /*
             if (section.TokenLength != 6 && section.TokenLength != 8)
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(section.TokenLength), S["The token length should be either 6 or 8."]);
             }
+            */
 
             return await EditAsync(section, context);
         }

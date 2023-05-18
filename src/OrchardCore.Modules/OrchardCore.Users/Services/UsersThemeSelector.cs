@@ -47,7 +47,7 @@ namespace OrchardCore.Users.Services
                         break;
                     case "TwoFactorAuthentication":
                         useSiteTheme = routeValues["action"] != null
-                            && routeValues["action"].ToString().StartsWith("LoginWith")
+                            && routeValues["action"].ToString().StartsWith("LoginWith", StringComparison.OrdinalIgnoreCase)
                             && (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().UseSiteTheme;
                         break;
                     case "Registration":
