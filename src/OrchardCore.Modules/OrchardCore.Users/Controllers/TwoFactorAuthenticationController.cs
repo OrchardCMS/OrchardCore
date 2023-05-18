@@ -71,7 +71,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<IActionResult> LoginWith2FA(bool rememberMe, string returnUrl = null)
+    public async Task<IActionResult> LoginWithTwoFactorAuthentication(bool rememberMe, string returnUrl = null)
     {
         var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
@@ -88,7 +88,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
             return RedirectToAction(nameof(AccountController.Login), typeof(AccountController).ControllerName());
         }
 
-        var model = new LoginWithTwoFaViewModel()
+        var model = new LoginWithTwoFactorAuthenticationViewModel()
         {
             RememberMe = rememberMe,
             ReturnUrl = returnUrl,
@@ -101,7 +101,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
     [HttpPost]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> LoginWith2FA(LoginWithTwoFaViewModel model)
+    public async Task<IActionResult> LoginWithTwoFactorAuthentication(LoginWithTwoFactorAuthenticationViewModel model)
     {
         var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
@@ -502,7 +502,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
     }
 
     [Admin]
-    public async Task<IActionResult> Disable2FA()
+    public async Task<IActionResult> DisableTwoFactorAuthentication()
     {
         var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
@@ -531,8 +531,8 @@ public class TwoFactorAuthenticationController : AccountBaseController
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Admin]
-    [ActionName(nameof(Disable2FA))]
-    public async Task<IActionResult> Disable2FAPost()
+    [ActionName(nameof(DisableTwoFactorAuthentication))]
+    public async Task<IActionResult> DisableTwoFactorAuthenticationPost()
     {
         var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
