@@ -216,17 +216,17 @@ namespace OrchardCore.Resources
             manifest
                 .DefineStyle("nouislider")
                 .SetUrl("~/OrchardCore.Resources/Styles/nouislider.min.css", "~/OrchardCore.Resources/Styles/nouislider.css")
-                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.css", "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.css")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css", "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.css")
                 .SetCdnIntegrity("sha384-PSZaVsyG9jDu8hFaSJev5s/9poIJlX7cuxSGdqCgXRHpo2DzIaZAyCd2rG/DJJmV", "sha384-SW0/EWtnMakMnwC9RHA27DeNtNCLsJ0l+oZrXlFbb2123lhLdZIbiDiwRPogNY8T")
-                .SetVersion("15.6.1");
+                .SetVersion("15.7.0");
 
             manifest
                 .DefineScript("nouislider")
                 .SetDependencies("jQuery")
                 .SetUrl("~/OrchardCore.Resources/Scripts/nouislider/nouislider.min.js", "~/OrchardCore.Resources/Scripts/nouislider/nouislider.js")
-                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.0/nouislider.min.js", "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.0/nouislider.js")
-                .SetCdnIntegrity("sha384-KiWE02DmrpKdHbQq8GswlJMAWML1i8bcHHKVrFiRIV6MFi8sLmFIbDMh4vQtX1Cd", "sha384-Iek2GBf0UVr6cs/ouPtsOrm0qzhXLwtQkWrRKIaIdW54zCWDsdD9jreTGmQTeUml")
-                .SetVersion("15.6.0");
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js", "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.js")
+                .SetCdnIntegrity("sha384-/gBUOLHADjY2rp6bHB0IyW9AC28q4OsnirJScje4l1crgYW7Qarx3dH8zcqcUgmy", "sha384-ZRTsSqAkR2D5UR6P8ew9nDImNmAueqBx3QIljDVMucOjF3eVskkMIk50HUW239mY")
+                .SetVersion("15.7.0");
 
             manifest
                 .DefineStyle("codemirror")

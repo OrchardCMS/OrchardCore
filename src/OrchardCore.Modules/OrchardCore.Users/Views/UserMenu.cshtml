@@ -1,7 +1,13 @@
 @using System.Security.Claims
+@using OrchardCore.Settings
+@using OrchardCore.Users.Models
+@using OrchardCore.Entities
+
+@inject ISiteService SiteService
 @inject IAuthorizationService AuthorizationService
 @{
     var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var loginSettings = (await SiteService.GetSiteSettingsAsync()).As<LoginSettings>();
 }
 <div class="dropdown">
     <form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post" class="no-multisubmit">
@@ -20,6 +26,13 @@
                 <li><a class="dropdown-item" asp-area="OrchardCore.Users" asp-action="Display" asp-controller="Admin" asp-route-id="@userId" asp-route-returnUrl="@FullRequestPath"><span><i class="far fa-address-card" aria-hidden="true"></i></span>&nbsp;<span> @T["Profile"]</span></a></li>
             }
             <li><a class="dropdown-item" asp-area="OrchardCore.Users" asp-controller="Account" asp-action="ChangePassword" asp-route-returnUrl="@FullRequestPath"><span><i class="fa-solid fa-key" aria-hidden="true"></i></span>&nbsp;<span> @T["Change password"]</span></a></li>
+
+            @if (loginSettings.IsTwoFactorAuthenticationEnabled())
+            {
+                <li>
+                    <a class="dropdown-item" asp-route-area="OrchardCore.Users" asp-controller="TwoFactorAuthentication" asp-action="Index"><i class="fa-solid fa-shield-halved fa-fw" aria-hidden="true"></i> @T["Security"]</a>
+                </li>
+            }
             <li><button type="submit" class="dropdown-item"><span><i class="fa-solid fa-sign-out-alt" aria-hidden="true"></i></span>&nbsp;<span> @T["Log off"]</span></button></li>
         </ul>
     </form>

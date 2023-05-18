@@ -57,18 +57,21 @@ namespace OrchardCore.Search.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (context.GroupId != GroupId || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageSearchSettings))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageSearchSettings))
             {
                 return null;
             }
 
-            var model = new SearchSettingsViewModel();
-
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
-                section.ProviderName = model.ProviderName;
-                section.Placeholder = model.Placeholder;
-                section.PageTitle = model.PageTitle;
+                var model = new SearchSettingsViewModel();
+
+                if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+                {
+                    section.ProviderName = model.ProviderName;
+                    section.Placeholder = model.Placeholder;
+                    section.PageTitle = model.PageTitle;
+                }
             }
 
             return await EditAsync(section, context);

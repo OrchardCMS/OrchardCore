@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Notify;
@@ -23,19 +22,17 @@ using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
-using IWorkflowManager = OrchardCore.Workflows.Services.IWorkflowManager;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace OrchardCore.Users.Controllers
 {
     [Authorize]
-    public class AccountController : Controller
+    public class AccountController : AccountBaseController
     {
         public const string DefaultExternalLoginProtector = "DefaultExternalLogin";
 
         private readonly IUserService _userService;
         private readonly SignInManager<IUser> _signInManager;
-        private readonly UserManager<IUser> _userManager;
         private readonly ILogger _logger;
         private readonly ISiteService _siteService;
         private readonly IEnumerable<ILoginFormEvent> _accountEvents;
@@ -61,9 +58,9 @@ namespace OrchardCore.Users.Controllers
             IDistributedCache distributedCache,
             IDataProtectionProvider dataProtectionProvider,
             IEnumerable<IExternalLoginEventHandler> externalLoginHandlers)
+            : base(userManager)
         {
             _signInManager = signInManager;
-            _userManager = userManager;
             _userService = userService;
             _logger = logger;
             _siteService = siteService;
@@ -219,6 +216,17 @@ namespace OrchardCore.Users.Controllers
                                 }
                             }
 
+                            if (result.RequiresTwoFactor)
+                            {
+                                return RedirectToAction(nameof(TwoFactorAuthenticationController.LoginWith2FA),
+                                    typeof(TwoFactorAuthenticationController).ControllerName(),
+                                    new
+                                    {
+                                        returnUrl,
+                                        model.RememberMe
+                                    });
+                            }
+
                             if (result.IsLockedOut)
                             {
                                 ModelState.AddModelError(String.Empty, S["The account is locked out"]);
@@ -296,35 +304,6 @@ namespace OrchardCore.Users.Controllers
             {
                 ModelState.AddModelError(String.Empty, error.Description);
             }
-        }
-
-        private IActionResult RedirectToLocal(string returnUrl)
-        {
-            if (Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl.ToUriComponents());
-            }
-
-            return Redirect("~/");
-        }
-
-        private async Task<IActionResult> LoggedInActionResult(IUser user, string returnUrl = null, ExternalLoginInfo info = null)
-        {
-            var workflowManager = HttpContext.RequestServices.GetService<IWorkflowManager>();
-            if (workflowManager != null && user is User u)
-            {
-                var input = new Dictionary<string, object>
-                {
-                    ["UserName"] = user.UserName,
-                    ["ExternalClaims"] = info?.Principal?.GetSerializableClaims() ?? Enumerable.Empty<SerializableClaim>(),
-                    ["Roles"] = u.RoleNames,
-                    ["Provider"] = info?.LoginProvider
-                };
-                await workflowManager.TriggerEventAsync(nameof(Workflows.Activities.UserLoggedInEvent),
-                    input: input, correlationId: u.UserId);
-            }
-
-            return RedirectToLocal(returnUrl);
         }
 
         [HttpPost]

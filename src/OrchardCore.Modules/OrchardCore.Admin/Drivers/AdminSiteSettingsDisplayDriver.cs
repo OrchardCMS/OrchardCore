@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -51,7 +52,7 @@ namespace OrchardCore.Admin.Drivers
                 return null;
             }
 
-            if (context.GroupId == GroupId)
+            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
                 var model = new AdminSettingsViewModel();
 
