@@ -149,7 +149,7 @@ namespace OrchardCore.Users
                 name: "LoginWith2fa",
                 areaName: "OrchardCore.Users",
                 pattern: "LoginWith2fa",
-                defaults: new { controller = twoFaControllerName, action = nameof(TwoFactorAuthenticationController.LoginWith2FA) }
+                defaults: new { controller = twoFaControllerName, action = nameof(TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication) }
             );
             routes.MapAreaControllerRoute(
                 name: "EnableAuthenticator",
@@ -185,7 +185,7 @@ namespace OrchardCore.Users
                 name: "Disable2FA",
                 areaName: "OrchardCore.Users",
                 pattern: "Disable2FA",
-                defaults: new { controller = twoFaControllerName, action = nameof(TwoFactorAuthenticationController.Disable2FA) }
+                defaults: new { controller = twoFaControllerName, action = nameof(TwoFactorAuthenticationController.DisableTwoFactorAuthentication) }
             );
             routes.MapAreaControllerRoute(
                 name: "LoginWithRecoveryCode",
