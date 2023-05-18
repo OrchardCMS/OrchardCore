@@ -21,9 +21,6 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: "15"
-#    - name: Fix nuget restore issue
-#      run: |
-#          apt update && apt --only-upgrade install ca-certificates -y
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
