@@ -7,10 +7,6 @@ namespace OrchardCore.Users.Models
     {
         public static bool IsTwoFactorAuthenticationEnabled(this LoginSettings settings) => settings.EnableTwoFactorAuthentication
                 || settings.EnableTwoFactorAuthenticationForSpecificRoles;
-        {
-            return settings.EnableTwoFactorAuthentication
-                || settings.EnableTwoFactorAuthenticationForSpecificRoles;
-        }
 
         public static async Task<bool> CanEnableTwoFactorAuthenticationAsync(this LoginSettings loginSettings, Func<string, Task<bool>> isInRole)
         {

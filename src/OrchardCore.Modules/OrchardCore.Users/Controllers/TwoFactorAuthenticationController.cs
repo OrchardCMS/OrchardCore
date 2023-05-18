@@ -7,7 +7,6 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -39,7 +38,6 @@ public class TwoFactorAuthenticationController : AccountBaseController
     private readonly IEnumerable<ILoginFormEvent> _accountEvents;
     private readonly INotifier _notifier;
     private readonly IDistributedCache _distributedCache;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly UrlEncoder _urlEncoder;
     private readonly ShellSettings _shellSettings;
     private readonly IHtmlLocalizer H;
@@ -55,7 +53,6 @@ public class TwoFactorAuthenticationController : AccountBaseController
         IEnumerable<ILoginFormEvent> accountEvents,
         INotifier notifier,
         IDistributedCache distributedCache,
-        IDataProtectionProvider dataProtectionProvider,
         UrlEncoder urlEncoder,
         ShellSettings shellSettings)
         : base(userManager)
@@ -66,7 +63,6 @@ public class TwoFactorAuthenticationController : AccountBaseController
         _accountEvents = accountEvents;
         _notifier = notifier;
         _distributedCache = distributedCache;
-        _dataProtectionProvider = dataProtectionProvider;
         _urlEncoder = urlEncoder;
         _shellSettings = shellSettings;
         H = htmlLocalizer;
@@ -129,17 +125,13 @@ public class TwoFactorAuthenticationController : AccountBaseController
         }
 
         var authenticatorCode = StripToken(model.TwoFactorCode);
-
         var rememberClient = loginSettings.AllowRememberClientTwoFactorAuthentication && model.RememberClient;
-
         var result = await _signInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode, model.RememberMe, rememberClient);
-
         var userId = await _userManager.GetUserIdAsync(user);
 
         if (result.Succeeded)
         {
             _logger.LogInformation(1, "User with ID '{UserId}' logged in with 2FA.", userId);
-
             await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
 
             return await LoggedInActionResult(user, model.ReturnUrl);
@@ -156,7 +148,6 @@ public class TwoFactorAuthenticationController : AccountBaseController
         }
 
         _logger.LogWarning("Invalid authenticator code entered for user with ID '{UserId}'.", userId);
-
         ModelState.AddModelError(String.Empty, S["Invalid authenticator code."]);
 
         // Login failed with a known user.
@@ -219,7 +210,6 @@ public class TwoFactorAuthenticationController : AccountBaseController
             if (result.Succeeded)
             {
                 _logger.LogInformation("User with ID '{UserId}' logged in with a recovery code.", userId);
-
                 await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
 
                 return await LoggedInActionResult(user, model.ReturnUrl);
@@ -236,7 +226,6 @@ public class TwoFactorAuthenticationController : AccountBaseController
             }
 
             _logger.LogWarning("Invalid recovery code entered for user with ID '{UserId}' ", userId);
-
             ModelState.AddModelError(String.Empty, S["Invalid recovery code entered."]);
         }
 
@@ -290,9 +279,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
         }
 
         var verificationCode = StripToken(model.Code);
-
         var provider = _userManager.Options.Tokens.AuthenticatorTokenProvider;
-
         var is2faTokenValid = await _userManager.VerifyTwoFactorTokenAsync(user, provider, verificationCode);
 
         if (!is2faTokenValid)
@@ -348,7 +335,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
         var model = new TwoFactorAuthenticationViewModel()
         {
             HasAuthenticator = await _userManager.GetAuthenticatorKeyAsync(user) != null,
-            Is2faEnabled = await _userManager.GetTwoFactorEnabledAsync(user),
+            IsTwoFaEnabled = await _userManager.GetTwoFactorEnabledAsync(user),
             IsMachineRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
             RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user),
             CanDisableTwoFa = !loginSettings.RequireTwoFactorAuthentication,
@@ -376,7 +363,6 @@ public class TwoFactorAuthenticationController : AccountBaseController
         }
 
         await _signInManager.ForgetTwoFactorClientAsync();
-
         await _notifier.SuccessAsync(H["The current browser has been forgotten. When you login again from this browser you will be prompted for your 2fa code."]);
 
         return RedirectToAction(nameof(Index));
@@ -627,11 +613,6 @@ public class TwoFactorAuthenticationController : AccountBaseController
         return Array.Empty<string>();
     }
 
-    private static string GetRecoveryCodesCacheKey(string userId)
-    {
-        return $"TwoFactorAuthenticationRecoveryCodes_{userId}";
-    }
-
     private async Task<EnableAuthenticatorViewModel> LoadSharedKeyAndQrCodeUriAsync(IUser user, LoginSettings settings)
     {
         // Load the authenticator key & QR code URI to display on the form.
@@ -679,12 +660,6 @@ public class TwoFactorAuthenticationController : AccountBaseController
         return result.ToString().ToLowerInvariant();
     }
 
-    private static string StripToken(string code)
-    {
-        // Strip spaces and hyphens.
-        return code.Replace(" ", String.Empty).Replace("-", String.Empty);
-    }
-
     private async Task<string> GenerateQrCodeUriAsync(string displayName, string unformattedKey, int tokenLength)
     {
         var site = await _siteService.GetSiteSettingsAsync();
@@ -699,4 +674,10 @@ public class TwoFactorAuthenticationController : AccountBaseController
             unformattedKey,
             tokenLength);
     }
+
+    private static string StripToken(string code) =>
+     code.Replace(" ", String.Empty).Replace("-", String.Empty);
+
+    private static string GetRecoveryCodesCacheKey(string userId)
+    => $"TwoFactorAuthenticationRecoveryCodes_{userId}";
 }

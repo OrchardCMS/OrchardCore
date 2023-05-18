@@ -19,7 +19,7 @@
 @if (canTrack)
 {
     <div class="mb-5 text-center">
-        @if (Model.Is2faEnabled)
+        @if (Model.IsTwoFaEnabled)
         {
             <h4 class="text-center text-success">@T["Two-factor authentication is enabled."]  </h4>
         }
@@ -28,7 +28,7 @@
             <h4 class="text-center text-danger">@T["Two-factor authentication is not enabled yet."]  </h4>
         }
 
-        @if (Model.Is2faEnabled)
+        @if (Model.IsTwoFaEnabled)
         {
             if (Model.RecoveryCodesLeft == 0)
             {
