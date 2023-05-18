@@ -131,11 +131,6 @@ jobs:
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
-    # - name: Set Database Collation
-    #   run: |
-    #       apt-get install mariadb-client -y
-    #       mariadb --host mariadb --port 3306 --user=root --password=test123 \
-    #       --execute "alter database test collate = 'utf8mb3_general_ci';"
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
