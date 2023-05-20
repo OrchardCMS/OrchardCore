@@ -76,36 +76,47 @@ namespace OrchardCore.Search.Lucene.Handlers
                 // Only process the last context.
                 var context = ContextsById.Last();
 
-                ContentItem published = null, latest = null;
-                bool publishedLoaded = false, latestLoaded = false;
+                ContentItem published = null, latest = context.ContentItem;
 
+                if (context is PublishContentContext publishContext)
+                {
+                    if (publishContext.Cancel)
+                    {
+                        continue;
+                    }
+                    if (publishContext.PreviousItem != null)
+                    {
+                        published = publishContext.PreviousItem;
+                    }
+                }
                 foreach (var indexSettings in await luceneIndexSettingsService.GetSettingsAsync())
                 {
                     var cultureAspect = await contentManager.PopulateAspectAsync<CultureAspect>(context.ContentItem);
                     var culture = cultureAspect.HasCulture ? cultureAspect.Culture.Name : null;
                     var ignoreIndexedCulture = indexSettings.Culture == "any" ? false : culture != indexSettings.Culture;
-
                     if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType) && !ignoreIndexedCulture)
                     {
-                        if (!indexSettings.IndexLatest && !publishedLoaded)
-                        {
-                            publishedLoaded = true;
-                            published = await contentManager.GetAsync(context.ContentItem.ContentItemId, VersionOptions.Published);
-                        }
-
-                        if (indexSettings.IndexLatest && !latestLoaded)
-                        {
-                            latestLoaded = true;
-                            latest = await contentManager.GetAsync(context.ContentItem.ContentItemId, VersionOptions.Latest);
-                        }
-
-                        var contentItem = !indexSettings.IndexLatest ? published : latest;
-
-                        if (contentItem == null)
+                        if (context is RemoveContentContext)
                         {
                             await luceneIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
+                            continue;
+                        }
+
+                        ContentItem contentItem;
+                        if (!indexSettings.IndexLatest)
+                        {
+                            if (published is null)
+                            {
+                                published = await contentManager.GetAsync(context.ContentItem.ContentItemId, VersionOptions.Published);
+                            }
+                            contentItem = published;
                         }
                         else
+                        {
+                            contentItem = latest;
+                        }
+
+                        if (contentItem != null)
                         {
                             var buildIndexContext = new BuildIndexContext(new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId), contentItem, new string[] { contentItem.ContentType }, new LuceneContentIndexSettings());
                             await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
