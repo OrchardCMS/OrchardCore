@@ -86,8 +86,8 @@ namespace OrchardCore.Workflows.Controllers
 
             var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
 
-            var query = _session.QueryIndex<WorkflowIndex>();
-            query = query.Where(x => x.WorkflowTypeId == workflowType.WorkflowTypeId);
+            var query = _session.QueryIndex<WorkflowIndex>()
+                .Where(x => x.WorkflowTypeId == workflowType.WorkflowTypeId);
 
             switch (model.Options.Filter)
             {
