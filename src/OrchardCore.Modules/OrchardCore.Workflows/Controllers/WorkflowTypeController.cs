@@ -130,7 +130,8 @@ namespace OrchardCore.Workflows.Controllers
             // through it.
             foreach (var workflowTypeId in workflowTypeIds.ToArray())
             {
-                var workflowInstance = await _session.QueryIndex<WorkflowIndex>(index =>
+                var workflowInstance = await _session.QueryIndex<WorkflowIndex>(index => index.WorkflowTypeId == workflowTypeId)
+                    .FirstOrDefaultAsync();
                         index.WorkflowTypeId == workflowTypeId)
                     .FirstOrDefaultAsync();
                 if (workflowInstance == null)
