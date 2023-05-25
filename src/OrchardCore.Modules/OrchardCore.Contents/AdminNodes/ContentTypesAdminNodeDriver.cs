@@ -50,7 +50,7 @@ namespace OrchardCore.Contents.AdminNodes
                 {
                     ContentTypeId = x.Name,
                     IsChecked = treeNode.ContentTypes.Any(selected => String.Equals(selected.ContentTypeId, x.Name, StringComparison.OrdinalIgnoreCase)),
-                    IconClass = treeNode.ContentTypes.Where(selected => selected.ContentTypeId == x.Name).FirstOrDefault()?.IconClass ?? String.Empty
+                    IconClass = treeNode.ContentTypes.FirstOrDefault(selected => selected.ContentTypeId == x.Name)?.IconClass ?? String.Empty
                 }).ToArray();
             }).Location("Content");
         }
