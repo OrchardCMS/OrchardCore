@@ -5,31 +5,17 @@
     "build": "gulp build",
     "rebuild": "gulp rebuild",
     "watch": " gulp watch",
-    "install:orchardcore.admindashboard": "cd src/OrchardCore.Modules/OrchardCore.AdminDashboard && npm install",
-    "install:orchardcore.adminmenu": "cd src/OrchardCore.Modules/OrchardCore.AdminMenu && npm install",
-    "install:orchardcore.apis.graphql": "cd src/OrchardCore.Modules/OrchardCore.Apis.GraphQL && npm install",
-    "install:orchardcore.liquid": "cd src/OrchardCore.Modules/OrchardCore.Liquid && npm install",
-    "install:orchardcore.markdown": "cd src/OrchardCore.Modules/OrchardCore.Markdown && npm install",
-    "install:orchardcore.media": "cd src/OrchardCore.Modules/OrchardCore.Media && npm install",
-    "install:orchardcore.resources": "cd src/OrchardCore.Modules/OrchardCore.Resources && npm install",
-    "install:orchardcore.setup": "cd src/OrchardCore.Modules/OrchardCore.Setup && npm install",
-    "install:orchardcore.spatial": "cd src/OrchardCore.Modules/OrchardCore.Spatial && npm install",
-    "install:orchardcore.themes": "cd src/OrchardCore.Modules/OrchardCore.Themes && npm install",
-    "install:orchardcore.shortcodes": "cd src/OrchardCore.Modules/OrchardCore.Shortcodes && npm install",
-    "install:orchardcore.workflows": "cd src/OrchardCore.Modules/OrchardCore.Workflows && npm install",
-    "install:orchardcore.audittrail": "cd src/OrchardCore.Modules/OrchardCore.AuditTrail && npm install",
-    "install:orchardcore.theadmin": "cd src/OrchardCore.Themes/TheAdmin && npm install",
-    "install:orchardcore.theagencytheme": "cd src/OrchardCore.Themes/TheAgencyTheme && npm install",
-    "install:orchardcore.theblogtheme": "cd src/OrchardCore.Themes/TheBlogTheme && npm install",
-    "install:orchardcore.thecomingsoontheme": "cd src/OrchardCore.Themes/TheComingSoonTheme && npm install",
-    "install:orchardcore.thetheme": "cd src/OrchardCore.Themes/TheTheme && npm install",
-    "postinstall": "run-s install:*"
+    "postinstall": "node .scripts/install.js",
+    "update-projects": "node .scripts/update.js",
+    "install-project": "node .scripts/project.js install",
+    "update-project": "node .scripts/project.js update",
+    "cleanup": "node .scripts/cleanup.js"
   },
   "devDependencies": {
     "@babel/core": "^7.20.5",
     "@babel/preset-env": "^7.20.2",
     "@babel/preset-flow": "7.18.6",
-    "all-contributors-cli": "^6.24.0",
+    "all-contributors-cli": "^6.25.1",
     "es6-promise": "4.2.8",
     "glob": "^8.0.3",
     "graceful-fs": "4.2.10",
@@ -59,6 +45,7 @@
     "postcss": "8.4.19",
     "postcss-rtl": "^2.0.0",
     "rtlcss": "4.0.0",
-    "typescript": "^4.9.3"
+    "typescript": "^4.9.3",
+    "child_process": "^1.0.2"
   }
 }

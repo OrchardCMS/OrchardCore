@@ -58,7 +58,7 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
                 return null;
             }
 
-            if (context.GroupId == GroupId)
+            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
                 var model = new ElasticSettingsViewModel();
 

@@ -5,6 +5,7 @@ on:
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
+
 jobs:
   test_functional_mvc:
     name: Functional Tests - MVC
@@ -13,12 +14,13 @@ jobs:
       image: cypress/included:9.6.1
     steps:
     - uses: actions/checkout@v3
+      # We need to install dotnet in the docker container.
+    - uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '7.0.x'
     - uses: actions/setup-node@v3
       with:
         node-version: "15"
-#    - name: Fix nuget restore issue
-#      run: |
-#          apt update && apt --only-upgrade install ca-certificates -y
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
@@ -38,6 +40,10 @@ jobs:
       image: cypress/included:9.6.1
     steps:
     - uses: actions/checkout@v3
+      # We need to install dotnet in the docker container.
+    - uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '7.0.x'
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -78,6 +84,10 @@ jobs:
       OrchardCore__DatabaseProvider: "Postgres"
     steps:
     - uses: actions/checkout@v3
+      # We need to install dotnet in the docker container.
+    - uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '7.0.x'
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -94,7 +104,7 @@ jobs:
           test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
           src/OrchardCore.Cms.Web/App_Data/logs
         retention-days: 3
-  
+
   test_functional_cms_mysql:
     name: Functional Tests - CMS MySql
     runs-on: ubuntu-latest
@@ -114,6 +124,10 @@ jobs:
       OrchardCore__DatabaseProvider: "MySql"
     steps:
     - uses: actions/checkout@v3
+      # We need to install dotnet in the docker container.
+    - uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '7.0.x'
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -149,6 +163,10 @@ jobs:
       OrchardCore__DatabaseProvider: "SqlConnection"
     steps:
     - uses: actions/checkout@v3
+      # We need to install dotnet in the docker container.
+    - uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '7.0.x'
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y

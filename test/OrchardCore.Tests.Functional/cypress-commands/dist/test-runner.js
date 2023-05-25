@@ -13,9 +13,9 @@ global.log = function(msg) {
 };
 
 // Build the dotnet application in release mode
-function build(dir) {
+function build(dir, dotnetVersion) {
   global.log("Building ...");
-  child_process.spawnSync("dotnet", ["build", "-c", "Release"], { cwd: dir });
+  child_process.spawnSync("dotnet", ["build", "-c", "Release", "-f", dotnetVersion], { cwd: dir });
 }
 
 // destructive action that deletes the App_Data folder
@@ -29,13 +29,13 @@ function host(dir, assembly, { appDataLocation='./App_Data', dotnetVersion='net7
   if (fs.existsSync(path.join(dir, `bin/Release/${dotnetVersion}/`, assembly))) {
     global.log("Application already built, skipping build");
   } else {
-    build(dir);
+    build(dir, dotnetVersion);
   }
-  global.log("Starting application ..."); 
-  
+  global.log("Starting application ...");
+
   const ocEnv = {};
   ocEnv["ORCHARD_APP_DATA"] = appDataLocation;
-  
+
   let server = child_process.spawn(
     "dotnet",
     [`bin/Release/${dotnetVersion}/` + assembly],

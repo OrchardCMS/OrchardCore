@@ -14,7 +14,7 @@ public class AdminCulturePickerShapes : IShapeTableProvider
     public void Discover(ShapeTableBuilder builder)
     {
         builder.Describe("Layout")
-            .OnDisplaying(async context =>
+            .OnCreated(async context =>
             {
                 if (context.Shape is IZoneHolding layout)
                 {
