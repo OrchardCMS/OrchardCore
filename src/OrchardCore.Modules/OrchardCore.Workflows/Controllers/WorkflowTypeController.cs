@@ -132,8 +132,6 @@ namespace OrchardCore.Workflows.Controllers
             {
                 var workflowInstance = await _session.QueryIndex<WorkflowIndex>(index => index.WorkflowTypeId == workflowTypeId)
                     .FirstOrDefaultAsync();
-                        index.WorkflowTypeId == workflowTypeId)
-                    .FirstOrDefaultAsync();
                 if (workflowInstance == null)
                 {
                     workflowTypeIds.Remove(workflowTypeId);
