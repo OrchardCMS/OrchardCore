@@ -1,0 +1,9 @@
+@model OrchardCore.Users.Models.LoginSettings
+
+<div class="mb-3" asp-validation-class-for="EnableTwoFactorAuthentication">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="EnableTwoFactorAuthentication" data-bs-toggle="collapse" data-bs-target=".two-fa-settings" href=".two-fa-settings" role="button" aria-expanded="false" aria-controls=".two-fa-settings" />
+        <span asp-validation-for="EnableTwoFactorAuthentication"></span>
+        <label class="form-check-label" asp-for="EnableTwoFactorAuthentication">@T["Enable two-factor authentication"]</label>
+    </div>
+</div>

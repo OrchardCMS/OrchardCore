@@ -36,6 +36,7 @@ using OrchardCore.Setup.Events;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Drivers;
+using OrchardCore.Users.Filters;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Liquid;
@@ -141,6 +142,58 @@ namespace OrchardCore.Users
                 pattern: _adminOptions.AdminUrlPrefix + "/Users/Display/{id}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Display) }
             );
+
+            var twoFaControllerName = typeof(TwoFactorAuthenticationController).ControllerName();
+
+            routes.MapAreaControllerRoute(
+                name: "LoginWith2fa",
+                areaName: "OrchardCore.Users",
+                pattern: "LoginWithTwoFactorAuthentication",
+                defaults: new { controller = twoFaControllerName, action = nameof(TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "EnableAuthenticator",
+                areaName: "OrchardCore.Users",
+                pattern: userOptions.EnableAuthenticatorPath,
+                defaults: new { controller = twoFaControllerName, action = nameof(TwoFactorAuthenticationController.EnableAuthenticator) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "TwoFactorAuthentication",
+                areaName: "OrchardCore.Users",
+                pattern: "TwoFactorAuthentication",
+                defaults: new { controller = twoFaControllerName, action = nameof(TwoFactorAuthenticationController.Index) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "GenerateRecoveryCodes",
+                areaName: "OrchardCore.Users",
+                pattern: "GenerateRecoveryCodes",
+                defaults: new { controller = twoFaControllerName, action = nameof(TwoFactorAuthenticationController.GenerateRecoveryCodes) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "ShowRecoveryCodes",
+                areaName: "OrchardCore.Users",
+                pattern: "ShowRecoveryCodes",
+                defaults: new { controller = twoFaControllerName, action = nameof(TwoFactorAuthenticationController.ShowRecoveryCodes) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "ResetAuthenticator",
+                areaName: "OrchardCore.Users",
+                pattern: "ResetAuthenticator",
+                defaults: new { controller = twoFaControllerName, action = nameof(TwoFactorAuthenticationController.ResetAuthenticator) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "Disable2FA",
+                areaName: "OrchardCore.Users",
+                pattern: "DisableTwoFactorAuthentication",
+                defaults: new { controller = twoFaControllerName, action = nameof(TwoFactorAuthenticationController.DisableTwoFactorAuthentication) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "LoginWithRecoveryCode",
+                areaName: "OrchardCore.Users",
+                pattern: "LoginWithRecoveryCode",
+                defaults: new { controller = twoFaControllerName, action = nameof(TwoFactorAuthenticationController.LoginWithRecoveryCode) }
+            );
+
             builder.UseAuthorization();
         }
 
@@ -155,17 +208,31 @@ namespace OrchardCore.Users
             // Add ILookupNormalizer as Singleton because it is needed by UserIndexProvider
             services.TryAddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
 
-            // Adds the default token providers used to generate tokens for reset passwords, change email
-            // and change telephone number operations, and for two factor authentication token generation.
-            services.AddIdentity<IUser, IRole>(options =>
+            // Add the default token providers used to generate tokens for reset passwords, change email,
+            // and for two-factor authentication token generation.
+            var identityBuilder = services.AddIdentity<IUser, IRole>(options =>
             {
                 // Specify OrchardCore User requirements.
                 // A user name cannot include an @ symbol, i.e. be an email address
                 // An email address must be provided, and be unique.
                 options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._+";
                 options.User.RequireUniqueEmail = true;
-            })
-            .AddDefaultTokenProviders();
+            });
+
+            var dataProtectionProviderType = typeof(DataProtectorTokenProvider<>).MakeGenericType(identityBuilder.UserType);
+            //var phoneNumberProviderType = typeof(PhoneNumberTokenProvider<>).MakeGenericType(identityBuilder.UserType);
+            var emailTokenProviderType = typeof(EmailTokenProvider<>).MakeGenericType(identityBuilder.UserType);
+            var authenticatorProviderType = typeof(AuthenticatorTokenProvider<>).MakeGenericType(identityBuilder.UserType);
+
+            identityBuilder.AddTokenProvider(TokenOptions.DefaultProvider, dataProtectionProviderType)
+                .AddTokenProvider(TokenOptions.DefaultEmailProvider, emailTokenProviderType)
+                // .AddTokenProvider(TokenOptions.DefaultPhoneProvider, phoneNumberProviderType)
+                .AddTokenProvider(TokenOptions.DefaultAuthenticatorProvider, authenticatorProviderType);
+
+            services.AddMvc(options =>
+            {
+                options.Filters.Add<TwoFactorAuthenticationAuthorizationFilter>();
+            });
 
             // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
             // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
@@ -190,6 +257,7 @@ namespace OrchardCore.Users
 
             services.AddDataMigration<Migrations>();
 
+            services.AddScoped<IUserClaimsProvider, TwoFactorAuthenticationClaimsProvider>();
             services.AddScoped<IUserClaimsProvider, EmailClaimsProvider>();
             services.AddSingleton<IUserIdGenerator, DefaultUserIdGenerator>();
 
@@ -245,6 +313,7 @@ namespace OrchardCore.Users
             services.AddScoped<IAuthorizationHandler, RoleAuthorizationHandler>();
             services.AddScoped<IPermissionProvider, UserRolePermissions>();
             services.AddSingleton<IUsersAdminListFilterProvider, RolesAdminListFilterProvider>();
+            services.AddScoped<IDisplayDriver<ISite>, RoleLoginSettingsDisplayDriver>();
         }
     }
 
