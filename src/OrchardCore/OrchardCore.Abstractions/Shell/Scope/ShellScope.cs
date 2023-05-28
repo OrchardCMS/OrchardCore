@@ -15,16 +15,16 @@ namespace OrchardCore.Environment.Shell.Scope
     /// <summary>
     /// Custom 'IServiceScope' managing the shell state and the execution flow.
     /// </summary>
-    public class ShellScope : IServiceScope
+    public class ShellScope : IServiceScope, IAsyncDisposable
     {
-        private static readonly AsyncLocal<ShellScopeHolder> _current = new AsyncLocal<ShellScopeHolder>();
+        private static readonly AsyncLocal<ShellScopeHolder> _current = new();
 
-        private readonly IServiceScope _serviceScope;
-        private readonly Dictionary<object, object> _items = new Dictionary<object, object>();
-        private readonly List<Func<ShellScope, Task>> _beforeDispose = new List<Func<ShellScope, Task>>();
-        private readonly HashSet<string> _deferredSignals = new HashSet<string>();
-        private readonly List<Func<ShellScope, Task>> _deferredTasks = new List<Func<ShellScope, Task>>();
-        private readonly List<Func<ShellScope, Exception, Task>> _exceptionHandlers = new List<Func<ShellScope, Exception, Task>>();
+        private readonly AsyncServiceScope _serviceScope;
+        private readonly Dictionary<object, object> _items = new();
+        private readonly List<Func<ShellScope, Task>> _beforeDispose = new();
+        private readonly HashSet<string> _deferredSignals = new();
+        private readonly List<Func<ShellScope, Task>> _deferredTasks = new();
+        private readonly List<Func<ShellScope, Exception, Task>> _exceptionHandlers = new();
 
         private bool _serviceScopeOnly;
         private bool _shellTerminated;
@@ -48,7 +48,7 @@ namespace OrchardCore.Environment.Shell.Scope
                     $"Can't resolve a scope on tenant: {shellContext.Settings.Name}");
             }
 
-            _serviceScope = shellContext.ServiceProvider.CreateScope();
+            _serviceScope = shellContext.ServiceProvider.CreateAsyncScope();
             ServiceProvider = _serviceScope.ServiceProvider;
         }
 
@@ -229,7 +229,7 @@ namespace OrchardCore.Environment.Shell.Scope
                 return;
             }
 
-            using (this)
+            await using (this)
             {
                 StartAsyncFlow();
                 try
@@ -265,7 +265,7 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         internal async Task TerminateShellAsync()
         {
-            using (this)
+            await using (this)
             {
                 StartAsyncFlow();
                 await TerminateShellInternalAsync();
@@ -452,7 +452,7 @@ namespace OrchardCore.Environment.Shell.Scope
                 // A disabled shell still in use is released by its last scope.
                 if (ShellContext.Settings.State == TenantState.Disabled)
                 {
-                    ShellContext.ReleaseFromLastScope();
+                    await ShellContext.ReleaseFromLastScopeAsync();
                 }
 
                 if (!ShellContext._released)
@@ -515,6 +515,40 @@ namespace OrchardCore.Environment.Shell.Scope
                 // Clear the current scope that may be trapped in some execution contexts.
                 holder.Scope = null;
             }
+
+            GC.SuppressFinalize(this);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            _disposed = true;
+            await _serviceScope.DisposeAsync();
+
+            // Check if the shell has been terminated.
+            if (_shellTerminated)
+            {
+                await ShellContext.DisposeAsync();
+            }
+
+            if (!_terminated)
+            {
+                // Keep the counter clean if not yet decremented.
+                Interlocked.Decrement(ref ShellContext._refCount);
+            }
+
+            var holder = _current.Value;
+            if (holder is not null)
+            {
+                // Clear the current scope that may be trapped in some execution contexts.
+                holder.Scope = null;
+            }
+
+            GC.SuppressFinalize(this);
         }
 
         private class ShellScopeHolder

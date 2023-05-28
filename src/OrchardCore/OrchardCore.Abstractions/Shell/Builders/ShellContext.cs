@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
@@ -10,11 +12,11 @@ namespace OrchardCore.Environment.Shell.Builders
     /// The shell context represents the shell's state that is kept alive
     /// for the whole life of the application
     /// </summary>
-    public class ShellContext : IDisposable
+    public class ShellContext : IDisposable, IAsyncDisposable
     {
         private bool _disposed;
         private List<WeakReference<ShellContext>> _dependents;
-        private readonly object _synLock = new object();
+        private readonly SemaphoreSlim _semaphore = new(1);
 
         internal volatile int _refCount;
         internal volatile int _terminated;
@@ -87,11 +89,18 @@ namespace OrchardCore.Environment.Shell.Builders
         /// </summary>
         public void Release() => ReleaseInternal();
 
-        internal void ReleaseFromLastScope() => ReleaseInternal(ReleaseMode.FromLastScope);
+        /// <summary>
+        /// Mark the <see cref="ShellContext"/> as released and then a candidate to be disposed.
+        /// </summary>
+        public Task ReleaseAsync() => ReleaseInternalAsync();
 
-        internal void ReleaseFromDependency() => ReleaseInternal(ReleaseMode.FromDependency);
+        internal Task ReleaseFromLastScopeAsync() => ReleaseInternalAsync(ReleaseMode.FromLastScope);
 
-        internal void ReleaseInternal(ReleaseMode mode = ReleaseMode.Normal)
+        internal Task ReleaseFromDependencyAsync() => ReleaseInternalAsync(ReleaseMode.FromDependency);
+
+        internal void ReleaseInternal(ReleaseMode mode = ReleaseMode.Normal) => ReleaseInternalAsync(mode).GetAwaiter().GetResult();
+
+        internal async Task ReleaseInternalAsync(ReleaseMode mode = ReleaseMode.Normal)
         {
             if (_released)
             {
@@ -111,7 +120,8 @@ namespace OrchardCore.Environment.Shell.Builders
             // when the number reached zero.
 
             ShellScope scope = null;
-            lock (_synLock)
+            await _semaphore.WaitAsync();
+            try
             {
                 if (_released)
                 {
@@ -124,7 +134,7 @@ namespace OrchardCore.Environment.Shell.Builders
                     {
                         if (dependent.TryGetTarget(out var shellContext))
                         {
-                            shellContext.ReleaseFromDependency();
+                            await shellContext.ReleaseFromDependencyAsync();
                         }
                     }
                 }
@@ -138,6 +148,10 @@ namespace OrchardCore.Environment.Shell.Builders
 
                 _released = true;
             }
+            finally
+            {
+                _semaphore.Release();
+            }
 
             if (mode == ReleaseMode.FromLastScope)
             {
@@ -147,11 +161,11 @@ namespace OrchardCore.Environment.Shell.Builders
             if (scope != null)
             {
                 // Use this scope to manage the shell state as usual.
-                scope.TerminateShellAsync().GetAwaiter().GetResult();
+                await scope.TerminateShellAsync();
                 return;
             }
 
-            Dispose();
+            await DisposeAsync();
         }
 
         internal enum ReleaseMode
@@ -180,23 +194,31 @@ namespace OrchardCore.Environment.Shell.Builders
                 return;
             }
 
-            lock (_synLock)
+            _semaphore.Wait();
+            try
             {
-                if (_dependents == null)
-                {
-                    _dependents = new List<WeakReference<ShellContext>>();
-                }
+                _dependents ??= new List<WeakReference<ShellContext>>();
 
                 // Remove any previous instance that represent the same tenant in case it has been released (restarted).
                 _dependents.RemoveAll(x => !x.TryGetTarget(out var shell) || shell.Settings.Name == shellContext.Settings.Name);
 
                 _dependents.Add(new WeakReference<ShellContext>(shellContext));
             }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         public void Dispose()
         {
             Close();
+            GC.SuppressFinalize(this);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            await CloseAsync();
             GC.SuppressFinalize(this);
         }
 
@@ -213,6 +235,34 @@ namespace OrchardCore.Environment.Shell.Builders
             if (ServiceProvider != null)
             {
                 (ServiceProvider as IDisposable)?.Dispose();
+                ServiceProvider = null;
+            }
+
+            IsActivated = false;
+            Blueprint = null;
+            Pipeline = null;
+        }
+
+        public async ValueTask CloseAsync()
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            _disposed = true;
+
+            if (ServiceProvider is not null)
+            {
+                if (ServiceProvider is IAsyncDisposable asyncDisposable)
+                {
+                    await asyncDisposable.DisposeAsync();
+                }
+                else
+                {
+                    (ServiceProvider as IDisposable)?.Dispose();
+                }
+
                 ServiceProvider = null;
             }
 

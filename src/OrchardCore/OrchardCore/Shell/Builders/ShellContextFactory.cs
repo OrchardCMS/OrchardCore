@@ -45,7 +45,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
             if (currentDescriptor != null)
             {
-                describedContext.Dispose();
+                await describedContext.DisposeAsync();
                 return await CreateDescribedContextAsync(settings, currentDescriptor);
             }
 
@@ -74,7 +74,7 @@ namespace OrchardCore.Environment.Shell.Builders
             await settings.EnsureConfigurationAsync();
 
             var blueprint = await _compositionStrategy.ComposeAsync(settings, shellDescriptor);
-            var provider = _shellContainerFactory.CreateContainer(settings, blueprint);
+            var provider = await _shellContainerFactory.CreateContainerAsync(settings, blueprint);
 
             var options = provider.GetService<IOptions<ShellContainerOptions>>().Value;
             foreach (var initializeAsync in options.Initializers)

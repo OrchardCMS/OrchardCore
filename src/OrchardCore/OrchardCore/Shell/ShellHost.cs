@@ -19,9 +19,9 @@ namespace OrchardCore.Environment.Shell
     /// all <see cref="ShellSettings"/> that we also need to register in the <see cref="IRunningShellTable"/> to serve incoming requests.
     /// For each <see cref="ShellContext"/> a service container and then a request pipeline are only built on the first matching request.
     /// </summary>
-    public class ShellHost : IShellHost, IDisposable
+    public class ShellHost : IShellHost, IDisposable, IAsyncDisposable
     {
-        private const int ReloadShellMaxRetriesCount = 9;
+        private const int _reloadShellMaxRetriesCount = 9;
 
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IShellContextFactory _shellContextFactory;
@@ -193,12 +193,12 @@ namespace OrchardCore.Environment.Shell
             }
 
             var count = 0;
-            while (count++ < ReloadShellMaxRetriesCount)
+            while (count++ < _reloadShellMaxRetriesCount)
             {
                 if (_shellContexts.TryRemove(settings.Name, out var context))
                 {
                     _runningShellTable.Remove(settings);
-                    context.Release();
+                    await context.ReleaseAsync();
                 }
 
                 // Add a 'PlaceHolder' allowing to retrieve the settings until the shell will be rebuilt.
@@ -261,7 +261,7 @@ namespace OrchardCore.Environment.Shell
 
             if (_shellContexts.TryRemove(settings.Name, out var context))
             {
-                context.Release();
+                await context.ReleaseAsync();
             }
 
             // Add a 'PlaceHolder' allowing to retrieve the settings until the shell will be rebuilt.
@@ -521,6 +521,18 @@ namespace OrchardCore.Environment.Shell
             {
                 shell.Dispose();
             }
+
+            GC.SuppressFinalize(this);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            foreach (var shell in ListShellContexts())
+            {
+                await shell.DisposeAsync();
+            }
+
+            GC.SuppressFinalize(this);
         }
     }
 }

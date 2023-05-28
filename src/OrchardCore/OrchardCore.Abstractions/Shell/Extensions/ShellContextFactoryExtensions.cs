@@ -14,7 +14,7 @@ public static class ShellContextFactoryExtensions
     public static async Task<ShellContext> CreateMaximumContextAsync(this IShellContextFactory shellContextFactory, ShellSettings shellSettings)
     {
         var shellDescriptor = await shellContextFactory.GetShellDescriptorAsync(shellSettings);
-        if (shellDescriptor == null)
+        if (shellDescriptor is null)
         {
             return await shellContextFactory.CreateMinimumContextAsync(shellSettings);
         }
@@ -37,7 +37,7 @@ public static class ShellContextFactoryExtensions
     {
         ShellDescriptor shellDescriptor = null;
 
-        using var shellContext = await shellContextFactory.CreateMinimumContextAsync(shellSettings);
+        await using var shellContext = await shellContextFactory.CreateMinimumContextAsync(shellSettings);
         await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
         {
             var shellDescriptorManager = scope.ServiceProvider.GetRequiredService<IShellDescriptorManager>();

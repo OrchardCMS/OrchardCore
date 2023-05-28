@@ -383,7 +383,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
 
             // Acquire the distributed context or create a new one if not yet built.
-            using var context = await AcquireOrCreateDistributedContextAsync(defaultContext);
+            await using var context = await AcquireOrCreateDistributedContextAsync(defaultContext);
 
             // If the required distributed features are not enabled, nothing to do.
             var distributedCache = context?.DistributedCache;
@@ -434,7 +434,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
 
             // Acquire the distributed context or create a new one if not yet built.
-            using var context = await AcquireOrCreateDistributedContextAsync(defaultContext);
+            await using var context = await AcquireOrCreateDistributedContextAsync(defaultContext);
 
             // If the required distributed features are not enabled, nothing to do.
             var distributedCache = context?.DistributedCache;
@@ -493,7 +493,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
 
             // Acquire the distributed context or create a new one if not yet built.
-            using var context = await AcquireOrCreateDistributedContextAsync(defaultContext);
+            await using var context = await AcquireOrCreateDistributedContextAsync(defaultContext);
 
             // If the required distributed features are not enabled, nothing to do.
             var distributedCache = context?.DistributedCache;

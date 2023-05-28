@@ -1,12 +1,13 @@
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell.Builders;
 
 namespace OrchardCore.Environment.Shell.Distributed
 {
-    internal class DistributedContext : IDisposable
+    internal class DistributedContext : IDisposable, IAsyncDisposable
     {
         private ShellContext _context;
         private volatile int _count;
@@ -70,6 +71,17 @@ namespace OrchardCore.Environment.Shell.Distributed
             {
                 _context.Dispose();
             }
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            // The last use disposes the shell context.
+            if (Interlocked.Decrement(ref _count) == 0)
+            {
+                return _context.DisposeAsync();
+            }
+
+            return ValueTask.CompletedTask;
         }
     }
 }
