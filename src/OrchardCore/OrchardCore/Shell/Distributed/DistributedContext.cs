@@ -9,7 +9,7 @@ namespace OrchardCore.Environment.Shell.Distributed
 {
     internal class DistributedContext : IDisposable, IAsyncDisposable
     {
-        private ShellContext _context;
+        private readonly ShellContext _context;
         private volatile int _count;
         private bool _released;
 
@@ -62,6 +62,12 @@ namespace OrchardCore.Environment.Shell.Distributed
         {
             _released = true;
             Dispose();
+        }
+
+        public async Task ReleaseAsync()
+        {
+            _released = true;
+            await DisposeAsync();
         }
 
         public void Dispose()

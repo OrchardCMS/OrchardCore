@@ -36,7 +36,7 @@ namespace OrchardCore.Environment.Shell.Builders
         public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint) =>
             CreateContainerAsync(settings, blueprint).GetAwaiter().GetResult();
 
-        public async Task<IServiceProvider> CreateContainerAsync(ShellSettings settings, ShellBlueprint blueprint)
+        public async Task<ServiceProvider> CreateContainerAsync(ShellSettings settings, ShellBlueprint blueprint)
         {
             var tenantServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 

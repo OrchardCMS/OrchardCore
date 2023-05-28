@@ -75,7 +75,7 @@ public class ShellRemovalManager : IShellRemovalManager
                 return context;
             }
 
-            using var shellContext = maximumContext;
+            await using var shellContext = maximumContext;
             (var locker, var locked) = await shellContext.TryAcquireShellRemovingLockAsync();
             if (!locked)
             {

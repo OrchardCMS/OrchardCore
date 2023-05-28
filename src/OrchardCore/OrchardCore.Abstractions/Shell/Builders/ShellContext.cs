@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
@@ -24,7 +25,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
         public ShellSettings Settings { get; set; }
         public ShellBlueprint Blueprint { get; set; }
-        public IServiceProvider ServiceProvider { get; set; }
+        public ServiceProvider ServiceProvider { get; set; }
 
         /// <summary>
         /// Whether the shell is activated.
@@ -230,9 +231,9 @@ namespace OrchardCore.Environment.Shell.Builders
             _disposed = true;
 
             // Disposes all the services registered for this shell
-            if (ServiceProvider != null)
+            if (ServiceProvider is not null)
             {
-                (ServiceProvider as IDisposable)?.Dispose();
+                ServiceProvider.Dispose();
                 ServiceProvider = null;
             }
 
@@ -252,16 +253,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
             if (ServiceProvider is not null)
             {
-                if (ServiceProvider is IAsyncDisposable asyncDisposable)
-                {
-                    await asyncDisposable.DisposeAsync();
-                }
-                else
-                {
-                    (ServiceProvider as IDisposable)?.Dispose();
-                }
-
-                ServiceProvider = null;
+                await ServiceProvider.DisposeAsync();
             }
 
             IsActivated = false;

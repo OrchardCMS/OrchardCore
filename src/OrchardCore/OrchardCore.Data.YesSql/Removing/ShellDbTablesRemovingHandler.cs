@@ -77,7 +77,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
         try
         {
             // Create a minimum shell context without any features.
-            using var shellContext = await _shellContextFactory.CreateMinimumContextAsync(shellSettings);
+            await using var shellContext = await _shellContextFactory.CreateMinimumContextAsync(shellSettings);
             var store = shellContext.ServiceProvider.GetRequiredService<IStore>();
 
             using var connection = store.Configuration.ConnectionFactory.CreateConnection();
@@ -120,7 +120,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
         }
 
         // Create an isolated shell context composed of all features that have been installed.
-        using var shellContext = await _shellContextFactory.CreateMaximumContextAsync(shellSettings);
+        await using var shellContext = await _shellContextFactory.CreateMaximumContextAsync(shellSettings);
         await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
         {
             var store = scope.ServiceProvider.GetRequiredService<IStore>();
