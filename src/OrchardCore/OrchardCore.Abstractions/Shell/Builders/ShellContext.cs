@@ -87,7 +87,7 @@ namespace OrchardCore.Environment.Shell.Builders
         /// <summary>
         /// Mark the <see cref="ShellContext"/> as released and then a candidate to be disposed.
         /// </summary>
-        public void Release() => ReleaseInternal();
+        public void Release() => ReleaseInternalAsync().GetAwaiter().GetResult();
 
         /// <summary>
         /// Mark the <see cref="ShellContext"/> as released and then a candidate to be disposed.
@@ -97,8 +97,6 @@ namespace OrchardCore.Environment.Shell.Builders
         internal Task ReleaseFromLastScopeAsync() => ReleaseInternalAsync(ReleaseMode.FromLastScope);
 
         internal Task ReleaseFromDependencyAsync() => ReleaseInternalAsync(ReleaseMode.FromDependency);
-
-        internal void ReleaseInternal(ReleaseMode mode = ReleaseMode.Normal) => ReleaseInternalAsync(mode).GetAwaiter().GetResult();
 
         internal async Task ReleaseInternalAsync(ReleaseMode mode = ReleaseMode.Normal)
         {
