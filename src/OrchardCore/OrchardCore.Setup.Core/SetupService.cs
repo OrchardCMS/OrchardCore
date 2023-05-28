@@ -196,7 +196,7 @@ namespace OrchardCore.Setup.Services
                 Features = context.EnabledFeatures.Select(id => new ShellFeature { Id = id }).ToList()
             };
 
-            using (var shellContext = await _shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor))
+            await using (var shellContext = await _shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor))
             {
                 await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
                 {
