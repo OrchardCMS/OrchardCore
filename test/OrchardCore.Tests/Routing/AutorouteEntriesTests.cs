@@ -234,7 +234,7 @@ namespace OrchardCore.Tests.Routing
             };
         }
 
-        private static IServiceProvider CreateServiceProvider()
+        private static ServiceProvider CreateServiceProvider()
         {
             var services = new ServiceCollection();
             services.AddSingleton<IStubAutorouteEntries, StubAutorouteEntries>();

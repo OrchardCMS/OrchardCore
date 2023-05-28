@@ -56,7 +56,7 @@ namespace OrchardCore.Recipes
             ServiceProvider = CreateServiceProvider(),
         };
 
-        private static IServiceProvider CreateServiceProvider() => new ServiceCollection()
+        private static ServiceProvider CreateServiceProvider() => new ServiceCollection()
             .AddScripting()
             .AddSingleton<IDistributedLock, LocalLock>()
             .AddLogging()
