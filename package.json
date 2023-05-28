@@ -15,7 +15,7 @@
     "@babel/core": "^7.20.5",
     "@babel/preset-env": "^7.20.2",
     "@babel/preset-flow": "7.18.6",
-    "all-contributors-cli": "^6.25.1",
+    "all-contributors-cli": "^6.26.0",
     "es6-promise": "4.2.8",
     "glob": "^8.0.3",
     "graceful-fs": "4.2.10",
