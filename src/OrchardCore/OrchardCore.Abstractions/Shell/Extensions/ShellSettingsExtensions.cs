@@ -7,37 +7,32 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Wether it is the 'Default' tenant or not.
         /// </summary>
-        public static bool IsDefaultShell(this ShellSettings settings) =>
-            settings is not null && settings.Name == ShellHelper.DefaultShellName;
+        public static bool IsDefaultShell(this ShellSettings settings) => settings is { Name: ShellHelper.DefaultShellName };
 
         /// <summary>
         /// Wether the tenant is uninitialized or not.
         /// </summary>
-        public static bool IsUninitialized(this ShellSettings settings) =>
-            settings is not null && settings.State == TenantState.Uninitialized;
+        public static bool IsUninitialized(this ShellSettings settings) => settings is { State: TenantState.Uninitialized };
 
         /// <summary>
         /// Wether the tenant is initializing or not.
         /// </summary>
-        public static bool IsInitializing(this ShellSettings settings) =>
-            settings is not null && settings.State == TenantState.Initializing;
+        public static bool IsInitializing(this ShellSettings settings) => settings is { State: TenantState.Initializing };
 
         /// <summary>
         /// Wether the tenant is running or not.
         /// </summary>
-        public static bool IsRunning(this ShellSettings settings) =>
-            settings is not null && settings.State == TenantState.Running;
+        public static bool IsRunning(this ShellSettings settings) => settings is { State: TenantState.Running };
 
         /// <summary>
         /// Wether the tenant is disabled or not.
         /// </summary>
-        public static bool IsDisabled(this ShellSettings settings) =>
-            settings is not null && settings.State == TenantState.Disabled;
+        public static bool IsDisabled(this ShellSettings settings) => settings is { State: TenantState.Disabled };
 
         /// <summary>
         /// Wether the tenant is initialized or not.
         /// </summary>
         public static bool IsInitialized(this ShellSettings settings) =>
-            settings is not null && (settings.IsRunning() || settings.IsDisabled());
+            settings is { State: TenantState.Running or TenantState.Disabled };
     }
 }
