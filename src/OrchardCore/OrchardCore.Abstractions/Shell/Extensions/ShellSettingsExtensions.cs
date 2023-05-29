@@ -32,7 +32,6 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Wether the tenant is initialized or not.
         /// </summary>
-        public static bool IsInitialized(this ShellSettings settings) =>
-            settings is { State: TenantState.Running or TenantState.Disabled };
+        public static bool IsInitialized(this ShellSettings settings) => settings.IsRunning() || settings.IsDisabled();
     }
 }
