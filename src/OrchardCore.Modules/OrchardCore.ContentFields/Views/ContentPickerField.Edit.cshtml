@@ -28,7 +28,6 @@
                         class="cursor-move list-group-item content-picker-default__list-item d-flex align-items-start justify-content-between"
                         :key="item.id">
                         <div class="align-items-center align-self-center"><span>{{ item.displayText }}</span> <span v-show="!item.hasPublished" class="text-muted small">(@T["Not published"])</span></div>
-                        
                         <div class="btn-group btn-group-sm align-items-center" role="group">
                             <button v-on:click="edit(item)" type="button" class="btn btn-secondary content-picker-default__list-item__edit"><i class="fa-solid fa-eye fa-sm" aria-hidden="true"></i></button>
                             <button v-on:click="remove(item)" type="button" class="btn btn-secondary content-picker-default__list-item__delete"><i class="fa-solid fa-trash fa-sm" aria-hidden="true"></i></button>

@@ -24,6 +24,7 @@ function initVueMultiselect(element) {
   if (element) {
     var elementId = element.id;
     var selectedItems = JSON.parse(element.dataset.selectedItems || "[]");
+    var editUrl = element.dataset.editUrl;
     var searchUrl = element.dataset.searchUrl;
     var multiple = JSON.parse(element.dataset.multiple);
     var debouncedSearch = debounce(function (vm, query) {
@@ -106,6 +107,10 @@ function initVueMultiselect(element) {
           // if allowing multiple content items and do not show it if we're only allowing 
           // a single content item and we've just selected that one item.
           this.searchBoxContainer.css("display", multiple ? "block" : "none");
+        },
+        edit: function edit(item) {
+          url = editUrl.replace('contentItemId', item.id);
+          window.open(url, '_blank').focus();
         },
         remove: function remove(item) {
           this.arrayOfItems.splice(this.arrayOfItems.indexOf(item), 1);
