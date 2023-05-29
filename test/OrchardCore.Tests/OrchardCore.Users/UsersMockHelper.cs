@@ -1,11 +1,3 @@
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
-using Moq;
-using OrchardCore.Email;
-using OrchardCore.Users;
-using OrchardCore.Users.Services;
-
 namespace OrchardCore.Tests.OrchardCore.Users
 {
     public static class UsersMockHelper

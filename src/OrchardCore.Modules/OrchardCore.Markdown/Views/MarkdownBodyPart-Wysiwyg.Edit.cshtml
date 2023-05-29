@@ -1,6 +1,8 @@
 @model MarkdownBodyPartViewModel
+@using OrchardCore
 @using OrchardCore.ContentLocalization
 @using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Localization
 @using OrchardCore.Markdown.ViewModels
 @using OrchardCore.Markdown.Settings
 
@@ -14,10 +16,12 @@
 
 @await DisplayAsync(await New.ShortcodeModal())
 
-<div class="form-group mde-editor">
-    <label asp-for="Markdown">@Model.TypePartDefinition.DisplayName()</label>
-    <span class="hint">@T["The markdown text of the content item."]</span>
-    <textarea asp-for="Markdown" rows="5" class="form-control content-preview-text"></textarea>
+<div class="@Orchard.GetWrapperCssClasses("mde-editor")">
+    <label asp-for="Markdown" class="@Orchard.GetLabelCssClasses()">@Model.TypePartDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndCssClasses()">
+        <span class="hint">@T["The markdown text of the content item."]</span>
+        <textarea asp-for="Markdown" rows="5" class="form-control content-preview-text"></textarea>
+    </div>
 </div>
 
 <script at="Foot">

@@ -1,0 +1,54 @@
+@model FeatureProfileViewModel
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Feature Profile"])</h1></zone>
+
+<div asp-validation-summary="All"></div>
+
+<form asp-action="Edit" method="post" class="no-multisubmit">
+       @Html.EditorForModel()
+</form>
+
+<script at="Foot" asp-name="profile-editor" depends-on="monaco, admin">
+    $(document).ready(function() {
+        require(['vs/editor/editor.main'], function() {
+
+            var html = document.getElementsByTagName("html")[0];
+            const mutationObserver = new MutationObserver(setTheme);
+            mutationObserver.observe(html, { attributes: true });
+
+            function setTheme() {
+                var theme = html.dataset.theme;
+                if (theme === "darkmode") {
+                    monaco.editor.setTheme('vs-dark')
+                } else {
+                    monaco.editor.setTheme('vs')
+                }
+            }
+
+            setTheme();
+
+            var modelUri = monaco.Uri.parse("x://orchardcore.tenants.featureprofiles.json");
+            var editor = document.getElementById('@Html.IdFor(x => x.FeatureRules)_editor');
+            var textArea = document.getElementById('@Html.IdFor(x => x.FeatureRules)');
+            var schema = JSON.parse(editor.dataset.schema)
+            var model = monaco.editor.createModel(textArea.value, "json", modelUri);
+
+            monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+                validate: true,
+                schemas: [{
+                    uri: "x://orchardcore.tenants.featureprofiles.schema.json",
+                    fileMatch: [modelUri.toString()],
+                    schema: schema
+                }]
+            });
+
+            var editor = monaco.editor.create(editor, {
+                model: model
+            });
+
+            window.addEventListener("submit", function() {
+                textArea.value = editor.getValue();
+            });
+        });
+    });
+</script>

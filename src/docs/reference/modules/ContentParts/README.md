@@ -8,7 +8,7 @@ Orchard Core allows you to add Parts to a content type.
 | --- | --- |
 | [`TitlePart`](../../modules/Title/README.md) | Allows you to add a title. |
 | [`AutoroutePart`](../../modules/Autoroute/README.md) | Allows you to add a permalink. |
-| `CommonPart` | Allows you to edit the creation date and the owner of the content. |
+| [`CommonPart`](../../modules/Contents/README.md) | Allows you to edit the creation date and the owner of the content. |
 | [`AliasPart`](../../modules/Alias/README.md) | Allows you to add an alias. |
 | [`HtmlBodyPart`](../../modules/Html/README.md) | Allows you to add an HTML body. |
 | [`MarkdownPart`](../../modules/Markdown/README.md) | Allows you to add a Markdown body. |
@@ -22,3 +22,5 @@ Orchard Core allows you to add Parts to a content type.
 | [`Preview`](../../modules/ContentPreview/README.md) | Allows you to add a preview button. |
 | [`PublishLater`](../../modules/PublishLater/README.md) | Allows you to set a date in order to publish later. |
 | [`ReCaptcha`](../../modules/ReCaptcha/README.md) | Allows you to add a ReCaptcha. |
+| [`SeoMeta`](../../modules/Seo/README.md) | Allows you to configure SEO meta tags. |
+| [`AuditTrail`](../../modules/AuditTrail/README.md) | Allows you to add a comment describing the changes of a content item, to be recorded to the Audit Trail. |

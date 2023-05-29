@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
-using Xunit;
 
 namespace OrchardCore.Tests.DisplayManagement
 {

@@ -20,6 +20,24 @@
                 foreColorRemove: 'Remove text color',
                 backColorRemove: 'Remove background color'
             },
+            az: {
+                foreColor: 'Yazı rəngi',
+                backColor: 'Arxa plan rəngi',
+                foreColorRemove: 'Yazı rəngini sil',
+                backColorRemove: 'Arxa plan rəngini sil'
+            },
+            by: {
+                foreColor: 'Колер тэксту',
+                backColor: 'Колер фону тэксту',
+                foreColorRemove: 'Выдаліць колер тэксту',
+                backColorRemove: 'Выдаліць колер фону тэксту'
+            },
+            ca: {
+                foreColor: 'Color del text',
+                backColor: 'Color del fons',
+                foreColorRemove: 'Eliminar color del text',
+                backColorRemove: 'Eliminar color del fons'
+            },
             cs: {
                 foreColor: 'Barva textu',
                 backColor: 'Barva pozadí'
@@ -31,6 +49,12 @@
             de: {
                 foreColor: 'Textfarbe',
                 backColor: 'Hintergrundfarbe'
+            },
+            es: {
+                foreColor: 'Color del texto',
+                backColor: 'Color del fondo',
+                foreColorRemove: 'Eliminar color del texto',
+                backColorRemove: 'Eliminar color del fondo'
             },
             et: {
                 foreColor: 'Teksti värv',
@@ -70,7 +94,15 @@
             },
             ru: {
                 foreColor: 'Цвет текста',
-                backColor: 'Цвет выделения текста'
+                backColor: 'Цвет выделения текста',
+                foreColorRemove: 'Очистить цвет текста',
+                backColorRemove: 'Очистить цвет выделения текста'
+            },
+            sl: {
+                foreColor: 'Barva teksta',
+                backColor: 'Barva ozadja',
+                foreColorRemove: 'Ponastavi barvo teksta',
+                backColorRemove: 'Ponastavi barvo ozadja',
             },
             sk: {
                 foreColor: 'Farba textu',
@@ -107,6 +139,9 @@
             return 'transparent';
         } else {
             rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/);
+            if (rgb == null) {
+                return 'transparent'; // No match, return transparent as unkown color
+            }
             return hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
         }
     }

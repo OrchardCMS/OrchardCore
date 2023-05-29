@@ -1,13 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Extensions.Hosting;
 using OrchardCore.DisplayManagement.Events;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Modules;
 using OrchardCore.Tests.Stubs;
-using Xunit;
 
 namespace OrchardCore.Tests.Extensions
 {
@@ -130,7 +126,7 @@ namespace OrchardCore.Tests.Extensions
         public void GetFeaturesShouldReturnAllFeaturesOrderedByDependency()
         {
             var features = ModuleScopedExtensionManager.GetFeatures()
-                .Where(f => f.Category == "Test" && !f.Extension.IsTheme());
+                .Where(f => f.Category == "Test" && !f.IsTheme());
 
             Assert.Equal(4, features.Count());
             Assert.Equal("Sample1", features.ElementAt(0).Id);

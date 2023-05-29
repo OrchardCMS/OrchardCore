@@ -56,6 +56,11 @@ namespace OrchardCore.AutoSetup.Options
         public string DatabaseTablePrefix { get; set; }
 
         /// <summary>
+        /// Gets or sets the database's schema.
+        /// </summary>
+        public string DatabaseSchema { get; set; }
+
+        /// <summary>
         /// Gets or sets the recipe name.
         /// </summary>
         public string RecipeName { get; set; }
@@ -74,6 +79,12 @@ namespace OrchardCore.AutoSetup.Options
         /// Gets or sets the tenant request url prefix.
         /// </summary>
         public string RequestUrlPrefix { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the feature profile applied to the tenant. May be <see langword="null"/> or empty
+        /// for no profile being selected.
+        /// </summary>
+        public string FeatureProfile { get; set; }
 
         /// <summary>
         /// Gets the Flag which indicates a Default/Root shell/tenant.

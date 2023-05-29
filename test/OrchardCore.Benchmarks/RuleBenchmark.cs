@@ -26,7 +26,7 @@ namespace OrchardCore.Benchmark
 
         static RuleBenchmark()
         {
-            var services = RuleTests.CreateRuleServiceCollection()                
+            var services = RuleTests.CreateRuleServiceCollection()
                 .AddCondition<HomepageCondition, HomepageConditionEvaluator, ConditionFactory<HomepageCondition>>()
                 .AddSingleton<IGlobalMethodProvider, DefaultLayersMethodProvider>()
                 .AddMemoryCache()
@@ -52,9 +52,9 @@ namespace OrchardCore.Benchmark
             {
                 Conditions = new List<Condition>
                 {
-                    new HomepageCondition 
-                    { 
-                        Value = true 
+                    new HomepageCondition
+                    {
+                        Value = true
                     }
                 }
             };
@@ -96,13 +96,13 @@ namespace OrchardCore.Benchmark
         [Benchmark(Baseline = true)]
         public void EvaluateIsHomepageWithJavascript()
         {
-            Convert.ToBoolean(_engine.Evaluate(_scope, "isHomepage()"));            
+            Convert.ToBoolean(_engine.Evaluate(_scope, "isHomepage()"));
         }
 
         [Benchmark]
         public async Task EvaluateIsHomepageWithRule()
         {
-            await _ruleService.EvaluateAsync(_rule);       
-        }        
+            await _ruleService.EvaluateAsync(_rule);
+        }
     }
 }

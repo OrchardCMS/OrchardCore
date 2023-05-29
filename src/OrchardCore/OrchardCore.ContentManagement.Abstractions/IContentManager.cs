@@ -67,7 +67,7 @@ namespace OrchardCore.ContentManagement
         /// </summary>
         /// <param name="contentItem"></param>
         /// <returns>The validation <see cref="ContentValidateResult"/> result.</returns>
-        Task<ContentValidateResult> RestoreAsync(ContentItem contentItem);        
+        Task<ContentValidateResult> RestoreAsync(ContentItem contentItem);
 
         /// <summary>
         /// Gets the published content item with the specified id
@@ -92,6 +92,17 @@ namespace OrchardCore.ContentManagement
         /// This means that it should be used only to get a list of content items that have not been loaded.
         /// </remarks>
         Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, bool latest = false);
+
+        /// <summary>
+        /// Gets the published content items with the specified ids
+        /// </summary>
+        /// <param name="contentItemIds">The content item ids to load</param>
+        /// <param name="options">The version option</param>
+        /// <remarks>
+        /// This method will always issue a database query.
+        /// This means that it should be used only to get a list of content items that have not been loaded.
+        /// </remarks>
+        Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, VersionOptions options);
 
         /// <summary>
         /// Gets the content item with the specified version id

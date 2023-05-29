@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using OrchardCore.Security.Permissions;
 using OrchardCore.AdminMenu.Services;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminMenu
 {

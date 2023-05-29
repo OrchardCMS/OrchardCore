@@ -13,7 +13,7 @@ namespace OrchardCore.Resources.Liquid
 {
     public class StyleTag
     {
-        private static readonly char[] Separators = new[] {',', ' '};
+        private static readonly char[] Separators = new[] { ',', ' ' };
 
         public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {

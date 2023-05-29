@@ -1,15 +1,9 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
-using OrchardCore.GitHub.Services;
 using OrchardCore.GitHub.Settings;
 
 namespace OrchardCore.GitHub.Configuration
@@ -18,32 +12,23 @@ namespace OrchardCore.GitHub.Configuration
         IConfigureOptions<AuthenticationOptions>,
         IConfigureNamedOptions<GitHubOptions>
     {
-        private readonly IGitHubAuthenticationService _githubAuthenticationService;
+        private readonly GitHubAuthenticationSettings _gitHubAuthenticationSettings;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
         public GitHubOptionsConfiguration(
-            IGitHubAuthenticationService githubAuthenticationService,
+            IOptions<GitHubAuthenticationSettings> gitHubAuthenticationSettings,
             IDataProtectionProvider dataProtectionProvider,
-            ShellSettings shellSettings,
             ILogger<GitHubOptionsConfiguration> logger)
         {
-            _githubAuthenticationService = githubAuthenticationService;
+            _gitHubAuthenticationSettings = gitHubAuthenticationSettings.Value;
             _dataProtectionProvider = dataProtectionProvider;
-            _shellSettings = shellSettings;
             _logger = logger;
         }
 
         public void Configure(AuthenticationOptions options)
         {
-            var settings = GetGitHubAuthenticationSettingsAsync().GetAwaiter().GetResult();
-            if (settings == null)
-            {
-                return;
-            }
-
-            if (_githubAuthenticationService.ValidateSettings(settings).Any())
+            if (_gitHubAuthenticationSettings == null)
             {
                 return;
             }
@@ -64,47 +49,30 @@ namespace OrchardCore.GitHub.Configuration
                 return;
             }
 
-            var loginSettings = GetGitHubAuthenticationSettingsAsync().GetAwaiter().GetResult();
-            if (loginSettings == null)
+            if (_gitHubAuthenticationSettings == null)
             {
                 return;
             }
 
-            options.ClientId = loginSettings.ClientID;
+            options.ClientId = _gitHubAuthenticationSettings.ClientID;
 
             try
             {
-                options.ClientSecret = _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GitHubAuthentication).Unprotect(loginSettings.ClientSecret);
+                options.ClientSecret = _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GitHubAuthentication).Unprotect(_gitHubAuthenticationSettings.ClientSecret);
             }
             catch
             {
                 _logger.LogError("The GitHub Consumer Secret could not be decrypted. It may have been encrypted using a different key.");
             }
 
-            if (loginSettings.CallbackPath.HasValue)
+            if (_gitHubAuthenticationSettings.CallbackPath.HasValue)
             {
-                options.CallbackPath = loginSettings.CallbackPath;
+                options.CallbackPath = _gitHubAuthenticationSettings.CallbackPath;
             }
 
-            options.SaveTokens = loginSettings.SaveTokens;
+            options.SaveTokens = _gitHubAuthenticationSettings.SaveTokens;
         }
 
         public void Configure(GitHubOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
-
-        private async Task<GitHubAuthenticationSettings> GetGitHubAuthenticationSettingsAsync()
-        {
-            var settings = await _githubAuthenticationService.GetSettingsAsync();
-            if ((_githubAuthenticationService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
-            {
-                if (_shellSettings.State == TenantState.Running)
-                {
-                    _logger.LogWarning("GitHub Authentication is not correctly configured.");
-                }
-
-                return null;
-            }
-
-            return settings;
-        }
     }
 }

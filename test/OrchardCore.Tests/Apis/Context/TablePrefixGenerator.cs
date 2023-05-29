@@ -1,7 +1,3 @@
-﻿using System;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace OrchardCore.Tests.Apis.Context
 {
     /// <summary>
@@ -20,14 +16,14 @@ namespace OrchardCore.Tests.Apis.Context
             await Task.Delay(1);
             var ticks = DateTime.Now.Ticks;
 
-			var result = new StringBuilder();
-			while (ticks != 0)
-			{
-				result.Append(CharList[ticks % CharList.Length]);
-				ticks /= CharList.Length;
-			}
+            var result = new StringBuilder();
+            while (ticks != 0)
+            {
+                result.Append(CharList[ticks % CharList.Length]);
+                ticks /= CharList.Length;
+            }
 
-			return result.ToString();
+            return result.ToString();
         }
     }
 }

@@ -1,14 +1,14 @@
 @model AuditTrailSettingsViewModel
 
-@{ 
+@{
     Title.Clear();
     RenderTitleSegments(T["Audit Trail Settings"]);
 }
- 
-<zone name="Title" position="before"><h1 class="float-left pr-2">@T["Audit Trail"]</h1></zone>
+
+<zone name="Title" position="before"><h1 class="float-start pe-2">@T["Audit Trail"]</h1></zone>
 
 <section>
-    <div class="form-group">
+    <div class="mb-3">
         <label class="" for="Categories">@T["Events to record"]</label>
         <table class="table table-hover">
             <thead>
@@ -28,9 +28,11 @@
                             <td colspan="2">
                                 <strong>@category.Name</strong>
                             </td>
-                            <td class="custom-checkbox">
-                                <input type="checkbox" class="custom-control-input check-all-master" id="@category.Name" />
-                                <label class="custom-control-label" for="@category.Name">@T["Select all"]</label>
+                            <td>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input check-all-master" id="@category.Name" />
+                                    <label class="form-check-label" for="@category.Name">@T["Select all"]</label>
+                                </div>
                             </td>
                         </tr>
                         @{
@@ -44,13 +46,11 @@
                                         @auditTrailEvent.LocalizedName
                                     </td>
                                     <td>@auditTrailEvent.Description</td>
-                                    <td class="custom-control custom-checkbox check-all-slave">
-
-                                        <input type="checkbox" class="custom-control-input"
-                                               asp-for="Categories[categoriesIndex].Events[eventsIndex].IsEnabled"
-                                               disabled="@Model.Categories[categoriesIndex].Events[eventsIndex].IsMandatory"/>
-
-                                        <label class="custom-control-label" asp-for="Categories[categoriesIndex].Events[eventsIndex].IsEnabled">@auditTrailEvent.LocalizedName</label>
+                                    <td>
+                                        <div class="form-check check-all-slave">
+                                            <input type="checkbox" class="form-check-input" asp-for="Categories[categoriesIndex].Events[eventsIndex].IsEnabled" disabled="@Model.Categories[categoriesIndex].Events[eventsIndex].IsMandatory" />
+                                            <label class="form-check-label" asp-for="Categories[categoriesIndex].Events[eventsIndex].IsEnabled">@auditTrailEvent.LocalizedName</label>
+                                        </div>
                                     </td>
                                 </tr>
                                 eventsIndex++;
@@ -63,12 +63,10 @@
         </table>
     </div>
 
-    <div class="form-group" asp-validation-class-for="ClientIpAddressAllowed">
-        <div class="custom-control custom-checkbox">
-            <input asp-for="ClientIpAddressAllowed" class="custom-control-input" type="checkbox" />
-            <label asp-for="ClientIpAddressAllowed" class="custom-control-label">@T["Allow client IP address"]</label>
-            <span class="hint dashed">@T["Whether the client IP address is recorded."]</span>
-        </div>
+    <div class="form-check" asp-validation-class-for="ClientIpAddressAllowed">
+        <input asp-for="ClientIpAddressAllowed" class="form-check-input" type="checkbox" />
+        <label asp-for="ClientIpAddressAllowed" class="form-check-label">@T["Allow client IP address"]</label>
+        <span class="hint dashed">@T["Whether the client IP address is recorded."]</span>
     </div>
 </section>
 

@@ -24,7 +24,8 @@ namespace OrchardCore.Media.Processing
         Gif,
         Jpg,
         Png,
-        Tga
+        Tga,
+        WebP
     }
 
     internal class ImageSharpUrlFormatter
@@ -56,14 +57,16 @@ namespace OrchardCore.Media.Processing
                 queryStringParams["rmode"] = resizeMode.ToString().ToLower();
             }
 
-            if (quality.HasValue)
-            {
-                queryStringParams["quality"] = quality.ToString();
-            }
-
+            // The format is set before quality such that the quality is not 
+            // invalidated when the url is generated.
             if (format != Format.Undefined)
             {
                 queryStringParams["format"] = format.ToString().ToLower();
+            }
+
+            if (quality.HasValue)
+            {
+                queryStringParams["quality"] = quality.ToString();
             }
 
             if (anchor != null)

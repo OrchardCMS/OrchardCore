@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Localization.DataAnnotations;
 
 namespace OrchardCore.Localization.PortableObject
 {
@@ -12,6 +13,9 @@ namespace OrchardCore.Localization.PortableObject
     /// </summary>
     public class PortableObjectStringLocalizer : IPluralStringLocalizer
     {
+        private static readonly string DataAnnotationsDefaultErrorMessagesContext = typeof(DataAnnotationsDefaultErrorMessages).FullName;
+        private static readonly string LocalizedDataAnnotationsMvcOptionsContext = typeof(LocalizedDataAnnotationsMvcOptions).FullName;
+
         private readonly ILocalizationManager _localizationManager;
         private readonly bool _fallBackToParentCulture;
         private readonly ILogger _logger;
@@ -37,7 +41,7 @@ namespace OrchardCore.Localization.PortableObject
         }
 
         /// <inheritdocs />
-        public LocalizedString this[string name]
+        public virtual LocalizedString this[string name]
         {
             get
             {
@@ -53,7 +57,7 @@ namespace OrchardCore.Localization.PortableObject
         }
 
         /// <inheritdocs />
-        public LocalizedString this[string name, params object[] arguments]
+        public virtual LocalizedString this[string name, params object[] arguments]
         {
             get
             {
@@ -65,7 +69,7 @@ namespace OrchardCore.Localization.PortableObject
         }
 
         /// <inheritdocs />
-        public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
+        public virtual IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
         {
             var culture = CultureInfo.CurrentUICulture;
 
@@ -74,11 +78,8 @@ namespace OrchardCore.Localization.PortableObject
                 : GetAllStrings(culture);
         }
 
-        [Obsolete("This method will be removed in the upcoming ASP.NET Core major release.")]
-        public IStringLocalizer WithCulture(CultureInfo culture) => this;
-
         /// <inheritdocs />
-        public (LocalizedString, object[]) GetTranslation(string name, params object[] arguments)
+        public virtual (LocalizedString, object[]) GetTranslation(string name, params object[] arguments)
         {
             if (name == null)
             {
@@ -150,7 +151,7 @@ namespace OrchardCore.Localization.PortableObject
             return allLocalizedStrings;
         }
 
-        private string GetTranslation(string[] pluralForms, CultureInfo culture, int? count)
+        protected string GetTranslation(string[] pluralForms, CultureInfo culture, int? count)
         {
             var dictionary = _localizationManager.GetDictionary(culture);
 
@@ -170,7 +171,7 @@ namespace OrchardCore.Localization.PortableObject
             return pluralForms[pluralForm];
         }
 
-        private string GetTranslation(string name, string context, CultureInfo culture, int? count)
+        protected string GetTranslation(string name, string context, CultureInfo culture, int? count)
         {
             string translation = null;
             try
@@ -199,8 +200,31 @@ namespace OrchardCore.Localization.PortableObject
 
                     if (dictionary != null)
                     {
-                        // Extract translation with context
                         var key = CultureDictionaryRecord.GetKey(name, context);
+
+                        // Extract translation from data annotations attributes
+                        if (context == LocalizedDataAnnotationsMvcOptionsContext)
+                        {
+                            // Extract translation with context
+                            key = CultureDictionaryRecord.GetKey(name, DataAnnotationsDefaultErrorMessagesContext);
+                            translation = dictionary[key];
+
+                            if (translation != null)
+                            {
+                                return translation;
+                            }
+
+                            // Extract translation without context
+                            key = CultureDictionaryRecord.GetKey(name, null);
+                            translation = dictionary[key];
+
+                            if (translation != null)
+                            {
+                                return translation;
+                            }
+                        }
+
+                        // Extract translation with context
                         translation = dictionary[key, count];
 
                         if (context != null && translation == null)

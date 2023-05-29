@@ -1,7 +1,4 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.Infrastructure.Html;
-using Xunit;
 
 namespace OrchardCore.Tests.Html
 {

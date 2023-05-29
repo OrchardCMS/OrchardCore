@@ -284,7 +284,7 @@ namespace OrchardCore.FileStorage.FileSystem
             catch (Exception ex)
             {
                 throw new FileStoreException($"Cannot get file stream of the file '{fileStoreEntry.Path}'.", ex);
-            }           
+            }
         }
 
         public async Task<string> CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using Cysharp.Text;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.ContentManagement.Utilities
@@ -12,17 +13,21 @@ namespace OrchardCore.ContentManagement.Utilities
     {
         public static string CamelFriendly(this string camel)
         {
+            // optimize common cases
             if (string.IsNullOrWhiteSpace(camel))
-                return "";
-
-            var sb = new StringBuilder(camel);
-
-            for (int i = camel.Length - 1; i > 0; i--)
             {
-                if (char.IsUpper(sb[i]))
+                return "";
+            }
+
+            using var sb = ZString.CreateStringBuilder();
+            for (var i = 0; i < camel.Length; ++i)
+            {
+                var c = camel[i];
+                if (i != 0 && char.IsUpper(c))
                 {
-                    sb.Insert(i, ' ');
+                    sb.Append(' ');
                 }
+                sb.Append(c);
             }
 
             return sb.ToString();
@@ -62,39 +67,6 @@ namespace OrchardCore.ContentManagement.Utilities
 
             var trimmed = text.Substring(0, characterCount);
             return trimmed + ellipsis;
-        }
-
-        public static string HtmlClassify(this string text)
-        {
-            if (string.IsNullOrWhiteSpace(text))
-                return "";
-
-            var friendlier = text.CamelFriendly();
-
-            var result = new char[friendlier.Length];
-
-            var cursor = 0;
-            var previousIsNotLetter = false;
-            for (var i = 0; i < friendlier.Length; i++)
-            {
-                char current = friendlier[i];
-                if (IsLetter(current) || (char.IsDigit(current) && cursor > 0))
-                {
-                    if (previousIsNotLetter && i != 0 && cursor > 0)
-                    {
-                        result[cursor++] = '-';
-                    }
-
-                    result[cursor++] = char.ToLowerInvariant(current);
-                    previousIsNotLetter = false;
-                }
-                else
-                {
-                    previousIsNotLetter = true;
-                }
-            }
-
-            return new string(result, 0, cursor);
         }
 
         public static LocalizedString OrDefault(this string text, LocalizedString defaultValue)

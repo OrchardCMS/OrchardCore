@@ -12,6 +12,6 @@ namespace OrchardCore.Rules
         public string Name => TypeName;
 
         public ConditionOperator Create()
-            => new TConditionOperator();     
+            => new TConditionOperator();
     }
 }

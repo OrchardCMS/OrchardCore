@@ -8,7 +8,6 @@ using Fluid;
 using Fluid.Ast;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.DisplayManagement;
 using OrchardCore.Liquid;
 using OrchardCore.ResourceManagement;
 
@@ -16,7 +15,7 @@ namespace OrchardCore.Resources.Liquid
 {
     public class StyleBlock
     {
-        private static readonly char[] Separators = new[] {',', ' '};
+        private static readonly char[] Separators = new[] { ',', ' ' };
         public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             var services = ((LiquidTemplateContext)context).Services;

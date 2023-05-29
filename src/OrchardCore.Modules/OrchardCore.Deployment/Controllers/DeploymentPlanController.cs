@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Deployment.Indexes;
 using OrchardCore.Deployment.ViewModels;
@@ -16,7 +17,6 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 using YesSql;
 using YesSql.Services;
 
@@ -29,7 +29,7 @@ namespace OrchardCore.Deployment.Controllers
         private readonly IDisplayManager<DeploymentStep> _displayManager;
         private readonly IEnumerable<IDeploymentStepFactory> _factories;
         private readonly ISession _session;
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IStringLocalizer S;
@@ -41,7 +41,7 @@ namespace OrchardCore.Deployment.Controllers
             IDisplayManager<DeploymentStep> displayManager,
             IEnumerable<IDeploymentStepFactory> factories,
             ISession session,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             IShapeFactory shapeFactory,
             IStringLocalizer<DeploymentPlanController> stringLocalizer,
             IHtmlLocalizer<DeploymentPlanController> htmlLocalizer,
@@ -52,7 +52,7 @@ namespace OrchardCore.Deployment.Controllers
             _factories = factories;
             _authorizationService = authorizationService;
             _session = session;
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
             _notifier = notifier;
             _updateModelAccessor = updateModelAccessor;
             New = shapeFactory;
@@ -72,8 +72,7 @@ namespace OrchardCore.Deployment.Controllers
                 return Forbid();
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var deploymentPlans = _session.Query<DeploymentPlan, DeploymentPlanIndex>();
 
@@ -140,7 +139,7 @@ namespace OrchardCore.Deployment.Controllers
                         {
                             _session.Delete(item);
                         }
-                        _notifier.Success(H["Deployment plans successfully deleted."]);
+                        await _notifier.SuccessAsync(H["Deployment plans successfully deleted."]);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -298,7 +297,7 @@ namespace OrchardCore.Deployment.Controllers
 
                 _session.Save(deploymentPlan);
 
-                _notifier.Success(H["Deployment plan updated successfully."]);
+                await _notifier.SuccessAsync(H["Deployment plan updated successfully."]);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -324,7 +323,7 @@ namespace OrchardCore.Deployment.Controllers
 
             _session.Delete(deploymentPlan);
 
-            _notifier.Success(H["Deployment plan deleted successfully."]);
+            await _notifier.SuccessAsync(H["Deployment plan deleted successfully."]);
 
             return RedirectToAction(nameof(Index));
         }

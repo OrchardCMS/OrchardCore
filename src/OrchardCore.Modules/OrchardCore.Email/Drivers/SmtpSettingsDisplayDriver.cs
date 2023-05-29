@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -53,6 +54,8 @@ namespace OrchardCore.Email.Drivers
                     model.PickupDirectoryLocation = settings.PickupDirectoryLocation;
                     model.Host = settings.Host;
                     model.Port = settings.Port;
+                    model.ProxyHost = settings.ProxyHost;
+                    model.ProxyPort = settings.ProxyPort;
                     model.EncryptionMethod = settings.EncryptionMethod;
                     model.AutoSelectEncryption = settings.AutoSelectEncryption;
                     model.RequireCredentials = settings.RequireCredentials;
@@ -79,7 +82,7 @@ namespace OrchardCore.Email.Drivers
                 return null;
             }
 
-            if (context.GroupId == GroupId)
+            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
                 var previousPassword = section.Password;
                 await context.Updater.TryUpdateModelAsync(section, Prefix);

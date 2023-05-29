@@ -27,7 +27,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 ServiceDescriptor.Scoped<IDataMigration, OpenIdMigrations>());
 
             // Configure support for an OpenId collection.
-            builder.Services.Configure<StoreCollectionOptions>(o => o.Collections.Add("OpenId"));  
+            builder.Services.Configure<StoreCollectionOptions>(o => o.Collections.Add("OpenId"));
 
             return builder;
         }

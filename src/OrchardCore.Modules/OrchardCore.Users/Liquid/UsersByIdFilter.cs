@@ -24,7 +24,7 @@ namespace OrchardCore.Users.Liquid
             if (input.Type == FluidValues.Array)
             {
                 // List of user ids
-                var userIds = input.Enumerate().Select(x => x.ToStringValue()).ToArray();
+                var userIds = input.Enumerate(ctx).Select(x => x.ToStringValue()).ToArray();
 
                 return FluidValue.Create(await _session.Query<User, UserIndex>(x => x.UserId.IsIn(userIds)).ListAsync(), ctx.Options);
             }

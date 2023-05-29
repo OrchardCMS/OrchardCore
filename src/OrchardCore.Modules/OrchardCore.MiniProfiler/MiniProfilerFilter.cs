@@ -1,13 +1,12 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Shapes;
-using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.MiniProfiler
 {
@@ -15,23 +14,29 @@ namespace OrchardCore.MiniProfiler
     {
         private readonly ILayoutAccessor _layoutAccessor;
         private readonly IShapeFactory _shapeFactory;
-        private readonly MiniProfilerOptions _options;
+        private readonly IAuthorizationService _authorizationService;
 
         public MiniProfilerFilter(
             ILayoutAccessor layoutAccessor,
             IShapeFactory shapeFactory,
-            IOptions<MiniProfilerOptions> options)
+            IAuthorizationService authorizationService)
         {
             _layoutAccessor = layoutAccessor;
             _shapeFactory = shapeFactory;
-            _options = options.Value;
+            _authorizationService = authorizationService;
         }
 
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
-            // Should only run on the front-end (or optionally also on the admin) for a full view.
-            if ((context.Result is ViewResult || context.Result is PageResult) &&
-                (_options.AllowOnAdmin || !AdminAttribute.IsApplied(context.HttpContext)))
+            var viewMiniProfilerOnFrontEnd = await _authorizationService.AuthorizeAsync(context.HttpContext.User, Permissions.ViewMiniProfilerOnFrontEnd);
+            var viewMiniProfilerOnBackEnd = await _authorizationService.AuthorizeAsync(context.HttpContext.User, Permissions.ViewMiniProfilerOnBackEnd);
+            if (
+                    (context.Result is ViewResult || context.Result is PageResult) &&
+                    (
+                        (viewMiniProfilerOnFrontEnd && !AdminAttribute.IsApplied(context.HttpContext)) ||
+                        (viewMiniProfilerOnBackEnd && AdminAttribute.IsApplied(context.HttpContext))
+                    )
+                )
             {
                 var layout = await _layoutAccessor.GetLayoutAsync();
                 var footerZone = layout.Zones["Footer"];

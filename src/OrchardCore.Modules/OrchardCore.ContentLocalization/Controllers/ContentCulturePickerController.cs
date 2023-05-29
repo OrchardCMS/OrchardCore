@@ -81,7 +81,7 @@ namespace OrchardCore.ContentLocalization.Controllers
                 return false;
             }
 
-            return LocalRedirect(url);
+            return this.LocalRedirect(url, true);
         }
     }
 }

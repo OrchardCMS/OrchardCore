@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement;
@@ -18,7 +19,6 @@ using OrchardCore.Navigation;
 using OrchardCore.Placements.Services;
 using OrchardCore.Placements.ViewModels;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Placements.Controllers
 {
@@ -30,7 +30,7 @@ namespace OrchardCore.Placements.Controllers
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
         private readonly INotifier _notifier;
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly dynamic New;
 
         public AdminController(
@@ -40,14 +40,14 @@ namespace OrchardCore.Placements.Controllers
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
             INotifier notifier,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             IShapeFactory shapeFactory)
         {
             _logger = logger;
             _authorizationService = authorizationService;
             _placementsManager = placementsManager;
             _notifier = notifier;
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
 
             New = shapeFactory;
             H = htmlLocalizer;
@@ -61,8 +61,7 @@ namespace OrchardCore.Placements.Controllers
                 return Forbid();
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var shapeTypes = await _placementsManager.ListShapePlacementsAsync();
 
@@ -178,7 +177,7 @@ namespace OrchardCore.Placements.Controllers
             if (viewModel.Creating && await _placementsManager.GetShapePlacementsAsync(viewModel.ShapeType) != null)
             {
                 // Prevent overriding existing rules on creation
-                _notifier.Warning(H["Placement rules for \"{0}\" already exists. Please edit existing rule.", viewModel.ShapeType]);
+                await _notifier.WarningAsync(H["Placement rules for \"{0}\" already exists. Please edit existing rule.", viewModel.ShapeType]);
                 return View(viewModel);
             }
 
@@ -195,28 +194,28 @@ namespace OrchardCore.Placements.Controllers
                     await _placementsManager.UpdateShapePlacementsAsync(viewModel.ShapeType, placementNodes);
                     viewModel.Creating = false;
 
-                    _notifier.Success(H["The \"{0}\" placement have been saved.", viewModel.ShapeType]);
+                    await _notifier.SuccessAsync(H["The \"{0}\" placement have been saved.", viewModel.ShapeType]);
                 }
                 else if (viewModel.Creating)
                 {
-                    _notifier.Warning(H["The \"{0}\" placement is empty.", viewModel.ShapeType]);
+                    await _notifier.WarningAsync(H["The \"{0}\" placement is empty.", viewModel.ShapeType]);
                     return View(viewModel);
                 }
                 else
                 {
                     // Remove if empty
                     await _placementsManager.RemoveShapePlacementsAsync(viewModel.ShapeType);
-                    _notifier.Success(H["The \"{0}\" placement has been deleted.", viewModel.ShapeType]);
+                    await _notifier.SuccessAsync(H["The \"{0}\" placement has been deleted.", viewModel.ShapeType]);
                 }
             }
-            catch(JsonReaderException jsonException)
+            catch (JsonReaderException jsonException)
             {
-                _notifier.Error(H["An error occurred while parsing the placement<br/>{0}", jsonException.Message]);
+                await _notifier.ErrorAsync(H["An error occurred while parsing the placement<br/>{0}", jsonException.Message]);
                 return View(viewModel);
             }
             catch (Exception e)
             {
-                _notifier.Error(H["An error occurred while saving the placement."]);
+                await _notifier.ErrorAsync(H["An error occurred while saving the placement."]);
                 _logger.LogError(e, "An error occurred while saving the placement.");
                 return View(viewModel);
             }
@@ -238,7 +237,7 @@ namespace OrchardCore.Placements.Controllers
             }
 
             await _placementsManager.RemoveShapePlacementsAsync(shapeType);
-            _notifier.Success(H["The \"{0}\" placement has been deleted.", shapeType]);
+            await _notifier.SuccessAsync(H["The \"{0}\" placement has been deleted.", shapeType]);
 
             return RedirectToReturnUrlOrIndex(returnUrl);
         }
@@ -263,7 +262,7 @@ namespace OrchardCore.Placements.Controllers
                         {
                             await _placementsManager.RemoveShapePlacementsAsync(item);
                         }
-                        _notifier.Success(H["Placements successfully removed."]);
+                        await _notifier.SuccessAsync(H["Placements successfully removed."]);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -277,7 +276,7 @@ namespace OrchardCore.Placements.Controllers
         {
             if ((String.IsNullOrEmpty(returnUrl) == false) && (Url.IsLocalUrl(returnUrl)))
             {
-                return Redirect(returnUrl);
+                return this.Redirect(returnUrl, true);
             }
             else
             {

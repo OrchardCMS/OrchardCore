@@ -96,20 +96,17 @@ on this protocol.
 
 To include Content Types displayed with Razor Pages, enable the Sitemaps for Decoupled Razor Pages feature.
 
-In your `Startup.cs`, configure the `SitemapsRazorPagesOptions` to support the routes for your Content Types.
+In your `Program.cs`, configure the `SitemapsRazorPagesOptions` to support the routes for your Content Types.
 
 ```csharp
-public override void ConfigureServices(IServiceCollection services)
+builder.Services.Configure<SitemapsRazorPagesOptions>(options =>
 {
-    services.Configure<SitemapsRazorPagesOptions>(options =>
+    options.ConfigureContentType("DecoupledBlogPost", o =>
     {
-        options.ConfigureContentType("DecoupledBlogPost", o =>
-        {
-            o.PageName = "DecoupledBlogPost";
-            o.RouteValues = (contentItem) => new { area = "OrchardCore.Sitemaps", slug = contentItem.ContentItemId };
-        });
+        o.PageName = "DecoupledBlogPost";
+        o.RouteValues = (contentItem) => new { area = "OrchardCore.Sitemaps", slug = contentItem.ContentItemId };
     });
-}      
+});    
 ```
 
 !!! note
@@ -125,7 +122,7 @@ To clear the cache manually use the _Configuration -> SEO -> Sitemaps Cache_ fea
 
 ## Video
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/fG_rFD0wffw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/fG_rFD0wffw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## CREDITS
 

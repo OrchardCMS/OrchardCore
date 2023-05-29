@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Remote.ViewModels;
@@ -15,7 +16,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Deployment.Remote.Controllers
 {
@@ -23,7 +23,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
     public class RemoteInstanceController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
         private readonly RemoteInstanceService _service;
         private readonly dynamic New;
@@ -33,7 +33,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         public RemoteInstanceController(
             RemoteInstanceService service,
             IAuthorizationService authorizationService,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             IShapeFactory shapeFactory,
             IStringLocalizer<RemoteInstanceController> stringLocalizer,
             IHtmlLocalizer<RemoteInstanceController> htmlLocalizer,
@@ -41,7 +41,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             )
         {
             _authorizationService = authorizationService;
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
             New = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
@@ -56,8 +56,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 return Forbid();
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var remoteInstances = (await _service.GetRemoteInstanceListAsync()).RemoteInstances;
 
@@ -129,7 +128,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 await _service.CreateRemoteInstanceAsync(model.Name, model.Url, model.ClientName, model.ApiKey);
 
-                _notifier.Success(H["Remote instance created successfully."]);
+                await _notifier.SuccessAsync(H["Remote instance created successfully."]);
                 return RedirectToAction(nameof(Index));
             }
 
@@ -187,7 +186,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 await _service.UpdateRemoteInstance(model.Id, model.Name, model.Url, model.ClientName, model.ApiKey);
 
-                _notifier.Success(H["Remote instance updated successfully."]);
+                await _notifier.SuccessAsync(H["Remote instance updated successfully."]);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -213,7 +212,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             await _service.DeleteRemoteInstanceAsync(id);
 
-            _notifier.Success(H["Remote instance deleted successfully."]);
+            await _notifier.SuccessAsync(H["Remote instance deleted successfully."]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -241,7 +240,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                         {
                             await _service.DeleteRemoteInstanceAsync(item.Id);
                         }
-                        _notifier.Success(H["Remote instances successfully removed."]);
+                        await _notifier.SuccessAsync(H["Remote instances successfully removed."]);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

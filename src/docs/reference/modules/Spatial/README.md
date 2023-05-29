@@ -101,7 +101,7 @@ Visual representation:
       "must": [
         {
           "term": {
-            "Content.ContentItem.ContentType": "Acme"
+            "Content.ContentItem.ContentType.keyword": "Acme"
           }
         },
         {

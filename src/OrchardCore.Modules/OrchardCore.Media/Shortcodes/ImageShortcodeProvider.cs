@@ -12,8 +12,8 @@ namespace OrchardCore.Media.Shortcodes
 {
     public class ImageShortcodeProvider : IShortcodeProvider
     {
-        private static readonly ValueTask<string> Null = new ValueTask<string>((string)null);
-        private static readonly ValueTask<string> ImageShortcode = new ValueTask<string>("[image]");
+        private static ValueTask<string> Null => new ValueTask<string>((string)null);
+        private static ValueTask<string> ImageShortcode => new ValueTask<string>("[image]");
         private static readonly HashSet<string> Shortcodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "image",

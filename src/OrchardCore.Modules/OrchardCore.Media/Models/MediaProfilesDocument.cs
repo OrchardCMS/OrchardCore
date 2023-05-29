@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using OrchardCore.Data.Documents;
 using OrchardCore.Media.Processing;
 

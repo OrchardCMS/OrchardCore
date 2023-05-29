@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\..\src\OrchardCore.Build\OrchardCore.Commons.props" />
+  <Import Project="..\..\..\src\OrchardCore\OrchardCore.Theme.Targets\OrchardCore.Theme.Targets.props" />
+  <Import Project="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.props" />
+
+  <PropertyGroup>
+    <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\OrchardCore\OrchardCore.Theme.Targets\OrchardCore.Theme.Targets.csproj" />
+    <ProjectReference Include="..\..\..\src\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
+  </ItemGroup>
+
+  <!-- TODO: TBD: do we need to import both MODULE+THEME targets? -->
+  <Import Project="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.targets" />
+  <Import Project="..\..\..\src\OrchardCore\OrchardCore.Theme.Targets\OrchardCore.Theme.Targets.targets" />
+  <Import Project="..\..\..\src\OrchardCore.Build\OrchardCore.Commons.targets" />
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>OrchardCore.Abstractions.Tests</_Parameter1>
+    </AssemblyAttribute>
+
+    <!-- Ctor arguments by position:
+    1: string id
+    2: , string name
+    3: , string baseTheme
+    4: , string category
+    5: , string priority
+    6: , string description
+    7: , string author
+    8: , string semVer
+    9: , string websiteUrl
+    10: , string featureDependencies
+    11: , string tags
+    12: , object defaultTenant
+    13: , object alwaysEnabled
+    14: , object enabledByDependencyOnly
+    -->
+    <AssemblyAttribute Include="OrchardCore.DisplayManagement.Manifest.ThemeAttribute">
+      <_Parameter1>one</_Parameter1>
+      <_Parameter2>two</_Parameter2>
+      <_Parameter3>three</_Parameter3>
+      <_Parameter4>four</_Parameter4>
+      <_Parameter5>5</_Parameter5>
+      <_Parameter6>six</_Parameter6>
+      <_Parameter7>seven</_Parameter7>
+      <_Parameter8>8.9.10</_Parameter8>
+      <_Parameter9>lorem://assyattrib.ipsum</_Parameter9>
+      <_Parameter10>ten;eleven;twelve</_Parameter10>
+      <_Parameter11>eleven;twelve;thirteen</_Parameter11>
+      <_Parameter12>true</_Parameter12>
+      <_Parameter13>true</_Parameter13>
+      <_Parameter14>false</_Parameter14>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+</Project>

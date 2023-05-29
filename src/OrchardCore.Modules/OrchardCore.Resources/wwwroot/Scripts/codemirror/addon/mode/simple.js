@@ -3,14 +3,17 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
+
 (function (mod) {
-  if ((typeof exports === "undefined" ? "undefined" : _typeof(exports)) == "object" && (typeof module === "undefined" ? "undefined" : _typeof(module)) == "object") // CommonJS
-    mod(require("../../lib/codemirror"));else if (typeof define == "function" && define.amd) // AMD
-    define(["../../lib/codemirror"], mod);else // Plain browser env
+  if ((typeof exports === "undefined" ? "undefined" : _typeof(exports)) == "object" && (typeof module === "undefined" ? "undefined" : _typeof(module)) == "object")
+    // CommonJS
+    mod(require("../../lib/codemirror"));else if (typeof define == "function" && define.amd)
+    // AMD
+    define(["../../lib/codemirror"], mod);else
+    // Plain browser env
     mod(CodeMirror);
 })(function (CodeMirror) {
   "use strict";
@@ -20,18 +23,15 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       return CodeMirror.simpleMode(config, states);
     });
   };
-
   CodeMirror.simpleMode = function (config, states) {
     ensureState(states, "start");
     var states_ = {},
-        meta = states.meta || {},
-        hasIndentation = false;
-
+      meta = states.meta || {},
+      hasIndentation = false;
     for (var state in states) {
       if (state != meta && states.hasOwnProperty(state)) {
         var list = states_[state] = [],
-            orig = states[state];
-
+          orig = states[state];
         for (var i = 0; i < orig.length; i++) {
           var data = orig[i];
           list.push(new Rule(data, states));
@@ -39,7 +39,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
       }
     }
-
     var mode = {
       startState: function startState() {
         return {
@@ -60,7 +59,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         };
         if (state.localState) s.localState = CodeMirror.copyState(state.local.mode, state.localState);
         if (state.stack) s.stack = state.stack.slice(0);
-
         for (var pers = state.persistentStates; pers; pers = pers.next) {
           s.persistentStates = {
             mode: pers.mode,
@@ -69,7 +67,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             next: s.persistentStates
           };
         }
-
         return s;
       },
       token: tokenFunction(states_, config),
@@ -86,15 +83,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }
     return mode;
   };
-
   function ensureState(states, name) {
     if (!states.hasOwnProperty(name)) throw new Error("Undefined state " + name + " in simple mode");
   }
-
   function toRegex(val, caret) {
     if (!val) return /(?:)/;
     var flags = "";
-
     if (val instanceof RegExp) {
       if (val.ignoreCase) flags = "i";
       if (val.unicode) flags += "u";
@@ -102,30 +96,24 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     } else {
       val = String(val);
     }
-
     return new RegExp((caret === false ? "" : "^") + "(?:" + val + ")", flags);
   }
-
   function asToken(val) {
     if (!val) return null;
     if (val.apply) return val;
     if (typeof val == "string") return val.replace(/\./g, " ");
     var result = [];
-
     for (var i = 0; i < val.length; i++) {
       result.push(val[i] && val[i].replace(/\./g, " "));
     }
-
     return result;
   }
-
   function Rule(data, states) {
     if (data.next || data.push) ensureState(states, data.next || data.push);
     this.regex = toRegex(data.regex);
     this.token = asToken(data.token);
     this.data = data;
   }
-
   function tokenFunction(states, config) {
     return function (stream, state) {
       if (state.pending) {
@@ -134,7 +122,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         stream.pos += pend.text.length;
         return pend.token;
       }
-
       if (state.local) {
         if (state.local.end && stream.match(state.local.end)) {
           var tok = state.local.endToken || null;
@@ -142,18 +129,15 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           return tok;
         } else {
           var tok = state.local.mode.token(stream, state.localState),
-              m;
+            m;
           if (state.local.endScan && (m = state.local.endScan.exec(stream.current()))) stream.pos = stream.start + m.index;
           return tok;
         }
       }
-
       var curState = states[state.state];
-
       for (var i = 0; i < curState.length; i++) {
         var rule = curState[i];
         var matches = (!rule.data.sol || stream.sol()) && stream.match(rule.regex);
-
         if (matches) {
           if (rule.data.next) {
             state.state = rule.data.next;
@@ -163,13 +147,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           } else if (rule.data.pop && state.stack && state.stack.length) {
             state.state = state.stack.pop();
           }
-
           if (rule.data.mode) enterLocalMode(config, state, rule.data.mode, rule.token);
           if (rule.data.indent) state.indent.push(stream.indentation() + config.indentUnit);
           if (rule.data.dedent) state.indent.pop();
           var token = rule.token;
           if (token && token.apply) token = token(matches);
-
           if (matches.length > 2 && rule.token && typeof rule.token != "string") {
             for (var j = 2; j < matches.length; j++) {
               if (matches[j]) (state.pending || (state.pending = [])).push({
@@ -177,7 +159,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
                 token: rule.token[j - 1]
               });
             }
-
             stream.backUp(matches[0].length - (matches[1] ? matches[1].length : 0));
             return token[0];
           } else if (token && token.join) {
@@ -187,31 +168,25 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           }
         }
       }
-
       stream.next();
       return null;
     };
   }
-
   function cmp(a, b) {
     if (a === b) return true;
     if (!a || _typeof(a) != "object" || !b || _typeof(b) != "object") return false;
     var props = 0;
-
     for (var prop in a) {
       if (a.hasOwnProperty(prop)) {
         if (!b.hasOwnProperty(prop) || !cmp(a[prop], b[prop])) return false;
         props++;
       }
     }
-
     for (var prop in b) {
       if (b.hasOwnProperty(prop)) props--;
     }
-
     return props == 0;
   }
-
   function enterLocalMode(config, state, spec, token) {
     var pers;
     if (spec.persistent) for (var p = state.persistentStates; p && !pers; p = p.next) {
@@ -233,27 +208,22 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       endToken: token && token.join ? token[token.length - 1] : token
     };
   }
-
   function indexOf(val, arr) {
     for (var i = 0; i < arr.length; i++) {
       if (arr[i] === val) return true;
     }
   }
-
   function indentFunction(states, meta) {
     return function (state, textAfter, line) {
       if (state.local && state.local.mode.indent) return state.local.mode.indent(state.localState, textAfter, line);
       if (state.indent == null || state.local || meta.dontIndentStates && indexOf(state.state, meta.dontIndentStates) > -1) return CodeMirror.Pass;
       var pos = state.indent.length - 1,
-          rules = states[state.state];
-
+        rules = states[state.state];
       scan: for (;;) {
         for (var i = 0; i < rules.length; i++) {
           var rule = rules[i];
-
           if (rule.data.dedent && rule.data.dedentIfLineStart !== false) {
             var m = rule.regex.exec(textAfter);
-
             if (m && m[0]) {
               pos--;
               if (rule.next || rule.push) rules = states[rule.next || rule.push];
@@ -262,10 +232,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             }
           }
         }
-
         break;
       }
-
       return pos < 0 ? 0 : state.indent[pos];
     };
   }

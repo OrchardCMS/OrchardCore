@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -18,6 +16,7 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Contents.AdminNodes;
+using OrchardCore.Contents.AuditTrail.Settings;
 using OrchardCore.Contents.Controllers;
 using OrchardCore.Contents.Deployment;
 using OrchardCore.Contents.Drivers;
@@ -36,15 +35,12 @@ using OrchardCore.Contents.ViewModels;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Entities;
 using OrchardCore.Feeds;
-using YesSql.Filters.Query;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Lists.Settings;
@@ -53,10 +49,12 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Settings.Deployment;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Handlers;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
+using YesSql.Filters.Query;
 
 namespace OrchardCore.Contents
 {
@@ -166,7 +164,7 @@ namespace OrchardCore.Contents
             services.AddScoped<IContentHandleProvider, ContentItemIdHandleProvider>();
             services.AddScoped<IContentItemIndexHandler, ContentItemIndexCoordinator>();
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
 
             // Common Part
             services.AddContentPart<CommonPart>()
@@ -200,7 +198,6 @@ namespace OrchardCore.Contents
 
             services.AddScoped<IContentsAdminListQueryService, DefaultContentsAdminListQueryService>();
 
-            services.AddScoped<IDisplayManager<ContentOptionsViewModel>, DisplayManager<ContentOptionsViewModel>>();
             services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ContentOptionsDisplayDriver>();
 
             services.AddScoped(typeof(IContentItemRecursionHelper<>), typeof(ContentItemRecursionHelper<>));
@@ -327,6 +324,8 @@ namespace OrchardCore.Contents
             services.AddTransient<IDeploymentSource, ContentDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, ContentDeploymentStepDriver>();
+
+            services.AddSiteSettingsPropertyDeploymentStep<ContentAuditTrailSettings, DeploymentStartup>(S => S["Content Audit Trail settings"], S => S["Exports the content audit trail settings."]);
         }
     }
 

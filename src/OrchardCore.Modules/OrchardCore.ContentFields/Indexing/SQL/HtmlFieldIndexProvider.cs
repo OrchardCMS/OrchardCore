@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using YesSql.Indexes;
 
 namespace OrchardCore.ContentFields.Indexing.SQL
@@ -18,7 +18,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
     public class HtmlFieldIndexProvider : ContentFieldIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly HashSet<string> _ignoredTypes = new HashSet<string>();
+        private readonly HashSet<string> _ignoredTypes = new();
         private IContentDefinitionManager _contentDefinitionManager;
 
         public HtmlFieldIndexProvider(IServiceProvider serviceProvider)
@@ -67,40 +67,20 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                         return null;
                     }
 
-                    var results = new List<HtmlFieldIndex>();
-
-                    foreach (var fieldDefinition in fieldDefinitions)
-                    {
-                        var jPart = (JObject)contentItem.Content[fieldDefinition.PartDefinition.Name];
-
-                        if (jPart == null)
-                        {
-                            continue;
-                        }
-
-                        var jField = (JObject)jPart[fieldDefinition.Name];
-
-                        if (jField == null)
-                        {
-                            continue;
-                        }
-
-                        var field = jField.ToObject<HtmlField>();
-
-                        results.Add(new HtmlFieldIndex
-                        {
-                            Latest = contentItem.Latest,
-                            Published = contentItem.Published,
-                            ContentItemId = contentItem.ContentItemId,
-                            ContentItemVersionId = contentItem.ContentItemVersionId,
-                            ContentType = contentItem.ContentType,
-                            ContentPart = fieldDefinition.PartDefinition.Name,
-                            ContentField = fieldDefinition.Name,
-                            Html = field.Html
-                        });
-                    }
-
-                    return results;
+                    return fieldDefinitions
+                        .GetContentFields<HtmlField>(contentItem)
+                        .Select(pair =>
+                            new HtmlFieldIndex
+                            {
+                                Latest = contentItem.Latest,
+                                Published = contentItem.Published,
+                                ContentItemId = contentItem.ContentItemId,
+                                ContentItemVersionId = contentItem.ContentItemVersionId,
+                                ContentType = contentItem.ContentType,
+                                ContentPart = pair.Definition.PartDefinition.Name,
+                                ContentField = pair.Definition.Name,
+                                Html = pair.Field.Html,
+                            });
                 });
         }
     }

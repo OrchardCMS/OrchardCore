@@ -1,7 +1,10 @@
 using System;
 using Fluid;
 using Fluid.Values;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -17,14 +20,19 @@ using OrchardCore.Liquid.Models;
 using OrchardCore.Liquid.Services;
 using OrchardCore.Liquid.ViewModels;
 using OrchardCore.Modules;
+using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Liquid
 {
     public class Startup : StartupBase
     {
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            app.UseMiddleware<ScriptsMiddleware>();
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<ISlugService, SlugService>();
             services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
 
             services.Configure<TemplateOptions>(options =>
@@ -56,7 +64,8 @@ namespace OrchardCore.Liquid
                 options.Filters.AddFilter("json", JsonFilter.Json);
                 options.Filters.AddFilter("jsonparse", JsonParseFilter.JsonParse);
             })
-            .AddLiquidFilter<TimeZoneFilter>("local")
+            .AddLiquidFilter<LocalTimeZoneFilter>("local")
+            .AddLiquidFilter<UtcTimeZoneFilter>("utc")
             .AddLiquidFilter<SlugifyFilter>("slugify")
             .AddLiquidFilter<LiquidFilter>("liquid")
             .AddLiquidFilter<ContentUrlFilter>("href")
@@ -64,6 +73,8 @@ namespace OrchardCore.Liquid
             .AddLiquidFilter<NewShapeFilter>("shape_new")
             .AddLiquidFilter<ShapeRenderFilter>("shape_render")
             .AddLiquidFilter<ShapeStringifyFilter>("shape_stringify");
+
+            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         }
     }
 
@@ -78,7 +89,7 @@ namespace OrchardCore.Liquid
                 .UseDisplayDriver<LiquidPartDisplayDriver>()
                 .AddHandler<LiquidPartHandler>();
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
             services.AddScoped<IContentPartIndexHandler, LiquidPartIndexHandler>();
         }
     }

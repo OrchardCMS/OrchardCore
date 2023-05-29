@@ -1,11 +1,8 @@
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.Lists.Models;
 using OrchardCore.Tests.Apis.Context;
-using Xunit;
 using GraphQLApi = OrchardCore.Apis.GraphQL;
 
 namespace OrchardCore.Tests.Apis.GraphQL
@@ -13,6 +10,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
     public class BlogPostTests
     {
         [Fact]
+
         public async Task ShouldListAllBlogs()
         {
             using (var context = new BlogContext())
@@ -247,6 +245,31 @@ namespace OrchardCore.Tests.Apis.GraphQL
         }
 
         [Fact]
+        public async Task ShouldNotReturnBlogsWithViewOwnBlogContentPermission()
+        {
+            using var context = new SiteContext()
+                .WithPermissionsContext(new PermissionsContext
+                {
+                    UsePermissionsContext = true,
+                    AuthorizedPermissions = new[]
+                    {
+                        GraphQLApi.Permissions.ExecuteGraphQL,
+                        Contents.Permissions.ViewOwnContent
+                    }
+                });
+
+            await context.InitializeAsync();
+
+            var result = await context.GraphQLClient.Content
+                .Query("blog", builder =>
+                {
+                    builder.WithField("contentItemId");
+                });
+
+            Assert.Empty(result["data"]["blog"]);
+        }
+
+        [Fact]
         public async Task ShouldNotReturnBlogsWithoutViewBlogContentPermission()
         {
             using var context = new SiteContext()
@@ -267,7 +290,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     builder.WithField("contentItemId");
                 });
 
-            Assert.Equal(GraphQLApi.ValidationRules.RequiresPermissionValidationRule.ErrorCode, result["errors"][0]["extensions"]["code"]);
+            Assert.Equal(GraphQLApi.ValidationRules.RequiresPermissionValidationRule.ErrorCode, result["errors"][0]["extensions"]["number"].ToString());
         }
     }
 }

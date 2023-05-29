@@ -1,75 +1,91 @@
+using System;
 using System.Globalization;
 using System.Text;
+using Cysharp.Text;
+using OrchardCore.Modules.Services;
 
 namespace OrchardCore.Liquid.Services
 {
+    [Obsolete("This class has been deprecated and will be removed in the next major release, please use OrchardCore.Modules.Services instead.", false)]
     public class SlugService : ISlugService
     {
+        private const char Hyphen = '-';
+        private const int MaxLength = 1000;
+
+        public string Slugify(string text, char separator)
+        {
+            throw new NotImplementedException();
+        }
+
         public string Slugify(string text)
         {
-            if (string.IsNullOrEmpty(text))
+            if (String.IsNullOrEmpty(text))
             {
                 return text;
             }
 
-            var sb = new StringBuilder();
+            var appendHyphen = false;
+            var normalizedText = text.Normalize(NormalizationForm.FormKD);
 
-            var stFormKD = text.Trim().ToLower().Normalize(NormalizationForm.FormKD);
-            foreach (var t in stFormKD)
+            using var slug = ZString.CreateStringBuilder();
+
+            for (var i = 0; i < normalizedText.Length; i++)
             {
-                // Allowed symbols
-                if (t == '-' || t == '_' || t == '~')
+                var currentChar = Char.ToLowerInvariant(normalizedText[i]);
+
+                if (CharUnicodeInfo.GetUnicodeCategory(currentChar) == UnicodeCategory.NonSpacingMark)
                 {
-                    sb.Append(t);
                     continue;
                 }
 
-                var uc = CharUnicodeInfo.GetUnicodeCategory(t);
-                switch (uc)
+                if (Char.IsLetterOrDigit(currentChar))
                 {
-                    case UnicodeCategory.LowercaseLetter:
-                    case UnicodeCategory.OtherLetter:
-                    case UnicodeCategory.DecimalDigitNumber:
-                        // Keep letters and digits
-                        sb.Append(t);
-                        break;
-                    case UnicodeCategory.NonSpacingMark:
-                        // Remove diacritics
-                        break;
-                    default:
-                        // Replace all other chars with dash
-                        sb.Append('-');
-                        break;
+                    slug.Append(currentChar);
+
+                    appendHyphen = true;
                 }
-            }
-
-            var slug = sb.ToString().Normalize(NormalizationForm.FormC);
-
-            // Simplifies dash groups
-            for (var i = 0; i < slug.Length - 1; i++)
-            {
-                if (slug[i] == '-')
+                else if (currentChar is Hyphen)
                 {
-                    var j = 0;
-                    while (i + j + 1 < slug.Length && slug[i + j + 1] == '-')
+                    if (appendHyphen && i != normalizedText.Length - 1)
                     {
-                        j++;
+                        slug.Append(currentChar);
+                        appendHyphen = false;
                     }
-                    if (j > 0)
+                }
+                else if (currentChar == '_' || currentChar == '~')
+                {
+                    slug.Append(currentChar);
+                }
+                else
+                {
+                    if (appendHyphen)
                     {
-                        slug = slug.Remove(i + 1, j);
+                        slug.Append(Hyphen);
+
+                        appendHyphen = false;
                     }
                 }
             }
 
-            if (slug.Length > 1000)
+            var length = Math.Min(slug.Length - GetTrailingHyphenCount(slug.AsSpan()), MaxLength);
+
+            return new string(slug.AsSpan()[..length]).Normalize(NormalizationForm.FormC);
+        }
+
+        private static int GetTrailingHyphenCount(ReadOnlySpan<char> input)
+        {
+            var hyphenCount = 0;
+            for (var i = input.Length - 1; i >= 0; i--)
             {
-                slug = slug.Substring(0, 1000);
+                if (input[i] != Hyphen)
+                {
+                    break;
+                }
+
+                ++hyphenCount;
             }
 
-            slug = slug.Trim('-', '_', '.');
-
-            return slug;
+            return hyphenCount;
         }
     }
 }

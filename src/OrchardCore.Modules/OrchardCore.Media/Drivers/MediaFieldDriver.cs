@@ -62,7 +62,7 @@ namespace OrchardCore.Media.Drivers
                 {
                     if (field.MediaTexts != null)
                     {
-                        for(var i = 0; i < itemPaths.Count(); i++)
+                        for (var i = 0; i < itemPaths.Count(); i++)
                         {
                             if (i >= 0 && i < field.MediaTexts.Length)
                             {
@@ -77,12 +77,24 @@ namespace OrchardCore.Media.Drivers
                     var anchors = field.GetAnchors();
                     if (anchors != null)
                     {
-                        for(var i = 0; i < itemPaths.Count(); i++)
+                        for (var i = 0; i < itemPaths.Count(); i++)
                         {
                             if (i >= 0 && i < anchors.Length)
                             {
                                 itemPaths[i].Anchor = anchors[i];
                             }
+                        }
+                    }
+                }
+
+                var filenames = field.GetAttachedFileNames();
+                if (filenames != null)
+                {
+                    for (var i = 0; i < itemPaths.Count(); i++)
+                    {
+                        if (i >= 0 && i < filenames.Length)
+                        {
+                            itemPaths[i].AttachedFileName = filenames[i];
                         }
                     }
                 }
@@ -112,6 +124,7 @@ namespace OrchardCore.Media.Drivers
                 {
                     try
                     {
+                        field.SetAttachedFileNames(items.Where(i => !i.IsRemoved).Select(i => i.AttachedFileName).ToArray());
                         await _attachedMediaFieldFileService.HandleFilesOnFieldUpdateAsync(items, context.ContentPart.ContentItem);
                     }
                     catch (Exception e)

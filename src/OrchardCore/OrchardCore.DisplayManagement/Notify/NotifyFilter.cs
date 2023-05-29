@@ -11,11 +11,10 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.Layout;
-using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.DisplayManagement.Notify
 {
-    public class NotifyFilter : IActionFilter, IAsyncResultFilter
+    public class NotifyFilter : IActionFilter, IAsyncResultFilter, IPageFilter
     {
         public const string CookiePrefix = "orch_notify";
         private readonly INotifier _notifier;
@@ -25,7 +24,6 @@ namespace OrchardCore.DisplayManagement.Notify
 
         private NotifyEntry[] _existingEntries = Array.Empty<NotifyEntry>();
         private bool _shouldDeleteCookie;
-        private string _tenantPath;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly ILogger _logger;
 
@@ -33,7 +31,6 @@ namespace OrchardCore.DisplayManagement.Notify
             INotifier notifier,
             ILayoutAccessor layoutAccessor,
             IShapeFactory shapeFactory,
-            ShellSettings shellSettings,
             IDataProtectionProvider dataProtectionProvider,
             HtmlEncoder htmlEncoder,
             ILogger<NotifyFilter> logger)
@@ -45,11 +42,9 @@ namespace OrchardCore.DisplayManagement.Notify
             _layoutAccessor = layoutAccessor;
             _notifier = notifier;
             _shapeFactory = shapeFactory;
-
-            _tenantPath = "/" + shellSettings.RequestUrlPrefix;
         }
 
-        public void OnActionExecuting(ActionExecutingContext filterContext)
+        private void OnHandlerExecuting(FilterContext filterContext)
         {
             var messages = Convert.ToString(filterContext.HttpContext.Request.Cookies[CookiePrefix]);
             if (String.IsNullOrEmpty(messages))
@@ -75,7 +70,7 @@ namespace OrchardCore.DisplayManagement.Notify
             _existingEntries = messageEntries;
         }
 
-        public void OnActionExecuted(ActionExecutedContext filterContext)
+        private void OnHandlerExecuted(FilterContext filterContext)
         {
             var messageEntries = _notifier.List().ToArray();
 
@@ -89,14 +84,42 @@ namespace OrchardCore.DisplayManagement.Notify
             // combine any existing entries added by the previous request with new ones.
 
             _existingEntries = messageEntries.Concat(_existingEntries).Distinct(new NotifyEntryComparer(_htmlEncoder)).ToArray();
-
+            object result = filterContext is ActionExecutedContext ace ? ace.Result : ((PageHandlerExecutedContext)filterContext).Result;
             // Result is not a view, so assume a redirect and assign values to TemData.
             // String data type used instead of complex array to be session-friendly.
-            if (!(filterContext.Result is ViewResult || filterContext.Result is PageResult) && _existingEntries.Length > 0)
+            if (result is not ViewResult && result is not PageResult && _existingEntries.Length > 0)
             {
-                filterContext.HttpContext.Response.Cookies.Append(CookiePrefix, SerializeNotifyEntry(_existingEntries), new CookieOptions { HttpOnly = true, Path = _tenantPath });
+                filterContext.HttpContext.Response.Cookies.Append(CookiePrefix, SerializeNotifyEntry(_existingEntries), GetCookieOptions(filterContext.HttpContext));
             }
         }
+
+        #region Interface wrappers
+
+        public void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            OnHandlerExecuting(filterContext);
+        }
+
+        public void OnActionExecuted(ActionExecutedContext filterContext)
+        {
+            OnHandlerExecuted(filterContext);
+        }
+
+        public void OnPageHandlerSelected(PageHandlerSelectedContext context)
+        {
+        }
+
+        public void OnPageHandlerExecuting(PageHandlerExecutingContext filterContext)
+        {
+            OnHandlerExecuting(filterContext);
+        }
+
+        public void OnPageHandlerExecuted(PageHandlerExecutedContext context)
+        {
+            OnHandlerExecuted(context);
+        }
+
+        #endregion
 
         public async Task OnResultExecutionAsync(ResultExecutingContext filterContext, ResultExecutionDelegate next)
         {
@@ -108,7 +131,7 @@ namespace OrchardCore.DisplayManagement.Notify
                 return;
             }
 
-            if (!(filterContext.Result is ViewResult || filterContext.Result is PageResult))
+            if (filterContext.Result is not ViewResult && filterContext.Result is not PageResult)
             {
                 await next();
                 return;
@@ -128,7 +151,8 @@ namespace OrchardCore.DisplayManagement.Notify
             {
                 foreach (var messageEntry in _existingEntries)
                 {
-                    await zone.AddAsync(await _shapeFactory.CreateAsync("Message", Arguments.From(messageEntry)));
+                    // Also retrieve the actual zone in case it was only a temporary empty zone created on demand.
+                    zone = await zone.AddAsync(await _shapeFactory.CreateAsync("Message", Arguments.From(messageEntry)));
                 }
             }
 
@@ -139,7 +163,7 @@ namespace OrchardCore.DisplayManagement.Notify
 
         private void DeleteCookies(ResultExecutingContext filterContext)
         {
-            filterContext.HttpContext.Response.Cookies.Delete(CookiePrefix, new CookieOptions { Path = _tenantPath });
+            filterContext.HttpContext.Response.Cookies.Delete(CookiePrefix, GetCookieOptions(filterContext.HttpContext));
         }
 
         private string SerializeNotifyEntry(NotifyEntry[] notifyEntries)
@@ -176,6 +200,21 @@ namespace OrchardCore.DisplayManagement.Notify
 
                 _logger.LogWarning("The notification entries could not be decrypted");
             }
+        }
+
+        private static CookieOptions GetCookieOptions(HttpContext httpContext)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true
+            };
+
+            if (!httpContext.Request.PathBase.Equals(PathString.Empty))
+            {
+                cookieOptions.Path = httpContext.Request.PathBase;
+            }
+
+            return cookieOptions;
         }
     }
 }

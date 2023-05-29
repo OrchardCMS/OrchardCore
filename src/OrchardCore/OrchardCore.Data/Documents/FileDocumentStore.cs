@@ -67,9 +67,7 @@ namespace OrchardCore.Data.Documents
         /// <inheritdoc />
         public Task UpdateAsync<T>(T document, Func<T, Task> updateCache, bool checkConcurrency = false)
         {
-            var documentStore = ShellScope.Services.GetRequiredService<IDocumentStore>();
-
-            documentStore.AfterCommitSuccess<T>(async () =>
+            DocumentStore.AfterCommitSuccess<T>(async () =>
             {
                 await SaveDocumentAsync(document);
                 ShellScope.Set(typeof(T), null);
@@ -79,9 +77,9 @@ namespace OrchardCore.Data.Documents
             return Task.CompletedTask;
         }
 
-        public Task CancelAsync() => throw new NotImplementedException();
-        public void AfterCommitSuccess<T>(DocumentStoreCommitSuccessDelegate afterCommitSuccess) => throw new NotImplementedException();
-        public void AfterCommitFailure<T>(DocumentStoreCommitFailureDelegate afterCommitFailure) => throw new NotImplementedException();
+        public Task CancelAsync() => DocumentStore.CancelAsync();
+        public void AfterCommitSuccess<T>(DocumentStoreCommitSuccessDelegate afterCommitSuccess) => DocumentStore.AfterCommitSuccess<T>(afterCommitSuccess);
+        public void AfterCommitFailure<T>(DocumentStoreCommitFailureDelegate afterCommitFailure) => DocumentStore.AfterCommitFailure<T>(afterCommitFailure);
         public Task CommitAsync() => throw new NotImplementedException();
 
         private async Task<T> GetDocumentAsync<T>()
@@ -146,5 +144,7 @@ namespace OrchardCore.Data.Documents
                 _semaphore.Release();
             }
         }
+
+        private static IDocumentStore DocumentStore => ShellScope.Services.GetRequiredService<IDocumentStore>();
     }
 }

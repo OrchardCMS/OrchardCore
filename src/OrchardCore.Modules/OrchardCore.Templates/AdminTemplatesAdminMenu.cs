@@ -9,7 +9,7 @@ namespace OrchardCore.Templates
     {
         private readonly IStringLocalizer S;
 
-        public AdminTemplatesAdminMenu(IStringLocalizer<AdminMenu> localizer)
+        public AdminTemplatesAdminMenu(IStringLocalizer<AdminTemplatesAdminMenu> localizer)
         {
             S = localizer;
         }

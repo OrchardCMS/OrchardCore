@@ -3,7 +3,7 @@
   <Import Project="..\..\src\OrchardCore.Build\Dependencies.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>$(AspNetCoreTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
@@ -19,18 +19,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Localization\PoFiles\EntryWithComments.po" />
-    <None Remove="Localization\PoFiles\EntryWithContext.po" />
-    <None Remove="Localization\PoFiles\EntryWithEscapedCharacters.po" />
-    <None Remove="Localization\PoFiles\EntryWithMultilineText.po" />
-    <None Remove="Localization\PoFiles\EntryWithoutTranslation.po" />
-    <None Remove="Localization\PoFiles\EntryWithPlural.po" />
-    <None Remove="Localization\PoFiles\EntryWithQuotes.po" />
-    <None Remove="Localization\PoFiles\EntryWithUnclosedQuote.po" />
-    <None Remove="Localization\PoFiles\MultipleEntries.po" />
-    <None Remove="Localization\PoFiles\PoeditHeader.po" />
-    <None Remove="Localization\PoFiles\SimpleEntry.po" />
     <None Remove="Apis\Lucene\Recipes\luceneQueryTest.json" />
+    <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe1.json" />
+    <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe2.json" />
+    <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe3.json" />
+    <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\scope-recipe.json" />
     <None Remove="Recipes\RecipeFiles\recipe1.json" />
     <None Remove="Recipes\RecipeFiles\recipe2.json" />
     <None Remove="Recipes\RecipeFiles\recipe3.json" />
@@ -39,17 +32,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Localization\PoFiles\EntryWithComments.po" />
-    <EmbeddedResource Include="Localization\PoFiles\EntryWithContext.po" />
-    <EmbeddedResource Include="Localization\PoFiles\EntryWithEscapedCharacters.po" />
-    <EmbeddedResource Include="Localization\PoFiles\EntryWithMultilineText.po" />
-    <EmbeddedResource Include="Localization\PoFiles\EntryWithoutTranslation.po" />
-    <EmbeddedResource Include="Localization\PoFiles\EntryWithPlural.po" />
-    <EmbeddedResource Include="Localization\PoFiles\EntryWithQuotes.po" />
-    <EmbeddedResource Include="Localization\PoFiles\EntryWithUnclosedQuote.po" />
-    <EmbeddedResource Include="Localization\PoFiles\MultipleEntries.po" />
-    <EmbeddedResource Include="Localization\PoFiles\PoeditHeader.po" />
-    <EmbeddedResource Include="Localization\PoFiles\SimpleEntry.po" />
+    <EmbeddedResource Include="Localization\PoFiles\*.po" />
+    <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe3.json" />
+    <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe2.json" />
+    <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe1.json" />
+    <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\scope-recipe.json" />
     <EmbeddedResource Include="Recipes\RecipeFiles\recipe5.json" />
     <EmbeddedResource Include="Recipes\RecipeFiles\recipe4.json" />
     <EmbeddedResource Include="Recipes\RecipeFiles\recipe1.json" />

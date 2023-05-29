@@ -137,9 +137,8 @@ namespace OrchardCore.Alias.Handlers
             var unversionedAlias = alias;
 
             var versionSeparatorPosition = alias.LastIndexOf('-');
-            if (versionSeparatorPosition > -1)
+            if (versionSeparatorPosition > -1 && Int32.TryParse(alias.Substring(versionSeparatorPosition).TrimStart('-'), out version))
             {
-                Int32.TryParse(alias.Substring(versionSeparatorPosition).TrimStart('-'), out version);
                 unversionedAlias = alias.Substring(0, versionSeparatorPosition);
             }
 

@@ -30,6 +30,7 @@ namespace OrchardCore.ContentTypes.Editors
                 model.Versionable = settings.Versionable;
                 model.Securable = settings.Securable;
                 model.Stereotype = settings.Stereotype;
+                model.Description = settings.Description;
             }).Location("Content:5");
         }
 
@@ -44,6 +45,8 @@ namespace OrchardCore.ContentTypes.Editors
                 context.Builder.Draftable(model.Draftable);
                 context.Builder.Versionable(model.Versionable);
                 context.Builder.Securable(model.Securable);
+                context.Builder.WithDescription(model.Description);
+
                 var stereotype = model.Stereotype?.Trim();
                 context.Builder.Stereotype(stereotype);
 

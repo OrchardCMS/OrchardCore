@@ -16,7 +16,7 @@ In this example, the `blog` is the type, and the `displayText` is the return val
 
 ```json
 {
-  blog(contentItemId: "4k5df0kadp9asy1n2ejzs1rz4r") {
+  blog(where: {contentItemId: "4k5df0kadp9asy1n2ejzs1rz4r"}) {
     displayText
   }
 }

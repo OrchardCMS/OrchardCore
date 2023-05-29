@@ -3,25 +3,29 @@
 <script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
 
 <!-- Hidden submit button do not remove -->
-<input type="submit" name="submit.Filter" id="submitFilter" class="sr-only" />
-<input type="submit" name="submit.BulkAction" class="sr-only" />
+<input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
+<input type="submit" name="submit.BulkAction" class="visually-hidden" />
 @Html.HiddenFor(o => o.Options.BulkAction)
 
-<div class="card mb-3 position-sticky action-bar">
-    <div class="card-body bg-primary p-3">
-        <div class="form-group mb-n1">
-            @await DisplayAsync(Model.Header.Search)
-            @await DisplayAsync(Model.Header.Create)
+<div class="card bg-primary mb-3 position-sticky action-bar">
+    <div class="card-body">
+        <div class="row gx-3">
+            <div class="col">
+                @await DisplayAsync(Model.Header.Search)
+            </div>
+            <div class="col-auto">
+                @await DisplayAsync(Model.Header.Create)
+            </div>
         </div>
     </div>
 </div>
 <ul class="list-group with-checkbox">
     <li class="list-group-item bg-primary">
-        <div class="row">
+        <div class="row gx-3">
             <div class="col">
                 @await DisplayAsync(Model.Header.Summary)
             </div>
-            <div class="col d-flex justify-content-start flex-row-reverse">
+            <div class="col col-md-auto text-end">
                 @await DisplayAsync(Model.Header.Actions)
             </div>
         </div>
@@ -56,10 +60,10 @@
         var selectedItems = $("#selected-items");
         var itemsCheckboxes = $(":checkbox[name='itemIds']");
 
-        @* This applies to all filter selectpickers on page. Add .nosubmit to not submit *@
-        $('.selectpicker:not(.nosubmit)').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-            $("[name='submit.Filter']").click();
-        });
+    @* This applies to all filter selectpickers on page. Add .nosubmit to not submit *@
+            $('.selectpicker:not(.nosubmit)').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+                $("[name='submit.Filter']").click();
+            });
 
         $(".dropdown-menu .dropdown-item").filter(function () {
             return $(this).data("action");
@@ -91,7 +95,7 @@
             }
         }
 
-        selectAllCtrl.click(function(){
+        selectAllCtrl.click(function () {
             itemsCheckboxes.not(this).prop("checked", this.checked);
             selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
             displayActionsOrFilters();

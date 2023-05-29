@@ -104,10 +104,7 @@ namespace OrchardCore.OpenId.Controllers
                 case ConsentTypes.External when authorizations.Any():
                 case ConsentTypes.Explicit when authorizations.Any() && !request.HasPrompt(Prompts.Consent):
                     var identity = new ClaimsIdentity(result.Principal.Claims, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-                    var principal = new ClaimsPrincipal(identity);
-
-                    identity.AddClaim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.User,
-                        Destinations.AccessToken, Destinations.IdentityToken);
+                    identity.AddClaim(new Claim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.User));
 
                     // Note: while ASP.NET Core Identity uses the legacy WS-Federation claims (exposed by the ClaimTypes class),
                     // OpenIddict uses the newer JWT claims defined by the OpenID Connect specification. To ensure the mandatory
@@ -121,30 +118,23 @@ namespace OrchardCore.OpenId.Controllers
                         identity.AddClaim(new Claim(Claims.Name, result.Principal.GetUserName()));
                     }
 
-                    principal.SetScopes(request.GetScopes());
-                    principal.SetResources(await GetResourcesAsync(request.GetScopes()));
+                    identity.SetScopes(request.GetScopes());
+                    identity.SetResources(await GetResourcesAsync(request.GetScopes()));
 
                     // Automatically create a permanent authorization to avoid requiring explicit consent
                     // for future authorization or token requests containing the same scopes.
                     var authorization = authorizations.LastOrDefault();
-                    if (authorization == null)
-                    {
-                        authorization = await _authorizationManager.CreateAsync(
-                            principal: principal,
-                            subject: principal.GetUserIdentifier(),
-                            client: await _applicationManager.GetIdAsync(application),
-                            type: AuthorizationTypes.Permanent,
-                            scopes: principal.GetScopes());
-                    }
+                    authorization ??= await _authorizationManager.CreateAsync(
+                        identity: identity,
+                        subject: identity.GetUserIdentifier(),
+                        client: await _applicationManager.GetIdAsync(application),
+                        type: AuthorizationTypes.Permanent,
+                        scopes: identity.GetScopes());
 
-                    principal.SetAuthorizationId(await _authorizationManager.GetIdAsync(authorization));
+                    identity.SetAuthorizationId(await _authorizationManager.GetIdAsync(authorization));
+                    identity.SetDestinations(GetDestinations);
 
-                    foreach (var claim in principal.Claims)
-                    {
-                        claim.SetDestinations(GetDestinations(claim, principal));
-                    }
-
-                    return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+                    return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
                 case ConsentTypes.Explicit when request.HasPrompt(Prompts.None):
                     return Forbid(new AuthenticationProperties(new Dictionary<string, string>
@@ -242,10 +232,7 @@ namespace OrchardCore.OpenId.Controllers
 
                 default:
                     var identity = new ClaimsIdentity(User.Claims, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-                    var principal = new ClaimsPrincipal(identity);
-
-                    identity.AddClaim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.User,
-                        Destinations.AccessToken, Destinations.IdentityToken);
+                    identity.AddClaim(new Claim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.User));
 
                     // Note: while ASP.NET Core Identity uses the legacy WS-Federation claims (exposed by the ClaimTypes class),
                     // OpenIddict uses the newer JWT claims defined by the OpenID Connect specification. To ensure the mandatory
@@ -259,30 +246,23 @@ namespace OrchardCore.OpenId.Controllers
                         identity.AddClaim(new Claim(Claims.Name, User.GetUserName()));
                     }
 
-                    principal.SetScopes(request.GetScopes());
-                    principal.SetResources(await GetResourcesAsync(request.GetScopes()));
+                    identity.SetScopes(request.GetScopes());
+                    identity.SetResources(await GetResourcesAsync(request.GetScopes()));
 
                     // Automatically create a permanent authorization to avoid requiring explicit consent
                     // for future authorization or token requests containing the same scopes.
                     var authorization = authorizations.LastOrDefault();
-                    if (authorization == null)
-                    {
-                        authorization = await _authorizationManager.CreateAsync(
-                            principal: principal,
-                            subject: principal.GetUserIdentifier(),
-                            client: await _applicationManager.GetIdAsync(application),
-                            type: AuthorizationTypes.Permanent,
-                            scopes: principal.GetScopes());
-                    }
+                    authorization ??= await _authorizationManager.CreateAsync(
+                        identity: identity,
+                        subject: identity.GetUserIdentifier(),
+                        client: await _applicationManager.GetIdAsync(application),
+                        type: AuthorizationTypes.Permanent,
+                        scopes: identity.GetScopes());
 
-                    principal.SetAuthorizationId(await _authorizationManager.GetIdAsync(authorization));
+                    identity.SetAuthorizationId(await _authorizationManager.GetIdAsync(authorization));
+                    identity.SetDestinations(GetDestinations);
 
-                    foreach (var claim in principal.Claims)
-                    {
-                        claim.SetDestinations(GetDestinations(claim, principal));
-                    }
-
-                    return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+                    return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }
         }
 
@@ -442,6 +422,16 @@ namespace OrchardCore.OpenId.Controllers
 
         private async Task<IActionResult> ExchangeClientCredentialsGrantType(OpenIddictRequest request)
         {
+            if (request.HasScope(Scopes.OfflineAccess))
+            {
+                return Forbid(new AuthenticationProperties(new Dictionary<string, string>
+                {
+                    [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidScope,
+                    [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
+                        "The 'offline_access' scope is not allowed when using the client credentials grant."
+                }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            }
+
             // Note: client authentication is always enforced by OpenIddict before this action is invoked.
             var application = await _applicationManager.FindByClientIdAsync(request.ClientId) ??
                 throw new InvalidOperationException("The application details cannot be found.");
@@ -450,15 +440,13 @@ namespace OrchardCore.OpenId.Controllers
                 OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
                 Claims.Name, Claims.Role);
 
-            identity.AddClaim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.Application,
-                Destinations.AccessToken, Destinations.IdentityToken);
+            identity.AddClaim(new Claim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.Application));
+            identity.AddClaim(new Claim(Claims.Subject, request.ClientId));
 
-            identity.AddClaim(Claims.Subject, request.ClientId,
-                Destinations.AccessToken, Destinations.IdentityToken);
-
-            identity.AddClaim(Claims.Name,
-                await _applicationManager.GetDisplayNameAsync(application),
-                Destinations.AccessToken, Destinations.IdentityToken);
+            // Always add a "name" claim for grant_type=client_credentials in both
+            // access and identity tokens even if the "name" scope wasn't requested.
+            identity.AddClaim(new Claim(Claims.Name, await _applicationManager.GetDisplayNameAsync(application))
+                .SetDestinations(Destinations.AccessToken, Destinations.IdentityToken));
 
             // If the role service is available, add all the role claims
             // associated with the application roles in the database.
@@ -466,8 +454,11 @@ namespace OrchardCore.OpenId.Controllers
 
             foreach (var role in await _applicationManager.GetRolesAsync(application))
             {
-                identity.AddClaim(identity.RoleClaimType, role,
-                    Destinations.AccessToken, Destinations.IdentityToken);
+                // Since the claims added in this block have a dynamic name, directly set the destinations
+                // here instead of relying on the GetDestination() helper that only works with static claims.
+
+                identity.AddClaim(new Claim(identity.RoleClaimType, role)
+                    .SetDestinations(Destinations.AccessToken, Destinations.IdentityToken));
 
                 if (roleService != null)
                 {
@@ -478,10 +469,11 @@ namespace OrchardCore.OpenId.Controllers
                 }
             }
 
-            var principal = new ClaimsPrincipal(identity);
-            principal.SetResources(await GetResourcesAsync(request.GetScopes()));
+            identity.SetScopes(request.GetScopes());
+            identity.SetResources(await GetResourcesAsync(request.GetScopes()));
+            identity.SetDestinations(GetDestinations);
 
-            return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
 
         private async Task<IActionResult> ExchangePasswordGrantType(OpenIddictRequest request)
@@ -536,9 +528,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var identity = (ClaimsIdentity)principal.Identity;
-
-            identity.AddClaim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.User,
-                Destinations.AccessToken, Destinations.IdentityToken);
+            identity.AddClaim(new Claim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.User));
 
             // Note: while ASP.NET Core Identity uses the legacy WS-Federation claims (exposed by the ClaimTypes class),
             // OpenIddict uses the newer JWT claims defined by the OpenID Connect specification. To ensure the mandatory
@@ -552,28 +542,21 @@ namespace OrchardCore.OpenId.Controllers
                 identity.AddClaim(new Claim(Claims.Name, principal.GetUserName()));
             }
 
-            principal.SetScopes(request.GetScopes());
-            principal.SetResources(await GetResourcesAsync(request.GetScopes()));
+            identity.SetScopes(request.GetScopes());
+            identity.SetResources(await GetResourcesAsync(request.GetScopes()));
 
             // Automatically create a permanent authorization to avoid requiring explicit consent
             // for future authorization or token requests containing the same scopes.
             var authorization = authorizations.FirstOrDefault();
-            if (authorization == null)
-            {
-                authorization = await _authorizationManager.CreateAsync(
-                    principal: principal,
-                    subject: principal.GetUserIdentifier(),
-                    client: await _applicationManager.GetIdAsync(application),
-                    type: AuthorizationTypes.Permanent,
-                    scopes: principal.GetScopes());
-            }
+            authorization ??= await _authorizationManager.CreateAsync(
+                identity: identity,
+                subject: identity.GetUserIdentifier(),
+                client: await _applicationManager.GetIdAsync(application),
+                type: AuthorizationTypes.Permanent,
+                scopes: identity.GetScopes());
 
-            principal.SetAuthorizationId(await _authorizationManager.GetIdAsync(authorization));
-
-            foreach (var claim in principal.Claims)
-            {
-                claim.SetDestinations(GetDestinations(claim, principal));
-            }
+            identity.SetAuthorizationId(await _authorizationManager.GetIdAsync(authorization));
+            identity.SetDestinations(GetDestinations);
 
             return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
@@ -614,9 +597,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var identity = (ClaimsIdentity)principal.Identity;
-
-            identity.AddClaim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.User,
-                Destinations.AccessToken, Destinations.IdentityToken);
+            identity.AddClaim(new Claim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.User));
 
             // Note: while ASP.NET Core Identity uses the legacy WS-Federation claims (exposed by the ClaimTypes class),
             // OpenIddict uses the newer JWT claims defined by the OpenID Connect specification. To ensure the mandatory
@@ -630,15 +611,12 @@ namespace OrchardCore.OpenId.Controllers
                 identity.AddClaim(new Claim(Claims.Name, principal.GetUserName()));
             }
 
-            foreach (var claim in principal.Claims)
-            {
-                claim.SetDestinations(GetDestinations(claim, principal));
-            }
+            identity.SetDestinations(GetDestinations);
 
             return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
 
-        private IEnumerable<string> GetDestinations(Claim claim, ClaimsPrincipal principal)
+        private static IEnumerable<string> GetDestinations(Claim claim)
         {
             // Note: by default, claims are NOT automatically included in the access and identity tokens.
             // To allow OpenIddict to serialize them, you must attach them a destination, that specifies
@@ -646,23 +624,27 @@ namespace OrchardCore.OpenId.Controllers
 
             switch (claim.Type)
             {
+                // If the claim already includes destinations (set before this helper is called), flow them as-is.
+                case string when claim.GetDestinations() is { IsDefaultOrEmpty: false } destinations:
+                    return destinations;
+
                 // Never include the security stamp in the access and identity tokens, as it's a secret value.
                 case "AspNet.Identity.SecurityStamp":
-                    break;
+                    return Enumerable.Empty<string>();
 
                 // Only add the claim to the id_token if the corresponding scope was granted.
                 // The other claims will only be added to the access_token.
                 case OpenIdConstants.Claims.EntityType:
-                case Claims.Name when principal.HasScope(Scopes.Profile):
-                case Claims.Email when principal.HasScope(Scopes.Email):
-                case Claims.Role when principal.HasScope(Scopes.Roles):
-                    yield return Destinations.AccessToken;
-                    yield return Destinations.IdentityToken;
-                    break;
+                case Claims.Name when claim.Subject.HasScope(Scopes.Profile):
+                case Claims.Email when claim.Subject.HasScope(Scopes.Email):
+                case Claims.Role when claim.Subject.HasScope(Scopes.Roles):
+                    return new[]
+                    {
+                        Destinations.AccessToken,
+                        Destinations.IdentityToken
+                    };
 
-                default:
-                    yield return Destinations.AccessToken;
-                    break;
+                default: return new[] { Destinations.AccessToken };
             }
         }
 

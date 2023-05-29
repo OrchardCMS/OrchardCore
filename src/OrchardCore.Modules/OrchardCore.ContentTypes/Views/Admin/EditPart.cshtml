@@ -3,11 +3,16 @@
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.Mvc.Utilities
 
+@inject OrchardCore.ContentTypes.Services.IContentDefinitionService ContentDefinitionService
+
 @{
     var orderedFields = Model.PartDefinition.Fields
         .Select(field => new { Field = field, Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
         .OrderBy(x => x.Order)
-        .Select(x => x.Field);
+        .Select(x => x.Field)
+        .ToList();
+
+    var fields = ContentDefinitionService.GetFields().ToList();
 }
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Content Part - {0}", Model.DisplayName])</h1></zone>
 
@@ -16,49 +21,55 @@
 
     @if (Model.Editor.Shortcuts != null)
     {
-        <div class="form-group">
+        <div class="mb-3">
             @await DisplayAsync(Model.Editor.Shortcuts)
         </div>
     }
 
     @await DisplayAsync(Model.Editor)
 
-    <div class="form-group">
-        <h3>@T["Fields"]</h3>
+    @if (orderedFields.Count > 0 || fields.Count > 0)
+    {
+        <div class="mb-3">
+            <h3>@T["Fields"]</h3>
 
-        @if (Model.PartDefinition != null)
-        {
-            <ul class="list-group sortable" id="fields" style="cursor: move;">
-                @foreach (var field in orderedFields)
-                {
-                    <li class="list-group-item">
-                        <div class="properties">
-                            <div class="related">
-                                <a asp-route-action="EditField" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
-                                <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+            @if (Model.PartDefinition != null)
+            {
+                <ul class="list-group sortable" id="fields" style="cursor: move;">
+                    @foreach (var field in orderedFields)
+                    {
+                        <li class="list-group-item">
+                            <div class="w-100">
+                                <div class="float-end">
+                                    @if (fields.Any(x => x.Name.Equals(field.FieldDefinition.Name, StringComparison.OrdinalIgnoreCase)))
+                                    {
+                                        <a asp-route-action="EditField" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
+                                    }
+                                    <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+                                </div>
+                                @field.DisplayName() <span class="hint dashed">@field.FieldDefinition.Name.CamelFriendly()</span>
                             </div>
-                            @field.DisplayName() <span class="hint dashed">@field.FieldDefinition.Name.CamelFriendly()</span>
-                        </div>
-                        <input type="hidden" name="OrderedFieldNames" value="@field.Name" />
-                    </li>
-                }
-            </ul>
+                            <input type="hidden" name="OrderedFieldNames" value="@field.Name" />
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+        @if (fields.Count > 0)
+        {
+            <div class="mb-3">
+                <a asp-route-action="AddFieldTo" asp-route-id="@Model.PartDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
+            </div>
         }
-    </div>
-    <div class="form-group">
-        <a asp-route-action="AddFieldTo" asp-route-id="@Model.PartDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
-    </div>
-
-    <div class="form-group">
+    }
+    <div class="mb-3">
         <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
         <button class="btn btn-danger delete" type="submit" name="submit.Delete" value="Delete" data-url-af="RemoveUrl">@T["Delete"]</button>
     </div>
 </form>
 
 <script at="Foot">
-    //<![CDATA[
     $(function () {
         Sortable.create(document.getElementById("fields"));
     })
-    //]]>
 </script>

@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -9,7 +7,6 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Sitemaps.Models;
-using OrchardCore.Sitemaps.Services;
 using OrchardCore.Sitemaps.ViewModels;
 
 namespace OrchardCore.Sitemaps.Drivers
@@ -22,7 +19,7 @@ namespace OrchardCore.Sitemaps.Drivers
         {
             S = localizer;
         }
-        
+
         public override IDisplayResult Display(CustomPathSitemapSource sitemapSource)
         {
             return Combine(
@@ -38,7 +35,7 @@ namespace OrchardCore.Sitemaps.Drivers
                 model.Path = sitemapSource.Path;
                 model.Priority = sitemapSource.Priority;
                 model.ChangeFrequency = sitemapSource.ChangeFrequency;
-                
+
             }).Location("Content");
         }
 
@@ -55,7 +52,7 @@ namespace OrchardCore.Sitemaps.Drivers
             {
                 sitemap.Path = model.Path;
                 sitemap.Priority = model.Priority;
-                sitemap.ChangeFrequency = model.ChangeFrequency;     
+                sitemap.ChangeFrequency = model.ChangeFrequency;
                 sitemap.LastUpdate = DateTime.Now;
 
                 if (sitemap.Path?.IndexOfAny(CustomPathSitemapSource.InvalidCharactersForPath) > -1 || sitemap.Path?.IndexOf(' ') > -1 || sitemap.Path?.IndexOf("//") > -1)

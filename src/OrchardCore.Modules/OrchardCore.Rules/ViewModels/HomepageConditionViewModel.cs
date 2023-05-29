@@ -8,6 +8,6 @@ namespace OrchardCore.Rules.ViewModels
         public bool Value { get; set; }
 
         [BindNever]
-        public HomepageCondition Condition { get; set; }  
+        public HomepageCondition Condition { get; set; }
     }
 }

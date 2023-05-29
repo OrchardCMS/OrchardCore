@@ -1,4 +1,5 @@
-@using OrchardCore.Liquid.ViewModels;
+@using OrchardCore.Liquid.ViewModels
+@using OrchardCore
 @model LiquidPartViewModel
 
 <style asp-name="codemirror"></style>
@@ -10,13 +11,15 @@
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
-<div class="form-group">
-    <label asp-for="Liquid">@T["Body"]</label>
-    <textarea asp-for="Liquid" rows="5" class="form-control content-preview-text"></textarea>
-    <span class="hint">
-        @T["The body of the content item, in Liquid format."]
-        <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Liquid" target="_blank">@T["See documentation"]</a>
-    </span>
+<div class="@Orchard.GetWrapperCssClasses()">
+    <label asp-for="Liquid" class="@Orchard.GetLabelCssClasses()">@T["Body"]</label>
+    <div class="@Orchard.GetEndCssClasses()">
+        <textarea asp-for="Liquid" rows="5" class="form-control content-preview-text"></textarea>
+        <span class="hint">
+            @T["The body of the content item, in Liquid format."]
+            <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Liquid" target="_blank">@T["See documentation"]</a>
+        </span>
+    </div>
 </div>
 
 <script at="Foot">
@@ -35,7 +38,7 @@
             mode: { name: "liquid" },
         });
 
-        editor.on('change', function(cmEditor){
+        editor.on('change', function (cmEditor) {
             cmEditor.save();
             $(document).trigger('contentpreview:render');
         });

@@ -100,7 +100,7 @@ namespace OrchardCore.Layers.Recipes
                         }
                         else
                         {
-                             unknownTypes.Add(name);
+                            unknownTypes.Add(name);
                         }
                     }
                 }
@@ -145,7 +145,7 @@ namespace OrchardCore.Layers.Recipes
         public string Description { get; set; }
 
         public RuleStepModel LayerRule { get; set; }
-    }    
+    }
 
     public class RuleStepModel
     {

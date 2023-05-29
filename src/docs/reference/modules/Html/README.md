@@ -52,7 +52,7 @@ There are three predefined editor names:
 
 #### Video
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/lnjdRildsL8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/lnjdRildsL8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ### Custom Editors
 
@@ -84,10 +84,10 @@ To define what HTML to render when the editor is selected from the settings, a s
 Sample content:
 
 ```csharp
-@using OrchardCore.Html.ViewModels;
+@using OrchardCore.Html.ViewModels
 @model HtmlBodyPartViewModel
 
-<fieldset class="form-group">
+<fieldset class="mb-3">
     <label asp-for="Body">@T["Body"]</label>
     <textarea asp-for="Body" rows="5" class="form-control"></textarea>
     <span class="hint">@T["The body of the content item."]</span>

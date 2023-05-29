@@ -8,6 +8,7 @@ namespace OrchardCore.Tenants.ViewModels
     public class AdminIndexViewModel
     {
         public List<ShellSettingsEntry> ShellSettingsEntries { get; set; } = new List<ShellSettingsEntry>();
+
         public TenantIndexOptions Options { get; set; } = new TenantIndexOptions();
 
         [BindNever]
@@ -23,18 +24,19 @@ namespace OrchardCore.Tenants.ViewModels
     public enum BulkAction
     {
         Disable,
-        Enable
+        Enable,
+        Remove
     }
 
     public class ShellSettingsEntry
     {
+        public string Category { get; set; }
+
         public string Description { get; set; }
 
         public bool Selected { get; set; }
 
         public string Name { get; set; }
-
-        public bool IsDefaultTenant { get; set; }
 
         public string Token { get; set; }
 
@@ -45,9 +47,16 @@ namespace OrchardCore.Tenants.ViewModels
     public class TenantIndexOptions
     {
         public string Search { get; set; }
-        public TenantsFilter Filter { get; set; }
+
+        public string Category { get; set; }
+
+        public TenantsState Status { get; set; }
+
         public TenantsBulkAction BulkAction { get; set; }
+
         public TenantsOrder OrderBy { get; set; }
+
+        public List<SelectListItem> TenantsCategories { get; set; }
 
         [BindNever]
         public List<SelectListItem> TenantsStates { get; set; }
@@ -59,7 +68,7 @@ namespace OrchardCore.Tenants.ViewModels
         public List<SelectListItem> TenantsBulkAction { get; set; }
     }
 
-    public enum TenantsFilter
+    public enum TenantsState
     {
         All,
         Running,
@@ -71,7 +80,8 @@ namespace OrchardCore.Tenants.ViewModels
     {
         None,
         Disable,
-        Enable
+        Enable,
+        Remove
     }
 
     public enum TenantsOrder

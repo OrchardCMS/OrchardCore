@@ -4,12 +4,17 @@ using System.Linq;
 
 namespace OrchardCore.Environment.Extensions.Features
 {
+    /// <inheritdoc/>
     public class FeaturesProvider : IFeaturesProvider
     {
         public const string FeatureProviderStateKey = "FeatureProvider:Features";
 
         private readonly IEnumerable<IFeatureBuilderEvents> _featureBuilderEvents;
 
+        /// <summary>
+        /// Constructs a provider instance.
+        /// </summary>
+        /// <param name="featureBuilderEvents"></param>
         public FeaturesProvider(IEnumerable<IFeatureBuilderEvents> featureBuilderEvents)
         {
             _featureBuilderEvents = featureBuilderEvents;
@@ -28,24 +33,22 @@ namespace OrchardCore.Environment.Extensions.Features
                     if (String.IsNullOrWhiteSpace(feature.Id))
                     {
                         throw new ArgumentException(
-                            $"A feature is missing a mandatory 'Id' property in the Module '{extensionInfo.Id}'");
+                            $"A {nameof(feature)} is missing a mandatory '{nameof(feature.Id)}' property in the Module '{extensionInfo.Id}'");
                     }
 
+                    // Attribute properties are transparently resolved by the instances themselves for convenience
                     var featureId = feature.Id;
-                    var featureName = feature.Name ?? feature.Id;
+                    var featureName = feature.Name;
 
-                    var featureDependencyIds = feature.Dependencies
-                        .Select(e => e.Trim()).ToArray();
+                    var featureDependencyIds = feature.Dependencies;
 
-                    if (!Int32.TryParse(feature.Priority ?? manifestInfo.ModuleInfo.Priority, out var featurePriority))
-                    {
-                        featurePriority = 0;
-                    }
-
-                    var featureCategory = feature.Category ?? manifestInfo.ModuleInfo.Category;
-                    var featureDescription = feature.Description ?? manifestInfo.ModuleInfo.Description;
+                    // Categorize, Prioritize, Describe, using the ModuleInfo (ModuleAttribute) as the back stop
+                    var featureCategory = feature.Categorize(manifestInfo.ModuleInfo);
+                    var featurePriority = feature.Prioritize(manifestInfo.ModuleInfo);
+                    var featureDescription = feature.Describe(manifestInfo.ModuleInfo);
                     var featureDefaultTenantOnly = feature.DefaultTenantOnly;
                     var featureIsAlwaysEnabled = feature.IsAlwaysEnabled;
+                    var featureEnabledByDependencyOnly = feature.EnabledByDependencyOnly;
 
                     var context = new FeatureBuildingContext
                     {
@@ -58,7 +61,8 @@ namespace OrchardCore.Environment.Extensions.Features
                         Priority = featurePriority,
                         FeatureDependencyIds = featureDependencyIds,
                         DefaultTenantOnly = featureDefaultTenantOnly,
-                        IsAlwaysEnabled = featureIsAlwaysEnabled
+                        IsAlwaysEnabled = featureIsAlwaysEnabled,
+                        EnabledByDependencyOnly = featureEnabledByDependencyOnly
                     };
 
                     foreach (var builder in _featureBuilderEvents)
@@ -67,15 +71,16 @@ namespace OrchardCore.Environment.Extensions.Features
                     }
 
                     var featureInfo = new FeatureInfo(
-                        featureId,
-                        featureName,
-                        featurePriority,
-                        featureCategory,
-                        featureDescription,
-                        extensionInfo,
-                        featureDependencyIds,
-                        featureDefaultTenantOnly,
-                        featureIsAlwaysEnabled);
+                        context.FeatureId,
+                        context.FeatureName,
+                        context.Priority,
+                        context.Category,
+                        context.Description,
+                        context.ExtensionInfo,
+                        context.FeatureDependencyIds,
+                        context.DefaultTenantOnly,
+                        context.IsAlwaysEnabled,
+                        context.EnabledByDependencyOnly);
 
                     foreach (var builder in _featureBuilderEvents)
                     {
@@ -91,18 +96,15 @@ namespace OrchardCore.Environment.Extensions.Features
                 var featureId = extensionInfo.Id;
                 var featureName = manifestInfo.Name;
 
-                var featureDependencyIds = manifestInfo.ModuleInfo.Dependencies
-                    .Select(e => e.Trim()).ToArray();
+                var featureDependencyIds = manifestInfo.ModuleInfo.Dependencies;
 
-                if (!Int32.TryParse(manifestInfo.ModuleInfo.Priority, out var featurePriority))
-                {
-                    featurePriority = 0;
-                }
-
-                var featureCategory = manifestInfo.ModuleInfo.Category;
-                var featureDescription = manifestInfo.ModuleInfo.Description;
+                // Ditto Categorize, Prioritize, Describe, in this case the root Module 'is' the back stop
+                var featureCategory = manifestInfo.ModuleInfo.Categorize();
+                var featurePriority = manifestInfo.ModuleInfo.Prioritize();
+                var featureDescription = manifestInfo.ModuleInfo.Describe();
                 var featureDefaultTenantOnly = manifestInfo.ModuleInfo.DefaultTenantOnly;
                 var featureIsAlwaysEnabled = manifestInfo.ModuleInfo.IsAlwaysEnabled;
+                var featureEnabledByDependencyOnly = manifestInfo.ModuleInfo.EnabledByDependencyOnly;
 
                 var context = new FeatureBuildingContext
                 {
@@ -115,7 +117,8 @@ namespace OrchardCore.Environment.Extensions.Features
                     Priority = featurePriority,
                     FeatureDependencyIds = featureDependencyIds,
                     DefaultTenantOnly = featureDefaultTenantOnly,
-                    IsAlwaysEnabled = featureIsAlwaysEnabled
+                    IsAlwaysEnabled = featureIsAlwaysEnabled,
+                    EnabledByDependencyOnly = featureEnabledByDependencyOnly,
                 };
 
                 foreach (var builder in _featureBuilderEvents)
@@ -132,7 +135,8 @@ namespace OrchardCore.Environment.Extensions.Features
                     context.ExtensionInfo,
                     context.FeatureDependencyIds,
                     context.DefaultTenantOnly,
-                    context.IsAlwaysEnabled);
+                    context.IsAlwaysEnabled,
+                    context.EnabledByDependencyOnly);
 
                 foreach (var builder in _featureBuilderEvents)
                 {

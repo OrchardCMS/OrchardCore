@@ -41,11 +41,11 @@ function initializeParametersEditor(elem, data, modalBodyElement) {
                 return store.getParametersFormattedList();
             },
             showModal: function () {
-                $(modalBodyElement).modal();
+                parametersModal.props.data.modal = new bootstrap.Modal(modalBodyElement[0]);
+                parametersModal.props.data.modal.show();
             },
             closeModal: function () {
-                var modal = $(modalBodyElement).modal();
-                modal.modal('hide');
+                parametersModal.props.data.modal.hide();
             }
         }
     };
@@ -56,7 +56,8 @@ function initializeParametersEditor(elem, data, modalBodyElement) {
             parametersModal: parametersModal
         },
         data: {
-            sharedState: store.state
+            sharedState: store.state,
+            modal: null
         },
         el: elem,
         methods: {

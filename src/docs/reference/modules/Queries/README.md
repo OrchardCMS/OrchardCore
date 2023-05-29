@@ -297,3 +297,24 @@ The following JavaScript functions are available with this module.
 ## Tutorial
 
 <https://www.youtube.com/watch?v=6ZaqWmq8Pog&t=2891s>
+
+## Breaking changes
+
+1.0 -> 1.1
+
+The Query API now returns an IQueryResults which now will also contain a count for the Lucene results. The JSON data structure has changed from :
+
+```json
+[
+    {...}
+]
+```
+
+To :
+
+```json
+{
+  items:[...],
+  count:1231
+}
+```

@@ -8,6 +8,6 @@ namespace OrchardCore.Rules.ViewModels
         public string DisplayText { get; set; }
 
         [BindNever]
-        public AnyConditionGroup Condition { get; set; }  
+        public AnyConditionGroup Condition { get; set; }
     }
 }
