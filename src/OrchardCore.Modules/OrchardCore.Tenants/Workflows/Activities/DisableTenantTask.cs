@@ -47,7 +47,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 return Outcomes("Failed");
             }
 
-            if (shellSettings.State != TenantState.Running)
+            if (!shellSettings.IsRunning())
             {
                 return Outcomes("Failed");
             }

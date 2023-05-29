@@ -172,7 +172,7 @@ namespace OrchardCore.Environment.Shell
         /// </param>
         public async Task ReloadShellContextAsync(ShellSettings settings, bool eventSource = true)
         {
-            if (ReloadingAsync != null && eventSource && settings.State != TenantState.Initializing)
+            if (ReloadingAsync != null && eventSource && !settings.IsInitializing())
             {
                 foreach (var d in ReloadingAsync.GetInvocationList())
                 {
@@ -187,7 +187,7 @@ namespace OrchardCore.Environment.Shell
                 return;
             }
 
-            if (settings.State != TenantState.Initializing)
+            if (!settings.IsInitializing())
             {
                 settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
             }
@@ -215,7 +215,7 @@ namespace OrchardCore.Environment.Shell
                     _runningShellTable.Add(settings);
                 }
 
-                if (settings.State == TenantState.Initializing)
+                if (settings.IsInitializing())
                 {
                     return;
                 }
@@ -245,7 +245,7 @@ namespace OrchardCore.Environment.Shell
         /// </param>
         public async Task ReleaseShellContextAsync(ShellSettings settings, bool eventSource = true)
         {
-            if (ReleasingAsync != null && eventSource && settings.State != TenantState.Initializing)
+            if (ReleasingAsync != null && eventSource && !settings.IsInitializing())
             {
                 foreach (var d in ReleasingAsync.GetInvocationList())
                 {
@@ -278,7 +278,7 @@ namespace OrchardCore.Environment.Shell
         {
             CheckCanRemoveShell(settings);
 
-            if (RemovingAsync != null && eventSource && settings.State != TenantState.Initializing)
+            if (RemovingAsync != null && eventSource && !settings.IsInitializing())
             {
                 foreach (var d in RemovingAsync.GetInvocationList())
                 {
@@ -336,7 +336,7 @@ namespace OrchardCore.Environment.Shell
             var defaultSettings = allSettings.FirstOrDefault(s => s.IsDefaultShell());
 
             // The 'Default' tenant is not running, run the Setup.
-            if (defaultSettings?.State != TenantState.Running)
+            if (!defaultSettings.IsRunning())
             {
                 var setupContext = await CreateSetupContextAsync(defaultSettings);
                 AddAndRegisterShell(setupContext);
@@ -359,7 +359,7 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         private Task<ShellContext> CreateShellContextAsync(ShellSettings settings)
         {
-            if (settings.State == TenantState.Uninitialized)
+            if (settings.IsUninitialized())
             {
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
@@ -368,7 +368,7 @@ namespace OrchardCore.Environment.Shell
 
                 return _shellContextFactory.CreateSetupContextAsync(settings);
             }
-            else if (settings.State == TenantState.Disabled)
+            else if (settings.IsDisabled())
             {
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
@@ -377,7 +377,7 @@ namespace OrchardCore.Environment.Shell
 
                 return Task.FromResult(new ShellContext { Settings = settings });
             }
-            else if (settings.State == TenantState.Running || settings.State == TenantState.Initializing)
+            else if (settings.IsRunning() || settings.IsInitializing())
             {
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
@@ -469,10 +469,10 @@ namespace OrchardCore.Environment.Shell
         private bool CanCreateShell(ShellSettings shellSettings)
         {
             return
-                shellSettings.State == TenantState.Running ||
-                shellSettings.State == TenantState.Uninitialized ||
-                shellSettings.State == TenantState.Initializing ||
-                shellSettings.State == TenantState.Disabled;
+                shellSettings.IsRunning() ||
+                shellSettings.IsUninitialized() ||
+                shellSettings.IsInitializing() ||
+                shellSettings.IsDisabled();
         }
 
         /// <summary>
@@ -481,9 +481,9 @@ namespace OrchardCore.Environment.Shell
         private static bool CanRegisterShell(ShellSettings shellSettings)
         {
             return
-                shellSettings.State == TenantState.Running ||
-                shellSettings.State == TenantState.Uninitialized ||
-                shellSettings.State == TenantState.Initializing;
+                shellSettings.IsRunning() ||
+                shellSettings.IsUninitialized() ||
+                shellSettings.IsInitializing();
         }
 
         /// <summary>
@@ -493,7 +493,7 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         private bool CanReleaseShell(ShellSettings settings)
         {
-            return settings.State != TenantState.Disabled || _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes == 0;
+            return !settings.IsDisabled() || _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes == 0;
         }
 
         /// <summary>
@@ -506,8 +506,8 @@ namespace OrchardCore.Environment.Shell
                 throw new InvalidOperationException($"The '{ShellHelper.DefaultShellName}' tenant can't be removed.");
             }
 
-            if (settings.State != TenantState.Uninitialized &&
-                (settings.State != TenantState.Disabled ||
+            if (!settings.IsUninitialized() &&
+                (!settings.IsDisabled() ||
                 _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0))
             {
                 throw new InvalidOperationException(

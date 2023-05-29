@@ -43,7 +43,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 return Outcomes("Failed");
             }
 
-            if (shellSettings.State != TenantState.Disabled)
+            if (!shellSettings.IsDisabled())
             {
                 return Outcomes("Failed");
             }

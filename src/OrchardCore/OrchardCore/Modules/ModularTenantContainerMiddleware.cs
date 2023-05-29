@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Modules
 {
@@ -36,7 +35,7 @@ namespace OrchardCore.Modules
             // We only serve the next request if the tenant has been resolved.
             if (shellSettings != null)
             {
-                if (shellSettings.State == TenantState.Initializing)
+                if (shellSettings.IsInitializing())
                 {
                     httpContext.Response.Headers.Add(HeaderNames.RetryAfter, "10");
                     httpContext.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;

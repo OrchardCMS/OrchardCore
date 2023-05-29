@@ -10,7 +10,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.OpenId.Abstractions.Descriptors;
@@ -93,7 +92,7 @@ namespace OrchardCore.OpenId.Controllers
 
             var model = new CreateOpenIdScopeViewModel();
 
-            foreach (var tenant in _shellHost.GetAllSettings().Where(s => s.State == TenantState.Running))
+            foreach (var tenant in _shellHost.GetAllSettings().Where(s => s.IsRunning()))
             {
                 model.Tenants.Add(new CreateOpenIdScopeViewModel.TenantEntry
                 {
@@ -180,7 +179,7 @@ namespace OrchardCore.OpenId.Controllers
                 where !string.IsNullOrEmpty(resource) && !resource.StartsWith(OpenIdConstants.Prefixes.Tenant, StringComparison.Ordinal)
                 select resource);
 
-            foreach (var tenant in _shellHost.GetAllSettings().Where(s => s.State == TenantState.Running))
+            foreach (var tenant in _shellHost.GetAllSettings().Where(s => s.IsRunning()))
             {
                 model.Tenants.Add(new EditOpenIdScopeViewModel.TenantEntry
                 {

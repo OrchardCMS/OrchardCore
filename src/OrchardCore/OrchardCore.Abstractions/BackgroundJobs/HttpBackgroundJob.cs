@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.BackgroundJobs;
@@ -20,7 +19,7 @@ public static class HttpBackgroundJob
         var scope = ShellScope.Current;
 
         // Allow a job to be triggered e.g. during a tenant setup, but later on only check if the tenant is running.
-        if (scope.ShellContext.Settings.State != TenantState.Running && scope.ShellContext.Settings.State != TenantState.Initializing)
+        if (!scope.ShellContext.Settings.IsRunning() && !scope.ShellContext.Settings.IsInitializing())
         {
             return Task.CompletedTask;
         }
@@ -52,7 +51,7 @@ public static class HttpBackgroundJob
             var shellContext = await shellHost.GetOrCreateShellContextAsync(scope.ShellContext.Settings);
 
             // Can't be executed e.g. if a tenant setup failed.
-            if (shellContext == null || shellContext.Settings.State != TenantState.Running)
+            if (shellContext == null || !shellContext.Settings.IsRunning())
             {
                 return;
             }

@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Shell.Builders;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Scope
@@ -450,7 +449,7 @@ namespace OrchardCore.Environment.Shell.Scope
             if (Interlocked.Decrement(ref ShellContext._refCount) == 0)
             {
                 // A disabled shell still in use is released by its last scope.
-                if (ShellContext.Settings.State == TenantState.Disabled)
+                if (ShellContext.Settings.IsDisabled())
                 {
                     ShellContext.ReleaseFromLastScope();
                 }

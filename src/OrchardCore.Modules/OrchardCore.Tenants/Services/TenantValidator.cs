@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Tenants.Models;
 using OrchardCore.Tenants.ViewModels;
@@ -118,7 +117,7 @@ namespace OrchardCore.Tenants.Services
                 {
                     errors.Add(new ModelError(nameof(model.Name), S["The existing tenant to be validated was not found."]));
                 }
-                else if (existingShellSettings.State == TenantState.Uninitialized)
+                else if (existingShellSettings.IsUninitialized())
                 {
                     // While the tenant is in Uninitialized state, we still are able to change the database settings.
                     // Let's validate the database for assurance.

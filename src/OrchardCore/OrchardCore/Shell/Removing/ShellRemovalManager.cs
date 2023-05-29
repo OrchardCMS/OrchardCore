@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell.Builders;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Removing;
@@ -54,7 +53,7 @@ public class ShellRemovalManager : IShellRemovalManager
         }
 
         // Check if the tenant is not 'Uninitialized' and that all resources should be removed.
-        if (shellSettings.State == TenantState.Disabled && !context.LocalResourcesOnly)
+        if (shellSettings.IsDisabled() && !context.LocalResourcesOnly)
         {
             // Create an isolated shell context composed of all features that have been installed.
             ShellContext maximumContext = null;

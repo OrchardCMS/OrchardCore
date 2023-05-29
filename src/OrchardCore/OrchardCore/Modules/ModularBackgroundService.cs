@@ -14,7 +14,6 @@ using Microsoft.Extensions.Primitives;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Settings;
 
@@ -292,7 +291,7 @@ namespace OrchardCore.Modules
 
         private ShellContext[] GetRunningShells() => _shellHost
             .ListShellContexts()
-            .Where(s => s.Settings.State == TenantState.Running && (_options.ShellWarmup || s.Pipeline != null))
+            .Where(s => s.Settings.IsRunning() && (_options.ShellWarmup || s.Pipeline != null))
             .ToArray();
 
         private ShellContext[] GetShellsToRun(IEnumerable<ShellContext> shells)

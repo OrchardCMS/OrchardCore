@@ -116,7 +116,7 @@ namespace OrchardCore.Tenants.Controllers
                        ShellSettings = x,
                    };
 
-                   if (x.State == TenantState.Uninitialized && !String.IsNullOrEmpty(x["Secret"]))
+                   if (x.IsUninitialized() && !String.IsNullOrEmpty(x["Secret"]))
                    {
                        entry.Token = dataProtector.Protect(x["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
                    }
@@ -139,9 +139,9 @@ namespace OrchardCore.Tenants.Controllers
 
             entries = options.Status switch
             {
-                TenantsState.Disabled => entries.Where(t => t.ShellSettings.State == TenantState.Disabled).ToList(),
-                TenantsState.Running => entries.Where(t => t.ShellSettings.State == TenantState.Running).ToList(),
-                TenantsState.Uninitialized => entries.Where(t => t.ShellSettings.State == TenantState.Uninitialized).ToList(),
+                TenantsState.Disabled => entries.Where(t => t.ShellSettings.IsDisabled()).ToList(),
+                TenantsState.Running => entries.Where(t => t.ShellSettings.IsRunning()).ToList(),
+                TenantsState.Uninitialized => entries.Where(t => t.ShellSettings.IsUninitialized()).ToList(),
                 _ => entries,
             };
 
@@ -252,7 +252,7 @@ namespace OrchardCore.Tenants.Controllers
                         {
                             await _notifier.WarningAsync(H["You cannot disable the default tenant."]);
                         }
-                        else if (shellSettings.State != TenantState.Running)
+                        else if (!shellSettings.IsRunning())
                         {
                             await _notifier.WarningAsync(H["The tenant '{0}' is already disabled.", shellSettings.Name]);
                         }
@@ -265,7 +265,7 @@ namespace OrchardCore.Tenants.Controllers
                         break;
 
                     case "Enable":
-                        if (shellSettings.State != TenantState.Disabled)
+                        if (!shellSettings.IsDisabled())
                         {
                             await _notifier.WarningAsync(H["The tenant '{0}' is already enabled.", shellSettings.Name]);
                         }
@@ -415,7 +415,7 @@ namespace OrchardCore.Tenants.Controllers
 
             // The user can change the 'preset' database information only if the
             // tenant has not been initialized yet
-            if (shellSettings.State == TenantState.Uninitialized)
+            if (shellSettings.IsUninitialized())
             {
                 var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
                 var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
@@ -465,7 +465,7 @@ namespace OrchardCore.Tenants.Controllers
 
                 // The user can change the 'preset' database information only if the
                 // tenant has not been initialized yet
-                if (shellSettings.State == TenantState.Uninitialized)
+                if (shellSettings.IsUninitialized())
                 {
                     shellSettings["DatabaseProvider"] = model.DatabaseProvider;
                     shellSettings["TablePrefix"] = model.TablePrefix;
@@ -484,7 +484,7 @@ namespace OrchardCore.Tenants.Controllers
 
             // The user can change the 'preset' database information only if the
             // tenant has not been initialized yet
-            if (shellSettings.State == TenantState.Uninitialized)
+            if (shellSettings.IsUninitialized())
             {
                 model.DatabaseProvider = shellSettings["DatabaseProvider"];
                 model.TablePrefix = shellSettings["TablePrefix"];
@@ -526,7 +526,7 @@ namespace OrchardCore.Tenants.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            if (shellSettings.State != TenantState.Running)
+            if (!shellSettings.IsRunning())
             {
                 await _notifier.ErrorAsync(H["You can only disable a Running tenant."]);
                 return RedirectToAction(nameof(Index));
@@ -556,7 +556,7 @@ namespace OrchardCore.Tenants.Controllers
                 return NotFound();
             }
 
-            if (shellSettings.State != TenantState.Disabled)
+            if (!shellSettings.IsDisabled())
             {
                 await _notifier.ErrorAsync(H["You can only enable a Disabled tenant."]);
                 return RedirectToAction(nameof(Index));

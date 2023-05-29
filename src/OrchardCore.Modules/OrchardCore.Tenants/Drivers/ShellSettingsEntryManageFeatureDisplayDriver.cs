@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Drivers;

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using OrchardCore.Environment.Shell.Builders.Models;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Environment.Shell.Builders
@@ -100,7 +99,7 @@ namespace OrchardCore.Environment.Shell.Builders
             }
 
             // A disabled shell still in use will be released by its last scope, as checked at the host level.
-            if (mode == ReleaseMode.FromDependency && Settings.State == TenantState.Disabled && _refCount != 0)
+            if (mode == ReleaseMode.FromDependency && Settings.IsDisabled() && _refCount != 0)
             {
                 return;
             }

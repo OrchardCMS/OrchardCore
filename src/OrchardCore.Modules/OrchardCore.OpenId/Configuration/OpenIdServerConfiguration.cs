@@ -11,7 +11,6 @@ using OpenIddict.Server;
 using OpenIddict.Server.AspNetCore;
 using OpenIddict.Server.DataProtection;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
@@ -231,7 +230,7 @@ namespace OrchardCore.OpenId.Configuration
             var settings = await _serverService.GetSettingsAsync();
             if ((await _serverService.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
             {
-                if (_shellSettings.State == TenantState.Running)
+                if (_shellSettings.IsRunning())
                 {
                     _logger.LogWarning("The OpenID Connect module is not correctly configured.");
                 }

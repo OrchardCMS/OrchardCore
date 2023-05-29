@@ -8,7 +8,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Modules;
 
@@ -101,7 +100,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                     }
 
                     // Manage the second counter used to sync the default tenant while it is 'Uninitialized'.
-                    defaultTenantSyncingSeconds = defaultContext.Settings.State == TenantState.Uninitialized
+                    defaultTenantSyncingSeconds = defaultContext.Settings.IsUninitialized()
                         ? defaultTenantSyncingSeconds
                         : 0;
 
@@ -112,7 +111,7 @@ namespace OrchardCore.Environment.Shell.Distributed
 
                         // Load the settings of the default tenant that may have been setup by another instance.
                         var defaultSettings = await _shellSettingsManager.LoadSettingsAsync(ShellHelper.DefaultShellName);
-                        if (defaultSettings.State == TenantState.Running)
+                        if (defaultSettings.IsRunning())
                         {
                             // If the default tenant has been setup by another instance, reload it locally.
                             await _shellHost.ReloadShellContextAsync(defaultContext.Settings, eventSource: false);
@@ -122,7 +121,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                     }
 
                     // If the default tenant is not running, nothing to do.
-                    if (defaultContext.Settings.State != TenantState.Running)
+                    if (!defaultContext.Settings.IsRunning())
                     {
                         continue;
                     }
@@ -247,7 +246,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                             if (settings.Name != ShellHelper.DefaultShellName && tenantsToRemove.Contains(settings.Name))
                             {
                                 // The local resources can only be removed if the tenant is 'Disabled' or 'Uninitialized'.
-                                if (settings.State == TenantState.Disabled || settings.State == TenantState.Uninitialized)
+                                if (settings.IsDisabled() || settings.IsUninitialized())
                                 {
                                     // Keep in sync this tenant by removing its local (non shared) resources.
                                     var removingContext = await _shellRemovingManager.RemoveAsync(settings, localResourcesOnly: true);
@@ -311,7 +310,7 @@ namespace OrchardCore.Environment.Shell.Distributed
 
             // If there is no default tenant or it is not running, nothing to do.
             var defaultSettings = await _shellSettingsManager.LoadSettingsAsync(ShellHelper.DefaultShellName);
-            if (defaultSettings?.State != TenantState.Running)
+            if (!defaultSettings.IsRunning())
             {
                 return;
             }
@@ -377,7 +376,7 @@ namespace OrchardCore.Environment.Shell.Distributed
 
             // If there is no default tenant or it is not running, nothing to do.
             if (!_shellHost.TryGetShellContext(ShellHelper.DefaultShellName, out var defaultContext) ||
-                defaultContext.Settings.State != TenantState.Running)
+                !defaultContext.Settings.IsRunning())
             {
                 return;
             }
@@ -428,7 +427,7 @@ namespace OrchardCore.Environment.Shell.Distributed
 
             // If there is no default tenant or it is not running, nothing to do.
             if (!_shellHost.TryGetShellContext(ShellHelper.DefaultShellName, out var defaultContext) ||
-                defaultContext.Settings.State != TenantState.Running)
+                !defaultContext.Settings.IsRunning())
             {
                 return;
             }
@@ -487,7 +486,7 @@ namespace OrchardCore.Environment.Shell.Distributed
 
             // If there is no default tenant or it is not running, nothing to do.
             if (!_shellHost.TryGetShellContext(ShellHelper.DefaultShellName, out var defaultContext) ||
-                defaultContext.Settings.State != TenantState.Running)
+                !defaultContext.Settings.IsRunning())
             {
                 return;
             }

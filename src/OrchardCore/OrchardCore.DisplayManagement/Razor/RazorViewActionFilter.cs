@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Settings;
 
 namespace OrchardCore.DisplayManagement.Razor
@@ -58,7 +57,7 @@ namespace OrchardCore.DisplayManagement.Razor
                 var siteService = context.HttpContext.RequestServices.GetService<ISiteService>();
 
                 // 'ISiteService' may be null during a setup and can't be used if the tenant is 'Uninitialized'.
-                if (siteService != null && shellSettings.State != TenantState.Uninitialized)
+                if (siteService != null && !shellSettings.IsUninitialized())
                 {
                     razorViewFeature.Site = await siteService.GetSiteSettingsAsync();
                 }

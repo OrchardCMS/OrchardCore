@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -11,7 +12,7 @@ namespace OrchardCore.Environment.Shell
             return new ShellSettings()
             {
                 Name = ShellHelper.DefaultShellName,
-                State = Models.TenantState.Running
+                State = TenantState.Running
             };
         }
 

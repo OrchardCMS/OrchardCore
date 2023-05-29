@@ -109,7 +109,7 @@ namespace OrchardCore.AutoSetup
         /// </returns>
         public async Task InvokeAsync(HttpContext httpContext)
         {
-            if (_setupOptions != null && _shellSettings.State == TenantState.Uninitialized)
+            if (_setupOptions != null && _shellSettings.IsUninitialized())
             {
                 // Try to acquire a lock before starting installation, it guaranties an atomic setup in multi instances environment.
                 (var locker, var locked) = await _distributedLock.TryAcquireAutoSetupLockAsync(_lockOptions);
@@ -120,7 +120,7 @@ namespace OrchardCore.AutoSetup
 
                 await using var acquiredLock = locker;
 
-                if (_shellSettings.State == TenantState.Uninitialized)
+                if (_shellSettings.IsUninitialized())
                 {
                     var pathBase = httpContext.Request.PathBase;
                     if (!pathBase.HasValue)
@@ -130,7 +130,7 @@ namespace OrchardCore.AutoSetup
 
                     // Check if the tenant was installed by another instance.
                     var settings = await _shellSettingsManager.LoadSettingsAsync(_shellSettings.Name);
-                    if (settings.State != TenantState.Uninitialized)
+                    if (!settings.IsUninitialized())
                     {
                         await _shellHost.ReloadShellContextAsync(_shellSettings, eventSource: false);
                         httpContext.Response.Redirect(pathBase);

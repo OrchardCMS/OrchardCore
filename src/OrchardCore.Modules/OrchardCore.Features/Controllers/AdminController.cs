@@ -12,7 +12,6 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Features.Services;
 using OrchardCore.Features.ViewModels;
 using OrchardCore.Routing;
@@ -182,7 +181,7 @@ namespace OrchardCore.Features.Controllers
                 && !String.IsNullOrWhiteSpace(tenant)
                 && _shellHost.TryGetSettings(tenant, out var settings)
                 && !settings.IsDefaultShell()
-                && settings.State == TenantState.Running)
+                && settings.IsRunning())
             {
                 // At this point, we know that this request is being executed from the Default tenant.
                 // Also, we were able to find a matching and running tenant that isn't the Default one.
