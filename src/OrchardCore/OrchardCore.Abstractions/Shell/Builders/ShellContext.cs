@@ -211,51 +211,62 @@ namespace OrchardCore.Environment.Shell.Builders
 
         public void Dispose()
         {
-            Close();
+            if (_disposed)
+            {
+                return;
+            }
+
+            _disposed = true;
+
+            DisposeInternal();
+
             GC.SuppressFinalize(this);
         }
 
         public async ValueTask DisposeAsync()
         {
-            await CloseAsync();
+            if (_disposed)
+            {
+                return;
+            }
+
+            _disposed = true;
+
+            await DisposeInternalAsync();
+
             GC.SuppressFinalize(this);
         }
 
-        public void Close()
+        public void DisposeInternal()
         {
             if (_disposed)
             {
                 return;
             }
 
-            _disposed = true;
+            ServiceProvider?.Dispose();
 
-            // Disposes all the services registered for this shell
-            if (ServiceProvider is not null)
-            {
-                ServiceProvider.Dispose();
-                ServiceProvider = null;
-            }
-
-            IsActivated = false;
-            Blueprint = null;
-            Pipeline = null;
+            Terminate();
         }
 
-        public async ValueTask CloseAsync()
+        public async ValueTask DisposeInternalAsync()
         {
             if (_disposed)
             {
                 return;
             }
-
-            _disposed = true;
 
             if (ServiceProvider is not null)
             {
                 await ServiceProvider.DisposeAsync();
             }
 
+            Terminate();
+        }
+
+        public void Terminate()
+        {
+            ServiceProvider = null;
             IsActivated = false;
             Blueprint = null;
             Pipeline = null;
@@ -263,7 +274,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
         ~ShellContext()
         {
-            Close();
+            DisposeInternal();
         }
     }
 }

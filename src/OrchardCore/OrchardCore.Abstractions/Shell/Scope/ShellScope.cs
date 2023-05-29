@@ -495,26 +495,8 @@ namespace OrchardCore.Environment.Shell.Scope
             }
 
             _disposed = true;
-            _serviceScope.Dispose();
 
-            // Check if the shell has been terminated.
-            if (_shellTerminated)
-            {
-                ShellContext.Dispose();
-            }
-
-            if (!_terminated)
-            {
-                // Keep the counter clean if not yet decremented.
-                Interlocked.Decrement(ref ShellContext._refCount);
-            }
-
-            var holder = _current.Value;
-            if (holder != null)
-            {
-                // Clear the current scope that may be trapped in some execution contexts.
-                holder.Scope = null;
-            }
+            DisposeInternal();
 
             GC.SuppressFinalize(this);
         }
@@ -527,14 +509,38 @@ namespace OrchardCore.Environment.Shell.Scope
             }
 
             _disposed = true;
+
+            await DisposeInternalAsync();
+
+            GC.SuppressFinalize(this);
+        }
+
+        public void DisposeInternal()
+        {
+            _serviceScope.Dispose();
+
+            if (_shellTerminated)
+            {
+                ShellContext.Dispose();
+            }
+
+            Terminate();
+        }
+
+        public async ValueTask DisposeInternalAsync()
+        {
             await _serviceScope.DisposeAsync();
 
-            // Check if the shell has been terminated.
             if (_shellTerminated)
             {
                 await ShellContext.DisposeAsync();
             }
 
+            Terminate();
+        }
+
+        private void Terminate()
+        {
             if (!_terminated)
             {
                 // Keep the counter clean if not yet decremented.
@@ -547,8 +553,6 @@ namespace OrchardCore.Environment.Shell.Scope
                 // Clear the current scope that may be trapped in some execution contexts.
                 holder.Scope = null;
             }
-
-            GC.SuppressFinalize(this);
         }
 
         private class ShellScopeHolder
