@@ -16,6 +16,7 @@ using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Contents.Core;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement;
@@ -43,6 +44,7 @@ namespace OrchardCore.Contents.Controllers
         private readonly IContentsAdminListQueryService _contentsAdminListQueryService;
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
+        private readonly ContentsAdminSettings _contentsAdminSettings;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IShapeFactory _shapeFactory;
         private readonly dynamic New;
@@ -62,6 +64,7 @@ namespace OrchardCore.Contents.Controllers
             ILogger<AdminController> logger,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
+            IOptions<ContentsAdminSettings> contentsAdminSettings,
             IUpdateModelAccessor updateModelAccessor)
         {
             _authorizationService = authorizationService;
@@ -77,6 +80,7 @@ namespace OrchardCore.Contents.Controllers
 
             H = htmlLocalizer;
             S = stringLocalizer;
+            _contentsAdminSettings = contentsAdminSettings.Value;
             _shapeFactory = shapeFactory;
             New = shapeFactory;
             _logger = logger;
@@ -87,7 +91,8 @@ namespace OrchardCore.Contents.Controllers
             [ModelBinder(BinderType = typeof(ContentItemFilterEngineModelBinder), Name = "q")] QueryFilterResult<ContentItem> queryFilterResult,
             ContentOptionsViewModel options,
             PagerParameters pagerParameters,
-            string contentTypeId = "")
+            string contentTypeId = "",
+            string stereotype = "")
         {
             var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions()
                     .Where(ctd => ctd.IsCreatable())
@@ -105,11 +110,13 @@ namespace OrchardCore.Contents.Controllers
             }
 
             // The filter is bound seperately and mapped to the options.
-            // The options must still be bound so that options that are not filters are still bound
+            // The options must still be bound so that options that are not filters are still bound.
             options.FilterResult = queryFilterResult;
 
+            var hasSelectedContentType = !String.IsNullOrEmpty(options.SelectedContentType);
+
             // Populate the creatable types.
-            if (!String.IsNullOrEmpty(options.SelectedContentType))
+            if (hasSelectedContentType)
             {
                 // When the selected content type is provided via the route or options a placeholder node is used to apply a filter.
                 options.FilterResult.TryAddOrReplace(new ContentTypeFilterNode(options.SelectedContentType));
@@ -120,40 +127,61 @@ namespace OrchardCore.Contents.Controllers
                     return NotFound();
                 }
 
-                var creatableList = new List<SelectListItem>();
+                options.CreatableTypes ??= new List<SelectListItem>();
 
                 // Allows non creatable types to be created by another admin page.
-                if (contentTypeDefinition.IsCreatable() || options.CanCreateSelectedContentType)
+                var creatable = contentTypeDefinition.IsCreatable() || options.CanCreateSelectedContentType;
+
+                if (creatable && await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, contentTypeDefinition, CurrentUserId()))
                 {
-                    if (await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, contentTypeDefinition, CurrentUserId()))
+                    options.CreatableTypes.Add(new SelectListItem(contentTypeDefinition.DisplayName, contentTypeDefinition.Name));
+                }
+            }
+
+            // Populate the creatable types.
+            if (!hasSelectedContentType && !String.IsNullOrEmpty(stereotype) && !_contentsAdminSettings.IgnorableStereotypes.Contains(stereotype))
+            {
+                // When the selected stereotype is provided via the route or options a placeholder node is used to apply a filter.
+                options.FilterResult.TryAddOrReplace(new StereotypeFilterNode(stereotype));
+
+                var availableContentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions()
+                    .Where(defintion => defintion.StereotypeEquals(stereotype, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+                var currentUserId = CurrentUserId();
+
+                options.ContentTypeOptions = await GetListableContentTypeOptionsAsync(availableContentTypeDefinitions, currentUserId, options.SelectedContentType, false);
+                options.CreatableTypes ??= new List<SelectListItem>();
+
+                foreach (var availableContentTypeDefinition in availableContentTypeDefinitions)
+                {
+                    // Allows non creatable types to be created by another admin page.
+                    var creatable = availableContentTypeDefinition.IsCreatable() || options.CanCreateSelectedContentType;
+
+                    if (creatable && await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, availableContentTypeDefinition, currentUserId))
                     {
-                        creatableList.Add(new SelectListItem(contentTypeDefinition.DisplayName, contentTypeDefinition.Name));
+                        options.CreatableTypes.Add(new SelectListItem(availableContentTypeDefinition.DisplayName, availableContentTypeDefinition.Name));
                     }
                 }
-
-                options.CreatableTypes = creatableList;
             }
 
             if (options.CreatableTypes == null)
             {
-                var creatableList = new List<SelectListItem>();
-                if (contentTypeDefinitions.Any())
-                {
-                    foreach (var contentTypeDefinition in contentTypeDefinitions)
-                    {
-                        if (!contentTypeDefinition.IsCreatable())
-                        {
-                            continue;
-                        }
+                options.CreatableTypes = new List<SelectListItem>();
+                var currentUserId = CurrentUserId();
 
-                        if (await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, contentTypeDefinition, CurrentUserId()))
-                        {
-                            creatableList.Add(new SelectListItem(contentTypeDefinition.DisplayName, contentTypeDefinition.Name));
-                        }
+                foreach (var contentTypeDefinition in contentTypeDefinitions)
+                {
+                    if (!contentTypeDefinition.IsCreatable())
+                    {
+                        continue;
+                    }
+
+                    if (await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, contentTypeDefinition, currentUserId))
+                    {
+                        options.CreatableTypes.Add(new SelectListItem(contentTypeDefinition.DisplayName, contentTypeDefinition.Name));
                     }
                 }
-
-                options.CreatableTypes = creatableList;
             }
 
             // We populate the remaining SelectLists.
@@ -185,51 +213,14 @@ namespace OrchardCore.Contents.Controllers
                 new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
             };
 
-            if (options.ContentTypeOptions == null && (String.IsNullOrEmpty(options.SelectedContentType) || String.IsNullOrEmpty(contentTypeId)))
+            if (options.ContentTypeOptions == null
+                && (String.IsNullOrEmpty(options.SelectedContentType) || String.IsNullOrEmpty(contentTypeId)))
             {
-                var listableTypes = new List<ContentTypeDefinition>();
-                var userNameIdentifier = CurrentUserId();
-
-                foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
-                {
-                    if (!ctd.IsListable() || !await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.ListContent, ctd, userNameIdentifier))
-                    {
-                        continue;
-                    }
-
-                    listableTypes.Add(ctd);
-                }
-
-                var contentTypeOptions = listableTypes
-                    .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
-                    .ToList().OrderBy(kvp => kvp.Value);
-
-                options.ContentTypeOptions = new List<SelectListItem>
-                {
-                    new SelectListItem() { Text = S["All content types"], Value = String.Empty }
-                };
-
-                foreach (var option in contentTypeOptions)
-                {
-                    if (!await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.ListContent, option.Key, userNameIdentifier))
-                    {
-                        continue;
-                    }
-
-                    options.ContentTypeOptions.Add(new SelectListItem()
-                    {
-                        Text = option.Value,
-                        Value = option.Key,
-                        Selected = option.Value == options.SelectedContentType
-                    });
-                }
+                options.ContentTypeOptions = await GetListableContentTypeOptionsAsync(_contentDefinitionManager.ListTypeDefinitions(), CurrentUserId(), options.SelectedContentType, true);
             }
 
             // If ContentTypeOptions is not initialized by query string or by the code above, initialize it
-            if (options.ContentTypeOptions == null)
-            {
-                options.ContentTypeOptions = new List<SelectListItem>();
-            }
+            options.ContentTypeOptions ??= new List<SelectListItem>();
 
             // With the options populated we filter the query, allowing the filters to alter the options.
             var query = await _contentsAdminListQueryService.QueryAsync(options, _updateModelAccessor.ModelUpdater);
@@ -273,6 +264,37 @@ namespace OrchardCore.Contents.Controllers
             });
 
             return View(shapeViewModel);
+        }
+
+        private async Task<List<SelectListItem>> GetListableContentTypeOptionsAsync(IEnumerable<ContentTypeDefinition> definitions, string currentUserId, string selectedContentType, bool showSelectAll = true)
+        {
+            var items = new List<SelectListItem>();
+
+            if (showSelectAll)
+            {
+                items.Add(new SelectListItem()
+                {
+                    Text = S["All content types"],
+                    Value = String.Empty
+                });
+            };
+
+            foreach (var definition in definitions)
+            {
+                if (!definition.IsListable() || !await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.ListContent, definition.Name, currentUserId))
+                {
+                    continue;
+                }
+
+                items.Add(new SelectListItem()
+                {
+                    Text = definition.DisplayName,
+                    Value = definition.Name,
+                    Selected = String.Equals(definition.Name, selectedContentType)
+                });
+            }
+
+            return items;
         }
 
         [HttpPost, ActionName("List")]
@@ -349,7 +371,7 @@ namespace OrchardCore.Contents.Controllers
                         await _notifier.SuccessAsync(H["Content removed successfully."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
 

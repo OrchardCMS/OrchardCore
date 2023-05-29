@@ -17,6 +17,22 @@ public static class ContentTypeExtensions
         return !String.IsNullOrEmpty(contentTypeDefinition.GetStereotype());
     }
 
+    public static bool StereotypeEquals(this ContentTypeDefinition contentTypeDefinition, string stereotype)
+    {
+        return contentTypeDefinition.StereotypeEquals(stereotype, StringComparison.Ordinal);
+    }
+
+    public static bool StereotypeEquals(this ContentTypeDefinition contentTypeDefinition, string stereotype, StringComparison stringComparison)
+    {
+        if (String.IsNullOrEmpty(stereotype))
+        {
+            throw new ArgumentNullException(nameof(stereotype));
+        }
+
+        return contentTypeDefinition.TryGetStereotype(out var st)
+            && String.Equals(st, stereotype, stringComparison);
+    }
+
     public static string GetStereotype(this ContentTypeDefinition contentTypeDefinition)
     {
         return contentTypeDefinition.GetSettings().Stereotype;

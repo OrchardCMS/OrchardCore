@@ -11,6 +11,7 @@ using OrchardCore.AdminDashboard.Models;
 using OrchardCore.AdminDashboard.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.Contents.Core;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Modules;
@@ -43,6 +44,11 @@ namespace OrchardCore.AdminDashboard
             services.AddScoped<IContentDisplayDriver, DashboardContentDisplayDriver>();
 
             services.AddDataMigration<Migrations>();
+
+            services.PostConfigure<ContentsAdminSettings>(settings =>
+            {
+                settings.IgnorableStereotypes.Add("DashboardWidget");
+            });
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

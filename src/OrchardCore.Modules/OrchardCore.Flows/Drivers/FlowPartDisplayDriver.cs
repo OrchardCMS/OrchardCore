@@ -133,12 +133,11 @@ namespace OrchardCore.Flows.Drivers
 
             if (settings.ContainedContentTypes == null || !settings.ContainedContentTypes.Any())
             {
-                return _contentDefinitionManager.ListTypeDefinitions().Where(t => t.GetStereotype() == "Widget");
+                return _contentDefinitionManager.ListTypeDefinitions().Where(t => t.StereotypeEquals("Widget"));
             }
 
-            return settings.ContainedContentTypes
-                .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
-                .Where(t => t != null && t.GetStereotype() == "Widget");
+            return _contentDefinitionManager.ListTypeDefinitions()
+                .Where(t => settings.ContainedContentTypes.Contains(t.Name) && t.StereotypeEquals("Widget"));
         }
     }
 }
