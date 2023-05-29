@@ -155,7 +155,12 @@ namespace OrchardCore.Lists.Drivers
         {
             var contentTypes = settings.ContainedContentTypes ?? Enumerable.Empty<string>();
 
-            return contentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
+            if (!contentTypes.Any())
+            {
+                return Enumerable.Empty<ContentTypeDefinition>();
+            }
+
+            return _contentDefinitionManager.ListTypeDefinitions().Where(x => contentTypes.Contains(x.Name));
         }
     }
 }
