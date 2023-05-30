@@ -1,49 +1,24 @@
-using System;
-using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Hosting;
-using Moq;
-using OrchardCore.Environment.Shell;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Resources;
-using OrchardCore.Settings;
-using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Resources
 {
     public class SubResourceIntegrityTests
     {
-        private const string WebRoot = "wwwroot";
-
-        private string RootPath => new DirectoryInfo("../../../../../").FullName;
-
         [Fact]
         public void CheckSubResourceIntegrity()
         {
             // Arrange
-            var orchardCoreResourcesPath = Path.Combine(RootPath, @"src\OrchardCore.Modules\OrchardCore.Resources");
-            var siteServiceMock = new Mock<ISiteService>();
-            siteServiceMock
-                .Setup(s => s.GetSiteSettingsAsync())
-                .Returns(Task.FromResult<ISite>(new SiteSettings { ResourceDebugMode = ResourceDebugMode.Enabled }));
-            var hostEnvironmentMock = new Mock<IHostEnvironment>();
-            hostEnvironmentMock
-                .Setup(e => e.ContentRootFileProvider)
-                .Returns(new PhysicalFileProvider(Path.Combine(orchardCoreResourcesPath, WebRoot)));
+            var resourceOptions = Options.Create(new ResourceOptions());
             var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             httpContextAccessorMock
                 .Setup(a => a.HttpContext)
                 .Returns(new DefaultHttpContext());
-            var shellSettings = new ShellSettings();
             var configurationOptions = new ResourceManagementOptionsConfiguration(
-                siteServiceMock.Object,
-                hostEnvironmentMock.Object,
-                httpContextAccessorMock.Object,
-                shellSettings
+                resourceOptions,
+                Mock.Of<IHostEnvironment>(),
+                httpContextAccessorMock.Object
             );
             var resourceManagementOptions = new ResourceManagementOptions();
 
@@ -57,41 +32,42 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Resources
 
             void ValidateSubResourceIntegrity(string resourceType)
             {
-                var orchardCoreResourceFolder = "~/OrchardCore.Resources";
-                var contentRootProvider = hostEnvironmentMock.Object.ContentRootFileProvider;
                 foreach (var resource in resourceManifest.GetResources(resourceType))
                 {
                     foreach (var resourceDefinition in resource.Value)
                     {
-                        if (!String.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !String.IsNullOrEmpty(resourceDefinition.Url))
+                        if (!String.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !String.IsNullOrEmpty(resourceDefinition.UrlCdnDebug))
                         {
-                            var resourcePath = contentRootProvider.GetFileInfo(resourceDefinition.Url[orchardCoreResourceFolder.Length..]).PhysicalPath;
-                            var resourceIntegrity = GetSubResourceIntegrity(resourcePath);
-                            Assert.Equal(resourceIntegrity, resourceDefinition.CdnIntegrity);
+                            var resourceIntegrity = GetSubResourceIntegrityAsync(resourceDefinition.UrlCdnDebug).Result;
+
+                            Assert.True(resourceIntegrity.Equals(resourceDefinition.CdnDebugIntegrity), $"The {resourceType} {resourceDefinition.UrlCdnDebug} has invalid SRI hash, please use '{resourceIntegrity}' instead.");
                         }
 
-                        if (!String.IsNullOrEmpty(resourceDefinition.CdnDebugIntegrity) && !String.IsNullOrEmpty(resourceDefinition.UrlDebug))
+                        if (!String.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !String.IsNullOrEmpty(resourceDefinition.UrlCdn))
                         {
-                            var resourceDebugPath = contentRootProvider.GetFileInfo(resourceDefinition.UrlDebug[orchardCoreResourceFolder.Length..]).PhysicalPath;
-                            var resourceDebugintegrity = GetSubResourceIntegrity(resourceDebugPath);
-                            Assert.Equal(resourceDebugintegrity, resourceDefinition.CdnDebugIntegrity);
+                            var resourceIntegrity = GetSubResourceIntegrityAsync(resourceDefinition.UrlCdn).Result;
+
+                            Assert.True(resourceIntegrity.Equals(resourceDefinition.CdnIntegrity), $"The {resourceType} {resourceDefinition.UrlCdn} has invalid SRI hash, please use '{resourceIntegrity}' instead.");
                         }
                     }
                 }
             }
         }
 
-        private static string GetSubResourceIntegrity(string resourcePath)
+        private static async Task<string> GetSubResourceIntegrityAsync(string url)
         {
-            var resourceIntegrity = String.Empty;
-            var resourceBytes = File.ReadAllBytes(resourcePath);
-            using (var sha384 = SHA384.Create())
+            var client = new HttpClient
             {
-                var hash = sha384.ComputeHash(resourceBytes);
-                resourceIntegrity = "sha384-" + Convert.ToBase64String(hash);
-            }
+                BaseAddress = new Uri(url)
+            };
 
-            return resourceIntegrity;
+            var data = await client.GetByteArrayAsync(url);
+
+            using var memoryStream = new MemoryStream(data);
+            using var sha384Hash = SHA384.Create();
+            var hash = sha384Hash.ComputeHash(memoryStream);
+
+            return "sha384-" + Convert.ToBase64String(hash);
         }
     }
 }
