@@ -104,7 +104,7 @@ namespace OrchardCore.Contents.Controllers
                 return Forbid();
             }
 
-            // The parameter contentTypeId used by the AdminMenus so needs to be passed into the options.
+            // The parameter contentTypeId is used by the AdminMenus. Pass it to the options.
             if (!String.IsNullOrEmpty(contentTypeId))
             {
                 options.SelectedContentType = contentTypeId;
