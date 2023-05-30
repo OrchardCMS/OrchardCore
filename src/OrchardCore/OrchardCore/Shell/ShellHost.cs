@@ -406,7 +406,7 @@ namespace OrchardCore.Environment.Shell
             {
                 // Creates a default shell settings based on the configuration.
                 var shellSettings = _shellSettingsManager.CreateDefaultSettings();
-                shellSettings.Name = ShellHelper.DefaultShellName;
+                shellSettings.Name = ShellSettings.DefaultShellName;
                 shellSettings.State = TenantState.Uninitialized;
                 defaultSettings = shellSettings;
 
@@ -501,9 +501,9 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         private void CheckCanRemoveShell(ShellSettings settings)
         {
-            if (settings.Name == ShellHelper.DefaultShellName)
+            if (settings.IsDefaultShell())
             {
-                throw new InvalidOperationException($"The '{ShellHelper.DefaultShellName}' tenant can't be removed.");
+                throw new InvalidOperationException($"The '{ShellSettings.DefaultShellName}' tenant can't be removed.");
             }
 
             if (!settings.IsUninitialized() &&

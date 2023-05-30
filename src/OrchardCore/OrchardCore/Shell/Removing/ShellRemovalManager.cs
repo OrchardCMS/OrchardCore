@@ -40,9 +40,9 @@ public class ShellRemovalManager : IShellRemovalManager
             LocalResourcesOnly = localResourcesOnly,
         };
 
-        if (shellSettings.Name == ShellHelper.DefaultShellName)
+        if (shellSettings.IsDefaultShell())
         {
-            context.ErrorMessage = S["The tenant should not be the '{0}' tenant.", ShellHelper.DefaultShellName];
+            context.ErrorMessage = S["The tenant should not be the '{0}' tenant.", ShellSettings.DefaultShellName];
             return context;
         }
 
@@ -124,7 +124,7 @@ public class ShellRemovalManager : IShellRemovalManager
             });
         }
 
-        if (_shellHost.TryGetSettings(ShellHelper.DefaultShellName, out var defaultSettings))
+        if (_shellHost.TryGetSettings(ShellSettings.DefaultShellName, out var defaultSettings))
         {
             // Use the default shell context to execute the host level removing handlers.
             var shellContext = await _shellHost.GetOrCreateShellContextAsync(defaultSettings);

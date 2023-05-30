@@ -111,7 +111,7 @@ public class ApiControllerTests
     {
         var defaultShellSettings = new ShellSettings
         {
-            Name = ShellHelper.DefaultShellName,
+            Name = ShellSettings.DefaultShellName,
             State = TenantState.Running
         };
         var shellHostMock = new Mock<IShellHost>();

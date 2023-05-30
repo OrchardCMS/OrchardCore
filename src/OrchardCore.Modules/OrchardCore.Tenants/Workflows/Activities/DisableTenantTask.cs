@@ -37,7 +37,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
             var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null))?.Trim();
 
-            if (tenantName == ShellHelper.DefaultShellName)
+            if (tenantName.IsDefaultShellName())
             {
                 return Outcomes("Failed");
             }

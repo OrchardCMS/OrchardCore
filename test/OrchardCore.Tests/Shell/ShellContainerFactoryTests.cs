@@ -14,7 +14,7 @@ namespace OrchardCore.Tests.Shell
     {
         private static readonly ShellSettings _uninitializedDefaultShell = new()
         {
-            Name = ShellHelper.DefaultShellName,
+            Name = ShellSettings.DefaultShellName,
             State = TenantState.Uninitialized
         };
 

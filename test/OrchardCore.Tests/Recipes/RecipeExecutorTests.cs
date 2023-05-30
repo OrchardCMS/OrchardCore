@@ -52,7 +52,7 @@ namespace OrchardCore.Recipes
 
         private static ShellContext CreateShellContext() => new ShellContext()
         {
-            Settings = new ShellSettings() { Name = ShellHelper.DefaultShellName, State = TenantState.Running },
+            Settings = new ShellSettings() { Name = ShellSettings.DefaultShellName, State = TenantState.Running },
             ServiceProvider = CreateServiceProvider(),
         };
 

@@ -116,7 +116,7 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
                 .Returns<string, object[]>((n, a) => new LocalizedString(n, n));
 
             var shellSettings = defaultTenant
-                ? ShellHost.GetSettings(ShellHelper.DefaultShellName)
+                ? ShellHost.GetSettings(ShellSettings.DefaultShellName)
                 : new ShellSettings();
 
             var dbConnectionValidatorMock = new Mock<IDbConnectionValidator>();

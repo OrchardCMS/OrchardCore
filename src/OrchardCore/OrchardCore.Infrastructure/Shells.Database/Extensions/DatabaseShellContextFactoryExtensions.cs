@@ -20,7 +20,7 @@ namespace OrchardCore.Shells.Database.Extensions
 
             var settings = new ShellSettings()
             {
-                Name = ShellHelper.DefaultShellName,
+                Name = ShellSettings.DefaultShellName,
                 State = TenantState.Running
             };
 

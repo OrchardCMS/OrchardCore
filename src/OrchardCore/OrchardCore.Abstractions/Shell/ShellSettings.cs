@@ -9,12 +9,17 @@ using OrchardCore.Environment.Shell.Models;
 namespace OrchardCore.Environment.Shell
 {
     /// <summary>
-    /// Represents the minimalistic set of fields stored for each tenant. This model
-    /// is obtained from the 'IShellSettingsManager', which by default reads this
-    /// from the 'App_Data/tenants.json' file.
+    /// The minimalistic set of settings fields and the configuration of a given tenant, all data can be first provided
+    /// by regular configuration sources, then by default settings of all tenants are stored in 'App_Data/tenants.json',
+    /// while each configuration is stored in a tenant specific location 'App_Data/Sites/{tenant}/appsettings.json'.
     /// </summary>
     public class ShellSettings
     {
+        /// <summary>
+        /// The name of the 'Default' tenant.
+        /// </summary>
+        public const string DefaultShellName = "Default";
+
         private static readonly char[] _hostSeparators = new[] { ',', ' ' };
 
         private readonly ShellConfiguration _settings;
@@ -39,8 +44,14 @@ namespace OrchardCore.Environment.Shell
             Name = settings.Name;
         }
 
+        /// <summary>
+        /// The tenant name.
+        /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// The tenant version identifier.
+        /// </summary>
         public string VersionId
         {
             get => _settings["VersionId"];
@@ -51,25 +62,40 @@ namespace OrchardCore.Environment.Shell
             }
         }
 
-        public string TenantId => _settings["TenantId"] ?? _settings ["VersionId"];
+        /// <summary>
+        /// The tenant identifier.
+        /// </summary>
+        public string TenantId => _settings["TenantId"] ?? _settings["VersionId"];
 
+        /// <summary>
+        /// The tenant request url host, multiple separated hosts may be provided.
+        /// </summary>
         public string RequestUrlHost
         {
             get => _settings["RequestUrlHost"];
             set => _settings["RequestUrlHost"] = value;
         }
 
+        /// <summary>
+        /// The tenant request url host(s).
+        /// </summary>
         [JsonIgnore]
         public string[] RequestUrlHosts => _settings["RequestUrlHost"]
             ?.Split(_hostSeparators, StringSplitOptions.RemoveEmptyEntries)
             ?? Array.Empty<string>();
 
+        /// <summary>
+        /// The tenant request url prefix.
+        /// </summary>
         public string RequestUrlPrefix
         {
             get => _settings["RequestUrlPrefix"]?.Trim(' ', '/');
             set => _settings["RequestUrlPrefix"] = value;
         }
 
+        /// <summary>
+        /// The tenant state.
+        /// </summary>
         [JsonConverter(typeof(StringEnumConverter))]
         public TenantState State
         {
@@ -77,6 +103,9 @@ namespace OrchardCore.Environment.Shell
             set => _settings["State"] = value.ToString();
         }
 
+        /// <summary>
+        /// The tenant configuration.
+        /// </summary>
         [JsonIgnore]
         public IShellConfiguration ShellConfiguration => _configuration;
 
@@ -87,6 +116,9 @@ namespace OrchardCore.Environment.Shell
             set => _configuration[key] = value;
         }
 
+        /// <summary>
+        /// Ensures that the tenant configuration is built.
+        /// </summary>
         public Task EnsureConfigurationAsync() => _configuration.EnsureConfigurationAsync();
     }
 }
