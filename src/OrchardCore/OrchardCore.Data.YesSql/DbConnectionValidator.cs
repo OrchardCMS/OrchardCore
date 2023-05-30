@@ -112,7 +112,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             selectCommand.CommandText = GetSelectBuilderForDocumentTable(sqlBuilder, documentName, context.Schema).ToSqlString();
 
             using var result = await selectCommand.ExecuteReaderAsync();
-            if (context.ShellName != ShellSettings.DefaultShellName)
+            if (!context.ShellName.IsDefaultShellName())
             {
                 // The 'Document' table exists.
                 return DbConnectionValidatorResult.DocumentTableFound;

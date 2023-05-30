@@ -4,7 +4,6 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Tests.Stubs;
 using StartupBase = OrchardCore.Modules.StartupBase;
 
@@ -12,11 +11,9 @@ namespace OrchardCore.Tests.Shell
 {
     public class ShellContainerFactoryTests
     {
-        private static readonly ShellSettings _uninitializedDefaultShell = new()
-        {
-            Name = ShellSettings.DefaultShellName,
-            State = TenantState.Uninitialized
-        };
+        private static readonly ShellSettings _uninitializedDefaultShell = new ShellSettings()
+            .AsDefaultShell()
+            .AsUninitialized();
 
         private readonly IShellContainerFactory _shellContainerFactory;
         private readonly IServiceProvider _applicationServiceProvider;

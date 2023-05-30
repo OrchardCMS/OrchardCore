@@ -11,7 +11,6 @@ using OrchardCore.Abstractions.Setup;
 using OrchardCore.AutoSetup.Extensions;
 using OrchardCore.AutoSetup.Options;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Setup.Services;
 
@@ -205,12 +204,13 @@ namespace OrchardCore.AutoSetup
         /// <returns>The <see cref="ShellSettings"/>.</returns>
         public async Task<ShellSettings> CreateTenantSettingsAsync(TenantSetupOptions setupOptions)
         {
-            var shellSettings = _shellSettingsManager.CreateDefaultSettings();
+            var shellSettings = _shellSettingsManager
+                .CreateDefaultSettings()
+                .AsUninitialized();
 
             shellSettings.Name = setupOptions.ShellName;
             shellSettings.RequestUrlHost = setupOptions.RequestUrlHost;
             shellSettings.RequestUrlPrefix = setupOptions.RequestUrlPrefix;
-            shellSettings.State = TenantState.Uninitialized;
 
             shellSettings["ConnectionString"] = setupOptions.DatabaseConnectionString;
             shellSettings["TablePrefix"] = setupOptions.DatabaseTablePrefix;

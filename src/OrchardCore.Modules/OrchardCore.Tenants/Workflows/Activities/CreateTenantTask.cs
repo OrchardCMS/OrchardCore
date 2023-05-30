@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
@@ -138,7 +137,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 shellSettings.RequestUrlPrefix = requestUrlPrefix;
             }
 
-            shellSettings.State = TenantState.Uninitialized;
+            shellSettings.AsUninitialized();
 
             if (!String.IsNullOrEmpty(connectionString))
             {

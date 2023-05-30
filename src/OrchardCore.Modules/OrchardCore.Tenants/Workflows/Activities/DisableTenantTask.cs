@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
@@ -52,7 +51,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 return Outcomes("Failed");
             }
 
-            shellSettings.State = TenantState.Disabled;
+            shellSettings.AsDisabled();
             await ShellHost.UpdateShellSettingsAsync(shellSettings);
 
             return Outcomes("Disabled");

@@ -243,7 +243,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                             }
 
                             // Check if the tenant needs to be removed locally.
-                            if (settings.Name != ShellSettings.DefaultShellName && tenantsToRemove.Contains(settings.Name))
+                            if (!settings.IsDefaultShell() && tenantsToRemove.Contains(settings.Name))
                             {
                                 // The local resources can only be removed if the tenant is 'Disabled' or 'Uninitialized'.
                                 if (settings.IsDisabled() || settings.IsUninitialized())
@@ -454,7 +454,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                 await distributedCache.SetStringAsync(ReloadIdKey(name), identifier.ReloadId);
 
                 // Check if it is a new created tenant that has not been already loaded.
-                if (name != ShellSettings.DefaultShellName && !_shellHost.TryGetSettings(name, out _))
+                if (!name.IsDefaultShellName() && !_shellHost.TryGetSettings(name, out _))
                 {
                     // Also update the global identifier specifying that a tenant has been created.
                     await distributedCache.SetStringAsync(_shellCountChangedIdKey, identifier.ReloadId);

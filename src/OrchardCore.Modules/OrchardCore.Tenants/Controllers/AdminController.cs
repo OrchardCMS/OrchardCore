@@ -15,7 +15,6 @@ using OrchardCore.Data;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
@@ -258,7 +257,7 @@ namespace OrchardCore.Tenants.Controllers
                         }
                         else
                         {
-                            shellSettings.State = TenantState.Disabled;
+                            shellSettings.AsDisabled();
                             await _shellHost.UpdateShellSettingsAsync(shellSettings);
                         }
 
@@ -271,7 +270,7 @@ namespace OrchardCore.Tenants.Controllers
                         }
                         else
                         {
-                            shellSettings.State = TenantState.Running;
+                            shellSettings.AsRunning();
                             await _shellHost.UpdateShellSettingsAsync(shellSettings);
                         }
 
@@ -350,12 +349,13 @@ namespace OrchardCore.Tenants.Controllers
             if (ModelState.IsValid)
             {
                 // Creates a default shell settings based on the configuration.
-                var shellSettings = _shellSettingsManager.CreateDefaultSettings();
+                var shellSettings = _shellSettingsManager
+                    .CreateDefaultSettings()
+                    .AsUninitialized();
 
                 shellSettings.Name = model.Name;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
-                shellSettings.State = TenantState.Uninitialized;
 
                 shellSettings["Category"] = model.Category;
                 shellSettings["Description"] = model.Description;
@@ -532,7 +532,7 @@ namespace OrchardCore.Tenants.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            shellSettings.State = TenantState.Disabled;
+            shellSettings.AsDisabled();
             await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
             return RedirectToAction(nameof(Index));
@@ -562,7 +562,7 @@ namespace OrchardCore.Tenants.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            shellSettings.State = TenantState.Running;
+            shellSettings.AsRunning();
             await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
             return RedirectToAction(nameof(Index));

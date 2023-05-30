@@ -1,5 +1,4 @@
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Tests.Apis.Context;
 
 namespace OrchardCore.Tests.Shell;
@@ -21,8 +20,8 @@ public class ShellHostTests : SiteContext
             new ShellSettings()
             {
                 Name = name,
-                State = TenantState.Uninitialized,
-            });
+            }
+            .AsUninitialized());
 
         ShellHost.TryGetSettings(searchName, out var foundShellSettings);
         ShellHost.TryGetShellContext(searchName, out var foundShellContext);

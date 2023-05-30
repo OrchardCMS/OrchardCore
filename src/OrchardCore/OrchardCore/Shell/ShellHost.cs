@@ -9,7 +9,6 @@ using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Events;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Environment.Shell
@@ -405,10 +404,9 @@ namespace OrchardCore.Environment.Shell
             if (defaultSettings == null)
             {
                 // Creates a default shell settings based on the configuration.
-                var shellSettings = _shellSettingsManager.CreateDefaultSettings();
-                shellSettings.Name = ShellSettings.DefaultShellName;
-                shellSettings.State = TenantState.Uninitialized;
-                defaultSettings = shellSettings;
+                defaultSettings = _shellSettingsManager.CreateDefaultSettings()
+                    .AsDefaultShell()
+                    .AsUninitialized();
 
                 await UpdateShellSettingsAsync(defaultSettings);
             }

@@ -38,5 +38,55 @@ namespace OrchardCore.Environment.Shell
         /// Wether the tenant is initialized or not.
         /// </summary>
         public static bool IsInitialized(this ShellSettings settings) => settings.IsRunning() || settings.IsDisabled();
+
+        /// <summary>
+        /// Wether the tenant is removable or not.
+        /// </summary>
+        public static bool IsRemovable(this ShellSettings shellSettings) => shellSettings.IsDisabled() || shellSettings.IsUninitialized();
+
+        /// <summary>
+        /// As the 'Default' tenant.
+        /// </summary>
+        public static ShellSettings AsDefaultShell(this ShellSettings settings)
+        {
+            settings.Name = ShellSettings.DefaultShellName;
+            return settings;
+        }
+
+        /// <summary>
+        /// As an uninitialized tenant.
+        /// </summary>
+        public static ShellSettings AsUninitialized(this ShellSettings settings)
+        {
+            settings.State = TenantState.Uninitialized;
+            return settings;
+        }
+
+        /// <summary>
+        /// As an initializing tenant.
+        /// </summary>
+        public static ShellSettings AsInitializing(this ShellSettings settings)
+        {
+            settings.State = TenantState.Initializing;
+            return settings;
+        }
+
+        /// <summary>
+        /// As a running tenant.
+        /// </summary>
+        public static ShellSettings AsRunning(this ShellSettings settings)
+        {
+            settings.State = TenantState.Running;
+            return settings;
+        }
+
+        /// <summary>
+        /// As a disabled tenant.
+        /// </summary>
+        public static ShellSettings AsDisabled(this ShellSettings settings)
+        {
+            settings.State = TenantState.Disabled;
+            return settings;
+        }
     }
 }

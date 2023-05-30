@@ -135,10 +135,10 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
 
         private static async Task SeedTenantsAsync()
         {
-            await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant1", State = TenantState.Uninitialized, RequestUrlPrefix = "tenant1" });
-            await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant2", State = TenantState.Uninitialized, RequestUrlPrefix = String.Empty, RequestUrlHost = "example2.com" });
-            await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant3", State = TenantState.Uninitialized, RequestUrlPrefix = "tenant3", RequestUrlHost = String.Empty });
-            await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant4", State = TenantState.Uninitialized, RequestUrlPrefix = "tenant4", RequestUrlHost = "example4.com, example5.com" });
+            await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant1", RequestUrlPrefix = "tenant1" }.AsUninitialized());
+            await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant2", RequestUrlPrefix = String.Empty, RequestUrlHost = "example2.com" }.AsUninitialized());
+            await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant3", RequestUrlPrefix = "tenant3", RequestUrlHost = String.Empty }.AsUninitialized());
+            await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant4", RequestUrlPrefix = "tenant4", RequestUrlHost = "example4.com, example5.com" }.AsUninitialized());
         }
     }
 }

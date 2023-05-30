@@ -1,30 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Environment.Shell
 {
     public class SingleShellSettingsManager : IShellSettingsManager
     {
-        public ShellSettings CreateDefaultSettings()
-        {
-            return new ShellSettings()
-            {
-                Name = ShellSettings.DefaultShellName,
-                State = TenantState.Running
-            };
-        }
+        public ShellSettings CreateDefaultSettings() => new ShellSettings().AsDefaultShell().AsRunning();
 
-        public Task<IEnumerable<ShellSettings>> LoadSettingsAsync()
-        {
-            return Task.FromResult((new ShellSettings[] { CreateDefaultSettings() }).AsEnumerable());
-        }
+        public Task<IEnumerable<ShellSettings>> LoadSettingsAsync() =>
+            Task.FromResult((new ShellSettings[] { CreateDefaultSettings() }).AsEnumerable());
 
-        public Task<IEnumerable<string>> LoadSettingsNamesAsync()
-        {
-            return Task.FromResult((new string[] { ShellSettings.DefaultShellName }).AsEnumerable());
-        }
+        public Task<IEnumerable<string>> LoadSettingsNamesAsync() =>
+            Task.FromResult((new string[] { ShellSettings.DefaultShellName }).AsEnumerable());
 
         public Task<ShellSettings> LoadSettingsAsync(string tenant) => Task.FromResult(CreateDefaultSettings());
 
