@@ -504,9 +504,7 @@ namespace OrchardCore.Environment.Shell
                 throw new InvalidOperationException($"The '{ShellSettings.DefaultShellName}' tenant can't be removed.");
             }
 
-            if (!settings.IsUninitialized() &&
-                (!settings.IsDisabled() ||
-                _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0))
+            if (!settings.IsRemovable() || (_shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0))
             {
                 throw new InvalidOperationException(
                     $"The tenant '{settings.Name}' can't be removed as it is neither uninitialized nor disabled.");
