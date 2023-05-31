@@ -51,7 +51,14 @@ namespace OrchardCore.Environment.Shell.Scope
             ServiceProvider = _serviceScope.ServiceProvider;
         }
 
+        /// <summary>
+        /// The 'ShellContext' of this shell scope.
+        /// </summary>
         public ShellContext ShellContext { get; }
+
+        /// <summary>
+        /// The 'IServiceProvider' of this shell scope.
+        /// </summary>
         public IServiceProvider ServiceProvider { get; }
 
         /// <summary>
@@ -365,6 +372,10 @@ namespace OrchardCore.Environment.Shell.Scope
             }
         }
 
+        /// <summary>
+        /// Invokes the registered delegates that should be executed before disposing this shell scope,
+        /// triggers the deferred signals and executes the deferred tasks in their own isolated scope.
+        /// </summary>
         internal async Task BeforeDisposeAsync()
         {
             foreach (var callback in _beforeDispose)

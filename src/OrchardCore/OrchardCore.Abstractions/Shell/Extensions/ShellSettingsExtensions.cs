@@ -5,7 +5,7 @@ namespace OrchardCore.Environment.Shell
     public static class ShellSettingsExtensions
     {
         /// <summary>
-        /// Wether it is the name of the 'Default' tenant.
+        /// Wether it is the name of the 'Default' tenant or not.
         /// </summary>
         public static bool IsDefaultShellName(this string name) => name == ShellSettings.DefaultShellName;
 

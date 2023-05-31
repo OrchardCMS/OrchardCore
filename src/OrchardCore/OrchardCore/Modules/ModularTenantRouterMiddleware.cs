@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Scope;
 
@@ -55,7 +56,7 @@ namespace OrchardCore.Modules
             }
 
             // Do we need to rebuild the pipeline ?
-            if (shellContext.Pipeline == null)
+            if (!shellContext.HasPipeline())
             {
                 await InitializePipelineAsync(shellContext);
             }
@@ -69,10 +70,9 @@ namespace OrchardCore.Modules
 
             // Building a pipeline for a given shell can't be done by two requests.
             await semaphore.WaitAsync();
-
             try
             {
-                if (shellContext.Pipeline == null)
+                if (!shellContext.HasPipeline())
                 {
                     shellContext.Pipeline = BuildTenantPipeline();
                 }

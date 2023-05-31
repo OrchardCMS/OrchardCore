@@ -25,18 +25,28 @@ namespace OrchardCore.Environment.Shell
         private readonly ShellConfiguration _settings;
         private readonly ShellConfiguration _configuration;
 
+        /// <summary>
+        /// Initializes a new <see cref="ShellSettings"/>.
+        /// </summary>
         public ShellSettings()
         {
             _settings = new ShellConfiguration();
             _configuration = new ShellConfiguration();
         }
 
+        /// <summary>
+        /// Initializes a new <see cref="ShellSettings"/> from an existing one
+        /// and from an exiting <see cref="ShellConfiguration"/>.
+        /// </summary>
         public ShellSettings(ShellConfiguration settings, ShellConfiguration configuration)
         {
             _settings = settings;
             _configuration = configuration;
         }
 
+        /// <summary>
+        /// Initializes a new <see cref="ShellSettings"/> from an existing one.
+        /// </summary>
         public ShellSettings(ShellSettings settings)
         {
             _settings = new ShellConfiguration(settings._settings);
@@ -117,7 +127,7 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Ensures that the tenant configuration is built.
+        /// Ensures that the tenant configuration is initialized.
         /// </summary>
         public Task EnsureConfigurationAsync() => _configuration.EnsureConfigurationAsync();
     }

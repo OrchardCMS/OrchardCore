@@ -19,12 +19,23 @@ namespace OrchardCore.Environment.Shell.Builders
         internal volatile int _terminated;
         internal bool _released;
 
+        /// <summary>
+        /// The <see cref="ShellSettings"/> holding the tenant settings and configuration.
+        /// </summary>
         public ShellSettings Settings { get; set; }
+
+        /// <summary>
+        /// The <see cref="ShellBlueprint"/> describing the tenant container.
+        /// </summary>
         public ShellBlueprint Blueprint { get; set; }
+
+        /// <summary>
+        /// The <see cref="IServiceProvider"/> of the tenant container.
+        /// </summary>
         public IServiceProvider ServiceProvider { get; set; }
 
         /// <summary>
-        /// Whether the shell is activated.
+        /// Whether the shell is activated or not.
         /// </summary>
         public bool IsActivated { get; set; }
 
@@ -33,10 +44,13 @@ namespace OrchardCore.Environment.Shell.Builders
         /// </summary>
         public IShellPipeline Pipeline { get; set; }
 
+        /// <summary>
+        /// Place holder class used for shells that are lazily built.
+        /// </summary>
         public class PlaceHolder : ShellContext
         {
             /// <summary>
-            /// Used as a place holder for a shell that will be lazily created.
+            /// Used as a place holder for a shell that will be lazily built.
             /// </summary>
             public PlaceHolder()
             {
@@ -44,6 +58,9 @@ namespace OrchardCore.Environment.Shell.Builders
                 _disposed = true;
             }
 
+            /// <summary>
+            /// Wether or not related to a pre-created shell on the first loading.
+            /// </summary>
             public bool PreCreated { get; init; }
         }
 

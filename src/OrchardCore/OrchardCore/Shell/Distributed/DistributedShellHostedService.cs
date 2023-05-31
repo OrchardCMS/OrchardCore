@@ -642,7 +642,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
 
             // Check if the default context is still the placeholder pre-created on loading.
-            if (defaultContext is ShellContext.PlaceHolder placeholder && placeholder.PreCreated)
+            if (defaultContext.IsPreCreated())
             {
                 // Reuse the current context.
                 return _context;

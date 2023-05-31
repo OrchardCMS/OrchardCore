@@ -491,7 +491,7 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         private bool CanReleaseShell(ShellSettings settings)
         {
-            return !settings.IsDisabled() || _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes == 0;
+            return !settings.IsDisabled() || _shellContexts.TryGetValue(settings.Name, out var context) && !context.IsInUse();
         }
 
         /// <summary>
@@ -504,10 +504,16 @@ namespace OrchardCore.Environment.Shell
                 throw new InvalidOperationException($"The '{ShellSettings.DefaultShellName}' tenant can't be removed.");
             }
 
-            if (!settings.IsRemovable() || (_shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0))
+            if (!settings.IsRemovable())
             {
                 throw new InvalidOperationException(
                     $"The tenant '{settings.Name}' can't be removed as it is neither uninitialized nor disabled.");
+            }
+
+            if (settings.IsDisabled() && _shellContexts.TryGetValue(settings.Name, out var context) && context.IsInUse())
+            {
+                throw new InvalidOperationException(
+                    $"The tenant '{settings.Name}' can't be removed as it is disabled but still in use.");
             }
         }
 
