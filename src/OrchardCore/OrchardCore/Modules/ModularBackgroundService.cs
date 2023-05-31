@@ -118,7 +118,7 @@ namespace OrchardCore.Modules
                     }
 
                     var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
-                    if (!_options.ShellWarmup && !shellScope.ShellContext.HasPipeline())
+                    if (!_options.ShellWarmup && !shellScope.ShellContext.IsWarmedUp())
                     {
                         break;
                     }
@@ -202,7 +202,7 @@ namespace OrchardCore.Modules
                 _httpContextAccessor.HttpContext = shell.CreateHttpContext();
 
                 var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
-                if (!_options.ShellWarmup && !shellScope.ShellContext.HasPipeline())
+                if (!_options.ShellWarmup && !shellScope.ShellContext.IsWarmedUp())
                 {
                     return;
                 }
@@ -291,7 +291,7 @@ namespace OrchardCore.Modules
 
         private ShellContext[] GetRunningShells() => _shellHost
             .ListShellContexts()
-            .Where(s => s.Settings.IsRunning() && (_options.ShellWarmup || s.HasPipeline()))
+            .Where(s => s.Settings.IsRunning() && (_options.ShellWarmup || s.IsWarmedUp()))
             .ToArray();
 
         private ShellContext[] GetShellsToRun(IEnumerable<ShellContext> shells)
