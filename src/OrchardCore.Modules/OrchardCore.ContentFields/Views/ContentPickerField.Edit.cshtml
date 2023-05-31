@@ -8,7 +8,7 @@
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
     var fieldName = Model.PartFieldDefinition.Name;
     var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
-    var editUrl = @Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Edit", contentItemId = "contentItemId" });
+    var editUrl = Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Edit", contentItemId = "contentItemId" });
     var searchUrl = Url.RouteUrl(new { area = "OrchardCore.ContentFields", controller = "ContentPickerAdmin", action = "SearchContentItems", part = partName, field = fieldName });
     var vueElementId = $"ContentPicker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
     var multiple = settings.Multiple.ToString().ToLowerInvariant();
