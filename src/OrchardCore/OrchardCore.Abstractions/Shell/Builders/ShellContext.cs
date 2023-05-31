@@ -50,7 +50,7 @@ namespace OrchardCore.Environment.Shell.Builders
         public class PlaceHolder : ShellContext
         {
             /// <summary>
-            /// Used as a place holder for a shell that will be lazily built.
+            /// Initializes a place holder for a shell that will be lazily built.
             /// </summary>
             public PlaceHolder()
             {
@@ -59,7 +59,7 @@ namespace OrchardCore.Environment.Shell.Builders
             }
 
             /// <summary>
-            /// Wether or not related to a pre-created shell on the first loading.
+            /// Wether or not the shell is pre-created after the first loading.
             /// </summary>
             public bool PreCreated { get; init; }
         }
