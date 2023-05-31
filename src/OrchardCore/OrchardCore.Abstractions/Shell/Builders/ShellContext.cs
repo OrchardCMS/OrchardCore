@@ -59,7 +59,7 @@ namespace OrchardCore.Environment.Shell.Builders
             }
 
             /// <summary>
-            /// Wether or not the shell is pre-created after the first loading.
+            /// Wether or not the tenant is only pre-created after the first loading.
             /// </summary>
             public bool PreCreated { get; init; }
         }

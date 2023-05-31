@@ -5,7 +5,7 @@ namespace OrchardCore.Environment.Shell
     public static class ShellContextExtensions
     {
         /// <summary>
-        /// Wether or not the tenant is pre-built but only after the first loading.
+        /// Wether or not the tenant is only pre-created after the first loading.
         /// </summary>
         public static bool IsPreCreated(this ShellContext context) =>
             context is ShellContext.PlaceHolder placeHolder && placeHolder.PreCreated;
@@ -13,8 +13,7 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Wether or not the tenant is pre-built after a releasing or reloading.
         /// </summary>
-        public static bool IsPreBuilt(this ShellContext context) =>
-            context is ShellContext.PlaceHolder placeHolder && !placeHolder.PreCreated;
+        public static bool IsPreBuilt(this ShellContext context) => context is ShellContext.PlaceHolder;
 
         /// <summary>
         /// Wether or not the tenant container is built after a first demand.

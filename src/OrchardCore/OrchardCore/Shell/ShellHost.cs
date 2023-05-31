@@ -513,7 +513,7 @@ namespace OrchardCore.Environment.Shell
             if (settings.IsDisabled() && _shellContexts.TryGetValue(settings.Name, out var context) && context.IsInUse())
             {
                 throw new InvalidOperationException(
-                    $"The tenant '{settings.Name}' can't be removed as it is disabled but still in use.");
+                    $"The disabled tenant '{settings.Name}' can't be removed as it is still in use.");
             }
         }
 
