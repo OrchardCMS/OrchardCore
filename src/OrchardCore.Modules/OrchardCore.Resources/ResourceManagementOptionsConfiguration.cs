@@ -171,9 +171,9 @@ namespace OrchardCore.Resources
             manifest
                .DefineScript("popperjs")
                .SetUrl("~/OrchardCore.Resources/Scripts/popper.min.js", "~/OrchardCore.Resources/Scripts/popper.js")
-               .SetCdn("https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js", "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.js")
-               .SetCdnIntegrity("sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3", "sha384-VQo0vWAZ18Sqo1Alu/vX3/9h02S6fyWFzsl04LHApi5zmn8ZTmjmqTn0WqxmlPPm")
-               .SetVersion("2.11.6");
+               .SetCdn("https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js", "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.js")
+               .SetCdnIntegrity("sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r", "sha384-yBknSWNrSUPkBtbhhCJ07i/BOmbrigRhLKPzTAny+TT4uGAwIdfNTAkBd/3VzXbg")
+               .SetVersion("2.11.8");
 
             manifest
                 .DefineScript("bootstrap")
@@ -197,6 +197,28 @@ namespace OrchardCore.Resources
                 .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css", "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.css")
                 .SetCdnIntegrity("sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3", "sha384-BNKxVsQUv1K6rV5WJumgbzW1t/UsyFWm/uP4I8rr9T3PeBkcRGGApJv+rOjBpEdF")
                 .SetVersion("5.1.3");
+
+            manifest
+                .DefineScript("bootstrap")
+                .SetDependencies("popperjs")
+                .SetUrl("~/OrchardCore.Resources/Vendor/bootstrap-5.3.0/bootstrap.min.js", "~/OrchardCore.Resources/Vendor/bootstrap-5.3.0/bootstrap.js")
+                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js", "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.js")
+                .SetCdnIntegrity("sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS", "sha384-jE+UVmddS/Zpkke+ip5zwkHXly3NpbKGS52uUttb0aE7GyJPcJnHkGh8MutHS6FS")
+                .SetVersion("5.3.0");
+
+            manifest
+                .DefineScript("bootstrap-bundle")
+                .SetUrl("~~/OrchardCore.Resources/Vendor/bootstrap-5.3.0/bootstrap.bundle.min.js", "~/OrchardCore.Resources/Vendor/bootstrap-5.3.0/bootstrap.bundle.js")
+                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js", "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.js")
+                .SetCdnIntegrity("sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz", "sha384-zoeFI3sA/Fy4j0+BH0ZVL774vWo2Hk5sqpu1fTa4BFq4jwUwM19/xQELVceW/I20")
+                .SetVersion("5.3.0");
+
+            manifest
+                .DefineStyle("bootstrap")
+                .SetUrl("~/OrchardCore.Resources/Vendor/bootstrap-5.3.0/bootstrap.min.css", "~/OrchardCore.Resources/Vendor/bootstrap-5.3.0/bootstrap.css")
+                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css", "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.css")
+                .SetCdnIntegrity("sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM", "sha384-4br+IwSQ4OwTn+wm8qhTgP0Ud025Xee3bb4WV9pecuw1MQyZABMXPReSyIjnxIsq")
+                .SetVersion("5.3.0");
 
             manifest
                 .DefineStyle("bootstrap-select")
