@@ -5,19 +5,19 @@
     "inputs": [
       "node_modules/bootstrap-4.6.1/scss/bootstrap.scss"
     ],
-    "output": "wwwroot/Vendors/bootstrap-4.6.1/bootstrap.css"
+    "output": "wwwroot/Vendor/bootstrap-4.6.1/bootstrap.css"
   },
   {
     "inputs": [
       "node_modules/bootstrap-4.6.1/dist/js/bootstrap.js"
     ],
-    "output": "wwwroot/Vendors/bootstrap-4.6.1/bootstrap.js"
+    "output": "wwwroot/Vendor/bootstrap-4.6.1/bootstrap.js"
   },
   {
     "inputs": [
       "node_modules/bootstrap-4.6.1/dist/js/bootstrap.bundle.js"
     ],
-    "output": "wwwroot/Vendors/bootstrap-4.6.1/bootstrap.bundle.js"
+    "output": "wwwroot/Vendor/bootstrap-4.6.1/bootstrap.bundle.js"
   },
   {
     "generateRTL": false,
@@ -25,19 +25,19 @@
     "inputs": [
       "node_modules/bootstrap-5.3.0/scss/bootstrap.scss"
     ],
-    "output": "wwwroot/Vendors/bootstrap-5.3.0/bootstrap.css"
+    "output": "wwwroot/Vendor/bootstrap-5.3.0/bootstrap.css"
   },
   {
     "inputs": [
       "node_modules/bootstrap-5.3.0/dist/js/bootstrap.js"
     ],
-    "output": "wwwroot/Vendors/bootstrap-5.3.0/bootstrap.js"
+    "output": "wwwroot/Vendor/bootstrap-5.3.0/bootstrap.js"
   },
   {
     "inputs": [
       "node_modules/bootstrap-5.3.0/dist/js/bootstrap.bundle.js"
     ],
-    "output": "wwwroot/Vendors/bootstrap-5.3.0/bootstrap.bundle.js"
+    "output": "wwwroot/Vendor/bootstrap-5.3.0/bootstrap.bundle.js"
   },
   {
     "generateRTL": false,
