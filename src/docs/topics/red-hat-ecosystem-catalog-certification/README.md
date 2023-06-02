@@ -6,7 +6,7 @@ The [Red Hat Ecosystem Catalog](https://catalog.redhat.com/) is a catalog of sof
 
 The certification is an assurance that Orchard Core works on RHEL. To keep this certification up-to-date, we need to rerun certification for each new Orchard release, as well as RHEL major release. This is not mandatory though, and it's good enough if we do this certification occasionally.
 
-Note that Orchard has to be certified as a non-containerized app. Containerized app certification can't be done with [the Orchard Core Docker image](https://hub.docker.com/r/orchardproject/orchardcore-cms-linux), since Red Hat required Podman.
+Note that Orchard has to be certified as a non-containerized app. Containerized app certification can't be done with [the Orchard Core Docker image](https://hub.docker.com/r/orchardproject/orchardcore-cms-linux), since Red Hat required [Podman](https://podman.io).
 
 To begin, set up the basics on the [Certified Technology Portal](https://connect.redhat.com/account/dashboard). If you need access to it, please let us know. Then, these are the steps:
 
