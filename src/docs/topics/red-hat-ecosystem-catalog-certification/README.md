@@ -1,6 +1,6 @@
 # Managing the Orchard Core Red Hat Ecosystem Catalog certification
 
-The [Red Hat Ecosystem Catalog](https://catalog.redhat.com/) is a catalog of software certified to work on the Red Hat platforms, like directly on Red Hat Enterprise Linux (RHEL). Orchard Core is cross-platform and thus works on RHEL as well. To showcase this, and to publicize Orchard Core better to the Red Hat community, we have certified Orchard and created [its Red Hat Ecosystem Catalog profile](https://catalog.redhat.com/software/applications/detail/223797).
+The [Red Hat Ecosystem Catalog](https://catalog.redhat.com/) is a catalog of software certified to work on the Red Hat platforms, like directly on Red Hat Enterprise Linux (RHEL). Orchard Core is cross-platform and thus works on RHEL as well. To showcase this, and to publicize Orchard Core better to the Red Hat community, we have certified Orchard and created its [Red Hat Ecosystem Catalog profile](https://catalog.redhat.com/software/applications/detail/223797).
 
 ## Renewing the certification
 
