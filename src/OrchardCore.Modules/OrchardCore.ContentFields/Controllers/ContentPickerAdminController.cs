@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
 using OrchardCore.ContentFields.Settings;
@@ -9,6 +11,7 @@ using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.Contents;
 
 namespace OrchardCore.ContentFields.Controllers
 {
@@ -16,15 +19,23 @@ namespace OrchardCore.ContentFields.Controllers
     public class ContentPickerAdminController : Controller
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IContentManager _contentManager;
         private readonly IEnumerable<IContentPickerResultProvider> _resultProviders;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ContentPickerAdminController(
             IContentDefinitionManager contentDefinitionManager,
-            IEnumerable<IContentPickerResultProvider> resultProviders
-            )
+            IContentManager contentManager,
+            IEnumerable<IContentPickerResultProvider> resultProviders,
+            IAuthorizationService authorizationService,
+            IHttpContextAccessor httpContextAccessor)
         {
             _contentDefinitionManager = contentDefinitionManager;
+            _contentManager = contentManager;
             _resultProviders = resultProviders;
+            _authorizationService = authorizationService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<IActionResult> SearchContentItems(string part, string field, string query)
@@ -75,7 +86,23 @@ namespace OrchardCore.ContentFields.Controllers
                 PartFieldDefinition = partFieldDefinition
             });
 
-            return new ObjectResult(results.Select(r => new VueMultiselectItemViewModel() { Id = r.ContentItemId, DisplayText = r.DisplayText, HasPublished = r.HasPublished }));
+            var contentItems = await _contentManager
+                .GetAsync(results.Select(r => r.ContentItemId));
+
+            var selectedItems = new List<VueMultiselectItemViewModel>();
+            foreach (var contentItem in contentItems)
+            {
+                selectedItems.Add(new VueMultiselectItemViewModel()
+                {
+                    Id = contentItem.ContentItemId,
+                    DisplayText = contentItem.ToString(),
+                    HasPublished = contentItem.IsPublished(),
+                    IsViewable = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext!.User,
+                                     CommonPermissions.EditContent, contentItem)
+                });
+            }
+
+            return new ObjectResult(selectedItems);
         }
     }
 }
