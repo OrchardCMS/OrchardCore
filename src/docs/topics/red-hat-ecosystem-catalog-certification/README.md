@@ -18,7 +18,7 @@ To begin, set up the basics on the [Certified Technology Portal](https://connect
     sudo firewall-cmd --zone=public --add-port=80/tcp --permanent
     sudo firewall-cmd --reload
     ```
-4. Open the full OC source that was released, and publish it. Use Release Configuration, self-contained, with the Target Runtime `linux-x64`. You can do this with right click-Publish from Visual Studio as well. Upload the publish folder to the VM (what you can do from the file browser of MobaXterm).
+4. Open the full OC source that was released, and publish it. Use Release Configuration, self-contained, with the Target Runtime `linux-x64`. You can do this with right click, then "Publish" from Visual Studio as well. Upload the publish folder to the VM (what you can do from the file browser of MobaXterm).
 5. Test running the app with:
     ```console
     sudo mkdir -m 777 App_Data
