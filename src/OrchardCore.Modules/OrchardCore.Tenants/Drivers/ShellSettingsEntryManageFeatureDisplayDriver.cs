@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -10,7 +11,9 @@ public class ShellSettingsEntryManageFeatureDisplayDriver : DisplayDriver<ShellS
 {
     public override Task<IDisplayResult> DisplayAsync(ShellSettingsEntry model, BuildDisplayContext context)
     {
-        if (model.ShellSettings != null && !model.ShellSettings.IsDefaultShell() && context.GroupId.Equals("ActionButtons", System.StringComparison.OrdinalIgnoreCase))
+        if (model.ShellSettings is not null &&
+            !model.ShellSettings.IsDefaultShell() &&
+            context.GroupId.Equals("ActionButtons", StringComparison.OrdinalIgnoreCase))
         {
             return Task.FromResult<IDisplayResult>(View("ManageFeaturesActionButtons", model).Location("Content:5").OnGroup(context.GroupId));
         }

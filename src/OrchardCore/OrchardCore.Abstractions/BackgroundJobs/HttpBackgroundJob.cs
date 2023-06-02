@@ -51,7 +51,7 @@ public static class HttpBackgroundJob
             var shellContext = await shellHost.GetOrCreateShellContextAsync(scope.ShellContext.Settings);
 
             // Can't be executed e.g. if a tenant setup failed.
-            if (shellContext == null || !shellContext.Settings.IsRunning())
+            if (!shellContext.Settings.IsRunning())
             {
                 return;
             }

@@ -246,7 +246,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                             if (!settings.IsDefaultShell() && tenantsToRemove.Contains(settings.Name))
                             {
                                 // The local resources can only be removed if the tenant is 'Disabled' or 'Uninitialized'.
-                                if (settings.IsDisabled() || settings.IsUninitialized())
+                                if (settings.IsRemovable())
                                 {
                                     // Keep in sync this tenant by removing its local (non shared) resources.
                                     var removingContext = await _shellRemovingManager.RemoveAsync(settings, localResourcesOnly: true);

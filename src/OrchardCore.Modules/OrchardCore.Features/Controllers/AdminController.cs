@@ -222,7 +222,7 @@ namespace OrchardCore.Features.Controllers
                 return Url.Action(nameof(Features), new { tenant });
             }
 
-            if ((settings == null || !settings.IsDefaultShell()) && featureId == FeaturesConstants.FeatureId)
+            if (!settings.IsDefaultShell() && featureId == FeaturesConstants.FeatureId)
             {
                 return Url.Content("~/" + _adminOptions.AdminUrlPrefix);
             }

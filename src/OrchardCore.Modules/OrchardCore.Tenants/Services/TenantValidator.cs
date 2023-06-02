@@ -65,7 +65,7 @@ namespace OrchardCore.Tenants.Services
 
             _ = _shellHost.TryGetSettings(model.Name, out var existingShellSettings);
 
-            if ((existingShellSettings == null || !existingShellSettings.IsDefaultShell()) &&
+            if (!existingShellSettings.IsDefaultShell() &&
                 String.IsNullOrWhiteSpace(model.RequestUrlHost) &&
                 String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
             {

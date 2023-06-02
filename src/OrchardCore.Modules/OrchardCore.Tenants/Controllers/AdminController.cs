@@ -270,8 +270,7 @@ namespace OrchardCore.Tenants.Controllers
                         }
                         else
                         {
-                            shellSettings.AsRunning();
-                            await _shellHost.UpdateShellSettingsAsync(shellSettings);
+                            await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
                         }
 
                         break;
@@ -562,8 +561,7 @@ namespace OrchardCore.Tenants.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            shellSettings.AsRunning();
-            await _shellHost.UpdateShellSettingsAsync(shellSettings);
+            await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
 
             return RedirectToAction(nameof(Index));
         }

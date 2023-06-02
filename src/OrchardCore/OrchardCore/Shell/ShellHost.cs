@@ -354,7 +354,7 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Creates a shell context based on shell settings
+        /// Creates a shell context based on shell settings.
         /// </summary>
         private Task<ShellContext> CreateShellContextAsync(ShellSettings settings)
         {
@@ -404,7 +404,8 @@ namespace OrchardCore.Environment.Shell
             if (defaultSettings == null)
             {
                 // Creates a default shell settings based on the configuration.
-                defaultSettings = _shellSettingsManager.CreateDefaultSettings()
+                defaultSettings = _shellSettingsManager
+                    .CreateDefaultSettings()
                     .AsDefaultShell()
                     .AsUninitialized();
 
@@ -415,7 +416,7 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Adds the shell and registers its settings in RunningShellTable
+        /// Adds the shell and registers its settings in RunningShellTable.
         /// </summary>
         private void AddAndRegisterShell(ShellContext context)
         {
@@ -449,7 +450,7 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Registers the shell settings in RunningShellTable
+        /// Registers the shell settings in RunningShellTable.
         /// </summary>
         private void RegisterShellSettings(ShellSettings settings)
         {

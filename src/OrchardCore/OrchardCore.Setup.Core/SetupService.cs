@@ -252,8 +252,7 @@ namespace OrchardCore.Setup.Services
             }
 
             // Update the shell state
-            shellSettings.AsRunning();
-            await _shellHost.UpdateShellSettingsAsync(shellSettings);
+            await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
 
             return executionId;
         }
