@@ -5,17 +5,17 @@ namespace OrchardCore.Environment.Shell
     public static class ShellContextExtensions
     {
         /// <summary>
-        /// Wether or not the tenant is only pre-created after the first loading.
+        /// Wether or not the tenant has been pre-created on first loading.
         /// </summary>
         public static bool IsPreCreated(this ShellContext context) => context is ShellContext.PlaceHolder { PreCreated: true };
 
         /// <summary>
-        /// Wether or not the tenant container is built after a first demand.
+        /// Wether or not the tenant container has been built on a first demand.
         /// </summary>
         public static bool IsBuilt(this ShellContext context) => context is { ServiceProvider: not null };
 
         /// <summary>
-        /// Wether or not the tenant pipeline is built after a first request.
+        /// Wether or not the tenant pipeline has been built on a first request.
         /// </summary>
         public static bool IsWarmedUp(this ShellContext context) => context is { Pipeline: not null };
 

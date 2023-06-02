@@ -45,12 +45,12 @@ namespace OrchardCore.Environment.Shell.Builders
         public IShellPipeline Pipeline { get; set; }
 
         /// <summary>
-        /// Place holder class used for shells that are lazily built.
+        /// PlaceHolder class used for shell lazy initialization.
         /// </summary>
         public class PlaceHolder : ShellContext
         {
             /// <summary>
-            /// Initializes a place holder for a shell that will be lazily built.
+            /// Initializes a placeHolder used for shell lazy initialization.
             /// </summary>
             public PlaceHolder()
             {
@@ -59,7 +59,7 @@ namespace OrchardCore.Environment.Shell.Builders
             }
 
             /// <summary>
-            /// Wether or not the tenant is only pre-created after the first loading.
+            /// Wether or not the tenant has been pre-created on first loading.
             /// </summary>
             public bool PreCreated { get; init; }
         }
