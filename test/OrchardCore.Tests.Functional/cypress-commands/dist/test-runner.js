@@ -14,42 +14,8 @@ global.log = function(msg) {
 
 // Build the dotnet application in release mode
 function build(dir, dotnetVersion) {
-  global.log("version: 3");
-
-  // "dotnet" command arguments.
-  let runArgs = [
-      'build',
-      '--configuration', 'Release',
-      '--framework', dotnetVersion
-  ];
-
-  // "dotnet" process options.
-  let runOpts = {
-      cwd: dir
-  };
-
-  try {
-    // Run dotnet build process, blocks until process completes.
-    let { status, error, stderr, stdout } = child_process.spawnSync('dotnet', runArgs, runOpts);
-
-    if (error) {
-      throw error;
-    }
-
-    if (status !== 0) {
-      if (stderr.length > 0) {
-        throw new Error(stderr.toString());
-      }
-      throw new Error(stdout.toString());
-    }
-
-    console.log(stdout.toString());
-    console.log('Build successful.');
-  }
-  catch (error) {
-    console.error(error);
-    console.error('Failed to build.');
-  }  
+  global.log("Building ...");
+  child_process.spawnSync("dotnet", ["build", "-c", "Release", "-f", dotnetVersion], { cwd: dir });
 }
 
 // destructive action that deletes the App_Data folder
@@ -65,11 +31,11 @@ function host(dir, assembly, { appDataLocation='./App_Data', dotnetVersion='net7
   } else {
     build(dir, dotnetVersion);
   }
-  global.log("Starting application ..."); 
-  
+  global.log("Starting application ...");
+
   const ocEnv = {};
   ocEnv["ORCHARD_APP_DATA"] = appDataLocation;
-  
+
   let server = child_process.spawn(
     "dotnet",
     [`bin/Release/${dotnetVersion}/` + assembly],

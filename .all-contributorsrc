@@ -2708,6 +2708,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "al3xjohnson",
+      "name": "Alex Johnson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5759745?v=4",
+      "profile": "https://github.com/al3xjohnson",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "skipCi": true

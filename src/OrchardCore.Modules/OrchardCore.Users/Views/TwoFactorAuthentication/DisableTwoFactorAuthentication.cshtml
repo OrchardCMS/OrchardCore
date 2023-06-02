@@ -1,0 +1,17 @@
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Disable two-factor authentication"])</h1></zone>
+
+<div class="alert alert-warning" role="alert">
+    <p>
+        <strong>@T["This action only disables two-factor authentication."]</strong>
+    </p>
+    <p>
+        @T["Disabling two-factor authentication does not change the keys used in authenticator apps. If you wish to change the key used in an authenticator app you should <a href=\"{0}\">reset your authenticator keys.</a>", Url.Action("ResetAuthenticator")]
+    </p>
+</div>
+
+<div>
+    <form method="post">
+        <button class="btn btn-danger" type="submit">@T["Disable Two-factor Authentication"]</button>
+    </form>
+</div>

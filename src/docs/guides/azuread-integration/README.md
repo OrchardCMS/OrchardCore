@@ -64,7 +64,7 @@ check Use a script to generate userName based on external provider claims and co
 
 ```javascript
 switch (context.loginProvider) {
-    case "AzureAD":
+    case "AzureAd":
         context.externalClaims.forEach(claim => {
             if (claim.type === "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn") {
                 context.userName = claim.value;
@@ -90,7 +90,7 @@ also check the settings to disable asking user info on first registration
 
 ```javascript
 switch (context.loginProvider) {
-    case "AzureAD":
+    case "AzureAd":
         context.externalClaims.forEach(claim => {
             if (claim.type === "http://schemas.microsoft.com/ws/2008/06/identity/claims/role") {
                 switch (claim.value) {

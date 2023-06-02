@@ -45,7 +45,7 @@ namespace OrchardCore.Settings.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(ISite site, UpdateEditorContext context)
         {
-            if (context.GroupId == GroupId)
+            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
                 var model = new SiteSettingsViewModel();
 
