@@ -15,6 +15,8 @@ namespace OrchardCore.AutoSetup.Options
     /// </summary>
     public class TenantSetupOptions
     {
+        private bool? _isDefault;
+
         /// <summary>
         /// The Shell Name
         /// </summary>
@@ -89,7 +91,7 @@ namespace OrchardCore.AutoSetup.Options
         /// <summary>
         /// Gets the Flag which indicates a Default/Root shell/tenant.
         /// </summary>
-        public bool IsDefault => ShellName.IsDefaultShellName();
+        public bool IsDefault => _isDefault ??= ShellName.IsDefaultShellName();
 
         /// <summary>
         /// Error Message Format
@@ -108,9 +110,14 @@ namespace OrchardCore.AutoSetup.Options
                 yield return new ValidationResult("ShellName Can not be empty and must contain characters only and no spaces.");
             }
 
+            if (!IsDefault && ShellName.IsDefaultShellNameIgnoreCase())
+            {
+                yield return new ValidationResult("The tenant name is in conflict with the 'Default' tenant name.");
+            }
+
             if (!IsDefault && String.IsNullOrWhiteSpace(RequestUrlPrefix) && String.IsNullOrWhiteSpace(RequestUrlHost))
             {
-                yield return new ValidationResult("RequestUrlPrefix or RequestUrlHost should be provided for no Default Tenant");
+                yield return new ValidationResult("RequestUrlPrefix or RequestUrlHost should be provided for a non 'Default' Tenant.");
             }
 
             if (!String.IsNullOrWhiteSpace(RequestUrlPrefix) && RequestUrlPrefix.Contains('/'))

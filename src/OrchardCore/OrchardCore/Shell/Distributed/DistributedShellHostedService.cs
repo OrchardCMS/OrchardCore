@@ -641,8 +641,8 @@ namespace OrchardCore.Environment.Shell.Distributed
                 return await CreateDistributedContextAsync(defaultContext);
             }
 
-            // Check if the default context is still the placeholder pre-created on loading.
-            if (defaultContext.IsPreCreated())
+            // Check if the default context is still the placeholder pre-created on first loading.
+            if (defaultContext.IsPlaceholder(placeholder => placeholder.PreCreated))
             {
                 // Reuse the current context.
                 return _context;

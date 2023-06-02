@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -37,7 +38,17 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
             var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null))?.Trim();
 
+            if (String.IsNullOrEmpty(tenantName))
+            {
+                return Outcomes("Failed");
+            }
+
             if (!ShellHost.TryGetSettings(tenantName, out var shellSettings))
+            {
+                return Outcomes("Failed");
+            }
+
+            if (shellSettings.IsDefaultShell())
             {
                 return Outcomes("Failed");
             }
