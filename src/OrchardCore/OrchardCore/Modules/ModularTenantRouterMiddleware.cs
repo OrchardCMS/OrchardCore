@@ -56,7 +56,7 @@ namespace OrchardCore.Modules
             }
 
             // Do we need to rebuild the pipeline ?
-            if (!shellContext.IsWarmedUp())
+            if (!shellContext.HasPipeline())
             {
                 await InitializePipelineAsync(shellContext);
             }
@@ -72,7 +72,7 @@ namespace OrchardCore.Modules
             await semaphore.WaitAsync();
             try
             {
-                if (!shellContext.IsWarmedUp())
+                if (!shellContext.HasPipeline())
                 {
                     shellContext.Pipeline = BuildTenantPipeline();
                 }
