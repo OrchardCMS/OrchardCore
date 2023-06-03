@@ -7,7 +7,7 @@ namespace OrchardCore.Environment.Shell
     {
         /// <summary>
         /// Wether or not the tenant is only a placeholder built on loading, releasing or reloading.
-        /// On first loading the <see cref="ShellContext.PlaceHolder.PreCreated"/> is equal to true.
+        /// On the first loading <see cref="ShellContext.PlaceHolder.PreCreated"/> is equal to true.
         /// </summary>
         public static bool IsPlaceholder(this ShellContext context, Func<ShellContext.PlaceHolder, bool> predicate = null)
             => context is ShellContext.PlaceHolder placeholder && (predicate?.Invoke(placeholder) ?? true);

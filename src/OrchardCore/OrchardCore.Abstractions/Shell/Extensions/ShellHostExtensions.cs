@@ -50,5 +50,11 @@ namespace OrchardCore.Environment.Shell
 
             return settings;
         }
+
+        /// <summary>
+        /// Wether or not the tenant is in use in at least one active scope.
+        /// </summary>
+        public static bool IsShellContextActive(this IShellHost shellHost, ShellSettings settings) =>
+            shellHost.TryGetShellContext(settings.Name, out var context) && context.IsActive();
     }
 }

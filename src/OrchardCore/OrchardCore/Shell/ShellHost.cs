@@ -465,35 +465,28 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Whether or not a shell can be added to the list of available shells.
         /// </summary>
-        private bool CanCreateShell(ShellSettings shellSettings)
-        {
-            return
-                shellSettings.IsRunning() ||
-                shellSettings.IsUninitialized() ||
-                shellSettings.IsInitializing() ||
-                shellSettings.IsDisabled();
-        }
+        private bool CanCreateShell(ShellSettings shellSettings) =>
+            shellSettings.IsRunning() ||
+            shellSettings.IsUninitialized() ||
+            shellSettings.IsInitializing() ||
+            shellSettings.IsDisabled();
 
         /// <summary>
         /// Whether or not a shell can be activated and added to the running shells.
         /// </summary>
-        private static bool CanRegisterShell(ShellSettings shellSettings)
-        {
-            return
-                shellSettings.IsRunning() ||
-                shellSettings.IsUninitialized() ||
-                shellSettings.IsInitializing();
-        }
+        private static bool CanRegisterShell(ShellSettings shellSettings) =>
+            shellSettings.IsRunning() ||
+            shellSettings.IsUninitialized() ||
+            shellSettings.IsInitializing();
 
         /// <summary>
         /// Whether or not a shell can be released and removed from the list, false if disabled and still in use.
         /// Note: A disabled shell still in use will be released by its last scope, and keeping it in the list
         /// prevents a consumer from creating a new one that would have a null service provider.
         /// </summary>
-        private bool CanReleaseShell(ShellSettings settings)
-        {
-            return !settings.IsDisabled() || (_shellContexts.TryGetValue(settings.Name, out var context) && !context.IsActive());
-        }
+        private bool CanReleaseShell(ShellSettings settings) =>
+            !settings.IsDisabled() ||
+            !this.IsShellContextActive(settings);
 
         /// <summary>
         /// Checks if a shell can be removed, throws an exception if the shell is neither uninitialized nor disabled.
@@ -511,7 +504,7 @@ namespace OrchardCore.Environment.Shell
                     $"The tenant '{settings.Name}' can't be removed as it is neither uninitialized nor disabled.");
             }
 
-            if (settings.IsDisabled() && _shellContexts.TryGetValue(settings.Name, out var context) && context.IsActive())
+            if (settings.IsDisabled() && this.IsShellContextActive(settings))
             {
                 throw new InvalidOperationException(
                     $"The disabled tenant '{settings.Name}' can't be removed as it is still in use.");
