@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Models;
 
@@ -11,7 +12,7 @@ namespace OrchardCore.Environment.Shell
     /// <summary>
     /// The minimalistic set of settings fields and the configuration of a given tenant, all data can be first provided
     /// by regular configuration sources, then by default settings of all tenants are stored in 'App_Data/tenants.json',
-    /// while each configuration is stored in a tenant specific location 'App_Data/Sites/{tenant}/appsettings.json'.
+    /// while each tenant configuration is stored in the related site folder 'App_Data/Sites/{tenant}/appsettings.json'.
     /// </summary>
     public class ShellSettings
     {
@@ -76,6 +77,12 @@ namespace OrchardCore.Environment.Shell
         /// The tenant identifier.
         /// </summary>
         public string TenantId => _settings["TenantId"] ?? _settings["VersionId"];
+
+        /// <summary>
+        /// The registered shell context if it exists.
+        /// </summary>
+        [JsonIgnore]
+        public ShellContext ShellContext { get; set; }
 
         /// <summary>
         /// The tenant request url host, multiple separated hosts may be provided.

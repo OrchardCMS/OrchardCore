@@ -1,4 +1,5 @@
 using System;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Environment.Shell
@@ -59,8 +60,7 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Wether or not the tenant is in use in at least one active scope.
         /// </summary>
-        public static bool IsActive(this ShellSettings settings, IShellHost shellHost) =>
-            shellHost.TryGetShellContext(settings.Name, out var context) && context.IsActive();
+        public static bool IsActive(this ShellSettings settings) => settings is not null && settings.ShellContext.IsActive();
 
         /// <summary>
         /// As the 'Default' tenant.
@@ -104,6 +104,15 @@ namespace OrchardCore.Environment.Shell
         public static ShellSettings AsDisabled(this ShellSettings settings)
         {
             settings.State = TenantState.Disabled;
+            return settings;
+        }
+
+        /// <summary>
+        /// With this registered shell context.
+        /// </summary>
+        public static ShellSettings WithShellContext(this ShellSettings settings, ShellContext context)
+        {
+            settings.ShellContext = context;
             return settings;
         }
     }

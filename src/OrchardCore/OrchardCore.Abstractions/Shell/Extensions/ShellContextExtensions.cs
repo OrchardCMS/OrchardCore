@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.Environment.Shell.Builders;
 
 namespace OrchardCore.Environment.Shell
@@ -7,10 +6,18 @@ namespace OrchardCore.Environment.Shell
     {
         /// <summary>
         /// Wether or not the tenant is only a placeholder built on loading, releasing or reloading.
-        /// On the first loading <see cref="ShellContext.PlaceHolder.PreCreated"/> is equal to true.
         /// </summary>
-        public static bool IsPlaceholder(this ShellContext context, Func<ShellContext.PlaceHolder, bool> predicate = null)
-            => context is ShellContext.PlaceHolder placeholder && (predicate?.Invoke(placeholder) ?? true);
+        public static bool IsPlaceholder(this ShellContext context) => context is ShellContext.PlaceHolder;
+
+        /// <summary>
+        /// Wether or not the tenant is only the placeholder pre-created on first loading.
+        /// </summary>
+        public static bool IsPreCreated(this ShellContext context) => context is ShellContext.PlaceHolder { PreCreated: true };
+
+        /// <summary>
+        /// Wether or not the tenant container has been built on a first demand.
+        /// </summary>
+        public static bool HasServices(this ShellContext context) => context is { ServiceProvider: not null };
 
         /// <summary>
         /// Wether or not the tenant pipeline has been built on a first request.

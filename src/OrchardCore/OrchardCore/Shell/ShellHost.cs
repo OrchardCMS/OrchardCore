@@ -422,7 +422,7 @@ namespace OrchardCore.Environment.Shell
         {
             if (_shellContexts.TryAdd(context.Settings.Name, context))
             {
-                _shellSettings[context.Settings.Name] = context.Settings;
+                _shellSettings[context.Settings.Name] = context.Settings.WithShellContext(context);
 
                 if (CanRegisterShell(context))
                 {
@@ -465,7 +465,7 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Whether or not a shell can be added to the list of available shells.
         /// </summary>
-        private bool CanCreateShell(ShellSettings shellSettings) =>
+        private static bool CanCreateShell(ShellSettings shellSettings) =>
             shellSettings.IsRunning() ||
             shellSettings.IsUninitialized() ||
             shellSettings.IsInitializing() ||
@@ -484,14 +484,14 @@ namespace OrchardCore.Environment.Shell
         /// Note: A disabled shell still in use will be released by its last scope, and keeping it in the list
         /// prevents a consumer from creating a new one that would have a null service provider.
         /// </summary>
-        private bool CanReleaseShell(ShellSettings settings) =>
+        private static bool CanReleaseShell(ShellSettings settings) =>
             !settings.IsDisabled() ||
-            !settings.IsActive(this);
+            !settings.IsActive();
 
         /// <summary>
         /// Checks if a shell can be removed, throws an exception if the shell is neither uninitialized nor disabled.
         /// </summary>
-        private void CheckCanRemoveShell(ShellSettings settings)
+        private static void CheckCanRemoveShell(ShellSettings settings)
         {
             if (settings.IsDefaultShell())
             {
@@ -504,7 +504,7 @@ namespace OrchardCore.Environment.Shell
                     $"The tenant '{settings.Name}' can't be removed as it is neither uninitialized nor disabled.");
             }
 
-            if (settings.IsDisabled() && settings.IsActive(this))
+            if (settings.IsDisabled() && settings.IsActive())
             {
                 throw new InvalidOperationException(
                     $"The disabled tenant '{settings.Name}' can't be removed as it is still in use.");
