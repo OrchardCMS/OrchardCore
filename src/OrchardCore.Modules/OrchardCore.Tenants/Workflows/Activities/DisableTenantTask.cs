@@ -57,8 +57,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 return Outcomes("Failed");
             }
 
-            shellSettings.AsDisabled();
-            await ShellHost.UpdateShellSettingsAsync(shellSettings);
+            await ShellHost.UpdateShellSettingsAsync(shellSettings.AsDisabled());
 
             return Outcomes("Disabled");
         }

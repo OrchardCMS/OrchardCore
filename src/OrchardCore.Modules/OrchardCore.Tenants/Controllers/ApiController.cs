@@ -216,8 +216,7 @@ namespace OrchardCore.Tenants.Controllers
                 return BadRequest(S["You can only disable a Running tenant."]);
             }
 
-            shellSettings.AsDisabled();
-            await _shellHost.UpdateShellSettingsAsync(shellSettings);
+            await _shellHost.UpdateShellSettingsAsync(shellSettings.AsDisabled());
 
             return Ok();
         }
