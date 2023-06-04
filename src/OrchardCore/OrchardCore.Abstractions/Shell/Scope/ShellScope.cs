@@ -43,9 +43,8 @@ namespace OrchardCore.Environment.Shell.Scope
                 // Keep the counter clean before failing.
                 Interlocked.Decrement(ref shellContext._refCount);
 
-                throw new ArgumentException(
-                    $"Can't resolve a scope on tenant '{shellContext.Settings.Name}' as it is disabled or disposed",
-                    nameof(shellContext));
+                throw new InvalidOperationException(
+                    $"Can't resolve a scope on tenant '{shellContext.Settings.Name}' as it is disabled or disposed");
             }
 
             _serviceScope = shellContext.ServiceProvider.CreateScope();

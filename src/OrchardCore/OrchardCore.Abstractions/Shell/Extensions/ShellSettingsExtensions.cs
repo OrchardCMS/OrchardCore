@@ -54,7 +54,13 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Wether the tenant is removable or not.
         /// </summary>
-        public static bool IsRemovable(this ShellSettings shellSettings) => shellSettings.IsDisabled() || shellSettings.IsUninitialized();
+        public static bool IsRemovable(this ShellSettings settings) => settings.IsDisabled() || settings.IsUninitialized();
+
+        /// <summary>
+        /// Wether or not the tenant is in use in at least one active scope.
+        /// </summary>
+        public static bool IsActive(this ShellSettings settings, IShellHost shellHost) =>
+            shellHost.TryGetShellContext(settings.Name, out var context) && context.IsActive();
 
         /// <summary>
         /// As the 'Default' tenant.

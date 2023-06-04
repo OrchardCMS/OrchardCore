@@ -486,7 +486,7 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         private bool CanReleaseShell(ShellSettings settings) =>
             !settings.IsDisabled() ||
-            !this.IsShellContextActive(settings);
+            !settings.IsActive(this);
 
         /// <summary>
         /// Checks if a shell can be removed, throws an exception if the shell is neither uninitialized nor disabled.
@@ -504,7 +504,7 @@ namespace OrchardCore.Environment.Shell
                     $"The tenant '{settings.Name}' can't be removed as it is neither uninitialized nor disabled.");
             }
 
-            if (settings.IsDisabled() && this.IsShellContextActive(settings))
+            if (settings.IsDisabled() && settings.IsActive(this))
             {
                 throw new InvalidOperationException(
                     $"The disabled tenant '{settings.Name}' can't be removed as it is still in use.");
