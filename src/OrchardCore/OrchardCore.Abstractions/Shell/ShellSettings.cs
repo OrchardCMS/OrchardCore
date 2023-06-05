@@ -37,7 +37,7 @@ namespace OrchardCore.Environment.Shell
 
         /// <summary>
         /// Initializes a new <see cref="ShellSettings"/> from an existing one
-        /// and from an exiting <see cref="ShellConfiguration"/>.
+        /// and from an existing <see cref="Configuration.ShellConfiguration"/>.
         /// </summary>
         public ShellSettings(ShellConfiguration settings, ShellConfiguration configuration)
         {

@@ -20,7 +20,7 @@ namespace OrchardCore.Environment.Shell
     /// </summary>
     public class ShellHost : IShellHost, IDisposable
     {
-        private const int ReloadShellMaxRetriesCount = 9;
+        private const int _reloadShellMaxRetriesCount = 9;
 
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IShellContextFactory _shellContextFactory;
@@ -86,7 +86,7 @@ namespace OrchardCore.Environment.Shell
         {
             ShellContext shell = null;
 
-            while (shell == null)
+            while (shell is null)
             {
                 if (!_shellContexts.TryGetValue(settings.Name, out shell))
                 {
@@ -127,7 +127,7 @@ namespace OrchardCore.Environment.Shell
         {
             ShellScope scope = null;
 
-            while (scope == null)
+            while (scope is null)
             {
                 if (!_shellContexts.TryGetValue(settings.Name, out var shellContext))
                 {
@@ -139,7 +139,7 @@ namespace OrchardCore.Environment.Shell
 
                 // If CreateScope() returned null, the shell is released. We then remove it and
                 // retry with the hope to get one that won't be released before we create a scope.
-                if (scope == null)
+                if (scope is null)
                 {
                     // If the context is released, it is removed from the dictionary so that the next
                     // iteration or a new call on 'GetScopeAsync()' will recreate a new shell context.
@@ -185,7 +185,7 @@ namespace OrchardCore.Environment.Shell
         /// </param>
         public async Task ReloadShellContextAsync(ShellSettings settings, bool eventSource = true)
         {
-            if (ReloadingAsync != null && eventSource && !settings.IsInitializing())
+            if (ReloadingAsync is not null && eventSource && !settings.IsInitializing())
             {
                 foreach (var d in ReloadingAsync.GetInvocationList())
                 {
@@ -206,7 +206,7 @@ namespace OrchardCore.Environment.Shell
             }
 
             var count = 0;
-            while (count++ < ReloadShellMaxRetriesCount)
+            while (count++ < _reloadShellMaxRetriesCount)
             {
                 if (_shellContexts.TryRemove(settings.Name, out var context))
                 {
@@ -256,7 +256,7 @@ namespace OrchardCore.Environment.Shell
         /// <param name="eventSource">Whether the related <see cref="ShellEvent"/> is invoked.</param>
         public async Task ReleaseShellContextAsync(ShellSettings settings, bool eventSource = true)
         {
-            if (ReleasingAsync != null && eventSource && !settings.IsInitializing())
+            if (ReleasingAsync is not null && eventSource && !settings.IsInitializing())
             {
                 foreach (var d in ReleasingAsync.GetInvocationList())
                 {
@@ -292,7 +292,7 @@ namespace OrchardCore.Environment.Shell
         {
             CheckCanRemoveShell(settings);
 
-            if (RemovingAsync != null && eventSource && !settings.IsInitializing())
+            if (RemovingAsync is not null && eventSource && !settings.IsInitializing())
             {
                 foreach (var d in RemovingAsync.GetInvocationList())
                 {
@@ -341,7 +341,7 @@ namespace OrchardCore.Environment.Shell
             // 'ITypeFeatureProvider' and their areas defined in the application conventions.
             await _extensionManager.LoadFeaturesAsync();
 
-            if (LoadingAsync != null)
+            if (LoadingAsync is not null)
             {
                 foreach (var d in LoadingAsync.GetInvocationList())
                 {
@@ -420,7 +420,7 @@ namespace OrchardCore.Environment.Shell
                 _logger.LogDebug("Creating shell context for root setup.");
             }
 
-            if (defaultSettings == null)
+            if (defaultSettings is null)
             {
                 // Creates a default shell settings based on the configuration.
                 defaultSettings = _shellSettingsManager
@@ -441,7 +441,7 @@ namespace OrchardCore.Environment.Shell
         {
             if (_shellContexts.TryAdd(context.Settings.Name, context))
             {
-                _shellSettings[context.Settings.Name] = context.Settings.WithShellContext(context);
+                _shellSettings[context.Settings.Name] = context.Settings.WithShell(context);
 
                 if (CanRegisterShell(context))
                 {

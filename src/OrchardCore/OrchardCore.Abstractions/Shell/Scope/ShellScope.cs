@@ -16,20 +16,23 @@ namespace OrchardCore.Environment.Shell.Scope
     /// </summary>
     public class ShellScope : IServiceScope
     {
-        private static readonly AsyncLocal<ShellScopeHolder> _current = new AsyncLocal<ShellScopeHolder>();
+        private static readonly AsyncLocal<ShellScopeHolder> _current = new();
 
         private readonly IServiceScope _serviceScope;
-        private readonly Dictionary<object, object> _items = new Dictionary<object, object>();
-        private readonly List<Func<ShellScope, Task>> _beforeDispose = new List<Func<ShellScope, Task>>();
-        private readonly HashSet<string> _deferredSignals = new HashSet<string>();
-        private readonly List<Func<ShellScope, Task>> _deferredTasks = new List<Func<ShellScope, Task>>();
-        private readonly List<Func<ShellScope, Exception, Task>> _exceptionHandlers = new List<Func<ShellScope, Exception, Task>>();
+        private readonly Dictionary<object, object> _items = new();
+        private readonly List<Func<ShellScope, Task>> _beforeDispose = new();
+        private readonly HashSet<string> _deferredSignals = new();
+        private readonly List<Func<ShellScope, Task>> _deferredTasks = new();
+        private readonly List<Func<ShellScope, Exception, Task>> _exceptionHandlers = new();
 
         private bool _serviceScopeOnly;
         private bool _shellTerminated;
         private bool _terminated;
         private bool _disposed;
 
+        /// <summary>
+        /// Initializes a <see cref="ShellScope"/> from a given parent <see cref="Builders.ShellContext"/>.
+        /// </summary>
         public ShellScope(ShellContext shellContext)
         {
             // Prevent the context from being disposed until the end of the scope
@@ -38,7 +41,7 @@ namespace OrchardCore.Environment.Shell.Scope
 
             // The service provider is null if we try to create
             // a scope on a disabled shell or already disposed.
-            if (shellContext.ServiceProvider == null)
+            if (shellContext.ServiceProvider is null)
             {
                 // Keep the counter clean before failing.
                 Interlocked.Decrement(ref shellContext._refCount);
@@ -52,7 +55,7 @@ namespace OrchardCore.Environment.Shell.Scope
         }
 
         /// <summary>
-        /// The 'ShellContext' of this shell scope.
+        /// The parent 'ShellContext' of this shell scope.
         /// </summary>
         public ShellContext ShellContext { get; }
 
@@ -62,7 +65,7 @@ namespace OrchardCore.Environment.Shell.Scope
         public IServiceProvider ServiceProvider { get; }
 
         /// <summary>
-        /// Retrieve the 'ShellContext' of the current shell scope.
+        /// Retrieve the parent 'ShellContext' of the current shell scope.
         /// </summary>
         public static ShellContext Context => Current?.ShellContext;
 
@@ -81,7 +84,7 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         public static void Set(object key, object value)
         {
-            if (Current != null)
+            if (Current is not null)
             {
                 Current._items[key] = value;
             }
@@ -90,19 +93,19 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Gets a shared item from the current shell scope.
         /// </summary>
-        public static object Get(object key) => Current == null ? null : Current._items.TryGetValue(key, out var value) ? value : null;
+        public static object Get(object key) => Current is null ? null : Current._items.TryGetValue(key, out var value) ? value : null;
 
         /// <summary>
         /// Gets a shared item of a given type from the current shell scope.
         /// </summary>
-        public static T Get<T>(object key) => Current == null ? default : Current._items.TryGetValue(key, out var value) ? value is T item ? item : default : default;
+        public static T Get<T>(object key) => Current is null ? default : Current._items.TryGetValue(key, out var value) ? value is T item ? item : default : default;
 
         /// <summary>
         /// Gets (or creates) a shared item of a given type from the current shell scope.
         /// </summary>
         public static T GetOrCreate<T>(object key, Func<T> factory)
         {
-            if (Current == null)
+            if (Current is null)
             {
                 return factory();
             }
@@ -120,7 +123,7 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         public static T GetOrCreate<T>(object key) where T : class, new()
         {
-            if (Current == null)
+            if (Current is null)
             {
                 return new T();
             }
@@ -520,7 +523,7 @@ namespace OrchardCore.Environment.Shell.Scope
             }
 
             var holder = _current.Value;
-            if (holder != null)
+            if (holder is not null)
             {
                 // Clear the current scope that may be trapped in some execution contexts.
                 holder.Scope = null;

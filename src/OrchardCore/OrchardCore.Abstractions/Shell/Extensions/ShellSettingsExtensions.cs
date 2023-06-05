@@ -113,7 +113,7 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// With this registered shell context.
         /// </summary>
-        public static ShellSettings WithShellContext(this ShellSettings settings, ShellContext context)
+        public static ShellSettings WithShell(this ShellSettings settings, ShellContext context)
         {
             settings.ShellContext = context;
             return settings;
