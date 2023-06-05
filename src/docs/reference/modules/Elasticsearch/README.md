@@ -335,3 +335,7 @@ Here is a small table to compare Lucene and Elasticsearch (string) types:
 | StringField | Keyword  | A field that is indexed but not tokenized: the entire value is indexed as a single token     | original value AND indexed | [stored fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/term-level-queries.html) because indexed as a single token.  |
 | TextField   | Text     | A field that is indexed and tokenized, without term vectors | original value AND indexed  | [analyzed fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/full-text-queries.html). Also known as full-text search |
 | StoredField | stored in _source by mapping configuration | A field containing original value (not analyzed) | original value | [stored fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/term-level-queries.html) |
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/7Mx1Vjsy3Xw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
