@@ -53,6 +53,9 @@ namespace OrchardCore.Environment.Shell
         public ShellEvent ReloadingAsync { get; set; }
         public ShellEvent RemovingAsync { get; set; }
 
+        /// <summary>
+        /// Ensure that all the <see cref="ShellContext"/> are pre-created and available to process requests.
+        /// </summary>
         public async Task InitializeAsync()
         {
             if (_initialized)
@@ -76,6 +79,9 @@ namespace OrchardCore.Environment.Shell
             }
         }
 
+        /// <summary>
+        /// Returns an existing <see cref="ShellContext"/> or creates a new one if necessary.
+        /// </summary>
         public async Task<ShellContext> GetOrCreateShellContextAsync(ShellSettings settings)
         {
             ShellContext shell = null;
@@ -114,6 +120,9 @@ namespace OrchardCore.Environment.Shell
             return shell;
         }
 
+        /// <summary>
+        /// Creates a standalone service scope that can be used to resolve local services.
+        /// </summary>
         public async Task<ShellScope> GetScopeAsync(ShellSettings settings)
         {
             ShellScope scope = null;
@@ -141,6 +150,9 @@ namespace OrchardCore.Environment.Shell
             return scope;
         }
 
+        /// <summary>
+        /// Updates an existing shell configuration and then reloads the shell.
+        /// </summary>
         public async Task UpdateShellSettingsAsync(ShellSettings settings)
         {
             settings.VersionId = IdGenerator.GenerateId();
@@ -148,6 +160,9 @@ namespace OrchardCore.Environment.Shell
             await ReloadShellContextAsync(settings);
         }
 
+        /// <summary>
+        /// Removes a shell settings.
+        /// </summary>
         public async Task RemoveShellSettingsAsync(ShellSettings settings)
         {
             CheckCanRemoveShell(settings);
@@ -166,8 +181,7 @@ namespace OrchardCore.Environment.Shell
         /// built for subsequent requests, while existing requests get flushed.
         /// </summary>
         /// <param name="settings">The <see cref="ShellSettings"/> to reload.</param>
-        /// <param name="eventSource">
-        /// Whether the related <see cref="ShellEvent"/> is invoked.
+        /// <param name="eventSource">Whether the related <see cref="ShellEvent"/> is invoked.
         /// </param>
         public async Task ReloadShellContextAsync(ShellSettings settings, bool eventSource = true)
         {
@@ -239,9 +253,7 @@ namespace OrchardCore.Environment.Shell
         /// Note: Can be used to free up resources after a given time of inactivity.
         /// </summary>
         /// <param name="settings">The <see cref="ShellSettings"/> to reload.</param>
-        /// <param name="eventSource">
-        /// Whether the related <see cref="ShellEvent"/> is invoked.
-        /// </param>
+        /// <param name="eventSource">Whether the related <see cref="ShellEvent"/> is invoked.</param>
         public async Task ReleaseShellContextAsync(ShellSettings settings, bool eventSource = true)
         {
             if (ReleasingAsync != null && eventSource && !settings.IsInitializing())
@@ -273,6 +285,8 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Removes a shell.
         /// </summary>
+        /// <param name="settings">The <see cref="ShellSettings"/> of the shell to remove.</param>
+        /// <param name="eventSource">Whether the related <see cref="ShellEvent"/> is invoked.</param>
         public async Task RemoveShellContextAsync(ShellSettings settings, bool eventSource = true)
         {
             CheckCanRemoveShell(settings);
@@ -311,6 +325,10 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         public IEnumerable<ShellSettings> GetAllSettings() => _shellSettings.Values.ToArray();
 
+        /// <summary>
+        /// Pre-creates and registers all shells, if the 'Default' shell is not running, a setup context is built.
+        /// On first loading only a placeholder is pre-created for each shell that is then fully built on demamnd.
+        /// </summary>
         private async Task PreCreateAndRegisterShellsAsync()
         {
             if (_logger.IsEnabled(LogLevel.Information))

@@ -72,7 +72,7 @@ namespace OrchardCore.Environment.Shell
         IEnumerable<ShellSettings> GetAllSettings();
 
         /// <summary>
-        /// Removes a shell configuration.
+        /// Removes a shell settings.
         /// </summary>
         Task RemoveShellSettingsAsync(ShellSettings settings);
 
