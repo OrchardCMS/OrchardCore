@@ -79,7 +79,7 @@ namespace OrchardCore.Environment.Shell
         public string TenantId => _settings["TenantId"] ?? _settings["VersionId"];
 
         /// <summary>
-        /// The registered shell context if it exists.
+        /// The registered parent shell context if it exists.
         /// </summary>
         [JsonIgnore]
         public ShellContext ShellContext { get; set; }
