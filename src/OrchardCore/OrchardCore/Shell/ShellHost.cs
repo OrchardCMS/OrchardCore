@@ -161,7 +161,7 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Removes a shell settings.
+        /// Removes a shell context and its settings from memory and from the storage.
         /// </summary>
         public async Task RemoveShellSettingsAsync(ShellSettings settings)
         {
@@ -283,7 +283,8 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Removes a shell.
+        /// Removes a shell context and its settings but only from memory, used for syncing
+        /// when the settings has been already removed from the storage by another instance.
         /// </summary>
         /// <param name="settings">The <see cref="ShellSettings"/> of the shell to remove.</param>
         /// <param name="eventSource">Whether the related <see cref="ShellEvent"/> is invoked.</param>
