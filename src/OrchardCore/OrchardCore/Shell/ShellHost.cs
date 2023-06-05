@@ -521,12 +521,6 @@ namespace OrchardCore.Environment.Shell
                 throw new InvalidOperationException(
                     $"The tenant '{settings.Name}' can't be removed as it is neither uninitialized nor disabled.");
             }
-
-            if (settings.IsDisabled() && settings.IsActive())
-            {
-                throw new InvalidOperationException(
-                    $"The disabled tenant '{settings.Name}' can't be removed as it is still in use.");
-            }
         }
 
         public void Dispose()

@@ -25,7 +25,8 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Wether or not settings are null or related to the 'Default' tenant.
         /// </summary>
-        public static bool IsDefaultShellOrNull(this ShellSettings settings) => settings is null or { Name: ShellSettings.DefaultShellName };
+        public static bool IsDefaultShellOrNull(this ShellSettings settings) =>
+            settings is null or { Name: ShellSettings.DefaultShellName };
 
         /// <summary>
         /// Wether the tenant is uninitialized or not.
@@ -55,12 +56,14 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Wether the tenant is removable or not.
         /// </summary>
-        public static bool IsRemovable(this ShellSettings settings) => settings.IsDisabled() || settings.IsUninitialized();
+        public static bool IsRemovable(this ShellSettings settings) =>
+            settings.IsUninitialized() || (settings.IsDisabled() && !settings.IsActive());
 
         /// <summary>
         /// Wether or not the tenant is in use in at least one active scope.
         /// </summary>
-        public static bool IsActive(this ShellSettings settings) => settings is not null && settings.ShellContext.IsActive();
+        public static bool IsActive(this ShellSettings settings) =>
+            settings is { ShellContext: ShellContext { ActiveScopes: > 0 } };
 
         /// <summary>
         /// As the 'Default' tenant.
