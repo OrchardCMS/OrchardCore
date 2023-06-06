@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Models;
 
@@ -77,12 +76,6 @@ namespace OrchardCore.Environment.Shell
         /// The tenant identifier.
         /// </summary>
         public string TenantId => _settings["TenantId"] ?? _settings["VersionId"];
-
-        /// <summary>
-        /// The registered parent shell context if it exists.
-        /// </summary>
-        [JsonIgnore]
-        public ShellContext ShellContext { get; set; }
 
         /// <summary>
         /// The tenant request url host, multiple separated hosts may be provided.

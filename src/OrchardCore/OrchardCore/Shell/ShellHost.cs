@@ -441,7 +441,7 @@ namespace OrchardCore.Environment.Shell
         {
             if (_shellContexts.TryAdd(context.Settings.Name, context))
             {
-                _shellSettings[context.Settings.Name] = context.Settings.WithShell(context);
+                _shellSettings[context.Settings.Name] = context.Settings;
 
                 if (CanRegisterShell(context))
                 {
@@ -503,21 +503,25 @@ namespace OrchardCore.Environment.Shell
         /// Note: A disabled shell still in use will be released by its last scope, and keeping it in the list
         /// prevents a consumer from creating a new one that would have a null service provider.
         /// </summary>
-        private static bool CanReleaseShell(ShellSettings settings) =>
+        private bool CanReleaseShell(ShellSettings settings) =>
             !settings.IsDisabled() ||
-            !settings.IsActive();
+            (_shellContexts.TryGetValue(settings.Name, out var context) &&
+            !context.IsActive());
 
         /// <summary>
         /// Checks if a shell can be removed, throws an exception if the shell is neither uninitialized nor disabled.
         /// </summary>
-        private static void CheckCanRemoveShell(ShellSettings settings)
+        private void CheckCanRemoveShell(ShellSettings settings)
         {
             if (settings.IsDefaultShell())
             {
                 throw new InvalidOperationException($"The '{ShellSettings.DefaultShellName}' tenant can't be removed.");
             }
 
-            if (!settings.IsRemovable())
+            if (!settings.IsUninitialized() &&
+                (!settings.IsDisabled() ||
+                (_shellContexts.TryGetValue(settings.Name, out var context) &&
+                context.IsActive())))
             {
                 throw new InvalidOperationException(
                     $"The tenant '{settings.Name}' can't be removed as it is neither uninitialized nor disabled.");
