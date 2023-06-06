@@ -503,10 +503,7 @@ namespace OrchardCore.Environment.Shell
         /// Note: A disabled shell still in use will be released by its last scope, and keeping it in the list
         /// prevents a consumer from creating a new one that would have a null service provider.
         /// </summary>
-        private bool CanReleaseShell(ShellSettings settings) =>
-            !settings.IsDisabled() ||
-            (TryGetShellContext(settings.Name, out var context) &&
-            !context.IsActive());
+        private bool CanReleaseShell(ShellSettings settings) => !settings.IsDisabled() || !IsShellActive(settings);
 
         /// <summary>
         /// Checks if a shell can be removed, throws an exception if the shell is neither uninitialized nor disabled.
@@ -518,15 +515,21 @@ namespace OrchardCore.Environment.Shell
                 throw new InvalidOperationException($"The '{ShellSettings.DefaultShellName}' tenant can't be removed.");
             }
 
-            if (!settings.IsUninitialized() &&
-                (!settings.IsDisabled() ||
-                (TryGetShellContext(settings.Name, out var context) &&
-                context.IsActive())))
+            // A disabled shell may be still in use in at least one active scope.
+            if (!settings.IsRemovable() || IsShellActive(settings))
             {
                 throw new InvalidOperationException(
                     $"The tenant '{settings.Name}' can't be removed as it is neither uninitialized nor disabled.");
             }
         }
+
+        /// <summary>
+        /// Wether or not a shell is in use in at least one active scope.
+        /// </summary>
+        private bool IsShellActive(ShellSettings settings) =>
+            settings is { Name: not null } &&
+            _shellContexts.TryGetValue(settings.Name, out var context) &&
+            context.IsActive();
 
         public void Dispose()
         {

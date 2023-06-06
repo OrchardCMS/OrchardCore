@@ -46,7 +46,8 @@ public class ShellRemovalManager : IShellRemovalManager
             return context;
         }
 
-        if (!shellSettings.IsRemovable())
+        // A disabled tenant may be still in use in at least one active scope.
+        if (!shellSettings.IsRemovable() || _shellHost.IsShellActive(shellSettings))
         {
             context.ErrorMessage = S["The tenant '{0}' should be 'Disabled' or 'Uninitialized'.", shellSettings.Name];
             return context;
