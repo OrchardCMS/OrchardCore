@@ -21,8 +21,7 @@
             font-size: 0.875rem;
             padding: 0;
         }
-
-        // show horizontal-scrollbar to keep it usable even on deeply nested directories        
+        // show horizontal-scrollbar to keep it usable even on deeply nested directories
         + ol {
             overflow-x: auto;
         }
@@ -50,7 +49,7 @@
 
     div {
         a {
-            color: $gray-700;
+            color: $media-menu-font-color;
             text-decoration: none;
         }
     }
