@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using NLog;
 using NLog.Config;
-using NLog.LayoutRenderers;
 using NLog.Web;
 
 namespace OrchardCore.Logging
@@ -13,7 +12,9 @@ namespace OrchardCore.Logging
     {
         public static IWebHostBuilder UseNLogWeb(this IWebHostBuilder builder)
         {
-            LayoutRenderer.Register<TenantLayoutRenderer>(TenantLayoutRenderer.LayoutRendererName);
+            LogManager.Setup().SetupExtensions(builder =>
+                builder.RegisterLayoutRenderer<TenantLayoutRenderer>(TenantLayoutRenderer.LayoutRendererName));
+
             builder.UseNLog();
             builder.ConfigureAppConfiguration((context, _) =>
             {
@@ -30,10 +31,12 @@ namespace OrchardCore.Logging
     {
         public static LoggingConfiguration ConfigureNLog(this IHostEnvironment env, string configFileRelativePath)
         {
-            ConfigurationItemFactory.Default.RegisterItemsFromAssembly(typeof(AspNetExtensions).GetTypeInfo().Assembly);
+            LogManager.Setup().SetupExtensions(builder =>
+                builder.RegisterAssembly(typeof(AspNetExtensions).GetType().Assembly));
+
             LogManager.AddHiddenAssembly(typeof(AspNetExtensions).GetTypeInfo().Assembly);
             var fileName = Path.Combine(env.ContentRootPath, configFileRelativePath);
-            LogManager.LoadConfiguration(fileName);
+            LogManager.Setup().LoadConfigurationFromFile(fileName);
             return LogManager.Configuration;
         }
     }

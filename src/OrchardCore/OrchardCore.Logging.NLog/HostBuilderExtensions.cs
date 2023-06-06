@@ -1,7 +1,6 @@
 using System.IO;
 using Microsoft.Extensions.Hosting;
 using NLog;
-using NLog.LayoutRenderers;
 using NLog.Web;
 
 namespace OrchardCore.Logging;
@@ -10,7 +9,9 @@ public static class HostBuilderExtensions
 {
     public static IHostBuilder UseNLogHost(this IHostBuilder builder)
     {
-        LayoutRenderer.Register<TenantLayoutRenderer>(TenantLayoutRenderer.LayoutRendererName);
+        LogManager.Setup().SetupExtensions(builder =>
+            builder.RegisterLayoutRenderer<TenantLayoutRenderer>(TenantLayoutRenderer.LayoutRendererName));
+
         builder.UseNLog();
         builder.ConfigureAppConfiguration((context, _) =>
         {
