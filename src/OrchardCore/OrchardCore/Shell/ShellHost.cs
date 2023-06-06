@@ -505,7 +505,7 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         private bool CanReleaseShell(ShellSettings settings) =>
             !settings.IsDisabled() ||
-            (_shellContexts.TryGetValue(settings.Name, out var context) &&
+            (TryGetShellContext(settings.Name, out var context) &&
             !context.IsActive());
 
         /// <summary>
@@ -520,7 +520,7 @@ namespace OrchardCore.Environment.Shell
 
             if (!settings.IsUninitialized() &&
                 (!settings.IsDisabled() ||
-                (_shellContexts.TryGetValue(settings.Name, out var context) &&
+                (TryGetShellContext(settings.Name, out var context) &&
                 context.IsActive())))
             {
                 throw new InvalidOperationException(
