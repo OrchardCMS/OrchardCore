@@ -102,3 +102,9 @@ public static class ShellSettingsExtensions
         return settings;
     }
 }
+
+[Obsolete("This class will be removed in a future release, use 'ShellSettings' instead.", false)]
+public static class ShellHelper
+{
+    public const string DefaultShellName = ShellSettings.DefaultShellName;
+}
