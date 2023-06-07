@@ -1,4 +1,3 @@
-using System.IO;
 using Microsoft.Extensions.Hosting;
 using NLog;
 using NLog.Web;
@@ -9,17 +8,14 @@ public static class HostBuilderExtensions
 {
     public static IHostBuilder UseNLogHost(this IHostBuilder builder)
     {
-        LogManager.Setup().SetupExtensions(builder =>
-            builder.RegisterLayoutRenderer<TenantLayoutRenderer>(TenantLayoutRenderer.LayoutRendererName));
+        LogManager.Setup().SetupExtensions(ext =>
+            ext.RegisterLayoutRenderer<TenantLayoutRenderer>(TenantLayoutRenderer.LayoutRendererName));
 
-        builder.UseNLog();
-        builder.ConfigureAppConfiguration((context, _) =>
+        return builder.UseNLog()
+        .ConfigureAppConfiguration((context, _) =>
         {
             var environment = context.HostingEnvironment;
-            environment.ConfigureNLog($"{environment.ContentRootPath}{Path.DirectorySeparatorChar}NLog.config");
             LogManager.Configuration.Variables["configDir"] = environment.ContentRootPath;
         });
-
-        return builder;
     }
 }
