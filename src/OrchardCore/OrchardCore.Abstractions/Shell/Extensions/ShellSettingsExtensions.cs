@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Environment.Shell;
@@ -6,26 +5,9 @@ namespace OrchardCore.Environment.Shell;
 public static class ShellSettingsExtensions
 {
     /// <summary>
-    /// Wether or not the provided name is the 'Default' tenant name.
-    /// </summary>
-    public static bool IsDefaultShellName(this string name) => name == ShellSettings.DefaultShellName;
-
-    /// <summary>
-    /// Wether or not the provided name may be in conflict with the 'Default' tenant name.
-    /// </summary>
-    public static bool IsDefaultShellNameIgnoreCase(this string name) =>
-        name?.Equals(ShellSettings.DefaultShellName, StringComparison.OrdinalIgnoreCase) ?? false;
-
-    /// <summary>
     /// Wether the tenant is the 'Default' tenant or not.
     /// </summary>
     public static bool IsDefaultShell(this ShellSettings settings) => settings is { Name: ShellSettings.DefaultShellName };
-
-    /// <summary>
-    /// Wether or not settings are null or related to the 'Default' tenant.
-    /// </summary>
-    public static bool IsDefaultShellOrNull(this ShellSettings settings) =>
-        settings is null or { Name: ShellSettings.DefaultShellName };
 
     /// <summary>
     /// Wether the tenant is uninitialized or not.
@@ -101,10 +83,4 @@ public static class ShellSettingsExtensions
         settings.State = TenantState.Disabled;
         return settings;
     }
-}
-
-[Obsolete("This class will be removed in a future release, use 'ShellSettings' instead.", false)]
-public static class ShellHelper
-{
-    public const string DefaultShellName = ShellSettings.DefaultShellName;
 }

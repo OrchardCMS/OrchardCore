@@ -177,11 +177,11 @@ namespace OrchardCore.Features.Controllers
 
         private async Task ExecuteAsync(string tenant, Func<FeatureService, ShellSettings, bool, Task> action)
         {
-            if (_shellSettings.IsDefaultShell()
-                && !String.IsNullOrWhiteSpace(tenant)
-                && _shellHost.TryGetSettings(tenant, out var settings)
-                && !settings.IsDefaultShell()
-                && settings.IsRunning())
+            if (_shellSettings.IsDefaultShell() &&
+                !String.IsNullOrWhiteSpace(tenant) &&
+                _shellHost.TryGetSettings(tenant, out var settings) &&
+                !settings.IsDefaultShell() &&
+                settings.IsRunning())
             {
                 // At this point, we know that this request is being executed from the Default tenant.
                 // Also, we were able to find a matching and running tenant that isn't the Default one.
