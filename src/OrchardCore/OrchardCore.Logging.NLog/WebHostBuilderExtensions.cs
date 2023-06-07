@@ -14,12 +14,13 @@ public static class WebHostBuilderExtensions
         LogManager.Setup().SetupExtensions(ext =>
             ext.RegisterLayoutRenderer<TenantLayoutRenderer>(TenantLayoutRenderer.LayoutRendererName));
 
-        return builder.UseNLog()
-        .ConfigureAppConfiguration((context, _) =>
-        {
-            var environment = context.HostingEnvironment;
-            LogManager.Configuration.Variables["configDir"] = environment.ContentRootPath;
-        });
+        return builder
+            .UseNLog()
+            .ConfigureAppConfiguration((context, _) =>
+            {
+                var environment = context.HostingEnvironment;
+                LogManager.Configuration.Variables["configDir"] = environment.ContentRootPath;
+            });
     }
 }
 
@@ -29,8 +30,8 @@ internal static class AspNetExtensions
     {
         var fileName = Path.Combine(env.ContentRootPath, configFileRelativePath);
 
-        LogManager.Setup().SetupLogFactory(factory =>
-            factory.AddCallSiteHiddenAssembly(typeof(AspNetExtensions).GetType().Assembly))
+        LogManager.Setup()
+            .SetupLogFactory(factory => factory.AddCallSiteHiddenAssembly(typeof(AspNetExtensions).GetType().Assembly))
             .SetupExtensions(ext =>
             {
                 ext.RegisterLayoutRenderer<TenantLayoutRenderer>(TenantLayoutRenderer.LayoutRendererName);

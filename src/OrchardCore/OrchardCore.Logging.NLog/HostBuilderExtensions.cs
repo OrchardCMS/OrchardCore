@@ -11,11 +11,12 @@ public static class HostBuilderExtensions
         LogManager.Setup().SetupExtensions(ext =>
             ext.RegisterLayoutRenderer<TenantLayoutRenderer>(TenantLayoutRenderer.LayoutRendererName));
 
-        return builder.UseNLog()
-        .ConfigureAppConfiguration((context, _) =>
-        {
-            var environment = context.HostingEnvironment;
-            LogManager.Configuration.Variables["configDir"] = environment.ContentRootPath;
-        });
+        return builder
+            .UseNLog()
+            .ConfigureAppConfiguration((context, _) =>
+            {
+                var environment = context.HostingEnvironment;
+                LogManager.Configuration.Variables["configDir"] = environment.ContentRootPath;
+            });
     }
 }
