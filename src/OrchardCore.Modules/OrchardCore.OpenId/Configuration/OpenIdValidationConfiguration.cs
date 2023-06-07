@@ -140,10 +140,9 @@ namespace OrchardCore.OpenId.Configuration
                     return;
                 }
 
-                options.Configuration = new OpenIddictConfiguration
-                {
-                    Issuer = configuration.Authority
-                };
+                options.Configuration = new OpenIddictConfiguration();
+
+                options.Issuer = configuration.Authority;
 
                 // Import the signing keys from the OpenID server configuration.
                 foreach (var key in await service.GetSigningKeysAsync())
