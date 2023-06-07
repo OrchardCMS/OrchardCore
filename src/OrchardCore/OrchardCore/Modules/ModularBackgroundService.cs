@@ -140,13 +140,13 @@ namespace OrchardCore.Modules
                         var taskName = scheduler.Name;
 
                         var task = scope.ServiceProvider.GetServices<IBackgroundTask>().GetTaskByName(taskName);
-                        if (task == null)
+                        if (task is null)
                         {
                             return;
                         }
 
                         var siteService = scope.ServiceProvider.GetService<ISiteService>();
-                        if (siteService != null)
+                        if (siteService is not null)
                         {
                             try
                             {
@@ -223,7 +223,7 @@ namespace OrchardCore.Modules
 
                     ITimeZone timeZone = null;
                     var siteService = scope.ServiceProvider.GetService<ISiteService>();
-                    if (siteService != null)
+                    if (siteService is not null)
                     {
                         try
                         {
@@ -251,7 +251,7 @@ namespace OrchardCore.Modules
                         }
 
                         BackgroundTaskSettings settings = null;
-                        if (settingsProvider != null)
+                        if (settingsProvider is not null)
                         {
                             try
                             {
