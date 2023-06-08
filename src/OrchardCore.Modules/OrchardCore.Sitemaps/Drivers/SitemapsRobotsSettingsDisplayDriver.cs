@@ -36,7 +36,7 @@ public class SitemapsRobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, S
         return Initialize<SitemapsRobotsSettings>("SitemapsRobotsSettings_Edit", model =>
         {
             model.IncludeSitemaps = settings.IncludeSitemaps;
-        }).Location("Content:5.1")
+        }).Location("Content:4")
         .OnGroup(SeoConstants.RobotsSettingsGroupId);
     }
 

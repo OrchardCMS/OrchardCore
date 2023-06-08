@@ -1,15 +1,13 @@
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
+using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Modules.FileProviders;
-using OrchardCore.Seo.ViewModels;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Seo.Drivers;
@@ -19,18 +17,22 @@ public class RobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, RobotsSet
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IStaticFileProvider _staticFileProvider;
-    private readonly AdminOptions _adminOptions;
+    private readonly INotifier _notifier;
+    private readonly IHtmlLocalizer H;
 
     public RobotsSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IStaticFileProvider staticFileProvider,
-        IOptions<AdminOptions> adminOptions)
+        INotifier notifier,
+        IHtmlLocalizer<RobotsSettingsDisplayDriver> htmlLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _staticFileProvider = staticFileProvider;
-        _adminOptions = adminOptions.Value;
+        _notifier = notifier;
+
+        H = htmlLocalizer;
     }
 
     public override async Task<IDisplayResult> EditAsync(RobotsSettings settings, BuildEditorContext context)
@@ -42,32 +44,18 @@ public class RobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, RobotsSet
             return null;
         }
 
-        return Initialize<RobotsSettingsViewModel>("RobotsSettings_Edit", async model =>
+        return Initialize<RobotsSettings>("RobotsSettings_Edit", async model =>
         {
             var fileInfo = _staticFileProvider.GetFileInfo(SeoConstants.RobotsFileName);
 
-            model.PhysicalFileExists = fileInfo.Exists;
-
-            if (String.IsNullOrEmpty(settings.FileContent))
+            if (fileInfo.Exists)
             {
-                // At this point, there is no defined contents in the settings.
-                if (fileInfo.Exists)
-                {
-                    // Since there is a robots file on the file system, let's show the settings with the existing content.
-                    using var stream = fileInfo.CreateReadStream();
-                    using var reader = new StreamReader(stream);
+                await _notifier.WarningAsync(H["A physical {0} file is found for the current site. Until removed, the file content settings below will have no effect.", SeoConstants.RobotsFileName]);
+            }
 
-                    model.FileContent = await reader.ReadToEndAsync();
-                }
-                else
-                {
-                    model.FileContent = SeoHelpers.GetDefaultRobotsContents(_adminOptions);
-                }
-            }
-            else
-            {
-                model.FileContent = settings.FileContent;
-            }
+            model.AllowAll = settings.AllowAll;
+            model.DiallowAdmin = settings.DiallowAdmin;
+            model.AdditionalRules = settings.AdditionalRules;
         }).Location("Content:5")
         .OnGroup(SeoConstants.RobotsSettingsGroupId);
     }
@@ -82,11 +70,7 @@ public class RobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, RobotsSet
             return null;
         }
 
-        var model = new RobotsSettingsViewModel();
-
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-        settings.FileContent = model.FileContent;
+        await context.Updater.TryUpdateModelAsync(settings, Prefix);
 
         return await EditAsync(settings, context);
     }

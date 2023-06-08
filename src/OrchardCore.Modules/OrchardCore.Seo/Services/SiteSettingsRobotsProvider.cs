@@ -1,4 +1,8 @@
+using System;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
 
@@ -7,16 +11,37 @@ namespace OrchardCore.Seo.Services;
 public class SiteSettingsRobotsProvider : IRobotsProvider
 {
     private readonly ISiteService _siteService;
+    private readonly AdminOptions _adminOptions;
 
-    public SiteSettingsRobotsProvider(ISiteService siteService)
+    public SiteSettingsRobotsProvider(
+        ISiteService siteService,
+        IOptions<AdminOptions> adminOptions)
     {
         _siteService = siteService;
+        _adminOptions = adminOptions.Value;
     }
 
     public async Task<string> ContentAsync()
     {
         var settings = (await _siteService.GetSiteSettingsAsync()).As<RobotsSettings>();
 
-        return settings.FileContent;
+        var content = new StringBuilder();
+
+        if (settings.AllowAll)
+        {
+            content.AppendLine($"Allow: *");
+        }
+
+        if (settings.DiallowAdmin)
+        {
+            content.AppendLine($"Disallow: /{_adminOptions.AdminUrlPrefix}");
+        }
+
+        if (!String.IsNullOrEmpty(settings.AdditionalRules))
+        {
+            content.AppendLine(settings.AdditionalRules.Trim());
+        }
+
+        return content.ToString();
     }
 }
