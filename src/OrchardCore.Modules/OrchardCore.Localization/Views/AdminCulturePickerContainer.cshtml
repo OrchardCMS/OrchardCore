@@ -16,7 +16,7 @@
 
     @foreach (var culture in Model.SupportedCultures)
     {
-        <option selected="@(culture.Name == selectedCultureName ? "selected" : null)" value="@culture.Name">@culture.DisplayName</option>
+        <option selected="@(culture.Name == selectedCultureName ? "selected" : null)" value="@culture.Name">@culture.NativeName</option>
     }
 </select>
 
