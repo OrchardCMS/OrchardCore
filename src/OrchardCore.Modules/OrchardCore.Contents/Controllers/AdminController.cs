@@ -16,7 +16,6 @@ using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.Contents.Core;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement;
@@ -42,7 +41,6 @@ namespace OrchardCore.Contents.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IDisplayManager<ContentOptionsViewModel> _contentOptionsDisplayManager;
         private readonly IContentsAdminListQueryService _contentsAdminListQueryService;
-        private readonly ContentsAdminSettings _contentsAdminSettings;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IShapeFactory _shapeFactory;
         private readonly ILogger _logger;
@@ -65,7 +63,6 @@ namespace OrchardCore.Contents.Controllers
             ILogger<AdminController> logger,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
-            IOptions<ContentsAdminSettings> contentsAdminSettings,
             IUpdateModelAccessor updateModelAccessor)
         {
             _authorizationService = authorizationService;
@@ -78,7 +75,6 @@ namespace OrchardCore.Contents.Controllers
             _updateModelAccessor = updateModelAccessor;
             _contentOptionsDisplayManager = contentOptionsDisplayManager;
             _contentsAdminListQueryService = contentsAdminListQueryService;
-            _contentsAdminSettings = contentsAdminSettings.Value;
             _shapeFactory = shapeFactory;
             _logger = logger;
 
@@ -130,7 +126,7 @@ namespace OrchardCore.Contents.Controllers
                 options.CreatableTypes = await GetCreatableTypeOptionsAsync(options.CanCreateSelectedContentType, contentTypeDefinition);
             }
 
-            if (!hasSelectedContentType && !String.IsNullOrEmpty(stereotype) && !_contentsAdminSettings.IgnorableStereotypes.Contains(stereotype))
+            if (!hasSelectedContentType && !String.IsNullOrEmpty(stereotype))
             {
                 // When a stereotype is provided via the query parameter or options a placeholder node is used to apply a filter.
                 options.FilterResult.TryAddOrReplace(new StereotypeFilterNode(stereotype));

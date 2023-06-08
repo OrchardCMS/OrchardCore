@@ -7,7 +7,6 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.Contents.Core;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Flows.Controllers;
@@ -60,11 +59,6 @@ namespace OrchardCore.Flows
             services.AddContentPart<FlowMetadata>();
 
             services.AddDataMigration<Migrations>();
-
-            services.PostConfigure<ContentsAdminSettings>(settings =>
-            {
-                settings.IgnorableStereotypes.Add("Widget");
-            });
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

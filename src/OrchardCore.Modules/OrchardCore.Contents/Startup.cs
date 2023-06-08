@@ -18,7 +18,6 @@ using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Contents.AdminNodes;
 using OrchardCore.Contents.AuditTrail.Settings;
 using OrchardCore.Contents.Controllers;
-using OrchardCore.Contents.Core;
 using OrchardCore.Contents.Deployment;
 using OrchardCore.Contents.Drivers;
 using OrchardCore.Contents.Feeds.Builders;
@@ -338,36 +337,6 @@ namespace OrchardCore.Contents
             services.AddSingleton<IAdminNodeProviderFactory>(new AdminNodeProviderFactory<ContentTypesAdminNode>());
             services.AddScoped<IAdminNodeNavigationBuilder, ContentTypesAdminNodeNavigationBuilder>();
             services.AddScoped<IDisplayDriver<MenuItem>, ContentTypesAdminNodeDriver>();
-
-            services.PostConfigure<ContentsAdminSettings>(settings =>
-            {
-                settings.IgnorableStereotypes.Add("Menu");
-                settings.IgnorableStereotypes.Add("MenuItem");
-            });
-        }
-    }
-
-    [RequireFeatures("OrchardCore.Users.CustomUserSettings")]
-    public class CustomUserSettingsStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.PostConfigure<ContentsAdminSettings>(settings =>
-            {
-                settings.IgnorableStereotypes.Add("CustomUserSettings");
-            });
-        }
-    }
-
-    [RequireFeatures("OrchardCore.CustomSettings")]
-    public class CustomSettingsStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.PostConfigure<ContentsAdminSettings>(settings =>
-            {
-                settings.IgnorableStereotypes.Add("CustomSettings");
-            });
         }
     }
 
