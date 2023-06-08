@@ -29,7 +29,7 @@ public class SiteSettingsRobotsProvider : IRobotsProvider
 
         if (settings.AllowAll)
         {
-            content.AppendLine($"Allow: *");
+            content.AppendLine("Allow: *");
         }
 
         if (settings.DiallowAdmin)
