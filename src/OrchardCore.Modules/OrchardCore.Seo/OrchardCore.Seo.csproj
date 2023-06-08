@@ -5,6 +5,7 @@
     <!-- NuGet properties-->
     <Title>OrchardCore Seo</Title>
     <Description>$(OCCMSDescription)
+      
     Provides Seo Meta features.</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
