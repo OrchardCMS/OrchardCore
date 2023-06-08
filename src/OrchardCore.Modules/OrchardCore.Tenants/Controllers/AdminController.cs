@@ -105,19 +105,19 @@ namespace OrchardCore.Tenants.Controllers
 
             var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
-            var entries = allSettings.Select(x =>
+            var entries = allSettings.Select(settings =>
                {
                    var entry = new ShellSettingsEntry
                    {
-                       Category = x["Category"],
-                       Description = x["Description"],
-                       Name = x.Name,
-                       ShellSettings = x,
+                       Category = settings["Category"],
+                       Description = settings["Description"],
+                       Name = settings.Name,
+                       ShellSettings = settings,
                    };
 
-                   if (x.IsUninitialized() && !String.IsNullOrEmpty(x["Secret"]))
+                   if (settings.IsUninitialized() && !String.IsNullOrEmpty(settings["Secret"]))
                    {
-                       entry.Token = dataProtector.Protect(x["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
+                       entry.Token = dataProtector.Protect(settings["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
                    }
 
                    return entry;

@@ -108,7 +108,7 @@ namespace OrchardCore.AutoSetup
         /// </returns>
         public async Task InvokeAsync(HttpContext httpContext)
         {
-            if (_setupOptions != null && _shellSettings.IsUninitialized())
+            if (_setupOptions is not null && _shellSettings.IsUninitialized())
             {
                 // Try to acquire a lock before starting installation, it guaranties an atomic setup in multi instances environment.
                 (var locker, var locked) = await _distributedLock.TryAcquireAutoSetupLockAsync(_lockOptions);

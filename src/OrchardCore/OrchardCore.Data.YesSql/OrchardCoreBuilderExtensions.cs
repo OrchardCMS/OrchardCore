@@ -55,7 +55,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     var shellSettings = sp.GetService<ShellSettings>();
 
                     // Before the setup, a 'DatabaseProvider' may be configured without a required 'ConnectionString'.
-                    if (shellSettings.IsUninitialized() || shellSettings["DatabaseProvider"] == null)
+                    if (shellSettings.IsUninitialized() || shellSettings["DatabaseProvider"] is null)
                     {
                         return null;
                     }
