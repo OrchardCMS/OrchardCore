@@ -40,6 +40,7 @@ public class RobotsMiddleware
 
             if (file.Exists)
             {
+                // At this point we know that the a robots.txt file exists as a static file. Let the static file provider handle it.
                 await _next(httpContext);
 
                 return;
@@ -55,9 +56,7 @@ public class RobotsMiddleware
             }
             else
             {
-                var defaultContent = $"User-agent: *\r\nAllow: /\r\nDisallow: /{_adminOptions.AdminUrlPrefix}";
-
-                await httpContext.Response.WriteAsync(defaultContent);
+                await httpContext.Response.WriteAsync(SeoHelpers.GetDefaultRobotsContents(_adminOptions));
             }
         }
 

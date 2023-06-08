@@ -1,7 +1,10 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -19,15 +22,18 @@ public class RobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, RobotsSet
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IStaticFileProvider _staticFileProvider;
+    private readonly AdminOptions _adminOptions;
 
     public RobotsSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IStaticFileProvider staticFileProvider)
+        IStaticFileProvider staticFileProvider,
+        IOptions<AdminOptions> adminOptions)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _staticFileProvider = staticFileProvider;
+        _adminOptions = adminOptions.Value;
     }
 
     public override async Task<IDisplayResult> EditAsync(RobotsSettings settings, BuildEditorContext context)
@@ -39,12 +45,30 @@ public class RobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, RobotsSet
             return null;
         }
 
-        return Initialize<RobotsSettingsViewModel>("RobotsSettings_Edit", model =>
+        return Initialize<RobotsSettingsViewModel>("RobotsSettings_Edit", async model =>
         {
             var fileInfo = _staticFileProvider.GetFileInfo(RobotsMiddleware.RobotsFileName);
 
             model.PhysicalFileExists = fileInfo.Exists;
-            model.FileContent = settings.FileContent;
+
+            if (String.IsNullOrEmpty(settings.FileContent))
+            {
+                if (fileInfo.Exists)
+                {
+                    using var stream = fileInfo.CreateReadStream();
+                    using var reader = new StreamReader(stream);
+
+                    model.FileContent = await reader.ReadToEndAsync();
+                }
+                else
+                {
+                    model.FileContent = SeoHelpers.GetDefaultRobotsContents(_adminOptions);
+                }
+            }
+            else
+            {
+                model.FileContent = settings.FileContent;
+            }
         }).Location("Content:3")
         .OnGroup(GroupId);
     }
