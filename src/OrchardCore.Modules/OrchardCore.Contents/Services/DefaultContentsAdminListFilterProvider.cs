@@ -206,8 +206,6 @@ namespace OrchardCore.Contents.Services
                         var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
                         var authorizationService = context.ServiceProvider.GetRequiredService<IAuthorizationService>();
                         var contentDefinitionManager = context.ServiceProvider.GetRequiredService<IContentDefinitionManager>();
-                        var user = httpContextAccessor.HttpContext.User;
-                        var userNameIdentifier = user?.FindFirstValue(ClaimTypes.NameIdentifier);
 
                         // Filter for a specific stereotype.
                         if (!String.IsNullOrEmpty(stereotype))
@@ -222,6 +220,9 @@ namespace OrchardCore.Contents.Services
 
                             if (contentTypeDefinitionNames.Count > 0)
                             {
+                                var user = httpContextAccessor.HttpContext.User;
+                                var userNameIdentifier = user?.FindFirstValue(ClaimTypes.NameIdentifier);
+
                                 var viewAll = new List<string>();
                                 var viewOwn = new List<string>();
 
