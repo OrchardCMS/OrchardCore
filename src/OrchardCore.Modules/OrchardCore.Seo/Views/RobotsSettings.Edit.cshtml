@@ -1,0 +1,15 @@
+@using OrchardCore.Seo.Services
+
+@model OrchardCore.Seo.ViewModels.RobotsSettingsViewModel
+
+@if (Model.PhysicalFileExists)
+{
+    <div class="alert alert-warning">
+        @T["A physical {0} file is found for the current site. Until removed, the file content settings below will have no effect.", RobotsMiddleware.RobotsFileName]
+    </div>
+}
+
+<div class="mb-3" asp-validation-class-for="FileContent">
+    <label asp-for="FileContent">@T["File content"]</label>
+    <textarea asp-for="FileContent" rows="10" class="form-control"></textarea>
+</div>
