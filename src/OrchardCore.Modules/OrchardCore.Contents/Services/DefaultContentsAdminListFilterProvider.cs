@@ -209,7 +209,7 @@ namespace OrchardCore.Contents.Services
                         var user = httpContextAccessor.HttpContext.User;
                         var userNameIdentifier = user?.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                        // Filter for a specific type.
+                        // Filter for a specific stereotype.
                         if (!String.IsNullOrEmpty(stereotype))
                         {
                             var contentTypeDefinitionNames = contentDefinitionManager.ListTypeDefinitions()
