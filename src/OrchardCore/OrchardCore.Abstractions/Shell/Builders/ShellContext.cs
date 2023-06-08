@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
@@ -25,7 +24,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
         public ShellSettings Settings { get; set; }
         public ShellBlueprint Blueprint { get; set; }
-        public ServiceProvider ServiceProvider { get; set; }
+        public IServiceProvider ServiceProvider { get; set; }
 
         /// <summary>
         /// Whether the shell is activated.
@@ -88,6 +87,7 @@ namespace OrchardCore.Environment.Shell.Builders
         /// <summary>
         /// Mark the <see cref="ShellContext"/> as released and then a candidate to be disposed.
         /// </summary>
+        [Obsolete("This method will be removed in a future version, use ReleaseAsync instead.")]
         public void Release() => ReleaseInternalAsync().GetAwaiter().GetResult();
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace OrchardCore.Environment.Shell.Builders
             if (_released)
             {
                 // The dependent is released immediately.
-                shellContext.Release();
+                shellContext.ReleaseAsync().GetAwaiter().GetResult();
                 return;
             }
 
@@ -199,7 +199,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 _dependents ??= new List<WeakReference<ShellContext>>();
 
                 // Remove any previous instance that represent the same tenant in case it has been released (restarted).
-                _dependents.RemoveAll(x => !x.TryGetTarget(out var shell) || shell.Settings.Name == shellContext.Settings.Name);
+                _dependents.RemoveAll(wref => !wref.TryGetTarget(out var shell) || shell.Settings.Name == shellContext.Settings.Name);
 
                 _dependents.Add(new WeakReference<ShellContext>(shellContext));
             }
@@ -244,7 +244,10 @@ namespace OrchardCore.Environment.Shell.Builders
                 return;
             }
 
-            ServiceProvider?.Dispose();
+            if (ServiceProvider is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
 
             Terminate();
         }
@@ -256,9 +259,13 @@ namespace OrchardCore.Environment.Shell.Builders
                 return;
             }
 
-            if (ServiceProvider is not null)
+            if (ServiceProvider is IAsyncDisposable asyncDisposable)
             {
-                await ServiceProvider.DisposeAsync();
+                await asyncDisposable.DisposeAsync();
+            }
+            else if (ServiceProvider is IDisposable disposable)
+            {
+                disposable.Dispose();
             }
 
             Terminate();

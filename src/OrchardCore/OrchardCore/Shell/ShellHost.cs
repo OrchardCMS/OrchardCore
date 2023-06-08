@@ -19,7 +19,7 @@ namespace OrchardCore.Environment.Shell
     /// all <see cref="ShellSettings"/> that we also need to register in the <see cref="IRunningShellTable"/> to serve incoming requests.
     /// For each <see cref="ShellContext"/> a service container and then a request pipeline are only built on the first matching request.
     /// </summary>
-    public class ShellHost : IShellHost, IDisposable, IAsyncDisposable
+    public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
     {
         private const int _reloadShellMaxRetriesCount = 9;
 
@@ -288,7 +288,7 @@ namespace OrchardCore.Environment.Shell
 
             if (_shellContexts.TryRemove(settings.Name, out var context))
             {
-                context.Release();
+                await context.ReleaseAsync();
             }
 
             _shellSettings.TryRemove(settings.Name, out _);
@@ -521,8 +521,6 @@ namespace OrchardCore.Environment.Shell
             {
                 shell.Dispose();
             }
-
-            GC.SuppressFinalize(this);
         }
 
         public async ValueTask DisposeAsync()
@@ -531,8 +529,6 @@ namespace OrchardCore.Environment.Shell
             {
                 await shell.DisposeAsync();
             }
-
-            GC.SuppressFinalize(this);
         }
     }
 }
