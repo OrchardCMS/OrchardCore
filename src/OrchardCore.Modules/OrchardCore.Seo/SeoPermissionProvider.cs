@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
@@ -16,14 +16,14 @@ public class SeoPermissionProvider : IPermissionProvider
     {
         return new[]
         {
-                new PermissionStereotype
+            new PermissionStereotype
+            {
+                Name = "Administrator",
+                Permissions = new[]
                 {
-                    Name = "Administrator",
-                    Permissions = new[]
-                    {
-                        SeoPermissions.ManageSettings
-                    }
+                    SeoPermissions.ManageSettings
                 }
-            };
+            }
+        };
     }
 }
