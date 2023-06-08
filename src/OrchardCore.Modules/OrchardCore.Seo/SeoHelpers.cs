@@ -1,11 +1,17 @@
+using System;
 using OrchardCore.Admin;
 
 namespace OrchardCore.Seo;
 
 public class SeoHelpers
 {
-    public static string GetDefaultRobotsContents(AdminOptions adminOptions)
+    public static string GetDefaultRobotsContents(AdminOptions options)
     {
-        return $"User-agent: *\r\nAllow: /\r\nDisallow: /{adminOptions.AdminUrlPrefix}";
+        if (options == null)
+        {
+            throw new ArgumentNullException(nameof(options));
+        }
+
+        return $"User-agent: *\r\nAllow: /\r\nDisallow: /{options.AdminUrlPrefix}";
     }
 }

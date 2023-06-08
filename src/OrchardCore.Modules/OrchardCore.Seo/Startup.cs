@@ -38,6 +38,7 @@ namespace OrchardCore.Seo
             services.AddScoped<IPermissionProvider, SeoPermissionProvider>();
             services.AddScoped<IDisplayDriver<ISite>, RobotsSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddTransient<IRobotsProvider, SiteSettingsRobotsProvider>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

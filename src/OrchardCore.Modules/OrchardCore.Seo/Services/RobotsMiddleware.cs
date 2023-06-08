@@ -1,42 +1,40 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
-using OrchardCore.Entities;
 using OrchardCore.Modules.FileProviders;
-using OrchardCore.Seo.Settings;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Seo.Services;
 
 public class RobotsMiddleware
 {
-    public const string RobotsFileName = "robots.txt";
-
     private readonly RequestDelegate _next;
-    private readonly ISiteService _siteService;
     private readonly IStaticFileProvider _staticFileProvider;
+    private readonly IEnumerable<IRobotsProvider> _robotsProviders;
     private readonly AdminOptions _adminOptions;
 
     public RobotsMiddleware(
         RequestDelegate next,
-        ISiteService siteService,
         IStaticFileProvider staticFileProvider,
+        IEnumerable<IRobotsProvider> robotsProviders,
         IOptions<AdminOptions> adminOptions)
     {
         _next = next;
-        _siteService = siteService;
         _staticFileProvider = staticFileProvider;
+        _robotsProviders = robotsProviders;
         _adminOptions = adminOptions.Value;
     }
 
     public async Task Invoke(HttpContext httpContext)
     {
-        if (httpContext.Request.Path.StartsWithSegments("/" + RobotsFileName))
+        if (httpContext.Request.Path.StartsWithSegments("/" + SeoConstants.RobotsFileName))
         {
-            var file = _staticFileProvider.GetFileInfo(RobotsFileName);
+            var file = _staticFileProvider.GetFileInfo(SeoConstants.RobotsFileName);
 
             if (file.Exists)
             {
@@ -46,13 +44,26 @@ public class RobotsMiddleware
                 return;
             }
 
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<RobotsSettings>();
             httpContext.Response.Clear();
             httpContext.Response.ContentType = "text/plain";
 
-            if (!String.IsNullOrEmpty(settings.FileContent))
+            var content = new StringBuilder();
+
+            foreach (var provider in _robotsProviders.Reverse())
             {
-                await httpContext.Response.WriteAsync(settings.FileContent);
+                var item = (await provider.ContentAsync())?.Trim();
+
+                if (String.IsNullOrEmpty(item))
+                {
+                    continue;
+                }
+
+                content.AppendLine(item);
+            }
+
+            if (content.Length > 0)
+            {
+                await httpContext.Response.WriteAsync(content.ToString());
             }
             else
             {

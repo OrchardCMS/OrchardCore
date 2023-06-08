@@ -1,4 +1,4 @@
-namespace OrchardCore.Seo.Settings;
+namespace OrchardCore.Seo;
 
 public class RobotsSettings
 {

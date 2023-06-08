@@ -9,8 +9,6 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Modules.FileProviders;
-using OrchardCore.Seo.Services;
-using OrchardCore.Seo.Settings;
 using OrchardCore.Seo.ViewModels;
 using OrchardCore.Settings;
 
@@ -18,7 +16,6 @@ namespace OrchardCore.Seo.Drivers;
 
 public class RobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, RobotsSettings>
 {
-    public const string GroupId = "robotsSettings";
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IStaticFileProvider _staticFileProvider;
@@ -40,21 +37,23 @@ public class RobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, RobotsSet
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, SeoPermissions.ManageSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, SeoConstants.ManageSeoSettings))
         {
             return null;
         }
 
         return Initialize<RobotsSettingsViewModel>("RobotsSettings_Edit", async model =>
         {
-            var fileInfo = _staticFileProvider.GetFileInfo(RobotsMiddleware.RobotsFileName);
+            var fileInfo = _staticFileProvider.GetFileInfo(SeoConstants.RobotsFileName);
 
             model.PhysicalFileExists = fileInfo.Exists;
 
             if (String.IsNullOrEmpty(settings.FileContent))
             {
+                // At this point, there is no defined contents in the settings.
                 if (fileInfo.Exists)
                 {
+                    // Since there is a robots file on the file system, let's show the settings with the existing content.
                     using var stream = fileInfo.CreateReadStream();
                     using var reader = new StreamReader(stream);
 
@@ -69,16 +68,16 @@ public class RobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, RobotsSet
             {
                 model.FileContent = settings.FileContent;
             }
-        }).Location("Content:3")
-        .OnGroup(GroupId);
+        }).Location("Content:5")
+        .OnGroup(SeoConstants.RobotsSettingsGroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(RobotsSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase)
-            || !await _authorizationService.AuthorizeAsync(user, SeoPermissions.ManageSettings))
+        if (!context.GroupId.Equals(SeoConstants.RobotsSettingsGroupId, StringComparison.OrdinalIgnoreCase)
+            || !await _authorizationService.AuthorizeAsync(user, SeoConstants.ManageSeoSettings))
         {
             return null;
         }

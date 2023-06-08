@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
-using OrchardCore.Seo.Drivers;
 
 namespace OrchardCore.Seo;
 
@@ -28,8 +27,8 @@ public class AdminMenu : INavigationProvider
                    .Add(S["SEO"], S["SEO"].PrefixPosition(), seo => seo
                        .AddClass("seo")
                        .Id("seo")
-                       .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = RobotsSettingsDisplayDriver.GroupId })
-                       .Permission(SeoPermissions.ManageSettings)
+                       .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SeoConstants.RobotsSettingsGroupId })
+                       .Permission(SeoConstants.ManageSeoSettings)
                        .LocalNav()
                        )
                    )

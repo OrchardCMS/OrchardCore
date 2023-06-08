@@ -9,7 +9,7 @@ public class SeoPermissionProvider : IPermissionProvider
 {
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        return Task.FromResult(new[] { SeoPermissions.ManageSettings }.AsEnumerable());
+        return Task.FromResult(new[] { SeoConstants.ManageSeoSettings }.AsEnumerable());
     }
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -21,7 +21,7 @@ public class SeoPermissionProvider : IPermissionProvider
                 Name = "Administrator",
                 Permissions = new[]
                 {
-                    SeoPermissions.ManageSettings
+                    SeoConstants.ManageSeoSettings
                 }
             }
         };

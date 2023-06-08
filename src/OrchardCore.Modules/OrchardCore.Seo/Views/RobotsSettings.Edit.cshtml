@@ -1,11 +1,12 @@
 @using OrchardCore.Seo.Services
+@using OrchardCore.Seo
 
 @model OrchardCore.Seo.ViewModels.RobotsSettingsViewModel
 
 @if (Model.PhysicalFileExists)
 {
     <div class="alert alert-warning">
-        @T["A physical {0} file is found for the current site. Until removed, the file content settings below will have no effect.", RobotsMiddleware.RobotsFileName]
+        @T["A physical {0} file is found for the current site. Until removed, the file content settings below will have no effect.", SeoConstants.RobotsFileName]
     </div>
 }
 
