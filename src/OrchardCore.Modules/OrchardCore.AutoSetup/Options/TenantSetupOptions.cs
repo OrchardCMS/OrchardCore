@@ -2,23 +2,24 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.AutoSetup.Options
 {
-    using System.Text.RegularExpressions;
-
     /// <summary>
     /// The tenant setup options.
     /// </summary>
     public class TenantSetupOptions
     {
+        private readonly string _requiredErrorMessageFormat = "The {0} field is required.";
+
         private bool? _isDefault;
 
         /// <summary>
-        /// The Shell Name
+        /// The Shell Name.
         /// </summary>
         public string ShellName { get; set; }
 
@@ -94,11 +95,6 @@ namespace OrchardCore.AutoSetup.Options
         public bool IsDefault => _isDefault ??= ShellName.IsDefaultShellName();
 
         /// <summary>
-        /// Error Message Format
-        /// </summary>
-        private readonly string RequiredErrorMessageFormat = "The {0} field is required.";
-
-        /// <summary>
         /// Tenant validation.
         /// </summary>
         /// <param name="validationContext"> The validation context. </param>
@@ -127,43 +123,43 @@ namespace OrchardCore.AutoSetup.Options
 
             if (String.IsNullOrWhiteSpace(SiteName))
             {
-                yield return new ValidationResult(String.Format(RequiredErrorMessageFormat, nameof(SiteName)));
+                yield return new ValidationResult(String.Format(_requiredErrorMessageFormat, nameof(SiteName)));
             }
 
             if (String.IsNullOrWhiteSpace(AdminUsername))
             {
-                yield return new ValidationResult(String.Format(RequiredErrorMessageFormat, nameof(AdminUsername)));
+                yield return new ValidationResult(String.Format(_requiredErrorMessageFormat, nameof(AdminUsername)));
             }
 
             if (String.IsNullOrWhiteSpace(AdminEmail))
             {
-                yield return new ValidationResult(String.Format(RequiredErrorMessageFormat, nameof(AdminEmail)));
+                yield return new ValidationResult(String.Format(_requiredErrorMessageFormat, nameof(AdminEmail)));
             }
 
             if (String.IsNullOrWhiteSpace(AdminPassword))
             {
-                yield return new ValidationResult(String.Format(RequiredErrorMessageFormat, nameof(AdminPassword)));
+                yield return new ValidationResult(String.Format(_requiredErrorMessageFormat, nameof(AdminPassword)));
             }
 
             var selectedProvider = validationContext.GetServices<DatabaseProvider>().FirstOrDefault(x => x.Value == DatabaseProvider);
             if (selectedProvider == null)
             {
-                yield return new ValidationResult(String.Format(RequiredErrorMessageFormat, nameof(DatabaseProvider)));
+                yield return new ValidationResult(String.Format(_requiredErrorMessageFormat, nameof(DatabaseProvider)));
             }
 
             if (selectedProvider != null && selectedProvider.HasConnectionString && String.IsNullOrWhiteSpace(DatabaseConnectionString))
             {
-                yield return new ValidationResult(String.Format(RequiredErrorMessageFormat, nameof(DatabaseConnectionString)));
+                yield return new ValidationResult(String.Format(_requiredErrorMessageFormat, nameof(DatabaseConnectionString)));
             }
 
             if (String.IsNullOrWhiteSpace(RecipeName))
             {
-                yield return new ValidationResult(String.Format(RequiredErrorMessageFormat, nameof(RecipeName)));
+                yield return new ValidationResult(String.Format(_requiredErrorMessageFormat, nameof(RecipeName)));
             }
 
             if (String.IsNullOrWhiteSpace(SiteTimeZone))
             {
-                yield return new ValidationResult(String.Format(RequiredErrorMessageFormat, nameof(SiteTimeZone)));
+                yield return new ValidationResult(String.Format(_requiredErrorMessageFormat, nameof(SiteTimeZone)));
             }
         }
     }

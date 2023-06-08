@@ -55,7 +55,7 @@ namespace OrchardCore.Modules
                 httpContext.Request.Path = remainingPath;
             }
 
-            // Do we need to rebuild the pipeline ?
+            // Do we need to rebuild the pipeline?
             if (!shellContext.HasPipeline())
             {
                 await InitializePipelineAsync(shellContext);
@@ -83,12 +83,12 @@ namespace OrchardCore.Modules
             }
         }
 
-        // Build the middleware pipeline for the current tenant
+        // Build the middleware pipeline for the current tenant.
         private IShellPipeline BuildTenantPipeline()
         {
             var appBuilder = new ApplicationBuilder(ShellScope.Context.ServiceProvider, _features);
 
-            // Create a nested pipeline to configure the tenant middleware pipeline
+            // Create a nested pipeline to configure the tenant middleware pipeline.
             var startupFilters = appBuilder.ApplicationServices.GetService<IEnumerable<IStartupFilter>>();
 
             var shellPipeline = new ShellRequestPipeline();
@@ -115,7 +115,7 @@ namespace OrchardCore.Modules
             var startups = appBuilder.ApplicationServices.GetServices<IStartup>();
 
             // IStartup instances are ordered by module dependency with an 'ConfigureOrder' of 0 by default.
-            // OrderBy performs a stable sort so order is preserved among equal 'ConfigureOrder' values.
+            // 'OrderBy' performs a stable sort so order is preserved among equal 'ConfigureOrder' values.
             startups = startups.OrderBy(s => s.ConfigureOrder);
 
             appBuilder.UseRouting().UseEndpoints(routes =>
