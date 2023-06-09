@@ -5,7 +5,7 @@ namespace OrchardCore.Seo;
 public class RobotsSettings
 {
     [DefaultValue(true)]
-    public bool AllowAll { get; set; } = true;
+    public bool AllowAllAgents { get; set; } = true;
 
     [DefaultValue(true)]
     public bool DiallowAdmin { get; set; } = true;

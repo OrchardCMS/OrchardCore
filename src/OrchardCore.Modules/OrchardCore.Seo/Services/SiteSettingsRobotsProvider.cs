@@ -27,9 +27,9 @@ public class SiteSettingsRobotsProvider : IRobotsProvider
 
         var content = new StringBuilder();
 
-        if (settings.AllowAll)
+        if (settings.AllowAllAgents)
         {
-            content.AppendLine("Allow: *");
+            content.AppendLine("User-agent: *");
         }
 
         if (settings.DiallowAdmin)

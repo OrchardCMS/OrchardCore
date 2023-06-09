@@ -53,7 +53,7 @@ public class RobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, RobotsSet
                 await _notifier.WarningAsync(H["A physical {0} file is found for the current site. Until removed, the file content settings below will have no effect.", SeoConstants.RobotsFileName]);
             }
 
-            model.AllowAll = settings.AllowAll;
+            model.AllowAllAgents = settings.AllowAllAgents;
             model.DiallowAdmin = settings.DiallowAdmin;
             model.AdditionalRules = settings.AdditionalRules;
         }).Location("Content:5")
