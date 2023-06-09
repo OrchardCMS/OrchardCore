@@ -22,7 +22,7 @@ These default settings aim to provide a basic configuration that ensures search 
     If the [Sitemaps](../Sitemaps) feature is enabled, all sitemap indexes and sitemaps are added to the `robots.txt` by default. 
 
 !!! warning
-    If the site's [filesystem](../Tenants/#static-file-provider-feature) contains a `robots.txt` it will take presance and the site settings to generate the files are ignore.
+    If the site's [filesystem](../Tenants/#static-file-provider-feature) contains a `robots.txt`, this file will take precedence and the site settings to generate the files will be ignored.
 
 ## Video
 
