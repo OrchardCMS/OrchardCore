@@ -33,6 +33,7 @@ namespace OrchardCore.Environment.Shell.Builders
             _serviceProvider = serviceProvider;
         }
 
+        [Obsolete("This method will be removed in a future version, use CreateContainerAsync instead.", false)]
         public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint) =>
             CreateContainerAsync(settings, blueprint).GetAwaiter().GetResult();
 
@@ -193,11 +194,8 @@ namespace OrchardCore.Environment.Shell.Builders
             {
                 lock (this)
                 {
-                    if (_applicationFeature == null)
-                    {
-                        _applicationFeature = _extensionManager.GetFeatures()
+                    _applicationFeature ??= _extensionManager.GetFeatures()
                             .FirstOrDefault(f => f.Id == _hostingEnvironment.ApplicationName);
-                    }
                 }
             }
         }

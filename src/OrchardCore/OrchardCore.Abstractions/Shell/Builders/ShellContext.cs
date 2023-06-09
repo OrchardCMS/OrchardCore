@@ -53,7 +53,7 @@ namespace OrchardCore.Environment.Shell.Builders
         /// <summary>
         /// Creates a <see cref="ShellScope"/> on this shell context.
         /// </summary>
-        [Obsolete("This method will be removed in a future version, use CreateScopeAsync instead.")]
+        [Obsolete("This method will be removed in a future version, use CreateScopeAsync instead.", false)]
         public ShellScope CreateScope() => CreateScopeAsync().GetAwaiter().GetResult();
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace OrchardCore.Environment.Shell.Builders
         /// <summary>
         /// Mark the <see cref="ShellContext"/> as released and then a candidate to be disposed.
         /// </summary>
-        [Obsolete("This method will be removed in a future version, use ReleaseAsync instead.")]
+        [Obsolete("This method will be removed in a future version, use ReleaseAsync instead.", false)]
         public void Release() => ReleaseInternalAsync().GetAwaiter().GetResult();
 
         /// <summary>
@@ -183,7 +183,7 @@ namespace OrchardCore.Environment.Shell.Builders
         /// <summary>
         /// Registers the specified shellContext as dependent such that it is also released when the current shell context is released.
         /// </summary>
-        [Obsolete("This method will be removed in a future version, use AddDependentShellAsync instead.")]
+        [Obsolete("This method will be removed in a future version, use AddDependentShellAsync instead.", false)]
         public void AddDependentShell(ShellContext shellContext) => AddDependentShellAsync(shellContext).GetAwaiter().GetResult();
 
         /// <summary>
