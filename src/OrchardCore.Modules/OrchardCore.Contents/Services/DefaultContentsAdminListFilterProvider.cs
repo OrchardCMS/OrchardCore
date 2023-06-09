@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -148,7 +149,7 @@ namespace OrchardCore.Contents.Services
 
                                 return query.With<ContentItemIndex>(x => x.ContentType == contentType && x.Owner == userNameIdentifier);
                             }
-                            // At this point the given contentType is invalid. Ignore it.
+                            // At this point, the given contentType is invalid. Ignore it.
                         }
 
                         var listAnyContentTypes = new List<string>();
@@ -197,6 +198,71 @@ namespace OrchardCore.Contents.Services
                         return (false, String.Empty);
                     })
                     .AlwaysRun()
+                )
+                .WithNamedTerm("stereotype", builder => builder
+                    .OneCondition(async (stereotype, query, ctx) =>
+                    {
+                        var context = (ContentQueryContext)ctx;
+                        var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
+                        var authorizationService = context.ServiceProvider.GetRequiredService<IAuthorizationService>();
+                        var contentDefinitionManager = context.ServiceProvider.GetRequiredService<IContentDefinitionManager>();
+
+                        // Filter for a specific stereotype.
+                        if (!String.IsNullOrEmpty(stereotype))
+                        {
+                            var contentTypeDefinitionNames = contentDefinitionManager.ListTypeDefinitions()
+                            .Where(definition => definition.StereotypeEquals(stereotype, StringComparison.OrdinalIgnoreCase))
+                            .Select(definition => definition.Name)
+                            .ToList();
+
+                            // We display a specific type even if it's not listable so that admin pages
+                            // can reuse the content list page for specific types.
+
+                            if (contentTypeDefinitionNames.Count > 0)
+                            {
+                                var user = httpContextAccessor.HttpContext.User;
+                                var userNameIdentifier = user?.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                                var viewAll = new List<string>();
+                                var viewOwn = new List<string>();
+
+                                foreach (var contentTypeDefinitionName in contentTypeDefinitionNames)
+                                {
+                                    // It is important to pass null to the owner parameter. This will check if the user can view content that belongs to others.
+                                    if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, contentTypeDefinitionName, owner: null))
+                                    {
+                                        viewAll.Add(contentTypeDefinitionName);
+
+                                        continue;
+                                    }
+
+                                    viewOwn.Add(contentTypeDefinitionName);
+                                }
+
+                                return query.With<ContentItemIndex>(x => x.ContentType.IsIn(viewAll) || (x.ContentType.IsIn(viewOwn) && x.Owner == userNameIdentifier));
+                            }
+
+                            // At this point, the given stereotype is invalid. Ignore it.
+                        }
+
+                        return query;
+                    })
+                    .MapTo<ContentOptionsViewModel>((val, model) =>
+                    {
+                        if (!String.IsNullOrEmpty(val))
+                        {
+                            model.SelectedContentType = val;
+                        }
+                    })
+                    .MapFrom<ContentOptionsViewModel>((model) =>
+                    {
+                        if (!String.IsNullOrEmpty(model.SelectedContentType))
+                        {
+                            return (true, model.SelectedContentType);
+                        }
+
+                        return (false, String.Empty);
+                    })
                 )
                 .WithDefaultTerm("text", builder => builder
                     .ManyCondition(
