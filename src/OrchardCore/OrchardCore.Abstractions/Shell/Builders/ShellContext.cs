@@ -189,7 +189,7 @@ namespace OrchardCore.Environment.Shell.Builders
             if (_released)
             {
                 // The dependent is released immediately.
-                shellContext.ReleaseAsync().GetAwaiter().GetResult();
+                shellContext.ReleaseInternalAsync().GetAwaiter().GetResult();
                 return;
             }
 
