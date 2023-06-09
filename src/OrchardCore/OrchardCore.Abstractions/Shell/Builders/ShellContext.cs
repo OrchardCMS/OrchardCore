@@ -177,7 +177,13 @@ namespace OrchardCore.Environment.Shell.Builders
         /// <summary>
         /// Registers the specified shellContext as dependent such that it is also released when the current shell context is released.
         /// </summary>
-        public void AddDependentShell(ShellContext shellContext)
+        [Obsolete("This method will be removed in a future version, use AddDependentShellAsync instead.")]
+        public void AddDependentShell(ShellContext shellContext) => AddDependentShellAsync(shellContext).GetAwaiter().GetResult();
+
+        /// <summary>
+        /// Registers the specified shellContext as dependent such that it is also released when the current shell context is released.
+        /// </summary>
+        public async Task AddDependentShellAsync(ShellContext shellContext)
         {
             // If the dependent is released, nothing to do.
             if (shellContext.Released)
@@ -189,11 +195,11 @@ namespace OrchardCore.Environment.Shell.Builders
             if (_released)
             {
                 // The dependent is released immediately.
-                shellContext.ReleaseInternalAsync().GetAwaiter().GetResult();
+                await shellContext.ReleaseInternalAsync();
                 return;
             }
 
-            _semaphore.Wait();
+            await _semaphore.WaitAsync();
             try
             {
                 _dependents ??= new List<WeakReference<ShellContext>>();
