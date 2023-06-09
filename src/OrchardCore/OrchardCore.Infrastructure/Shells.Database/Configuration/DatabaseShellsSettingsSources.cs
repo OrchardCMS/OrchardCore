@@ -65,7 +65,7 @@ namespace OrchardCore.Shells.Database.Configuration
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)
         {
             await using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-            await context.CreateScope().UsingServiceScopeAsync(async scope =>
+            await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
@@ -107,7 +107,7 @@ namespace OrchardCore.Shells.Database.Configuration
         public async Task RemoveAsync(string tenant)
         {
             await using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-            await context.CreateScope().UsingServiceScopeAsync(async scope =>
+            await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
@@ -125,7 +125,7 @@ namespace OrchardCore.Shells.Database.Configuration
             DatabaseShellsSettings document = null;
 
             await using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-            await context.CreateScope().UsingServiceScopeAsync(async scope =>
+            await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 

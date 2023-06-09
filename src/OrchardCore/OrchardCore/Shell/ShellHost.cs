@@ -127,7 +127,7 @@ namespace OrchardCore.Environment.Shell
                 }
 
                 // We create a scope before checking if the shell has been released.
-                scope = shellContext.CreateScope();
+                scope = await shellContext.CreateScopeAsync();
 
                 // If CreateScope() returned null, the shell is released. We then remove it and
                 // retry with the hope to get one that won't be released before we create a scope.

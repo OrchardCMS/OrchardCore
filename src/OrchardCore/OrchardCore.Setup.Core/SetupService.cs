@@ -198,7 +198,7 @@ namespace OrchardCore.Setup.Services
 
             await using (var shellContext = await _shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor))
             {
-                await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
+                await (await shellContext.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
                 {
                     try
                     {

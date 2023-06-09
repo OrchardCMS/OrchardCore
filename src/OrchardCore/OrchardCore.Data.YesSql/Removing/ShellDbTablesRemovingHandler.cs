@@ -121,7 +121,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
 
         // Create an isolated shell context composed of all features that have been installed.
         await using var shellContext = await _shellContextFactory.CreateMaximumContextAsync(shellSettings);
-        await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
+        await (await shellContext.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
         {
             var store = scope.ServiceProvider.GetRequiredService<IStore>();
             shellDbTablesInfo.Configure(store.Configuration);

@@ -38,7 +38,7 @@ public static class ShellContextFactoryExtensions
         ShellDescriptor shellDescriptor = null;
 
         await using var shellContext = await shellContextFactory.CreateMinimumContextAsync(shellSettings);
-        await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
+        await (await shellContext.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
         {
             var shellDescriptorManager = scope.ServiceProvider.GetRequiredService<IShellDescriptorManager>();
             shellDescriptor = await shellDescriptorManager.GetShellDescriptorAsync();

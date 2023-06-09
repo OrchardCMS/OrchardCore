@@ -53,7 +53,13 @@ namespace OrchardCore.Environment.Shell.Builders
         /// <summary>
         /// Creates a <see cref="ShellScope"/> on this shell context.
         /// </summary>
-        public ShellScope CreateScope()
+        [Obsolete("This method will be removed in a future version, use CreateScopeAsync instead.")]
+        public ShellScope CreateScope() => CreateScopeAsync().GetAwaiter().GetResult();
+
+        /// <summary>
+        /// Creates a <see cref="ShellScope"/> on this shell context.
+        /// </summary>
+        public async Task<ShellScope> CreateScopeAsync()
         {
             // Don't create a shell scope on a released shell.
             if (_released)
@@ -67,7 +73,7 @@ namespace OrchardCore.Environment.Shell.Builders
             if (_released)
             {
                 // But let this scope manage the shell state as usual.
-                scope.TerminateShellAsync().GetAwaiter().GetResult();
+                await scope.TerminateShellAsync();
                 return null;
             }
 
