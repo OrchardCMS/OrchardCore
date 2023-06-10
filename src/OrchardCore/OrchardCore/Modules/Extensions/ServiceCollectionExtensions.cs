@@ -40,6 +40,20 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class ServiceCollectionExtensions
     {
         /// <summary>
+        /// Http client implementation types to remove, excluding logging and options services.
+        /// </summary>
+        private static Type[] _httpClientImplementationTypesToRemove = new ServiceCollection()
+            .AddHttpClient()
+            .Where(sd => sd.Lifetime == ServiceLifetime.Singleton)
+            .Select(sd => sd.GetImplementationType())
+            .Except(new ServiceCollection()
+                .AddLogging()
+                .AddOptions()
+                .Where(sd => sd.Lifetime == ServiceLifetime.Singleton)
+                .Select(sd => sd.GetImplementationType()))
+            .ToArray();
+
+        /// <summary>
         /// Adds OrchardCore services to the host service collection.
         /// </summary>
         public static OrchardCoreBuilder AddOrchardCore(this IServiceCollection services)
@@ -291,20 +305,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 // So, each tenant needs isolated http client singletons and configurations, so that
                 // typed clients and handlers are activated/resolved from the right tenant container.
 
-                // Get implementation types of http client singletons.
-                var implementationTypesToRemove = new ServiceCollection()
-                    .AddHttpClient()
-                    .Where(sd => sd.Lifetime == ServiceLifetime.Singleton)
-                    .Select(sd => sd.GetImplementationType())
-
-                    // Exclude logging and options singletons.
-                    .Except(new ServiceCollection()
-                        .AddLogging()
-                        .AddOptions()
-                        .Where(sd => sd.Lifetime == ServiceLifetime.Singleton)
-                        .Select(sd => sd.GetImplementationType()))
-                    .ToArray();
-
                 // Include current options configurations.
                 var configurationDescriptorsToRemove = collection
                     .Where(sd => sd.ServiceType.IsGenericType &&
@@ -314,7 +314,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 // Retrieve all descriptors to remove.
                 var descriptorsToRemove = collection
                     .Where(sd => sd is ClonedSingletonDescriptor &&
-                        implementationTypesToRemove.Contains(sd.GetImplementationType()))
+                        _httpClientImplementationTypesToRemove.Contains(sd.GetImplementationType()))
                     .Concat(configurationDescriptorsToRemove)
                     .ToArray();
 
