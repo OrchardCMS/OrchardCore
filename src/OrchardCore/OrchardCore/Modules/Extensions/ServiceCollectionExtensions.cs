@@ -66,7 +66,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 AddStaticFiles(builder);
 
                 AddRouting(builder);
-                AddHttpClient(builder);
+                IsolateHttpClient(builder);
                 AddEndpointsApiExplorer(builder);
                 AddAntiForgery(builder);
                 AddSameSiteCookieBackwardsCompatibility(builder);
@@ -279,9 +279,9 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds isolated tenant level http client services.
+        /// Isolates tenants from host level http client services.
         /// </summary>
-        private static void AddHttpClient(OrchardCoreBuilder builder)
+        private static void IsolateHttpClient(OrchardCoreBuilder builder)
         {
             // 'AddHttpClient()' may be called by the host or not.
 
@@ -306,7 +306,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     .ToArray();
 
                 // Include current options configurations.
-                var configDescriptorsToRemove = collection
+                var configurationDescriptorsToRemove = collection
                     .Where(sd => sd.ServiceType.IsGenericType &&
                         sd.ServiceType.GenericTypeArguments.Contains(typeof(HttpClientFactoryOptions)))
                     .ToArray();
@@ -315,7 +315,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 var descriptorsToRemove = collection
                     .Where(sd => sd is ClonedSingletonDescriptor &&
                         implementationTypesToRemove.Contains(sd.GetImplementationType()))
-                    .Concat(configDescriptorsToRemove)
+                    .Concat(configurationDescriptorsToRemove)
                     .ToArray();
 
                 // Isolate each tenant container from the host.
