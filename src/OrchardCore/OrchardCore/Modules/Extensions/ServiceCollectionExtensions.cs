@@ -279,7 +279,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds isolated tenant level routing services.
+        /// Adds isolated tenant level http client services.
         /// </summary>
         private static void AddHttpClient(OrchardCoreBuilder builder)
         {
