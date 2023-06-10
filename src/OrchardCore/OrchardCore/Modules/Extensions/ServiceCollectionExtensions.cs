@@ -40,17 +40,14 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Http client implementation types to remove, excluding logging and options services.
+        /// Http client singleton types used to isolate tenants from the host.
         /// </summary>
-        private static Type[] _httpClientImplementationTypesToRemove = new ServiceCollection()
+        private static readonly Type[] _httpClientSingletonTypes = new ServiceCollection()
             .AddHttpClient()
-            .Where(sd => sd.Lifetime == ServiceLifetime.Singleton)
-            .Select(sd => sd.GetImplementationType())
+            .GetSingletonImplementationTypes()
             .Except(new ServiceCollection()
                 .AddLogging()
-                .AddOptions()
-                .Where(sd => sd.Lifetime == ServiceLifetime.Singleton)
-                .Select(sd => sd.GetImplementationType()))
+                .GetSingletonImplementationTypes())
             .ToArray();
 
         /// <summary>
@@ -293,19 +290,16 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Isolates tenants from host level http client services.
+        /// Isolates tenant http client singletons and configurations from the host.
         /// </summary>
         private static void IsolateHttpClient(OrchardCoreBuilder builder)
         {
-            // 'AddHttpClient()' may be called by the host or not.
-
             builder.ConfigureServices(collection =>
             {
-                // Http client singletons are not tenant aware and they use global cache and options.
-                // So, each tenant needs isolated http client singletons and configurations, so that
-                // typed clients and handlers are activated/resolved from the right tenant container.
+                // Each tenant needs isolated http client singletons and configurations, so that
+                // typed clients/handlers are activated/resolved from the right tenant container.
 
-                // Include current options configurations.
+                // Retrieve current options configurations.
                 var configurationDescriptorsToRemove = collection
                     .Where(sd => sd.ServiceType.IsGenericType &&
                         sd.ServiceType.GenericTypeArguments.Contains(typeof(HttpClientFactoryOptions)))
@@ -314,17 +308,15 @@ namespace Microsoft.Extensions.DependencyInjection
                 // Retrieve all descriptors to remove.
                 var descriptorsToRemove = collection
                     .Where(sd => sd is ClonedSingletonDescriptor &&
-                        _httpClientImplementationTypesToRemove.Contains(sd.GetImplementationType()))
+                        _httpClientSingletonTypes.Contains(sd.GetImplementationType()))
                     .Concat(configurationDescriptorsToRemove)
                     .ToArray();
 
-                // Isolate each tenant container from the host.
+                // Isolate each tenant from the host.
                 foreach (var descriptor in descriptorsToRemove)
                 {
                     collection.Remove(descriptor);
                 }
-
-                // Then let each tenant use 'AddHttpClient()' or not.
             },
             order: Int32.MinValue + 100);
         }
