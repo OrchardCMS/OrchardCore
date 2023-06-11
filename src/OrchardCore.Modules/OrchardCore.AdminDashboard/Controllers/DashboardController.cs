@@ -94,7 +94,7 @@ namespace OrchardCore.AdminDashboard.Controllers
             var dashboardCreatable = new List<SelectListItem>();
 
             var widgetContentTypes = _contentDefinitionManager.ListTypeDefinitions()
-                    .Where(t => t.TryGetStereotype(out var stereotype) && stereotype.Contains("DashboardWidget"))
+                    .Where(t => t.StereotypeEquals("DashboardWidget"))
                     .OrderBy(x => x.DisplayName);
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
