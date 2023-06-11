@@ -66,7 +66,7 @@ namespace OrchardCore.Tenants.Services
 
             _ = _shellHost.TryGetSettings(model.Name, out var existingShellSettings);
 
-            // Check first if the existing shell settings are not related to the 'Default' tenant.
+            // First check that existing settings are not those of the 'Default' tenant.
             if ((existingShellSettings == null ||
                 !existingShellSettings.IsDefaultShell()) &&
                 String.IsNullOrWhiteSpace(model.RequestUrlHost) &&
@@ -86,7 +86,7 @@ namespace OrchardCore.Tenants.Services
                 ?.Split(_hostSeparators, StringSplitOptions.RemoveEmptyEntries)
                 ?? Array.Empty<string>();
 
-            // Check first if the existing shell settings are not related to the 'Default' tenant.
+            // First check that existing settings are not those of the 'Default' tenant.
             if ((existingShellSettings == null ||
                 !existingShellSettings.IsDefaultShell()) &&
                 _shellHost.GetAllSettings().Any(settings =>
