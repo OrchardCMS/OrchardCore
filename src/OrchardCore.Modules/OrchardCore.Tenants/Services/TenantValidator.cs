@@ -66,7 +66,8 @@ namespace OrchardCore.Tenants.Services
 
             _ = _shellHost.TryGetSettings(model.Name, out var existingShellSettings);
 
-            if ((existingShellSettings == null || !existingShellSettings.IsDefaultShell()) &&
+            if ((existingShellSettings == null ||
+                !existingShellSettings.IsDefaultShell()) &&
                 String.IsNullOrWhiteSpace(model.RequestUrlHost) &&
                 String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
             {
@@ -84,10 +85,12 @@ namespace OrchardCore.Tenants.Services
                 ?.Split(_hostSeparators, StringSplitOptions.RemoveEmptyEntries)
                 ?? Array.Empty<string>();
 
-            if (_shellHost.GetAllSettings().Any(settings =>
-                settings != existingShellSettings &&
-                String.Equals(settings.RequestUrlPrefix ?? String.Empty, modelUrlPrefix, StringComparison.OrdinalIgnoreCase) &&
-                DoesUrlHostExist(settings.RequestUrlHosts, modelUrlHosts)))
+            if ((existingShellSettings == null ||
+                !existingShellSettings.IsDefaultShell()) &&
+                _shellHost.GetAllSettings().Any(settings =>
+                    settings != existingShellSettings &&
+                    String.Equals(settings.RequestUrlPrefix ?? String.Empty, modelUrlPrefix, StringComparison.OrdinalIgnoreCase) &&
+                    DoesUrlHostExist(settings.RequestUrlHosts, modelUrlHosts)))
             {
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["A tenant with the same host and prefix already exists."]));
             }
