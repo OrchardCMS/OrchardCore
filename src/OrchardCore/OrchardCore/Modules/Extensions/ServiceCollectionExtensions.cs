@@ -499,5 +499,13 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.Add(collection);
             });
         }
+
+        /// <summary>
+        /// Retrieves the singleton implementation types from the provided service collection.
+        /// </summary>
+        private static IEnumerable<Type> GetSingletonImplementationTypes(this IServiceCollection services) =>
+            services
+                .Where(sd => sd.Lifetime == ServiceLifetime.Singleton)
+                .Select(sd => sd.GetImplementationType());
     }
 }
