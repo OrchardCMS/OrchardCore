@@ -20,7 +20,10 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         public const string DefaultShellName = "Default";
 
-        private static readonly char[] _hostSeparators = new[] { ',', ' ' };
+        /// <summary>
+        /// The 'RequestUrlHost' string separators allowing to provide multiple hosts.
+        /// </summary>
+        public static readonly char[] HostSeparators = new[] { ',', ' ' };
 
         private readonly ShellConfiguration _settings;
         private readonly ShellConfiguration _configuration;
@@ -91,7 +94,7 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         [JsonIgnore]
         public string[] RequestUrlHosts => _settings["RequestUrlHost"]
-            ?.Split(_hostSeparators, StringSplitOptions.RemoveEmptyEntries)
+            ?.Split(HostSeparators, StringSplitOptions.RemoveEmptyEntries)
             ?? Array.Empty<string>();
 
         /// <summary>

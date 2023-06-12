@@ -14,12 +14,12 @@ namespace OrchardCore.Tenants.Services
 {
     public class TenantValidator : ITenantValidator
     {
-        private static readonly char[] _hostSeparators = new[] { ',', ' ' };
-
         private readonly IShellHost _shellHost;
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IFeatureProfilesService _featureProfilesService;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer<TenantValidator> S;
+#pragma warning restore IDE1006 // Naming Styles
         private readonly IDbConnectionValidator _dbConnectionValidator;
 
         public TenantValidator(
@@ -45,7 +45,7 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.Name), S["The tenant name is mandatory."]));
             }
 
-            if (model.FeatureProfiles != null && model.FeatureProfiles.Length > 0)
+            if (model.FeatureProfiles is not null && model.FeatureProfiles.Length > 0)
             {
                 var featureProfiles = await _featureProfilesService.GetFeatureProfilesAsync();
 
@@ -78,18 +78,12 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["The url prefix can not contain more than one segment."]));
             }
 
-            var modelUrlPrefix = model.RequestUrlPrefix?.Trim(' ', '/') ?? String.Empty;
-
-            var modelUrlHosts = model.RequestUrlHost
-                ?.Split(_hostSeparators, StringSplitOptions.RemoveEmptyEntries)
-                ?? Array.Empty<string>();
-
             // First check that existing settings are not those of the 'Default' tenant.
             if (!existingShellSettings.IsDefaultShell() &&
                 _shellHost.GetAllSettings().Any(settings =>
                     settings != existingShellSettings &&
-                    String.Equals(settings.RequestUrlPrefix ?? String.Empty, modelUrlPrefix, StringComparison.OrdinalIgnoreCase) &&
-                    DoesUrlHostExist(settings.RequestUrlHosts, modelUrlHosts)))
+                    settings.HasUrlPrefix(model.RequestUrlPrefix) &&
+                    settings.HasUrlHost(model.RequestUrlHost)))
             {
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["A tenant with the same host and prefix already exists."]));
             }
@@ -97,16 +91,13 @@ namespace OrchardCore.Tenants.Services
             ShellSettings shellSettings = null;
             if (model.IsNewTenant)
             {
-                if (existingShellSettings != null)
+                if (existingShellSettings.IsDefaultShell())
                 {
-                    if (existingShellSettings.IsDefaultShell())
-                    {
-                        errors.Add(new ModelError(nameof(model.Name), S["The tenant name is in conflict with the 'Default' tenant."]));
-                    }
-                    else
-                    {
-                        errors.Add(new ModelError(nameof(model.Name), S["A tenant with the same name already exists."]));
-                    }
+                    errors.Add(new ModelError(nameof(model.Name), S["The tenant name is in conflict with the 'Default' tenant."]));
+                }
+                else if (existingShellSettings is not null)
+                {
+                    errors.Add(new ModelError(nameof(model.Name), S["A tenant with the same name already exists."]));
                 }
                 else
                 {
@@ -116,7 +107,7 @@ namespace OrchardCore.Tenants.Services
             }
             else
             {
-                if (existingShellSettings == null)
+                if (existingShellSettings is null)
                 {
                     errors.Add(new ModelError(nameof(model.Name), S["The existing tenant to be validated was not found."]));
                 }
@@ -124,12 +115,11 @@ namespace OrchardCore.Tenants.Services
                 {
                     // While the tenant is in Uninitialized state, we still are able to change the database settings.
                     // Let's validate the database for assurance.
-
                     shellSettings = existingShellSettings;
                 }
             }
 
-            if (shellSettings != null)
+            if (shellSettings is not null)
             {
                 var validationContext = new DbConnectionValidatorContext(shellSettings, model);
                 await ValidateConnectionAsync(validationContext, errors);
@@ -160,32 +150,6 @@ namespace OrchardCore.Tenants.Services
 
                     break;
             }
-        }
-
-        private static bool DoesUrlHostExist(string[] urlHosts, string[] modelUrlHosts)
-        {
-            if (urlHosts.Length == 0 && modelUrlHosts.Length == 0)
-            {
-                return true;
-            }
-
-            if (urlHosts.Length == 0 || modelUrlHosts.Length == 0)
-            {
-                return false;
-            }
-
-            for (var i = 0; i < urlHosts.Length; i++)
-            {
-                for (var j = 0; j < modelUrlHosts.Length; j++)
-                {
-                    if (urlHosts[i].Equals(modelUrlHosts[j], StringComparison.OrdinalIgnoreCase))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
         }
     }
 }

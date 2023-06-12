@@ -1,3 +1,4 @@
+using System;
 using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Environment.Shell;
@@ -38,6 +39,52 @@ public static class ShellSettingsExtensions
     /// Wether the tenant is removable or not.
     /// </summary>
     public static bool IsRemovable(this ShellSettings settings) => settings.IsUninitialized() || settings.IsDisabled();
+
+    /// <summary>
+    /// Wether or not the tenant has the provided url prefix.
+    /// </summary>
+    public static bool HasUrlPrefix(this ShellSettings settings, string urlPrefix) =>
+        String.Equals(
+            settings.RequestUrlPrefix ?? String.Empty,
+            urlPrefix?.Trim(' ', '/') ?? String.Empty,
+            StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Wether or not the tenant has one of the url host(s) defined by the provided string.
+    /// </summary>
+    public static bool HasUrlHost(this ShellSettings settings, string urlHost) =>
+        settings.HasUrlHost(urlHost
+            ?.Split(ShellSettings.HostSeparators, StringSplitOptions.RemoveEmptyEntries)
+            ?? Array.Empty<string>());
+
+    /// <summary>
+    /// Wether or not the tenant has one of the provided url hosts.
+    /// </summary>
+    public static bool HasUrlHost(this ShellSettings settings, string[] urlHosts)
+    {
+        if (settings.RequestUrlHosts.Length == 0 && urlHosts.Length == 0)
+        {
+            return true;
+        }
+
+        if (settings.RequestUrlHosts.Length == 0 || urlHosts.Length == 0)
+        {
+            return false;
+        }
+
+        for (var i = 0; i < settings.RequestUrlHosts.Length; i++)
+        {
+            for (var j = 0; j < urlHosts.Length; j++)
+            {
+                if (settings.RequestUrlHosts[i].Equals(urlHosts[j], StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 
     /// <summary>
     /// As the 'Default' tenant.
