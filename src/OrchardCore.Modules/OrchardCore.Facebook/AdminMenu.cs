@@ -1,23 +1,18 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Modules;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Facebook
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly ShellDescriptor _shellDescriptor;
         private readonly IStringLocalizer S;
 
         public AdminMenu(
-            IStringLocalizer<AdminMenu> localizer,
-            ShellDescriptor shellDescriptor)
+            IStringLocalizer<AdminMenu> localizer)
         {
             S = localizer;
-            _shellDescriptor = shellDescriptor;
         }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
@@ -38,18 +33,14 @@ namespace OrchardCore.Facebook
         }
     }
 
-    [Feature(FacebookConstants.Features.Login)]
     public class AdminMenuLogin : INavigationProvider
     {
-        private readonly ShellDescriptor _shellDescriptor;
         private readonly IStringLocalizer S;
 
         public AdminMenuLogin(
-            IStringLocalizer<AdminMenuLogin> localizer,
-            ShellDescriptor shellDescriptor)
+            IStringLocalizer<AdminMenuLogin> localizer)
         {
             S = localizer;
-            _shellDescriptor = shellDescriptor;
         }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
@@ -65,6 +56,39 @@ namespace OrchardCore.Facebook
                             .LocalNav())
                 ));
             }
+
+            return Task.CompletedTask;
+        }
+    }
+
+    public class AdminMenuPixel : INavigationProvider
+    {
+        private readonly IStringLocalizer S;
+
+        public AdminMenuPixel(
+            IStringLocalizer<AdminMenuLogin> stringLocalizer)
+        {
+            S = stringLocalizer;
+        }
+
+        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+        {
+            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            {
+                return Task.CompletedTask;
+            }
+
+            builder
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["Facebook Pixel"], S["Facebook Pixel"].PrefixPosition(), pixel => pixel
+                            .AddClass("facebookPixel").Id("facebookPixel")
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = FacebookConstants.PixelSettingsGroupId })
+                            .Permission(Permissions.ManageFacebookApp)
+                            .LocalNav()
+                        )
+                    )
+                );
 
             return Task.CompletedTask;
         }

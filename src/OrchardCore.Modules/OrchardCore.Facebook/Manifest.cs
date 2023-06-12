@@ -13,7 +13,8 @@ using OrchardCore.Modules.Manifest;
     Id = FacebookConstants.Features.Core,
     Name = "Facebook",
     Category = "Facebook",
-    Description = "Registers the core components used by the Facebook features."
+    Description = "Registers the core components used by the Facebook features.",
+    EnabledByDependencyOnly = true
 )]
 
 [assembly: Feature(
@@ -38,4 +39,11 @@ using OrchardCore.Modules.Manifest;
         "OrchardCore.Widgets",
         "OrchardCore.Recipes.Core",
     }
+)]
+
+[assembly: Feature(
+    Id = FacebookConstants.Features.Pixel,
+    Name = "Facebook Pixel",
+    Category = "Facebook",
+    Description = "Provides a way to enable Facebook Pixel tracking for your site."
 )]
