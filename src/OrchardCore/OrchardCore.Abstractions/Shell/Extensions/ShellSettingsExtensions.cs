@@ -44,6 +44,7 @@ public static class ShellSettingsExtensions
     /// Wether or not the tenant has the provided url prefix.
     /// </summary>
     public static bool HasUrlPrefix(this ShellSettings settings, string urlPrefix) =>
+        settings is not null &&
         String.Equals(
             settings.RequestUrlPrefix ?? String.Empty,
             urlPrefix?.Trim(' ', '/') ?? String.Empty,
@@ -62,6 +63,11 @@ public static class ShellSettingsExtensions
     /// </summary>
     public static bool HasUrlHost(this ShellSettings settings, string[] urlHosts)
     {
+        if (settings is null)
+        {
+            return false;
+        }
+
         if (settings.RequestUrlHosts.Length == 0 && urlHosts.Length == 0)
         {
             return true;

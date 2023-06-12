@@ -105,18 +105,15 @@ namespace OrchardCore.Tenants.Services
                     shellSettings.Name = model.Name;
                 }
             }
-            else
+            else if (existingShellSettings is null)
             {
-                if (existingShellSettings is null)
-                {
-                    errors.Add(new ModelError(nameof(model.Name), S["The existing tenant to be validated was not found."]));
-                }
-                else if (existingShellSettings.IsUninitialized())
-                {
-                    // While the tenant is in Uninitialized state, we still are able to change the database settings.
-                    // Let's validate the database for assurance.
-                    shellSettings = existingShellSettings;
-                }
+                errors.Add(new ModelError(nameof(model.Name), S["The existing tenant to be validated was not found."]));
+            }
+            else if (existingShellSettings.IsUninitialized())
+            {
+                // While the tenant is in Uninitialized state, we still are able to change the database settings.
+                // Let's validate the database for assurance.
+                shellSettings = existingShellSettings;
             }
 
             if (shellSettings is not null)
@@ -142,12 +139,10 @@ namespace OrchardCore.Tenants.Services
                     if (validationContext.DatabaseProvider == DatabaseProviderValue.Sqlite)
                     {
                         errors.Add(new ModelError(String.Empty, S["The related database file is already in use."]));
-                    }
-                    else
-                    {
-                        errors.Add(new ModelError(nameof(TenantViewModel.TablePrefix), S["The provided database, table prefix and schema are already in use."]));
+                        break;
                     }
 
+                    errors.Add(new ModelError(nameof(TenantViewModel.TablePrefix), S["The provided database, table prefix and schema are already in use."]));
                     break;
             }
         }
