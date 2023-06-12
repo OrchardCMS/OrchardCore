@@ -9,7 +9,7 @@ public class PixelPermissionProvider : IPermissionProvider
 {
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        return Task.FromResult(new[] { FacebookConstants.ManageFacebookPixel }.AsEnumerable());
+        return Task.FromResult(new[] { FacebookConstants.ManageFacebookPixelPermission }.AsEnumerable());
     }
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -19,7 +19,7 @@ public class PixelPermissionProvider : IPermissionProvider
             Name = "Administrator",
             Permissions = new[]
             {
-                FacebookConstants.ManageFacebookPixel
+                FacebookConstants.ManageFacebookPixelPermission
             }
         };
     }

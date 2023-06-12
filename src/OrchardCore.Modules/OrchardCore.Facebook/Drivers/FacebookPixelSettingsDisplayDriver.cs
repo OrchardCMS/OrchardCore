@@ -49,6 +49,8 @@ public class FacebookPixelSettingsDisplayDriver : SectionDisplayDriver<ISite, Fa
 
         await context.Updater.TryUpdateModelAsync(settings, Prefix);
 
+        settings.PixelId = settings.PixelId?.Trim();
+
         return await EditAsync(settings, context);
     }
 }

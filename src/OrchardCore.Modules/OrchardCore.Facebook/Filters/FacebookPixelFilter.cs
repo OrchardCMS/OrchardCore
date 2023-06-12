@@ -30,9 +30,9 @@ public class FacebookPixelFilter : IAsyncResultFilter
 
     public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
     {
-        // Should only run on the front-end for a full view
-        if ((context.Result is ViewResult || context.Result is PageResult) &&
-            !AdminAttribute.IsApplied(context.HttpContext))
+        // Should only run on the front-end for a full view.
+        if ((context.Result is ViewResult || context.Result is PageResult)
+            && !AdminAttribute.IsApplied(context.HttpContext))
         {
             var canTrack = context.HttpContext.Features.Get<ITrackingConsentFeature>()?.CanTrack ?? true;
 
@@ -42,7 +42,7 @@ public class FacebookPixelFilter : IAsyncResultFilter
 
                 if (!String.IsNullOrWhiteSpace(settings?.PixelId))
                 {
-                    _scriptsCache = new HtmlString($"<!-- Meta Pixel Code --><script>\n!function(f,b,e,v,n,t,s)\n{{if(f.fbq)return;n=f.fbq=function(){{n.callMethod?\r\n  n.callMethod.apply(n,arguments):n.queue.push(arguments)}};\n if(!f._fbq)\n f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';\n  n.queue=[];t=b.createElement(e);t.async=!0;\r\n  t.src=v;s=b.getElementsByTagName(e)[0];\n  s.parentNode.insertBefore(t,s)}}(window, document,'script',\r\n  'https://connect.facebook.net/en_US/fbevents.js');\n  fbq('init', '{settings?.PixelId}');\n  fbq('track', 'PageView');\n</script> \n<noscript><img height=\"1\" width=\"1\" style=\"display:none\"\r\n  src=\"https://www.facebook.com/tr?id={settings?.PixelId}&ev=PageView&noscript=1\"\r\n/></noscript> \n <!-- End Meta Pixel Code -->");
+                    _scriptsCache = new HtmlString($"<!-- Meta Pixel Code -->\r\n<script>\r\n  !function(f,b,e,v,n,t,s)\r\n  {{if(f.fbq)return;n=f.fbq=function(){{n.callMethod?\r\n  n.callMethod.apply(n,arguments):n.queue.push(arguments)}};\r\n  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';\r\n  n.queue=[];t=b.createElement(e);t.async=!0;\r\n  t.src=v;s=b.getElementsByTagName(e)[0];\r\n  s.parentNode.insertBefore(t,s)}}(window, document,'script',\r\n  'https://connect.facebook.net/en_US/fbevents.js');\r\n  fbq('init', '{settings.PixelId}');\r\n  fbq('track', 'PageView');\r\n</script>\r\n<noscript><img height=\"1\" width=\"1\" style=\"display:none\"\r\n  src=\"https://www.facebook.com/tr?id={settings.PixelId}&ev=PageView&noscript=1\"\r\n/></noscript>\r\n<!-- End Meta Pixel Code -->");
                 }
             }
 
