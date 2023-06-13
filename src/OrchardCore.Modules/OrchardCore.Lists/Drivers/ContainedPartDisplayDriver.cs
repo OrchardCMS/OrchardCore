@@ -56,7 +56,7 @@ namespace OrchardCore.Lists.Drivers
                 // such as widgets, from also having a ContainedPart shape built for them.
 
                 // Attach ContainedPart to the contentitem during edit to provide handlers container info.
-                model.Alter<ContainedPart>(async part =>
+                await model.AlterAsync<ContainedPart>(async part =>
                 {
                     part.ListContentItemId = viewModel.ContainerId;
                     part.ListContentType = viewModel.ContainerContentType;
@@ -82,7 +82,7 @@ namespace OrchardCore.Lists.Drivers
                 && viewModel.ContainerId != null
                 && viewModel.ContentType == model.ContentType)
             {
-                model.Alter<ContainedPart>(async part =>
+                await model.AlterAsync<ContainedPart>(async part =>
                 {
                     part.ListContentItemId = viewModel.ContainerId;
                     part.ListContentType = viewModel.ContainerContentType;
