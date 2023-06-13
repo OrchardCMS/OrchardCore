@@ -44,7 +44,7 @@ public class RobotsMiddleware
 
             foreach (var provider in _robotsProviders.Reverse())
             {
-                var item = (await provider.ContentAsync())?.Trim();
+                var item = (await provider.GetContentAsync())?.Trim();
 
                 if (String.IsNullOrEmpty(item))
                 {
@@ -57,6 +57,8 @@ public class RobotsMiddleware
             httpContext.Response.Clear();
             httpContext.Response.ContentType = "text/plain";
             await httpContext.Response.WriteAsync(content.ToString());
+
+            return;
         }
 
         await _next(httpContext);

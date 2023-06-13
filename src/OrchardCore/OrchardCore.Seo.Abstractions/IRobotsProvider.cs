@@ -8,5 +8,5 @@ public interface IRobotsProvider
     /// Provides a way to contribute to the content of the robots.txt file.
     /// </summary>
     /// <returns>Content to add to the robots.txt file.</returns>
-    Task<string> ContentAsync();
+    Task<string> GetContentAsync();
 }

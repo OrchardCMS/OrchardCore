@@ -8,7 +8,7 @@ public class RobotsSettings
     public bool AllowAllAgents { get; set; } = true;
 
     [DefaultValue(true)]
-    public bool DiallowAdmin { get; set; } = true;
+    public bool DisallowAdmin { get; set; } = true;
 
     public string AdditionalRules { get; set; }
 }

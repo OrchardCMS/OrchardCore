@@ -21,7 +21,7 @@ public class SiteSettingsRobotsProvider : IRobotsProvider
         _adminOptions = adminOptions.Value;
     }
 
-    public async Task<string> ContentAsync()
+    public async Task<string> GetContentAsync()
     {
         var settings = (await _siteService.GetSiteSettingsAsync()).As<RobotsSettings>();
 
@@ -32,7 +32,7 @@ public class SiteSettingsRobotsProvider : IRobotsProvider
             content.AppendLine("User-agent: *");
         }
 
-        if (settings.DiallowAdmin)
+        if (settings.DisallowAdmin)
         {
             content.AppendLine($"Disallow: /{_adminOptions.AdminUrlPrefix}");
         }

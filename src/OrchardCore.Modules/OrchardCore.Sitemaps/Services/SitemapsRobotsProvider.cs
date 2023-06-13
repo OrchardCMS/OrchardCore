@@ -23,7 +23,7 @@ public class SitemapsRobotsProvider : IRobotsProvider
         _siteService = siteService;
     }
 
-    public async Task<string> ContentAsync()
+    public async Task<string> GetContentAsync()
     {
         var site = await _siteService.GetSiteSettingsAsync();
 

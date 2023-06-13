@@ -50,11 +50,11 @@ public class RobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, RobotsSet
 
             if (fileInfo.Exists)
             {
-                await _notifier.WarningAsync(H["A physical {0} file is found for the current site. Until removed, the file content settings below will have no effect.", SeoConstants.RobotsFileName]);
+                await _notifier.WarningAsync(H["A physical {0} file is found for the current site. Until removed, the settings below will have no effect.", SeoConstants.RobotsFileName]);
             }
 
             model.AllowAllAgents = settings.AllowAllAgents;
-            model.DiallowAdmin = settings.DiallowAdmin;
+            model.DisallowAdmin = settings.DisallowAdmin;
             model.AdditionalRules = settings.AdditionalRules;
         }).Location("Content:5")
         .OnGroup(SeoConstants.RobotsSettingsGroupId);
