@@ -50,12 +50,12 @@ namespace OrchardCore.Lists.Drivers
                 && viewModel.ContainerId != null
                 && viewModel.ContentType == model.ContentType)
             {
-                // We are creating a content item that needs to be added to a container
-                // so we render the container id as part of the form, the content type,
-                // and the enable ordering setting.
+                // We are creating a content item that needs to be added to a container.
+                // Render the container id as part of the form. The content type, and the enable ordering setting.
                 // The content type must be included to prevent any contained items,
                 // such as widgets, from also having a ContainedPart shape built for them.
 
+                // Attach ContainedPart to the contentitem during edit to provide handlers container info.
                 model.Alter<ContainedPart>(async part =>
                 {
                     part.ListContentItemId = viewModel.ContainerId;
@@ -78,20 +78,21 @@ namespace OrchardCore.Lists.Drivers
 
             // The content type must match the value provided in the query string
             // in order for the ContainedPart to be included on the Content Item.
-            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)) && viewModel.ContainerId != null && viewModel.ContentType == model.ContentType)
+            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart))
+                && viewModel.ContainerId != null
+                && viewModel.ContentType == model.ContentType)
             {
-                model.Alter<ContainedPart>(part =>
+                model.Alter<ContainedPart>(async part =>
                 {
                     part.ListContentItemId = viewModel.ContainerId;
                     part.ListContentType = viewModel.ContainerContentType;
-                });
 
-                // If creating get next order number so item is added to the end of the list
-                if (viewModel.EnableOrdering)
-                {
-                    var nextOrder = await _containerService.GetNextOrderNumberAsync(viewModel.ContainerId);
-                    model.Alter<ContainedPart>(x => x.Order = nextOrder);
-                }
+                    // If creating get next order number so item is added to the end of the list.
+                    if (viewModel.EnableOrdering)
+                    {
+                        part.Order = await _containerService.GetNextOrderNumberAsync(viewModel.ContainerId);
+                    }
+                });
             }
 
             return await EditAsync(model, updater);
