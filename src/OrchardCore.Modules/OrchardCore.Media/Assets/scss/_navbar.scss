@@ -76,7 +76,7 @@
             display: inline-block;
 
             a {
-                color: $media-menu-font-color;
+                color: $media-color;
             }
         }
     }
@@ -89,7 +89,7 @@
 
         a {
             border-radius: 0px !important;
-            color: $media-menu-font-color;
+            color: $media-color;
         }
     }
 }
@@ -101,7 +101,7 @@
 
     button {
         border-radius: 0px !important;
-        color: $gray-700;
+        color: $media-color;
     }
 
     .selected {

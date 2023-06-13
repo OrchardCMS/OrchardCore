@@ -1328,7 +1328,7 @@
   margin-top: -5px;
 }
 :root[data-theme=darkmode] .visibility-buttons button {
-  color: #495057;
+  color: rgb(181, 175, 166);
 }
 [dir]:root[data-theme=darkmode] .visibility-buttons button {
   border-radius: 0px !important;
