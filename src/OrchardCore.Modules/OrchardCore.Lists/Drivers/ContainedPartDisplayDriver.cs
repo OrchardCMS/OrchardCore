@@ -46,13 +46,25 @@ namespace OrchardCore.Lists.Drivers
 
             var viewModel = new EditContainedPartViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)) && viewModel.ContainerId != null && viewModel.ContentType == model.ContentType)
+            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart))
+                && viewModel.ContainerId != null
+                && viewModel.ContentType == model.ContentType)
             {
                 // We are creating a content item that needs to be added to a container
                 // so we render the container id as part of the form, the content type,
                 // and the enable ordering setting.
                 // The content type must be included to prevent any contained items,
                 // such as widgets, from also having a ContainedPart shape built for them.
+
+                model.Alter<ContainedPart>(async part =>
+                {
+                    part.ListContentItemId = viewModel.ContainerId;
+                    part.ListContentType = viewModel.ContainerContentType;
+                    if (viewModel.EnableOrdering)
+                    {
+                        part.Order = await _containerService.GetNextOrderNumberAsync(viewModel.ContainerId);
+                    }
+                });
 
                 return BuildViewModel(viewModel.ContainerId, viewModel.ContainerContentType, model.ContentType, viewModel.EnableOrdering);
             }
@@ -68,10 +80,10 @@ namespace OrchardCore.Lists.Drivers
             // in order for the ContainedPart to be included on the Content Item.
             if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)) && viewModel.ContainerId != null && viewModel.ContentType == model.ContentType)
             {
-                model.Alter<ContainedPart>(x =>
+                model.Alter<ContainedPart>(part =>
                 {
-                    x.ListContentItemId = viewModel.ContainerId;
-                    x.ListContentType = viewModel.ContainerContentType;
+                    part.ListContentItemId = viewModel.ContainerId;
+                    part.ListContentType = viewModel.ContainerContentType;
                 });
 
                 // If creating get next order number so item is added to the end of the list
