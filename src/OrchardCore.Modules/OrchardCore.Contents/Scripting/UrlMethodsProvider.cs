@@ -15,30 +15,14 @@ namespace OrchardCore.Contents.Scripting
             _getUrlPrefix = new GlobalMethod
             {
                 Name = "getUrlPrefix",
-                Method = serviceProvider => (Func<string, string>)((string path) =>
-                 {
-                     string ret;
-
-                     var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
-
-                     if (!string.IsNullOrWhiteSpace(shellSettings.RequestUrlPrefix))
-                         ret = shellSettings.RequestUrlPrefix.Trim('/');
-                     else
-                         ret = string.Empty;
-
-                     if (!string.IsNullOrWhiteSpace(path))
-                     {
-                         ret = string.Concat(ret, '/', path.Trim('/')).Trim('/');
-                     }
-
-                     return string.Concat('/', ret);
-                 })
+                Method = serviceProvider => (string path) =>
+                {
+                    var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
+                    return String.Concat('/', $"{shellSettings.RequestUrlPrefix}/{path?.Trim('/')}".Trim('/'));
+                }
             };
         }
 
-        public IEnumerable<GlobalMethod> GetMethods()
-        {
-            return new[] { _getUrlPrefix };
-        }
+        public IEnumerable<GlobalMethod> GetMethods() => new[] { _getUrlPrefix };
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Twitter;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
@@ -25,13 +26,14 @@ namespace OrchardCore.Twitter.Signin.Configuration
         private readonly ITwitterSigninService _twitterSigninService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ShellSettings _shellSettings;
-        private readonly ILogger _logger;
         private readonly string _tenantPrefix;
+        private readonly ILogger _logger;
 
         public TwitterOptionsConfiguration(
             ITwitterSettingsService twitterService,
             ITwitterSigninService twitterSigninService,
             IDataProtectionProvider dataProtectionProvider,
+            IHttpContextAccessor httpContextAccessor,
             ShellSettings shellSettings,
             ILogger<TwitterOptionsConfiguration> logger)
         {
@@ -39,7 +41,14 @@ namespace OrchardCore.Twitter.Signin.Configuration
             _twitterSigninService = twitterSigninService;
             _dataProtectionProvider = dataProtectionProvider;
             _shellSettings = shellSettings;
-            _tenantPrefix = "/" + shellSettings.RequestUrlPrefix;
+
+            var pathBase = httpContextAccessor.HttpContext?.Request.PathBase ?? PathString.Empty;
+            if (!pathBase.HasValue)
+            {
+                pathBase = "/";
+            }
+
+            _tenantPrefix = pathBase;
             _logger = logger;
         }
 
@@ -66,7 +75,7 @@ namespace OrchardCore.Twitter.Signin.Configuration
             }
 
             var settings = GetSettingsAsync().GetAwaiter().GetResult();
-            if (settings == null)
+            if (settings is null)
             {
                 return;
             }
