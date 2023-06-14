@@ -18,7 +18,6 @@ using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.ViewModels;
 using OrchardCore.Routing;
 using OrchardCore.Security.Services;
-using OrchardCore.Settings;
 using OrchardCore.Users.Services;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
@@ -32,20 +31,17 @@ namespace OrchardCore.OpenId.Controllers
         private readonly IOpenIdApplicationManager _applicationManager;
         private readonly IOpenIdAuthorizationManager _authorizationManager;
         private readonly IOpenIdScopeManager _scopeManager;
-        private readonly ISiteService _siteService;
         private readonly ShellSettings _shellSettings;
 
         public AccessController(
             IOpenIdApplicationManager applicationManager,
             IOpenIdAuthorizationManager authorizationManager,
             IOpenIdScopeManager scopeManager,
-            ISiteService siteService,
             ShellSettings shellSettings)
         {
             _applicationManager = applicationManager;
             _authorizationManager = authorizationManager;
             _scopeManager = scopeManager;
-            _siteService = siteService;
             _shellSettings = shellSettings;
         }
 
