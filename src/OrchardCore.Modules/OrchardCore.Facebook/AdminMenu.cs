@@ -25,7 +25,7 @@ public class AdminMenu : INavigationProvider
         builder
             .Add(S["Configuration"], configuration => configuration
                 .Add(S["Settings"], settings => settings
-                    .Add(S["Facebook App"], S["Facebook App"].PrefixPosition(), facebook => facebook
+                    .Add(S["Meta App"], S["Meta App"].PrefixPosition(), facebook => facebook
                         .AddClass("facebookApp")
                         .Id("facebookApp")
                         .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = FacebookConstants.Features.Core })
@@ -59,7 +59,7 @@ public class AdminMenuLogin : INavigationProvider
         builder
             .Add(S["Security"], security => security
                 .Add(S["Authentication"], authentication => authentication
-                    .Add(S["Facebook"], S["Facebook"].PrefixPosition(), settings => settings
+                    .Add(S["Meta"], S["Meta"].PrefixPosition(), settings => settings
                         .AddClass("facebook")
                         .Id("facebook")
                         .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = FacebookConstants.Features.Login })
@@ -93,7 +93,7 @@ public class AdminMenuPixel : INavigationProvider
         builder
             .Add(S["Configuration"], configuration => configuration
                 .Add(S["Settings"], settings => settings
-                    .Add(S["Facebook Pixel"], S["Facebook Pixel"].PrefixPosition(), pixel => pixel
+                    .Add(S["Meta Pixel"], S["Meta Pixel"].PrefixPosition(), pixel => pixel
                         .AddClass("facebookPixel")
                         .Id("facebookPixel")
                         .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = FacebookConstants.PixelSettingsGroupId })
