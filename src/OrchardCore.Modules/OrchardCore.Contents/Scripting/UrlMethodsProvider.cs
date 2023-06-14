@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Scripting;
 
 namespace OrchardCore.Contents.Scripting
@@ -17,8 +17,21 @@ namespace OrchardCore.Contents.Scripting
                 Name = "getUrlPrefix",
                 Method = serviceProvider => (string path) =>
                 {
-                    var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
-                    return String.Concat('/', $"{shellSettings.RequestUrlPrefix}/{path?.Trim('/')}".Trim('/'));
+                    var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+
+                    var pathBase = httpContextAccessor.HttpContext?.Request.PathBase ?? PathString.Empty;
+                    if (!pathBase.HasValue)
+                    {
+                        pathBase = "/";
+                    }
+
+                    path = path?.Trim(' ', '/') ?? String.Empty;
+                    if (path.Length > 0)
+                    {
+                        pathBase = pathBase.Add($"/{path}");
+                    }
+
+                    return pathBase.Value;
                 }
             };
         }
