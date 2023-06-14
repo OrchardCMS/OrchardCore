@@ -20,7 +20,9 @@ namespace OrchardCore.Tenants.Services
         private readonly IShellHost _shellHost;
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IFeatureProfilesService _featureProfilesService;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer<TenantValidator> S;
+#pragma warning restore IDE1006 // Naming Styles
         private readonly IDbConnectionValidator _dbConnectionValidator;
 
         public TenantValidator(
@@ -100,38 +102,32 @@ namespace OrchardCore.Tenants.Services
             ShellSettings shellSettings = null;
             if (model.IsNewTenant)
             {
-                if (existingShellSettings != null)
-                {
-                    if (existingShellSettings.IsDefaultShell())
-                    {
-                        errors.Add(new ModelError(nameof(model.Name), S["The tenant name is in conflict with the 'Default' tenant."]));
-                    }
-                    else
-                    {
-                        errors.Add(new ModelError(nameof(model.Name), S["A tenant with the same name already exists."]));
-                    }
-                }
-                else
+                if (existingShellSettings is null)
                 {
                     // Set the settings to be validated.
                     shellSettings = _shellSettingsManager.CreateDefaultSettings();
                     shellSettings.Name = model.Name;
                 }
+                else if (existingShellSettings.IsDefaultShell())
+                {
+                    errors.Add(new ModelError(nameof(model.Name), S["The tenant name is in conflict with the 'Default' tenant."]));
+                }
+                else
+                {
+                    errors.Add(new ModelError(nameof(model.Name), S["A tenant with the same name already exists."]));
+                }
             }
-            else
+            else if (existingShellSettings is null)
             {
-                if (existingShellSettings == null)
-                {
-                    errors.Add(new ModelError(nameof(model.Name), S["The existing tenant to be validated was not found."]));
-                }
-                else if (existingShellSettings.State == TenantState.Uninitialized)
-                {
-                    // Database settings may still have been changed.
-                    shellSettings = existingShellSettings;
-                }
+                errors.Add(new ModelError(nameof(model.Name), S["The existing tenant to be validated was not found."]));
+            }
+            else if (existingShellSettings.State == TenantState.Uninitialized)
+            {
+                // Database settings may still have been changed.
+                shellSettings = existingShellSettings;
             }
 
-            if (shellSettings != null)
+            if (shellSettings is not null)
             {
                 var validationContext = new DbConnectionValidatorContext(shellSettings, model);
                 await ValidateConnectionAsync(validationContext, errors);
@@ -149,11 +145,13 @@ namespace OrchardCore.Tenants.Services
                         nameof(TenantViewModel.DatabaseProvider),
                         S["The provided database provider is not supported."]));
                     break;
+
                 case DbConnectionValidatorResult.InvalidConnection:
                     errors.Add(new ModelError(
                         nameof(TenantViewModel.ConnectionString),
                         S["The provided connection string is invalid or server is unreachable."]));
                     break;
+
                 case DbConnectionValidatorResult.DocumentTableFound:
                     if (validationContext.DatabaseProvider == DatabaseProviderValue.Sqlite)
                     {
