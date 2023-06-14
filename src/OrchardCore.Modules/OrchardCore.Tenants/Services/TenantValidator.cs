@@ -10,7 +10,7 @@ using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Tenants.Models;
 using OrchardCore.Tenants.ViewModels;
 
-namespace OrchardCore.Tenants.Services;
+namespace OrchardCore.Tenants.Services
 {
     public class TenantValidator : ITenantValidator
     {
