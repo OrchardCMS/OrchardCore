@@ -76,7 +76,10 @@ namespace OrchardCore.Templates.Controllers
             else
             {
                 var index = handle.IndexOf(_homeUrl, StringComparison.Ordinal);
-                handle = ((index < 0) ? handle : handle.Substring(_homeUrl.Length)).ToUriComponents(UriFormat.SafeUnescaped);
+
+                handle = (index < 0 ? handle : handle[_homeUrl.Length..])
+                    .ToUriComponents(UriFormat.SafeUnescaped);
+
                 contentItemId = await _contentHandleManager.GetContentItemIdAsync("slug:" + handle);
             }
 
