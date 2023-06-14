@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
-using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Abstractions.Managers;
@@ -20,7 +19,6 @@ using OrchardCore.OpenId.ViewModels;
 using OrchardCore.Routing;
 using OrchardCore.Security.Services;
 using OrchardCore.Settings;
-using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
@@ -497,16 +495,6 @@ namespace OrchardCore.OpenId.Controllers
                     [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.UnsupportedGrantType,
                     [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
                         "The resource owner password credentials grant is not supported."
-                }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
-            }
-
-            var disableLocalLogin = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().DisableLocalLogin;
-            if (disableLocalLogin)
-            {
-                return Forbid(new AuthenticationProperties(new Dictionary<string, string>
-                {
-                    [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
-                    [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "Local login is disabled."
                 }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }
 
