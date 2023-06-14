@@ -91,19 +91,19 @@ namespace OrchardCore.Tenants.Services
             ShellSettings shellSettings = null;
             if (model.IsNewTenant)
             {
-                if (existingShellSettings.IsDefaultShell())
-                {
-                    errors.Add(new ModelError(nameof(model.Name), S["The tenant name is in conflict with the 'Default' tenant."]));
-                }
-                else if (existingShellSettings is not null)
-                {
-                    errors.Add(new ModelError(nameof(model.Name), S["A tenant with the same name already exists."]));
-                }
-                else
+                if (existingShellSettings is null)
                 {
                     // Set the settings to be validated.
                     shellSettings = _shellSettingsManager.CreateDefaultSettings();
                     shellSettings.Name = model.Name;
+                }
+                else if (existingShellSettings.IsDefaultShell())
+                {
+                    errors.Add(new ModelError(nameof(model.Name), S["The tenant name is in conflict with the 'Default' tenant."]));
+                }
+                else
+                {
+                    errors.Add(new ModelError(nameof(model.Name), S["A tenant with the same name already exists."]));
                 }
             }
             else if (existingShellSettings is null)
@@ -134,11 +134,13 @@ namespace OrchardCore.Tenants.Services
                         TenantViewModel.DatabaseProvider),
                         S["The provided database provider is not supported."]));
                     break;
+
                 case DbConnectionValidatorResult.InvalidConnection:
                     errors.Add(new ModelError(
                         nameof(TenantViewModel.ConnectionString),
                         S["The provided connection string is invalid or server is unreachable."]));
                     break;
+
                 case DbConnectionValidatorResult.DocumentTableFound:
                     if (validationContext.DatabaseProvider == DatabaseProviderValue.Sqlite)
                     {
