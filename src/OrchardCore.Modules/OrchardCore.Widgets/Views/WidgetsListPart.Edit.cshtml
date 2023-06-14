@@ -1,8 +1,8 @@
-@using OrchardCore.ContentManagement.Metadata.Settings;
-@using OrchardCore.Mvc.Utilities;
-@using OrchardCore.Widgets.Models;
-@using OrchardCore.Widgets.ViewModels;
-@using OrchardCore.ContentManagement.Metadata.Models;
+@using OrchardCore.ContentManagement.Metadata.Settings
+@using OrchardCore.Mvc.Utilities
+@using OrchardCore.Widgets.Models
+@using OrchardCore.Widgets.ViewModels
+@using OrchardCore.ContentManagement.Metadata.Models
 
 @model WidgetsListPartEditViewModel
 
@@ -19,7 +19,7 @@
 
 <script asp-name="jquery-ui" at="Foot"></script>
 
-<div class="mb-3">
+<div>
     @foreach (var zone in Model.AvailableZones)
     {
         var widgetTemplatePlaceholderId = Guid.NewGuid().ToString("n");
@@ -132,7 +132,7 @@
                             <div class="btn-widget-add-below w-100 border border-info">
                                 <div class="btn-group ">
                                     <button type="button" title="@T["Add Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                        <i class="fa-solid fa-plus" aria-hidden="true"></i>
                                     </button>
                                     <div class="dropdown-menu">
                                         @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))

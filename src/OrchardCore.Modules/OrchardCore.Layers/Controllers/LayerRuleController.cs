@@ -258,7 +258,7 @@ namespace OrchardCore.Layers.Controllers
             var conditionParent = FindConditionParent(layer.LayerRule, conditionId);
             var toCondition = FindCondition(layer.LayerRule, toConditionId);
 
-            if (condition == null || conditionParent == null || toCondition == null || !(toCondition is ConditionGroup toGroupCondition))
+            if (condition == null || conditionParent == null || toCondition == null || toCondition is not ConditionGroup toGroupCondition)
             {
                 return NotFound();
             }
@@ -278,7 +278,7 @@ namespace OrchardCore.Layers.Controllers
                 return condition;
             }
 
-            if (!(condition is ConditionGroup conditionGroup))
+            if (condition is not ConditionGroup conditionGroup)
             {
                 return null;
             }

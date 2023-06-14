@@ -69,24 +69,21 @@ This will allow for the Razor Pages to be reloaded without the need to recompile
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="OrchardCore.Application.Cms.Core.Targets" Version="1.5.0" />
+  <PackageReference Include="OrchardCore.Application.Cms.Core.Targets" Version="1.6.0" />
 </ItemGroup>
 ```
 This will add the packages from Orchard Core CMS
 
-- Edit the `Startup.cs` file `ConfigureServices` method like this:
+- Edit the `Program.cs` file to configure OrchardCore CMS services like this:
 
 ```csharp
-public void ConfigureServices(IServiceCollection services)
-{
-    services.AddOrchardCms();
-}
+builder.Services.AddOrchardCms();
 ```
 
 !!! warning "Razor Pages"
     `AddRazorPages` must not be called directly as `services.AddOrchardCms()` already invokes it internally.
 
-- Edit the `Startup.cs` file `Configure`
+- Edit the `Program.cs` file
 - Remove everything after `app.UseStaticFiles();` and replace it by `app.UseOrchardCore();` like this:
 
 ```csharp

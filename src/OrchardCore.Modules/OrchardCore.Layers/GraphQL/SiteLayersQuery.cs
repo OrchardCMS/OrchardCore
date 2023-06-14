@@ -31,7 +31,7 @@ namespace OrchardCore.Layers.GraphQL
 
         public Task BuildAsync(ISchema schema)
         {
-            if (_graphQLContentOptions.ShouldSkipContentType("SiteLayers"))
+            if (_graphQLContentOptions.IsHiddenByDefault("SiteLayers"))
             {
                 return Task.CompletedTask;
             }

@@ -53,7 +53,7 @@ namespace OrchardCore.Environment.Shell.Configuration
             if (configuration._configuration != null)
             {
                 _configurationProviders = configuration._configuration.Providers
-                    .Where(p => !(p is UpdatableDataProvider)).ToArray();
+                    .Where(p => p is not UpdatableDataProvider).ToArray();
 
                 _initialData = configuration._updatableData.ToArray();
 

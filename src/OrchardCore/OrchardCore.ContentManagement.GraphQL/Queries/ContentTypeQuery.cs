@@ -49,7 +49,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             foreach (var typeDefinition in contentDefinitionManager.ListTypeDefinitions())
             {
-                if (_contentOptionsAccessor.Value.ShouldSkipContentType(typeDefinition.Name))
+                if (_contentOptionsAccessor.Value.ShouldHide(typeDefinition))
                 {
                     continue;
                 }

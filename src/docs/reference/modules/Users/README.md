@@ -11,6 +11,11 @@ The module contains the following features apart from the base feature:
 - Reset Password: Allows users to reset their password.
 - User Time Zone: Provides a way to set the time zone per user.
 - Custom User Settings: See [its own documentation page](CustomUserSettings/README.md).
+- [Users Authentication Ticket Store](./TicketStore.md): Stores users authentication tickets on server in memory cache instead of cookies. If distributed cache feature is enabled it will store authentication tickets on distributed cache.
+
+## Two-factor Authentication
+
+Starting with version 1.7, the Users feature is shipped with everything you need to enable two-factor authentication. To enable two-factor authentication, go to the Dashboard then navigate to `Security` >> `Settings` >> `User Login`. Click on the "Two-factor Authentication" tab and check "Enable two-factor authentication" option and save.
 
 ## Custom Paths
 
@@ -23,7 +28,9 @@ If you want to specify custom paths to access the authentication related urls, y
       "LogoffPath": "Users/LogOff",
       "ChangePasswordUrl": "ChangePassword",
       "ChangePasswordConfirmationUrl": "ChangePasswordConfirmation",
-      "ExternalLoginsUrl": "ExternalLogins"
+      "ExternalLoginsUrl": "ExternalLogins",
+      "ExternalLoginsUrl": "ExternalLogins",
+      "EnableAuthenticatorPath": "EnableAuthenticator"
     }
   }
 ```

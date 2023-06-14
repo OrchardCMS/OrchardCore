@@ -125,6 +125,7 @@ nav:
       - Publishing a new release: docs/topics/publishing-releases/README.md
       - Using Docker: docs/topics/docker/README.md
       - Using local NuGet packages: docs/topics/local-nuget-packages/README.md
+      - Managing the Orchard Core Red Hat Ecosystem Catalog certification:  docs/topics/red-hat-ecosystem-catalog-certification/README.md
   - Reference:
       - docs/reference/README.md
       - CMS Modules:
@@ -183,6 +184,7 @@ nav:
           - Users:
               - Overview: docs/reference/modules/Users/README.md
               - Custom User Settings: docs/reference/modules/Users/CustomUserSettings/README.md
+              - Notifications: docs/reference/modules/Notifications/README.md
           - Home Route: docs/reference/modules/HomeRoute/README.md
           - Feeds: docs/reference/modules/Feeds/README.md
       - Core Modules:
@@ -235,6 +237,7 @@ nav:
       - Owners: docs/resources/owners/README.md
       - Workshops: docs/resources/workshops/README.md
   - Releases:
+      - 1.6.0: docs/releases/1.6.0.md
       - 1.5.0: docs/releases/1.5.0.md
       - 1.4.0: docs/releases/1.4.0.md
       - 1.3.0: docs/releases/1.3.0.md

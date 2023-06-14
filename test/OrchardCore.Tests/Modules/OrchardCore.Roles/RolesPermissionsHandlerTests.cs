@@ -1,11 +1,7 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Moq;
 using OrchardCore.Roles;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Tests.Security;
-using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Roles
 {

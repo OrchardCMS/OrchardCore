@@ -19,7 +19,6 @@ using OrchardCore.AuditTrail.ViewModels;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -28,7 +27,6 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 using YesSql.Filters.Query;
-using YesSql.Indexes;
 
 namespace OrchardCore.AuditTrail
 {
@@ -56,7 +54,7 @@ namespace OrchardCore.AuditTrail
             services.Configure<StoreCollectionOptions>(o => o.Collections.Add(AuditTrailEvent.Collection));
 
             services.AddDataMigration<Migrations>();
-            services.AddSingleton<IIndexProvider, AuditTrailEventIndexProvider>();
+            services.AddIndexProvider<AuditTrailEventIndexProvider>();
             services.AddSingleton<IBackgroundTask, AuditTrailBackgroundTask>();
 
             services.AddScoped<IPermissionProvider, Permissions>();

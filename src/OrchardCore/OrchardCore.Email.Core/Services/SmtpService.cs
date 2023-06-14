@@ -81,7 +81,7 @@ namespace OrchardCore.Email.Services
                     return SmtpResult.Failed(errors.ToArray());
                 }
 
-                if (mimeMessage.From.Count == 0 && mimeMessage.Cc.Count == 0 && mimeMessage.Bcc.Count == 0)
+                if (mimeMessage.To.Count == 0 && mimeMessage.Cc.Count == 0 && mimeMessage.Bcc.Count == 0)
                 {
                     return SmtpResult.Failed(S["The mail message should have at least one of these headers: To, Cc or Bcc."]);
                 }
@@ -217,14 +217,13 @@ namespace OrchardCore.Email.Services
 
             var body = new BodyBuilder();
 
-            if (message.IsBodyHtml)
+            if (message.IsHtmlBody)
             {
                 body.HtmlBody = message.Body;
             }
-
-            if (message.IsBodyText)
+            else
             {
-                body.TextBody = message.BodyText;
+                body.TextBody = message.Body;
             }
 
             foreach (var attachment in message.Attachments)
@@ -277,8 +276,8 @@ namespace OrchardCore.Email.Services
                 secureSocketOptions = _options.EncryptionMethod switch
                 {
                     SmtpEncryptionMethod.None => SecureSocketOptions.None,
-                    SmtpEncryptionMethod.SSLTLS => SecureSocketOptions.SslOnConnect,
-                    SmtpEncryptionMethod.STARTTLS => SecureSocketOptions.StartTls,
+                    SmtpEncryptionMethod.SslTls => SecureSocketOptions.SslOnConnect,
+                    SmtpEncryptionMethod.StartTls => SecureSocketOptions.StartTls,
                     _ => SecureSocketOptions.Auto,
                 };
             }

@@ -33,7 +33,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
             var contentFieldProviders = serviceProvider.GetServices<IContentFieldProvider>().ToList();
 
-            if (_contentOptions.ShouldSkipContentType(contentTypeDefinition.Name))
+            if (_contentOptions.ShouldHide(contentTypeDefinition))
             {
                 return;
             }
@@ -49,6 +49,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 }
 
                 if (_contentOptions.ShouldSkip(part))
+                {
+                    continue;
+                }
+
+                if (!(part.PartDefinition.Fields.Any(field => contentFieldProviders.Any(fieldProvider => fieldProvider.GetField(field) != null))))
                 {
                     continue;
                 }

@@ -1,11 +1,8 @@
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Tests.Apis.Context;
-using Xunit;
 using YesSql;
+using ISession = YesSql.ISession;
 
 namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
 {
