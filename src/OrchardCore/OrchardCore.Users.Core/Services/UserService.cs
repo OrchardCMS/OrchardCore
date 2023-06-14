@@ -54,7 +54,7 @@ namespace OrchardCore.Users.Services
                 return null;
             }
 
-            var user = await _userManager.FindByNameAsync(userName);
+            var user = await GetUserAsync(userName);
             if (user == null)
             {
                 reportError(string.Empty, S["The specified username/password couple is invalid."]);
@@ -228,7 +228,8 @@ namespace OrchardCore.Users.Services
             return _signInManager.CreateUserPrincipalAsync(user);
         }
 
-        public Task<IUser> GetUserAsync(string userName) => _userManager.FindByNameAsync(userName);
+        public async Task<IUser> GetUserAsync(string userName) =>
+            (await _userManager.FindByNameAsync(userName)) ?? await _userManager.FindByEmailAsync(userName);
 
         public Task<IUser> GetUserByUniqueIdAsync(string userIdentifier) => _userManager.FindByIdAsync(userIdentifier);
 
