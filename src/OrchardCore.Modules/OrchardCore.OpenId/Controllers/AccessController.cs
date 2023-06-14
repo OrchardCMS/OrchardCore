@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using OrchardCore.Entities;
@@ -37,14 +36,12 @@ namespace OrchardCore.OpenId.Controllers
         private readonly IOpenIdScopeManager _scopeManager;
         private readonly ISiteService _siteService;
         private readonly ShellSettings _shellSettings;
-        private readonly IStringLocalizer S;
 
         public AccessController(
             IOpenIdApplicationManager applicationManager,
             IOpenIdAuthorizationManager authorizationManager,
             IOpenIdScopeManager scopeManager,
             ISiteService siteService,
-            IStringLocalizer<AccessController> stringLocalizer,
             ShellSettings shellSettings)
         {
             _applicationManager = applicationManager;
@@ -52,8 +49,6 @@ namespace OrchardCore.OpenId.Controllers
             _scopeManager = scopeManager;
             _siteService = siteService;
             _shellSettings = shellSettings;
-
-            S = stringLocalizer;
         }
 
         [AllowAnonymous, HttpGet, HttpPost, IgnoreAntiforgeryToken]
@@ -108,7 +103,7 @@ namespace OrchardCore.OpenId.Controllers
                     {
                         [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
                         [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                            S["The logged in user is not allowed to access this client application."]
+                            "The logged in user is not allowed to access this client application."
                     }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
                 case ConsentTypes.Implicit:
@@ -152,7 +147,7 @@ namespace OrchardCore.OpenId.Controllers
                     {
                         [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
                         [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                            S["Interactive user consent is required."]
+                            "Interactive user consent is required."
                     }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
                 default:
@@ -173,7 +168,7 @@ namespace OrchardCore.OpenId.Controllers
                     return Forbid(new AuthenticationProperties(new Dictionary<string, string>
                     {
                         [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.LoginRequired,
-                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = S["The user is not logged in."]
+                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The user is not logged in."
                     }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
                 }
 
@@ -238,7 +233,7 @@ namespace OrchardCore.OpenId.Controllers
                     {
                         [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
                         [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                            S["The logged in user is not allowed to access this client application."]
+                            "The logged in user is not allowed to access this client application."
                     }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
                 default:
@@ -439,7 +434,7 @@ namespace OrchardCore.OpenId.Controllers
                 {
                     [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidScope,
                     [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                        S["The 'offline_access' scope is not allowed when using the client credentials grant."]
+                        "The 'offline_access' scope is not allowed when using the client credentials grant."
                 }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }
 
@@ -501,7 +496,7 @@ namespace OrchardCore.OpenId.Controllers
                 {
                     [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.UnsupportedGrantType,
                     [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                        S["The resource owner password credentials grant is not supported."]
+                        "The resource owner password credentials grant is not supported."
                 }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }
 
@@ -511,7 +506,7 @@ namespace OrchardCore.OpenId.Controllers
                 return Forbid(new AuthenticationProperties(new Dictionary<string, string>
                 {
                     [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
-                    [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = S["Local login is disabled."]
+                    [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "Local login is disabled."
                 }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }
 
@@ -544,7 +539,7 @@ namespace OrchardCore.OpenId.Controllers
                     {
                         [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
                         [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                            S["The logged in user is not allowed to access this client application."]
+                            "The logged in user is not allowed to access this client application."
                     }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }
 
@@ -597,7 +592,7 @@ namespace OrchardCore.OpenId.Controllers
                     {
                         [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.UnauthorizedClient,
                         [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                            S["The refresh token grant type is not allowed for refresh tokens retrieved using the client credentials flow."]
+                            "The refresh token grant type is not allowed for refresh tokens retrieved using the client credentials flow."
                     }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
                 }
             }
