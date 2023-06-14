@@ -10,7 +10,7 @@ using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Tenants.Models;
 using OrchardCore.Tenants.ViewModels;
 
-namespace OrchardCore.Tenants.Services
+namespace OrchardCore.Tenants.Services;
 {
     public class TenantValidator : ITenantValidator
     {
@@ -65,7 +65,7 @@ namespace OrchardCore.Tenants.Services
 
             _ = _shellHost.TryGetSettings(model.Name, out var existingShellSettings);
 
-            // First check that existing settings are not those of the 'Default' tenant.
+            // Only if the existing is not the 'Default' shell.
             if (!existingShellSettings.IsDefaultShell() &&
                 String.IsNullOrWhiteSpace(model.RequestUrlHost) &&
                 String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
@@ -78,7 +78,7 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["The url prefix can not contain more than one segment."]));
             }
 
-            // First check that existing settings are not those of the 'Default' tenant.
+            // Only if the existing is not the 'Default' shell.
             if (!existingShellSettings.IsDefaultShell() &&
                 _shellHost.GetAllSettings().Any(settings =>
                     settings != existingShellSettings &&
@@ -101,6 +101,7 @@ namespace OrchardCore.Tenants.Services
                 }
                 else
                 {
+                    // Set the settings to be validated.
                     shellSettings = _shellSettingsManager.CreateDefaultSettings();
                     shellSettings.Name = model.Name;
                 }
@@ -111,8 +112,7 @@ namespace OrchardCore.Tenants.Services
             }
             else if (existingShellSettings.IsUninitialized())
             {
-                // While the tenant is in Uninitialized state, we still are able to change the database settings.
-                // Let's validate the database for assurance.
+                // Database settings may still have been changed.
                 shellSettings = existingShellSettings;
             }
 
@@ -130,19 +130,27 @@ namespace OrchardCore.Tenants.Services
             switch (await _dbConnectionValidator.ValidateAsync(validationContext))
             {
                 case DbConnectionValidatorResult.UnsupportedProvider:
-                    errors.Add(new ModelError(nameof(TenantViewModel.DatabaseProvider), S["The provided database provider is not supported."]));
+                    errors.Add(new ModelError(nameof(
+                        TenantViewModel.DatabaseProvider),
+                        S["The provided database provider is not supported."]));
                     break;
                 case DbConnectionValidatorResult.InvalidConnection:
-                    errors.Add(new ModelError(nameof(TenantViewModel.ConnectionString), S["The provided connection string is invalid or server is unreachable."]));
+                    errors.Add(new ModelError(
+                        nameof(TenantViewModel.ConnectionString),
+                        S["The provided connection string is invalid or server is unreachable."]));
                     break;
                 case DbConnectionValidatorResult.DocumentTableFound:
                     if (validationContext.DatabaseProvider == DatabaseProviderValue.Sqlite)
                     {
-                        errors.Add(new ModelError(String.Empty, S["The related database file is already in use."]));
+                        errors.Add(new ModelError(
+                            String.Empty,
+                            S["The related database file is already in use."]));
                         break;
                     }
 
-                    errors.Add(new ModelError(nameof(TenantViewModel.TablePrefix), S["The provided database, table prefix and schema are already in use."]));
+                    errors.Add(new ModelError(
+                        nameof(TenantViewModel.TablePrefix),
+                        S["The provided database, table prefix and schema are already in use."]));
                     break;
             }
         }
