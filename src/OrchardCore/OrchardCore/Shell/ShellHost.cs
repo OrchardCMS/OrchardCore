@@ -137,7 +137,7 @@ namespace OrchardCore.Environment.Shell
                 // We create a scope before checking if the shell has been released.
                 scope = shellContext.CreateScope();
 
-                // If CreateScope() returned null, the shell is released. We then remove it and
+                // If 'CreateScope()' returned null, the shell is released. We then remove it and
                 // retry with the hope to get one that won't be released before we create a scope.
                 if (scope is null)
                 {
@@ -328,7 +328,7 @@ namespace OrchardCore.Environment.Shell
 
         /// <summary>
         /// Pre-creates and registers all shells, if the 'Default' shell is not running, a setup context is built.
-        /// On first loading only a placeholder is pre-created for each shell that is then fully built on demamnd.
+        /// On first loading only a placeholder is pre-created for each shell that is then fully built on request.
         /// </summary>
         private async Task PreCreateAndRegisterShellsAsync()
         {
@@ -337,8 +337,7 @@ namespace OrchardCore.Environment.Shell
                 _logger.LogInformation("Start creation of shells");
             }
 
-            // Load all extensions and features so that the controllers are registered in
-            // 'ITypeFeatureProvider' and their areas defined in the application conventions.
+            // Load all extensions and features and register their components.
             await _extensionManager.LoadFeaturesAsync();
 
             if (LoadingAsync is not null)
@@ -435,7 +434,7 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Adds the shell and registers its settings in RunningShellTable.
+        /// Adds the shell and registers its settings in 'RunningShellTable'.
         /// </summary>
         private void AddAndRegisterShell(ShellContext context)
         {
@@ -469,7 +468,7 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Registers the shell settings in RunningShellTable.
+        /// Registers the shell settings in 'RunningShellTable'.
         /// </summary>
         private void RegisterShellSettings(ShellSettings settings)
         {
