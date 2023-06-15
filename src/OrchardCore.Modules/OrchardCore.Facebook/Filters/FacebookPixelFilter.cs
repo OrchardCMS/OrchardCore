@@ -17,6 +17,7 @@ public class FacebookPixelFilter : IAsyncResultFilter
 {
     private readonly IResourceManager _resourceManager;
     private readonly ISiteService _siteService;
+    private readonly HtmlString _code = new("<!-- Meta Pixel Code -->\r\n<script>\r\n!function(f,b,e,v,n,t,s)\r\n{if(f.fbq)return;n=f.fbq=function(){n.callMethod?\r\nn.callMethod.apply(n,arguments):n.queue.push(arguments)};\r\nif(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';\r\nn.queue=[];t=b.createElement(e);t.async=!0;\r\nt.src=v;s=b.getElementsByTagName(e)[0];\r\ns.parentNode.insertBefore(t,s)}(window, document,'script',\r\n'https://connect.facebook.net/en_US/fbevents.js');\r\nfbq('init', MetaPixelId);\r\nfbq('track', 'PageView');\r\n</script>\r\n<!-- End Meta Pixel Code -->");
 
     private HtmlString _scriptsCache;
 
@@ -42,13 +43,14 @@ public class FacebookPixelFilter : IAsyncResultFilter
 
                 if (!String.IsNullOrWhiteSpace(settings?.PixelId))
                 {
-                    _scriptsCache = new HtmlString($"<!-- Meta Pixel Code -->\r\n<script>\r\n  !function(f,b,e,v,n,t,s)\r\n  {{if(f.fbq)return;n=f.fbq=function(){{n.callMethod?\r\n  n.callMethod.apply(n,arguments):n.queue.push(arguments)}};\r\n  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';\r\n  n.queue=[];t=b.createElement(e);t.async=!0;\r\n  t.src=v;s=b.getElementsByTagName(e)[0];\r\n  s.parentNode.insertBefore(t,s)}}(window, document,'script',\r\n  'https://connect.facebook.net/en_US/fbevents.js');\r\n  fbq('init', '{settings.PixelId}');\r\n  fbq('track', 'PageView');\r\n</script>\r\n<!-- End Meta Pixel Code -->");
+                    _scriptsCache = new HtmlString($"<script>const MetaPixelId = '{settings.PixelId.Replace("'", "")}';</script>");
                 }
             }
 
             if (_scriptsCache != null)
             {
                 _resourceManager.RegisterHeadScript(_scriptsCache);
+                _resourceManager.RegisterHeadScript(_code);
             }
         }
 
