@@ -79,7 +79,7 @@ namespace OrchardCore.Autoroute.Handlers
 
             if (!String.IsNullOrWhiteSpace(part.Path) && !part.Disabled && part.SetHomepage)
             {
-                await SetHomeRouteAsync(part, homeRoute =>
+                await SetHomeRouteAsync(homeRoute =>
                 {
                     homeRoute[_options.ContentItemIdKey] = context.ContentItem.ContentItemId;
                     homeRoute.Remove(_options.JsonPathKey);
@@ -168,7 +168,7 @@ namespace OrchardCore.Autoroute.Handlers
             });
         }
 
-        private async Task SetHomeRouteAsync(AutoroutePart part, Action<RouteValueDictionary> action)
+        private async Task SetHomeRouteAsync(Action<RouteValueDictionary> action)
         {
             var site = await _siteService.LoadSiteSettingsAsync();
 
@@ -185,10 +185,6 @@ namespace OrchardCore.Autoroute.Handlers
             }
 
             action.Invoke(homeRoute);
-
-            // Once we took the flag into account we can dismiss it.
-            part.SetHomepage = false;
-            part.Apply();
 
             await _siteService.UpdateSiteSettingsAsync(site);
         }
@@ -215,7 +211,7 @@ namespace OrchardCore.Autoroute.Handlers
                         var autoroutePart = contentItem.As<AutoroutePart>();
                         if (autoroutePart != null && autoroutePart.SetHomepage)
                         {
-                            await SetHomeRouteAsync(autoroutePart, homeRoute =>
+                            await SetHomeRouteAsync(homeRoute =>
                             {
                                 homeRoute[_options.ContentItemIdKey] = containerContentItemId;
                                 homeRoute[_options.JsonPathKey] = jItem.Path;
