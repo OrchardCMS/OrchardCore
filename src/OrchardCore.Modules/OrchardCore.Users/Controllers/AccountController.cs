@@ -196,7 +196,7 @@ namespace OrchardCore.Users.Controllers
                     await _accountEvents.InvokeAsync((e, model, modelState) => e.LoggingInAsync(model.UserName, (key, message) => modelState.AddModelError(key, message)), model, ModelState, _logger);
                     if (ModelState.IsValid)
                     {
-                        var user = await _userManager.FindByNameAsync(model.UserName) ?? await _userManager.FindByEmailAsync(model.UserName);
+                        var user = await _userService.GetUserAsync(model.UserName);
                         if (user != null)
                         {
                             var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
