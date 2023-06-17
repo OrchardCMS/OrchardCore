@@ -31,28 +31,38 @@ namespace OrchardCore.Environment.Shell.Scope
         private bool _terminated;
         private bool _disposed;
 
+        /// <summary>
+        /// Initializes a <see cref="ShellScope"/> from a given parent <see cref="Builders.ShellContext"/>.
+        /// </summary>
         public ShellScope(ShellContext shellContext)
         {
-            // Prevent the context from being disposed until the end of the scope
+            // Prevent the context from being disposed until the end of the scope.
             Interlocked.Increment(ref shellContext._refCount);
             ShellContext = shellContext;
 
             // The service provider is null if we try to create
             // a scope on a disabled shell or already disposed.
-            if (shellContext.ServiceProvider == null)
+            if (shellContext.ServiceProvider is null)
             {
                 // Keep the counter clean before failing.
                 Interlocked.Decrement(ref shellContext._refCount);
 
-                throw new ArgumentNullException(nameof(shellContext.ServiceProvider),
-                    $"Can't resolve a scope on tenant: {shellContext.Settings.Name}");
+                throw new InvalidOperationException(
+                    $"Can't resolve a scope on tenant '{shellContext.Settings.Name}' as it is disabled or disposed");
             }
 
             _serviceScope = shellContext.ServiceProvider.CreateAsyncScope();
             ServiceProvider = _serviceScope.ServiceProvider;
         }
 
+        /// <summary>
+        /// The parent 'ShellContext' of this shell scope.
+        /// </summary>
         public ShellContext ShellContext { get; }
+
+        /// <summary>
+        /// The 'IServiceProvider' of this shell scope.
+        /// </summary>
         public IServiceProvider ServiceProvider { get; }
 
         /// <summary>
@@ -75,7 +85,7 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         public static void Set(object key, object value)
         {
-            if (Current != null)
+            if (Current is not null)
             {
                 Current._items[key] = value;
             }
@@ -84,19 +94,19 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Gets a shared item from the current shell scope.
         /// </summary>
-        public static object Get(object key) => Current == null ? null : Current._items.TryGetValue(key, out var value) ? value : null;
+        public static object Get(object key) => Current is null ? null : Current._items.TryGetValue(key, out var value) ? value : null;
 
         /// <summary>
         /// Gets a shared item of a given type from the current shell scope.
         /// </summary>
-        public static T Get<T>(object key) => Current == null ? default : Current._items.TryGetValue(key, out var value) ? value is T item ? item : default : default;
+        public static T Get<T>(object key) => Current is null ? default : Current._items.TryGetValue(key, out var value) ? value is T item ? item : default : default;
 
         /// <summary>
         /// Gets (or creates) a shared item of a given type from the current shell scope.
         /// </summary>
         public static T GetOrCreate<T>(object key, Func<T> factory)
         {
-            if (Current == null)
+            if (Current is null)
             {
                 return factory();
             }
@@ -114,7 +124,7 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         public static T GetOrCreate<T>(object key) where T : class, new()
         {
-            if (Current == null)
+            if (Current is null)
             {
                 return new T();
             }
@@ -358,6 +368,9 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         public static void AddExceptionHandler(Func<ShellScope, Exception, Task> handler) => Current?.ExceptionHandler(handler);
 
+        /// <summary>
+        /// Invokes the registered delegates that should be executed if an exception is thrown while executing in this shell scope.
+        /// </summary>
         public async Task HandleExceptionAsync(Exception e)
         {
             foreach (var callback in _exceptionHandlers)
@@ -366,6 +379,10 @@ namespace OrchardCore.Environment.Shell.Scope
             }
         }
 
+        /// <summary>
+        /// Invokes the registered delegates that should be executed before disposing this shell scope,
+        /// triggers the deferred signals and executes the deferred tasks in their own isolated scope.
+        /// </summary>
         internal async Task BeforeDisposeAsync()
         {
             foreach (var callback in _beforeDispose)
