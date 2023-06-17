@@ -50,7 +50,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 var document = await session.Query<DatabaseShellConfigurations>().FirstOrDefaultAsync();
 
-                if (document != null)
+                if (document is not null)
                 {
                     configurations = document.ShellConfigurations;
                 }
@@ -74,7 +74,7 @@ namespace OrchardCore.Shells.Database.Configuration
             });
 
             var configuration = configurations.GetValue(tenant) as JObject;
-            if (configuration != null)
+            if (configuration is not null)
             {
                 builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(configuration.ToString(Formatting.None))));
             }
@@ -90,7 +90,7 @@ namespace OrchardCore.Shells.Database.Configuration
                 var document = await session.Query<DatabaseShellConfigurations>().FirstOrDefaultAsync();
 
                 JObject configurations;
-                if (document != null)
+                if (document is not null)
                 {
                     configurations = document.ShellConfigurations;
                 }
@@ -104,7 +104,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 foreach (var key in data.Keys)
                 {
-                    if (data[key] != null)
+                    if (data[key] is not null)
                     {
                         config[key] = data[key];
                     }
@@ -130,7 +130,7 @@ namespace OrchardCore.Shells.Database.Configuration
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
                 var document = await session.Query<DatabaseShellConfigurations>().FirstOrDefaultAsync();
-                if (document != null)
+                if (document is not null)
                 {
                     document.ShellConfigurations.Remove(tenant);
                     session.Save(document, checkConcurrency: true);
@@ -152,7 +152,7 @@ namespace OrchardCore.Shells.Database.Configuration
             {
                 var configuration = await file.ReadToEndAsync();
 
-                if (configuration != null)
+                if (configuration is not null)
                 {
                     configurations[tenant] = JObject.Parse(configuration);
                 }

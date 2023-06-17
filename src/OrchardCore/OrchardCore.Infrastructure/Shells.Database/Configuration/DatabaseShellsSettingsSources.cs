@@ -42,7 +42,7 @@ namespace OrchardCore.Shells.Database.Configuration
         public async Task AddSourcesAsync(IConfigurationBuilder builder)
         {
             var document = await GetDocumentAsync();
-            if (document.ShellsSettings != null)
+            if (document.ShellsSettings is not null)
             {
                 builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(document.ShellsSettings.ToString(Formatting.None))));
             }
@@ -51,7 +51,7 @@ namespace OrchardCore.Shells.Database.Configuration
         public async Task AddSourcesAsync(string tenant, IConfigurationBuilder builder)
         {
             var document = await GetDocumentAsync();
-            if (document.ShellsSettings != null && document.ShellsSettings.ContainsKey(tenant))
+            if (document.ShellsSettings is not null && document.ShellsSettings.ContainsKey(tenant))
             {
                 var shellSettings = new JObject
                 {
@@ -72,7 +72,7 @@ namespace OrchardCore.Shells.Database.Configuration
                 var document = await session.Query<DatabaseShellsSettings>().FirstOrDefaultAsync();
 
                 JObject tenantsSettings;
-                if (document != null)
+                if (document is not null)
                 {
                     tenantsSettings = document.ShellsSettings;
                 }
@@ -86,7 +86,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 foreach (var key in data.Keys)
                 {
-                    if (data[key] != null)
+                    if (data[key] is not null)
                     {
                         settings[key] = data[key];
                     }
@@ -112,7 +112,7 @@ namespace OrchardCore.Shells.Database.Configuration
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
                 var document = await session.Query<DatabaseShellsSettings>().FirstOrDefaultAsync();
-                if (document != null)
+                if (document is not null)
                 {
                     document.ShellsSettings.Remove(tenant);
                     session.Save(document, checkConcurrency: true);
@@ -131,7 +131,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 document = await session.Query<DatabaseShellsSettings>().FirstOrDefaultAsync();
 
-                if (document == null)
+                if (document is null)
                 {
                     document = new DatabaseShellsSettings();
 

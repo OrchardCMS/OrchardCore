@@ -164,7 +164,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 {
                     var type = serviceDescriptor.GetImplementationType();
 
-                    if (type != null)
+                    if (type is not null)
                     {
                         var feature = featureServiceCollection.Key;
 
@@ -172,7 +172,7 @@ namespace OrchardCore.Environment.Shell.Builders
                         {
                             var attribute = type.GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
 
-                            if (attribute != null)
+                            if (attribute is not null)
                             {
                                 feature = featureServiceCollection.Key.Extension.Features
                                     .FirstOrDefault(f => f.Id == attribute.FeatureName)
@@ -190,7 +190,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
         private void EnsureApplicationFeature()
         {
-            if (_applicationFeature == null)
+            if (_applicationFeature is null)
             {
                 lock (this)
                 {

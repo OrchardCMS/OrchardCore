@@ -43,7 +43,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 currentDescriptor = await shellDescriptorManager.GetShellDescriptorAsync();
             });
 
-            if (currentDescriptor != null)
+            if (currentDescriptor is not null)
             {
                 await describedContext.DisposeAsync();
                 return await CreateDescribedContextAsync(settings, currentDescriptor);

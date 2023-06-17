@@ -47,7 +47,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
         if (context.ShellSettings.State == TenantState.Uninitialized)
         {
             var dbConnectionValidator = ShellScope.Services?.GetService<IDbConnectionValidator>();
-            if (dbConnectionValidator == null)
+            if (dbConnectionValidator is null)
             {
                 return;
             }

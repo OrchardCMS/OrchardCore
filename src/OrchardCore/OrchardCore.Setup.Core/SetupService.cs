@@ -78,7 +78,7 @@ namespace OrchardCore.Setup.Services
         /// <inheritdoc />
         public async Task<IEnumerable<RecipeDescriptor>> GetSetupRecipesAsync()
         {
-            if (_recipes == null)
+            if (_recipes is null)
             {
                 var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
                 _recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).ToArray();

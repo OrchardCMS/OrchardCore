@@ -19,14 +19,14 @@ namespace OrchardCore.Environment.Shell.Distributed
             _context = context;
 
             // If the distributed feature is not enabled, the distributed cache is not set.
-            if (context.ServiceProvider.GetService<DistributedShellMarkerService>() == null)
+            if (context.ServiceProvider.GetService<DistributedShellMarkerService>() is null)
             {
                 return;
             }
 
             // If the current cache is an in memory cache, the distributed cache is not set.
             var distributedCache = context.ServiceProvider.GetService<IDistributedCache>();
-            if (distributedCache == null || distributedCache is MemoryDistributedCache)
+            if (distributedCache is null || distributedCache is MemoryDistributedCache)
             {
                 return;
             }

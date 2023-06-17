@@ -54,6 +54,9 @@ namespace OrchardCore.Environment.Shell
         public ShellEvent ReloadingAsync { get; set; }
         public ShellEvent RemovingAsync { get; set; }
 
+        /// <summary>
+        /// Ensure that all the <see cref="ShellContext"/> are pre-created and available to process requests.
+        /// </summary>
         public async Task InitializeAsync()
         {
             if (_initialized)
@@ -77,11 +80,13 @@ namespace OrchardCore.Environment.Shell
             }
         }
 
+        /// <summary>
+        /// Returns an existing <see cref="ShellContext"/> or creates a new one if necessary.
+        /// </summary>
         public async Task<ShellContext> GetOrCreateShellContextAsync(ShellSettings settings)
         {
             ShellContext shell = null;
-
-            while (shell == null)
+            while (shell is null)
             {
                 if (!_shellContexts.TryGetValue(settings.Name, out shell))
                 {
@@ -115,11 +120,13 @@ namespace OrchardCore.Environment.Shell
             return shell;
         }
 
+        /// <summary>
+        /// Creates a standalone service scope that can be used to resolve local services.
+        /// </summary>
         public async Task<ShellScope> GetScopeAsync(ShellSettings settings)
         {
             ShellScope scope = null;
-
-            while (scope == null)
+            while (scope is null)
             {
                 if (!_shellContexts.TryGetValue(settings.Name, out var shellContext))
                 {
@@ -129,9 +136,9 @@ namespace OrchardCore.Environment.Shell
                 // We create a scope before checking if the shell has been released.
                 scope = await shellContext.CreateScopeAsync();
 
-                // If CreateScope() returned null, the shell is released. We then remove it and
+                // If 'CreateScope()' returned null, the shell is released. We then remove it and
                 // retry with the hope to get one that won't be released before we create a scope.
-                if (scope == null)
+                if (scope is null)
                 {
                     // If the context is released, it is removed from the dictionary so that the next
                     // iteration or a new call on 'GetScopeAsync()' will recreate a new shell context.
@@ -142,6 +149,9 @@ namespace OrchardCore.Environment.Shell
             return scope;
         }
 
+        /// <summary>
+        /// Updates an existing shell configuration and then reloads the shell.
+        /// </summary>
         public async Task UpdateShellSettingsAsync(ShellSettings settings)
         {
             settings.VersionId = IdGenerator.GenerateId();
@@ -149,6 +159,9 @@ namespace OrchardCore.Environment.Shell
             await ReloadShellContextAsync(settings);
         }
 
+        /// <summary>
+        /// Removes a shell context and its settings from memory and from the storage.
+        /// </summary>
         public async Task RemoveShellSettingsAsync(ShellSettings settings)
         {
             CheckCanRemoveShell(settings);
@@ -167,12 +180,10 @@ namespace OrchardCore.Environment.Shell
         /// built for subsequent requests, while existing requests get flushed.
         /// </summary>
         /// <param name="settings">The <see cref="ShellSettings"/> to reload.</param>
-        /// <param name="eventSource">
-        /// Whether the related <see cref="ShellEvent"/> is invoked.
-        /// </param>
+        /// <param name="eventSource">Whether the related <see cref="ShellEvent"/> is invoked.
         public async Task ReloadShellContextAsync(ShellSettings settings, bool eventSource = true)
         {
-            if (ReloadingAsync != null && eventSource && settings.State != TenantState.Initializing)
+            if (ReloadingAsync is not null && eventSource && settings.State != TenantState.Initializing)
             {
                 foreach (var d in ReloadingAsync.GetInvocationList())
                 {
@@ -240,12 +251,10 @@ namespace OrchardCore.Environment.Shell
         /// Note: Can be used to free up resources after a given time of inactivity.
         /// </summary>
         /// <param name="settings">The <see cref="ShellSettings"/> to reload.</param>
-        /// <param name="eventSource">
-        /// Whether the related <see cref="ShellEvent"/> is invoked.
-        /// </param>
+        /// <param name="eventSource">Whether the related <see cref="ShellEvent"/> is invoked.</param>
         public async Task ReleaseShellContextAsync(ShellSettings settings, bool eventSource = true)
         {
-            if (ReleasingAsync != null && eventSource && settings.State != TenantState.Initializing)
+            if (ReleasingAsync is not null && eventSource && settings.State != TenantState.Initializing)
             {
                 foreach (var d in ReleasingAsync.GetInvocationList())
                 {
@@ -272,13 +281,16 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Removes a shell.
+        /// Removes a shell context and its settings but only from memory, used for syncing
+        /// when the settings has been already removed from the storage by another instance.
         /// </summary>
+        /// <param name="settings">The <see cref="ShellSettings"/> of the shell to remove.</param>
+        /// <param name="eventSource">Whether the related <see cref="ShellEvent"/> is invoked.</param>
         public async Task RemoveShellContextAsync(ShellSettings settings, bool eventSource = true)
         {
             CheckCanRemoveShell(settings);
 
-            if (RemovingAsync != null && eventSource && settings.State != TenantState.Initializing)
+            if (RemovingAsync is not null && eventSource && settings.State != TenantState.Initializing)
             {
                 foreach (var d in RemovingAsync.GetInvocationList())
                 {
@@ -294,6 +306,11 @@ namespace OrchardCore.Environment.Shell
             _shellSettings.TryRemove(settings.Name, out _);
         }
 
+        /// <summary>
+        /// Lists all available <see cref="ShellContext"/> instances.
+        /// A shell might have been released or not yet built, if so 'shell.Released' is true and
+        /// 'shell.CreateScopeAsync()' return null, but you can still use 'GetScopeAsync(shell.Settings)'.
+        /// </summary>
         public IEnumerable<ShellContext> ListShellContexts() => _shellContexts.Values.ToArray();
 
         /// <summary>
@@ -312,6 +329,10 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         public IEnumerable<ShellSettings> GetAllSettings() => _shellSettings.Values.ToArray();
 
+        /// <summary>
+        /// Pre-creates and registers all shells, if the 'Default' shell is not running, a setup context is built.
+        /// On first loading only a placeholder is pre-created for each shell that is then fully built on request.
+        /// </summary>
         private async Task PreCreateAndRegisterShellsAsync()
         {
             if (_logger.IsEnabled(LogLevel.Information))
@@ -319,11 +340,10 @@ namespace OrchardCore.Environment.Shell
                 _logger.LogInformation("Start creation of shells");
             }
 
-            // Load all extensions and features so that the controllers are registered in
-            // 'ITypeFeatureProvider' and their areas defined in the application conventions.
+            // Load all extensions and features and register their components.
             await _extensionManager.LoadFeaturesAsync();
 
-            if (LoadingAsync != null)
+            if (LoadingAsync is not null)
             {
                 foreach (var d in LoadingAsync.GetInvocationList())
                 {
@@ -355,7 +375,7 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Creates a shell context based on shell settings
+        /// Creates a shell context based on shell settings.
         /// </summary>
         private Task<ShellContext> CreateShellContextAsync(ShellSettings settings)
         {
@@ -402,7 +422,7 @@ namespace OrchardCore.Environment.Shell
                 _logger.LogDebug("Creating shell context for root setup.");
             }
 
-            if (defaultSettings == null)
+            if (defaultSettings is null)
             {
                 // Creates a default shell settings based on the configuration.
                 var shellSettings = _shellSettingsManager.CreateDefaultSettings();
@@ -417,7 +437,7 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Adds the shell and registers its settings in RunningShellTable
+        /// Adds the shell and registers its settings in 'RunningShellTable'.
         /// </summary>
         private void AddAndRegisterShell(ShellContext context)
         {
@@ -451,7 +471,7 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Registers the shell settings in RunningShellTable
+        /// Registers the shell settings in 'RunningShellTable'.
         /// </summary>
         private void RegisterShellSettings(ShellSettings settings)
         {
@@ -506,6 +526,7 @@ namespace OrchardCore.Environment.Shell
                 throw new InvalidOperationException($"The '{ShellHelper.DefaultShellName}' tenant can't be removed.");
             }
 
+            // A disabled shell may be still in use in at least one active scope.
             if (settings.State != TenantState.Uninitialized &&
                 (settings.State != TenantState.Disabled ||
                 _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0))
