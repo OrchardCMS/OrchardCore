@@ -180,7 +180,7 @@ namespace OrchardCore.Environment.Shell
         /// built for subsequent requests, while existing requests get flushed.
         /// </summary>
         /// <param name="settings">The <see cref="ShellSettings"/> to reload.</param>
-        /// <param name="eventSource">Whether the related <see cref="ShellEvent"/> is invoked.
+        /// <param name="eventSource">Whether the related <see cref="ShellEvent"/> is invoked.</param>
         public async Task ReloadShellContextAsync(ShellSettings settings, bool eventSource = true)
         {
             if (ReloadingAsync is not null && eventSource && settings.State != TenantState.Initializing)
