@@ -2717,6 +2717,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "derandre84",
+      "name": "André Göpel",
+      "avatar_url": "https://avatars.githubusercontent.com/u/22834588?v=4",
+      "profile": "https://github.com/derandre84",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
