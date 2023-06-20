@@ -40,6 +40,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
     private readonly IDistributedCache _distributedCache;
     private readonly UrlEncoder _urlEncoder;
     private readonly ShellSettings _shellSettings;
+    private readonly ITwoFactorAuthenticationHandlerCoordinator _twoFactorHandlerCoordinator;
     private readonly IHtmlLocalizer H;
     private readonly IStringLocalizer S;
 
@@ -54,7 +55,8 @@ public class TwoFactorAuthenticationController : AccountBaseController
         INotifier notifier,
         IDistributedCache distributedCache,
         UrlEncoder urlEncoder,
-        ShellSettings shellSettings)
+        ShellSettings shellSettings,
+        ITwoFactorAuthenticationHandlerCoordinator twoFactorHandlerCoordinator)
         : base(userManager)
     {
         _signInManager = signInManager;
@@ -65,6 +67,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
         _distributedCache = distributedCache;
         _urlEncoder = urlEncoder;
         _shellSettings = shellSettings;
+        _twoFactorHandlerCoordinator = twoFactorHandlerCoordinator;
         H = htmlLocalizer;
         S = stringLocalizer;
     }
@@ -139,7 +142,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
         if (result.IsLockedOut)
         {
             _logger.LogWarning("User account locked out.");
-            ModelState.AddModelError(String.Empty, S["The account is locked out"]);
+            ModelState.AddModelError(String.Empty, S["The account is locked out."]);
             await _accountEvents.InvokeAsync((e, user) => e.IsLockedOutAsync(user), user, _logger);
 
             return RedirectToAction(nameof(AccountController.Login), typeof(AccountController).ControllerName());
@@ -202,8 +205,6 @@ public class TwoFactorAuthenticationController : AccountBaseController
 
             var result = await _signInManager.TwoFactorRecoveryCodeSignInAsync(recoveryCode);
 
-            var userId = await _userManager.GetUserIdAsync(user);
-
             if (result.Succeeded)
             {
                 await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
@@ -221,7 +222,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
                 return RedirectToAction(nameof(AccountController.Login), typeof(AccountController).ControllerName());
             }
 
-            _logger.LogWarning("Invalid recovery code entered for user with ID '{UserId}' ", userId);
+            _logger.LogWarning("Invalid recovery code entered for user.");
             ModelState.AddModelError(String.Empty, S["Invalid recovery code entered."]);
         }
 
@@ -241,7 +242,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            return NotFound("Unable to load user.");
         }
 
         var model = await LoadSharedKeyAndQrCodeUriAsync(user, loginSettings);
@@ -266,7 +267,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            return NotFound("Unable to load user.");
         }
 
         if (!ModelState.IsValid)
@@ -322,7 +323,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            return NotFound("Unable to load user.");
         }
 
         var model = new TwoFactorAuthenticationViewModel()
@@ -331,7 +332,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
             IsTwoFaEnabled = await _userManager.GetTwoFactorEnabledAsync(user),
             IsMachineRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
             RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user),
-            CanDisableTwoFa = !loginSettings.RequireTwoFactorAuthentication
+            CanDisableTwoFa = !await _twoFactorHandlerCoordinator.ShouldRequireAsync()
             || !await loginSettings.CanEnableTwoFactorAuthenticationAsync(role => _userManager.IsInRoleAsync(user, role)),
         };
 
@@ -353,7 +354,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            return NotFound("Unable to load user.");
         }
 
         await _signInManager.ForgetTwoFactorClientAsync();
@@ -375,7 +376,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            return NotFound("Unable to load user.");
         }
 
         var isTwoFactorEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
@@ -405,11 +406,10 @@ public class TwoFactorAuthenticationController : AccountBaseController
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            return NotFound("Unable to load user.");
         }
 
-        var isTwoFactorEnabled = await _userManager.GetTwoFactorEnabledAsync(user);
-        if (!isTwoFactorEnabled)
+        if (!await _userManager.GetTwoFactorEnabledAsync(user))
         {
             await _notifier.ErrorAsync(H["Cannot generate recovery codes for user because they do not have 2FA enabled."]);
 
@@ -437,7 +437,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            return NotFound("Unable to load user.");
         }
 
         var userId = await _userManager.GetUserIdAsync(user);
@@ -468,7 +468,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            return NotFound("Unable to load user.");
         }
 
         return View();
@@ -490,7 +490,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            return NotFound("Unable to load user.");
         }
 
         await _userManager.SetTwoFactorEnabledAsync(user, false);
@@ -514,10 +514,10 @@ public class TwoFactorAuthenticationController : AccountBaseController
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            return NotFound("Unable to load user.");
         }
 
-        if (loginSettings.RequireTwoFactorAuthentication
+        if (await _twoFactorHandlerCoordinator.ShouldRequireAsync()
             && await loginSettings.CanEnableTwoFactorAuthenticationAsync(role => _userManager.IsInRoleAsync(user, role)))
         {
             await _notifier.WarningAsync(H["Two-factor authentication cannot be disabled for the current user."]);
@@ -544,10 +544,10 @@ public class TwoFactorAuthenticationController : AccountBaseController
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            return NotFound("Unable to load user.");
         }
 
-        if (loginSettings.RequireTwoFactorAuthentication
+        if (await _twoFactorHandlerCoordinator.ShouldRequireAsync()
             && await loginSettings.CanEnableTwoFactorAuthenticationAsync(role => _userManager.IsInRoleAsync(user, role)))
         {
             await _notifier.WarningAsync(H["Two-factor authentication cannot be disabled for the current user."]);
