@@ -1,3 +1,5 @@
+@using OrchardCore
+
 @model ReverseProxySettingsViewModel
 
 <p class="alert alert-warning">
@@ -12,7 +14,7 @@
         </label>
     </div>
     <span class="hint">@T["Enables the forwarding of the HTTP header X-Forwarded-For"]</span>
-    <span class="hint">@T["Current request value;"] @Context.Connection.RemoteIpAddress</span>
+    <span class="hint">@T["Current request value;"] @Orchard.GetClientIpAddress()</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="EnableXForwardedProto">
