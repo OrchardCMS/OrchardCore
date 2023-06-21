@@ -22,6 +22,7 @@ public class ShellHostTests : SiteContext
             {
                 Name = name,
                 State = TenantState.Uninitialized,
+                VersionId = IdGenerator.GenerateId(),
                 RequestUrlPrefix = urlPrefix,
             });
 
