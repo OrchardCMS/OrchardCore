@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
+using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Services;
@@ -14,13 +15,16 @@ public class TwoFactorAuthenticationClaimsProvider : IUserClaimsProvider
 
     private readonly UserManager<IUser> _userManager;
     private readonly ISiteService _siteService;
+    private readonly ITwoFactorAuthenticationHandlerCoordinator _twoFactorHandlerCoordinator;
 
     public TwoFactorAuthenticationClaimsProvider(
         UserManager<IUser> userManager,
-        ISiteService siteService)
+        ISiteService siteService,
+        ITwoFactorAuthenticationHandlerCoordinator twoFactorHandlerCoordinator)
     {
         _userManager = userManager;
         _siteService = siteService;
+        _twoFactorHandlerCoordinator = twoFactorHandlerCoordinator;
     }
 
     public async Task GenerateAsync(IUser user, ClaimsIdentity claims)
@@ -37,7 +41,7 @@ public class TwoFactorAuthenticationClaimsProvider : IUserClaimsProvider
 
         var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
-        if (loginSettings.RequireTwoFactorAuthentication
+        if (await _twoFactorHandlerCoordinator.IsRequiredAsync()
             && !await _userManager.GetTwoFactorEnabledAsync(user)
             && await loginSettings.CanEnableTwoFactorAuthenticationAsync(role => _userManager.IsInRoleAsync(user, role)))
         {
