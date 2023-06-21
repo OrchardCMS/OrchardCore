@@ -74,9 +74,9 @@
 
         .breadcrumb-item {
             display: inline-block;
-            
+
             a {
-                color: $gray-700;
+                color: $media-color;
             }
         }
     }
@@ -89,7 +89,7 @@
 
         a {
             border-radius: 0px !important;
-            color: $gray-700;
+            color: $media-color;
         }
     }
 }
@@ -101,7 +101,7 @@
 
     button {
         border-radius: 0px !important;
-        color: $gray-700;
+        color: $media-color;
     }
 
     .selected {
