@@ -41,7 +41,7 @@ public class TwoFactorAuthenticationClaimsProvider : IUserClaimsProvider
 
         var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
-        if (await _twoFactorHandlerCoordinator.ShouldRequireAsync()
+        if (await _twoFactorHandlerCoordinator.IsRequiredAsync()
             && !await _userManager.GetTwoFactorEnabledAsync(user)
             && await loginSettings.CanEnableTwoFactorAuthenticationAsync(role => _userManager.IsInRoleAsync(user, role)))
         {

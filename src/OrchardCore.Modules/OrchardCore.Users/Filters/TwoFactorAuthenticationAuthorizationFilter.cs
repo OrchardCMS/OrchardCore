@@ -49,7 +49,7 @@ public class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthorizationFil
         var loginSettings = (await siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
         if (loginSettings.IsTwoFactorAuthenticationEnabled()
-            && await _twoFactorHandlerCoordinator.ShouldRequireAsync()
+            && await _twoFactorHandlerCoordinator.IsRequiredAsync()
             && context.HttpContext.User.HasClaim(claim => claim.Type == TwoFactorAuthenticationClaimsProvider.TwoFactorAuthenticationClaimType))
         {
             context.Result = new RedirectResult("~/" + _userOptions.EnableAuthenticatorPath);

@@ -8,16 +8,17 @@ public class DefaultTwoFactorAuthenticationHandlerCoordinator : ITwoFactorAuthen
 {
     private readonly IEnumerable<ITwoFactorAuthenticationHandler> _handlers;
 
-    public DefaultTwoFactorAuthenticationHandlerCoordinator(IEnumerable<ITwoFactorAuthenticationHandler> handlers)
+    public DefaultTwoFactorAuthenticationHandlerCoordinator(
+        IEnumerable<ITwoFactorAuthenticationHandler> handlers)
     {
         _handlers = handlers;
     }
 
-    public async Task<bool> ShouldRequireAsync()
+    public async Task<bool> IsRequiredAsync()
     {
         foreach (var handler in _handlers)
         {
-            if (await handler.ShouldRequireAsync())
+            if (await handler.IsRequiredAsync())
             {
                 return true;
             }

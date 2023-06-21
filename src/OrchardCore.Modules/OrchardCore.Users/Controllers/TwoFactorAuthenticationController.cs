@@ -332,7 +332,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
             IsTwoFaEnabled = await _userManager.GetTwoFactorEnabledAsync(user),
             IsMachineRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
             RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user),
-            CanDisableTwoFa = !await _twoFactorHandlerCoordinator.ShouldRequireAsync()
+            CanDisableTwoFa = !await _twoFactorHandlerCoordinator.IsRequiredAsync()
             || !await loginSettings.CanEnableTwoFactorAuthenticationAsync(role => _userManager.IsInRoleAsync(user, role)),
         };
 
@@ -517,7 +517,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
             return NotFound("Unable to load user.");
         }
 
-        if (await _twoFactorHandlerCoordinator.ShouldRequireAsync()
+        if (await _twoFactorHandlerCoordinator.IsRequiredAsync()
             && await loginSettings.CanEnableTwoFactorAuthenticationAsync(role => _userManager.IsInRoleAsync(user, role)))
         {
             await _notifier.WarningAsync(H["Two-factor authentication cannot be disabled for the current user."]);
@@ -547,7 +547,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
             return NotFound("Unable to load user.");
         }
 
-        if (await _twoFactorHandlerCoordinator.ShouldRequireAsync()
+        if (await _twoFactorHandlerCoordinator.IsRequiredAsync()
             && await loginSettings.CanEnableTwoFactorAuthenticationAsync(role => _userManager.IsInRoleAsync(user, role)))
         {
             await _notifier.WarningAsync(H["Two-factor authentication cannot be disabled for the current user."]);
