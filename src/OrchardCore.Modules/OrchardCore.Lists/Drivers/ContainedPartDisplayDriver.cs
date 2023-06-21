@@ -166,8 +166,7 @@ namespace OrchardCore.Lists.Drivers
 
         private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ListPartSettings settings) =>
             settings.ContainedContentTypes
-                ?.Where(contentType => !String.IsNullOrEmpty(contentType))
-                .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
+                ?.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
                 .Where(definition => definition is not null)
                 ?? Enumerable.Empty<ContentTypeDefinition>();
     }
