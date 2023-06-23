@@ -78,7 +78,5 @@ namespace OrchardCore.ContentFields.Services
 
             return results.OrderBy(x => x.DisplayText);
         }
-
-
     }
 }
