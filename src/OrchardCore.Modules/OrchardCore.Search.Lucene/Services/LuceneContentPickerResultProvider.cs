@@ -72,10 +72,5 @@ namespace OrchardCore.Search.Lucene.Services
 
             return results.OrderBy(x => x.DisplayText);
         }
-
-        public Task<string> GetContentPickerItemDescription(ContentItem contentItem, string pattern, string defaultValue)
-        {
-            return Task.FromResult(defaultValue);
-        }
     }
 }

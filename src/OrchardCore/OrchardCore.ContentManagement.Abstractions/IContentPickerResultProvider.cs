@@ -21,7 +21,6 @@ namespace OrchardCore.ContentManagement
     public class ContentPickerResult
     {
         public string DisplayText { get; set; }
-        public string Description { get; set; }
         public string ContentItemId { get; set; }
         public bool HasPublished { get; set; }
     }

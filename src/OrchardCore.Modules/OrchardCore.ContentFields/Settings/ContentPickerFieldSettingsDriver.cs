@@ -34,7 +34,6 @@ namespace OrchardCore.ContentFields.Settings
                 model.Source = GetSource(settings);
                 model.DisplayedContentTypes = settings.DisplayedContentTypes;
                 model.TitlePattern = settings.TitlePattern;
-                model.DescriptionPattern = settings.DescriptionPattern;
                 model.Stereotypes = String.Join(',', settings.DisplayedStereotypes ?? Array.Empty<string>());
             }).Location("Content");
         }
@@ -50,7 +49,6 @@ namespace OrchardCore.ContentFields.Settings
                     Hint = model.Hint,
                     Required = model.Required,
                     Multiple = model.Multiple,
-                    DescriptionPattern = model.DescriptionPattern,
                     TitlePattern = model.TitlePattern,
                 };
 
@@ -81,12 +79,6 @@ namespace OrchardCore.ContentFields.Settings
         private bool ValidateTextPatterns(UpdatePartFieldEditorContext context, ContentPickerFieldSettingsViewModel model)
         {
             bool isValid = true;
-
-            if (!string.IsNullOrEmpty(model.DescriptionPattern) && !_templateManager.Validate(model.DescriptionPattern, out var descriptionError))
-            {
-                context.Updater.ModelState.AddModelError(nameof(model.DescriptionPattern), S["DescriptionPattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", descriptionError)]);
-                isValid = false;
-            }
 
             if (!string.IsNullOrEmpty(model.TitlePattern) && !_templateManager.Validate(model.TitlePattern, out var titleErrors))
             {

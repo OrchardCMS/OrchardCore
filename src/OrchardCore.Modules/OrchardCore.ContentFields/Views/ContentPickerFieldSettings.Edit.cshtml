@@ -78,15 +78,7 @@
         <label asp-for="TitlePattern">@T["Title Pattern"]</label>
         <textarea asp-for="TitlePattern" rows="5" class="form-control"></textarea>
     </div>
-    <span class="hint">@T["The pattern used to render the custom content item title in content picker. DisplayText is used when title is empty. With Liquid support."]</span>
-</div>
-
-<div class="mb-3">
-    <div class="-md-75 w-xl-50 pr-md-3">
-        <label asp-for="DescriptionPattern">@T["Description Pattern"]</label>
-        <textarea asp-for="DescriptionPattern" rows="5" class="form-control"></textarea>
-    </div>
-    <span class="hint">@T["The pattern used to render the custom description in content picker. With Liquid support."]</span>
+    <span class="hint">@T["The pattern used to render the title in content picker. With Liquid support."]</span>
 </div>
 
 <script at="Foot">
@@ -120,16 +112,6 @@
     //<![CDATA[
     $(function () {
         editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.TitlePattern)'), {
-            autoRefresh: true,
-            lineNumbers: true,
-            styleActiveLine: true,
-            matchBrackets: true,
-            mode: { name: "liquid" },
-        });
-    });
-
-     $(function () {
-        editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.DescriptionPattern)'), {
             autoRefresh: true,
             lineNumbers: true,
             styleActiveLine: true,

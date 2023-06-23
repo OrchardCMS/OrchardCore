@@ -15,11 +15,6 @@ namespace OrchardCore.ContentFields.Settings
         /// <summary>
         /// The pattern used to build custom title
         /// </summary>
-        public string TitlePattern { get; set; }
-
-        /// <summary>
-        /// The pattern used to build additional description
-        /// </summary>
-        public string DescriptionPattern { get; set; }
+        public string TitlePattern { get; set; } = "{{ Model.ContentItem.DisplayText }}";
     }
 }

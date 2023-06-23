@@ -151,7 +151,6 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, ContentPickerFieldIndexHandler>();
             services.AddScoped<IContentPickerResultProvider, DefaultContentPickerResultProvider>();
-            services.AddScoped<IContentHandler, ContentPickerContentHandler>();
 
             // Migration, can be removed in a future release.
             services.AddDataMigration<Migrations>();

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Fluid;
+using Fluid.Values;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
@@ -13,6 +15,8 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Liquid;
+using OrchardCore.Localization;
 using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentFields.Drivers
@@ -21,13 +25,16 @@ namespace OrchardCore.ContentFields.Drivers
     {
         private readonly IContentManager _contentManager;
         private readonly IStringLocalizer S;
+        private readonly ILiquidTemplateManager _templateManager;
 
         public ContentPickerFieldDisplayDriver(
             IContentManager contentManager,
-            IStringLocalizer<ContentPickerFieldDisplayDriver> localizer)
+            IStringLocalizer<ContentPickerFieldDisplayDriver> localizer,
+            ILiquidTemplateManager templateManager)
         {
             _contentManager = contentManager;
             S = localizer;
+            _templateManager = templateManager;
         }
 
         public override IDisplayResult Display(ContentPickerField field, BuildFieldDisplayContext fieldDisplayContext)
@@ -65,15 +72,17 @@ namespace OrchardCore.ContentFields.Drivers
                     }
 
                     var cultureAspect = await _contentManager.PopulateAspectAsync(contentItem, new CultureAspect());
-                    var aspect = await _contentManager.PopulateAspectAsync(contentItem, new ContentPickerAspect(settings, cultureAspect.Culture));
 
-                    model.SelectedItems.Add(new VueMultiselectItemViewModel
+                    using (CultureScope.Create(cultureAspect.Culture))
                     {
-                        Id = contentItemId,
-                        DisplayText = aspect.Title,
-                        Description = aspect.Description,
-                        HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem)
-                    });
+                        model.SelectedItems.Add(new VueMultiselectItemViewModel
+                        {
+                            Id = contentItemId,
+                            DisplayText = await _templateManager.RenderStringAsync(settings.TitlePattern, NullEncoder.Default, contentItem,
+                                new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(contentItem) }),
+                            HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem)
+                        });
+                    }
                 }
             });
         }
