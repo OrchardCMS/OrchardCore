@@ -39,7 +39,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
 
     public async Task<IActionResult> ProcessRequestAsync(
         HttpRequest request,
-        Func<Guid, ContentRangeHeaderValue, Task<IActionResult>> chunkAsync,
+        Func<Guid, IFormFile, ContentRangeHeaderValue, Task<IActionResult>> chunkAsync,
         Func<IEnumerable<IFormFile>, Task<IActionResult>> completedAsync)
     {
         var contentRangeHeader = request.Headers.ContentRange;
@@ -54,9 +54,8 @@ public class ChunkFileUploadService : IChunkFileUploadService
         if (request.Form.Files.Count != 1
             || !ContentRangeHeaderValue.TryParse(contentRangeHeader, out var contentRange)
             || !Guid.TryParse(uploadIdValue, out var uploadId)
-            || contentRange.From is null
-            || contentRange.To is null
-            || contentRange.Length is null
+            || !contentRange.HasLength
+            || !contentRange.HasRange
             || contentRange.Length > _options.Value.MaxFileSize)
         {
             return new BadRequestResult();
@@ -74,7 +73,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
 
         return (contentRange.To.Value + 1) >= contentRange.Length.Value
             ? await CompleteUploadAsync(uploadId, formFile, completedAsync)
-            : await chunkAsync(uploadId, contentRange);
+            : await chunkAsync(uploadId, formFile, contentRange);
     }
 
     public async Task PurgeTempDirectoryAsync()

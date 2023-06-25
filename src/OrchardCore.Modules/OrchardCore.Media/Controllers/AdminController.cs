@@ -154,7 +154,8 @@ namespace OrchardCore.Media.Controllers
 
             return await _chunkFileUploadService.ProcessRequestAsync(
                 Request,
-                (_, _) => Task.FromResult<IActionResult>(Ok(new { })),
+                // We need this empty object because the frontend expects a JSON object in the response.
+                (_, _, _) => Task.FromResult<IActionResult>(Ok(new { })),
                 async (files) =>
                 {
                     if (String.IsNullOrEmpty(path))

@@ -23,7 +23,7 @@ public interface IChunkFileUploadService
     /// of all chunks were uploaded or a regular file upload happened.</param>
     Task<IActionResult> ProcessRequestAsync(
         HttpRequest request,
-        Func<Guid, ContentRangeHeaderValue, Task<IActionResult>> chunkAsync,
+        Func<Guid, IFormFile, ContentRangeHeaderValue, Task<IActionResult>> chunkAsync,
         Func<IEnumerable<IFormFile>, Task<IActionResult>> completedAsync);
 
     /// <summary>
