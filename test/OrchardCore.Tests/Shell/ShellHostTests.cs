@@ -11,9 +11,9 @@ public class ShellHostTests : SiteContext
     }
 
     [Theory]
-    [InlineData("Tenant1", "tEnAnT1")]
-    [InlineData(ShellHelper.DefaultShellName, "dEfAuLt")]
-    public static async Task CanGetShellByCaseInsensitiveName(string name, string searchName)
+    [InlineData("Tenant1", "tenant1", "tEnAnT1")]
+    [InlineData(ShellHelper.DefaultShellName, "", "dEfAuLt")]
+    public static async Task CanGetShellByCaseInsensitiveName(string name, string urlPrefix, string searchName)
     {
         await ShellHost.InitializeAsync();
 
@@ -22,6 +22,7 @@ public class ShellHostTests : SiteContext
             {
                 Name = name,
                 State = TenantState.Uninitialized,
+                RequestUrlPrefix = urlPrefix,
             });
 
         ShellHost.TryGetSettings(searchName, out var foundShellSettings);

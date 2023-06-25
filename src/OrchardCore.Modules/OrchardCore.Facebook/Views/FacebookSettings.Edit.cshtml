@@ -11,20 +11,20 @@
     <p class="alert alert-danger">@T["An error occurred while decrypting a setting. Please apply and save."]</p>
 }
 
-<h3>@T["Facebook Integration"]</h3>
+<h3>@T["Meta Integration"]</h3>
 
 <div class="mb-3" asp-validation-class-for="AppId">
     <label>@T["Application Identifier"]</label>
     <input asp-for="AppId" class="form-control" autocomplete="off" />
     <span asp-validation-for="AppId"></span>
-    <span class="hint">@T["The Application ID found on the Facebook developer portal parameters."]</span>
+    <span class="hint">@T["The Application ID found on the Meta developer portal parameters."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="AppSecret">
     <label>@T["Secret Key"]</label>
     <input asp-for="AppSecret" class="form-control" type="password" value="@Model.AppSecret" autocomplete="off" />
     <span asp-validation-for="AppSecret"></span>
-    <span class="hint">@T["The Application secret key found on the Facebook developer portal parameters."]</span>
+    <span class="hint">@T["The Application secret key found on the Meta developer portal parameters."]</span>
 </div>
 
 <div class="row">
