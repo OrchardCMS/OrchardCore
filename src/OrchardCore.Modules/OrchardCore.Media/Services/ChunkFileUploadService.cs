@@ -149,7 +149,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
     private async Task DeleteTemporaryFileAsync(Guid uploadId, IFormFile formFile) =>
         DeleteTemporaryFile(await GetTempFilePathAsync(uploadId, formFile));
 
-    private void DeleteTemporaryFile(String tempFilePath)
+    private void DeleteTemporaryFile(string tempFilePath)
     {
         try
         {
@@ -164,7 +164,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
         }
     }
 
-    private async Task<String> GetSiteTempFolderPathAsync()
+    private async Task<string> GetSiteTempFolderPathAsync()
     {
         var siteName = (await _siteService.GetSiteSettingsAsync()).SiteName;
         var siteTempFolderPath = Path.Combine(Path.GetTempPath(), siteName, TempFolderPrefix);
@@ -172,7 +172,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
         return siteTempFolderPath;
     }
 
-    private async Task<String> GetTempFilePathAsync(Guid uploadId, IFormFile formFile)
+    private async Task<string> GetTempFilePathAsync(Guid uploadId, IFormFile formFile)
     {
         var siteTempFolderPath = await GetSiteTempFolderPathAsync();
         var tempFilePath = Path.Combine(
@@ -182,7 +182,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
         return tempFilePath;
     }
 
-    private static Stream CreateTemporaryFile(String tempPath, long size)
+    private static Stream CreateTemporaryFile(string tempPath, long size)
     {
         var stream = File.Create(tempPath);
         stream.SetLength(size);
@@ -193,7 +193,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
         return stream;
     }
 
-    private static String CalculateHash(params String[] parts)
+    private static string CalculateHash(params string[] parts)
     {
         using var sha256 = SHA256.Create();
         var hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(String.Join(String.Empty, parts)));
@@ -207,17 +207,17 @@ internal sealed class ChunkedFormFile : IFormFile, IDisposable
     private readonly Stream _stream;
     private bool _disposed;
 
-    public String ContentType { get; set; }
+    public string ContentType { get; set; }
 
-    public String ContentDisposition { get; set; }
+    public string ContentDisposition { get; set; }
 
     public IHeaderDictionary Headers { get; set; }
 
     public long Length => _stream.Length;
 
-    public String Name { get; set; }
+    public string Name { get; set; }
 
-    public String FileName { get; set; }
+    public string FileName { get; set; }
 
     public ChunkedFormFile(Stream stream) =>
         _stream = stream;

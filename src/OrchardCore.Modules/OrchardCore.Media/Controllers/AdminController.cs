@@ -143,9 +143,7 @@ namespace OrchardCore.Media.Controllers
 
         [HttpPost]
         [MediaSizeLimit]
-        public async Task<IActionResult> Upload(
-            string path,
-            string contentType)
+        public async Task<IActionResult> Upload(string path)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
             {
