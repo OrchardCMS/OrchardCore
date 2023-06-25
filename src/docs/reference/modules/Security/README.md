@@ -14,7 +14,7 @@ Enabling the `OrchardCore.Security` module will allow the user to set the follow
 | `ReferrerPolicy` | Gets or sets the `Referrer-Policy` HTTP header. |
 
 !!! note
-    The `Content-Security-Policy` HTTP header contains `frame-ancestors` directive which obsoleted `X-Frame-Options` HTTP header.
+    The `Content-Security-Policy` HTTP header contains the `frame-ancestors` directive which obsoleted the `X-Frame-Options` HTTP header.
 
 ## Security Settings Configuration
 
