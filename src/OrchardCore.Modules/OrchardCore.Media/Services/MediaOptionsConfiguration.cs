@@ -61,6 +61,9 @@ namespace OrchardCore.Media.Services
         // style-src applied to allow browser behaviour of wrapping raw images in a styled img element.
         private const string DefaultContentSecurityPolicy = "default-src 'self'; style-src 'unsafe-inline'";
 
+        public static int? DefaultMaxUploadChunkSize = 104_857_600; // 100MB
+        public static TimeSpan DefaultTemporaryFileLifeTime = TimeSpan.FromHours(1);
+
         private readonly IShellConfiguration _shellConfiguration;
 
         public MediaOptionsConfiguration(IShellConfiguration shellConfiguration)
@@ -89,6 +92,8 @@ namespace OrchardCore.Media.Services
             options.AssetsPath = section.GetValue("AssetsPath", DefaultAssetsPath);
             options.AssetsUsersFolder = section.GetValue("AssetsUsersFolder", DefaultAssetsUsersFolder);
             options.UseTokenizedQueryString = section.GetValue("UseTokenizedQueryString", DefaultUseTokenizedQueryString);
+            options.MaxUploadChunkSize = section.GetValue(nameof(options.MaxUploadChunkSize), DefaultMaxUploadChunkSize);
+            options.TemporaryFileLifetime = section.GetValue(nameof(options.TemporaryFileLifetime), DefaultTemporaryFileLifeTime);
 
             var contentSecurityPolicy = section.GetValue("ContentSecurityPolicy", DefaultContentSecurityPolicy);
 

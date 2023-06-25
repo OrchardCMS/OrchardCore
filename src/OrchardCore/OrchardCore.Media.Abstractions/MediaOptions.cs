@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -66,6 +67,16 @@ namespace OrchardCore.Media
         /// The static file options used to serve non resized media.
         /// </summary>
         public StaticFileOptions StaticFileOptions { get; set; }
+
+        /// <summary>
+        /// The maximum chunk size when uploading files in bytes. If 0 or null, no chunked upload is used. Defaults to 100MB.
+        /// </summary>
+        public int? MaxUploadChunkSize { get; set; }
+
+        /// <summary>
+        /// The lifetime of temporary files created during upload. Defaults to 1 hour.
+        /// </summary>
+        public TimeSpan TemporaryFileLifetime { get; set; }
 
         public const string EncryptedCommandCacheKeyPrefix = "MediaCommands:";
     }

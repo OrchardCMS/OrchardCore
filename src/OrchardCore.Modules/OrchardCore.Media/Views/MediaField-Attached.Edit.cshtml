@@ -1,8 +1,13 @@
 @model OrchardCore.Media.ViewModels.EditMediaFieldViewModel
-@using OrchardCore.Media.Settings
-@using OrchardCore.ContentManagement.Metadata.Models
-@using OrchardCore.Mvc.Utilities
+@using Microsoft.Extensions.Options
 @using OrchardCore
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Media
+@using OrchardCore.Media.Settings
+@using OrchardCore.Mvc.Utilities
+
+@inject IOptions<MediaOptions> MediaOptions
+
 @{
     var settings = Model.PartFieldDefinition.GetSettings<MediaFieldSettings>();
     var mediaFieldId = Html.IdFor(m => m);
@@ -70,5 +75,6 @@
     @(settings.Multiple ? "true" : "false"),
     @(settings.AllowMediaText ? "true" : "false"),
     @(settings.AllowAnchors ? "true" : "false"),
-        '@Model.TempUploadFolder');
+        '@Model.TempUploadFolder',
+    @(MediaOptions.Value.MaxUploadChunkSize ?? 0));
 </script>
