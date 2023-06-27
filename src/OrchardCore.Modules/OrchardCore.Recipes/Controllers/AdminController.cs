@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -105,19 +104,7 @@ namespace OrchardCore.Recipes.Controllers
 
             var executionId = Guid.NewGuid().ToString("n");
 
-            // Set shell state to "Initializing" so that subsequent HTTP requests
-            // are responded to with "Service Unavailable" while running the recipe.
-            _shellSettings.State = TenantState.Initializing;
-
-            try
-            {
-                await _recipeExecutor.ExecuteAsync(executionId, recipe, environment, CancellationToken.None);
-            }
-            finally
-            {
-                // Don't lock the tenant if the recipe fails.
-                _shellSettings.State = TenantState.Running;
-            }
+            await _recipeExecutor.ExecuteAsync(executionId, recipe, environment, CancellationToken.None);
 
             await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
