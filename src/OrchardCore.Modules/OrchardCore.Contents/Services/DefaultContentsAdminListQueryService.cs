@@ -16,6 +16,10 @@ namespace OrchardCore.Contents.Services
     public class DefaultContentsAdminListQueryService : IContentsAdminListQueryService
     {
         public const string DefaultTermName = "text";
+        private static readonly HashSet<string> _operators = new()
+        {
+            "OR", "AND", "||", "&&"
+        };
 
         private readonly ISession _session;
         private readonly IServiceProvider _serviceProvider;
@@ -51,11 +55,7 @@ namespace OrchardCore.Contents.Services
 
                 // If only implicit OR operator(s).
                 var value = defaultTermNode.ToString();
-                if (defaultTermNode.Operation is OrNode
-                    && !value.Contains("OR", StringComparison.Ordinal)
-                    && !value.Contains("||", StringComparison.Ordinal)
-                    && !value.Contains("AND", StringComparison.Ordinal)
-                    && !value.Contains("&&", StringComparison.Ordinal))
+                if (defaultTermNode.Operation is OrNode node && !_operators.Contains(node.Value))
                 {
                     // Use an unary operator based on a full quoted string.
                     defaultOperator = new UnaryNode(value, OperateNodeQuotes.Double);
@@ -92,7 +92,9 @@ namespace OrchardCore.Contents.Services
             var selectedContentType = model.SelectedContentType;
             if (selectedContentType == null)
             {
-                var typeTermNode = model.FilterResult.OfType<TermOperationNode>().FirstOrDefault(x => x.TermName == "type");
+                var typeTermNode = model.FilterResult.OfType<TermOperationNode>()
+                    .FirstOrDefault(x => x.TermName == "type" || x.TermName == "stereotype");
+
                 if (typeTermNode != null)
                 {
                     selectedContentType = typeTermNode.Operation.ToString();
