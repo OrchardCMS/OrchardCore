@@ -78,9 +78,9 @@ namespace OrchardCore.Tenants.Services
             }
 
             if (_shellHost.GetAllSettings().Any(settings =>
-                    settings != existingShellSettings &&
-                    settings.HasUrlPrefix(model.RequestUrlPrefix) &&
-                    settings.HasUrlHost(model.RequestUrlHost)))
+                settings != existingShellSettings &&
+                settings.HasUrlPrefix(model.RequestUrlPrefix) &&
+                settings.HasUrlHost(model.RequestUrlHost)))
             {
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["A tenant with the same host and prefix already exists."]));
             }
