@@ -93,7 +93,7 @@ namespace OrchardCore.Contents.Services
 
         private static string GetSelectedContentType(ContentOptionsViewModel model)
         {
-            if (model.SelectedContentType == null)
+            if (String.IsNullOrEmpty(model.SelectedContentType))
             {
                 var typeTermNode = model.FilterResult.OfType<ContentTypeFilterNode>().FirstOrDefault();
 
@@ -108,6 +108,8 @@ namespace OrchardCore.Contents.Services
                 {
                     return sterotypeTermNode.Operation.ToString();
                 }
+
+                return null;
             }
 
             return model.SelectedContentType;
@@ -115,7 +117,7 @@ namespace OrchardCore.Contents.Services
 
         private string GetDefaultTermName(string selectedContentType)
         {
-            if (!String.IsNullOrEmpty(selectedContentType) && _contentsAdminListFilterOptions.TryGetDefaultTermName(selectedContentType, out var termName))
+            if (_contentsAdminListFilterOptions.TryGetDefaultTermName(selectedContentType, out var termName))
             {
                 return termName;
             }
