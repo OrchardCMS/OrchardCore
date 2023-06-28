@@ -50,7 +50,8 @@ namespace OrchardCore.Contents.Services
             if (defaultTermNode is not null)
             {
                 var value = defaultTermNode.ToString();
-                if (!_operators.Any(opt => value.Contains(opt, StringComparison.Ordinal)))
+                if (_contentsAdminListFilterOptions.UseQuotationMarks
+                    && !_operators.Any(opt => value.Contains(opt, StringComparison.Ordinal)))
                 {
                     // Use an unary operator based on a full quoted string.
                     defaultOperator = new UnaryNode(value, OperateNodeQuotes.Double);

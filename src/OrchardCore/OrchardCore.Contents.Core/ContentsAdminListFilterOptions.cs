@@ -10,6 +10,12 @@ public class ContentsAdminListFilterOptions
     private readonly Dictionary<string, string> _defaultTermNames = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
+    /// When true, the entire searched terms will be enclose within quotation marks, it creates an exact match search.
+    /// This means that search engines will treat the entire term as a single keyword or phrase, rather than individual words.
+    /// </summary>
+    public bool UseQuotationMarks { get; set; }
+
+    /// <summary>
     /// Gets the term-name to use by the given content type.
     /// </summary>
     /// <param name="contentType"></param>
