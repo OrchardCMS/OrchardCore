@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Entities;
 using OrchardCore.Modules;
+using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
 
@@ -22,6 +24,7 @@ namespace OrchardCore.Users.Services
         private readonly IOptions<IdentityOptions> _identityOptions;
         private readonly IEnumerable<IPasswordRecoveryFormEvents> _passwordRecoveryFormEvents;
         private readonly IStringLocalizer S;
+        private readonly ISiteService _siteService;
         private readonly ILogger _logger;
 
         public UserService(
@@ -30,6 +33,7 @@ namespace OrchardCore.Users.Services
             IOptions<IdentityOptions> identityOptions,
             IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents,
             IStringLocalizer<UserService> stringLocalizer,
+            ISiteService siteService,
             ILogger<UserService> logger)
         {
             _signInManager = signInManager;
@@ -37,11 +41,20 @@ namespace OrchardCore.Users.Services
             _identityOptions = identityOptions;
             _passwordRecoveryFormEvents = passwordRecoveryFormEvents;
             S = stringLocalizer;
+            _siteService = siteService;
             _logger = logger;
         }
 
         public async Task<IUser> AuthenticateAsync(string userName, string password, Action<string, string> reportError)
         {
+            var disableLocalLogin = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().DisableLocalLogin;
+
+            if (disableLocalLogin)
+            {
+                reportError(string.Empty, S["Local login is disabled."]);
+                return null;
+            }
+
             if (string.IsNullOrWhiteSpace(userName))
             {
                 reportError("UserName", S["A user name is required."]);
@@ -54,7 +67,7 @@ namespace OrchardCore.Users.Services
                 return null;
             }
 
-            var user = await _userManager.FindByNameAsync(userName);
+            var user = await GetUserAsync(userName);
             if (user == null)
             {
                 reportError(string.Empty, S["The specified username/password couple is invalid."]);
@@ -228,7 +241,8 @@ namespace OrchardCore.Users.Services
             return _signInManager.CreateUserPrincipalAsync(user);
         }
 
-        public Task<IUser> GetUserAsync(string userName) => _userManager.FindByNameAsync(userName);
+        public async Task<IUser> GetUserAsync(string userName) =>
+            (await _userManager.FindByNameAsync(userName)) ?? await _userManager.FindByEmailAsync(userName);
 
         public Task<IUser> GetUserByUniqueIdAsync(string userIdentifier) => _userManager.FindByIdAsync(userIdentifier);
 

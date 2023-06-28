@@ -53,7 +53,7 @@
 
             @if (Model.CanDisableTwoFa)
             {
-                <a asp-action="Disable2fa" class="btn btn-primary">@T["Disable two-factor authentication"]</a>
+                <a asp-action="DisableTwoFactorAuthentication" class="btn btn-primary">@T["Disable two-factor authentication"]</a>
             }
 
             <a asp-action="GenerateRecoveryCodes" class="btn btn-primary">@T["Reset recovery codes"]</a>
