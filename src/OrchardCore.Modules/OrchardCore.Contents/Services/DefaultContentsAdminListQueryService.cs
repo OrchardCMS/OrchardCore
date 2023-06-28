@@ -15,19 +15,17 @@ namespace OrchardCore.Contents.Services
 {
     public class DefaultContentsAdminListQueryService : IContentsAdminListQueryService
     {
-        public const string DefaultTermName = "text";
-
         private readonly ISession _session;
         private readonly IServiceProvider _serviceProvider;
         private readonly IEnumerable<IContentsAdminListFilter> _contentsAdminListFilters;
-        private readonly ContentSearchOption _contentSearchOptions;
+        private readonly ContentsAdminListFilterOptions _contentSearchOptions;
         private readonly ILogger _logger;
 
         public DefaultContentsAdminListQueryService(
             ISession session,
             IServiceProvider serviceProvider,
             IEnumerable<IContentsAdminListFilter> contentsAdminListFilters,
-            IOptions<ContentSearchOption> contentSearchOptions,
+            IOptions<ContentsAdminListFilterOptions> contentSearchOptions,
             ILogger<DefaultContentsAdminListQueryService> logger)
         {
             _session = session;
@@ -49,7 +47,7 @@ namespace OrchardCore.Contents.Services
             {
                 defaultTermName = GetDefaultTermName(selectedContentType);
 
-                if (defaultTermName != defaultTermNode.TermName || defaultOperator != defaultTermNode.Operation)
+                if (defaultTermName != defaultTermNode.TermName)
                 {
                     model.FilterResult.TryRemove(defaultTermNode.TermName);
                     model.FilterResult.TryAddOrReplace(new DefaultTermNode(defaultTermName, defaultOperator));
@@ -81,7 +79,7 @@ namespace OrchardCore.Contents.Services
             if (selectedContentType == null)
             {
                 var typeTermNode = model.FilterResult.OfType<TermOperationNode>()
-                    .FirstOrDefault(x => x.TermName == "type" || x.TermName == "stereotype");
+                    .FirstOrDefault(node => node.TermName == "type" || node.TermName == "stereotype");
 
                 if (typeTermNode != null)
                 {
@@ -99,7 +97,7 @@ namespace OrchardCore.Contents.Services
                 return termName;
             }
 
-            return DefaultTermName;
+            return ContentsAdminListFilterOptions.DefaultTermName;
         }
     }
 }

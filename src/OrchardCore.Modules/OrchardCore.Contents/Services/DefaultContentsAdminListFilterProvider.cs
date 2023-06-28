@@ -264,7 +264,7 @@ namespace OrchardCore.Contents.Services
                         return (false, String.Empty);
                     })
                 )
-                .WithDefaultTerm(DefaultContentsAdminListQueryService.DefaultTermName, builder => builder
+                .WithDefaultTerm(ContentsAdminListFilterOptions.DefaultTermName, builder => builder
                     .ManyCondition(
                         (val, query) => query.With<ContentItemIndex>(x => x.DisplayText.Contains(val)),
                         (val, query) => query.With<ContentItemIndex>(x => x.DisplayText.NotContains(val))

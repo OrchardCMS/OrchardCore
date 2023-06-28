@@ -3,8 +3,10 @@ using System.Collections.Generic;
 
 namespace OrchardCore.Contents;
 
-public class ContentSearchOption
+public class ContentsAdminListFilterOptions
 {
+    public const string DefaultTermName = "text";
+
     private readonly Dictionary<string, string> _maps = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
@@ -23,7 +25,7 @@ public class ContentSearchOption
     /// </summary>
     /// <param name="contentType"></param>
     /// <param name="termName"></param>
-    public void AddTerm(string contentType, string termName)
+    public void AddDefaultTermName(string contentType, string termName)
     {
         ArgumentNullException.ThrowIfNull(contentType, nameof(contentType));
 
@@ -34,13 +36,10 @@ public class ContentSearchOption
     /// Removes the content type from from the options if exists.
     /// </summary>
     /// <param name="contentType"></param>
-    public void RemoveTerm(string contentType)
+    public void RemoveDefaultTermName(string contentType)
     {
         ArgumentNullException.ThrowIfNull(contentType, nameof(contentType));
 
-        if (_maps.ContainsKey(contentType))
-        {
-            _maps.Remove(contentType);
-        }
+        _maps.Remove(contentType);
     }
 }
