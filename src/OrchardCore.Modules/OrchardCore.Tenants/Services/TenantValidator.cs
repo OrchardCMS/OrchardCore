@@ -65,7 +65,6 @@ namespace OrchardCore.Tenants.Services
 
             _ = _shellHost.TryGetSettings(model.Name, out var existingShellSettings);
 
-            // Only if the existing is not the 'Default' shell.
             if (!existingShellSettings.IsDefaultShell() &&
                 String.IsNullOrWhiteSpace(model.RequestUrlHost) &&
                 String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
@@ -78,9 +77,7 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["The url prefix can not contain more than one segment."]));
             }
 
-            // Only if the existing is not the 'Default' shell.
-            if (!existingShellSettings.IsDefaultShell() &&
-                _shellHost.GetAllSettings().Any(settings =>
+            if (_shellHost.GetAllSettings().Any(settings =>
                     settings != existingShellSettings &&
                     settings.HasUrlPrefix(model.RequestUrlPrefix) &&
                     settings.HasUrlHost(model.RequestUrlHost)))
