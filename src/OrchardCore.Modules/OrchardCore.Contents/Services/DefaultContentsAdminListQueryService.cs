@@ -15,6 +15,11 @@ namespace OrchardCore.Contents.Services
 {
     public class DefaultContentsAdminListQueryService : IContentsAdminListQueryService
     {
+        private readonly static List<string> _operators = new()
+        {
+            "OR", "AND", "||", "&&"
+        };
+
         private readonly ISession _session;
         private readonly IServiceProvider _serviceProvider;
         private readonly IEnumerable<IContentsAdminListFilter> _contentsAdminListFilters;
@@ -46,8 +51,14 @@ namespace OrchardCore.Contents.Services
             if (defaultTermNode is not null)
             {
                 defaultTermName = GetDefaultTermName(selectedContentType);
+                var value = defaultTermNode.ToString();
+                if (!_operators.Any(opt => value.Contains(opt, StringComparison.Ordinal)))
+                {
+                    // Use an unary operator based on a full quoted string.
+                    defaultOperator = new UnaryNode(value, OperateNodeQuotes.Double);
+                }
 
-                if (defaultTermName != defaultTermNode.TermName)
+                if (defaultTermName != defaultTermNode.TermName || defaultOperator != defaultTermNode.Operation)
                 {
                     model.FilterResult.TryRemove(defaultTermNode.TermName);
                     model.FilterResult.TryAddOrReplace(new DefaultTermNode(defaultTermName, defaultOperator));
@@ -92,7 +103,7 @@ namespace OrchardCore.Contents.Services
 
         private string GetDefaultTermName(string selectedContentType)
         {
-            if (!String.IsNullOrEmpty(selectedContentType) && _contentSearchOptions.TryGetValue(selectedContentType, out var termName))
+            if (!String.IsNullOrEmpty(selectedContentType) && _contentSearchOptions.TryGetDefaultTermName(selectedContentType, out var termName))
             {
                 return termName;
             }

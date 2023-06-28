@@ -7,7 +7,7 @@ public class ContentsAdminListFilterOptions
 {
     public const string DefaultTermName = "text";
 
-    private readonly Dictionary<string, string> _maps = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, string> _defaultTermNames = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
     /// Gets the term-name to use by the given content type.
@@ -15,9 +15,9 @@ public class ContentsAdminListFilterOptions
     /// <param name="contentType"></param>
     /// <param name="termName"></param>
     /// <returns></returns>
-    public bool TryGetValue(string contentType, out string termName)
+    public bool TryGetDefaultTermName(string contentType, out string termName)
     {
-        return _maps.TryGetValue(contentType, out termName);
+        return _defaultTermNames.TryGetValue(contentType, out termName);
     }
 
     /// <summary>
@@ -29,7 +29,7 @@ public class ContentsAdminListFilterOptions
     {
         ArgumentNullException.ThrowIfNull(contentType, nameof(contentType));
 
-        _maps.TryAdd(contentType, termName);
+        _defaultTermNames.TryAdd(contentType, termName);
     }
 
     /// <summary>
@@ -40,6 +40,6 @@ public class ContentsAdminListFilterOptions
     {
         ArgumentNullException.ThrowIfNull(contentType, nameof(contentType));
 
-        _maps.Remove(contentType);
+        _defaultTermNames.Remove(contentType);
     }
 }
