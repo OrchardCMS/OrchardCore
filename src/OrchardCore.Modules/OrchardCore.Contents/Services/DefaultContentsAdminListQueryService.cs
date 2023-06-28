@@ -42,15 +42,13 @@ namespace OrchardCore.Contents.Services
 
         public async Task<IQuery<ContentItem>> QueryAsync(ContentOptionsViewModel model, IUpdateModel updater)
         {
-            var selectedContentType = GetSelectedContentType(model);
-
             var defaultTermNode = model.FilterResult.OfType<DefaultTermNode>().FirstOrDefault();
             var defaultTermName = defaultTermNode?.TermName;
             var defaultOperator = defaultTermNode?.Operation;
+            var shouldRestoreDefault = false;
 
             if (defaultTermNode is not null)
             {
-                defaultTermName = GetDefaultTermName(selectedContentType);
                 var value = defaultTermNode.ToString();
                 if (!_operators.Any(opt => value.Contains(opt, StringComparison.Ordinal)))
                 {
@@ -58,8 +56,17 @@ namespace OrchardCore.Contents.Services
                     defaultOperator = new UnaryNode(value, OperateNodeQuotes.Double);
                 }
 
+                var selectedContentType = GetSelectedContentType(model);
+
+                if (selectedContentType != null)
+                {
+                    defaultTermName = GetDefaultTermName(selectedContentType);
+                }
+
                 if (defaultTermName != defaultTermNode.TermName || defaultOperator != defaultTermNode.Operation)
                 {
+                    shouldRestoreDefault = true;
+
                     model.FilterResult.TryRemove(defaultTermNode.TermName);
                     model.FilterResult.TryAddOrReplace(new DefaultTermNode(defaultTermName, defaultOperator));
                 }
@@ -74,7 +81,7 @@ namespace OrchardCore.Contents.Services
             await _contentsAdminListFilters
                 .InvokeAsync((filter, model, query, updater) => filter.FilterAsync(model, query, updater), model, query, updater, _logger);
 
-            if (defaultTermName != defaultTermNode?.TermName || defaultOperator != defaultTermNode?.Operation)
+            if (shouldRestoreDefault)
             {
                 // Restore the original defaultTermNode.
                 model.FilterResult.TryRemove(defaultTermName);
@@ -86,19 +93,24 @@ namespace OrchardCore.Contents.Services
 
         private static string GetSelectedContentType(ContentOptionsViewModel model)
         {
-            var selectedContentType = model.SelectedContentType;
-            if (selectedContentType == null)
+            if (model.SelectedContentType == null)
             {
-                var typeTermNode = model.FilterResult.OfType<TermOperationNode>()
-                    .FirstOrDefault(node => node.TermName == "type" || node.TermName == "stereotype");
+                var typeTermNode = model.FilterResult.OfType<ContentTypeFilterNode>().FirstOrDefault();
 
                 if (typeTermNode != null)
                 {
-                    selectedContentType = typeTermNode.Operation.ToString();
+                    return typeTermNode.Operation.ToString();
+                }
+
+                var sterotypeTermNode = model.FilterResult.OfType<StereotypeFilterNode>().FirstOrDefault();
+
+                if (sterotypeTermNode != null)
+                {
+                    return sterotypeTermNode.Operation.ToString();
                 }
             }
 
-            return selectedContentType;
+            return model.SelectedContentType;
         }
 
         private string GetDefaultTermName(string selectedContentType)
