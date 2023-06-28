@@ -23,20 +23,20 @@ namespace OrchardCore.Contents.Services
         private readonly ISession _session;
         private readonly IServiceProvider _serviceProvider;
         private readonly IEnumerable<IContentsAdminListFilter> _contentsAdminListFilters;
-        private readonly ContentsAdminListFilterOptions _contentSearchOptions;
+        private readonly ContentsAdminListFilterOptions _contentsAdminListFilterOptions;
         private readonly ILogger _logger;
 
         public DefaultContentsAdminListQueryService(
             ISession session,
             IServiceProvider serviceProvider,
             IEnumerable<IContentsAdminListFilter> contentsAdminListFilters,
-            IOptions<ContentsAdminListFilterOptions> contentSearchOptions,
+            IOptions<ContentsAdminListFilterOptions> contentsAdminListFilterOptions,
             ILogger<DefaultContentsAdminListQueryService> logger)
         {
             _session = session;
             _serviceProvider = serviceProvider;
             _contentsAdminListFilters = contentsAdminListFilters;
-            _contentSearchOptions = contentSearchOptions.Value;
+            _contentsAdminListFilterOptions = contentsAdminListFilterOptions.Value;
             _logger = logger;
         }
 
@@ -103,7 +103,7 @@ namespace OrchardCore.Contents.Services
 
         private string GetDefaultTermName(string selectedContentType)
         {
-            if (!String.IsNullOrEmpty(selectedContentType) && _contentSearchOptions.TryGetDefaultTermName(selectedContentType, out var termName))
+            if (!String.IsNullOrEmpty(selectedContentType) && _contentsAdminListFilterOptions.TryGetDefaultTermName(selectedContentType, out var termName))
             {
                 return termName;
             }
