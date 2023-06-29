@@ -48,7 +48,7 @@ public class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthorizationFil
 
         var loginSettings = (await siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
-        if (loginSettings.IsTwoFactorAuthenticationEnabled()
+        if (loginSettings.EnableTwoFactorAuthentication
             && await _twoFactorHandlerCoordinator.IsRequiredAsync()
             && context.HttpContext.User.HasClaim(claim => claim.Type == TwoFactorAuthenticationClaimsProvider.TwoFactorAuthenticationClaimType))
         {
