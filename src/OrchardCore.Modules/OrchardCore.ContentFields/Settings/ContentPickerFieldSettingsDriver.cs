@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
@@ -65,9 +64,7 @@ namespace OrchardCore.ContentFields.Settings
                         break;
                 }
 
-                var isValid = ValidateTextPatterns(context, model);
-
-                if (isValid)
+                if (IsValidTitlePattern(context, model))
                 {
                     context.Builder.WithSettings(settings);
                 }
@@ -76,17 +73,15 @@ namespace OrchardCore.ContentFields.Settings
             return Edit(partFieldDefinition);
         }
 
-        private bool ValidateTextPatterns(UpdatePartFieldEditorContext context, ContentPickerFieldSettingsViewModel model)
+        private bool IsValidTitlePattern(UpdatePartFieldEditorContext context, ContentPickerFieldSettingsViewModel model)
         {
-            bool isValid = true;
-
             if (!string.IsNullOrEmpty(model.TitlePattern) && !_templateManager.Validate(model.TitlePattern, out var titleErrors))
             {
-                context.Updater.ModelState.AddModelError(nameof(model.TitlePattern), S["TitlePattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", titleErrors)]);
-                isValid = false;
+                context.Updater.ModelState.AddModelError(nameof(model.TitlePattern), S["Title Pattern does not contain a valid Liquid expression. Details: {0}", string.Join(" ", titleErrors)]);
+                return false;
             }
 
-            return isValid;
+            return true;
         }
 
         private void SetStereoTypes(IUpdateModel updater, string stereotypes, ContentPickerFieldSettings settings)
