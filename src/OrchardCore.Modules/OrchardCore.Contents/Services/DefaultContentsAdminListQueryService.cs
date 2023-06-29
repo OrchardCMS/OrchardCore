@@ -15,10 +15,7 @@ namespace OrchardCore.Contents.Services
 {
     public class DefaultContentsAdminListQueryService : IContentsAdminListQueryService
     {
-        private readonly static List<string> _operators = new()
-        {
-            "OR", "AND", "||", "&&"
-        };
+        private readonly static List<string> _operators = new() { "OR", "AND", "||", "&&" };
 
         private readonly ISession _session;
         private readonly IServiceProvider _serviceProvider;
@@ -50,11 +47,11 @@ namespace OrchardCore.Contents.Services
             if (defaultTermNode is not null)
             {
                 var value = defaultTermNode.ToString();
-                if (_contentsAdminListFilterOptions.UseQuotationMarks
+                if (_contentsAdminListFilterOptions.UseExactMatch
                     && !_operators.Any(opt => value.Contains(opt, StringComparison.Ordinal)))
                 {
                     // Use an unary operator based on a full quoted string.
-                    defaultOperator = new UnaryNode(value, OperateNodeQuotes.Double);
+                    defaultOperator = new UnaryNode(value.Trim('"'), OperateNodeQuotes.Double);
                 }
 
                 var selectedContentType = GetSelectedContentType(model);
@@ -66,7 +63,7 @@ namespace OrchardCore.Contents.Services
 
                 if (defaultTermName != defaultTermNode.TermName || defaultOperator != defaultTermNode.Operation)
                 {
-                    shouldRestoreDefault = true;
+                    shouldRestoreDefault = _contentsAdminListFilterOptions.UseExactMatch;
 
                     model.FilterResult.TryRemove(defaultTermNode.TermName);
                     model.FilterResult.TryAddOrReplace(new DefaultTermNode(defaultTermName, defaultOperator));
