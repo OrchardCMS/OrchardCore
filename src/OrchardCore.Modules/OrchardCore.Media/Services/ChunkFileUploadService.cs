@@ -76,7 +76,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
 
     private Stream GetOrCreateTemporaryFile(Guid uploadId, IFormFile formFile, long size)
     {
-        var siteTempFolderPath = GetSiteTempFolderPath();
+        var siteTempFolderPath = GetTempFolderPath();
 
         if (!Directory.Exists(siteTempFolderPath))
         {
@@ -122,7 +122,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
 
         try
         {
-            var siteTempFolderPath = GetSiteTempFolderPath();
+            var siteTempFolderPath = GetTempFolderPath();
             if (_options.Value.TemporaryFileLifetime <= TimeSpan.Zero
                 || !Directory.Exists(siteTempFolderPath))
             {
@@ -177,7 +177,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
         };
     }
 
-    private static string GetSiteTempFolderPath()
+    private static string GetTempFolderPath()
     {
         var siteTempFolderPath = Path.Combine(Path.GetTempPath(), TempFolderPrefix);
 
@@ -186,7 +186,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
 
     private static string GetTempFilePath(Guid uploadId, IFormFile formFile)
     {
-        var siteTempFolderPath = GetSiteTempFolderPath();
+        var siteTempFolderPath = GetTempFolderPath();
         var tempFilePath = Path.Combine(
             siteTempFolderPath,
             CalculateHash(uploadId.ToString(), formFile.FileName, formFile.Name));
