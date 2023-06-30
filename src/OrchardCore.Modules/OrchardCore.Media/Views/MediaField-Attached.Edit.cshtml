@@ -41,12 +41,20 @@
             </label>
         </div>
 
-        <upload-list id-of-upload-input-field="@mediaFieldId"></upload-list>
+        <upload-list upload-input-id="@mediaFieldId-field-file-upload"></upload-list>
 
         <media-field-thumbs-container :media-items="mediaItems" :thumb-size="thumbSize" :selected-media="selectedMedia" :id-prefix="idPrefix"></media-field-thumbs-container>
 
         <partial name="Shared/MediaFieldEditMediaTextModal.cshtml" />
         <partial name="Shared/MediaFieldEditAnchorModal.cshtml" />
+
+        @*Localizable Strings for uploadComponent*@
+        <input type="hidden" id="t-error" value="@T["This file exceeds the maximum upload size"]" />
+
+        @*Localizable Strings for uploadListcomponent*@
+        <input type="hidden" id="t-uploads" value="@T["Uploads"]" />
+        <input type="hidden" id="t-errors" value="@T["Errors"]" />
+        <input type="hidden" id="t-clear-errors" value="@T["Clear Errors"]" />
 
     </div>
 
