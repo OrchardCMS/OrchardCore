@@ -74,24 +74,6 @@ public class ChunkFileUploadService : IChunkFileUploadService
             : await chunkAsync(uploadId, formFile, contentRange);
     }
 
-    private Stream GetOrCreateTemporaryFile(Guid uploadId, IFormFile formFile, long size)
-    {
-        var siteTempFolderPath = GetTempFolderPath();
-
-        if (!Directory.Exists(siteTempFolderPath))
-        {
-            Directory.CreateDirectory(siteTempFolderPath);
-        }
-
-        var tempFilePath = GetTempFilePath(uploadId, formFile);
-
-        return File.Exists(tempFilePath) switch
-        {
-            true => File.Open(tempFilePath, FileMode.Open, FileAccess.ReadWrite),
-            false => CreateTemporaryFile(tempFilePath, size),
-        };
-    }
-
     private async Task<IActionResult> CompleteUploadAsync(
         Guid uploadId,
         IFormFile formFile,
@@ -161,6 +143,24 @@ public class ChunkFileUploadService : IChunkFileUploadService
                 "An error occurred while deleting the temporary file '{TempFilePath}'.",
                 tempFilePath);
         }
+    }
+
+    private static Stream GetOrCreateTemporaryFile(Guid uploadId, IFormFile formFile, long size)
+    {
+        var siteTempFolderPath = GetTempFolderPath();
+
+        if (!Directory.Exists(siteTempFolderPath))
+        {
+            Directory.CreateDirectory(siteTempFolderPath);
+        }
+
+        var tempFilePath = GetTempFilePath(uploadId, formFile);
+
+        return File.Exists(tempFilePath) switch
+        {
+            true => File.Open(tempFilePath, FileMode.Open, FileAccess.ReadWrite),
+            false => CreateTemporaryFile(tempFilePath, size),
+        };
     }
 
     private static ChunkedFormFile GetTemporaryFileForRead(Guid uploadId, IFormFile formFile)
