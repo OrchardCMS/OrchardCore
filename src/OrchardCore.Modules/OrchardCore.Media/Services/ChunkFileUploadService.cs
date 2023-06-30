@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Media.Services;
 
@@ -20,18 +19,16 @@ public class ChunkFileUploadService : IChunkFileUploadService
 {
     private const String UploadIdFormKey = "__chunkedFileUploadId";
     private const String TempFolderPrefix = "ChunkedFileUploads";
+    private static readonly SemaphoreSlim _purgeLock = new(1, 1);
     private readonly IOptions<MediaOptions> _options;
-    private readonly ISiteService _siteService;
     private readonly ILogger _logger;
     private readonly IClock _clock;
 
     public ChunkFileUploadService(
-        ISiteService siteService,
         IClock clock,
         ILogger<ChunkFileUploadService> logger,
         IOptions<MediaOptions> options)
     {
-        _siteService = siteService;
         _clock = clock;
         _logger = logger;
         _options = options;
@@ -56,13 +53,14 @@ public class ChunkFileUploadService : IChunkFileUploadService
             || !Guid.TryParse(uploadIdValue, out var uploadId)
             || !contentRange.HasLength
             || !contentRange.HasRange
-            || contentRange.Length > _options.Value.MaxFileSize)
+            || contentRange.Length > _options.Value.MaxFileSize
+            || contentRange.To - contentRange.From > _options.Value.MaxUploadChunkSize)
         {
             return new BadRequestResult();
         }
 
         var formFile = request.Form.Files.First();
-        using (var fileStream = await GetOrCreateTemporaryFileAsync(
+        using (var fileStream = GetOrCreateTemporaryFile(
             uploadId,
             formFile,
             contentRange.Length.Value))
@@ -76,36 +74,16 @@ public class ChunkFileUploadService : IChunkFileUploadService
             : await chunkAsync(uploadId, formFile, contentRange);
     }
 
-    public async Task PurgeTempDirectoryAsync()
+    private Stream GetOrCreateTemporaryFile(Guid uploadId, IFormFile formFile, long size)
     {
-        var siteTempFolderPath = await GetSiteTempFolderPathAsync();
-        if (_options.Value.TemporaryFileLifetime <= TimeSpan.Zero
-            || !Directory.Exists(siteTempFolderPath))
-        {
-            return;
-        }
-
-        var tempFiles = Directory.GetFiles(siteTempFolderPath)
-            .Select(filePath => new FileInfo(filePath))
-            .Where(fileInfo => fileInfo.LastWriteTimeUtc + _options.Value.TemporaryFileLifetime < _clock.UtcNow)
-            .ToList();
-
-        foreach (var tempFile in tempFiles)
-        {
-            DeleteTemporaryFile(tempFile.FullName);
-        }
-    }
-
-    private async Task<Stream> GetOrCreateTemporaryFileAsync(Guid uploadId, IFormFile formFile, long size)
-    {
-        var siteTempFolderPath = await GetSiteTempFolderPathAsync();
+        var siteTempFolderPath = GetSiteTempFolderPath();
 
         if (!Directory.Exists(siteTempFolderPath))
         {
             Directory.CreateDirectory(siteTempFolderPath);
         }
 
-        var tempFilePath = await GetTempFilePathAsync(uploadId, formFile);
+        var tempFilePath = GetTempFilePath(uploadId, formFile);
 
         return File.Exists(tempFilePath) switch
         {
@@ -119,7 +97,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
         IFormFile formFile,
         Func<IEnumerable<IFormFile>, Task<IActionResult>> completedAsync)
     {
-        var chunkedFormFile = await GetTemporaryFileForReadAsync(uploadId, formFile);
+        var chunkedFormFile = GetTemporaryFileForRead(uploadId, formFile);
 
         try
         {
@@ -128,26 +106,47 @@ public class ChunkFileUploadService : IChunkFileUploadService
         finally
         {
             chunkedFormFile.Dispose();
-            await DeleteTemporaryFileAsync(uploadId, formFile);
+            DeleteTemporaryFile(uploadId, formFile);
+            PurgeTempDirectory();
         }
     }
 
-    private async Task<ChunkedFormFile> GetTemporaryFileForReadAsync(Guid uploadId, IFormFile formFile)
+    private void PurgeTempDirectory()
     {
-        var tempFilePath = await GetTempFilePathAsync(uploadId, formFile);
-
-        return new(File.OpenRead(tempFilePath))
+        if (_purgeLock.CurrentCount == 0)
         {
-            ContentType = formFile.ContentType,
-            ContentDisposition = formFile.ContentDisposition,
-            Headers = formFile.Headers,
-            Name = formFile.Name,
-            FileName = formFile.FileName,
-        };
+            return;
+        }
+
+        _purgeLock.Wait();
+
+        try
+        {
+            var siteTempFolderPath = GetSiteTempFolderPath();
+            if (_options.Value.TemporaryFileLifetime <= TimeSpan.Zero
+                || !Directory.Exists(siteTempFolderPath))
+            {
+                return;
+            }
+
+            var tempFiles = Directory.GetFiles(siteTempFolderPath)
+                .Select(filePath => new FileInfo(filePath))
+                .Where(fileInfo => fileInfo.LastWriteTimeUtc + _options.Value.TemporaryFileLifetime < _clock.UtcNow)
+                .ToList();
+
+            foreach (var tempFile in tempFiles)
+            {
+                DeleteTemporaryFile(tempFile.FullName);
+            }
+        }
+        finally
+        {
+            _purgeLock.Release();
+        }
     }
 
-    private async Task DeleteTemporaryFileAsync(Guid uploadId, IFormFile formFile) =>
-        DeleteTemporaryFile(await GetTempFilePathAsync(uploadId, formFile));
+    private void DeleteTemporaryFile(Guid uploadId, IFormFile formFile) =>
+        DeleteTemporaryFile(GetTempFilePath(uploadId, formFile));
 
     private void DeleteTemporaryFile(string tempFilePath)
     {
@@ -164,17 +163,30 @@ public class ChunkFileUploadService : IChunkFileUploadService
         }
     }
 
-    private async Task<string> GetSiteTempFolderPathAsync()
+    private static ChunkedFormFile GetTemporaryFileForRead(Guid uploadId, IFormFile formFile)
     {
-        var siteName = (await _siteService.GetSiteSettingsAsync()).SiteName;
-        var siteTempFolderPath = Path.Combine(Path.GetTempPath(), siteName, TempFolderPrefix);
+        var tempFilePath = GetTempFilePath(uploadId, formFile);
+
+        return new(File.OpenRead(tempFilePath))
+        {
+            ContentType = formFile.ContentType,
+            ContentDisposition = formFile.ContentDisposition,
+            Headers = formFile.Headers,
+            Name = formFile.Name,
+            FileName = formFile.FileName,
+        };
+    }
+
+    private static string GetSiteTempFolderPath()
+    {
+        var siteTempFolderPath = Path.Combine(Path.GetTempPath(), TempFolderPrefix);
 
         return siteTempFolderPath;
     }
 
-    private async Task<string> GetTempFilePathAsync(Guid uploadId, IFormFile formFile)
+    private static string GetTempFilePath(Guid uploadId, IFormFile formFile)
     {
-        var siteTempFolderPath = await GetSiteTempFolderPathAsync();
+        var siteTempFolderPath = GetSiteTempFolderPath();
         var tempFilePath = Path.Combine(
             siteTempFolderPath,
             CalculateHash(uploadId.ToString(), formFile.FileName, formFile.Name));
@@ -198,7 +210,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
         using var sha256 = SHA256.Create();
         var hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(String.Join(String.Empty, parts)));
 
-        return BitConverter.ToString(hash).Replace("-", String.Empty);
+        return Convert.ToHexString(hash);
     }
 }
 

@@ -11,7 +11,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
-using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
@@ -189,7 +188,6 @@ namespace OrchardCore.Media
 
             services.AddScoped<IUserAssetFolderNameProvider, DefaultUserAssetFolderNameProvider>();
             services.AddTransient<IChunkFileUploadService, ChunkFileUploadService>();
-            services.AddSingleton<IBackgroundTask, ChunkFileUploadBackgroundTask>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
