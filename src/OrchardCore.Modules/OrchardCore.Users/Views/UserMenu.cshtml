@@ -27,7 +27,7 @@
             }
             <li><a class="dropdown-item" asp-area="OrchardCore.Users" asp-controller="Account" asp-action="ChangePassword" asp-route-returnUrl="@FullRequestPath"><span><i class="fa-solid fa-key" aria-hidden="true"></i></span>&nbsp;<span> @T["Change password"]</span></a></li>
 
-            @if (loginSettings.IsTwoFactorAuthenticationEnabled())
+            @if (loginSettings.EnableTwoFactorAuthentication)
             {
                 <li>
                     <a class="dropdown-item" asp-route-area="OrchardCore.Users" asp-controller="TwoFactorAuthentication" asp-action="Index"><i class="fa-solid fa-shield-halved fa-fw" aria-hidden="true"></i> @T["Security"]</a>
