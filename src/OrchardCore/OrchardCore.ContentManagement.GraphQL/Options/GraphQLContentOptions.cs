@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GraphQL;
 using GraphQL.Types;
 using OrchardCore.ContentManagement.GraphQL.Settings;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -227,6 +228,34 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
             }
 
             return false;
+        }
+
+        internal bool ShouldPreventFieldNameCollision(ContentTypePartDefinition definition)
+        {
+            var settings = definition.GetSettings<GraphQLContentTypePartSettings>();
+
+            return settings.PreventFieldNameCollisionMethod != PreventFieldNameCollisionMethods.None;
+        }
+
+        internal string GetCustomFieldName(ContentTypePartDefinition definition, string partName, string fieldName)
+        {
+            var settings = definition.GetSettings<GraphQLContentTypePartSettings>();
+
+            switch (settings.PreventFieldNameCollisionMethod)
+            {
+                case PreventFieldNameCollisionMethods.None:
+                    return fieldName;
+                case PreventFieldNameCollisionMethods.AddPartNameSuffix:
+                    return $"{partName.ToFieldName()}{fieldName.ToPascalCase()}";
+                case PreventFieldNameCollisionMethods.AddCustomSuffix:
+                    return $"{fieldName.ToCamelCase()}{settings.PreventFieldNameCollisionCustomValue.ToPascalCase()}";
+                case PreventFieldNameCollisionMethods.AddCustomPrefix:
+                    return $"{settings.PreventFieldNameCollisionCustomValue.ToCamelCase()}{fieldName.ToPascalCase()}";
+                case PreventFieldNameCollisionMethods.UseCustomFieldName:
+                    return settings.PreventFieldNameCollisionCustomValue.ToCamelCase();
+            }
+
+            return null;
         }
     }
 }

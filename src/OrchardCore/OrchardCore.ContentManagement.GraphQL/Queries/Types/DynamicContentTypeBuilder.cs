@@ -53,7 +53,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     continue;
                 }
 
-                if (!(part.PartDefinition.Fields.Any(field => contentFieldProviders.Any(fieldProvider => fieldProvider.GetField(field) != null))))
+                if (!(part.PartDefinition.Fields.Any(field => contentFieldProviders.Any(fieldProvider => fieldProvider.HasField(field)))))
                 {
                     continue;
                 }
@@ -64,7 +64,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     {
                         foreach (var fieldProvider in contentFieldProviders)
                         {
-                            var fieldType = fieldProvider.GetField(field);
+                            var customFieldName = _contentOptions.GetCustomFieldName(part, part.Name, field.Name);
+
+                            var fieldType = fieldProvider.GetField(field, part.Name, customFieldName);
 
                             if (fieldType != null)
                             {
@@ -90,7 +92,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                         {
                             foreach (var fieldProvider in contentFieldProviders)
                             {
-                                var contentFieldType = fieldProvider.GetField(field);
+                                var contentFieldType = fieldProvider.GetField(field, part.Name);
 
                                 if (contentFieldType != null && !contentItemType.HasField(contentFieldType.Name))
                                 {

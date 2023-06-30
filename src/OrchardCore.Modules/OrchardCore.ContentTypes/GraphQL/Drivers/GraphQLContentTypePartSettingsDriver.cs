@@ -44,10 +44,9 @@ namespace OrchardCore.ContentTypes.GraphQL.Drivers
 
                 model.Settings.AvailablePreventFieldNameCollisionMethods = new List<SelectListItem>() {
                     new SelectListItem { Value = nameof(PreventFieldNameCollisionMethods.None), Text = S["Do nothing"] },
-                    new SelectListItem { Value = nameof(PreventFieldNameCollisionMethods.AddPartNameSuffix), Text = S["Add Part Name Prefix"] },
+                    new SelectListItem { Value = nameof(PreventFieldNameCollisionMethods.AddPartNamePrefix), Text = S["Add Part Name Prefix"] },
                     new SelectListItem { Value = nameof(PreventFieldNameCollisionMethods.AddCustomPrefix), Text = S["Add Custom Prefix"] },
-                    new SelectListItem { Value = nameof(PreventFieldNameCollisionMethods.AddCustomSuffix), Text = S["Add Custom Suffix"] },
-                    new SelectListItem { Value = nameof(PreventFieldNameCollisionMethods.AddOridinalNumberSuffix), Text = S["Add Ordinal Number Suffix"] },
+                    new SelectListItem { Value = nameof(PreventFieldNameCollisionMethods.AddCustomSuffix), Text = S["Add Custom Suffix"] }
                 };
             }).Location("Content");
         }

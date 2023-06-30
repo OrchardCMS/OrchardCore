@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 
 namespace OrchardCore.ContentManagement.GraphQL.Settings
 {
@@ -23,14 +24,27 @@ namespace OrchardCore.ContentManagement.GraphQL.Settings
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
+            if (!Collapse)
+            {
+                yield break;
+            }
+
             var S = validationContext.GetService<IStringLocalizer<GraphQLContentTypePartSettings>>();
 
-            if (Collapse &&
-                (PreventFieldNameCollisionMethod == PreventFieldNameCollisionMethods.AddCustomPrefix ||
-                PreventFieldNameCollisionMethod == PreventFieldNameCollisionMethods.AddCustomSuffix) &&
-                string.IsNullOrWhiteSpace(PreventFieldNameCollisionCustomValue))
+            switch (PreventFieldNameCollisionMethod)
             {
-                yield return new ValidationResult(S["This field is required for selected method."], new[] { nameof(PreventFieldNameCollisionCustomValue) });
+                case PreventFieldNameCollisionMethods.AddCustomPrefix:
+                    if (!Regex.IsMatch(PreventFieldNameCollisionCustomValue, "^[_a-zA-Z][_a-zA-Z0-9]*$"))
+                    {
+                        yield return new ValidationResult(S["This field value must match '{0}' pattern for selected method.", "^[_a-zA-Z][_a-zA-Z0-9]*$"], new[] { nameof(PreventFieldNameCollisionCustomValue) });
+                    }
+                    break;
+                case PreventFieldNameCollisionMethods.AddCustomSuffix:
+                    if (!Regex.IsMatch(PreventFieldNameCollisionCustomValue, "^[_a-zA-Z0-9]*$"))
+                    {
+                        yield return new ValidationResult(S["This field value must match '{0}' pattern for selected method.", "^[_a-zA-Z0-9]*$"], new[] { nameof(PreventFieldNameCollisionCustomValue) });
+                    }
+                    break;
             }
         }
     }
@@ -38,9 +52,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Settings
     public enum PreventFieldNameCollisionMethods
     {
         None,
-        AddPartNameSuffix,
+        AddPartNamePrefix,
         AddCustomPrefix,
-        AddCustomSuffix,
-        AddOridinalNumberSuffix
+        AddCustomSuffix
     }
 }

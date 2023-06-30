@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using GraphQL.Resolvers;
 using GraphQL.Types;
@@ -18,27 +19,28 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public FieldType GetField(ContentPartFieldDefinition field)
+        public FieldType GetField(ContentPartFieldDefinition field, string namedPartTechnicalName, string customFieldName)
         {
-            var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
-            var typeActivator = serviceProvider.GetService<ITypeActivatorFactory<ContentField>>();
-            var activator = typeActivator.GetTypeActivator(field.FieldDefinition.Name);
-
-            var queryGraphType = typeof(ObjectGraphType<>).MakeGenericType(activator.Type);
-
-            if (serviceProvider.GetService(queryGraphType) is IObjectGraphType)
+            if (HasField(field))
             {
                 return new FieldType
                 {
-                    Name = field.Name,
+                    Name = customFieldName ?? field.Name,
                     Description = field.FieldDefinition.Name,
-                    Type = queryGraphType,
+                    Type = GetQueryGraphType(field),
                     Resolver = new FuncFieldResolver<ContentElement, ContentElement>(context =>
                     {
                         var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
 
+                        //Check if part has been collapsed by trying to get the parent named part.
+                        var contentPart = context.Source.Get(typeof(ContentPart), namedPartTechnicalName);
+
                         // Check if part has been collapsed by trying to get the parent part.
-                        var contentPart = context.Source.Get(typeof(ContentPart), field.PartDefinition.Name);
+                        if (contentPart == null)
+                        { 
+                            contentPart = context.Source.Get(typeof(ContentPart), field.PartDefinition.Name);
+                        }
+
                         if (contentPart == null)
                         {
                             // Part is not collapsed, access field directly.
@@ -52,6 +54,23 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
             }
 
             return null;
+        }
+
+        private Type GetQueryGraphType(ContentPartFieldDefinition field)
+        {
+            var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
+            var typeActivator = serviceProvider.GetService<ITypeActivatorFactory<ContentField>>();
+            var activator = typeActivator.GetTypeActivator(field.FieldDefinition.Name);
+            var queryGraphType = typeof(ObjectGraphType<>).MakeGenericType(activator.Type);
+
+            return queryGraphType;
+        }
+
+        public bool HasField(ContentPartFieldDefinition field)
+        {
+            var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
+
+            return serviceProvider.GetService(GetQueryGraphType(field)) is IObjectGraphType;
         }
     }
 }

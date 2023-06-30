@@ -87,20 +87,27 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
             }
         };
 
-        public FieldType GetField(ContentPartFieldDefinition field)
+        public FieldType GetField(ContentPartFieldDefinition field, string namedPartTechnicalName, string customFieldName)
         {
             if (!ContentFieldTypeMappings.ContainsKey(field.FieldDefinition.Name)) return null;
 
             var fieldDescriptor = ContentFieldTypeMappings[field.FieldDefinition.Name];
             return new FieldType
             {
-                Name = field.Name,
+                Name = customFieldName ?? field.Name,
                 Description = fieldDescriptor.Description,
                 Type = fieldDescriptor.FieldType,
                 Resolver = new FuncFieldResolver<ContentElement, object>(context =>
                 {
+                    //Check if part has been collapsed by trying to get the parent named part.
+                    var contentPart = context.Source.Get(typeof(ContentPart), namedPartTechnicalName);
+
                     // Check if part has been collapsed by trying to get the parent part.
-                    var contentPart = context.Source.Get(typeof(ContentPart), field.PartDefinition.Name);
+                    if (contentPart == null)
+                    {
+                        contentPart = context.Source.Get(typeof(ContentPart), field.PartDefinition.Name);
+                    }
+
                     if (contentPart == null)
                     {
                         // Part is not collapsed, access field directly.
@@ -117,6 +124,11 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     return contentField == null ? null : fieldDescriptor.FieldAccessor(contentField);
                 })
             };
+        }
+
+        public bool HasField(ContentPartFieldDefinition field)
+        {
+            return ContentFieldTypeMappings.ContainsKey(field.FieldDefinition.Name);
         }
 
         private class FieldTypeDescriptor
