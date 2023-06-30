@@ -245,14 +245,12 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
             {
                 case PreventFieldNameCollisionMethods.None:
                     return fieldName;
-                case PreventFieldNameCollisionMethods.AddPartNameSuffix:
+                case PreventFieldNameCollisionMethods.AddPartNamePrefix:
                     return $"{partName.ToFieldName()}{fieldName.ToPascalCase()}";
                 case PreventFieldNameCollisionMethods.AddCustomSuffix:
                     return $"{fieldName.ToCamelCase()}{settings.PreventFieldNameCollisionCustomValue.ToPascalCase()}";
                 case PreventFieldNameCollisionMethods.AddCustomPrefix:
                     return $"{settings.PreventFieldNameCollisionCustomValue.ToCamelCase()}{fieldName.ToPascalCase()}";
-                case PreventFieldNameCollisionMethods.UseCustomFieldName:
-                    return settings.PreventFieldNameCollisionCustomValue.ToCamelCase();
             }
 
             return null;
