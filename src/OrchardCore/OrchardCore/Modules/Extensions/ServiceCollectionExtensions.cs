@@ -40,14 +40,27 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class ServiceCollectionExtensions
     {
         /// <summary>
+        /// Routing singleton and global config types used to isolate tenants from the host.
+        /// </summary>
+        private static readonly Type[] _routingTypesToIsolate = new ServiceCollection()
+            .AddRouting()
+            .Where(sd =>
+                sd.Lifetime == ServiceLifetime.Singleton ||
+                sd.ServiceType == typeof(IConfigureOptions<RouteOptions>))
+            .Select(sd => sd.GetImplementationType())
+            .ToArray();
+
+        /// <summary>
         /// Http client singleton types used to isolate tenants from the host.
         /// </summary>
-        private static readonly Type[] _httpClientSingletonTypes = new ServiceCollection()
+        private static readonly Type[] _httpClientTypesToIsolate = new ServiceCollection()
             .AddHttpClient()
-            .GetSingletonImplementationTypes()
+            .Where(sd => sd.Lifetime == ServiceLifetime.Singleton)
+            .Select(sd => sd.GetImplementationType())
             .Except(new ServiceCollection()
                 .AddLogging()
-                .GetSingletonImplementationTypes())
+                .Where(sd => sd.Lifetime == ServiceLifetime.Singleton)
+                .Select(sd => sd.GetImplementationType()))
             .ToArray();
 
         /// <summary>
@@ -269,14 +282,11 @@ namespace Microsoft.Extensions.DependencyInjection
                 // setup by the default configuration of 'RouteOptions' and mutated on each call of 'UseEndPoints()'.
                 // So, we need isolated routing singletons (and a default configuration) per tenant.
 
-                var implementationTypesToRemove = new ServiceCollection().AddRouting()
-                    .Where(sd => sd.Lifetime == ServiceLifetime.Singleton || sd.ServiceType == typeof(IConfigureOptions<RouteOptions>))
-                    .Select(sd => sd.GetImplementationType())
-                    .ToArray();
-
                 var descriptorsToRemove = collection
-                    .Where(sd => (sd is ClonedSingletonDescriptor || sd.ServiceType == typeof(IConfigureOptions<RouteOptions>)) &&
-                        implementationTypesToRemove.Contains(sd.GetImplementationType()))
+                    .Where(sd =>
+                        (sd is ClonedSingletonDescriptor ||
+                        sd.ServiceType == typeof(IConfigureOptions<RouteOptions>)) &&
+                        _routingTypesToIsolate.Contains(sd.GetImplementationType()))
                     .ToArray();
 
                 foreach (var descriptor in descriptorsToRemove)
@@ -301,14 +311,16 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 // Retrieve current options configurations.
                 var configurationDescriptorsToRemove = collection
-                    .Where(sd => sd.ServiceType.IsGenericType &&
+                    .Where(sd =>
+                        sd.ServiceType.IsGenericType &&
                         sd.ServiceType.GenericTypeArguments.Contains(typeof(HttpClientFactoryOptions)))
                     .ToArray();
 
                 // Retrieve all descriptors to remove.
                 var descriptorsToRemove = collection
-                    .Where(sd => sd is ClonedSingletonDescriptor &&
-                        _httpClientSingletonTypes.Contains(sd.GetImplementationType()))
+                    .Where(sd =>
+                        sd is ClonedSingletonDescriptor &&
+                        _httpClientTypesToIsolate.Contains(sd.GetImplementationType()))
                     .Concat(configurationDescriptorsToRemove)
                     .ToArray();
 
@@ -332,7 +344,8 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 // Remove the related host singletons as they are not tenant aware.
                 var descriptorsToRemove = collection
-                    .Where(sd => sd is ClonedSingletonDescriptor &&
+                    .Where(sd =>
+                        sd is ClonedSingletonDescriptor &&
                         (sd.ServiceType == typeof(IActionDescriptorCollectionProvider) ||
                         sd.ServiceType == typeof(IApiDescriptionGroupCollectionProvider)))
                     .ToArray();
@@ -342,10 +355,8 @@ namespace Microsoft.Extensions.DependencyInjection
                     collection.Remove(descriptor);
                 }
 
-#if NET6_0_OR_GREATER
                 // Configure ApiExplorer at the tenant level.
                 collection.AddEndpointsApiExplorer();
-#endif
             },
             order: Int32.MinValue + 100);
         }
@@ -383,18 +394,18 @@ namespace Microsoft.Extensions.DependencyInjection
         private static void AddSameSiteCookieBackwardsCompatibility(OrchardCoreBuilder builder)
         {
             builder.ConfigureServices(services =>
+            {
+                services.Configure<CookiePolicyOptions>(options =>
                 {
-                    services.Configure<CookiePolicyOptions>(options =>
-                    {
-                        options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
-                        options.OnAppendCookie = cookieContext => CheckSameSiteBackwardsCompatiblity(cookieContext.Context, cookieContext.CookieOptions);
-                        options.OnDeleteCookie = cookieContext => CheckSameSiteBackwardsCompatiblity(cookieContext.Context, cookieContext.CookieOptions);
-                    });
-                })
-                .Configure(app =>
-                {
-                    app.UseCookiePolicy();
+                    options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
+                    options.OnAppendCookie = cookieContext => CheckSameSiteBackwardsCompatiblity(cookieContext.Context, cookieContext.CookieOptions);
+                    options.OnDeleteCookie = cookieContext => CheckSameSiteBackwardsCompatiblity(cookieContext.Context, cookieContext.CookieOptions);
                 });
+            })
+            .Configure(app =>
+            {
+                app.UseCookiePolicy();
+            });
         }
 
         private static void CheckSameSiteBackwardsCompatiblity(HttpContext httpContext, CookieOptions options)
@@ -499,13 +510,5 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.Add(collection);
             });
         }
-
-        /// <summary>
-        /// Retrieves the singleton implementation types from the provided service collection.
-        /// </summary>
-        private static IEnumerable<Type> GetSingletonImplementationTypes(this IServiceCollection services) =>
-            services
-                .Where(sd => sd.Lifetime == ServiceLifetime.Singleton)
-                .Select(sd => sd.GetImplementationType());
     }
 }
