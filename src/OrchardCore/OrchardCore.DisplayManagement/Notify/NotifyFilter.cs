@@ -209,7 +209,7 @@ namespace OrchardCore.DisplayManagement.Notify
                 HttpOnly = true
             };
 
-            if (!httpContext.Request.PathBase.Equals(PathString.Empty))
+            if (httpContext.Request.PathBase.HasValue)
             {
                 cookieOptions.Path = httpContext.Request.PathBase;
             }

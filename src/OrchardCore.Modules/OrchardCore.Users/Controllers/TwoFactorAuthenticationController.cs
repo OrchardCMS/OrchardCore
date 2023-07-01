@@ -78,7 +78,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
     {
         var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
-        if (!loginSettings.IsTwoFactorAuthenticationEnabled())
+        if (!loginSettings.EnableTwoFactorAuthentication)
         {
             return NotFound();
         }
@@ -108,7 +108,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
     {
         var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
-        if (!loginSettings.IsTwoFactorAuthenticationEnabled())
+        if (!loginSettings.EnableTwoFactorAuthentication)
         {
             return NotFound();
         }
@@ -161,7 +161,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
     {
         var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
-        if (!loginSettings.IsTwoFactorAuthenticationEnabled())
+        if (!loginSettings.EnableTwoFactorAuthentication)
         {
             return NotFound();
         }
@@ -186,7 +186,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
     {
         var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
-        if (!loginSettings.IsTwoFactorAuthenticationEnabled())
+        if (!loginSettings.EnableTwoFactorAuthentication)
         {
             return NotFound();
         }
@@ -234,7 +234,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
     {
         var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
-        if (!loginSettings.IsTwoFactorAuthenticationEnabled())
+        if (!loginSettings.EnableTwoFactorAuthentication)
         {
             return NotFound();
         }
@@ -315,7 +315,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
     {
         var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
-        if (!loginSettings.IsTwoFactorAuthenticationEnabled())
+        if (!loginSettings.EnableTwoFactorAuthentication)
         {
             return NotFound();
         }
@@ -332,8 +332,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
             IsTwoFaEnabled = await _userManager.GetTwoFactorEnabledAsync(user),
             IsMachineRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
             RecoveryCodesLeft = await _userManager.CountRecoveryCodesAsync(user),
-            CanDisableTwoFa = !await _twoFactorHandlerCoordinator.IsRequiredAsync()
-            || !await loginSettings.CanEnableTwoFactorAuthenticationAsync(role => _userManager.IsInRoleAsync(user, role)),
+            CanDisableTwoFa = !await _twoFactorHandlerCoordinator.IsRequiredAsync(),
         };
 
         return View(model);
@@ -346,7 +345,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
     {
         var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
-        if (!loginSettings.IsTwoFactorAuthenticationEnabled())
+        if (!loginSettings.EnableTwoFactorAuthentication)
         {
             return NotFound();
         }
@@ -368,7 +367,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
     {
         var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
-        if (!loginSettings.IsTwoFactorAuthenticationEnabled())
+        if (!loginSettings.EnableTwoFactorAuthentication)
         {
             return NotFound();
         }
@@ -398,7 +397,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
     {
         var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
-        if (!loginSettings.IsTwoFactorAuthenticationEnabled())
+        if (!loginSettings.EnableTwoFactorAuthentication)
         {
             return NotFound();
         }
@@ -429,7 +428,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
     {
         var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
-        if (!loginSettings.IsTwoFactorAuthenticationEnabled())
+        if (!loginSettings.EnableTwoFactorAuthentication)
         {
             return NotFound();
         }
@@ -460,7 +459,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
     {
         var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
-        if (!loginSettings.IsTwoFactorAuthenticationEnabled())
+        if (!loginSettings.EnableTwoFactorAuthentication)
         {
             return NotFound();
         }
@@ -482,7 +481,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
     {
         var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
-        if (!loginSettings.IsTwoFactorAuthenticationEnabled())
+        if (!loginSettings.EnableTwoFactorAuthentication)
         {
             return NotFound();
         }
@@ -506,7 +505,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
     {
         var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
-        if (!loginSettings.IsTwoFactorAuthenticationEnabled())
+        if (!loginSettings.EnableTwoFactorAuthentication)
         {
             return NotFound();
         }
@@ -517,8 +516,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
             return NotFound("Unable to load user.");
         }
 
-        if (await _twoFactorHandlerCoordinator.IsRequiredAsync()
-            && await loginSettings.CanEnableTwoFactorAuthenticationAsync(role => _userManager.IsInRoleAsync(user, role)))
+        if (await _twoFactorHandlerCoordinator.IsRequiredAsync())
         {
             await _notifier.WarningAsync(H["Two-factor authentication cannot be disabled for the current user."]);
 
@@ -536,7 +534,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
     {
         var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
-        if (!loginSettings.IsTwoFactorAuthenticationEnabled())
+        if (!loginSettings.EnableTwoFactorAuthentication)
         {
             return NotFound();
         }
@@ -547,8 +545,7 @@ public class TwoFactorAuthenticationController : AccountBaseController
             return NotFound("Unable to load user.");
         }
 
-        if (await _twoFactorHandlerCoordinator.IsRequiredAsync()
-            && await loginSettings.CanEnableTwoFactorAuthenticationAsync(role => _userManager.IsInRoleAsync(user, role)))
+        if (await _twoFactorHandlerCoordinator.IsRequiredAsync())
         {
             await _notifier.WarningAsync(H["Two-factor authentication cannot be disabled for the current user."]);
 

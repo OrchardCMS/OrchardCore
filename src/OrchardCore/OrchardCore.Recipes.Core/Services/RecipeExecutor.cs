@@ -125,6 +125,7 @@ namespace OrchardCore.Recipes.Services
                                         foreach (var descriptor in recipeStep.InnerRecipes)
                                         {
                                             var innerExecutionId = Guid.NewGuid().ToString();
+                                            descriptor.RequireNewScope = recipeDescriptor.RequireNewScope;
                                             await ExecuteAsync(innerExecutionId, descriptor, environment, cancellationToken);
                                         }
                                     }

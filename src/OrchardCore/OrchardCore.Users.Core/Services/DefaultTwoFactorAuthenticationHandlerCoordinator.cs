@@ -6,24 +6,31 @@ namespace OrchardCore.Users.Services;
 
 public class DefaultTwoFactorAuthenticationHandlerCoordinator : ITwoFactorAuthenticationHandlerCoordinator
 {
-    private readonly IEnumerable<ITwoFactorAuthenticationHandler> _handlers;
+    private readonly IEnumerable<ITwoFactorAuthenticationHandler> _twoFactorAuthenticationHandlers;
+
+    private bool? _isRequired = null;
 
     public DefaultTwoFactorAuthenticationHandlerCoordinator(
-        IEnumerable<ITwoFactorAuthenticationHandler> handlers)
+        IEnumerable<ITwoFactorAuthenticationHandler> twoFactorAuthenticationHandlers)
     {
-        _handlers = handlers;
+        _twoFactorAuthenticationHandlers = twoFactorAuthenticationHandlers;
     }
 
     public async Task<bool> IsRequiredAsync()
     {
-        foreach (var handler in _handlers)
+        if (_isRequired is null)
         {
-            if (await handler.IsRequiredAsync())
+            foreach (var handler in _twoFactorAuthenticationHandlers)
             {
-                return true;
+                if (await handler.IsRequiredAsync())
+                {
+                    _isRequired = true;
+
+                    break;
+                }
             }
         }
 
-        return false;
+        return _isRequired ??= false;
     }
 }
