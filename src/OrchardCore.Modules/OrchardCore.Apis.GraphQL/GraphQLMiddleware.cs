@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Execution;
+using GraphQL.Instrumentation;
 using GraphQL.SystemTextJson;
 using GraphQL.Validation;
 using GraphQL.Validation.Complexity;
@@ -140,6 +141,7 @@ namespace OrchardCore.Apis.GraphQL
 
             var schema = await schemaService.GetSchemaAsync();
             var dataLoaderDocumentListener = context.RequestServices.GetRequiredService<IDocumentExecutionListener>();
+            var start = DateTime.UtcNow;
             var result = await _executer.ExecuteAsync(_ =>
             {
                 _.Schema = schema;
@@ -149,6 +151,7 @@ namespace OrchardCore.Apis.GraphQL
                 _.UserContext = _settings.BuildUserContext?.Invoke(context);
                 _.ValidationRules = DocumentValidator.CoreRules
                                     .Concat(context.RequestServices.GetServices<IValidationRule>());
+                _.EnableMetrics = true;
                 _.ComplexityConfiguration = new ComplexityConfiguration
                 {
                     MaxDepth = _settings.MaxDepth,
@@ -158,6 +161,8 @@ namespace OrchardCore.Apis.GraphQL
                 _.Listeners.Add(dataLoaderDocumentListener);
                 _.RequestServices = context.RequestServices;
             });
+
+            result.EnrichWithApolloTracing(start);
 
             context.Response.StatusCode = (int)(result.Errors == null || result.Errors.Count == 0
                 ? HttpStatusCode.OK

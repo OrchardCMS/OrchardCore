@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using GraphQL.Instrumentation;
 using GraphQL.MicrosoftDI;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,15 +15,17 @@ namespace OrchardCore.Apis.GraphQL.Services
     public class SchemaService : ISchemaFactory
     {
         private readonly IEnumerable<ISchemaBuilder> _schemaBuilders;
+        private readonly IEnumerable<ICustomFieldMiddleware> _fieldMiddlewares;
         private readonly IServiceProvider _serviceProvider;
         private readonly SemaphoreSlim _schemaGenerationSemaphore = new SemaphoreSlim(1, 1);
         private readonly ConcurrentDictionary<ISchemaBuilder, string> _identifiers = new ConcurrentDictionary<ISchemaBuilder, string>();
 
         private ISchema _schema;
 
-        public SchemaService(IEnumerable<ISchemaBuilder> schemaBuilders, IServiceProvider serviceProvider)
+        public SchemaService(IEnumerable<ISchemaBuilder> schemaBuilders, IEnumerable<ICustomFieldMiddleware> fieldMiddlewares, IServiceProvider serviceProvider)
         {
             _schemaBuilders = schemaBuilders;
+            _fieldMiddlewares = fieldMiddlewares;
             _serviceProvider = serviceProvider;
         }
 
@@ -71,6 +74,13 @@ namespace OrchardCore.Apis.GraphQL.Services
                     Subscription = new ObjectGraphType { Name = "Subscription" },
                     NameConverter = new OrchardFieldNameConverter(),
                 };
+
+                schema.FieldMiddleware.Use(new InstrumentFieldsMiddleware());
+
+                foreach (var middleware in _fieldMiddlewares)
+                {
+                    schema.FieldMiddleware.Use(middleware);
+                }
 
                 foreach (var type in serviceProvider.GetServices<IInputObjectGraphType>())
                 {
