@@ -422,25 +422,25 @@ namespace Microsoft.Extensions.DependencyInjection
                 }
 
                 // Cover all iOS based browsers here. This includes:
-                // - Safari on iOS 12 for iPhone, iPod Touch, iPad
-                // - WkWebview on iOS 12 for iPhone, iPod Touch, iPad
-                // - Chrome on iOS 12 for iPhone, iPod Touch, iPad
-                // All of which are broken by SameSite=None, because they use the iOS networking stack
+                // - Safari on iOS 12 for iPhone, iPod Touch, iPad.
+                // - WkWebview on iOS 12 for iPhone, iPod Touch, iPad.
+                // - Chrome on iOS 12 for iPhone, iPod Touch, iPad.
+                // All of which are broken by SameSite=None, because they use the iOS networking stack.
                 if (userAgent.Contains("CPU iPhone OS 12") || userAgent.Contains("iPad; CPU OS 12"))
                 {
-                    options.SameSite = AspNetCore.Http.SameSiteMode.Unspecified;
+                    options.SameSite = SameSiteMode.Unspecified;
                     return;
                 }
 
                 // Cover Mac OS X based browsers that use the Mac OS networking stack. This includes:
                 // - Safari on Mac OS X.
                 // This does not include:
-                // - Chrome on Mac OS X
+                // - Chrome on Mac OS X.
                 // Because they do not use the Mac OS networking stack.
                 if (userAgent.Contains("Macintosh; Intel Mac OS X 10_14") &&
                     userAgent.Contains("Version/") && userAgent.Contains("Safari"))
                 {
-                    options.SameSite = AspNetCore.Http.SameSiteMode.Unspecified;
+                    options.SameSite = SameSiteMode.Unspecified;
                     return;
                 }
 
@@ -450,7 +450,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 // but pre-Chromium Edge does not require SameSite=None.
                 if (userAgent.Contains("Chrome/5") || userAgent.Contains("Chrome/6"))
                 {
-                    options.SameSite = AspNetCore.Http.SameSiteMode.Unspecified;
+                    options.SameSite = SameSiteMode.Unspecified;
                 }
             }
         }
