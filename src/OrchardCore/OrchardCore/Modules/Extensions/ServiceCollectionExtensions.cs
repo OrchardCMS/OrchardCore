@@ -289,6 +289,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         _routingTypesToIsolate.Contains(sd.GetImplementationType()))
                     .ToArray();
 
+                // Isolate each tenant from the host.
                 foreach (var descriptor in descriptorsToRemove)
                 {
                     collection.Remove(descriptor);
@@ -350,6 +351,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         sd.ServiceType == typeof(IApiDescriptionGroupCollectionProvider)))
                     .ToArray();
 
+                // Isolate each tenant from the host.
                 foreach (var descriptor in descriptorsToRemove)
                 {
                     collection.Remove(descriptor);
