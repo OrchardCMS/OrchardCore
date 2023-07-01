@@ -221,13 +221,13 @@ namespace OrchardCore.Users
             });
 
             var dataProtectionProviderType = typeof(DataProtectorTokenProvider<>).MakeGenericType(identityBuilder.UserType);
-            //var phoneNumberProviderType = typeof(PhoneNumberTokenProvider<>).MakeGenericType(identityBuilder.UserType);
+            var phoneNumberProviderType = typeof(PhoneNumberTokenProvider<>).MakeGenericType(identityBuilder.UserType);
             var emailTokenProviderType = typeof(EmailTokenProvider<>).MakeGenericType(identityBuilder.UserType);
             var authenticatorProviderType = typeof(AuthenticatorTokenProvider<>).MakeGenericType(identityBuilder.UserType);
 
             identityBuilder.AddTokenProvider(TokenOptions.DefaultProvider, dataProtectionProviderType)
                 .AddTokenProvider(TokenOptions.DefaultEmailProvider, emailTokenProviderType)
-                // .AddTokenProvider(TokenOptions.DefaultPhoneProvider, phoneNumberProviderType)
+                .AddTokenProvider(TokenOptions.DefaultPhoneProvider, phoneNumberProviderType)
                 .AddTokenProvider(TokenOptions.DefaultAuthenticatorProvider, authenticatorProviderType);
 
             services.AddMvc(options =>
