@@ -87,7 +87,9 @@ Configuration is done via the standard shell configuration, as follows.
       "FieldImpact": 2.0,
       "DefaultNumberOfResults": 100,
       "MaxNumberOfResults": 1000,
-      "MaxNumberOfResultsValidationMode": "Default"
+      "MaxNumberOfResultsValidationMode": "Default",
+      "EnableMetrics": true,
+      "EnableMetricsByHeader": false
     }
   }
 }
@@ -117,5 +119,13 @@ Enforces the total maximum nesting across all queries in a request.
 *MaxComplexity (int?, Default: null)*
 
 *FieldImpact (double?, Default: null)*
+
+*EnableMetrics (bool?, Default: false)*
+
+Enables metrics in GraphQl, enriches results with Apollo tracing and applies InstrumentFieldsMiddleware on results. Allows to add custom field middleware by registering implementations of ICustomFieldMiddleware interface.
+
+*EnableMetricsByHeader (bool?, Default: false)*
+
+Same as EnableMetrics but metrics are allowed only when request is made with X-GRAPHQL-METRICS header present.
 
 For more information on MaxDepth, MaxComplexity, FieldImpact & protecting against malicious queries view the graphql-dot-net documentation at <https://graphql-dotnet.github.io/docs/getting-started/malicious-queries/>

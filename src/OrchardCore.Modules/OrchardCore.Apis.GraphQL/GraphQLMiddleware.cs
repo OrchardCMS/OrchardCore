@@ -141,6 +141,7 @@ namespace OrchardCore.Apis.GraphQL
 
             var schema = await schemaService.GetSchemaAsync();
             var dataLoaderDocumentListener = context.RequestServices.GetRequiredService<IDocumentExecutionListener>();
+            var allowMetrics = _settings.EnableMetrics || _settings.EnableMetricsByHeader && context.Request.Headers.ContainsKey("X-GRAPHQL-METRICS");
             var start = DateTime.UtcNow;
             var result = await _executer.ExecuteAsync(_ =>
             {
@@ -151,7 +152,7 @@ namespace OrchardCore.Apis.GraphQL
                 _.UserContext = _settings.BuildUserContext?.Invoke(context);
                 _.ValidationRules = DocumentValidator.CoreRules
                                     .Concat(context.RequestServices.GetServices<IValidationRule>());
-                _.EnableMetrics = true;
+                _.EnableMetrics = allowMetrics;
                 _.ComplexityConfiguration = new ComplexityConfiguration
                 {
                     MaxDepth = _settings.MaxDepth,
@@ -162,7 +163,10 @@ namespace OrchardCore.Apis.GraphQL
                 _.RequestServices = context.RequestServices;
             });
 
-            result.EnrichWithApolloTracing(start);
+            if (allowMetrics)
+            {
+                result.EnrichWithApolloTracing(start);
+            }
 
             context.Response.StatusCode = (int)(result.Errors == null || result.Errors.Count == 0
                 ? HttpStatusCode.OK

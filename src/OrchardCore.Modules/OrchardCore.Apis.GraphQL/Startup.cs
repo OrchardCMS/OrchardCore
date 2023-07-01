@@ -2,6 +2,7 @@ using System;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Execution;
+using GraphQL.Instrumentation;
 using GraphQL.SystemTextJson;
 using GraphQL.Validation;
 using Microsoft.AspNetCore.Builder;
@@ -78,6 +79,8 @@ namespace OrchardCore.Apis.GraphQL
                 c.MaxNumberOfResults = configuration.GetValue<int?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.MaxNumberOfResults)}") ?? 1000;
                 c.MaxNumberOfResultsValidationMode = maxNumberOfResultsValidationMode;
                 c.DefaultNumberOfResults = configuration.GetValue<int?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.DefaultNumberOfResults)}") ?? 100;
+                c.EnableMetrics = configuration.GetValue<bool?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.EnableMetrics)}") ?? false;
+                c.EnableMetricsByHeader = configuration.GetValue<bool?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.EnableMetricsByHeader)}") ?? false;
             });
         }
 
