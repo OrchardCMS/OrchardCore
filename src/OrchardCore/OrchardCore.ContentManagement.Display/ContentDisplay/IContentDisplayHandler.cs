@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Handlers;
 
 namespace OrchardCore.ContentManagement.Display.ContentDisplay
@@ -9,8 +10,8 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
     /// </summary>
     public interface IContentDisplayHandler
     {
-        Task BuildDisplayAsync(ContentItem contentItem, BuildDisplayContext context);
-        Task BuildEditorAsync(ContentItem contentItem, BuildEditorContext context);
-        Task UpdateEditorAsync(ContentItem contentItem, UpdateEditorContext context);
+        Task BuildDisplayAsync(ContentItem contentItem, BuildDisplayContext context, ContentTypeDefinition contentTypeDefinition);
+        Task BuildEditorAsync(ContentItem contentItem, BuildEditorContext context, ContentTypeDefinition contentTypeDefinition);
+        Task UpdateEditorAsync(ContentItem contentItem, UpdateEditorContext context, ContentTypeDefinition contentTypeDefinition);
     }
 }
