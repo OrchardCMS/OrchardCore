@@ -31,13 +31,13 @@
     <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00016" />
     <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00016" />
     <PackageManagement Include="Lucene.Net.Spatial" Version="4.8.0-beta00016" />
-    <PackageManagement Include="MailKit" Version="4.0.0" />
+    <PackageManagement Include="MailKit" Version="4.1.0" />
     <PackageManagement Include="Markdig" Version="0.31.0" />
     <PackageManagement Include="MessagePack" Version="2.2.60" />
-    <PackageManagement Include="Microsoft.Identity.Web" Version="2.11.1" />
-    <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="17.6.2" />
+    <PackageManagement Include="Microsoft.Identity.Web" Version="2.12.4" />
+    <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="17.6.3" />
     <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
-    <PackageManagement Include="MimeKit" Version="4.0.0" />
+    <PackageManagement Include="MimeKit" Version="4.1.0" />
     <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.3.8" />
     <PackageManagement Include="Moq" Version="4.18.4" />
     <PackageManagement Include="ncrontab" Version="3.3.1" />
@@ -46,8 +46,8 @@
     <PackageManagement Include="NJsonSchema" Version="10.9.0" />
     <PackageManagement Include="NLog.Web.AspNetCore" Version="5.3.0" />
     <PackageManagement Include="NodaTime" Version="3.1.9" />
-    <PackageManagement Include="OpenIddict.AspNetCore" Version="4.4.0" />
-    <PackageManagement Include="OpenIddict.Core" Version="4.4.0" />
+    <PackageManagement Include="OpenIddict.AspNetCore" Version="4.5.0" />
+    <PackageManagement Include="OpenIddict.Core" Version="4.5.0" />
     <PackageManagement Include="OrchardCore.Translations.All" Version="1.6.1" />
     <PackageManagement Include="PdfPig" Version="0.1.8" />
     <PackageManagement Include="Serilog.AspNetCore" Version="7.0.0" />

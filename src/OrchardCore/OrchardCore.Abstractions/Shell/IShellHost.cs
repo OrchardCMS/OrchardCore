@@ -9,7 +9,7 @@ namespace OrchardCore.Environment.Shell
     public interface IShellHost : IShellEvents, IShellDescriptorManagerEventHandler
     {
         /// <summary>
-        /// Ensure that all the <see cref="ShellContext"/> are pre-created and available to process requests.
+        /// Ensures that all the <see cref="ShellContext"/> are pre-created and available to process requests.
         /// </summary>
         Task InitializeAsync();
 

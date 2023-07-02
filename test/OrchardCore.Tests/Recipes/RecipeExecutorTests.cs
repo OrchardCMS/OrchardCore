@@ -1,6 +1,5 @@
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
@@ -50,9 +49,9 @@ namespace OrchardCore.Recipes
 
         private static Task<ShellScope> GetScopeAsync() => ShellScope.Context.CreateScopeAsync();
 
-        private static ShellContext CreateShellContext() => new ShellContext()
+        private static ShellContext CreateShellContext() => new()
         {
-            Settings = new ShellSettings() { Name = ShellHelper.DefaultShellName, State = TenantState.Running },
+            Settings = new ShellSettings().AsDefaultShell().AsRunning(),
             ServiceProvider = CreateServiceProvider(),
         };
 

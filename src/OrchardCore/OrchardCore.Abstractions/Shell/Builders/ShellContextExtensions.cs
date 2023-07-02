@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 
@@ -16,7 +15,7 @@ namespace OrchardCore.Environment.Shell.Builders
         public static Task<(ILocker locker, bool locked)> TryAcquireShellActivateLockAsync(this ShellContext shellContext)
         {
             // If the shell is initializing, force the usage of a local lock.
-            var lockService = shellContext.Settings.State == TenantState.Initializing
+            var lockService = shellContext.Settings.IsInitializing()
                 ? (ILock)shellContext.ServiceProvider.GetRequiredService<ILocalLock>()
                 : shellContext.ServiceProvider.GetRequiredService<IDistributedLock>();
 

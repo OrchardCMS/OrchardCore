@@ -9,7 +9,6 @@ using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Events;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Environment.Shell
@@ -55,7 +54,7 @@ namespace OrchardCore.Environment.Shell
         public ShellEvent RemovingAsync { get; set; }
 
         /// <summary>
-        /// Ensure that all the <see cref="ShellContext"/> are pre-created and available to process requests.
+        /// Ensures that all the <see cref="ShellContext"/> are pre-created and available to process requests.
         /// </summary>
         public async Task InitializeAsync()
         {
@@ -183,7 +182,7 @@ namespace OrchardCore.Environment.Shell
         /// <param name="eventSource">Whether the related <see cref="ShellEvent"/> is invoked.</param>
         public async Task ReloadShellContextAsync(ShellSettings settings, bool eventSource = true)
         {
-            if (ReloadingAsync is not null && eventSource && settings.State != TenantState.Initializing)
+            if (ReloadingAsync is not null && eventSource && !settings.IsInitializing())
             {
                 foreach (var d in ReloadingAsync.GetInvocationList())
                 {
@@ -198,7 +197,7 @@ namespace OrchardCore.Environment.Shell
                 return;
             }
 
-            if (settings.State != TenantState.Initializing)
+            if (!settings.IsInitializing())
             {
                 settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
             }
@@ -226,7 +225,7 @@ namespace OrchardCore.Environment.Shell
                     _runningShellTable.Add(settings);
                 }
 
-                if (settings.State == TenantState.Initializing)
+                if (settings.IsInitializing())
                 {
                     return;
                 }
@@ -254,7 +253,7 @@ namespace OrchardCore.Environment.Shell
         /// <param name="eventSource">Whether the related <see cref="ShellEvent"/> is invoked.</param>
         public async Task ReleaseShellContextAsync(ShellSettings settings, bool eventSource = true)
         {
-            if (ReleasingAsync is not null && eventSource && settings.State != TenantState.Initializing)
+            if (ReleasingAsync is not null && eventSource && !settings.IsInitializing())
             {
                 foreach (var d in ReleasingAsync.GetInvocationList())
                 {
@@ -290,7 +289,7 @@ namespace OrchardCore.Environment.Shell
         {
             CheckCanRemoveShell(settings);
 
-            if (RemovingAsync is not null && eventSource && settings.State != TenantState.Initializing)
+            if (RemovingAsync is not null && eventSource && !settings.IsInitializing())
             {
                 foreach (var d in RemovingAsync.GetInvocationList())
                 {
@@ -356,7 +355,7 @@ namespace OrchardCore.Environment.Shell
             var defaultSettings = allSettings.FirstOrDefault(s => s.IsDefaultShell());
 
             // The 'Default' tenant is not running, run the Setup.
-            if (defaultSettings?.State != TenantState.Running)
+            if (!defaultSettings.IsRunning())
             {
                 var setupContext = await CreateSetupContextAsync(defaultSettings);
                 AddAndRegisterShell(setupContext);
@@ -379,7 +378,7 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         private Task<ShellContext> CreateShellContextAsync(ShellSettings settings)
         {
-            if (settings.State == TenantState.Uninitialized)
+            if (settings.IsUninitialized())
             {
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
@@ -388,7 +387,7 @@ namespace OrchardCore.Environment.Shell
 
                 return _shellContextFactory.CreateSetupContextAsync(settings);
             }
-            else if (settings.State == TenantState.Disabled)
+            else if (settings.IsDisabled())
             {
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
@@ -397,7 +396,7 @@ namespace OrchardCore.Environment.Shell
 
                 return Task.FromResult(new ShellContext { Settings = settings });
             }
-            else if (settings.State == TenantState.Running || settings.State == TenantState.Initializing)
+            else if (settings.IsRunning() || settings.IsInitializing())
             {
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
@@ -425,10 +424,10 @@ namespace OrchardCore.Environment.Shell
             if (defaultSettings is null)
             {
                 // Creates a default shell settings based on the configuration.
-                var shellSettings = _shellSettingsManager.CreateDefaultSettings();
-                shellSettings.Name = ShellHelper.DefaultShellName;
-                shellSettings.State = TenantState.Uninitialized;
-                defaultSettings = shellSettings;
+                defaultSettings = _shellSettingsManager
+                    .CreateDefaultSettings()
+                    .AsDefaultShell()
+                    .AsUninitialized();
 
                 await UpdateShellSettingsAsync(defaultSettings);
             }
@@ -486,55 +485,52 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Whether or not a shell can be added to the list of available shells.
         /// </summary>
-        private bool CanCreateShell(ShellSettings shellSettings)
-        {
-            return
-                shellSettings.State == TenantState.Running ||
-                shellSettings.State == TenantState.Uninitialized ||
-                shellSettings.State == TenantState.Initializing ||
-                shellSettings.State == TenantState.Disabled;
-        }
+        private static bool CanCreateShell(ShellSettings shellSettings) =>
+            shellSettings.IsRunning() ||
+            shellSettings.IsUninitialized() ||
+            shellSettings.IsInitializing() ||
+            shellSettings.IsDisabled();
 
         /// <summary>
         /// Whether or not a shell can be activated and added to the running shells.
         /// </summary>
-        private static bool CanRegisterShell(ShellSettings shellSettings)
-        {
-            return
-                shellSettings.State == TenantState.Running ||
-                shellSettings.State == TenantState.Uninitialized ||
-                shellSettings.State == TenantState.Initializing;
-        }
+        private static bool CanRegisterShell(ShellSettings shellSettings) =>
+            shellSettings.IsRunning() ||
+            shellSettings.IsUninitialized() ||
+            shellSettings.IsInitializing();
 
         /// <summary>
         /// Whether or not a shell can be released and removed from the list, false if disabled and still in use.
         /// Note: A disabled shell still in use will be released by its last scope, and keeping it in the list
         /// prevents a consumer from creating a new one that would have a null service provider.
         /// </summary>
-        private bool CanReleaseShell(ShellSettings settings)
-        {
-            return settings.State != TenantState.Disabled || _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes == 0;
-        }
+        private bool CanReleaseShell(ShellSettings settings) => !settings.IsDisabled() || !IsShellActive(settings);
 
         /// <summary>
         /// Checks if a shell can be removed, throws an exception if the shell is neither uninitialized nor disabled.
         /// </summary>
         private void CheckCanRemoveShell(ShellSettings settings)
         {
-            if (settings.Name == ShellHelper.DefaultShellName)
+            if (settings.IsDefaultShell())
             {
-                throw new InvalidOperationException($"The '{ShellHelper.DefaultShellName}' tenant can't be removed.");
+                throw new InvalidOperationException($"The '{ShellSettings.DefaultShellName}' tenant can't be removed.");
             }
 
             // A disabled shell may be still in use in at least one active scope.
-            if (settings.State != TenantState.Uninitialized &&
-                (settings.State != TenantState.Disabled ||
-                _shellContexts.TryGetValue(settings.Name, out var value) && value.ActiveScopes > 0))
+            if (!settings.IsRemovable() || IsShellActive(settings))
             {
                 throw new InvalidOperationException(
                     $"The tenant '{settings.Name}' can't be removed as it is neither uninitialized nor disabled.");
             }
         }
+
+        /// <summary>
+        /// Wether or not a shell is in use in at least one active scope.
+        /// </summary>
+        private bool IsShellActive(ShellSettings settings) =>
+            settings is { Name: not null } &&
+            _shellContexts.TryGetValue(settings.Name, out var context) &&
+            context.IsActive();
 
         public void Dispose()
         {

@@ -164,16 +164,10 @@ namespace OrchardCore.Lists.Drivers
             }).Location("Content:1");
         }
 
-        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ListPartSettings settings)
-        {
-            var contentTypes = settings.ContainedContentTypes ?? Enumerable.Empty<string>();
-
-            if (!contentTypes.Any())
-            {
-                return Enumerable.Empty<ContentTypeDefinition>();
-            }
-
-            return _contentDefinitionManager.ListTypeDefinitions().Where(x => contentTypes.Contains(x.Name));
-        }
+        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ListPartSettings settings) =>
+            settings.ContainedContentTypes
+                ?.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
+                .Where(definition => definition is not null)
+                ?? Enumerable.Empty<ContentTypeDefinition>();
     }
 }

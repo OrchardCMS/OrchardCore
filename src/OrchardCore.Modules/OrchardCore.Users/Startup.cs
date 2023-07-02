@@ -36,6 +36,7 @@ using OrchardCore.Setup.Events;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Drivers;
+using OrchardCore.Users.Events;
 using OrchardCore.Users.Filters;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Indexes;
@@ -314,6 +315,7 @@ namespace OrchardCore.Users
             services.AddScoped<IPermissionProvider, UserRolePermissions>();
             services.AddSingleton<IUsersAdminListFilterProvider, RolesAdminListFilterProvider>();
             services.AddScoped<IDisplayDriver<ISite>, RoleLoginSettingsDisplayDriver>();
+            services.AddScoped<ITwoFactorAuthenticationHandler, RoleTwoFactorAuthenticationHandler>();
         }
     }
 

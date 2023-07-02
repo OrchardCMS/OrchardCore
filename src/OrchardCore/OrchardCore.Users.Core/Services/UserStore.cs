@@ -974,7 +974,7 @@ namespace OrchardCore.Users.Services
         {
             var settings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
-            if (settings.IsTwoFactorAuthenticationEnabled() && user is User u)
+            if (settings.EnableTwoFactorAuthentication && user is User u)
             {
                 return u.TwoFactorEnabled;
             }
