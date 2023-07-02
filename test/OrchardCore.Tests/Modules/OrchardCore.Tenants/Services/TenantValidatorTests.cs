@@ -116,7 +116,7 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
                 .Returns<string, object[]>((n, a) => new LocalizedString(n, n));
 
             var shellSettings = defaultTenant
-                ? ShellHost.GetSettings(ShellHelper.DefaultShellName)
+                ? ShellHost.GetSettings(ShellSettings.DefaultShellName)
                 : new ShellSettings();
 
             var dbConnectionValidatorMock = new Mock<IDbConnectionValidator>();
@@ -135,10 +135,10 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
 
         private static async Task SeedTenantsAsync()
         {
-            await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant1", State = TenantState.Uninitialized, RequestUrlPrefix = "tenant1", VersionId = IdGenerator.GenerateId() });
-            await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant2", State = TenantState.Uninitialized, RequestUrlPrefix = String.Empty, RequestUrlHost = "example2.com", VersionId = IdGenerator.GenerateId() });
-            await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant3", State = TenantState.Uninitialized, RequestUrlPrefix = "tenant3", RequestUrlHost = String.Empty, VersionId = IdGenerator.GenerateId() });
-            await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant4", State = TenantState.Uninitialized, RequestUrlPrefix = "tenant4", RequestUrlHost = "example4.com, example5.com", VersionId = IdGenerator.GenerateId() });
+            await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant1", RequestUrlPrefix = "tenant1", VersionId = IdGenerator.GenerateId() }.AsUninitialized());
+            await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant2", RequestUrlPrefix = String.Empty, RequestUrlHost = "example2.com", VersionId = IdGenerator.GenerateId() }.AsUninitialized());
+            await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant3", RequestUrlPrefix = "tenant3", RequestUrlHost = String.Empty, VersionId = IdGenerator.GenerateId() }.AsUninitialized());
+            await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant4", RequestUrlPrefix = "tenant4", RequestUrlHost = "example4.com, example5.com", VersionId = IdGenerator.GenerateId() }.AsUninitialized());
         }
     }
 }

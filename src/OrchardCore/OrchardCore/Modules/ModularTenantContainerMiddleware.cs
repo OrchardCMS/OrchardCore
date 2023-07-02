@@ -5,7 +5,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OrchardCore.Clusters;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Modules
 {
@@ -55,7 +54,7 @@ namespace OrchardCore.Modules
                     return;
                 }
 
-                if (shellSettings.State == TenantState.Initializing)
+                if (shellSettings.IsInitializing())
                 {
                     httpContext.Response.Headers.Add(HeaderNames.RetryAfter, "10");
                     httpContext.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;

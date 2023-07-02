@@ -35,7 +35,7 @@ namespace OrchardCore.Media.Azure
         public override async Task ActivatingAsync()
         {
             // Only create container if options are valid.
-            if (_shellSettings.State == Environment.Shell.Models.TenantState.Uninitialized ||
+            if (_shellSettings.IsUninitialized() ||
                 String.IsNullOrEmpty(_options.ConnectionString) ||
                 String.IsNullOrEmpty(_options.ContainerName) ||
                 !_options.CreateContainer

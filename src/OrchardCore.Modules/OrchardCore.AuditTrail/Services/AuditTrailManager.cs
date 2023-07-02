@@ -14,7 +14,6 @@ using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.AuditTrail.Settings;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Settings;
@@ -61,7 +60,7 @@ namespace OrchardCore.AuditTrail.Services
 
         public async Task RecordEventAsync<TEvent>(AuditTrailContext<TEvent> context) where TEvent : class, new()
         {
-            if (_shellSettings.State == TenantState.Initializing && String.IsNullOrEmpty(context.UserName))
+            if (_shellSettings.IsInitializing() && String.IsNullOrEmpty(context.UserName))
             {
                 var feature = _httpContextAccessor.HttpContext.Features.Get<RecipeEnvironmentFeature>();
                 if (feature != null && feature.Properties.TryGetValue(SetupConstants.AdminUsername, out var adminUsername))

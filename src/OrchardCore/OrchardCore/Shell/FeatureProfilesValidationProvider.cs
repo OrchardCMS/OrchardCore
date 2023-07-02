@@ -42,7 +42,7 @@ namespace OrchardCore.Environment.Shell
 
             if (!_featureProfileLookup.NotFound)
             {
-                var scope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName);
+                var scope = await _shellHost.GetScopeAsync(ShellSettings.DefaultShellName);
 
                 await scope.UsingAsync(async (scope) =>
                 {

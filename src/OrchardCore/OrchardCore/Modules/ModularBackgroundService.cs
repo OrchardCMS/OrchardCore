@@ -14,7 +14,6 @@ using Microsoft.Extensions.Primitives;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Settings;
 
@@ -119,7 +118,7 @@ namespace OrchardCore.Modules
                     }
 
                     var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
-                    if (!_options.ShellWarmup && shellScope.ShellContext.Pipeline == null)
+                    if (!_options.ShellWarmup && !shellScope.ShellContext.HasPipeline())
                     {
                         break;
                     }
@@ -141,13 +140,13 @@ namespace OrchardCore.Modules
                         var taskName = scheduler.Name;
 
                         var task = scope.ServiceProvider.GetServices<IBackgroundTask>().GetTaskByName(taskName);
-                        if (task == null)
+                        if (task is null)
                         {
                             return;
                         }
 
                         var siteService = scope.ServiceProvider.GetService<ISiteService>();
-                        if (siteService != null)
+                        if (siteService is not null)
                         {
                             try
                             {
@@ -203,7 +202,7 @@ namespace OrchardCore.Modules
                 _httpContextAccessor.HttpContext = shell.CreateHttpContext();
 
                 var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
-                if (!_options.ShellWarmup && shellScope.ShellContext.Pipeline == null)
+                if (!_options.ShellWarmup && !shellScope.ShellContext.HasPipeline())
                 {
                     return;
                 }
@@ -224,7 +223,7 @@ namespace OrchardCore.Modules
 
                     ITimeZone timeZone = null;
                     var siteService = scope.ServiceProvider.GetService<ISiteService>();
-                    if (siteService != null)
+                    if (siteService is not null)
                     {
                         try
                         {
@@ -252,7 +251,7 @@ namespace OrchardCore.Modules
                         }
 
                         BackgroundTaskSettings settings = null;
-                        if (settingsProvider != null)
+                        if (settingsProvider is not null)
                         {
                             try
                             {
@@ -292,7 +291,7 @@ namespace OrchardCore.Modules
 
         private ShellContext[] GetRunningShells() => _shellHost
             .ListShellContexts()
-            .Where(s => s.Settings.State == TenantState.Running && (_options.ShellWarmup || s.Pipeline != null))
+            .Where(s => s.Settings.IsRunning() && (_options.ShellWarmup || s.HasPipeline()))
             .ToArray();
 
         private ShellContext[] GetShellsToRun(IEnumerable<ShellContext> shells)

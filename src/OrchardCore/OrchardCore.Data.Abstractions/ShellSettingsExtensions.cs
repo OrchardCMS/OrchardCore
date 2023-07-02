@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Data;
 
@@ -90,8 +89,4 @@ public static class ShellSettingsExtensions
 
         return identityColumnSize;
     }
-
-    public static bool IsInitialized(this ShellSettings shellSettings) =>
-        shellSettings.State == TenantState.Running ||
-        shellSettings.State == TenantState.Disabled;
 }

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Clusters;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Scope;
 
@@ -55,9 +56,9 @@ namespace OrchardCore.Modules
 
             var shellContext = ShellScope.Context;
 
-            // Define a PathBase for the current request that is the RequestUrlPrefix.
-            // This will allow any view to reference ~/ as the tenant's base url.
-            // Because IIS or another middleware might have already set it, we just append the tenant prefix value.
+            // Define a new 'PathBase' for the current request based on the tenant 'RequestUrlPrefix'.
+            // Because IIS or another middleware might have already set it, we just append the prefix.
+            // This allows to use any helper accepting the '~/' path to resolve the tenant's base url.
             if (!String.IsNullOrEmpty(shellContext.Settings.RequestUrlPrefix))
             {
                 PathString prefix = "/" + shellContext.Settings.RequestUrlPrefix;
@@ -67,7 +68,7 @@ namespace OrchardCore.Modules
             }
 
             // Do we need to rebuild the pipeline?
-            if (shellContext.Pipeline is null)
+            if (!shellContext.HasPipeline())
             {
                 await InitializePipelineAsync(shellContext);
             }
@@ -84,10 +85,12 @@ namespace OrchardCore.Modules
 
             // Building a pipeline for a given shell can't be done by two requests.
             await semaphore.WaitAsync();
-
             try
             {
-                shellContext.Pipeline ??= BuildTenantPipeline();
+                if (!shellContext.HasPipeline())
+                {
+                    shellContext.Pipeline = BuildTenantPipeline();
+                }
             }
             finally
             {
@@ -126,8 +129,8 @@ namespace OrchardCore.Modules
         {
             var startups = appBuilder.ApplicationServices.GetServices<IStartup>();
 
-            // IStartup instances are ordered by module dependency with a 'ConfigureOrder' of 0 by default.
-            // OrderBy performs a stable sort so order is preserved among equal 'ConfigureOrder' values.
+            // IStartup instances are ordered by module dependency with an 'ConfigureOrder' of 0 by default.
+            // 'OrderBy' performs a stable sort so order is preserved among equal 'ConfigureOrder' values.
             startups = startups.OrderBy(s => s.ConfigureOrder);
 
             appBuilder.UseRouting().UseEndpoints(routes =>

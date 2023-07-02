@@ -1,5 +1,4 @@
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Tests.Apis.Context;
 
 namespace OrchardCore.Tests.Shell;
@@ -12,7 +11,7 @@ public class ShellHostTests : SiteContext
 
     [Theory]
     [InlineData("Tenant1", "tenant1", "tEnAnT1")]
-    [InlineData(ShellHelper.DefaultShellName, "", "dEfAuLt")]
+    [InlineData(ShellSettings.DefaultShellName, "", "dEfAuLt")]
     public static async Task CanGetShellByCaseInsensitiveName(string name, string urlPrefix, string searchName)
     {
         await ShellHost.InitializeAsync();
@@ -21,10 +20,10 @@ public class ShellHostTests : SiteContext
             new ShellSettings()
             {
                 Name = name,
-                State = TenantState.Uninitialized,
                 VersionId = IdGenerator.GenerateId(),
                 RequestUrlPrefix = urlPrefix,
-            });
+            }
+            .AsUninitialized());
 
         ShellHost.TryGetSettings(searchName, out var foundShellSettings);
         ShellHost.TryGetShellContext(searchName, out var foundShellContext);
