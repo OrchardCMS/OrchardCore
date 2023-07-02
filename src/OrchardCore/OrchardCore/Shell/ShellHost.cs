@@ -54,7 +54,7 @@ namespace OrchardCore.Environment.Shell
         public ShellEvent RemovingAsync { get; set; }
 
         /// <summary>
-        /// Ensure that all the <see cref="ShellContext"/> are pre-created and available to process requests.
+        /// Ensures that all the <see cref="ShellContext"/> are pre-created and available to process requests.
         /// </summary>
         public async Task InitializeAsync()
         {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
@@ -83,6 +84,14 @@ public class DbConnectionValidator : IDbConnectionValidator
         var factory = GetFactory(context.DatabaseProvider, connectionString);
 
         using var connection = factory.CreateConnection();
+
+        // Prevent from creating an empty locked 'Sqlite' file.
+        if (provider.Value == DatabaseProviderValue.Sqlite &&
+            connection is SqliteConnection sqliteConnection &&
+            !File.Exists(sqliteConnection.DataSource))
+        {
+            return DbConnectionValidatorResult.DocumentTableNotFound;
+        }
 
         try
         {

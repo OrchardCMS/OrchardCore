@@ -17,10 +17,8 @@ namespace OrchardCore.Tenants.Services
         private readonly IShellHost _shellHost;
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IFeatureProfilesService _featureProfilesService;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer<TenantValidator> S;
-#pragma warning restore IDE1006 // Naming Styles
         private readonly IDbConnectionValidator _dbConnectionValidator;
+        private readonly IStringLocalizer<TenantValidator> S;
 
         public TenantValidator(
             IShellHost shellHost,
