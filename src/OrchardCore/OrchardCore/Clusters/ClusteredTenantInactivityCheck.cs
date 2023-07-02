@@ -35,12 +35,12 @@ namespace OrchardCore.Clusters
             // Check if the clusters max idle time is configured and if the tenant pipeline has been built.
             if (_options.MaxIdleTime.HasValue &&
                 _shellHost.TryGetShellContext(_shellSettings.Name, out var shellContext) &&
-                shellContext.Pipeline is not null)
+                shellContext.HasPipeline())
             {
                 // Check if the clusters max idle time has expired for this tenant.
                 if (shellContext.LastRequestTimeUtc.Add(_options.MaxIdleTime.Value) < DateTime.UtcNow)
                 {
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings, eventSource: false) ;
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings, eventSource: false);
                 }
             }
         }
