@@ -50,7 +50,8 @@ namespace OrchardCore.Tests.Shell
 
             var container = (await _shellContainerFactory
                 .CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint))
-                .CreateScope().ServiceProvider;
+                .CreateScope()
+                .ServiceProvider;
 
             var typeFeatureProvider = _applicationServiceProvider.GetService<ITypeFeatureProvider>();
 
@@ -68,7 +69,8 @@ namespace OrchardCore.Tests.Shell
 
             var container = (await _shellContainerFactory
                 .CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint))
-                .CreateScope().ServiceProvider;
+                .CreateScope()
+                .ServiceProvider;
 
             var typeFeatureProvider = _applicationServiceProvider.GetService<ITypeFeatureProvider>();
 
@@ -83,7 +85,8 @@ namespace OrchardCore.Tests.Shell
             var shellBlueprint = CreateBlueprint();
             var container = (await _shellContainerFactory
                 .CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint))
-                .CreateScope().ServiceProvider;
+                .CreateScope()
+                .ServiceProvider;
 
             var singleton1 = container.GetRequiredService<ITestSingleton>();
             var singleton2 = container.GetRequiredService<ITestSingleton>();
@@ -118,7 +121,10 @@ namespace OrchardCore.Tests.Shell
             var shellBlueprint = CreateBlueprint();
             AddStartup(shellBlueprint, typeof(ServicesOfTheSameTypeStartup));
 
-            var container = (await _shellContainerFactory.CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint)).CreateScope().ServiceProvider;
+            var container = (await _shellContainerFactory
+                .CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint))
+                .CreateScope()
+                .ServiceProvider;
 
             var services = container.GetServices<ITwoHostSingletonsOfTheSameType>();
 
@@ -132,7 +138,8 @@ namespace OrchardCore.Tests.Shell
 
             var container = (await _shellContainerFactory
                 .CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint))
-                .CreateScope().ServiceProvider;
+                .CreateScope()
+                .ServiceProvider;
 
             var services = container.GetServices<IHostSingletonAndScopedOfTheSameType>();
 
