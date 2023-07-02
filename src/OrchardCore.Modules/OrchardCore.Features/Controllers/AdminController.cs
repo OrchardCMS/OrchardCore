@@ -12,7 +12,6 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Features.Services;
 using OrchardCore.Features.ViewModels;
 using OrchardCore.Routing;
@@ -178,11 +177,11 @@ namespace OrchardCore.Features.Controllers
 
         private async Task ExecuteAsync(string tenant, Func<FeatureService, ShellSettings, bool, Task> action)
         {
-            if (_shellSettings.IsDefaultShell()
-                && !String.IsNullOrWhiteSpace(tenant)
-                && _shellHost.TryGetSettings(tenant, out var settings)
-                && !settings.IsDefaultShell()
-                && settings.State == TenantState.Running)
+            if (_shellSettings.IsDefaultShell() &&
+                !String.IsNullOrWhiteSpace(tenant) &&
+                _shellHost.TryGetSettings(tenant, out var settings) &&
+                !settings.IsDefaultShell() &&
+                settings.IsRunning())
             {
                 // At this point, we know that this request is being executed from the Default tenant.
                 // Also, we were able to find a matching and running tenant that isn't the Default one.
@@ -223,7 +222,7 @@ namespace OrchardCore.Features.Controllers
                 return Url.Action(nameof(Features), new { tenant });
             }
 
-            if ((settings == null || !settings.IsDefaultShell()) && featureId == FeaturesConstants.FeatureId)
+            if (!settings.IsDefaultShell() && featureId == FeaturesConstants.FeatureId)
             {
                 return Url.Content("~/" + _adminOptions.AdminUrlPrefix);
             }
