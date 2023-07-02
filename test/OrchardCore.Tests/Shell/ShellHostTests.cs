@@ -20,7 +20,6 @@ public class ShellHostTests : SiteContext
             new ShellSettings()
             {
                 Name = name,
-                VersionId = IdGenerator.GenerateId(),
                 RequestUrlPrefix = urlPrefix,
             }
             .AsUninitialized());

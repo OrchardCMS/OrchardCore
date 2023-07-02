@@ -20,6 +20,10 @@ namespace OrchardCore.Environment.Shell
         /// The name of the 'Default' tenant.
         /// </summary>
         public const string DefaultShellName = "Default";
+
+        /// <summary>
+        /// The number of tenant cluster slots.
+        /// </summary>
         public const int ClusterSlotsCount = 16384;
 
         /// <summary>
@@ -83,6 +87,9 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         public string TenantId => _settings["TenantId"] ?? _settings["VersionId"];
 
+        /// <summary>
+        /// The tenant cluster slot.
+        /// </summary>
         [JsonIgnore]
         public int ClusterSlot
         {

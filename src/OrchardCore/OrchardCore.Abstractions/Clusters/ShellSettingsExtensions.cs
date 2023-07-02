@@ -14,13 +14,11 @@ public static class ShellSettingsExtensions
     {
         foreach (var cluster in options.Clusters)
         {
-            // Check if the cluster slot of the current tenant is in the range.
-            if (cluster.SlotMin > settings.ClusterSlot || cluster.SlotMax < settings.ClusterSlot)
+            // Check if the cluster slot of the current tenant is in the cluster slot range.
+            if (settings.ClusterSlot >= cluster.SlotMin && settings.ClusterSlot <= cluster.SlotMax)
             {
-                continue;
+                return cluster.ClusterId;
             }
-
-            return cluster.ClusterId;
         }
 
         return null;
