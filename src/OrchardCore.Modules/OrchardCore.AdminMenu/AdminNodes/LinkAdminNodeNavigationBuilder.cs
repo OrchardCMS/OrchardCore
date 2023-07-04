@@ -33,7 +33,6 @@ namespace OrchardCore.AdminMenu.AdminNodes
         public Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
         {
             var node = menuItem as LinkAdminNode;
-
             if (node == null || String.IsNullOrEmpty(node.LinkText) || !node.Enabled)
             {
                 return Task.CompletedTask;
@@ -55,7 +54,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
                     }
                 }
 
-                // Add the actual link
+                // Add the actual link.
                 itemBuilder.Url(nodeLinkUrl);
                 itemBuilder.Priority(node.Priority);
                 itemBuilder.Position(node.Position);
@@ -72,8 +71,8 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 // Add them with a prefix so that later the shape template can extract them to use them on a <i> tag.
                 node.IconClass?.Split(' ').ToList().ForEach(c => itemBuilder.AddClass("icon-class-" + c));
 
-                // Let children build themselves inside this MenuItem
-                // todo: this logic can be shared by all TreeNodeNavigationBuilders
+                // Let children build themselves inside this MenuItem.
+                // Todo: This logic can be shared by all TreeNodeNavigationBuilders.
                 foreach (var childTreeNode in menuItem.Items)
                 {
                     try
