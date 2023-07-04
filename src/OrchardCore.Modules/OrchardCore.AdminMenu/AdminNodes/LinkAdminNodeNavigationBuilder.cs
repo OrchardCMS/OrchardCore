@@ -35,7 +35,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
             return builder.AddAsync(new LocalizedString(node.LinkText, node.LinkText), async itemBuilder =>
             {
                 // Add the actual link
-                itemBuilder.Url(node.LinkUrl);
+                itemBuilder.Url(node.LinkUrl, isAdminUrl: true);
                 itemBuilder.Priority(node.Priority);
                 itemBuilder.Position(node.Position);
 

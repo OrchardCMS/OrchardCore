@@ -17,7 +17,7 @@ namespace OrchardCore.AdminMenu.Models
             while (tempStack.Any())
             {
                 // evaluate first node
-                AdminNode item = tempStack.Pop();
+                var item = tempStack.Pop();
                 if (item.UniqueId.Equals(id, StringComparison.OrdinalIgnoreCase))
                 {
                     return item;
@@ -42,7 +42,7 @@ namespace OrchardCore.AdminMenu.Models
             while (tempStack.Any())
             {
                 // evaluate first
-                MenuItem item = tempStack.Pop();
+                var item = tempStack.Pop();
                 if (item.Items.Contains(nodeToRemove))
                 {
                     item.Items.Remove(nodeToRemove);
@@ -66,7 +66,7 @@ namespace OrchardCore.AdminMenu.Models
             while (tempStack.Any())
             {
                 // evaluate first
-                MenuItem node = tempStack.Pop();
+                var node = tempStack.Pop();
                 if (node.Equals(destinationNode))
                 {
                     node.Items.Insert(position, nodeToInsert);

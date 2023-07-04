@@ -31,8 +31,7 @@ namespace OrchardCore.Navigation
             ShellSettings shellSettings,
             IUrlHelperFactory urlHelperFactory,
             IAuthorizationService authorizationService,
-            IOptions<AdminOptions> adminOptions
-            )
+            IOptions<AdminOptions> adminOptions)
         {
             _navigationProviders = navigationProviders;
             _logger = logger;
@@ -166,7 +165,7 @@ namespace OrchardCore.Navigation
         {
             foreach (var menuItem in menuItems)
             {
-                menuItem.Href = GetUrl(menuItem.Url, menuItem.RouteValues, actionContext);
+                menuItem.Href = GetUrl(menuItem.Url, menuItem.RouteValues, actionContext, menuItem.IsAdminUrl);
                 menuItem.Items = ComputeHref(menuItem.Items, actionContext);
             }
 
@@ -179,15 +178,13 @@ namespace OrchardCore.Navigation
         /// <param name="menuItemUrl">The </param>
         /// <param name="routeValueDictionary"></param>
         /// <param name="actionContext"></param>
+        /// <param name="isAdminUrl"></param>
         /// <returns></returns>
-        private string GetUrl(string menuItemUrl, RouteValueDictionary routeValueDictionary, ActionContext actionContext)
+        private string GetUrl(string menuItemUrl, RouteValueDictionary routeValueDictionary, ActionContext actionContext, bool isAdminUrl)
         {
             if (routeValueDictionary?.Count > 0)
             {
-                if (_urlHelper == null)
-                {
-                    _urlHelper = _urlHelperFactory.GetUrlHelper(actionContext);
-                }
+                _urlHelper ??= _urlHelperFactory.GetUrlHelper(actionContext);
 
                 return _urlHelper.RouteUrl(new UrlRouteContext { Values = routeValueDictionary });
             }
@@ -197,7 +194,7 @@ namespace OrchardCore.Navigation
                 return "#";
             }
 
-            if (menuItemUrl[0] == '/' || menuItemUrl.IndexOf("://", StringComparison.Ordinal) >= 0)
+            if (menuItemUrl[0] == '/' || menuItemUrl.Contains("://"))
             {
                 // Return the unescaped url and let the browser generate all uri components.
                 return menuItemUrl;
@@ -208,7 +205,7 @@ namespace OrchardCore.Navigation
                 menuItemUrl = menuItemUrl.Substring(2);
             }
 
-            if (menuItemUrl.StartsWith($"{_adminOptions.AdminUrlPrefix}/", StringComparison.OrdinalIgnoreCase))
+            if (!isAdminUrl || menuItemUrl.StartsWith($"{_adminOptions.AdminUrlPrefix}/", StringComparison.OrdinalIgnoreCase))
             {
                 return actionContext.HttpContext.Request.PathBase.Add($"/{menuItemUrl}").Value;
             }
@@ -247,6 +244,7 @@ namespace OrchardCore.Navigation
                             break;
                         }
                     }
+
                     if (isAuthorized)
                     {
                         filtered.Add(item);
@@ -254,8 +252,6 @@ namespace OrchardCore.Navigation
                 }
 
                 // Process child items
-                var oldItems = item.Items;
-
                 item.Items = (await AuthorizeAsync(item.Items, user));
             }
 

@@ -43,9 +43,10 @@ namespace OrchardCore.Navigation
             return this;
         }
 
-        public NavigationItemBuilder Url(string url)
+        public NavigationItemBuilder Url(string url, bool isAdminUrl = false)
         {
             _item.Url = url;
+            _item.IsAdminUrl = isAdminUrl;
             return this;
         }
 
