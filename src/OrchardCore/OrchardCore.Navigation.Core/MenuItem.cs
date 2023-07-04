@@ -42,11 +42,6 @@ namespace OrchardCore.Navigation
         public string Url { get; set; }
 
         /// <summary>
-        /// Whether or not the url is an admin url.
-        /// </summary>
-        public bool IsAdminUrl { get; set; }
-
-        /// <summary>
         /// The relative position of the menu item among its siblings. e.g., 10, 0, "after".
         /// </summary>
         public string Position { get; set; }

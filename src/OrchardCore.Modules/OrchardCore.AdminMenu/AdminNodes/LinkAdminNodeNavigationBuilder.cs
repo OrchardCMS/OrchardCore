@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Navigation;
 
@@ -13,11 +15,16 @@ namespace OrchardCore.AdminMenu.AdminNodes
     {
         private readonly ILogger _logger;
         private readonly IAdminMenuPermissionService _adminMenuPermissionService;
+        private readonly AdminOptions _adminOptions;
 
 
-        public LinkAdminNodeNavigationBuilder(IAdminMenuPermissionService adminMenuPermissionService, ILogger<LinkAdminNodeNavigationBuilder> logger)
+        public LinkAdminNodeNavigationBuilder(
+            IAdminMenuPermissionService adminMenuPermissionService,
+            IOptions<AdminOptions> adminOptions,
+            ILogger<LinkAdminNodeNavigationBuilder> logger)
         {
             _adminMenuPermissionService = adminMenuPermissionService;
+            _adminOptions = adminOptions.Value;
             _logger = logger;
         }
 
@@ -34,8 +41,22 @@ namespace OrchardCore.AdminMenu.AdminNodes
 
             return builder.AddAsync(new LocalizedString(node.LinkText, node.LinkText), async itemBuilder =>
             {
+                var nodeLinkUrl = node.LinkUrl;
+                if (!String.IsNullOrEmpty(nodeLinkUrl) && nodeLinkUrl[0] != '/' && !nodeLinkUrl.Contains("://"))
+                {
+                    if (nodeLinkUrl.StartsWith("~/", StringComparison.Ordinal))
+                    {
+                        nodeLinkUrl = nodeLinkUrl[2..];
+                    }
+
+                    if (!nodeLinkUrl.StartsWith($"{_adminOptions.AdminUrlPrefix}/", StringComparison.OrdinalIgnoreCase))
+                    {
+                        nodeLinkUrl = $"{_adminOptions.AdminUrlPrefix}/{nodeLinkUrl}";
+                    }
+                }
+
                 // Add the actual link
-                itemBuilder.Url(node.LinkUrl, isAdminUrl: true);
+                itemBuilder.Url(nodeLinkUrl);
                 itemBuilder.Priority(node.Priority);
                 itemBuilder.Position(node.Position);
 
