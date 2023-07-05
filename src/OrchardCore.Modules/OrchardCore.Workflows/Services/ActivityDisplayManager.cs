@@ -23,10 +23,13 @@ namespace OrchardCore.Workflows.Services
             IServiceProvider serviceProvider,
             IShapeFactory shapeFactory,
             IEnumerable<IShapePlacementProvider> placementProviders,
+            IEnumerable<IDisplayDriver<IActivity>> displayDrivers,
             ILogger<DisplayManager<IActivity>> displayManagerLogger,
             ILayoutAccessor layoutAccessor)
         {
-            var drivers = workflowOptions.Value.ActivityDisplayDriverTypes.Select(x => serviceProvider.CreateInstance<IDisplayDriver<IActivity>>(x));
+            var drivers = workflowOptions.Value.ActivityDisplayDriverTypes
+                .Select(x => serviceProvider.CreateInstance<IDisplayDriver<IActivity>>(x))
+                .Concat(displayDrivers);
             _displayManager = new DisplayManager<IActivity>(drivers, shapeFactory, placementProviders, displayManagerLogger, layoutAccessor);
         }
 
