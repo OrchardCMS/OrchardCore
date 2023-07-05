@@ -48,7 +48,10 @@ namespace OrchardCore.AdminMenu.AdminNodes
                         nodeLinkUrl = nodeLinkUrl[2..];
                     }
 
-                    if (!nodeLinkUrl.StartsWith($"{_adminOptions.AdminUrlPrefix}/", StringComparison.OrdinalIgnoreCase))
+                    // Check if the first segment of 'nodeLinkUrl' is not equal to the admin prefix.
+                    if (!nodeLinkUrl.StartsWith($"{_adminOptions.AdminUrlPrefix}", StringComparison.OrdinalIgnoreCase) ||
+                        (nodeLinkUrl.Length != _adminOptions.AdminUrlPrefix.Length
+                        && nodeLinkUrl[_adminOptions.AdminUrlPrefix.Length] != '/'))
                     {
                         nodeLinkUrl = $"{_adminOptions.AdminUrlPrefix}/{nodeLinkUrl}";
                     }
