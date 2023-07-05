@@ -25,7 +25,7 @@ namespace OrchardCore.Lists.AdminNodes
         private ListsAdminNode _node;
         private ContentTypeDefinition _contentType;
 
-        private const int MaxItemsInNode = 100; // security check
+        private const int _maxItemsInNode = 100; // security check.
 
         public ListsAdminNodeNavigationBuilder(
             IContentDefinitionManager contentDefinitionManager,
@@ -115,13 +115,13 @@ namespace OrchardCore.Lists.AdminNodes
         {
             return (await _session.Query<ContentItem, ContentItemIndex>()
                 .With<ContentItemIndex>(x => x.Latest && x.ContentType == _node.ContentType)
-                .Take(MaxItemsInNode)
+                .Take(_maxItemsInNode)
                 .ListAsync())
                 .OrderBy(x => x.DisplayText)
                 .ToList();
         }
 
-        private List<string> AddPrefixToClasses(string unprefixed)
+        private static List<string> AddPrefixToClasses(string unprefixed)
         {
             return unprefixed?.Split(' ')
                 .ToList()
