@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid.Values;
@@ -192,29 +193,17 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         });
     }
 
-    private async Task<string> GetSubjectAsync(EmailAuthenticatorLoginSettings settings, IUser user, string code)
-    {
-        if (String.IsNullOrWhiteSpace(settings.Subject))
-        {
-            return EmailAuthenticatorLoginSettings.DefaultSubject;
-        }
+    private Task<string> GetSubjectAsync(EmailAuthenticatorLoginSettings settings, IUser user, string code)
+        => String.IsNullOrWhiteSpace(settings.Subject)
+        ? Task.FromResult(EmailAuthenticatorLoginSettings.DefaultSubject)
+        : GetContentAsync(settings.Subject, user, code);
 
-        return await GetMessageContentAsync(settings.Subject, user, code);
-    }
+    private Task<string> GetMessageAsync(EmailAuthenticatorLoginSettings settings, IUser user, string code)
+        => String.IsNullOrWhiteSpace(settings.Body)
+        ? Task.FromResult(EmailAuthenticatorLoginSettings.DefaultBody)
+        : GetContentAsync(settings.Body, user, code);
 
-    private async Task<string> GetMessageAsync(EmailAuthenticatorLoginSettings settings, IUser user, string code)
-    {
-        var body = settings.Body;
-
-        if (String.IsNullOrWhiteSpace(body))
-        {
-            body = EmailAuthenticatorLoginSettings.DefaultBody;
-        }
-
-        return await GetMessageContentAsync(body, user, code);
-    }
-
-    private async Task<string> GetMessageContentAsync(string message, IUser user, string code)
+    private async Task<string> GetContentAsync(string message, IUser user, string code)
     {
         var result = await _liquidTemplateManager.RenderHtmlContentAsync(message, _htmlEncoder, null,
             new Dictionary<string, FluidValue>()
@@ -223,7 +212,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
                 ["Code"] = new StringValue(code),
             });
 
-        using var writer = new System.IO.StringWriter();
+        using var writer = new StringWriter();
         result.WriteTo(writer, _htmlEncoder);
 
         return writer.ToString();
