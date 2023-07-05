@@ -5,15 +5,23 @@ namespace OrchardCore.Users.ViewModels;
 
 public class LoginWithTwoFactorAuthenticationViewModel
 {
+    [Required]
+    public string VerificationCode { get; set; }
+
+    [Required]
+    public string CurrentProvider { get; set; }
+
     public bool RememberMe { get; set; }
 
     public string ReturnUrl { get; set; }
 
-    [Required]
-    public string TwoFactorCode { get; set; }
+    public bool Next { get; set; }
 
-    public bool RememberClient { get; set; }
+    public bool RememberDevice { get; set; }
 
     [BindNever]
-    public bool AllowRememberClient { get; set; }
+    public bool HasMultipleProviders { get; set; }
+
+    [BindNever]
+    public bool AllowRememberDevice { get; set; }
 }

@@ -1,0 +1,32 @@
+<h4 class="text-center mb-3">@T["Email-Based Two-Factor Authentication"]</h4>
+
+<div class="alert d-none" id="RequestCodeFeedback">
+</div>
+<div class="text-center">
+    <button type="button" class="btn btn-success mb-3" id="RequestCode">@T["Email my verification code"]</button>
+</div>
+<script at="Head" asp-name="RequestVerificationCodeViaEmail">
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const box = document.getElementById('RequestCodeFeedback');
+        const btn = document.getElementById('RequestCode');
+
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            fetch('@Url.ActionLink("GetCode", "EmailAuthenticator")')
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        box.classList.add('alert-success');
+                        box.classList.remove('alert-danger');
+                    } else {
+                        box.classList.add('alert-danger');
+                        box.classList.remove('alert-success');
+                    }
+                    box.innerText = result.message;
+                    box.classList.remove('d-none')
+                }).catch(error => console.log(error));
+        });
+    });
+</script>

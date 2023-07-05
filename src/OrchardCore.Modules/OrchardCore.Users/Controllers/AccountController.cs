@@ -33,6 +33,7 @@ namespace OrchardCore.Users.Controllers
 
         private readonly IUserService _userService;
         private readonly SignInManager<IUser> _signInManager;
+        private readonly UserManager<IUser> _userManager;
         private readonly ILogger _logger;
         private readonly ISiteService _siteService;
         private readonly IEnumerable<ILoginFormEvent> _accountEvents;
@@ -58,9 +59,9 @@ namespace OrchardCore.Users.Controllers
             IDistributedCache distributedCache,
             IDataProtectionProvider dataProtectionProvider,
             IEnumerable<IExternalLoginEventHandler> externalLoginHandlers)
-            : base(userManager)
         {
             _signInManager = signInManager;
+            _userManager = userManager;
             _userService = userService;
             _logger = logger;
             _siteService = siteService;
@@ -787,7 +788,7 @@ namespace OrchardCore.Users.Controllers
                 return RedirectToAction(nameof(Login));
             }
 
-            // Remove External Authentication Tokens.
+            // Reset External Authentication Tokens.
             foreach (var item in u.UserTokens.Where(c => c.LoginProvider == model.LoginProvider).ToList())
             {
                 if (!(await _userManager.RemoveAuthenticationTokenAsync(user, model.LoginProvider, item.Name)).Succeeded)
