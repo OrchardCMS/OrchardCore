@@ -98,7 +98,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
             return View(await LoadSharedKeyAndQrCodeUriAsync(user, loginSettings));
         }
 
-        await EnableTwoFactorAuthentication(user);
+        await EnableTwoFactorAuthenticationAsync(user);
 
         await Notifier.SuccessAsync(H["Your authenticator app has been verified."]);
 
@@ -156,7 +156,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
             unformattedKey = await UserManager.GetAuthenticatorKeyAsync(user);
         }
 
-        var displayName = await GetUserDisplayName(user, settings.UseEmailAsAuthenticatorDisplayName);
+        var displayName = await GetUserDisplayNameAsync(user, settings.UseEmailAsAuthenticatorDisplayName);
 
         return new EnableAuthenticatorViewModel()
         {
@@ -165,15 +165,8 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
         };
     }
 
-    private Task<string> GetUserDisplayName(IUser user, bool showEmail)
-    {
-        if (showEmail)
-        {
-            return UserManager.GetEmailAsync(user);
-        }
-
-        return UserManager.GetUserNameAsync(user);
-    }
+    private Task<string> GetUserDisplayNameAsync(IUser user, bool showEmail)
+        => showEmail ? UserManager.GetEmailAsync(user) : UserManager.GetUserNameAsync(user);
 
     private static string FormatKey(string unformattedKey)
     {

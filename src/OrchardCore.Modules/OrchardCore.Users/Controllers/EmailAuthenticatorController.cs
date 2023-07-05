@@ -146,7 +146,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
 
         if (result.Succeeded)
         {
-            await EnableTwoFactorAuthentication(user);
+            await EnableTwoFactorAuthenticationAsync(user);
 
             await Notifier.SuccessAsync(H["Your email has been confirmed."]);
 
@@ -162,13 +162,14 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
     public async Task<IActionResult> GetCode()
     {
         var user = await SignInManager.GetTwoFactorAuthenticationUserAsync();
+        var errorMessage = S["The email could not be sent. Please attempt to request the code at a later time."];
 
         if (user == null)
         {
             return BadRequest(new
             {
                 success = false,
-                message = S["The email could not be sent. Please attempt to request the code at a later time."].Value,
+                message = errorMessage.Value,
             });
         }
 
@@ -188,8 +189,8 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         return Ok(new
         {
             success = result.Succeeded,
-            message = result.Succeeded ? S["A verification code has been sent via email. Kindly check your email for the code."].Value
-            : S["The email could not be sent. Please attempt to request the code at a later time."].Value,
+            message = result.Succeeded ? S["A verification code has been sent via email. Please check your email for the code."].Value
+            : errorMessage.Value,
         });
     }
 

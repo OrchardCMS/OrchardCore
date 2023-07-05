@@ -139,7 +139,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
             {
                 await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
 
-                return await LoggedInActionResult(user, model.ReturnUrl);
+                return await LoggedInActionResultAsync(user, model.ReturnUrl);
             }
 
             if (result.IsLockedOut)
@@ -201,7 +201,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
             {
                 await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
 
-                return await LoggedInActionResult(user, model.ReturnUrl);
+                return await LoggedInActionResultAsync(user, model.ReturnUrl);
             }
 
             if (result.IsLockedOut)
@@ -387,7 +387,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
             return RedirectToTwoFactorIndex();
         }
 
-        await EnableTwoFactorAuthentication(user);
+        await EnableTwoFactorAuthenticationAsync(user);
 
         await Notifier.SuccessAsync(H["Two-factor authentication has been enabled."]);
 

@@ -12,7 +12,7 @@ namespace OrchardCore.Users.Controllers;
 
 public class AccountBaseController : Controller
 {
-    protected async Task<IActionResult> LoggedInActionResult(IUser user, string returnUrl = null, ExternalLoginInfo info = null)
+    protected async Task<IActionResult> LoggedInActionResultAsync(IUser user, string returnUrl = null, ExternalLoginInfo info = null)
     {
         var workflowManager = HttpContext.RequestServices.GetService<IWorkflowManager>();
         if (workflowManager != null && user is User u)

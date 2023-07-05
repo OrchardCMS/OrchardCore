@@ -77,28 +77,39 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
     protected async Task<IActionResult> RemoveTwoFactorProviderAync(IUser user, Func<Task> onSuccessAsync)
     {
         var currentProviders = await AvailableProvidersAsync(user);
+        var result = IdentityResult.Failed();
 
         if (currentProviders.Count == 1)
         {
             if (await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync())
             {
-                await Notifier.ErrorAsync(H["You cannot remove the only active method."]);
+                await Notifier.ErrorAsync(H["You cannot remove the only active two-factor method."]);
 
                 return RedirectToTwoFactorIndex();
             }
 
-            await UserManager.SetTwoFactorEnabledAsync(user, false);
+            result = await UserManager.SetTwoFactorEnabledAsync(user, false);
 
-            await Notifier.WarningAsync(H["Your two-factor authentication has been disabled."]);
+            if (result.Succeeded)
+            {
+                await Notifier.WarningAsync(H["Your two-factor authentication has been disabled."]);
+            }
+            else
+            {
+                await Notifier.ErrorAsync(H["Unable to disable two-factor authentication."]);
+            }
         }
 
-        await onSuccessAsync();
-        await SignInManager.RefreshSignInAsync(user);
+        if (result.Succeeded)
+        {
+            await onSuccessAsync();
+            await SignInManager.RefreshSignInAsync(user);
+        }
 
         return RedirectToTwoFactorIndex();
     }
 
-    protected async Task EnableTwoFactorAuthentication(IUser user)
+    protected async Task EnableTwoFactorAuthenticationAsync(IUser user)
     {
         if (await UserManager.GetTwoFactorEnabledAsync(user))
         {
@@ -109,11 +120,11 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
 
         if (await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync())
         {
-            await RefreshTwoFactorClaim(user);
+            await RefreshTwoFactorClaimAsync(user);
         }
     }
 
-    protected async Task RefreshTwoFactorClaim(IUser user)
+    protected async Task RefreshTwoFactorClaimAsync(IUser user)
     {
         var twoFactorClaim = (await UserManager.GetClaimsAsync(user))
             .FirstOrDefault(claim => claim.Type == UserConstants.TwoFactorAuthenticationClaimType);
