@@ -73,11 +73,9 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
             return UserNotFound();
         }
 
-        var email = await UserManager.GetEmailAsync(user);
-
-        if (String.IsNullOrEmpty(email))
+        if (!await UserManager.IsEmailConfirmedAsync(user))
         {
-            await Notifier.ErrorAsync(H["Your account does not have an email address. Please edit your profile and provide an email address."]);
+            await Notifier.ErrorAsync(H["Your account does not have a confirmed email address."]);
         }
 
         return View();
@@ -114,7 +112,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
 
         if (result.Succeeded)
         {
-            await Notifier.SuccessAsync(H["Please check your email for an authentication token."]);
+            await Notifier.SuccessAsync(H["We have successfully sent an authentication code to your email. Please retrieve the code from your email and enter it below."]);
         }
         else
         {

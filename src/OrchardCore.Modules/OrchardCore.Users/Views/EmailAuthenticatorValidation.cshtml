@@ -1,10 +1,8 @@
-<h4 class="text-center mb-3">@T["Email-Based Two-Factor Authentication"]</h4>
+<h5 class="text-center mb-3">@T["Please <a href=\"#\" id=\"RequestCode\">click here</a> to receive a one-time verification code via email."]</h5>
 
-<div class="alert d-none" id="RequestCodeFeedback">
+<div class="text-center alert d-none" id="RequestCodeFeedback">
 </div>
-<div class="text-center">
-    <button type="button" class="btn btn-success mb-3" id="RequestCode">@T["Email my verification code"]</button>
-</div>
+
 <script at="Head" asp-name="RequestVerificationCodeViaEmail">
     document.addEventListener('DOMContentLoaded', () => {
 
@@ -13,6 +11,7 @@
 
         btn.addEventListener('click', (e) => {
             e.preventDefault();
+            box.classList.add('d-none')
 
             fetch('@Url.ActionLink("GetCode", "EmailAuthenticator")')
                 .then(response => response.json())
