@@ -112,6 +112,7 @@ public class RoleTwoFactorAuthenticationStartup : StartupBase
 public class AuthenticatorAppStartup : StartupBase
 {
     private static readonly string _authenticatorAppControllerName = typeof(AuthenticatorAppController).ControllerName();
+
     private readonly AdminOptions _adminOptions;
 
     public AuthenticatorAppStartup(IOptions<AdminOptions> adminOptions)

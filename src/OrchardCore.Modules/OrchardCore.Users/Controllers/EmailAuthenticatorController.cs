@@ -69,7 +69,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         var user = await UserManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound("Unable to load user.");
+            return UserNotFound();
         }
 
         var email = await UserManager.GetEmailAsync(user);
@@ -88,7 +88,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         var user = await UserManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound("Unable to load user.");
+            return UserNotFound();
         }
 
         var email = await UserManager.GetEmailAsync(user);
@@ -133,7 +133,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         var user = await UserManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound("Unable to load user.");
+            return UserNotFound();
         }
 
         if (!ModelState.IsValid)
