@@ -153,6 +153,9 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
     protected IActionResult RedirectToAccountLogin()
         => RedirectToAction(nameof(AccountController.Login), _accountControllerName);
 
+    protected IActionResult UserNotFound()
+        => NotFound("Unable to load user.");
+
     protected static string StripToken(string code)
         => code.Replace(" ", String.Empty).Replace("-", String.Empty);
 

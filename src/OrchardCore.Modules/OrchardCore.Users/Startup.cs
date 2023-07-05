@@ -170,10 +170,6 @@ namespace OrchardCore.Users
             //var phoneNumberProviderType = typeof(PhoneNumberTokenProvider<>).MakeGenericType(identityBuilder.UserType);
             //identityBuilder.AddTokenProvider(TokenOptions.DefaultPhoneProvider, phoneNumberProviderType);
 
-            // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
-            // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
-            services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme);
-
             var emailTokenProviderType = typeof(EmailTokenProvider<>).MakeGenericType(typeof(IUser));
             identityBuilder.AddTokenProvider(TokenOptions.DefaultEmailProvider, emailTokenProviderType);
             services.Configure<IdentityOptions>(options =>
@@ -182,6 +178,10 @@ namespace OrchardCore.Users
                 options.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultEmailProvider;
                 options.Tokens.ChangeEmailTokenProvider = TokenOptions.DefaultEmailProvider;
             });
+
+            // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
+            // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
+            services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme);
 
             services.AddUsers();
 

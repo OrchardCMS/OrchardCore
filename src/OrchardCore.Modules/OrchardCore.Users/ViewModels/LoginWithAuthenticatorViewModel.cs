@@ -13,7 +13,7 @@ public class LoginWithAuthenticatorViewModel
     public string Provider { get; set; }
 
     [Required]
-    public string TwoFactorCode { get; set; }
+    public string Code { get; set; }
 
     public bool RememberDevice { get; set; }
 

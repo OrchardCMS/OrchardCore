@@ -99,7 +99,7 @@ using OrchardCore.Users;
 
 [assembly: Feature(
     Id = UserConstants.Features.AuthenticatorApp,
-    Name = "Two-Factor Authentication App Method",
+    Name = "Two-Factor Authenticator App Method",
     Description = "Provides users a two-factor authentication method through any Authentication App.",
     Dependencies = new[]
     {

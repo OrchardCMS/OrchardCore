@@ -64,7 +64,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
         var user = await UserManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound("Unable to load user.");
+            return UserNotFound();
         }
 
         var loginSettings = (await SiteService.GetSiteSettingsAsync()).As<AuthenticatorAppLoginSettings>();
@@ -84,7 +84,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
         var user = await UserManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound("Unable to load user.");
+            return UserNotFound();
         }
 
         var isValid = await UserManager.VerifyTwoFactorTokenAsync(user, TokenOptions.DefaultAuthenticatorProvider, StripToken(model.Code));
@@ -111,7 +111,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
         var user = await UserManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound("Unable to load user.");
+            return UserNotFound();
         }
 
         var currentProviders = await AvailableProvidersAsync(user);
@@ -134,14 +134,14 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
         var user = await UserManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound("Unable to load user.");
+            return UserNotFound();
         }
 
         return await RemoveTwoFactorProviderAync(user, async () =>
         {
             await UserManager.ResetAuthenticatorKeyAsync(user);
 
-            await Notifier.SuccessAsync(H["Your authenticator app key has been reset, you will need to configure your authenticator app using the new key."]);
+            await Notifier.SuccessAsync(H["Your authenticator app key has been reset."]);
         });
     }
 

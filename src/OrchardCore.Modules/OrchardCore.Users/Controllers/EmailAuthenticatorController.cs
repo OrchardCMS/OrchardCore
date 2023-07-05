@@ -27,11 +27,9 @@ namespace OrchardCore.Users.Controllers;
 [Feature(UserConstants.Features.EmailAuthenticator)]
 public class EmailAuthenticatorController : TwoFactorAuthenticationBaseController
 {
-    private const string _tokenName = "OrchardCore.Token.Email";
     private readonly IUserService _userService;
     private readonly ISmtpService _smtpService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
-    private readonly IUserEmailStore<IUser> _userEmailStore;
     private readonly HtmlEncoder _htmlEncoder;
 
     public EmailAuthenticatorController(
@@ -46,7 +44,6 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         IUserService userService,
         ISmtpService smtpService,
         ILiquidTemplateManager liquidTemplateManager,
-        IUserEmailStore<IUser> userEmailStore,
         HtmlEncoder htmlEncoder,
         ITwoFactorAuthenticationHandlerCoordinator twoFactorAuthenticationHandlerCoordinator)
         : base(
@@ -63,7 +60,6 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         _userService = userService;
         _smtpService = smtpService;
         _liquidTemplateManager = liquidTemplateManager;
-        _userEmailStore = userEmailStore;
         _htmlEncoder = htmlEncoder;
     }
 

@@ -788,7 +788,7 @@ namespace OrchardCore.Users.Controllers
                 return RedirectToAction(nameof(Login));
             }
 
-            // Reset External Authentication Tokens.
+            // Remove External Authentication Tokens.
             foreach (var item in u.UserTokens.Where(c => c.LoginProvider == model.LoginProvider).ToList())
             {
                 if (!(await _userManager.RemoveAuthenticationTokenAsync(user, model.LoginProvider, item.Name)).Succeeded)

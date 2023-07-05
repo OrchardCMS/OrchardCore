@@ -34,9 +34,7 @@ public class EmailAuthenticatorLoginSettingsDisplayDriver : SectionDisplayDriver
         return Initialize<EmailAuthenticatorLoginSettings>("EmailAuthenticatorLoginSettings_Edit", model =>
         {
             model.Subject = String.IsNullOrWhiteSpace(settings.Subject) ? EmailAuthenticatorLoginSettings.DefaultSubject : settings.Subject;
-
             model.Body = String.IsNullOrWhiteSpace(settings.Body) ? EmailAuthenticatorLoginSettings.DefaultBody : settings.Body;
-
         }).Location("Content:10#Two-Factor Authentication")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
         .OnGroup(LoginSettingsDisplayDriver.GroupId);

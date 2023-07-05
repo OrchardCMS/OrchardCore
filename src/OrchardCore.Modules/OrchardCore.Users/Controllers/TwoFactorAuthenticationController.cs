@@ -227,7 +227,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         var user = await UserManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound("Unable to load user.");
+            return UserNotFound();
         }
 
         var providers = await AvailableProvidersAsync(user);
@@ -250,7 +250,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         var user = await UserManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound("Unable to load user.");
+            return UserNotFound();
         }
 
         var providers = await AvailableProvidersAsync(user);
@@ -287,7 +287,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         var user = await UserManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound("Unable to load user.");
+            return UserNotFound();
         }
 
         await SignInManager.ForgetTwoFactorClientAsync();
@@ -302,7 +302,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         var user = await UserManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound("Unable to load user.");
+            return UserNotFound();
         }
 
         var isTwoFactorEnabled = await UserManager.GetTwoFactorEnabledAsync(user);
@@ -325,7 +325,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         var user = await UserManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound("Unable to load user.");
+            return UserNotFound();
         }
 
         if (!await UserManager.GetTwoFactorEnabledAsync(user))
@@ -350,7 +350,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         var user = await UserManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound("Unable to load user.");
+            return UserNotFound();
         }
 
         var userId = await UserManager.GetUserIdAsync(user);
@@ -375,7 +375,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         var user = await UserManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound("Unable to load user.");
+            return UserNotFound();
         }
 
         var providers = await AvailableProvidersAsync(user);
@@ -400,7 +400,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         var user = await UserManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound("Unable to load user.");
+            return UserNotFound();
         }
 
         if (await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync())
@@ -422,7 +422,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         var user = await UserManager.GetUserAsync(User);
         if (user == null)
         {
-            return NotFound("Unable to load user.");
+            return UserNotFound();
         }
 
         if (await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync())
@@ -468,6 +468,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
 
         if (!validProviderRequested && user is User u)
         {
+            // At this point, no or invalid provider was given. Check the user preference and load the default provider if available.
             var preferences = u.As<TwoFactorPreference>();
 
             if (!String.IsNullOrEmpty(preferences.DefaultProvider) && providers.Contains(preferences.DefaultProvider))
@@ -478,7 +479,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
 
         if (next && providers.Count > 1)
         {
-            // Find the next provider.
+            // At this point, the user has multiple enabled providers and we are looking for the next provider.
             var index = providers.IndexOf(defaultProvider);
 
             if (index + 1 < providers.Count)

@@ -21,7 +21,8 @@ namespace OrchardCore.Users;
 [Feature(UserConstants.Features.TwoFactorAuthentication)]
 public class TwoFactorAuthenticationStartup : StartupBase
 {
-    private static readonly string _twoFaControllerName = typeof(TwoFactorAuthenticationController).ControllerName();
+    private static readonly string _twoFactorControllerName = typeof(TwoFactorAuthenticationController).ControllerName();
+
     private UserOptions _userOptions;
     private readonly AdminOptions _adminOptions;
 
@@ -50,48 +51,48 @@ public class TwoFactorAuthenticationStartup : StartupBase
             name: "LoginWithTwoFactorAuthentication",
             areaName: UserConstants.Features.Users,
             pattern: "LoginWithTwoFactorAuthentication",
-            defaults: new { controller = _twoFaControllerName, action = nameof(TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication) }
+            defaults: new { controller = _twoFactorControllerName, action = nameof(TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication) }
         );
 
         routes.MapAreaControllerRoute(
             name: "TwoFactorAuthentication",
             areaName: UserConstants.Features.Users,
             pattern: _userOptions.TwoFactorAuthenticationPath,
-            defaults: new { controller = _twoFaControllerName, action = nameof(TwoFactorAuthenticationController.Index) }
+            defaults: new { controller = _twoFactorControllerName, action = nameof(TwoFactorAuthenticationController.Index) }
         );
 
         routes.MapAreaControllerRoute(
             name: "GenerateRecoveryCodes",
             areaName: UserConstants.Features.Users,
             pattern: _adminOptions.AdminUrlPrefix + "/GenerateRecoveryCodes",
-            defaults: new { controller = _twoFaControllerName, action = nameof(TwoFactorAuthenticationController.GenerateRecoveryCodes) }
+            defaults: new { controller = _twoFactorControllerName, action = nameof(TwoFactorAuthenticationController.GenerateRecoveryCodes) }
         );
 
         routes.MapAreaControllerRoute(
             name: "ShowRecoveryCodes",
             areaName: UserConstants.Features.Users,
             pattern: _adminOptions.AdminUrlPrefix + "/ShowRecoveryCodes",
-            defaults: new { controller = _twoFaControllerName, action = nameof(TwoFactorAuthenticationController.ShowRecoveryCodes) }
+            defaults: new { controller = _twoFactorControllerName, action = nameof(TwoFactorAuthenticationController.ShowRecoveryCodes) }
         );
 
         routes.MapAreaControllerRoute(
             name: "DisableTwoFactorAuthentication",
             areaName: UserConstants.Features.Users,
             pattern: _adminOptions.AdminUrlPrefix + "/DisableTwoFactorAuthentication",
-            defaults: new { controller = _twoFaControllerName, action = nameof(TwoFactorAuthenticationController.DisableTwoFactorAuthentication) }
+            defaults: new { controller = _twoFactorControllerName, action = nameof(TwoFactorAuthenticationController.DisableTwoFactorAuthentication) }
         );
 
         routes.MapAreaControllerRoute(
             name: "EnableTwoFactorAuthentication",
             areaName: UserConstants.Features.Users,
             pattern: _adminOptions.AdminUrlPrefix + "/EnableTwoFactorAuthentication",
-            defaults: new { controller = _twoFaControllerName, action = nameof(TwoFactorAuthenticationController.EnableTwoFactorAuthentication) }
+            defaults: new { controller = _twoFactorControllerName, action = nameof(TwoFactorAuthenticationController.EnableTwoFactorAuthentication) }
         );
         routes.MapAreaControllerRoute(
             name: "LoginWithRecoveryCode",
             areaName: UserConstants.Features.Users,
             pattern: _adminOptions.AdminUrlPrefix + "/LoginWithRecoveryCode",
-            defaults: new { controller = _twoFaControllerName, action = nameof(TwoFactorAuthenticationController.LoginWithRecoveryCode) }
+            defaults: new { controller = _twoFactorControllerName, action = nameof(TwoFactorAuthenticationController.LoginWithRecoveryCode) }
         );
     }
 }
