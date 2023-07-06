@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
@@ -27,7 +26,7 @@ namespace OrchardCore.Media.Processing
 
         public async Task ActivatedAsync()
         {
-            if (_shellSettings.State == TenantState.Uninitialized)
+            if (_shellSettings.IsUninitialized())
             {
                 // If the tenant is 'Uninitialized' there is no registered 'ISession' and then 'ISiteService' can't be used.
                 return;

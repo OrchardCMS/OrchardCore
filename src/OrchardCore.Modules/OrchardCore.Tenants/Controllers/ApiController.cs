@@ -17,7 +17,6 @@ using OrchardCore.Abstractions.Setup;
 using OrchardCore.Data;
 using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
@@ -106,12 +105,13 @@ namespace OrchardCore.Tenants.Controllers
                 if (model.IsNewTenant)
                 {
                     // Creates a default shell settings based on the configuration.
-                    var shellSettings = _shellSettingsManager.CreateDefaultSettings();
+                    var shellSettings = _shellSettingsManager
+                        .CreateDefaultSettings()
+                        .AsUninitialized();
 
                     shellSettings.Name = model.Name;
                     shellSettings.RequestUrlHost = model.RequestUrlHost;
                     shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
-                    shellSettings.State = TenantState.Uninitialized;
 
                     shellSettings["Category"] = model.Category;
                     shellSettings["Description"] = model.Description;
@@ -174,7 +174,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
                 shellSettings["FeatureProfile"] = String.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
 
-                if (shellSettings.State == TenantState.Uninitialized)
+                if (shellSettings.IsUninitialized())
                 {
                     shellSettings["DatabaseProvider"] = model.DatabaseProvider;
                     shellSettings["TablePrefix"] = model.TablePrefix;
@@ -211,13 +211,12 @@ namespace OrchardCore.Tenants.Controllers
                 return NotFound();
             }
 
-            if (shellSettings.State != TenantState.Running)
+            if (!shellSettings.IsRunning())
             {
                 return BadRequest(S["You can only disable a Running tenant."]);
             }
 
-            shellSettings.State = TenantState.Disabled;
-            await _shellHost.UpdateShellSettingsAsync(shellSettings);
+            await _shellHost.UpdateShellSettingsAsync(shellSettings.AsDisabled());
 
             return Ok();
         }
@@ -241,13 +240,12 @@ namespace OrchardCore.Tenants.Controllers
                 return NotFound();
             }
 
-            if (shellSettings.State != TenantState.Disabled)
+            if (!shellSettings.IsDisabled())
             {
                 return BadRequest(S["You can only enable a Disabled tenant."]);
             }
 
-            shellSettings.State = TenantState.Running;
-            await _shellHost.UpdateShellSettingsAsync(shellSettings);
+            await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
 
             return Ok();
         }
@@ -328,12 +326,12 @@ namespace OrchardCore.Tenants.Controllers
                 ModelState.AddModelError(nameof(SetupApiViewModel.Name), S["Tenant not found: '{0}'", model.Name]);
             }
 
-            if (shellSettings.State == TenantState.Running)
+            if (shellSettings.IsRunning())
             {
                 return Created(GetEncodedUrl(shellSettings, null), null);
             }
 
-            if (shellSettings.State != TenantState.Uninitialized)
+            if (!shellSettings.IsUninitialized())
             {
                 return BadRequest(S["The tenant can't be setup."]);
             }

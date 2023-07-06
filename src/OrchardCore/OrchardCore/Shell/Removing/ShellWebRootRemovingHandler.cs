@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Removing;
@@ -33,7 +32,7 @@ public class ShellWebRootRemovingHandler : IShellRemovingHandler
     /// </summary>
     public Task RemovingAsync(ShellRemovingContext context)
     {
-        if (context.ShellSettings.State == TenantState.Uninitialized)
+        if (context.ShellSettings.IsUninitialized())
         {
             return Task.CompletedTask;
         }

@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Twitter.Services;
 using OrchardCore.Twitter.Settings;
 using OrchardCore.Twitter.Signin.Services;
@@ -108,7 +107,7 @@ namespace OrchardCore.Twitter.Signin.Configuration
             var settings = await _twitterService.GetSettingsAsync();
             if ((_twitterService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
             {
-                if (_shellSettings.State == TenantState.Running)
+                if (_shellSettings.IsRunning())
                 {
                     _logger.LogWarning("Integration with Twitter is not correctly configured.");
                 }
