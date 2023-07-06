@@ -25,7 +25,8 @@ namespace OrchardCore.Lists.AdminNodes
         private ListsAdminNode _node;
         private ContentTypeDefinition _contentType;
 
-        private const int _maxItemsInNode = 100; // security check.
+        // Security check.
+        private const int MaxItemsInNode = 100;
 
         public ListsAdminNodeNavigationBuilder(
             IContentDefinitionManager contentDefinitionManager,
@@ -72,7 +73,7 @@ namespace OrchardCore.Lists.AdminNodes
                 await AddContentItemsAsync(builder);
             }
 
-            // Add external children
+            // Add external children.
             foreach (var childNode in _node.Items)
             {
                 try
@@ -115,7 +116,7 @@ namespace OrchardCore.Lists.AdminNodes
         {
             return (await _session.Query<ContentItem, ContentItemIndex>()
                 .With<ContentItemIndex>(x => x.Latest && x.ContentType == _node.ContentType)
-                .Take(_maxItemsInNode)
+                .Take(MaxItemsInNode)
                 .ListAsync())
                 .OrderBy(x => x.DisplayText)
                 .ToList();
@@ -126,7 +127,7 @@ namespace OrchardCore.Lists.AdminNodes
             return unprefixed?.Split(' ')
                 .ToList()
                 .Select(c => "icon-class-" + c)
-                .ToList<string>()
+                .ToList()
                 ?? new List<string>();
         }
     }
