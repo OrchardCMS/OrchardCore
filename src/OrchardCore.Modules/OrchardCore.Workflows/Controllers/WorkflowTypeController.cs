@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -13,6 +14,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using OrchardCore.Admin;
+using OrchardCore.Data;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -43,6 +45,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly INotifier _notifier;
         private readonly ISecurityTokenService _securityTokenService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IDbConnectionAccessor _dbConnectionAccessor;
 
         private readonly dynamic New;
         private readonly IStringLocalizer S;
@@ -63,7 +66,8 @@ namespace OrchardCore.Workflows.Controllers
             ISecurityTokenService securityTokenService,
             IStringLocalizer<WorkflowTypeController> s,
             IHtmlLocalizer<WorkflowTypeController> h,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor,
+            IDbConnectionAccessor dbConnectionAccessor)
         {
             _pagerOptions = pagerOptions.Value;
             _session = session;
@@ -76,6 +80,7 @@ namespace OrchardCore.Workflows.Controllers
             _notifier = notifier;
             _securityTokenService = securityTokenService;
             _updateModelAccessor = updateModelAccessor;
+            _dbConnectionAccessor = dbConnectionAccessor;
 
             New = shapeFactory;
             S = s;
@@ -124,17 +129,18 @@ namespace OrchardCore.Workflows.Controllers
                 .Take(pager.PageSize)
                 .ListAsync();
 
-            var workflowTypeIds = workflowTypes.Select(x => x.WorkflowTypeId).ToList();
+            var workflowIndexTable = $"{_session.Store.Configuration.TablePrefix}{nameof(WorkflowIndex)}";
+            var dialect = _session.Store.Configuration.SqlDialect;
+            var selectSql = $"select distinct {dialect.QuoteForColumnName(nameof(WorkflowIndex.WorkflowTypeId))} from {dialect.QuoteForTableName(workflowIndexTable, _session.Store.Configuration.Schema)}";
 
-            // Changing the workflowTypeIds list to array is needed to be able to modify the original list while going
-            // through it.
-            foreach (var workflowTypeId in workflowTypeIds.ToArray())
+            IEnumerable<string> workflowTypeIdsWithInstances;
+            using var connection = _dbConnectionAccessor.CreateConnection();
             {
-                var workflowInstance = await _session.QueryIndex<WorkflowIndex>(index => index.WorkflowTypeId == workflowTypeId)
-                    .FirstOrDefaultAsync();
-                if (workflowInstance == null)
+                await connection.OpenAsync();
+                using var transaction = await connection.BeginTransactionAsync(_session.Store.Configuration.IsolationLevel);
                 {
-                    workflowTypeIds.Remove(workflowTypeId);
+                    workflowTypeIdsWithInstances =
+                        await transaction.Connection.QueryAsync<string>(selectSql, transaction: transaction);
                 }
             }
 
@@ -152,7 +158,7 @@ namespace OrchardCore.Workflows.Controllers
                     {
                         WorkflowType = x,
                         Id = x.Id,
-                        HasInstances = workflowTypeIds.Contains(x.WorkflowTypeId),
+                        HasInstances = workflowTypeIdsWithInstances.Contains(x.WorkflowTypeId),
                         Name = x.Name
                     })
                     .ToList(),
