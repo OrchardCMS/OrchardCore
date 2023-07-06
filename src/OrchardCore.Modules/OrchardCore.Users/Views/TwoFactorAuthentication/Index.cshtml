@@ -96,8 +96,9 @@
             if (Model.IsMachineRemembered)
             {
                 <div class="mb-3">
+                    <p class="mb-1">@T["The current device has been saved during the two-factor authentication process."]</p>
                     <form method="post" asp-action="ForgetTwoFactorClient">
-                        <button type="submit" class="btn btn-primary">@T["Forget this device"]</button>
+                        <button type="submit" class="btn btn-sm btn-primary">@T["Forget this device"]</button>
                     </form>
                 </div>
             }
@@ -116,7 +117,7 @@
                     </select>
                 </div>
 
-                <button type="submit" class="btn btn-primary">@T["Update"]</button>
+                <button type="submit" class="btn btn-sm btn-primary">@T["Update"]</button>
             </form>
         }
     </div>
