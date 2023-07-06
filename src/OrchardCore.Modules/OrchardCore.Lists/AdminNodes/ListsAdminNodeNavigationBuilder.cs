@@ -90,7 +90,7 @@ namespace OrchardCore.Lists.AdminNodes
 
         private async Task AddContentItemsAsync(NavigationBuilder listTypeMenu)
         {
-            foreach (var ci in await getContentItemsAsync())
+            foreach (var ci in await GetContentItemsAsync())
             {
                 var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
 
@@ -112,7 +112,7 @@ namespace OrchardCore.Lists.AdminNodes
             }
         }
 
-        private async Task<List<ContentItem>> getContentItemsAsync()
+        private async Task<List<ContentItem>> GetContentItemsAsync()
         {
             return (await _session.Query<ContentItem, ContentItemIndex>()
                 .With<ContentItemIndex>(x => x.Latest && x.ContentType == _node.ContentType)
