@@ -15,6 +15,7 @@ public class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthorizationFil
     private readonly UserOptions _userOptions;
     private readonly ITwoFactorAuthenticationHandlerCoordinator _twoFactorHandlerCoordinator;
     private readonly AdminOptions _adminOptions;
+
     private ISiteService _siteService;
 
     public TwoFactorAuthenticationAuthorizationFilter(

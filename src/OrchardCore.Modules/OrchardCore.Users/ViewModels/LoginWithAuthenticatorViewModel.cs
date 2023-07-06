@@ -5,15 +5,15 @@ namespace OrchardCore.Users.ViewModels;
 
 public class LoginWithAuthenticatorViewModel
 {
-    public bool RememberMe { get; set; }
-
-    public string ReturnUrl { get; set; }
+    [Required]
+    public string Code { get; set; }
 
     [Required]
     public string Provider { get; set; }
 
-    [Required]
-    public string Code { get; set; }
+    public bool RememberMe { get; set; }
+
+    public string ReturnUrl { get; set; }
 
     public bool RememberDevice { get; set; }
 

@@ -76,7 +76,7 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
 
     protected async Task<IActionResult> RemoveTwoFactorProviderAync(IUser user, Func<Task> onSuccessAsync)
     {
-        var currentProviders = await AvailableProvidersAsync(user);
+        var currentProviders = await GetTwoFactorProvidersAsync(user);
         var result = IdentityResult.Failed();
 
         if (currentProviders.Count == 1)
@@ -151,7 +151,7 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
         return RedirectToTwoFactorIndex();
     }
 
-    protected async Task<IList<string>> AvailableProvidersAsync(IUser user)
+    protected async Task<IList<string>> GetTwoFactorProvidersAsync(IUser user)
     {
         var providers = await UserManager.GetValidTwoFactorProvidersAsync(user);
 

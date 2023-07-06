@@ -22,8 +22,7 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Controllers;
 
-[Authorize]
-[Feature(UserConstants.Features.AuthenticatorApp)]
+[Authorize, Feature(UserConstants.Features.AuthenticatorApp)]
 public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
 {
     private const string _authenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&digits={3}&issuer={0}";
@@ -76,15 +75,18 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
         return View(model);
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [Admin]
+    [HttpPost, ValidateAntiForgeryToken, Admin]
     public async Task<IActionResult> Index(EnableAuthenticatorViewModel model)
     {
         var user = await UserManager.GetUserAsync(User);
         if (user == null)
         {
             return UserNotFound();
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return View(model);
         }
 
         var isValid = await UserManager.VerifyTwoFactorTokenAsync(user, TokenOptions.DefaultAuthenticatorProvider, StripToken(model.Code));
@@ -114,21 +116,18 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
             return UserNotFound();
         }
 
-        var currentProviders = await AvailableProvidersAsync(user);
+        var providers = await GetTwoFactorProvidersAsync(user);
 
         var model = new ResetAuthenticatorViewModel()
         {
             CanRemove = !await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync(),
-            WillDisableTwoFactor = currentProviders.Count == 1,
+            WillDisableTwoFactor = providers.Count == 1,
         };
 
         return View(model);
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [Admin]
-    [ActionName(nameof(Reset))]
+    [HttpPost, ValidateAntiForgeryToken, Admin, ActionName(nameof(Reset))]
     public async Task<IActionResult> RemovePost()
     {
         var user = await UserManager.GetUserAsync(User);

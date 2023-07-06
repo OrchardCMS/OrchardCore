@@ -78,7 +78,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
             return RedirectToAccountLogin();
         }
 
-        var providers = await AvailableProvidersAsync(user);
+        var providers = await GetTwoFactorProvidersAsync(user);
 
         var currentProvider = GetProvider(providers, user, provider, next);
 
@@ -116,7 +116,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
             return RedirectToAccountLogin();
         }
 
-        var providers = await AvailableProvidersAsync(user);
+        var providers = await GetTwoFactorProvidersAsync(user);
 
         var currentProvider = GetProvider(providers, user, model.CurrentProvider, false);
 
@@ -230,7 +230,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
             return UserNotFound();
         }
 
-        var providers = await AvailableProvidersAsync(user);
+        var providers = await GetTwoFactorProvidersAsync(user);
         var model = new TwoFactorAuthenticationViewModel();
         await PopulateModelAsync(user, providers, model);
 
@@ -253,7 +253,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
             return UserNotFound();
         }
 
-        var providers = await AvailableProvidersAsync(user);
+        var providers = await GetTwoFactorProvidersAsync(user);
 
         if (ModelState.IsValid)
         {
@@ -378,7 +378,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
             return UserNotFound();
         }
 
-        var providers = await AvailableProvidersAsync(user);
+        var providers = await GetTwoFactorProvidersAsync(user);
 
         if (providers.Count == 0)
         {

@@ -23,8 +23,9 @@ public class TwoFactorAuthenticationStartup : StartupBase
 {
     private static readonly string _twoFactorControllerName = typeof(TwoFactorAuthenticationController).ControllerName();
 
-    private UserOptions _userOptions;
     private readonly AdminOptions _adminOptions;
+
+    private UserOptions _userOptions;
 
     public TwoFactorAuthenticationStartup(IOptions<AdminOptions> adminOptions)
     {

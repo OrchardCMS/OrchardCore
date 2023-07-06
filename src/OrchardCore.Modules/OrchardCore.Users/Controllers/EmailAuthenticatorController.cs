@@ -110,7 +110,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
 
         if (result.Succeeded)
         {
-            await Notifier.SuccessAsync(H["We have successfully sent an authentication code to your email. Please retrieve the code from your email and enter it below."]);
+            await Notifier.SuccessAsync(H["We have successfully sent an verification code to your email. Please retrieve the code from your email and enter it below."]);
         }
         else
         {
@@ -169,14 +169,14 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
             });
         }
 
-        var setings = (await SiteService.GetSiteSettingsAsync()).As<EmailAuthenticatorLoginSettings>();
+        var settings = (await SiteService.GetSiteSettingsAsync()).As<EmailAuthenticatorLoginSettings>();
         var code = await UserManager.GenerateTwoFactorTokenAsync(user, TokenOptions.DefaultEmailProvider);
 
         var message = new MailMessage()
         {
             To = await UserManager.GetEmailAsync(user),
-            Subject = await GetSubjectAsync(setings, user, code),
-            Body = await GetMessageAsync(setings, user, code),
+            Subject = await GetSubjectAsync(settings, user, code),
+            Body = await GetMessageAsync(settings, user, code),
             IsHtmlBody = true,
         };
 

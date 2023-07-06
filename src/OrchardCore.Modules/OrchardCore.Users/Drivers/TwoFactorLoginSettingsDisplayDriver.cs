@@ -27,6 +27,7 @@ public class TwoFactorLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, T
         _authorizationService = authorizationService;
         S = stringLocalizer;
     }
+
     public override IDisplayResult Edit(TwoFactorLoginSettings settings)
     {
         return Initialize<TwoFactorLoginSettings>("TwoFactorLoginSettings_Edit", model =>
