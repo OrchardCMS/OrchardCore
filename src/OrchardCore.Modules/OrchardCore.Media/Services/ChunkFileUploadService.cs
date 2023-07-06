@@ -41,7 +41,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
     {
         var contentRangeHeader = request.Headers.ContentRange;
 
-        if (_options.Value.MaxUploadChunkSize is null or <= 0
+        if (_options.Value.MaxUploadChunkSize <= 0
             || contentRangeHeader.Count is 0
             || !request.Form.TryGetValue(UploadIdFormKey, out var uploadIdValue))
         {

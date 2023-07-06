@@ -126,7 +126,7 @@
 <input type="hidden" id="uploadFiles" value="@Url.Action("Upload", "Admin", new { area = "OrchardCore.Media" })" />
 
 @* Chunked file upload settings *@
-<input type="hidden" id="maxUploadChunkSize" value="@(MediaOptions.Value.MaxUploadChunkSize ?? 0)" />
+<input type="hidden" id="maxUploadChunkSize" value="@MediaOptions.Value.MaxUploadChunkSize" />
 
 @*Localizable Strings shared*@
 <input type="hidden" id="deleteFolder" data-title="@T["Delete media folder"]" data-message="@T["Are you sure you want to delete this folder?"]" />

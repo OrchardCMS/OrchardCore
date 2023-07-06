@@ -76,5 +76,5 @@
     @(settings.AllowMediaText ? "true" : "false"),
     @(settings.AllowAnchors ? "true" : "false"),
         '@Model.TempUploadFolder',
-    @(MediaOptions.Value.MaxUploadChunkSize ?? 0));
+    @MediaOptions.Value.MaxUploadChunkSize);
 </script>
