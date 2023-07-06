@@ -75,7 +75,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
 
         if (!await UserManager.IsEmailConfirmedAsync(user))
         {
-            await Notifier.ErrorAsync(H["Your account does not have a confirmed email address."]);
+            return RedirectToAction(nameof(Index));
         }
 
         return View();
@@ -90,9 +90,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
             return UserNotFound();
         }
 
-        var email = await UserManager.GetEmailAsync(user);
-
-        if (String.IsNullOrEmpty(email))
+        if (!await UserManager.IsEmailConfirmedAsync(user))
         {
             return RedirectToAction(nameof(Index));
         }
@@ -102,7 +100,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         var setings = (await SiteService.GetSiteSettingsAsync()).As<EmailAuthenticatorLoginSettings>();
         var message = new MailMessage()
         {
-            To = email,
+            To = await UserManager.GetEmailAsync(user),
             Subject = await GetSubjectAsync(setings, user, code),
             Body = await GetMessageAsync(setings, user, code),
             IsHtmlBody = true,
