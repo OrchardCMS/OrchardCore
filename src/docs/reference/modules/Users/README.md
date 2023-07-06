@@ -12,10 +12,13 @@ The module contains the following features apart from the base feature:
 - User Time Zone: Provides a way to set the time zone per user.
 - Custom User Settings: See [its own documentation page](CustomUserSettings/README.md).
 - [Users Authentication Ticket Store](./TicketStore.md): Stores users authentication tickets on server in memory cache instead of cookies. If distributed cache feature is enabled it will store authentication tickets on distributed cache.
+- Two-Factor Authentication Services: Provices Two-factor core services. This feature cannot be manually enabled or disable as it is enabled by dependency on demand.
+- Two-Factor Email Method: Allows users to two-factor authenticate using an email.
+- Two-Factor Authenticator App Method: Allows users to two-factor authenticate using any Authenticator App.
 
 ## Two-factor Authentication
 
-Starting with version 1.7, the Users feature is shipped with everything you need to enable two-factor authentication. To enable two-factor authentication, go to the Dashboard then navigate to `Security` >> `Settings` >> `User Login`. Click on the "Two-factor Authentication" tab and check "Enable two-factor authentication" option and save.
+Starting with version 1.7, OrchardCore is shipped with everything you need to secure your app with two-factor authentication. To use two-factor authentication, simply enable "Two-Factor Email Method" and/or "Two-Factor Authenticator App Method" features. You can configure the process based on your need by navigating to `Security` >> `Settings` >> `User Login`. Click on the "Two-Factor Authentication" tab and update the settings as needed.
 
 ## Custom Paths
 
@@ -30,7 +33,7 @@ If you want to specify custom paths to access the authentication related urls, y
       "ChangePasswordConfirmationUrl": "ChangePasswordConfirmation",
       "ExternalLoginsUrl": "ExternalLogins",
       "ExternalLoginsUrl": "ExternalLogins",
-      "EnableAuthenticatorPath": "EnableAuthenticator"
+      "TwoFactorAuthenticationPath": "TwoFactor"
     }
   }
 ```

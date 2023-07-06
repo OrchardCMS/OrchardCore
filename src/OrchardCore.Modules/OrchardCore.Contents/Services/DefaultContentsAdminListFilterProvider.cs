@@ -149,6 +149,7 @@ namespace OrchardCore.Contents.Services
 
                                 return query.With<ContentItemIndex>(x => x.ContentType == contentType && x.Owner == userNameIdentifier);
                             }
+
                             // At this point, the given contentType is invalid. Ignore it.
                         }
 
@@ -211,9 +212,9 @@ namespace OrchardCore.Contents.Services
                         if (!String.IsNullOrEmpty(stereotype))
                         {
                             var contentTypeDefinitionNames = contentDefinitionManager.ListTypeDefinitions()
-                            .Where(definition => definition.StereotypeEquals(stereotype, StringComparison.OrdinalIgnoreCase))
-                            .Select(definition => definition.Name)
-                            .ToList();
+                                .Where(definition => definition.StereotypeEquals(stereotype, StringComparison.OrdinalIgnoreCase))
+                                .Select(definition => definition.Name)
+                                .ToList();
 
                             // We display a specific type even if it's not listable so that admin pages
                             // can reuse the content list page for specific types.
@@ -246,22 +247,6 @@ namespace OrchardCore.Contents.Services
                         }
 
                         return query;
-                    })
-                    .MapTo<ContentOptionsViewModel>((val, model) =>
-                    {
-                        if (!String.IsNullOrEmpty(val))
-                        {
-                            model.SelectedContentType = val;
-                        }
-                    })
-                    .MapFrom<ContentOptionsViewModel>((model) =>
-                    {
-                        if (!String.IsNullOrEmpty(model.SelectedContentType))
-                        {
-                            return (true, model.SelectedContentType);
-                        }
-
-                        return (false, String.Empty);
                     })
                 )
                 .WithDefaultTerm(ContentsAdminListFilterOptions.DefaultTermName, builder => builder

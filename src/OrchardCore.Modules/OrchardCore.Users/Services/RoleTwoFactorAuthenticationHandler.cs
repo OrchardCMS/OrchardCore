@@ -37,9 +37,9 @@ public class RoleTwoFactorAuthenticationHandler : ITwoFactorAuthenticationHandle
             return false;
         }
 
-        var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
+        var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<RoleLoginSettings>();
 
-        if (loginSettings.EnableTwoFactorAuthenticationForSpecificRoles)
+        if (loginSettings.RequireTwoFactorAuthenticationForSpecificRoles && loginSettings.Roles != null)
         {
             foreach (var role in loginSettings.Roles)
             {
