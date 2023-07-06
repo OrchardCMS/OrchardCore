@@ -66,7 +66,6 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         _twoFactorDisplayManager = twoFactorDisplayManager;
     }
 
-    [HttpGet]
     [AllowAnonymous]
     public async Task<IActionResult> LoginWithTwoFactorAuthentication(bool rememberMe = false, bool next = false, string provider = "", string returnUrl = "")
     {
@@ -103,10 +102,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         return View(model);
     }
 
-    [HttpPost]
-    [AllowAnonymous]
-    [ValidateAntiForgeryToken]
-    [ActionName(nameof(LoginWithTwoFactorAuthentication))]
+    [HttpPost, AllowAnonymous, ActionName(nameof(LoginWithTwoFactorAuthentication))]
     public async Task<IActionResult> LoginWithTwoFactorAuthenticationPost(LoginWithTwoFactorAuthenticationViewModel model)
     {
         var user = await SignInManager.GetTwoFactorAuthenticationUserAsync();
@@ -178,9 +174,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         });
     }
 
-    [HttpPost]
-    [AllowAnonymous]
-    [ValidateAntiForgeryToken]
+    [HttpPost, AllowAnonymous]
     public async Task<IActionResult> LoginWithRecoveryCode(LoginWithRecoveryCodeViewModel model)
     {
         if (ModelState.IsValid)
@@ -242,9 +236,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         return View(model);
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [Admin]
+    [HttpPost, Admin]
     public async Task<IActionResult> Index(TwoFactorAuthenticationViewModel model)
     {
         var user = await UserManager.GetUserAsync(User);
@@ -279,9 +271,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         return View(model);
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [Admin]
+    [HttpPost, Admin]
     public async Task<IActionResult> ForgetTwoFactorClient()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -316,10 +306,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         return View();
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [Admin]
-    [ActionName(nameof(GenerateRecoveryCodes))]
+    [HttpPost, Admin, ActionName(nameof(GenerateRecoveryCodes))]
     public async Task<IActionResult> GenerateRecoveryCodesPost()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -368,8 +355,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         });
     }
 
-    [Admin]
-    [ValidateAntiForgeryToken, HttpPost]
+    [Admin, HttpPost]
     public async Task<IActionResult> EnableTwoFactorAuthentication()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -413,10 +399,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         return View();
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [Admin]
-    [ActionName(nameof(DisableTwoFactorAuthentication))]
+    [HttpPost, Admin, ActionName(nameof(DisableTwoFactorAuthentication))]
     public async Task<IActionResult> DisableTwoFactorAuthenticationPost()
     {
         var user = await UserManager.GetUserAsync(User);

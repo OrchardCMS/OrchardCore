@@ -22,7 +22,7 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Controllers;
 
-[Authorize, Feature(UserConstants.Features.AuthenticatorApp)]
+[Authorize, Admin, Feature(UserConstants.Features.AuthenticatorApp)]
 public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
 {
     private const string _authenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&digits={3}&issuer={0}";
@@ -57,7 +57,6 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
         _shellSettings = shellSettings;
     }
 
-    [Admin]
     public async Task<IActionResult> Index(string returnUrl)
     {
         var user = await UserManager.GetUserAsync(User);
@@ -75,7 +74,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
         return View(model);
     }
 
-    [HttpPost, ValidateAntiForgeryToken, Admin]
+    [HttpPost]
     public async Task<IActionResult> Index(EnableAuthenticatorViewModel model)
     {
         var user = await UserManager.GetUserAsync(User);
@@ -107,7 +106,6 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
         return await RedirectToTwoFactorAsync(user);
     }
 
-    [Admin]
     public async Task<IActionResult> Reset()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -120,15 +118,15 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
 
         var model = new ResetAuthenticatorViewModel()
         {
-            CanRemove = !await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync(),
+            CanRemove = providers.Count > 1 || !await TwoFactorAuthenticationHandlerCoordinator.IsRequiredAsync(),
             WillDisableTwoFactor = providers.Count == 1,
         };
 
         return View(model);
     }
 
-    [HttpPost, ValidateAntiForgeryToken, Admin, ActionName(nameof(Reset))]
-    public async Task<IActionResult> RemovePost()
+    [HttpPost, ActionName(nameof(Reset))]
+    public async Task<IActionResult> ResetPost()
     {
         var user = await UserManager.GetUserAsync(User);
         if (user == null)

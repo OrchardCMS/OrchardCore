@@ -25,7 +25,7 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Controllers;
 
-[Feature(UserConstants.Features.EmailAuthenticator)]
+[Authorize, Feature(UserConstants.Features.EmailAuthenticator)]
 public class EmailAuthenticatorController : TwoFactorAuthenticationBaseController
 {
     private readonly IUserService _userService;
@@ -64,7 +64,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         _htmlEncoder = htmlEncoder;
     }
 
-    [Admin, Authorize]
+    [Admin]
     public async Task<IActionResult> Index()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -73,15 +73,15 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
             return UserNotFound();
         }
 
-        if (!await UserManager.IsEmailConfirmedAsync(user))
+        if (await UserManager.IsEmailConfirmedAsync(user))
         {
-            return RedirectToAction(nameof(Index));
+            return RedirectToTwoFactorIndex();
         }
 
         return View();
     }
 
-    [HttpPost, ValidateAntiForgeryToken, Admin, Authorize]
+    [HttpPost, Admin]
     public async Task<IActionResult> RequestCode()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -90,9 +90,9 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
             return UserNotFound();
         }
 
-        if (!await UserManager.IsEmailConfirmedAsync(user))
+        if (await UserManager.IsEmailConfirmedAsync(user))
         {
-            return RedirectToAction(nameof(Index));
+            return RedirectToTwoFactorIndex();
         }
 
         var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
@@ -110,7 +110,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
 
         if (result.Succeeded)
         {
-            await Notifier.SuccessAsync(H["We have successfully sent an verification code to your email. Please retrieve the code from your email and enter it below."]);
+            await Notifier.SuccessAsync(H["We have successfully sent an verification code to your email. Please retrieve the code from your email."]);
         }
         else
         {
@@ -124,7 +124,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         return View(model);
     }
 
-    [HttpPost, ValidateAntiForgeryToken, Authorize, Admin]
+    [HttpPost]
     public async Task<IActionResult> ValidateCode(EnableEmailAuthenticatorViewModel model)
     {
         var user = await UserManager.GetUserAsync(User);
@@ -154,8 +154,8 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         return View(nameof(RequestCode), model);
     }
 
-    [IgnoreAntiforgeryToken, Produces("application/json"), AllowAnonymous]
-    public async Task<IActionResult> GetCode()
+    [HttpPost, Produces("application/json"), AllowAnonymous]
+    public async Task<IActionResult> SendCode()
     {
         var user = await SignInManager.GetTwoFactorAuthenticationUserAsync();
         var errorMessage = S["The email could not be sent. Please attempt to request the code at a later time."];

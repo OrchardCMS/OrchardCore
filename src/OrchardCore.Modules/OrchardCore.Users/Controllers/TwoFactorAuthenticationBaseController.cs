@@ -77,7 +77,6 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
     protected async Task<IActionResult> RemoveTwoFactorProviderAync(IUser user, Func<Task> onSuccessAsync)
     {
         var currentProviders = await GetTwoFactorProvidersAsync(user);
-        var result = IdentityResult.Failed();
 
         if (currentProviders.Count == 1)
         {
@@ -88,22 +87,22 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
                 return RedirectToTwoFactorIndex();
             }
 
-            result = await UserManager.SetTwoFactorEnabledAsync(user, false);
+            var result = await UserManager.SetTwoFactorEnabledAsync(user, false);
 
             if (result.Succeeded)
             {
+                await onSuccessAsync();
                 await Notifier.WarningAsync(H["Your two-factor authentication has been disabled."]);
+                await SignInManager.RefreshSignInAsync(user);
             }
             else
             {
                 await Notifier.ErrorAsync(H["Unable to disable two-factor authentication."]);
             }
         }
-
-        if (result.Succeeded)
+        else
         {
             await onSuccessAsync();
-            await SignInManager.RefreshSignInAsync(user);
         }
 
         return RedirectToTwoFactorIndex();
