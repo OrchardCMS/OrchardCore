@@ -111,10 +111,10 @@ namespace OrchardCore.AutoSetup.Options
                 yield return new ValidationResult("The tenant name is in conflict with the 'Default' tenant name.");
             }
 
-            if (!IsDefault && String.IsNullOrWhiteSpace(RequestUrlPrefix) && String.IsNullOrWhiteSpace(RequestUrlHost))
-            {
-                yield return new ValidationResult("RequestUrlPrefix or RequestUrlHost should be provided for a non 'Default' Tenant.");
-            }
+            //if (!IsDefault && String.IsNullOrWhiteSpace(RequestUrlPrefix) && String.IsNullOrWhiteSpace(RequestUrlHost))
+            //{
+            //    yield return new ValidationResult("RequestUrlPrefix or RequestUrlHost should be provided for a non 'Default' Tenant.");
+            //}
 
             if (!String.IsNullOrWhiteSpace(RequestUrlPrefix) && RequestUrlPrefix.Contains('/'))
             {
