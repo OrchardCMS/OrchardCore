@@ -57,11 +57,26 @@ dotnet_style_explicit_tuple_names                          = true : suggestion
 trim_trailing_whitespace = true
 insert_final_newline = true
 
-# Suggest to use "_" instead of "this." when creating new private fields
+# Suggest to use "_" instead of "this." when creating new private fields.
 dotnet_naming_style.camel_case_leading_underscore.capitalization = camel_case
 dotnet_naming_style.camel_case_leading_underscore.required_prefix = _
+
+# Define the 'private_fields' symbol group.
 dotnet_naming_symbols.private_fields.applicable_kinds = field
 dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+
+# Define the 'private_fields_should_be_camel_case_leading_underscore' naming rule.
 dotnet_naming_rule.private_fields_should_be_camel_case_leading_underscore.severity = suggestion
 dotnet_naming_rule.private_fields_should_be_camel_case_leading_underscore.symbols = private_fields
 dotnet_naming_rule.private_fields_should_be_camel_case_leading_underscore.style = camel_case_leading_underscore
+
+# Define the 'private_const_fields' symbol group.
+dotnet_naming_symbols.private_const_fields.applicable_kinds = field
+dotnet_naming_symbols.private_const_fields.applicable_accessibilities = private
+dotnet_naming_symbols.private_const_fields.required_modifiers = const
+
+# Define the 'private_const_fields_ignore_camel_case_leading_underscore' naming rule.
+dotnet_naming_rule.private_const_fields_ignore_camel_case_leading_underscore.severity = none
+dotnet_naming_rule.private_const_fields_ignore_camel_case_leading_underscore.symbols = private_const_fields
+dotnet_naming_rule.private_const_fields_ignore_camel_case_leading_underscore.style = camel_case_leading_underscore
+
