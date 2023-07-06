@@ -153,11 +153,20 @@ namespace OrchardCore.Navigation
         {
             _item.RouteValues = new RouteValueDictionary(values);
             if (!String.IsNullOrEmpty(actionName))
+            {
                 _item.RouteValues["action"] = actionName;
+            }
+
             if (!String.IsNullOrEmpty(controllerName))
+            {
                 _item.RouteValues["controller"] = controllerName;
+            }
+
             if (!String.IsNullOrEmpty(areaName))
+            {
                 _item.RouteValues["area"] = areaName;
+            }
+
             return this;
         }
     }
