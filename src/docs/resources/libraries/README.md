@@ -38,6 +38,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [OpenIddict](https://github.com/openiddict/openiddict-core) | Flexible and versatile OAuth 2.0/OpenID Connect stack for .NET. | 4.5.0 | [Apache-2.0](https://github.com/openiddict/openiddict-core/blob/dev/LICENSE.md)) |
 | [PdfPig](https://github.com/UglyToad/PdfPig/) | Library to read and extract text and other content from PDF files. | 0.1.8 | [Apache-2.0](https://github.com/UglyToad/PdfPig/blob/master/LICENSE) |
 | [Serilog.AspNetCore](https://github.com/serilog/serilog-aspnetcore) | Serilog integration for ASP.NET Core. | 7.0.0 | [Apache-2.0](https://github.com/serilog/serilog-aspnetcore/blob/dev/LICENSE) |
+| [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) | General purpose redis client. | 2.6.116 | [MIT](https://github.com/StackExchange/StackExchange.Redis/blob/main/LICENSE) |
 | [Shortcodes](https://github.com/sebastienros/shortcodes) | Shortcodes processor for .NET. | 1.3.3 | [MIT](https://github.com/sebastienros/shortcodes/blob/dev/LICENSE) |
 | [YesSql](https://github.com/sebastienros/yessql) | .NET document database working on any RDBMS. | 3.3.0 | [MIT](https://github.com/sebastienros/yessql/blob/dev/LICENSE) |
 | [ZString](https://github.com/Cysharp/ZString) | Zero Allocation StringBuilder for .NET Core and Unity. | 2.5.0 | [MIT](https://github.com/Cysharp/ZString/blob/master/LICENSE) |
