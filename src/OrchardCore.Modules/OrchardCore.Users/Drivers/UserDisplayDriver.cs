@@ -71,7 +71,6 @@ namespace OrchardCore.Users.Drivers
             return Initialize<EditUserViewModel>("UserFields_Edit", model =>
             {
                 model.EmailConfirmed = user.EmailConfirmed;
-                model.PhoneNumberConfirmed = user.PhoneNumberConfirmed;
                 model.IsEnabled = user.IsEnabled;
                 model.IsNewRequest = context.IsNew;
                 // The current user cannot disable themselves, nor can a user without permission to manage this user disable them.
@@ -148,11 +147,6 @@ namespace OrchardCore.Users.Drivers
                 {
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     await _userManager.ConfirmEmailAsync(user, token);
-                }
-                if (model.PhoneNumberConfirmed && !await _userManager.IsPhoneNumberConfirmedAsync(user))
-                {
-                    var token = await _userManager.GenerateChangePhoneNumberTokenAsync(user, user.PhoneNumber);
-                    await _userManager.ChangePhoneNumberAsync(user, user.PhoneNumber, token);
                 }
             }
 

@@ -57,6 +57,7 @@ namespace OrchardCore.Users.Drivers
                 Initialize<EditUserPhoneNumberViewModel>("UserPhoneNumber_Edit", async model =>
                 {
                     model.PhoneNumber = user.PhoneNumber;
+                    model.PhoneNumberConfirmed = user.PhoneNumberConfirmed;
 
                     model.AllowEditing = context.IsNew || await CanEditUserInfoAsync(user);
 
