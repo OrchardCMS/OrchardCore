@@ -19,7 +19,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
     public class LuceneQueryFieldTypeProvider : ISchemaBuilder
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ILogger<LuceneQueryFieldTypeProvider> _logger;
+        private readonly ILogger _logger;
 
         public LuceneQueryFieldTypeProvider(IHttpContextAccessor httpContextAccessor, ILogger<LuceneQueryFieldTypeProvider> logger)
         {

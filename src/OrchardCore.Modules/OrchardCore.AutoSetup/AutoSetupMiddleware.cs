@@ -54,7 +54,7 @@ namespace OrchardCore.AutoSetup
         /// <summary>
         /// The logger.
         /// </summary>
-        private readonly ILogger<AutoSetupMiddleware> _logger;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// The auto setup lock options.
