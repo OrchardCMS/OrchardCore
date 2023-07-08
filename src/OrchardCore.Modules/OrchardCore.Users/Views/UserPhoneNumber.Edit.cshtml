@@ -5,11 +5,10 @@
     <div class="input-group col-md-4">
         <span class="input-group-text"><i class="fa-solid fa-phone" aria-hidden="true"></i></span>
         <input asp-for="PhoneNumber" class="form-control" type="tel" asp-is-disabled="@(!Model.AllowEditing)" />
-        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-        <span style="display: flex; justify-content: center; align-items: center; margin: 4px;">
+        <span class="input-group-text">
             @if (Model.PhoneNumberConfirmed)
             {
-                <i class="fas fa-check-circle" style="color: green;" title="@T["Verified"]"></i>
+                <i class="fas fa-check-circle text-success" title="@T["Verified"]"></i>
             }
             else
             {

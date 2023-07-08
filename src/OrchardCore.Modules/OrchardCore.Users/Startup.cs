@@ -167,10 +167,10 @@ namespace OrchardCore.Users
                 options.User.RequireUniqueEmail = true;
             });
 
-            var phoneNumberProviderType = typeof(PhoneNumberTokenProvider<>).MakeGenericType(typeof(IUser));
+            var phoneNumberProviderType = typeof(PhoneNumberTokenProvider<>).MakeGenericType(identityBuilder.UserType);
             identityBuilder.AddTokenProvider(TokenOptions.DefaultPhoneProvider, phoneNumberProviderType);
             
-            var emailTokenProviderType = typeof(EmailTokenProvider<>).MakeGenericType(typeof(IUser));
+            var emailTokenProviderType = typeof(EmailTokenProvider<>).MakeGenericType(identityBuilder.UserType);
             identityBuilder.AddTokenProvider(TokenOptions.DefaultEmailProvider, emailTokenProviderType);
             services.Configure<IdentityOptions>(options =>
             {
