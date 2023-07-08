@@ -20,7 +20,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
     public class ElasticQueryFieldTypeProvider : ISchemaBuilder
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ILogger<ElasticQueryFieldTypeProvider> _logger;
+        private readonly ILogger _logger;
 
         public ElasticQueryFieldTypeProvider(IHttpContextAccessor httpContextAccessor, ILogger<ElasticQueryFieldTypeProvider> logger)
         {

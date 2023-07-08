@@ -8,7 +8,7 @@ namespace OrchardCore.Cors.Services
     public class CorsOptionsConfiguration : IConfigureOptions<CorsOptions>
     {
         private readonly CorsService _corsService;
-        private readonly ILogger<CorsOptionsConfiguration> _logger;
+        private readonly ILogger _logger;
 
         public CorsOptionsConfiguration(CorsService corsService, ILogger<CorsOptionsConfiguration> logger)
         {
