@@ -6,7 +6,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
     public class ContentPartDisplayOption : ContentPartOptionBase
     {
-        private readonly List<ContentPartDisplayDriverOption> _partDisplayDrivers = new List<ContentPartDisplayDriverOption>();
+        private readonly List<ContentPartDisplayDriverOption> _partDisplayDrivers = new();
 
         public ContentPartDisplayOption(Type contentPartType) : base(contentPartType)
         {
