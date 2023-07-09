@@ -27,8 +27,10 @@ namespace OrchardCore.Modules
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new();
 
         public ModularTenantRouterMiddleware(
-            IFeatureCollection features,
+#pragma warning disable IDE0060 // Remove unused parameter
             RequestDelegate next,
+#pragma warning restore IDE0060 // Remove unused parameter
+            IFeatureCollection features,
             ILogger<ModularTenantRouterMiddleware> logger)
         {
             _features = features;

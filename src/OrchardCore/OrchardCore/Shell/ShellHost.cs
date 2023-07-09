@@ -18,7 +18,7 @@ namespace OrchardCore.Environment.Shell
     /// all <see cref="ShellSettings"/> that we also need to register in the <see cref="IRunningShellTable"/> to serve incoming requests.
     /// For each <see cref="ShellContext"/> a service container and then a request pipeline are only built on the first matching request.
     /// </summary>
-    public class ShellHost : IShellHost, IDisposable
+    public sealed class ShellHost : IShellHost, IDisposable
     {
         private const int _reloadShellMaxRetriesCount = 9;
 

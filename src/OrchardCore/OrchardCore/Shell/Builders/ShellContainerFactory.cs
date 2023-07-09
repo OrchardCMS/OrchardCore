@@ -189,11 +189,8 @@ namespace OrchardCore.Environment.Shell.Builders
             {
                 lock (this)
                 {
-                    if (_applicationFeature == null)
-                    {
-                        _applicationFeature = _extensionManager.GetFeatures()
+                    _applicationFeature ??= _extensionManager.GetFeatures()
                             .FirstOrDefault(f => f.Id == _hostingEnvironment.ApplicationName);
-                    }
                 }
             }
         }

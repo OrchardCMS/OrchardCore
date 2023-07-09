@@ -15,7 +15,9 @@ public class ShellRemovalManager : IShellRemovalManager
     private readonly IShellHost _shellHost;
     private readonly IShellContextFactory _shellContextFactory;
     private readonly IEnumerable<IShellRemovingHandler> _shellRemovingHandlers;
+#pragma warning disable IDE1006 // Naming Styles
     private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
     private readonly ILogger _logger;
 
     public ShellRemovalManager(
