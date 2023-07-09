@@ -10,8 +10,8 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
     /// </summary>
     public interface IContentDisplayHandler
     {
-        Task BuildDisplayAsync(ContentItem contentItem, BuildDisplayContext context, ContentTypeDefinition contentTypeDefinition);
-        Task BuildEditorAsync(ContentItem contentItem, BuildEditorContext context, ContentTypeDefinition contentTypeDefinition);
-        Task UpdateEditorAsync(ContentItem contentItem, UpdateEditorContext context, ContentTypeDefinition contentTypeDefinition);
+        Task BuildDisplayAsync(ContentItem contentItem, BuildDisplayContext context, ContentTypeDefinition? contentTypeDefinition = default);
+        Task BuildEditorAsync(ContentItem contentItem, BuildEditorContext context, ContentTypeDefinition? contentTypeDefinition = default);
+        Task UpdateEditorAsync(ContentItem contentItem, UpdateEditorContext context, ContentTypeDefinition? contentTypeDefinition = default);
     }
 }
