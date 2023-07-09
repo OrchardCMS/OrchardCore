@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Metadata;
@@ -42,7 +43,7 @@ namespace OrchardCore.ContentManagement.Display
             _logger = logger;
         }
 
-        public async Task BuildDisplayAsync(ContentItem contentItem, BuildDisplayContext context, ContentTypeDefinition? contentTypeDefinitionIn = default)
+        public async Task BuildDisplayAsync(ContentItem contentItem, BuildDisplayContext context,ContentTypeDefinition contentTypeDefinitionIn)
         {
             ContentTypeDefinition contentTypeDefinition = null;
 
@@ -50,7 +51,7 @@ namespace OrchardCore.ContentManagement.Display
             {
                 try
                 {
-                    contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+                    contentTypeDefinition =  _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
                 }
                 catch (Exception ex)
                 {
@@ -208,7 +209,7 @@ namespace OrchardCore.ContentManagement.Display
             }
         }
 
-        public async Task BuildEditorAsync(ContentItem contentItem, BuildEditorContext context, ContentTypeDefinition? contentTypeDefinitionIn = default)
+        public async Task BuildEditorAsync(ContentItem contentItem, BuildEditorContext context, ContentTypeDefinition contentTypeDefinitionIn)
         {
             ContentTypeDefinition contentTypeDefinition = null;
 
@@ -316,7 +317,7 @@ namespace OrchardCore.ContentManagement.Display
             }
         }
 
-        public async Task UpdateEditorAsync(ContentItem contentItem, UpdateEditorContext context, ContentTypeDefinition? contentTypeDefinitionIn = default)
+        public async Task UpdateEditorAsync(ContentItem contentItem, UpdateEditorContext context, ContentTypeDefinition contentTypeDefinitionIn)
         {
             ContentTypeDefinition contentTypeDefinition = null;
 
