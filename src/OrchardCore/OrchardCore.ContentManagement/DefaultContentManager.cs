@@ -55,10 +55,7 @@ namespace OrchardCore.ContentManagement
         public async Task<ContentItem> NewAsync(string contentType)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentType);
-            if (contentTypeDefinition == null)
-            {
-                contentTypeDefinition = new ContentTypeDefinitionBuilder().Named(contentType).Build();
-            }
+            contentTypeDefinition ??= new ContentTypeDefinitionBuilder().Named(contentType).Build();
 
             // Create a new kernel for the model instance.
             var context = new ActivatingContentContext(new ContentItem() { ContentType = contentTypeDefinition.Name })
@@ -516,14 +513,15 @@ namespace OrchardCore.ContentManagement
 
             // We are not invoking NewAsync as we are cloning an existing item
             // This will also prevent the Elements (parts) from being allocated unnecessarily
-            var buildingContentItem = new ContentItem();
-
-            buildingContentItem.ContentType = existingContentItem.ContentType;
-            buildingContentItem.ContentItemId = existingContentItem.ContentItemId;
-            buildingContentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(existingContentItem);
-            buildingContentItem.DisplayText = existingContentItem.DisplayText;
-            buildingContentItem.Latest = true;
-            buildingContentItem.Data = new JObject(existingContentItem.Data);
+            var buildingContentItem = new ContentItem
+            {
+                ContentType = existingContentItem.ContentType,
+                ContentItemId = existingContentItem.ContentItemId,
+                ContentItemVersionId = _idGenerator.GenerateUniqueId(existingContentItem),
+                DisplayText = existingContentItem.DisplayText,
+                Latest = true,
+                Data = new JObject(existingContentItem.Data)
+            };
 
             var context = new VersionContentContext(existingContentItem, buildingContentItem);
 
@@ -703,10 +701,10 @@ namespace OrchardCore.ContentManagement
                         {
                             if (_logger.IsEnabled(LogLevel.Error))
                             {
-                                _logger.LogError("Error importing content item version id '{ContentItemVersionId}' : '{Errors}'", importingItem?.ContentItemVersionId, string.Join(", ", result.Errors));
+                                _logger.LogError("Error importing content item version id '{ContentItemVersionId}' : '{Errors}'", importingItem?.ContentItemVersionId, String.Join(", ", result.Errors));
                             }
 
-                            throw new ValidationException(string.Join(", ", result.Errors));
+                            throw new ValidationException(String.Join(", ", result.Errors));
                         }
 
                         // Imported handlers will only be fired if the validation has been successful.
@@ -754,10 +752,10 @@ namespace OrchardCore.ContentManagement
                         {
                             if (_logger.IsEnabled(LogLevel.Error))
                             {
-                                _logger.LogError("Error importing content item version id '{ContentItemVersionId}' : '{Errors}'", importingItem.ContentItemVersionId, string.Join(", ", result.Errors));
+                                _logger.LogError("Error importing content item version id '{ContentItemVersionId}' : '{Errors}'", importingItem.ContentItemVersionId, String.Join(", ", result.Errors));
                             }
 
-                            throw new ValidationException(string.Join(", ", result.Errors));
+                            throw new ValidationException(String.Join(", ", result.Errors));
                         }
 
                         // Imported handlers will only be fired if the validation has been successful.
@@ -926,7 +924,7 @@ namespace OrchardCore.ContentManagement
             if (String.IsNullOrEmpty(contentItem.ContentItemId))
             {
                 // NewAsync should be used to create new content items.
-                throw new ArgumentNullException(nameof(ContentItem.ContentItemId));
+                throw new InvalidOperationException($"The content item is missing a '{nameof(ContentItem.ContentItemId)}'.");
             }
 
             // Initializes the Id as it could be interpreted as an updated object when added back to YesSql

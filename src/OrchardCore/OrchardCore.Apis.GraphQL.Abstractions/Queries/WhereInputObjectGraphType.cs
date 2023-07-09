@@ -17,22 +17,22 @@ namespace OrchardCore.Apis.GraphQL.Queries
             return value;
         }
 
-        // Applies to all types
-        public static Dictionary<string, string> EqualityOperators = new Dictionary<string, string>
+        // Applies to all types.
+        public static readonly Dictionary<string, string> EqualityOperators = new()
         {
             { "", "is equal to" },
             { "_not", "is not equal to" }
         };
 
-        // Applies to all types
-        public static Dictionary<string, string> MultiValueComparisonOperators = new Dictionary<string, string>
+        // Applies to all types.
+        public static readonly Dictionary<string, string> MultiValueComparisonOperators = new()
         {
             { "_in", "is in collection" },
             { "_not_in", "is not in collection" }
         };
 
-        // Applies to non strings
-        public static Dictionary<string, string> NonStringValueComparisonOperators = new Dictionary<string, string>
+        // Applies to non strings.
+        public static readonly Dictionary<string, string> NonStringValueComparisonOperators = new()
         {
             { "_gt", "is greater than" },
             { "_gte", "is greater than or equal" },
@@ -40,8 +40,8 @@ namespace OrchardCore.Apis.GraphQL.Queries
             { "_lte", "is less than or equal" }
         };
 
-        // Applies to strings
-        public static Dictionary<string, string> StringComparisonOperators = new Dictionary<string, string>
+        // Applies to strings.
+        public static readonly Dictionary<string, string> StringComparisonOperators = new()
         {
             {"_contains", "contains the string"},
             {"_not_contains", "does not contain the string"},
