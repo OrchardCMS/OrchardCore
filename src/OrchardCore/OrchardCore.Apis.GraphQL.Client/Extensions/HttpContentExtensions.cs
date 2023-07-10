@@ -13,8 +13,10 @@ namespace OrchardCore.Apis.GraphQL.Client
             using var stream = await content.ReadAsStreamAsync();
             using var reader = new StreamReader(stream);
             using var jsonReader = new JsonTextReader(reader);
+
             var ser = new JsonSerializer();
             ser.Converters.Insert(0, jsonConverter);
+
             return ser.Deserialize<T>(jsonReader);
         }
 
@@ -28,6 +30,7 @@ namespace OrchardCore.Apis.GraphQL.Client
         {
             using var reader = new StreamReader(stream);
             using var jsonReader = new JsonTextReader(reader);
+
             var jsonSerializer = new JsonSerializer
             {
                 NullValueHandling = NullValueHandling.Ignore,
