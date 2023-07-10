@@ -96,7 +96,7 @@ namespace OrchardCore.Localization.PortableObject
                 }
             }
 
-            return sb == null ? str : sb.ToString();
+            return sb?.ToString() ?? str;
         }
 
         private static string TrimQuote(string str)
