@@ -13,7 +13,7 @@ namespace OrchardCore.DisplayManagement.Theming
     /// </summary>
     public class ThemingViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeature>
     {
-        public static string ThemeLayoutFileName = "DefaultOrchardCoreThemingLayout" + RazorViewEngine.ViewExtension;
+        public static readonly string ThemeLayoutFileName = "DefaultOrchardCoreThemingLayout" + RazorViewEngine.ViewExtension;
 
         public ThemingViewsFeatureProvider()
         {

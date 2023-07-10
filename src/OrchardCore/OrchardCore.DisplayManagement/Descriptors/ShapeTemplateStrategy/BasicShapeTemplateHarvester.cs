@@ -23,10 +23,10 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
             }
             else
             {
-                var displayType = info.FileName.Substring(lastDot + 1);
+                var displayType = info.FileName[(lastDot + 1)..];
                 yield return new HarvestShapeHit
                 {
-                    ShapeType = Adjust(info.SubPath, info.FileName.Substring(0, lastDot), displayType),
+                    ShapeType = Adjust(info.SubPath, info.FileName[..lastDot], displayType),
                     DisplayType = displayType
                 };
             }
@@ -37,24 +37,25 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
             var leader = "";
             if (subPath.StartsWith("Views/", StringComparison.Ordinal) && subPath != "Views/Items")
             {
-                leader = subPath.Substring("Views/".Length) + "_";
+                leader = subPath["Views/".Length..] + "_";
             }
 
             // canonical shape type names must not have - or . to be compatible
             // with display and shape api calls)))
             var shapeType = leader + fileName.Replace("--", "__").Replace("-", "__").Replace('.', '_');
 
-            if (string.IsNullOrEmpty(displayType))
+            if (String.IsNullOrEmpty(displayType))
             {
                 return shapeType.ToLowerInvariant();
             }
+
             var firstBreakingSeparator = shapeType.IndexOf("__", StringComparison.Ordinal);
             if (firstBreakingSeparator <= 0)
             {
                 return (shapeType + "_" + displayType).ToLowerInvariant();
             }
 
-            return (shapeType.Substring(0, firstBreakingSeparator) + "_" + displayType + shapeType.Substring(firstBreakingSeparator)).ToLowerInvariant();
+            return (shapeType[..firstBreakingSeparator] + "_" + displayType + shapeType[firstBreakingSeparator..]).ToLowerInvariant();
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
@@ -7,7 +8,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 {
     public class Composite : DynamicObject
     {
-        protected readonly Dictionary<string, object> _properties = new Dictionary<string, object>();
+        protected readonly Dictionary<string, object> _properties = new();
 
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
@@ -43,7 +44,7 @@ namespace OrchardCore.DisplayManagement.Shapes
                 return TryGetMemberImpl(binder.Name, out result);
             }
 
-            // method call with one argument will assign the property
+            // Method call with one argument will assign the property.
             if (args.Length == 1)
             {
                 result = this;
@@ -54,7 +55,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             {
                 if (binder.Name == "ToString")
                 {
-                    result = string.Empty;
+                    result = String.Empty;
                     return true;
                 }
 
@@ -116,7 +117,9 @@ namespace OrchardCore.DisplayManagement.Shapes
             get { return _properties; }
         }
 
+#pragma warning disable IDE0060 // Remove unused parameter
         public static bool operator ==(Composite a, Nil b)
+#pragma warning restore IDE0060 // Remove unused parameter
         {
             return null == a;
         }
@@ -133,18 +136,21 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
+            if (obj is null)
             {
                 return false;
             }
+
             if (ReferenceEquals(this, obj))
             {
                 return true;
             }
-            if (obj.GetType() != this.GetType())
+
+            if (obj.GetType() != GetType())
             {
                 return false;
             }
+
             return Equals((Composite)obj);
         }
 
@@ -156,8 +162,8 @@ namespace OrchardCore.DisplayManagement.Shapes
 
     public class Nil : DynamicObject
     {
-        private static readonly Nil Singleton = new Nil();
-        public static Nil Instance { get { return Singleton; } }
+        private static readonly Nil _singleton = new();
+        public static Nil Instance { get { return _singleton; } }
 
         private Nil()
         {
@@ -186,16 +192,17 @@ namespace OrchardCore.DisplayManagement.Shapes
             switch (binder.Operation)
             {
                 case ExpressionType.Equal:
-                    result = ReferenceEquals(arg, Nil.Instance) || (object)arg == null;
+                    result = ReferenceEquals(arg, Nil.Instance) || arg == null;
                     return true;
                 case ExpressionType.NotEqual:
-                    result = !ReferenceEquals(arg, Nil.Instance) && (object)arg != null;
+                    result = !ReferenceEquals(arg, Nil.Instance) && arg != null;
                     return true;
             }
 
             return base.TryBinaryOperation(binder, arg, out result);
         }
 
+#pragma warning disable IDE0060 // Remove unused parameter
         public static bool operator ==(Nil a, Nil b)
         {
             return true;
@@ -205,10 +212,11 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             return false;
         }
+#pragma warning restore IDE0060 // Remove unused parameter
 
         public static bool operator ==(Nil a, object b)
         {
-            return ReferenceEquals(a, b) || (object)b == null;
+            return ReferenceEquals(a, b) || b == null;
         }
 
         public static bool operator !=(Nil a, object b)
@@ -239,7 +247,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public override string ToString()
         {
-            return string.Empty;
+            return String.Empty;
         }
     }
 }

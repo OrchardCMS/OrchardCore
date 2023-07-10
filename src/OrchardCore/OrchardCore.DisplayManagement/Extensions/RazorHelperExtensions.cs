@@ -2,6 +2,8 @@ using System.Globalization;
 using OrchardCore;
 using OrchardCore.Localization;
 
+#pragma warning disable CA1050 // Declare types in namespaces
+#pragma warning disable IDE0060 // Remove unused parameter
 public static class RazorHelperExtensions
 {
     /// <summary>
@@ -21,3 +23,5 @@ public static class RazorHelperExtensions
         return CultureInfo.CurrentUICulture.Name;
     }
 }
+#pragma warning restore IDE0060 // Remove unused parameter
+#pragma warning restore CA1050 // Declare types in namespaces
