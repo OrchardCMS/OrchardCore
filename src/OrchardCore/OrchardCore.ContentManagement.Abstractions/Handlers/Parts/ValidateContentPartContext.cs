@@ -1,9 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata.Models;
 
-#pragma warning disable CA1050 // Declare types in namespaces
+namespace OrchardCore.ContentManagement.Handlers;
+
 public class ValidateContentPartContext : ValidateContentContext
 {
     public ValidateContentPartContext(ContentItem contentItem)
@@ -35,4 +34,3 @@ public static class ValidateContentPartContextExtensions
         }
     }
 }
-#pragma warning restore CA1050 // Declare types in namespaces

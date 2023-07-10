@@ -8,7 +8,7 @@ namespace OrchardCore.ContentManagement
     {
         private readonly JsonLoadSettings _jsonLoadSettings = new()
         {
-            LineInfoHandling = LineInfoHandling.Ignore // defaults to loading which allocates quite a lot.
+            LineInfoHandling = LineInfoHandling.Ignore // Defaults to loading which allocates quite a lot.
         };
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
