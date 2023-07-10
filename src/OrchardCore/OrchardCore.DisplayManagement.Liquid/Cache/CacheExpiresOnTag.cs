@@ -14,7 +14,9 @@ namespace OrchardCore.DynamicCache.Liquid
 {
     public class CacheExpiresOnTag
     {
+#pragma warning disable IDE0060 // Remove unused parameter
         public static async ValueTask<Completion> WriteToAsync(Expression argument, TextWriter writer, TextEncoder encoder, TemplateContext context)
+#pragma warning restore IDE0060 // Remove unused parameter
         {
             var services = ((LiquidTemplateContext)context).Services;
 
@@ -25,9 +27,8 @@ namespace OrchardCore.DynamicCache.Liquid
                 return Completion.Normal;
             }
 
-            var value = DateTimeOffset.MinValue;
+            DateTimeOffset value;
             var input = await argument.EvaluateAsync(context);
-
             if (input.Type == FluidValues.String)
             {
                 var stringValue = input.ToStringValue();

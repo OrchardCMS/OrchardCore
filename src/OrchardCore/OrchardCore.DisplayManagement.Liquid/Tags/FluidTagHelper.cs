@@ -15,7 +15,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class FluidTagHelper
     {
-        public static Dictionary<string, string> DefaultArgumentsMapping = new Dictionary<string, string>();
+        public static readonly Dictionary<string, string> DefaultArgumentsMapping = new();
         private static long _uniqueId;
 
         public static ValueTask<Completion> WriteArgumentsTagHelperAsync(List<FilterArgument> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
@@ -79,7 +79,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 }
             }
 
-            Interlocked.CompareExchange(ref _uniqueId, long.MaxValue, 0);
+            Interlocked.CompareExchange(ref _uniqueId, Int64.MaxValue, 0);
             var id = Interlocked.Increment(ref _uniqueId);
 
             var tagHelperContext = new TagHelperContext(contextAttributes, new Dictionary<object, object>(), id.ToString());

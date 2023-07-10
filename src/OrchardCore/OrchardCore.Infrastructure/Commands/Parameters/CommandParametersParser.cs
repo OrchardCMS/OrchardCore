@@ -17,13 +17,13 @@ namespace OrchardCore.Environment.Commands.Parameters
                 // Switch?
                 if (arg[0] == '/')
                 {
-                    int index = arg.IndexOf(':');
-                    var switchName = (index < 0 ? arg.Substring(1) : arg.Substring(1, index - 1));
-                    var switchValue = (index < 0 || index >= arg.Length ? string.Empty : arg.Substring(index + 1));
+                    var index = arg.IndexOf(':');
+                    var switchName = index < 0 ? arg[1..] : arg[1..index];
+                    var switchValue = index < 0 || index >= arg.Length ? String.Empty : arg[(index + 1)..];
 
-                    if (string.IsNullOrEmpty(switchName))
+                    if (String.IsNullOrEmpty(switchName))
                     {
-                        throw new ArgumentException(string.Format("Invalid switch syntax: \"{0}\". Valid syntax is /<switchName>[:<switchValue>].", arg));
+                        throw new ArgumentException(String.Format("Invalid switch syntax: \"{0}\". Valid syntax is /<switchName>[:<switchValue>].", arg));
                     }
 
                     switches.Add(switchName, switchValue);

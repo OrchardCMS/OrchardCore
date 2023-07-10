@@ -11,7 +11,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class ShapeAddPropertyTag
     {
+#pragma warning disable IDE0060 // Remove unused parameter
         public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, List<FilterArgument>> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
+#pragma warning restore IDE0060 // Remove unused parameter
         {
             var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
 
