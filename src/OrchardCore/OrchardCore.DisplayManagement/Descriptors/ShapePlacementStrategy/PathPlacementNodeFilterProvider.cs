@@ -64,9 +64,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
             }
         }
 
-        private static string AppendTrailingSlash(string path)
-        {
-            return path.EndsWith('/') ? path : path + "/";
-        }
+        private static string AppendTrailingSlash(string path) => path.EndsWith('/') ? path : path + "/";
     }
 }

@@ -61,7 +61,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
                 return Location[(contentDelimiter + 1)..];
             }
 
-            return Location.Substring(contentDelimiter + 1, secondDelimiter - contentDelimiter - 1);
+            return Location[(contentDelimiter + 1)..secondDelimiter];
         }
 
         public string GetTab()
@@ -78,7 +78,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
                 return Location[(tabDelimiter + 1)..];
             }
 
-            return Location.Substring(tabDelimiter + 1, nextDelimiter - tabDelimiter - 1);
+            return Location[(tabDelimiter + 1)..nextDelimiter];
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
                 return Location[(groupDelimiter + 1)..];
             }
 
-            return Location.Substring(groupDelimiter + 1, nextDelimiter - groupDelimiter - 1);
+            return Location[(groupDelimiter + 1)..nextDelimiter];
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
                 return Location[(cardDelimiter + 1)..];
             }
 
-            return Location.Substring(cardDelimiter + 1, nextDelimiter - cardDelimiter - 1);
+            return Location[(cardDelimiter + 1)..nextDelimiter];
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
                 return Location[(colDelimeter + 1)..];
             }
 
-            return Location.Substring(colDelimeter + 1, nextDelimiter - colDelimeter - 1);
+            return Location[(colDelimeter + 1)..nextDelimiter];
         }
     }
 }
