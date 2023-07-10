@@ -29,22 +29,6 @@ namespace OrchardCore.Localization.PortableObject
         /// <inheritdocs />
         public IHtmlLocalizer Create(string baseName, string location)
         {
-            var index = 0;
-            if (baseName.StartsWith(location, StringComparison.OrdinalIgnoreCase))
-            {
-                index = location.Length;
-            }
-
-            if (baseName.Length > index && baseName[index] == '.')
-            {
-                index += 1;
-            }
-
-            if (baseName.Length > index && baseName.IndexOf("Areas.", index, StringComparison.Ordinal) == index)
-            {
-                index += "Areas.".Length;
-            }
-
             return new PortableObjectHtmlLocalizer(_stringLocalizerFactory.Create(baseName, location));
         }
     }

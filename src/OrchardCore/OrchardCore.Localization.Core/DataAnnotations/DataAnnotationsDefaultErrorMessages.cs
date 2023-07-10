@@ -7,12 +7,11 @@ namespace OrchardCore.Localization.DataAnnotations
     /// </summary>
     internal sealed class DataAnnotationsDefaultErrorMessages
     {
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S = null;
+#pragma warning restore IDE1006 // Naming Styles
 
-        private DataAnnotationsDefaultErrorMessages()
-        {
-
-        }
+        private DataAnnotationsDefaultErrorMessages() { }
 
         public string AssociatedMetadataTypeTypeDescriptorMetadataTypeContainsUnknownProperties => S["The associated metadata type for type '{0}' contains the following unknown properties or fields: {1}. Please make sure that the names of these members match the names of the properties on the main type."];
 
