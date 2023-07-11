@@ -11,13 +11,13 @@ namespace OrchardCore.Mvc.LocationExpander
 {
     public class ComponentViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
-        private static readonly string SharedViewsPath = "/Views/Shared/{0}" + RazorViewEngine.ViewExtension;
-        private static readonly string SharedPagesPath = "/Pages/Shared/{0}" + RazorViewEngine.ViewExtension;
-        private static readonly string[] RazorExtensions = new[] { RazorViewEngine.ViewExtension };
+        private static readonly string _sharedViewsPath = "/Views/Shared/{0}" + RazorViewEngine.ViewExtension;
+        private static readonly string _sharedPagesPath = "/Pages/Shared/{0}" + RazorViewEngine.ViewExtension;
+        private static readonly string[] _razorExtensions = new[] { RazorViewEngine.ViewExtension };
         private const string CacheKey = "ModuleComponentViewLocations";
         private static List<IExtensionInfo> _modulesWithComponentViews;
         private static List<IExtensionInfo> _modulesWithPagesComponentViews;
-        private static object _synLock = new object();
+        private static readonly object _synLock = new();
         private static bool _initialized;
 
         private readonly IExtensionManager _extensionManager;
@@ -53,7 +53,7 @@ namespace OrchardCore.Mvc.LocationExpander
                     foreach (var module in orderedModules)
                     {
                         var moduleComponentsViewFilePaths = fileProviderAccessor.FileProvider.GetViewFilePaths(
-                            module.SubPath + "/Views/Shared/Components", RazorExtensions,
+                            module.SubPath + "/Views/Shared/Components", _razorExtensions,
                             viewsFolder: null, inViewsFolder: true, inDepth: true);
 
                         if (moduleComponentsViewFilePaths.Any())
@@ -62,7 +62,7 @@ namespace OrchardCore.Mvc.LocationExpander
                         }
 
                         var modulePagesComponentsViewFilePaths = fileProviderAccessor.FileProvider.GetViewFilePaths(
-                            module.SubPath + "/Pages/Shared/Components", RazorExtensions,
+                            module.SubPath + "/Pages/Shared/Components", _razorExtensions,
                             viewsFolder: null, inViewsFolder: true, inDepth: true);
 
                         if (modulePagesComponentsViewFilePaths.Any())
@@ -112,10 +112,10 @@ namespace OrchardCore.Mvc.LocationExpander
 
                     moduleComponentViewLocations = _modulesWithComponentViews
                         .Where(m => enabledExtensionIds.Contains(m.Id))
-                        .Select(m => '/' + m.SubPath + SharedViewsPath)
+                        .Select(m => '/' + m.SubPath + _sharedViewsPath)
                         .Concat(_modulesWithPagesComponentViews
                         .Where(m => enabledExtensionIds.Contains(m.Id))
-                        .Select(m => '/' + m.SubPath + SharedPagesPath))
+                        .Select(m => '/' + m.SubPath + _sharedPagesPath))
                         .ToArray();
 
                     _memoryCache.Set(CacheKey, moduleComponentViewLocations);
