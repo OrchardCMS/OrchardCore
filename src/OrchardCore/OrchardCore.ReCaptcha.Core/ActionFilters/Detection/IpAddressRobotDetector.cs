@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using OrchardCore.ReCaptcha.Configuration;
@@ -9,15 +10,15 @@ namespace OrchardCore.ReCaptcha.ActionFilters.Detection
         private const string IpAddressAbuseDetectorCacheKey = "IpAddressRobotDetector";
 
         private readonly IMemoryCache _memoryCache;
-        private readonly IOrchardHelper _orchardHelper;
+        private readonly IClientIpAddressAccessor _clientIpAddressAccessor;
         private readonly ReCaptchaSettings _settings;
 
         public IpAddressRobotDetector(
-            IOrchardHelper orchardHelper,
+            IClientIpAddressAccessor clientIpAddressAccessor,
             IMemoryCache memoryCache,
             IOptions<ReCaptchaSettings> settingsAccessor)
         {
-            _orchardHelper = orchardHelper;
+            _clientIpAddressAccessor = clientIpAddressAccessor;
             _memoryCache = memoryCache;
             _settings = settingsAccessor.Value;
         }
@@ -30,7 +31,9 @@ namespace OrchardCore.ReCaptcha.ActionFilters.Detection
 
         private string GetIpAddressCacheKey()
         {
-            return $"{IpAddressAbuseDetectorCacheKey}:{_orchardHelper.GetClientIpAddress()}";
+            var address = _clientIpAddressAccessor.GetIpAddressAsync().GetAwaiter().GetResult();
+
+            return $"{IpAddressAbuseDetectorCacheKey}:{address?.ToString() ?? String.Empty}";
         }
 
         public RobotDetectionResult DetectRobot()

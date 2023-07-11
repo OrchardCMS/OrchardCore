@@ -31,7 +31,7 @@ namespace OrchardCore.AuditTrail.Services
         private readonly ILookupNormalizer _keyNormalizer;
         private readonly IAuditTrailIdGenerator _auditTrailIdGenerator;
         private readonly IEnumerable<IAuditTrailEventHandler> _auditTrailEventHandlers;
-        private readonly IOrchardHelper _orchardHelper;
+        private readonly IClientIpAddressAccessor _clientIpAddressAccessor;
         private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
@@ -43,7 +43,7 @@ namespace OrchardCore.AuditTrail.Services
             IHttpContextAccessor httpContextAccessor,
             ILookupNormalizer keyNormalizer,
             IEnumerable<IAuditTrailEventHandler> auditTrailEventHandlers,
-            IOrchardHelper orchardHelper,
+            IClientIpAddressAccessor clientIpAddressAccessor,
             IAuditTrailIdGenerator auditTrailIdGenerator,
             ShellSettings shellSettings,
             ILogger<AuditTrailManager> logger)
@@ -55,7 +55,7 @@ namespace OrchardCore.AuditTrail.Services
             _httpContextAccessor = httpContextAccessor;
             _keyNormalizer = keyNormalizer;
             _auditTrailEventHandlers = auditTrailEventHandlers;
-            _orchardHelper = orchardHelper;
+            _clientIpAddressAccessor = clientIpAddressAccessor;
             _auditTrailIdGenerator = auditTrailIdGenerator;
             _shellSettings = shellSettings;
             _logger = logger;
@@ -166,7 +166,7 @@ namespace OrchardCore.AuditTrail.Services
                 return null;
             }
 
-            return _orchardHelper.GetClientIpAddress()?.ToString();
+            return (await _clientIpAddressAccessor.GetIpAddressAsync())?.ToString();
         }
 
         private async Task<AuditTrailSettings> GetAuditTrailSettingsAsync() =>
