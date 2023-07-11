@@ -32,7 +32,7 @@ namespace OrchardCore.Recipes
 
                     var value = variable.Value<string>();
 
-                    // Replace variable value while the result returns another script
+                    // Replace variable value while the result returns another script.
                     while (value.StartsWith('[') && value.EndsWith(']'))
                     {
                         value = value.Trim('[', ']');
@@ -45,7 +45,7 @@ namespace OrchardCore.Recipes
             };
         }
 
-        public IScriptingManager ScriptingManager => ShellScope.Services.GetRequiredService<IScriptingManager>();
+        public static IScriptingManager ScriptingManager => ShellScope.Services.GetRequiredService<IScriptingManager>();
 
         public IEnumerable<GlobalMethod> GetMethods()
         {

@@ -464,10 +464,10 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     elasticTopDocs.Count = searchResponse.Hits.Count;
 
                     var topDocs = new List<Dictionary<string, object>>();
-                    
+
                     var documents = searchResponse.Documents.GetEnumerator();
                     var hits = searchResponse.Hits.GetEnumerator();
-                    
+
                     while (documents.MoveNext() && hits.MoveNext())
                     {
                         var document = documents.Current;
@@ -612,6 +612,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             }
 
             _disposing = true;
+
+            GC.SuppressFinalize(this);
         }
 
         ~ElasticIndexManager()

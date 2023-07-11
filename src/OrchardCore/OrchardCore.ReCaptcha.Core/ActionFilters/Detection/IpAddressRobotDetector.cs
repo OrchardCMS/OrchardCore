@@ -51,7 +51,7 @@ namespace OrchardCore.ReCaptcha.ActionFilters.Detection
         {
             var ipAddressKey = GetIpAddressCacheKey();
 
-            // this has race conditions, but it's ok
+            // This has race conditions, but it's ok.
             var faultyRequestCount = _memoryCache.GetOrCreate(ipAddressKey, fact => 0);
             faultyRequestCount++;
             _memoryCache.Set(ipAddressKey, faultyRequestCount);

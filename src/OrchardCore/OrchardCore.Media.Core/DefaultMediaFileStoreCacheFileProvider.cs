@@ -48,7 +48,7 @@ namespace OrchardCore.Media.Core
         public async Task SetCacheAsync(Stream stream, IFileStoreEntry fileStoreEntry, CancellationToken cancellationToken)
         {
             // File store semantics include a leading slash.
-            var cachePath = Path.Combine(Root, fileStoreEntry.Path.Substring(1));
+            var cachePath = Path.Combine(Root, fileStoreEntry.Path[1..]);
             var directory = Path.GetDirectoryName(cachePath);
 
             if (!Directory.Exists(directory))
@@ -64,15 +64,14 @@ namespace OrchardCore.Media.Core
                 {
                     File.Delete(cachePath);
                 }
-                using (var fileStream = File.Create(cachePath))
-                {
-                    await stream.CopyToAsync(fileStream, StreamCopyBufferSize);
-                    await stream.FlushAsync();
 
-                    if (fileStream.Length == 0)
-                    {
-                        throw new Exception($"Error retrieving file (length equals 0 byte) : {cachePath}");
-                    }
+                using var fileStream = File.Create(cachePath);
+                await stream.CopyToAsync(fileStream, StreamCopyBufferSize, CancellationToken.None);
+                await stream.FlushAsync(CancellationToken.None);
+
+                if (fileStream.Length == 0)
+                {
+                    throw new Exception($"Error retrieving file (length equals 0 byte) : {cachePath}");
                 }
             }
             catch (Exception ex)

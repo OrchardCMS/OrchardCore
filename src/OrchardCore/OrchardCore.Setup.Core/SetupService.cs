@@ -30,7 +30,9 @@ namespace OrchardCore.Setup.Services
         private readonly ISetupUserIdGenerator _setupUserIdGenerator;
         private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
         private readonly ILogger _logger;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
         private readonly IHostApplicationLifetime _applicationLifetime;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IDbConnectionValidator _dbConnectionValidator;

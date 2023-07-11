@@ -79,7 +79,9 @@ namespace OrchardCore.Workflows.Models
             return Activities[activityId];
         }
 
+#pragma warning disable IDE0060 // Remove unused parameter
         public void Fault(Exception exception, ActivityContext activityContext)
+#pragma warning restore IDE0060 // Remove unused parameter
         {
             Workflow.Status = WorkflowStatus.Faulted;
             Workflow.FaultMessage = exception.Message;

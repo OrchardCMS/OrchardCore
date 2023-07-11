@@ -9,7 +9,9 @@ namespace OrchardCore.Notifications.Services;
 public class EmailNotificationProvider : INotificationMethodProvider
 {
     private readonly ISmtpService _smtpService;
+#pragma warning disable IDE1006 // Naming Styles
     private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
     public EmailNotificationProvider(
         ISmtpService smtpService,

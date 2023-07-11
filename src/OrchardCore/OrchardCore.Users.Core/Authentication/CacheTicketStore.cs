@@ -95,9 +95,9 @@ public class CacheTicketStore : ITicketStore
         }
     }
 
-    private byte[] SerializeTicket(AuthenticationTicket source)
+    private static byte[] SerializeTicket(AuthenticationTicket source)
         => TicketSerializer.Default.Serialize(source);
 
-    private AuthenticationTicket DeserializeTicket(byte[] source)
+    private static AuthenticationTicket DeserializeTicket(byte[] source)
         => source == null ? null : TicketSerializer.Default.Deserialize(source);
 }

@@ -151,15 +151,15 @@ namespace OrchardCore.Media.Core
                     foreach (var mediaCreatingEventHandler in _mediaCreatingEventHandlers)
                     {
                         // Creating stream disposed by using.
-                        using (var creatingStream = outputStream)
-                        {
-                            // Stop disposal of inputStream, as creating stream is the object to dispose.
-                            inputStream = null;
-                            // Outputstream must be created by event handler.
-                            outputStream = null;
+                        using var creatingStream = outputStream;
 
-                            outputStream = await mediaCreatingEventHandler.MediaCreatingAsync(context, creatingStream);
-                        }
+                        // Stop disposal of inputStream, as creating stream is the object to dispose.
+                        inputStream = null;
+
+                        // Outputstream must be created by event handler.
+                        outputStream = null;
+
+                        outputStream = await mediaCreatingEventHandler.MediaCreatingAsync(context, creatingStream);
                     }
 
                     return await _fileStore.CreateFileFromStreamAsync(context.Path, outputStream, overwrite);

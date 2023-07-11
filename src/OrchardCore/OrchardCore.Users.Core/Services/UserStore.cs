@@ -62,6 +62,7 @@ namespace OrchardCore.Users.Services
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
         }
 
         public string NormalizeKey(string key)
