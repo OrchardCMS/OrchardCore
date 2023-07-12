@@ -65,6 +65,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 if (node.PermissionNames.Any())
                 {
                     var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
+
                     // Find the actual permissions and apply them to the menu.
                     var selectedPermissions = permissions.Where(p => node.PermissionNames.Contains(p.Name));
                     itemBuilder.Permissions(selectedPermissions);
