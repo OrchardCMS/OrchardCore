@@ -35,9 +35,12 @@ namespace OrchardCore.Demo.Controllers
 
         public IActionResult Create()
         {
-            var viewModel = new TodoViewModel();
-            viewModel.TodoId = _idGenerator.GenerateUniqueId();
-            viewModel.DisplayMode = "Edit";
+            var viewModel = new TodoViewModel
+            {
+                TodoId = _idGenerator.GenerateUniqueId(),
+                DisplayMode = "Edit"
+            };
+
             return View(nameof(Edit), viewModel);
         }
 
@@ -73,10 +76,7 @@ namespace OrchardCore.Demo.Controllers
                     .Where(m => m.TodoId == viewModel.TodoId)
                     .FirstOrDefault();
 
-                if (model == null)
-                {
-                    model = new TodoModel() { TodoId = viewModel.TodoId };
-                }
+                model ??= new TodoModel() { TodoId = viewModel.TodoId };
 
                 model.Text = viewModel.Text;
                 model.DueDate = viewModel.DueDate;

@@ -12,7 +12,9 @@ namespace OrchardCore.Forms.Drivers
 {
     public class FormInputElementPartDisplayDriver : ContentPartDisplayDriver<FormInputElementPart>
     {
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public FormInputElementPartDisplayDriver(IStringLocalizer<FormInputElementPartDisplayDriver> stringLocalizer)
         {

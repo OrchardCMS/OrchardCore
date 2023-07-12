@@ -26,7 +26,9 @@ namespace OrchardCore.Contents
         private readonly LinkGenerator _linkGenerator;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public AdminMenu(
             IContentDefinitionManager contentDefinitionManager,

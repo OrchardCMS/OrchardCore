@@ -11,7 +11,9 @@ namespace OrchardCore.ContentTypes.Editors
 {
     public class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public ContentTypeSettingsDisplayDriver(IStringLocalizer<ContentTypeSettingsDisplayDriver> stringLocalizer)
         {
@@ -66,11 +68,11 @@ namespace OrchardCore.ContentTypes.Editors
                 return true;
             }
 
-            var startWithLetter = char.IsLetter(value[0]);
+            var startWithLetter = Char.IsLetter(value[0]);
 
             return value.Length == 1
                 ? startWithLetter
-                : startWithLetter && value.Skip(1).All(c => char.IsLetterOrDigit(c));
+                : startWithLetter && value.Skip(1).All(c => Char.IsLetterOrDigit(c));
         }
     }
 }

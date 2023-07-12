@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
@@ -10,16 +8,9 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
 {
     public class AuditTrailContentsDriver : ContentDisplayDriver
     {
-        // TODO what permission are we looking for here?
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAuthorizationService _authorizationService;
-
-        public AuditTrailContentsDriver(
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+        // TODO: What permission are we looking for here?
+        public AuditTrailContentsDriver()
         {
-            _httpContextAccessor = httpContextAccessor;
-            _authorizationService = authorizationService;
         }
 
         public override IDisplayResult Display(ContentItem contentItem, IUpdateModel updater)

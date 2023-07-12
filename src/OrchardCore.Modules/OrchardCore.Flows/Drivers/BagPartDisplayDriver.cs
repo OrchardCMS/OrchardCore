@@ -32,7 +32,9 @@ namespace OrchardCore.Flows.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
         private readonly INotifier _notifier;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IHtmlLocalizer H;
+#pragma warning restore IDE1006 // Naming Styles
         private readonly IAuthorizationService _authorizationService;
 
         public BagPartDisplayDriver(
@@ -78,7 +80,7 @@ namespace OrchardCore.Flows.Drivers
 
                 m.BagPart = bagPart;
                 m.Updater = context.Updater;
-                m.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(contentDefinitionManager, context.TypePartDefinition);
+                m.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(context.TypePartDefinition);
                 m.AccessibleWidgets = await GetAccessibleWidgetsAsync(bagPart.ContentItems, contentDefinitionManager);
             });
         }
@@ -230,7 +232,7 @@ namespace OrchardCore.Flows.Drivers
             return settings?.Securable ?? false;
         }
 
-        private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(IContentDefinitionManager contentDefinitionManager, ContentTypePartDefinition typePartDefinition)
+        private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ContentTypePartDefinition typePartDefinition)
         {
             var settings = typePartDefinition.GetSettings<BagPartSettings>();
             var contentTypes = Enumerable.Empty<ContentTypeDefinition>();

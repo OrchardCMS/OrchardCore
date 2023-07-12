@@ -38,10 +38,13 @@ namespace OrchardCore.Demo.Pages
             _session = session;
         }
 
+#pragma warning disable IDE0060 // Remove unused parameter
         public async Task OnGetAsync(string contentItemId)
+#pragma warning restore IDE0060 // Remove unused parameter
         {
             var query = _session.Query<ContentItem, ContentItemIndex>()
                 .With<ContentItemIndex>(x => x.ContentType == "Foo" && x.Published);
+
             var contentItems = await query.ListAsync();
             var updater = _updateModelAccessor.ModelUpdater;
 

@@ -7,7 +7,9 @@ namespace OrchardCore.Contents.Liquid
 {
     public static class DisplayTextFilter
     {
+#pragma warning disable IDE0060 // Remove unused parameter
         public static ValueTask<FluidValue> DisplayText(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+#pragma warning restore IDE0060 // Remove unused parameter
         {
             var contentItem = input.ToObjectValue() as ContentItem;
 

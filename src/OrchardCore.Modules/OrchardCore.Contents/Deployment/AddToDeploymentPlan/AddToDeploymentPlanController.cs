@@ -24,7 +24,9 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
         private readonly ISession _session;
         private readonly IEnumerable<IDeploymentStepFactory> _factories;
         private readonly INotifier _notifier;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IHtmlLocalizer H;
+#pragma warning restore IDE1006 // Naming Styles
 
         public AddToDeploymentPlanController(
             IAuthorizationService authorizationService,

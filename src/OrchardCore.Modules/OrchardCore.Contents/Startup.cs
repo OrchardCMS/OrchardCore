@@ -125,7 +125,7 @@ namespace OrchardCore.Contents
 
                 o.MemberAccessStrategy.Register<LiquidContentAccessor, FluidValue>((obj, name, context) => GetContentByHandleAsync((LiquidTemplateContext)context, name));
 
-                async Task<FluidValue> GetContentByHandleAsync(LiquidTemplateContext context, string handle, bool latest = false)
+                static async Task<FluidValue> GetContentByHandleAsync(LiquidTemplateContext context, string handle, bool latest = false)
                 {
                     var contentHandleManager = context.Services.GetRequiredService<IContentHandleManager>();
 

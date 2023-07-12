@@ -27,8 +27,10 @@ namespace OrchardCore.ContentTypes.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IDocumentStore _documentStore;
         private readonly IContentDefinitionDisplayManager _contentDefinitionDisplayManager;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
@@ -94,7 +96,7 @@ namespace OrchardCore.ContentTypes.Controllers
             }
 
             viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? String.Empty;
-            viewModel.Name = viewModel.Name ?? String.Empty;
+            viewModel.Name ??= String.Empty;
 
             if (String.IsNullOrWhiteSpace(viewModel.DisplayName))
             {
@@ -249,7 +251,7 @@ namespace OrchardCore.ContentTypes.Controllers
             {
                 Type = typeViewModel,
                 PartSelections = _contentDefinitionService.GetParts(metadataPartsOnly: false)
-                    .Where(cpd => !typePartNames.Contains(cpd.Name, StringComparer.OrdinalIgnoreCase) && cpd.PartDefinition != null ? cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable : false)
+                    .Where(cpd => !typePartNames.Contains(cpd.Name, StringComparer.OrdinalIgnoreCase) && cpd.PartDefinition != null && cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable)
                     .Select(cpd => new PartSelectionViewModel { PartName = cpd.Name, PartDisplayName = cpd.DisplayName, PartDescription = cpd.Description })
                     .ToList()
             };
@@ -272,9 +274,9 @@ namespace OrchardCore.ContentTypes.Controllers
             }
 
             var reusableParts = _contentDefinitionService.GetParts(metadataPartsOnly: false)
-                    .Where(cpd => cpd.PartDefinition != null ?
-                        (cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable &&
-                        cpd.PartDefinition.GetSettings<ContentPartSettings>().Reusable) : false);
+                    .Where(cpd => cpd.PartDefinition != null &&
+                        cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable &&
+                        cpd.PartDefinition.GetSettings<ContentPartSettings>().Reusable);
 
             var viewModel = new AddReusablePartViewModel
             {
@@ -457,7 +459,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return Forbid();
             }
 
-            viewModel.Name = viewModel.Name ?? String.Empty;
+            viewModel.Name ??= String.Empty;
 
             if (String.IsNullOrWhiteSpace(viewModel.Name))
             {
@@ -516,8 +518,10 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var viewModel = new EditPartViewModel(contentPartDefinition);
-            viewModel.Editor = await _contentDefinitionDisplayManager.BuildPartEditorAsync(contentPartDefinition, _updateModelAccessor.ModelUpdater);
+            var viewModel = new EditPartViewModel(contentPartDefinition)
+            {
+                Editor = await _contentDefinitionDisplayManager.BuildPartEditorAsync(contentPartDefinition, _updateModelAccessor.ModelUpdater)
+            };
 
             return View(viewModel);
         }
@@ -538,8 +542,10 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var viewModel = new EditPartViewModel(contentPartDefinition);
-            viewModel.Editor = await _contentDefinitionDisplayManager.UpdatePartEditorAsync(contentPartDefinition, _updateModelAccessor.ModelUpdater);
+            var viewModel = new EditPartViewModel(contentPartDefinition)
+            {
+                Editor = await _contentDefinitionDisplayManager.UpdatePartEditorAsync(contentPartDefinition, _updateModelAccessor.ModelUpdater)
+            };
 
             if (!ModelState.IsValid)
             {

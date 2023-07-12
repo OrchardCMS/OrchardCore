@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -12,7 +13,9 @@ namespace OrchardCore.Contents.Settings
     public class FullTextAspectSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
         private readonly ILiquidTemplateManager _templateManager;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public FullTextAspectSettingsDisplayDriver(
             ILiquidTemplateManager templateManager,
@@ -45,9 +48,12 @@ namespace OrchardCore.Contents.Settings
                 m => m.IncludeDisplayText,
                 m => m.IncludeBodyAspect);
 
-            if (!string.IsNullOrEmpty(model.FullTextTemplate) && !_templateManager.Validate(model.FullTextTemplate, out var errors))
+            if (!String.IsNullOrEmpty(model.FullTextTemplate) && !_templateManager.Validate(model.FullTextTemplate, out var errors))
             {
-                context.Updater.ModelState.AddModelError(nameof(model.FullTextTemplate), S["Full-text doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                context.Updater.ModelState.AddModelError(
+                    nameof(model.FullTextTemplate),
+                    S["Full-text doesn't contain a valid Liquid expression. Details: {0}",
+                    String.Join(" ", errors)]);
             }
             else
             {

@@ -13,13 +13,15 @@ namespace OrchardCore.Forms.Drivers
 {
     public class SelectPartDisplayDriver : ContentPartDisplayDriver<SelectPart>
     {
-        private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
+        private static readonly JsonSerializerSettings _serializerSettings = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             Formatting = Formatting.Indented
         };
 
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public SelectPartDisplayDriver(IStringLocalizer<SelectPartDisplayDriver> stringLocalizer)
         {
@@ -35,7 +37,7 @@ namespace OrchardCore.Forms.Drivers
         {
             return Initialize<SelectPartEditViewModel>("SelectPart_Fields_Edit", m =>
             {
-                m.Options = JsonConvert.SerializeObject(part.Options ?? Array.Empty<SelectOption>(), SerializerSettings);
+                m.Options = JsonConvert.SerializeObject(part.Options ?? Array.Empty<SelectOption>(), _serializerSettings);
                 m.DefaultValue = part.DefaultValue;
                 m.Editor = part.Editor;
             });
