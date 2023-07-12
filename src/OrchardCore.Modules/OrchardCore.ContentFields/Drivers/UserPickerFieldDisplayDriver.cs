@@ -21,7 +21,9 @@ namespace OrchardCore.ContentFields.Drivers
     public class UserPickerFieldDisplayDriver : ContentFieldDisplayDriver<UserPickerField>
     {
         private readonly ISession _session;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public UserPickerFieldDisplayDriver(
             ISession session,
@@ -47,7 +49,7 @@ namespace OrchardCore.ContentFields.Drivers
         {
             return Initialize<EditUserPickerFieldViewModel>(GetEditorShapeType(context), async model =>
             {
-                model.UserIds = string.Join(",", field.UserIds);
+                model.UserIds = String.Join(",", field.UserIds);
 
                 model.Field = field;
                 model.Part = context.ContentPart;

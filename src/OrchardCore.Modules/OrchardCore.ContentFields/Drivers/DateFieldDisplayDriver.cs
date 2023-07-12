@@ -14,7 +14,9 @@ namespace OrchardCore.ContentFields.Drivers
 {
     public class DateFieldDisplayDriver : ContentFieldDisplayDriver<DateField>
     {
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public DateFieldDisplayDriver(IStringLocalizer<DateFieldDisplayDriver> localizer)
         {

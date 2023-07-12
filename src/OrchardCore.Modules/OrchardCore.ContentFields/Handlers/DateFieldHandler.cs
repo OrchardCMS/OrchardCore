@@ -9,7 +9,9 @@ namespace OrchardCore.ContentFields.Handlers;
 
 public class DateFieldHandler : ContentFieldHandler<DateField>
 {
+#pragma warning disable IDE1006 // Naming Styles
     private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
     public DateFieldHandler(IStringLocalizer<DateFieldHandler> stringLocalizer)
     {

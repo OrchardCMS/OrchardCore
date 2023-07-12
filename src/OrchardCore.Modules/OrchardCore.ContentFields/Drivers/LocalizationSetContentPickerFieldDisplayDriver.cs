@@ -22,7 +22,9 @@ namespace OrchardCore.ContentFields.Drivers
     {
         private readonly IContentManager _contentManager;
         private readonly IContentLocalizationManager _contentLocalizationManager;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public LocalizationSetContentPickerFieldDisplayDriver(
             IContentManager contentManager,
@@ -50,7 +52,7 @@ namespace OrchardCore.ContentFields.Drivers
         {
             return Initialize<EditLocalizationSetContentPickerFieldViewModel>(GetEditorShapeType(context), async model =>
             {
-                model.LocalizationSets = string.Join(",", field.LocalizationSets);
+                model.LocalizationSets = String.Join(",", field.LocalizationSets);
 
                 model.Field = field;
                 model.Part = context.ContentPart;

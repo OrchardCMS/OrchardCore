@@ -14,7 +14,9 @@ namespace OrchardCore.ContentFields.Drivers
 {
     public class TimeFieldDisplayDriver : ContentFieldDisplayDriver<TimeField>
     {
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public TimeFieldDisplayDriver(IStringLocalizer<TimeFieldDisplayDriver> localizer)
         {

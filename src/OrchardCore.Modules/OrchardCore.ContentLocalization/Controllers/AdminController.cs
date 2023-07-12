@@ -17,7 +17,9 @@ namespace OrchardCore.ContentLocalization.Controllers
         private readonly IContentLocalizationManager _contentLocalizationManager;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IHtmlLocalizer H;
+#pragma warning restore IDE1006 // Naming Styles
 
         public AdminController(
             IContentManager contentManager,
@@ -37,7 +39,7 @@ namespace OrchardCore.ContentLocalization.Controllers
         public async Task<IActionResult> Localize(string contentItemId, string targetCulture)
         {
             // Invariant culture name is empty so a null value is bound.
-            targetCulture = targetCulture ?? "";
+            targetCulture ??= String.Empty;
 
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
@@ -73,7 +75,7 @@ namespace OrchardCore.ContentLocalization.Controllers
             if (alreadyLocalizedContent != null)
             {
                 await _notifier.WarningAsync(H["A localization already exists for '{0}'.", targetCulture]);
-                return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = contentItemId });
+                return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId });
             }
 
             try

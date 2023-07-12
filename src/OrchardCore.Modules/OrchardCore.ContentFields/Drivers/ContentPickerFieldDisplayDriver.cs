@@ -18,7 +18,9 @@ namespace OrchardCore.ContentFields.Drivers
     public class ContentPickerFieldDisplayDriver : ContentFieldDisplayDriver<ContentPickerField>
     {
         private readonly IContentManager _contentManager;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public ContentPickerFieldDisplayDriver(
             IContentManager contentManager,
@@ -44,7 +46,7 @@ namespace OrchardCore.ContentFields.Drivers
         {
             return Initialize<EditContentPickerFieldViewModel>(GetEditorShapeType(context), async model =>
             {
-                model.ContentItemIds = string.Join(",", field.ContentItemIds);
+                model.ContentItemIds = String.Join(",", field.ContentItemIds);
 
                 model.Field = field;
                 model.Part = context.ContentPart;
