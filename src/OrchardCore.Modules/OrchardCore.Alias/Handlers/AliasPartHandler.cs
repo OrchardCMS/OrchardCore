@@ -23,7 +23,9 @@ namespace OrchardCore.Alias.Handlers
         private readonly ITagCache _tagCache;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly ISession _session;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public AliasPartHandler(
             IContentDefinitionManager contentDefinitionManager,
@@ -55,7 +57,7 @@ namespace OrchardCore.Alias.Handlers
 
         public async override Task UpdatedAsync(UpdateContentContext context, AliasPart part)
         {
-            // Compute the Alias only if it's empty
+            // Compute the Alias only if it's empty.
             if (!String.IsNullOrEmpty(part.Alias))
             {
                 return;
@@ -79,7 +81,7 @@ namespace OrchardCore.Alias.Handlers
 
                 if (part.Alias?.Length > AliasPart.MaxAliasLength)
                 {
-                    part.Alias = part.Alias.Substring(0, AliasPart.MaxAliasLength);
+                    part.Alias = part.Alias[..AliasPart.MaxAliasLength];
                 }
 
                 if (!await part.IsAliasUniqueAsync(_session, part.Alias))
@@ -120,7 +122,7 @@ namespace OrchardCore.Alias.Handlers
         }
 
         /// <summary>
-        /// Get the pattern from the AliasPartSettings property for its type
+        /// Get the pattern from the AliasPartSettings property for its type.
         /// </summary>
         private string GetPattern(AliasPart part)
         {
@@ -137,9 +139,9 @@ namespace OrchardCore.Alias.Handlers
             var unversionedAlias = alias;
 
             var versionSeparatorPosition = alias.LastIndexOf('-');
-            if (versionSeparatorPosition > -1 && Int32.TryParse(alias.Substring(versionSeparatorPosition).TrimStart('-'), out version))
+            if (versionSeparatorPosition > -1 && Int32.TryParse(alias[versionSeparatorPosition..].TrimStart('-'), out version))
             {
-                unversionedAlias = alias.Substring(0, versionSeparatorPosition);
+                unversionedAlias = alias[..versionSeparatorPosition];
             }
 
             while (true)
@@ -148,7 +150,7 @@ namespace OrchardCore.Alias.Handlers
                 var quantityCharactersToTrim = unversionedAlias.Length + 1 + version.ToString().Length - AliasPart.MaxAliasLength;
                 if (quantityCharactersToTrim > 0)
                 {
-                    unversionedAlias = unversionedAlias.Substring(0, unversionedAlias.Length - quantityCharactersToTrim);
+                    unversionedAlias = unversionedAlias[..^quantityCharactersToTrim];
                 }
 
                 var versionedAlias = $"{unversionedAlias}-{version++}";

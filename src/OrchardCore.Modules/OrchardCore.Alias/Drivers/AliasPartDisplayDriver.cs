@@ -16,7 +16,9 @@ namespace OrchardCore.Alias.Drivers
     {
 
         private readonly ISession _session;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public AliasPartDisplayDriver(
             ISession session,
@@ -44,7 +46,7 @@ namespace OrchardCore.Alias.Drivers
             return Edit(model, context);
         }
 
-        private void BuildViewModel(AliasPartViewModel model, AliasPart part, AliasPartSettings settings)
+        private static void BuildViewModel(AliasPartViewModel model, AliasPart part, AliasPartSettings settings)
         {
             model.Alias = part.Alias;
             model.AliasPart = part;

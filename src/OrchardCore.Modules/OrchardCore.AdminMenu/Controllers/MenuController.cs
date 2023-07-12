@@ -27,9 +27,11 @@ namespace OrchardCore.AdminMenu.Controllers
         private readonly IAdminMenuService _adminMenuService;
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
         private readonly dynamic New;
+#pragma warning restore IDE1006 // Naming Styles
         private readonly ILogger _logger;
 
         public MenuController(
@@ -63,12 +65,12 @@ namespace OrchardCore.AdminMenu.Controllers
 
             var adminMenuList = (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu;
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
                 adminMenuList = adminMenuList.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            var count = adminMenuList.Count();
+            var count = adminMenuList.Count;
 
             var startIndex = pager.GetStartIndex();
             var pageSize = pager.PageSize;
@@ -261,7 +263,7 @@ namespace OrchardCore.AdminMenu.Controllers
                         await _notifier.SuccessAsync(H["Admin menus successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
 

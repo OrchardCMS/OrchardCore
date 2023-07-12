@@ -9,7 +9,9 @@ namespace OrchardCore.AdminMenu
     public class AdminMenu : INavigationProvider
     {
         private readonly AdminMenuNavigationProvidersCoordinator _adminMenuNavigationProvider;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public AdminMenu(AdminMenuNavigationProvidersCoordinator adminMenuNavigationProvider,
             IStringLocalizer<AdminMenu> localizer)
