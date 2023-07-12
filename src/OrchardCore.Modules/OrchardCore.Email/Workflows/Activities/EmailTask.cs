@@ -14,22 +14,22 @@ namespace OrchardCore.Email.Workflows.Activities
     {
         private readonly ISmtpService _smtpService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly HtmlEncoder _htmlEncoder;
 #pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
 #pragma warning restore IDE1006 // Naming Styles
+        private readonly HtmlEncoder _htmlEncoder;
 
         public EmailTask(
             ISmtpService smtpService,
             IWorkflowExpressionEvaluator expressionEvaluator,
-            HtmlEncoder htmlEncoder,
-            IStringLocalizer<EmailTask> localizer
+            IStringLocalizer<EmailTask> localizer,
+            HtmlEncoder htmlEncoder
         )
         {
             _smtpService = smtpService;
             _expressionEvaluator = expressionEvaluator;
-            _htmlEncoder = htmlEncoder;
             S = localizer;
+            _htmlEncoder = htmlEncoder;
         }
 
         public override string Name => nameof(EmailTask);
