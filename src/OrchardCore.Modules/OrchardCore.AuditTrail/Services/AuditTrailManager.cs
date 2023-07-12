@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -31,6 +30,7 @@ namespace OrchardCore.AuditTrail.Services
         private readonly ILookupNormalizer _keyNormalizer;
         private readonly IAuditTrailIdGenerator _auditTrailIdGenerator;
         private readonly IEnumerable<IAuditTrailEventHandler> _auditTrailEventHandlers;
+        private readonly IClientIpAddressAccessor _clientIpAddressAccessor;
         private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
@@ -42,6 +42,7 @@ namespace OrchardCore.AuditTrail.Services
             IHttpContextAccessor httpContextAccessor,
             ILookupNormalizer keyNormalizer,
             IEnumerable<IAuditTrailEventHandler> auditTrailEventHandlers,
+            IClientIpAddressAccessor clientIpAddressAccessor,
             IAuditTrailIdGenerator auditTrailIdGenerator,
             ShellSettings shellSettings,
             ILogger<AuditTrailManager> logger)
@@ -53,6 +54,7 @@ namespace OrchardCore.AuditTrail.Services
             _httpContextAccessor = httpContextAccessor;
             _keyNormalizer = keyNormalizer;
             _auditTrailEventHandlers = auditTrailEventHandlers;
+            _clientIpAddressAccessor = clientIpAddressAccessor;
             _auditTrailIdGenerator = auditTrailIdGenerator;
             _shellSettings = shellSettings;
             _logger = logger;
@@ -163,16 +165,7 @@ namespace OrchardCore.AuditTrail.Services
                 return null;
             }
 
-            var address = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress;
-            if (address != null)
-            {
-                if (IPAddress.IsLoopback(address))
-                {
-                    address = IPAddress.Loopback;
-                }
-            }
-
-            return address?.ToString();
+            return (await _clientIpAddressAccessor.GetIpAddressAsync())?.ToString();
         }
 
         private async Task<AuditTrailSettings> GetAuditTrailSettingsAsync() =>
