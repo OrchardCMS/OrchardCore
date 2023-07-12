@@ -137,6 +137,7 @@ This pattern ensures that at the end of the process the full tree will be proces
                 return Task.CompletedTask;
             }
 
+            // This is the standard Orchard Core way of adding menuItems to a builder.
             return builder.AddAsync(new LocalizedString(node.LinkText, node.LinkText), async itemBuilder =>
             {
                 var nodeLinkUrl = node.LinkUrl;
