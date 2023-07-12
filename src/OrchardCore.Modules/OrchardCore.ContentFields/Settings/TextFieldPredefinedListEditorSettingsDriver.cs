@@ -12,7 +12,9 @@ namespace OrchardCore.ContentFields.Settings
 {
     public class TextFieldPredefinedListEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TextField>
     {
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public TextFieldPredefinedListEditorSettingsDriver(IStringLocalizer<TextFieldPredefinedListEditorSettingsDriver> localizer)
         {
@@ -27,7 +29,7 @@ namespace OrchardCore.ContentFields.Settings
 
                 model.DefaultValue = settings.DefaultValue;
                 model.Editor = settings.Editor;
-                model.Options = JsonConvert.SerializeObject(settings.Options ?? new ListValueOption[0], Formatting.Indented);
+                model.Options = JsonConvert.SerializeObject(settings.Options ?? Array.Empty<ListValueOption>(), Formatting.Indented);
             })
             .Location("Editor");
         }

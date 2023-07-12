@@ -13,7 +13,9 @@ namespace OrchardCore.ContentFields.Settings
 {
     public class HtmlFieldMonacoEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<HtmlField>
     {
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public HtmlFieldMonacoEditorSettingsDriver(IStringLocalizer<HtmlFieldMonacoEditorSettingsDriver> localizer)
         {
@@ -25,7 +27,7 @@ namespace OrchardCore.ContentFields.Settings
             return Initialize<MonacoSettingsViewModel>("HtmlFieldMonacoEditorSettings_Edit", model =>
             {
                 var settings = partFieldDefinition.GetSettings<HtmlFieldMonacoEditorSettings>();
-                if (string.IsNullOrWhiteSpace(settings.Options))
+                if (System.String.IsNullOrWhiteSpace(settings.Options))
                 {
                     settings.Options = JsonConvert.SerializeObject(new { automaticLayout = true, language = "html" }, Formatting.Indented);
                 }

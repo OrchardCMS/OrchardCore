@@ -2,13 +2,12 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Hosting;
 
 namespace OrchardCore.ContentPreview
 {
     public class PreviewStartupFilter : IStartupFilter
     {
-        public PreviewStartupFilter(IHostEnvironment hostEnvironment)
+        public PreviewStartupFilter()
         {
         }
 

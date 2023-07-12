@@ -12,7 +12,9 @@ namespace OrchardCore.ContentFields.Settings
 {
     public class TextFieldMonacoEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TextField>
     {
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public TextFieldMonacoEditorSettingsDriver(IStringLocalizer<TextFieldMonacoEditorSettingsDriver> localizer)
         {
@@ -24,7 +26,7 @@ namespace OrchardCore.ContentFields.Settings
             return Initialize<MonacoSettingsViewModel>("TextFieldMonacoEditorSettings_Edit", model =>
             {
                 var settings = partFieldDefinition.GetSettings<TextFieldMonacoEditorSettings>();
-                if (string.IsNullOrWhiteSpace(settings.Options))
+                if (System.String.IsNullOrWhiteSpace(settings.Options))
                 {
                     settings.Options = JsonConvert.SerializeObject(new { automaticLayout = true, language = "html" }, Formatting.Indented);
                 }
