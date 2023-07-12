@@ -11,7 +11,9 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
     {
         private readonly int _maxNumberOfResults;
         private readonly MaxNumberOfResultsValidationMode _maxNumberOfResultsValidationMode;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
         private readonly ILogger _logger;
 
         public MaxNumberOfResultsValidationRule(
@@ -63,8 +65,13 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
                         }
                         else
                         {
-                            _logger.LogInformation(errorMessage);
-                            arg = new Argument(arg.NameNode, new IntValue(_maxNumberOfResults)); // if disabled mode we just log info and override the arg to be maxvalue
+                            _logger.LogInformation("'{IntValue}' exceeds the maximum number of results for '{ArgumentName}' ({MaxNumber})",
+                                value.Value,
+                                arg.Name,
+                                _maxNumberOfResults);
+
+                            // If disabled mode we just log info and override the arg to be maxvalue.
+                            arg = new Argument(arg.NameNode, new IntValue(_maxNumberOfResults));
                         }
                     }
                 }

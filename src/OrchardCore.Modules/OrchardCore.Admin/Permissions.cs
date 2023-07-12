@@ -6,7 +6,7 @@ namespace OrchardCore.Admin
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission AccessAdminPanel = new Permission("AccessAdminPanel", "Access admin panel");
+        public static readonly Permission AccessAdminPanel = new("AccessAdminPanel", "Access admin panel");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
@@ -41,7 +41,7 @@ namespace OrchardCore.Admin
             };
         }
 
-        private IEnumerable<Permission> GetPermissions()
+        private static IEnumerable<Permission> GetPermissions()
         {
             return new[]
             {

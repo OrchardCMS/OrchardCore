@@ -22,7 +22,9 @@ namespace OrchardCore.Https.Drivers
         private readonly INotifier _notifier;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IHtmlLocalizer H;
+#pragma warning restore IDE1006 // Naming Styles
 
         public HttpsSettingsDisplayDriver(IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,

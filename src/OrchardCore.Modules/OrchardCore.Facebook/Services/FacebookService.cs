@@ -13,7 +13,9 @@ namespace OrchardCore.Facebook.Services
     public class FacebookService : IFacebookService
     {
         private readonly ISiteService _siteService;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public FacebookService(
             ISiteService siteService,
@@ -50,7 +52,7 @@ namespace OrchardCore.Facebook.Services
 
             var results = new List<ValidationResult>();
 
-            if (string.IsNullOrEmpty(settings.AppId))
+            if (String.IsNullOrEmpty(settings.AppId))
             {
                 results.Add(new ValidationResult(S["The AppId is required."], new[]
                 {
@@ -58,7 +60,7 @@ namespace OrchardCore.Facebook.Services
                 }));
             }
 
-            if (string.IsNullOrEmpty(settings.AppSecret))
+            if (String.IsNullOrEmpty(settings.AppSecret))
             {
                 results.Add(new ValidationResult(S["The App Secret is required."], new[]
                 {

@@ -14,7 +14,9 @@ namespace OrchardCore.Email.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
         private readonly ISmtpService _smtpService;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IHtmlLocalizer H;
+#pragma warning restore IDE1006 // Naming Styles
 
         public AdminController(
             IHtmlLocalizer<AdminController> h,
@@ -71,7 +73,7 @@ namespace OrchardCore.Email.Controllers
             return View(model);
         }
 
-        private MailMessage CreateMessageFromViewModel(SmtpSettingsViewModel testSettings)
+        private static MailMessage CreateMessageFromViewModel(SmtpSettingsViewModel testSettings)
         {
             var message = new MailMessage
             {

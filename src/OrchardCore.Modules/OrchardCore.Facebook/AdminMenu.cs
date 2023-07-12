@@ -7,7 +7,9 @@ namespace OrchardCore.Facebook;
 
 public class AdminMenu : INavigationProvider
 {
+#pragma warning disable IDE1006 // Naming Styles
     private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
     public AdminMenu(
         IStringLocalizer<AdminMenu> localizer)
@@ -41,7 +43,9 @@ public class AdminMenu : INavigationProvider
 
 public class AdminMenuLogin : INavigationProvider
 {
+#pragma warning disable IDE1006 // Naming Styles
     private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
     public AdminMenuLogin(
         IStringLocalizer<AdminMenuLogin> localizer)
@@ -75,7 +79,9 @@ public class AdminMenuLogin : INavigationProvider
 
 public class AdminMenuPixel : INavigationProvider
 {
+#pragma warning disable IDE1006 // Naming Styles
     private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
     public AdminMenuPixel(
         IStringLocalizer<AdminMenuLogin> stringLocalizer)

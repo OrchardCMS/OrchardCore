@@ -15,7 +15,9 @@ namespace OrchardCore.Workflows.Http.Activities
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public HttpRedirectTask(
             IStringLocalizer<HttpRedirectTask> localizer,

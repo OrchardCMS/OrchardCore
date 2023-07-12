@@ -24,7 +24,7 @@ namespace OrchardCore.OpenId.Drivers
     public class OpenIdClientSettingsDisplayDriver : SectionDisplayDriver<ISite, OpenIdClientSettings>
     {
         private const string SettingsGroupId = "OrchardCore.OpenId.Client";
-        private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
+        private static readonly JsonSerializerSettings _jsonSerializerSettings = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
@@ -35,7 +35,9 @@ namespace OrchardCore.OpenId.Drivers
         private readonly IOpenIdClientService _clientService;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public OpenIdClientSettingsDisplayDriver(
             IAuthorizationService authorizationService,
@@ -66,7 +68,7 @@ namespace OrchardCore.OpenId.Drivers
             return Initialize<OpenIdClientSettingsViewModel>("OpenIdClientSettings_Edit", model =>
             {
                 model.DisplayName = settings.DisplayName;
-                model.Scopes = settings.Scopes != null ? string.Join(" ", settings.Scopes) : null;
+                model.Scopes = settings.Scopes != null ? String.Join(" ", settings.Scopes) : null;
                 model.Authority = settings.Authority?.AbsoluteUri;
                 model.CallbackPath = settings.CallbackPath;
                 model.ClientId = settings.ClientId;
@@ -101,7 +103,7 @@ namespace OrchardCore.OpenId.Drivers
                     model.UseIdTokenTokenFlow = true;
                 }
 
-                model.Parameters = JsonConvert.SerializeObject(settings.Parameters, JsonSerializerSettings);
+                model.Parameters = JsonConvert.SerializeObject(settings.Parameters, _jsonSerializerSettings);
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
@@ -119,11 +121,11 @@ namespace OrchardCore.OpenId.Drivers
                 var model = new OpenIdClientSettingsViewModel();
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                model.Scopes = model.Scopes ?? string.Empty;
+                model.Scopes ??= String.Empty;
 
                 settings.DisplayName = model.DisplayName;
                 settings.Scopes = model.Scopes.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
-                settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
+                settings.Authority = !String.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
                 settings.CallbackPath = model.CallbackPath;
                 settings.ClientId = model.ClientId;
                 settings.SignedOutCallbackPath = model.SignedOutCallbackPath;
@@ -131,7 +133,7 @@ namespace OrchardCore.OpenId.Drivers
                 settings.ResponseMode = model.ResponseMode;
                 settings.StoreExternalTokens = model.StoreExternalTokens;
 
-                bool useClientSecret = true;
+                var useClientSecret = true;
 
                 if (model.UseCodeFlow)
                 {
@@ -167,7 +169,7 @@ namespace OrchardCore.OpenId.Drivers
 
                 try
                 {
-                    settings.Parameters = string.IsNullOrWhiteSpace(model.Parameters)
+                    settings.Parameters = String.IsNullOrWhiteSpace(model.Parameters)
                         ? Array.Empty<ParameterSetting>()
                         : JsonConvert.DeserializeObject<ParameterSetting[]>(model.Parameters);
                 }
@@ -182,7 +184,7 @@ namespace OrchardCore.OpenId.Drivers
                 }
 
                 // Restore the client secret if the input is empty (i.e if it hasn't been reset).
-                if (string.IsNullOrEmpty(model.ClientSecret))
+                if (String.IsNullOrEmpty(model.ClientSecret))
                 {
                     settings.ClientSecret = previousClientSecret;
                 }
@@ -196,7 +198,7 @@ namespace OrchardCore.OpenId.Drivers
                 {
                     if (result != ValidationResult.Success)
                     {
-                        var key = result.MemberNames.FirstOrDefault() ?? string.Empty;
+                        var key = result.MemberNames.FirstOrDefault() ?? String.Empty;
                         context.Updater.ModelState.AddModelError(key, result.ErrorMessage);
                     }
                 }

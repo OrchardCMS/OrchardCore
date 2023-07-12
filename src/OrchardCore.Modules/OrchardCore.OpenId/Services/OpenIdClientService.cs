@@ -14,7 +14,9 @@ namespace OrchardCore.OpenId.Services
     public class OpenIdClientService : IOpenIdClientService
     {
         private readonly ISiteService _siteService;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public OpenIdClientService(
             ISiteService siteService,

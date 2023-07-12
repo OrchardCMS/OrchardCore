@@ -44,9 +44,11 @@ namespace OrchardCore.Workflows.Controllers
         private readonly ISecurityTokenService _securityTokenService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
+#pragma warning disable IDE1006 // Naming Styles
         private readonly dynamic New;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
+#pragma warning restore IDE1006 // Naming Styles
 
         public WorkflowTypeController
         (
@@ -91,10 +93,7 @@ namespace OrchardCore.Workflows.Controllers
 
             var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
-            if (options == null)
-            {
-                options = new WorkflowTypeIndexOptions();
-            }
+            options ??= new WorkflowTypeIndexOptions();
 
             var query = _session.Query<WorkflowType, WorkflowTypeIndex>();
 
@@ -105,7 +104,7 @@ namespace OrchardCore.Workflows.Controllers
                     break;
             }
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
                 query = query.Where(x => x.Name.Contains(options.Search));
             }
@@ -144,7 +143,7 @@ namespace OrchardCore.Workflows.Controllers
                     {
                         WorkflowType = x,
                         Id = x.Id,
-                        WorkflowCount = workflowGroups.ContainsKey(x.WorkflowTypeId) ? workflowGroups[x.WorkflowTypeId].Count() : 0,
+                        WorkflowCount = workflowGroups.TryGetValue(x.WorkflowTypeId, out var group) ? group.Count() : 0,
                         Name = x.Name
                     })
                     .ToList(),
@@ -199,7 +198,7 @@ namespace OrchardCore.Workflows.Controllers
                         break;
 
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
 
@@ -350,7 +349,7 @@ namespace OrchardCore.Workflows.Controllers
                 return Forbid();
             }
 
-            var newLocalId = string.IsNullOrWhiteSpace(localId) ? Guid.NewGuid().ToString() : localId;
+            var newLocalId = String.IsNullOrWhiteSpace(localId) ? Guid.NewGuid().ToString() : localId;
             var availableActivities = _activityLibrary.ListActivities();
             var workflowType = await _session.GetAsync<WorkflowType>(id);
 
@@ -383,20 +382,20 @@ namespace OrchardCore.Workflows.Controllers
             var activitiesDataQuery = activityContexts.Select(x => new
             {
                 Id = x.ActivityRecord.ActivityId,
-                X = x.ActivityRecord.X,
-                Y = x.ActivityRecord.Y,
-                Name = x.ActivityRecord.Name,
-                IsStart = x.ActivityRecord.IsStart,
+                x.ActivityRecord.X,
+                x.ActivityRecord.Y,
+                x.ActivityRecord.Name,
+                x.ActivityRecord.IsStart,
                 IsEvent = x.Activity.IsEvent(),
                 Outcomes = x.Activity.GetPossibleOutcomes(workflowContext, x).ToArray()
             });
             var workflowTypeData = new
             {
-                Id = workflowType.Id,
-                Name = workflowType.Name,
-                IsEnabled = workflowType.IsEnabled,
+                workflowType.Id,
+                workflowType.Name,
+                workflowType.IsEnabled,
                 Activities = activitiesDataQuery.ToArray(),
-                Transitions = workflowType.Transitions
+                workflowType.Transitions
             };
             var viewModel = new WorkflowTypeViewModel
             {
@@ -406,7 +405,7 @@ namespace OrchardCore.Workflows.Controllers
                 ActivityDesignShapes = activityDesignShapes,
                 ActivityCategories = _activityLibrary.ListCategories().ToList(),
                 LocalId = newLocalId,
-                LoadLocalState = !string.IsNullOrWhiteSpace(localId),
+                LoadLocalState = !String.IsNullOrWhiteSpace(localId),
                 WorkflowCount = workflowCount
             };
             return View(viewModel);
@@ -493,7 +492,7 @@ namespace OrchardCore.Workflows.Controllers
             activityShape.Activity = activity;
             activityShape.WorkflowTypeId = workflowTypeId;
             activityShape.Index = index;
-            activityShape.ReturnUrl = Url.Action(nameof(Edit), new { id = workflowTypeId, localId = localId });
+            activityShape.ReturnUrl = Url.Action(nameof(Edit), new { id = workflowTypeId, localId });
             return activityShape;
         }
 
@@ -505,7 +504,7 @@ namespace OrchardCore.Workflows.Controllers
             activityShape.ActivityRecord = activityContext.ActivityRecord;
             activityShape.WorkflowTypeId = workflowTypeId;
             activityShape.Index = index;
-            activityShape.ReturnUrl = Url.Action(nameof(Edit), new { id = workflowTypeId, localId = localId });
+            activityShape.ReturnUrl = Url.Action(nameof(Edit), new { id = workflowTypeId, localId });
             return activityShape;
         }
     }

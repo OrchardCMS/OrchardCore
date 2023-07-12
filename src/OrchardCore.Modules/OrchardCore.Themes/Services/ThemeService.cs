@@ -16,7 +16,9 @@ namespace OrchardCore.Themes.Services
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly INotifier _notifier;
         private readonly ISiteThemeService _siteThemeService;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IHtmlLocalizer H;
+#pragma warning restore IDE1006 // Naming Styles
 
         public ThemeService(
             IExtensionManager extensionManager,
@@ -45,7 +47,7 @@ namespace OrchardCore.Themes.Services
                     break;
                 themes.Enqueue(themeName);
 
-                themeName = !string.IsNullOrWhiteSpace(theme.Manifest.Name)
+                themeName = !String.IsNullOrWhiteSpace(theme.Manifest.Name)
                     ? theme.Manifest.Name
                     : null;
             }

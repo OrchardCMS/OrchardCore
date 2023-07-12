@@ -59,16 +59,17 @@ namespace OrchardCore.Twitter.Services
             var nonce = GetNonce();
             var timeStamp = Convert.ToInt64((_clock.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds).ToString();
 
-            var sortedParameters = new SortedDictionary<string, string>();
+            var sortedParameters = new SortedDictionary<string, string>
+            {
+                { Uri.EscapeDataString("oauth_consumer_key"), Uri.EscapeDataString(_twitterSettings.ConsumerKey) },
+                { Uri.EscapeDataString("oauth_nonce"), Uri.EscapeDataString(nonce) },
+                { Uri.EscapeDataString("oauth_signature_method"), Uri.EscapeDataString("HMAC-SHA1") },
+                { Uri.EscapeDataString("oauth_timestamp"), Uri.EscapeDataString(timeStamp) },
+                { Uri.EscapeDataString("oauth_token"), Uri.EscapeDataString(_twitterSettings.AccessToken) },
+                { Uri.EscapeDataString("oauth_version"), Uri.EscapeDataString("1.0") }
+            };
 
-            sortedParameters.Add(Uri.EscapeDataString("oauth_consumer_key"), Uri.EscapeDataString(_twitterSettings.ConsumerKey));
-            sortedParameters.Add(Uri.EscapeDataString("oauth_nonce"), Uri.EscapeDataString(nonce));
-            sortedParameters.Add(Uri.EscapeDataString("oauth_signature_method"), Uri.EscapeDataString("HMAC-SHA1"));
-            sortedParameters.Add(Uri.EscapeDataString("oauth_timestamp"), Uri.EscapeDataString(timeStamp));
-            sortedParameters.Add(Uri.EscapeDataString("oauth_token"), Uri.EscapeDataString(_twitterSettings.AccessToken));
-            sortedParameters.Add(Uri.EscapeDataString("oauth_version"), Uri.EscapeDataString("1.0"));
-
-            if (!string.IsNullOrEmpty(request.RequestUri.Query))
+            if (!String.IsNullOrEmpty(request.RequestUri.Query))
             {
                 foreach (var item in request.RequestUri.Query.Split('&'))
                 {
@@ -81,7 +82,7 @@ namespace OrchardCore.Twitter.Services
 
             var contentString = await request.Content.ReadAsStringAsync();
 
-            if (!string.IsNullOrEmpty(contentString))
+            if (!String.IsNullOrEmpty(contentString))
             {
                 foreach (var item in contentString.Split('&'))
                 {
@@ -93,15 +94,16 @@ namespace OrchardCore.Twitter.Services
                 }
             }
 
-            var baseString = string.Concat(request.Method.Method.ToUpperInvariant(), "&",
+            var baseString = String.Concat(request.Method.Method.ToUpperInvariant(), "&",
                 Uri.EscapeDataString(request.RequestUri.AbsoluteUri.ToString()), "&",
-                Uri.EscapeDataString(string.Join("&", sortedParameters.Select(c => string.Format("{0}={1}", c.Key, c.Value)))));
+                Uri.EscapeDataString(String.Join("&", sortedParameters.Select(c => String.Format("{0}={1}", c.Key, c.Value)))));
 
-            var secret = string.Concat(_twitterSettings.ConsumerSecret, "&", _twitterSettings.AccessTokenSecret);
+            var secret = String.Concat(_twitterSettings.ConsumerSecret, "&", _twitterSettings.AccessTokenSecret);
+
             string signature;
-            using (var hasher = new HMACSHA1(ASCIIEncoding.ASCII.GetBytes(secret)))
+            using (var hasher = new HMACSHA1(Encoding.ASCII.GetBytes(secret)))
             {
-                signature = Convert.ToBase64String(hasher.ComputeHash(ASCIIEncoding.ASCII.GetBytes(baseString)));
+                signature = Convert.ToBase64String(hasher.ComputeHash(Encoding.ASCII.GetBytes(baseString)));
             }
 
             var sb = new StringBuilder();

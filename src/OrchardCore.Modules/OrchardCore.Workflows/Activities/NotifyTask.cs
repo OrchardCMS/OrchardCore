@@ -14,7 +14,9 @@ namespace OrchardCore.Workflows.Activities
     {
         private readonly INotifier _notifier;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
         private readonly HtmlEncoder _htmlEncoder;
 
         public NotifyTask(

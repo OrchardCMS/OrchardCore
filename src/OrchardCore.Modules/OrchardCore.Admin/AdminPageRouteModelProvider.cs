@@ -13,7 +13,7 @@ namespace OrchardCore.Admin
 {
     internal class AdminPageRouteModelProvider : IPageRouteModelProvider
     {
-        private static readonly string RazorPageDocumentKind = "mvc.1.0.razor-page";
+        private static readonly string _razorPageDocumentKind = "mvc.1.0.razor-page";
 
         private readonly IHostEnvironment _hostingEnvironment;
         private readonly ApplicationPartManager _applicationManager;
@@ -75,7 +75,7 @@ namespace OrchardCore.Admin
         {
         }
 
-        private IEnumerable<CompiledViewDescriptor> GetPageDescriptors<T>(ApplicationPartManager applicationManager) where T : ViewsFeature, new()
+        private static IEnumerable<CompiledViewDescriptor> GetPageDescriptors<T>(ApplicationPartManager applicationManager) where T : ViewsFeature, new()
         {
             if (applicationManager == null)
             {
@@ -100,7 +100,7 @@ namespace OrchardCore.Admin
             }
         }
 
-        private static bool IsRazorPage(CompiledViewDescriptor viewDescriptor) => viewDescriptor.Item?.Kind == RazorPageDocumentKind;
+        private static bool IsRazorPage(CompiledViewDescriptor viewDescriptor) => viewDescriptor.Item?.Kind == _razorPageDocumentKind;
 
         private static T GetViewFeature<T>(ApplicationPartManager applicationManager) where T : ViewsFeature, new()
         {

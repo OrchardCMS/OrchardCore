@@ -7,8 +7,11 @@ namespace OrchardCore.MiniProfiler
 {
     internal class MiniProfilerConnectionFactory : IConnectionFactory
     {
+#pragma warning disable IDE1006 // Naming Styles
+        private static readonly string ConnectionName = nameof(ProfiledDbConnection).ToLower();
+#pragma warning restore IDE1006 // Naming Styles
+
         private readonly IConnectionFactory _factory;
-        private readonly static string ConnectionName = nameof(ProfiledDbConnection).ToLower();
 
         public Type DbConnectionType => typeof(ProfiledDbConnection);
 
@@ -19,7 +22,7 @@ namespace OrchardCore.MiniProfiler
 
         public DbConnection CreateConnection()
         {
-            // Forward the call to the actual factory
+            // Forward the call to the actual factory.
             var connection = _factory.CreateConnection();
 
             return new ProfiledDbConnection(connection, new CurrentDbProfiler(() => StackExchange.Profiling.MiniProfiler.Current));

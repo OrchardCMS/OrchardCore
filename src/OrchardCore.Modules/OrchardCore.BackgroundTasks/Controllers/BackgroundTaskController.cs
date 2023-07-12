@@ -28,9 +28,11 @@ namespace OrchardCore.BackgroundTasks.Controllers
         private readonly BackgroundTaskManager _backgroundTaskManager;
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly dynamic New;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
+#pragma warning restore IDE1006 // Naming Styles
 
         public BackgroundTaskController(
             IAuthorizationService authorizationService,

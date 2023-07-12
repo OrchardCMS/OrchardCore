@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -12,7 +13,9 @@ namespace OrchardCore.Facebook.Widgets.Settings
     public class FacebookPluginPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<FacebookPluginPart>
     {
         private readonly ILiquidTemplateManager _templateManager;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public FacebookPluginPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<FacebookPluginPartSettingsDisplayDriver> localizer)
         {
@@ -36,9 +39,9 @@ namespace OrchardCore.Facebook.Widgets.Settings
             await context.Updater.TryUpdateModelAsync(model, Prefix,
                 m => m.Liquid);
 
-            if (!string.IsNullOrEmpty(model.Liquid) && !_templateManager.Validate(model.Liquid, out var errors))
+            if (!String.IsNullOrEmpty(model.Liquid) && !_templateManager.Validate(model.Liquid, out var errors))
             {
-                context.Updater.ModelState.AddModelError(nameof(model.Liquid), S["The Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                context.Updater.ModelState.AddModelError(nameof(model.Liquid), S["The Body doesn't contain a valid Liquid expression. Details: {0}", String.Join(" ", errors)]);
             }
             else
             {

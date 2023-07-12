@@ -23,33 +23,36 @@ namespace OrchardCore.Features.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
-        private readonly INotifier _notifier;
         private readonly IExtensionManager _extensionManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
-        private readonly IStringLocalizer S;
         private readonly AdminOptions _adminOptions;
+        private readonly INotifier _notifier;
+
+#pragma warning disable IDE1006 // Naming Styles
+        private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
+#pragma warning restore IDE1006 // Naming Styles
 
         public AdminController(
-            IExtensionManager extensionManager,
-            IHtmlLocalizer<AdminController> localizer,
-            IShellFeaturesManager shellFeaturesManager,
             IAuthorizationService authorizationService,
             IShellHost shellHost,
             ShellSettings shellSettings,
+            IExtensionManager extensionManager,
+            IShellFeaturesManager shellFeaturesManager,
+            IOptions<AdminOptions> adminOptions,
             INotifier notifier,
             IStringLocalizer<AdminController> stringLocalizer,
-            IOptions<AdminOptions> adminOptions)
+            IHtmlLocalizer<AdminController> localizer)
         {
             _authorizationService = authorizationService;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
-            _notifier = notifier;
             _extensionManager = extensionManager;
             _shellFeaturesManager = shellFeaturesManager;
-            H = localizer;
-            S = stringLocalizer;
             _adminOptions = adminOptions.Value;
+            _notifier = notifier;
+            S = stringLocalizer;
+            H = localizer;
         }
 
         public async Task<ActionResult> Features(string tenant)

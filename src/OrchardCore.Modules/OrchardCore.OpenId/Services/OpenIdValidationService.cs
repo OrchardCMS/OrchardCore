@@ -22,7 +22,9 @@ namespace OrchardCore.OpenId.Services
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
         private readonly ISiteService _siteService;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public OpenIdValidationService(
             ShellDescriptor shellDescriptor,
@@ -91,7 +93,7 @@ namespace OrchardCore.OpenId.Services
 
             var results = ImmutableArray.CreateBuilder<ValidationResult>();
 
-            if (!(settings.Authority == null ^ string.IsNullOrEmpty(settings.Tenant)))
+            if (!(settings.Authority == null ^ String.IsNullOrEmpty(settings.Tenant)))
             {
                 results.Add(new ValidationResult(S["Either a tenant or an authority must be registered."], new[]
                 {
@@ -110,7 +112,7 @@ namespace OrchardCore.OpenId.Services
                     }));
                 }
 
-                if (!String.IsNullOrEmpty(settings.Authority.Query) || !string.IsNullOrEmpty(settings.Authority.Fragment))
+                if (!String.IsNullOrEmpty(settings.Authority.Query) || !String.IsNullOrEmpty(settings.Authority.Fragment))
                 {
                     results.Add(new ValidationResult(S["The authority cannot contain a query string or a fragment."], new[]
                     {
@@ -130,7 +132,7 @@ namespace OrchardCore.OpenId.Services
                     }));
                 }
 
-                if (!String.IsNullOrEmpty(settings.MetadataAddress.Query) || !string.IsNullOrEmpty(settings.MetadataAddress.Fragment))
+                if (!String.IsNullOrEmpty(settings.MetadataAddress.Query) || !String.IsNullOrEmpty(settings.MetadataAddress.Fragment))
                 {
                     results.Add(new ValidationResult(S["The metadata address cannot contain a query string or a fragment."], new[]
                     {
@@ -147,7 +149,7 @@ namespace OrchardCore.OpenId.Services
                 }
             }
 
-            if (!String.IsNullOrEmpty(settings.Tenant) && !string.IsNullOrEmpty(settings.Audience))
+            if (!String.IsNullOrEmpty(settings.Tenant) && !String.IsNullOrEmpty(settings.Audience))
             {
                 results.Add(new ValidationResult(S["No audience can be set when using another tenant."], new[]
                 {
@@ -155,7 +157,7 @@ namespace OrchardCore.OpenId.Services
                 }));
             }
 
-            if (settings.Authority != null && string.IsNullOrEmpty(settings.Audience))
+            if (settings.Authority != null && String.IsNullOrEmpty(settings.Audience))
             {
                 results.Add(new ValidationResult(S["An audience must be set when configuring the authority."], new[]
                 {

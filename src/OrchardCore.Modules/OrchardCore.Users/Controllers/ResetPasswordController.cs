@@ -25,7 +25,9 @@ namespace OrchardCore.Users.Controllers
         private readonly ISiteService _siteService;
         private readonly IEnumerable<IPasswordRecoveryFormEvents> _passwordRecoveryFormEvents;
         private readonly ILogger _logger;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public ResetPasswordController(
             IUserService userService,

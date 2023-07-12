@@ -8,10 +8,10 @@ namespace OrchardCore.Twitter
     public class Permissions : IPermissionProvider
     {
         public static readonly Permission ManageTwitter
-            = new Permission(nameof(ManageTwitter), "Manage Twitter settings");
+            = new(nameof(ManageTwitter), "Manage Twitter settings");
 
         public static readonly Permission ManageTwitterSignin
-            = new Permission(nameof(ManageTwitterSignin), "Manage Sign in with Twitter settings");
+            = new(nameof(ManageTwitterSignin), "Manage Sign in with Twitter settings");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {

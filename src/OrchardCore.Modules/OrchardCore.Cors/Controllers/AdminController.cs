@@ -22,7 +22,9 @@ namespace OrchardCore.Cors.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly CorsService _corsService;
         private readonly INotifier _notifier;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IHtmlLocalizer H;
+#pragma warning restore IDE1006 // Naming Styles
 
         public AdminController(
             IShellHost shellHost,

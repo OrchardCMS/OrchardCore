@@ -31,9 +31,11 @@ namespace OrchardCore.Tenants.Controllers
         private readonly FeatureProfilesManager _featureProfilesManager;
         private readonly INotifier _notifier;
         private readonly PagerOptions _pagerOptions;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
         private readonly dynamic New;
+        private readonly IHtmlLocalizer H;
+#pragma warning restore IDE1006 // Naming Styles
 
         public FeatureProfilesController(
             IAuthorizationService authorizationService,

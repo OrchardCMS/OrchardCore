@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
@@ -20,14 +21,16 @@ namespace OrchardCore.Deployment.Remote.Controllers
     [Admin]
     public class ExportRemoteInstanceController : Controller
     {
-        private static readonly HttpClient _httpClient = new HttpClient();
+        private static readonly HttpClient _httpClient = new();
 
         private readonly IDeploymentManager _deploymentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
         private readonly RemoteInstanceService _service;
         private readonly INotifier _notifier;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IHtmlLocalizer H;
+#pragma warning restore IDE1006 // Naming Styles
 
         public ExportRemoteInstanceController(
             IAuthorizationService authorizationService,
@@ -116,7 +119,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 System.IO.File.Delete(archiveFileName);
             }
 
-            if (!string.IsNullOrEmpty(returnUrl))
+            if (!String.IsNullOrEmpty(returnUrl))
             {
                 return this.LocalRedirect(returnUrl, true);
             }

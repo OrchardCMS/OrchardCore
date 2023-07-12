@@ -91,11 +91,10 @@ namespace OrchardCore.Workflows.Http.Scripting
                 Name = "readBody",
                 Method = serviceProvider => (Func<string>)(() =>
                 {
-                    using (var sr = new StreamReader(httpContextAccessor.HttpContext.Request.Body))
-                    {
-                        // Async read of the request body is mandatory.
-                        return sr.ReadToEndAsync().GetAwaiter().GetResult();
-                    }
+                    using var sr = new StreamReader(httpContextAccessor.HttpContext.Request.Body);
+
+                    // Async read of the request body is mandatory.
+                    return sr.ReadToEndAsync().GetAwaiter().GetResult();
                 })
             };
 

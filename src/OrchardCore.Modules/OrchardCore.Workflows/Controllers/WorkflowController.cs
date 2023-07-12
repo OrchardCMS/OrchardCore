@@ -39,8 +39,10 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public WorkflowController(
             IOptions<PagerOptions> pagerOptions,
@@ -102,18 +104,12 @@ namespace OrchardCore.Workflows.Controllers
                     break;
             }
 
-            switch (model.Options.OrderBy)
+            query = model.Options.OrderBy switch
             {
-                case WorkflowOrder.CreatedDesc:
-                    query = query.OrderByDescending(x => x.CreatedUtc);
-                    break;
-                case WorkflowOrder.Created:
-                    query = query.OrderBy(x => x.CreatedUtc);
-                    break;
-                default:
-                    query = query.OrderByDescending(x => x.CreatedUtc);
-                    break;
-            }
+                WorkflowOrder.CreatedDesc => query.OrderByDescending(x => x.CreatedUtc),
+                WorkflowOrder.Created => query.OrderBy(x => x.CreatedUtc),
+                _ => query.OrderByDescending(x => x.CreatedUtc),
+            };
 
             var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
@@ -193,21 +189,22 @@ namespace OrchardCore.Workflows.Controllers
             var activitiesDataQuery = activityContexts.Select(x => new
             {
                 Id = x.ActivityRecord.ActivityId,
-                X = x.ActivityRecord.X,
-                Y = x.ActivityRecord.Y,
-                Name = x.ActivityRecord.Name,
-                IsStart = x.ActivityRecord.IsStart,
+                x.ActivityRecord.X,
+                x.ActivityRecord.Y,
+                x.ActivityRecord.Name,
+                x.ActivityRecord.IsStart,
                 IsEvent = x.Activity.IsEvent(),
                 IsBlocking = workflow.BlockingActivities.Any(a => a.ActivityId == x.ActivityRecord.ActivityId),
                 Outcomes = x.Activity.GetPossibleOutcomes(workflowContext, x).ToArray()
             });
+
             var workflowTypeData = new
             {
-                Id = workflowType.Id,
-                Name = workflowType.Name,
-                IsEnabled = workflowType.IsEnabled,
+                workflowType.Id,
+                workflowType.Name,
+                workflowType.IsEnabled,
                 Activities = activitiesDataQuery.ToArray(),
-                Transitions = workflowType.Transitions
+                workflowType.Transitions
             };
 
             var jsonSerializerSettings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
@@ -274,7 +271,7 @@ namespace OrchardCore.Workflows.Controllers
                         break;
 
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
             return RedirectToAction(nameof(Index), new { workflowTypeId, pagenum = pagerParameters.Page, pagesize = pagerParameters.PageSize });

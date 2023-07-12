@@ -10,7 +10,9 @@ namespace OrchardCore.Workflows.UserTasks.Activities
 {
     public class UserTaskEvent : EventActivity
     {
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public UserTaskEvent(IStringLocalizer<UserTaskEvent> localizer)
         {
@@ -50,7 +52,7 @@ namespace OrchardCore.Workflows.UserTasks.Activities
             return Outcomes(action);
         }
 
-        private string GetProvidedAction(WorkflowExecutionContext workflowContext)
+        private static string GetProvidedAction(WorkflowExecutionContext workflowContext)
         {
             return (string)workflowContext.Input[ContentEventConstants.UserActionInputKey];
         }

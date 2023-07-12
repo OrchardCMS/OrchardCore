@@ -13,7 +13,9 @@ namespace OrchardCore.ReCaptcha.Workflows
     {
         private readonly ReCaptchaService _reCaptchaService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public ValidateReCaptchaTask(
             ReCaptchaService reCaptchaService,
@@ -47,10 +49,8 @@ namespace OrchardCore.ReCaptcha.Workflows
             {
                 var updater = _updateModelAccessor.ModelUpdater;
                 outcome = "Invalid";
-                if (updater != null)
-                {
-                    updater.ModelState.TryAddModelError(Constants.ReCaptchaServerResponseHeaderName, S["Captcha validation failed. Try again."]);
-                }
+
+                updater?.ModelState.TryAddModelError(Constants.ReCaptchaServerResponseHeaderName, S["Captcha validation failed. Try again."]);
             });
 
             return Outcomes("Done", outcome);

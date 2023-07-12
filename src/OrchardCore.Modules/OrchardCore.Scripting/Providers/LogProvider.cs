@@ -23,12 +23,14 @@ namespace OrchardCore.Scripting.Providers
                          }
                          if (param == null)
                          {
+#pragma warning disable CA2254 // Template should be a static expression
                              logger.Log(logLevel, text);
+#pragma warning restore CA2254 // Template should be a static expression
                          }
                          else
                          {
                              object[] args;
-                             if (!(param is Array))
+                             if (param is not Array)
                              {
                                  args = new[] { param };
                              }
@@ -36,7 +38,10 @@ namespace OrchardCore.Scripting.Providers
                              {
                                  args = (object[])param;
                              }
+
+#pragma warning disable CA2254 // Template should be a static expression
                              logger.Log(logLevel, text, args);
+#pragma warning restore CA2254 // Template should be a static expression
                          }
                      }
                      catch (Exception ex)

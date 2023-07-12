@@ -21,7 +21,9 @@ public class RoleLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, RoleLo
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IRoleService _roleService;
+#pragma warning disable IDE1006 // Naming Styles
     private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
     public RoleLoginSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,

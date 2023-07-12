@@ -12,7 +12,9 @@ namespace OrchardCore.GitHub.Services
     public class GitHubAuthenticationService : IGitHubAuthenticationService
     {
         private readonly ISiteService _siteService;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public GitHubAuthenticationService(
             ISiteService siteService,

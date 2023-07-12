@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -25,7 +26,9 @@ namespace OrchardCore.Users.Workflows.Activities
         private readonly LinkGenerator _linkGenerator;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
         private readonly HtmlEncoder _htmlEncoder;
 
         public RegisterUserTask(
@@ -90,21 +93,21 @@ namespace OrchardCore.Users.Workflows.Activities
         // This is the heart of the activity and actually performs the work to be done.
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            bool isValid = false;
+            var isValid = false;
             IFormCollection form = null;
             string email = null;
             if (_httpContextAccessor.HttpContext != null)
             {
                 form = _httpContextAccessor.HttpContext.Request.Form;
                 email = form["Email"];
-                isValid = !string.IsNullOrWhiteSpace(email);
+                isValid = !String.IsNullOrWhiteSpace(email);
             }
             var outcome = isValid ? "Valid" : "Invalid";
 
             if (isValid)
             {
                 var userName = form["UserName"];
-                if (string.IsNullOrWhiteSpace(userName))
+                if (String.IsNullOrWhiteSpace(userName))
                 {
                     userName = email.Replace('@', '+');
                 }
@@ -148,10 +151,7 @@ namespace OrchardCore.Users.Workflows.Activities
                     if (smtpService == null)
                     {
                         var updater = _updateModelAccessor.ModelUpdater;
-                        if (updater != null)
-                        {
-                            updater.ModelState.TryAddModelError("", S["No email service is available"]);
-                        }
+                        updater?.ModelState.TryAddModelError("", S["No email service is available"]);
                         outcome = "Invalid";
                     }
                     else

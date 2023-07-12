@@ -7,8 +7,8 @@ namespace OrchardCore.AdminDashboard
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageAdminDashboard = new Permission("ManageAdminDashboard", "Manage the Admin Dashboard");
-        public static readonly Permission AccessAdminDashboard = new Permission("AccessAdminDashboard", "Access the Admin Dashboard", new[] { ManageAdminDashboard });
+        public static readonly Permission ManageAdminDashboard = new("ManageAdminDashboard", "Manage the Admin Dashboard");
+        public static readonly Permission AccessAdminDashboard = new("AccessAdminDashboard", "Access the Admin Dashboard", new[] { ManageAdminDashboard });
 
         public Permissions()
         {

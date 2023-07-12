@@ -19,7 +19,9 @@ namespace OrchardCore.Roles.Services
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IDocumentManager<RolesDocument> _documentManager;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
         private readonly ILogger _logger;
 
         private bool _updating;
@@ -215,7 +217,7 @@ namespace OrchardCore.Roles.Services
 
         #region IRoleClaimStore<IRole>
 
-        public Task AddClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        public Task AddClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken = default)
         {
             if (role == null)
             {
@@ -232,7 +234,7 @@ namespace OrchardCore.Roles.Services
             return Task.CompletedTask;
         }
 
-        public Task<IList<Claim>> GetClaimsAsync(IRole role, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<IList<Claim>> GetClaimsAsync(IRole role, CancellationToken cancellationToken = default)
         {
             if (role == null)
             {
@@ -242,7 +244,7 @@ namespace OrchardCore.Roles.Services
             return Task.FromResult<IList<Claim>>(((Role)role).RoleClaims.Select(x => x.ToClaim()).ToList());
         }
 
-        public Task RemoveClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        public Task RemoveClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken = default)
         {
             if (role == null)
             {

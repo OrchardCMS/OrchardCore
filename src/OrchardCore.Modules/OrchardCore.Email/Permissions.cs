@@ -7,7 +7,7 @@ namespace OrchardCore.Email
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageEmailSettings = new Permission("ManageEmailSettings", "Manage Email Settings");
+        public static readonly Permission ManageEmailSettings = new("ManageEmailSettings", "Manage Email Settings");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {

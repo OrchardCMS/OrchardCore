@@ -32,13 +32,17 @@ public class AdminController : Controller, IUpdateModel
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly ISession _session;
+#pragma warning disable IDE1006 // Naming Styles
     private readonly dynamic New;
+#pragma warning restore IDE1006 // Naming Styles
     private readonly IDisplayManager<Notification> _webNoticiationDisplayManager;
     private readonly INotificationsAdminListQueryService _notificationsAdminListQueryService;
     private readonly IDisplayManager<ListNotificationOptions> _notificationOptionsDisplayManager;
     private readonly INotifier _notifier;
+#pragma warning disable IDE1006 // Naming Styles
     private readonly IStringLocalizer S;
     private readonly IHtmlLocalizer H;
+#pragma warning restore IDE1006 // Naming Styles
     private readonly IShapeFactory _shapeFactory;
     private readonly PagerOptions _pagerOptions;
     private readonly IClock _clock;

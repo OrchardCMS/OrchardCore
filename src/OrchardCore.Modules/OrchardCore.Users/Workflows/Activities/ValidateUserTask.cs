@@ -14,7 +14,9 @@ namespace OrchardCore.Users.Workflows.Activities
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly string _roleClaimType;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public ValidateUserTask(IHttpContextAccessor httpContextAccessor, IOptions<IdentityOptions> optionsAccessor, IStringLocalizer<ValidateUserTask> localizer)
         {

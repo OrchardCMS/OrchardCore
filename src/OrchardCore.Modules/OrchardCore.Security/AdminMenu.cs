@@ -8,7 +8,9 @@ namespace OrchardCore.Security
 {
     public class AdminMenu : INavigationProvider
     {
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {

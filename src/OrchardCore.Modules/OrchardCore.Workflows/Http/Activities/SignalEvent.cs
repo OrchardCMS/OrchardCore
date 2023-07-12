@@ -14,7 +14,9 @@ namespace OrchardCore.Workflows.Http.Activities
     {
         public static string EventName => nameof(SignalEvent);
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public SignalEvent(IWorkflowExpressionEvaluator expressionEvaluator, IStringLocalizer<SignalEvent> localizer)
         {
@@ -35,7 +37,7 @@ namespace OrchardCore.Workflows.Http.Activities
         public override async Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var signalName = await _expressionEvaluator.EvaluateAsync(SignalName, workflowContext, null);
-            return string.Equals(workflowContext.Input.GetValue<string>("Signal"), signalName, StringComparison.OrdinalIgnoreCase);
+            return String.Equals(workflowContext.Input.GetValue<string>("Signal"), signalName, StringComparison.OrdinalIgnoreCase);
         }
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

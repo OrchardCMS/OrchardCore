@@ -13,7 +13,7 @@ namespace OrchardCore.Localization
         /// <summary>
         /// Gets a permission for managing the cultures.
         /// </summary>
-        public static readonly Permission ManageCultures = new Permission("ManageCultures", "Manage supported culture");
+        public static readonly Permission ManageCultures = new("ManageCultures", "Manage supported culture");
 
         /// <inheritdocs />
         public Task<IEnumerable<Permission>> GetPermissionsAsync()

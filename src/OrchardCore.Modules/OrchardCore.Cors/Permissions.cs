@@ -7,7 +7,7 @@ namespace OrchardCore.Cors
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageCorsSettings = new Permission("ManageCorsSettings", "Managing Cors Settings", isSecurityCritical: true);
+        public static readonly Permission ManageCorsSettings = new("ManageCorsSettings", "Managing Cors Settings", isSecurityCritical: true);
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {

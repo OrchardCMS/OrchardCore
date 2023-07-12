@@ -15,7 +15,9 @@ namespace OrchardCore.Features.Services
         private readonly IExtensionManager _extensionManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly INotifier _notifier;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IHtmlLocalizer H;
+#pragma warning restore IDE1006 // Naming Styles
 
         public ModuleService(
                 IExtensionManager extensionManager,

@@ -27,7 +27,9 @@ namespace OrchardCore.Users.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IHtmlLocalizer H;
+#pragma warning restore IDE1006 // Naming Styles
 
         public UserRoleDisplayDriver(
             UserManager<IUser> userManager,

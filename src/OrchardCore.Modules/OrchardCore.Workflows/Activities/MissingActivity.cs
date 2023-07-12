@@ -12,7 +12,9 @@ namespace OrchardCore.Workflows.Activities
     public class MissingActivity : Activity
     {
         private readonly ILogger _logger;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public MissingActivity(IStringLocalizer<MissingActivity> localizer, ILogger<MissingActivity> logger, ActivityRecord missingActivityRecord)
         {

@@ -17,7 +17,8 @@ namespace OrchardCore.Users.Handlers
         private readonly ILogger _logger;
         private readonly IScriptingManager _scriptingManager;
         private readonly ISiteService _siteService;
-        private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
+
+        private static readonly JsonSerializerSettings _jsonSettings = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };

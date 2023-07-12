@@ -21,8 +21,10 @@ namespace OrchardCore.Deployment.Controllers
         private readonly IDeploymentManager _deploymentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public ImportController(
             IDeploymentManager deploymentManager,

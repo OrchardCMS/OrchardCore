@@ -26,9 +26,12 @@ namespace OrchardCore.Deployment.Remote.Controllers
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
         private readonly RemoteInstanceService _service;
+
+#pragma warning disable IDE1006 // Naming Styles
         private readonly dynamic New;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
+#pragma warning restore IDE1006 // Naming Styles
 
         public RemoteInstanceController(
             RemoteInstanceService service,
@@ -60,12 +63,12 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             var remoteInstances = (await _service.GetRemoteInstanceListAsync()).RemoteInstances;
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
                 remoteInstances = remoteInstances.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            var count = remoteInstances.Count();
+            var count = remoteInstances.Count;
 
             var startIndex = pager.GetStartIndex();
             var pageSize = pager.PageSize;
@@ -243,7 +246,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                         await _notifier.SuccessAsync(H["Remote instances successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
 
@@ -273,8 +276,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             }
             else
             {
-                Uri uri;
-                if (!Uri.TryCreate(model.Url, UriKind.Absolute, out uri))
+                if (!Uri.TryCreate(model.Url, UriKind.Absolute, out _))
                 {
                     ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.Url), S["The url is invalid."]);
                 }

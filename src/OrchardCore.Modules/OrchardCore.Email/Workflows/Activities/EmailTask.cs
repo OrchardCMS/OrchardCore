@@ -14,20 +14,22 @@ namespace OrchardCore.Email.Workflows.Activities
     {
         private readonly ISmtpService _smtpService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer S;
         private readonly HtmlEncoder _htmlEncoder;
+#pragma warning disable IDE1006 // Naming Styles
+        private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public EmailTask(
             ISmtpService smtpService,
             IWorkflowExpressionEvaluator expressionEvaluator,
-            IStringLocalizer<EmailTask> localizer,
-            HtmlEncoder htmlEncoder
+            HtmlEncoder htmlEncoder,
+            IStringLocalizer<EmailTask> localizer
         )
         {
             _smtpService = smtpService;
             _expressionEvaluator = expressionEvaluator;
-            S = localizer;
             _htmlEncoder = htmlEncoder;
+            S = localizer;
         }
 
         public override string Name => nameof(EmailTask);
@@ -88,7 +90,7 @@ namespace OrchardCore.Email.Workflows.Activities
             get => GetProperty(() => true);
             set => SetProperty(value);
         }
-  
+
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {

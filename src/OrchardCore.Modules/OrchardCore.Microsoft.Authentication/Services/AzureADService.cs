@@ -12,7 +12,9 @@ namespace OrchardCore.Microsoft.Authentication.Services
     public class AzureADService : IAzureADService
     {
         private readonly ISiteService _siteService;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public AzureADService(
             ISiteService siteService,

@@ -31,8 +31,11 @@ namespace OrchardCore.Localization.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
         private readonly CultureOptions _cultureOptions;
+
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public LocalizationSettingsDisplayDriver(
             INotifier notifier,
@@ -119,10 +122,10 @@ namespace OrchardCore.Localization.Drivers
                         section.DefaultCulture = section.SupportedCultures[0];
                     }
 
-                    // We always release the tenant for the default culture and also supported cultures to take effect
+                    // We always release the tenant for the default culture and also supported cultures to take effect.
                     await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
-                    // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture
+                    // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture.
                     using (CultureScope.Create(section.DefaultCulture, ignoreSystemSettings: _cultureOptions.IgnoreSystemSettings))
                     {
                         await _notifier.WarningAsync(H["The site has been restarted for the settings to take effect."]);

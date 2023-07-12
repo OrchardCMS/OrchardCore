@@ -32,9 +32,11 @@ namespace OrchardCore.Deployment.Controllers
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
         private readonly dynamic New;
+#pragma warning restore IDE1006 // Naming Styles
 
         public DeploymentPlanController(
             IAuthorizationService authorizationService,
@@ -76,7 +78,7 @@ namespace OrchardCore.Deployment.Controllers
 
             var deploymentPlans = _session.Query<DeploymentPlan, DeploymentPlanIndex>();
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
                 deploymentPlans = deploymentPlans.Where(x => x.Name.Contains(options.Search));
             }
@@ -142,7 +144,7 @@ namespace OrchardCore.Deployment.Controllers
                         await _notifier.SuccessAsync(H["Deployment plans successfully deleted."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
 

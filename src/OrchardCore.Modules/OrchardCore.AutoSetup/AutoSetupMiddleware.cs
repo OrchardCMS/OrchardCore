@@ -181,7 +181,7 @@ namespace OrchardCore.AutoSetup
 
             if (setupContext.Errors.Count == 0)
             {
-                _logger.LogInformation($"AutoSetup successfully provisioned the site {setupOptions.SiteName}");
+                _logger.LogInformation("AutoSetup successfully provisioned the site '{SiteName}'.", setupOptions.SiteName);
 
                 return true;
             }

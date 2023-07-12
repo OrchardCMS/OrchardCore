@@ -7,12 +7,11 @@ namespace OrchardCore.BackgroundTasks
 {
     public class AdminMenu : INavigationProvider
     {
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
-        {
-            S = localizer;
-        }
+        public AdminMenu(IStringLocalizer<AdminMenu> localizer) => S = localizer;
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {

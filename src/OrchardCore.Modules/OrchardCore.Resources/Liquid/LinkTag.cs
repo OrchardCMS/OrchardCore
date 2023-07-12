@@ -12,7 +12,9 @@ namespace OrchardCore.Resources.Liquid
 {
     public class LinkTag
     {
+#pragma warning disable IDE0060 // Remove unused parameter
         public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
+#pragma warning restore IDE0060 // Remove unused parameter
         {
             var services = ((LiquidTemplateContext)context).Services;
             var resourceManager = services.GetRequiredService<IResourceManager>();
@@ -42,27 +44,27 @@ namespace OrchardCore.Resources.Liquid
 
             var linkEntry = new LinkEntry();
 
-            if (!string.IsNullOrEmpty(src))
+            if (!System.String.IsNullOrEmpty(src))
             {
                 linkEntry.Href = src;
             }
 
-            if (!string.IsNullOrEmpty(rel))
+            if (!System.String.IsNullOrEmpty(rel))
             {
                 linkEntry.Rel = rel;
             }
 
-            if (!string.IsNullOrEmpty(condition))
+            if (!System.String.IsNullOrEmpty(condition))
             {
                 linkEntry.Condition = condition;
             }
 
-            if (!string.IsNullOrEmpty(title))
+            if (!System.String.IsNullOrEmpty(title))
             {
                 linkEntry.Title = title;
             }
 
-            if (!string.IsNullOrEmpty(type))
+            if (!System.String.IsNullOrEmpty(type))
             {
                 linkEntry.Type = type;
             }

@@ -41,16 +41,16 @@ namespace OrchardCore.Facebook
                 }
                 else if (Path.GetFileName(httpContext.Request.Path.Value) == "fb.js")
                 {
-                    if (!string.IsNullOrWhiteSpace(settings?.AppId))
+                    if (!String.IsNullOrWhiteSpace(settings?.AppId))
                     {
                         var options = $"{{ appId:'{settings.AppId}',version:'{settings.Version}'";
-                        if (string.IsNullOrWhiteSpace(settings.FBInitParams))
+                        if (String.IsNullOrWhiteSpace(settings.FBInitParams))
                         {
-                            options = string.Concat(options, "}");
+                            options = String.Concat(options, "}");
                         }
                         else
                         {
-                            options = string.Concat(options, ",", settings.FBInitParams, "}");
+                            options = String.Concat(options, ",", settings.FBInitParams, "}");
                         }
                         script = $"window.fbAsyncInit = function(){{ FB.init({options});}};";
                     }
@@ -60,7 +60,7 @@ namespace OrchardCore.Facebook
                 {
                     var bytes = Encoding.UTF8.GetBytes(script);
                     var cancellationToken = httpContext?.RequestAborted ?? CancellationToken.None;
-                    await httpContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes(script), 0, bytes.Length, cancellationToken);
+                    await httpContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes(script).AsMemory(0, bytes.Length), cancellationToken);
                     return;
                 }
             }

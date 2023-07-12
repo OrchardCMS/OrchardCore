@@ -7,7 +7,9 @@ namespace OrchardCore.Deployment
 {
     public class FileDownloadDeploymentTargetProvider : IDeploymentTargetProvider
     {
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public FileDownloadDeploymentTargetProvider(IStringLocalizer<FileDownloadDeploymentTargetProvider> stringLocalizer)
         {

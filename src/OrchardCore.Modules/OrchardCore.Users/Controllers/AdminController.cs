@@ -45,9 +45,11 @@ namespace OrchardCore.Users.Controllers
         private readonly IShapeFactory _shapeFactory;
         private readonly ILogger _logger;
 
+#pragma warning disable IDE1006 // Naming Styles
         private readonly dynamic New;
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public AdminController(
             IDisplayManager<User> userDisplayManager,
@@ -548,7 +550,9 @@ namespace OrchardCore.Users.Controllers
 
                 foreach (var error in result.Errors)
                 {
+#pragma warning disable CA2254 // Template should be a static expression
                     _logger.LogWarning(error.Description);
+#pragma warning restore CA2254 // Template should be a static expression
                 }
             }
 
