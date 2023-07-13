@@ -147,9 +147,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     cm.replaceSelections(replacements);
     ranges = cm.listSelections();
     if (!dontIndentOnAutoClose) {
-      for (var i = 0; i < ranges.length; i++) {
-        if (i == ranges.length - 1 || ranges[i].head.line < ranges[i + 1].head.line) cm.indentLine(ranges[i].head.line);
-      }
+      for (var i = 0; i < ranges.length; i++) if (i == ranges.length - 1 || ranges[i].head.line < ranges[i + 1].head.line) cm.indentLine(ranges[i].head.line);
     }
   }
   function autoCloseSlash(cm) {
@@ -161,9 +159,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
   };
   function indexOf(collection, elt) {
     if (collection.indexOf) return collection.indexOf(elt);
-    for (var i = 0, e = collection.length; i < e; ++i) {
-      if (collection[i] == elt) return i;
-    }
+    for (var i = 0, e = collection.length; i < e; ++i) if (collection[i] == elt) return i;
     return -1;
   }
 
