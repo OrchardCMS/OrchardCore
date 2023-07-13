@@ -6,14 +6,14 @@ namespace OrchardCore.Indexing
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageIndexes = new Permission("ManageIndexes", "Manage Indexes");
+        public static readonly Permission ManageIndexes = new("ManageIndexes", "Manage Indexes");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
             return Task.FromResult(GetPermissions());
         }
 
-        private IEnumerable<Permission> GetPermissions()
+        private static IEnumerable<Permission> GetPermissions()
         {
             return new[]
 {

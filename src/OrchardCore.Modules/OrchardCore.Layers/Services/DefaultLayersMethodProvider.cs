@@ -30,7 +30,7 @@ namespace OrchardCore.Layers.Services
                 {
                     var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
                     var requestPath = httpContext.Request.Path.Value;
-                    return requestPath == "/" || string.IsNullOrEmpty(requestPath);
+                    return requestPath == "/" || String.IsNullOrEmpty(requestPath);
                 })
             };
 
@@ -73,22 +73,22 @@ namespace OrchardCore.Layers.Services
                 {
                     if (url.StartsWith("~/", StringComparison.Ordinal))
                     {
-                        url = url.Substring(1);
+                        url = url[1..];
                     }
 
                     var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-                    string requestPath = httpContext.Request.Path.Value;
+                    var requestPath = httpContext.Request.Path.Value;
 
                     // Tenant home page could have an empty string as a request path, where
                     // the default tenant does not.
-                    if (string.IsNullOrEmpty(requestPath))
+                    if (String.IsNullOrEmpty(requestPath))
                     {
                         requestPath = "/";
                     }
 
                     return url.EndsWith('*')
                         ? requestPath.StartsWith(url.TrimEnd('*'), StringComparison.OrdinalIgnoreCase)
-                        : string.Equals(requestPath, url, StringComparison.OrdinalIgnoreCase);
+                        : String.Equals(requestPath, url, StringComparison.OrdinalIgnoreCase);
                 })
             };
 
@@ -99,8 +99,8 @@ namespace OrchardCore.Layers.Services
                 {
                     var currentCulture = CultureInfo.CurrentCulture;
 
-                    return string.Equals(culture, currentCulture.Name, StringComparison.OrdinalIgnoreCase) ||
-                        string.Equals(culture, currentCulture.Parent.Name, StringComparison.OrdinalIgnoreCase);
+                    return String.Equals(culture, currentCulture.Name, StringComparison.OrdinalIgnoreCase) ||
+                        String.Equals(culture, currentCulture.Parent.Name, StringComparison.OrdinalIgnoreCase);
                 })
             };
 

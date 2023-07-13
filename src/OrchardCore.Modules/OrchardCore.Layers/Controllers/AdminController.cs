@@ -40,8 +40,10 @@ namespace OrchardCore.Layers.Controllers
         private readonly IDisplayManager<Rule> _ruleDisplayManager;
         private readonly IConditionIdGenerator _conditionIdGenerator;
         private readonly IEnumerable<IConditionFactory> _conditionFactories;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
+#pragma warning restore IDE1006 // Naming Styles
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
 
@@ -162,10 +164,10 @@ namespace OrchardCore.Layers.Controllers
                 var layer = new Layer
                 {
                     Name = model.Name,
-                    Description = model.Description
+                    Description = model.Description,
+                    LayerRule = new Rule()
                 };
 
-                layer.LayerRule = new Rule();
                 _conditionIdGenerator.GenerateUniqueId(layer.LayerRule);
 
                 layers.Layers.Add(layer);
@@ -203,7 +205,7 @@ namespace OrchardCore.Layers.Controllers
                 var condition = factory.Create();
                 dynamic thumbnail = await _conditionDisplayManager.BuildDisplayAsync(condition, _updateModelAccessor.ModelUpdater, "Thumbnail");
                 thumbnail.Condition = condition;
-                thumbnail.TargetUrl = Url.ActionLink("Create", "LayerRule", new { name = name, type = factory.Name });
+                thumbnail.TargetUrl = Url.ActionLink("Create", "LayerRule", new { name, type = factory.Name });
                 thumbnails.Add(factory.Name, thumbnail);
             }
 

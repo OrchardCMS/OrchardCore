@@ -15,7 +15,9 @@ namespace OrchardCore.Layers.Drivers
     public class LayerMetadataWelder : ContentDisplayDriver
     {
         private readonly ILayerService _layerService;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public LayerMetadataWelder(ILayerService layerService, IStringLocalizer<LayerMetadataWelder> stringLocalizer)
         {
@@ -26,7 +28,7 @@ namespace OrchardCore.Layers.Drivers
         protected override void BuildPrefix(ContentItem model, string htmlFieldPrefix)
         {
             base.BuildPrefix(model, htmlFieldPrefix);
-            if (string.IsNullOrWhiteSpace(htmlFieldPrefix))
+            if (String.IsNullOrWhiteSpace(htmlFieldPrefix))
             {
                 Prefix = "LayerMetadata";
             }

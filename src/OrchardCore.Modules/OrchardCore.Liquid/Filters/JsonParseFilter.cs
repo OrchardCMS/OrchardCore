@@ -7,7 +7,9 @@ namespace OrchardCore.Liquid.Filters
 {
     public static class JsonParseFilter
     {
+#pragma warning disable IDE0060 // Remove unused parameter
         public static ValueTask<FluidValue> JsonParse(FluidValue input, FilterArguments arguments, TemplateContext context)
+#pragma warning restore IDE0060 // Remove unused parameter
         {
             var parsedValue = JToken.Parse(input.ToStringValue());
             if (parsedValue.Type == JTokenType.Array)

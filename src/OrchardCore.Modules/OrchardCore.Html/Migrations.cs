@@ -40,6 +40,7 @@ namespace OrchardCore.Html
         }
 
         // This code can be removed in a later version.
+#pragma warning disable CA1822 // Mark members as static
         public int UpdateFrom1()
         {
             return 2;
@@ -47,6 +48,7 @@ namespace OrchardCore.Html
 
         // This code can be removed in a later version.
         public int UpdateFrom2()
+#pragma warning restore CA1822 // Mark members as static
         {
             return 3;
         }
@@ -94,7 +96,7 @@ namespace OrchardCore.Html
                 await _session.SaveChangesAsync();
             }
 
-            bool UpdateBody(JToken content)
+            static bool UpdateBody(JToken content)
             {
                 var changed = false;
 
