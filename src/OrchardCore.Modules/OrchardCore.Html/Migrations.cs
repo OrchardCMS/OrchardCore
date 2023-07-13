@@ -68,7 +68,7 @@ namespace OrchardCore.Html
             // We are patching all content item versions by moving the Title to DisplayText
             // This step doesn't need to be executed for a brand new site
 
-            var lastDocumentId = 0;
+            long lastDocumentId = 0;
 
             for (; ; )
             {
@@ -94,7 +94,7 @@ namespace OrchardCore.Html
                 await _session.SaveChangesAsync();
             }
 
-            bool UpdateBody(JToken content)
+            static bool UpdateBody(JToken content)
             {
                 var changed = false;
 
