@@ -16,7 +16,9 @@ namespace OrchardCore.Media.GraphQL
 {
     public class MediaAssetQuery : ISchemaBuilder
     {
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
         private readonly GraphQLContentOptions _graphQLContentOptions;
 
         public MediaAssetQuery(
@@ -65,7 +67,7 @@ namespace OrchardCore.Media.GraphQL
         {
             var mediaFileStore = resolveContext.RequestServices.GetService<IMediaFileStore>();
 
-            var path = resolveContext.GetArgument("path", string.Empty);
+            var path = resolveContext.GetArgument("path", String.Empty);
             var includeSubDirectories = resolveContext.GetArgument("includeSubDirectories", false);
 
             var allFiles = mediaFileStore.GetDirectoryContentAsync(path, includeSubDirectories);

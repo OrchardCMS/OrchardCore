@@ -30,11 +30,10 @@ namespace OrchardCore.Media.Filters
         {
             var url = input.ToStringValue();
 
-            IDictionary<string, string> queryStringParams = null;
-
             // Profile is a named argument only.
             var profile = arguments["profile"];
 
+            IDictionary<string, string> queryStringParams;
             if (!profile.IsNil())
             {
                 queryStringParams = await _mediaProfileService.GetMediaProfileCommands(profile.ToStringValue());
@@ -109,7 +108,7 @@ namespace OrchardCore.Media.Filters
             {
                 var obj = anchorValue.ToObjectValue();
 
-                if (!(obj is Anchor anchor))
+                if (obj is not Anchor anchor)
                 {
                     anchor = null;
 

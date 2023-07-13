@@ -7,7 +7,9 @@ namespace OrchardCore.Media
 {
     public class AdminMenu : INavigationProvider
     {
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
@@ -48,7 +50,9 @@ namespace OrchardCore.Media
 
     public class MediaCacheAdminMenu : INavigationProvider
     {
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public MediaCacheAdminMenu(IStringLocalizer<AdminMenu> localizer)
         {

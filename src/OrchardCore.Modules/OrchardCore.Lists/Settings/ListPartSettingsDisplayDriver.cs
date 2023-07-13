@@ -16,7 +16,9 @@ namespace OrchardCore.Lists.Settings
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContainerService _containerService;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public ListPartSettingsDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,
