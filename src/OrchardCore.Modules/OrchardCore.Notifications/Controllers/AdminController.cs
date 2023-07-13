@@ -37,7 +37,7 @@ public class AdminController : Controller, IUpdateModel
     private readonly INotificationsAdminListQueryService _notificationsAdminListQueryService;
     private readonly IDisplayManager<ListNotificationOptions> _notificationOptionsDisplayManager;
     private readonly INotifier _notifier;
-    private readonly IStringLocalizer<AdminController> S;
+    private readonly IStringLocalizer S;
     private readonly IHtmlLocalizer H;
     private readonly IShapeFactory _shapeFactory;
     private readonly PagerOptions _pagerOptions;

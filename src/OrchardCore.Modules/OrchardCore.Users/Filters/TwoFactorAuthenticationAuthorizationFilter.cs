@@ -4,11 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.Entities;
+using OrchardCore.Admin;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
-using OrchardCore.Users.Models;
-using OrchardCore.Users.Services;
 
 namespace OrchardCore.Users.Filters;
 
@@ -16,13 +14,18 @@ public class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthorizationFil
 {
     private readonly UserOptions _userOptions;
     private readonly ITwoFactorAuthenticationHandlerCoordinator _twoFactorHandlerCoordinator;
+    private readonly AdminOptions _adminOptions;
+
+    private ISiteService _siteService;
 
     public TwoFactorAuthenticationAuthorizationFilter(
         IOptions<UserOptions> userOptions,
+        IOptions<AdminOptions> adminOptions,
         ITwoFactorAuthenticationHandlerCoordinator twoFactorHandlerCoordinator)
     {
         _userOptions = userOptions.Value;
         _twoFactorHandlerCoordinator = twoFactorHandlerCoordinator;
+        _adminOptions = adminOptions.Value;
     }
 
     public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
@@ -34,25 +37,25 @@ public class TwoFactorAuthenticationAuthorizationFilter : IAsyncAuthorizationFil
 
         if (!(context.HttpContext?.User?.Identity?.IsAuthenticated ?? false)
             || context.HttpContext.Request.Path.Equals("/" + _userOptions.LogoffPath, StringComparison.OrdinalIgnoreCase)
-            || context.HttpContext.Request.Path.Equals("/" + _userOptions.EnableAuthenticatorPath, StringComparison.OrdinalIgnoreCase))
+            || context.HttpContext.Request.Path.Equals("/" + _userOptions.TwoFactorAuthenticationPath, StringComparison.OrdinalIgnoreCase)
+            || context.HttpContext.Request.Path.StartsWithSegments("/" + _adminOptions.AdminUrlPrefix + "/Authenticator/Configure", StringComparison.OrdinalIgnoreCase)
+            || context.HttpContext.Request.Path.Equals("/" + _adminOptions.AdminUrlPrefix + "/ShowRecoveryCodes", StringComparison.OrdinalIgnoreCase)
+            )
         {
             return;
         }
 
-        var siteService = context.HttpContext.RequestServices.GetService<ISiteService>();
+        _siteService ??= context.HttpContext.RequestServices.GetService<ISiteService>();
 
-        if (siteService == null)
+        if (_siteService == null)
         {
             return;
         }
 
-        var loginSettings = (await siteService.GetSiteSettingsAsync()).As<LoginSettings>();
-
-        if (loginSettings.IsTwoFactorAuthenticationEnabled()
-            && await _twoFactorHandlerCoordinator.IsRequiredAsync()
-            && context.HttpContext.User.HasClaim(claim => claim.Type == TwoFactorAuthenticationClaimsProvider.TwoFactorAuthenticationClaimType))
+        if (await _twoFactorHandlerCoordinator.IsRequiredAsync()
+            && context.HttpContext.User.HasClaim(claim => claim.Type == UserConstants.TwoFactorAuthenticationClaimType))
         {
-            context.Result = new RedirectResult("~/" + _userOptions.EnableAuthenticatorPath);
+            context.Result = new RedirectResult("~/" + _userOptions.TwoFactorAuthenticationPath);
         }
     }
 }

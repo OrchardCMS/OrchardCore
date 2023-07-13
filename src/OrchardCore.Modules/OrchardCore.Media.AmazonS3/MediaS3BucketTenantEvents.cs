@@ -38,7 +38,7 @@ public class MediaS3BucketTenantEvents : ModularTenantEvents
     public override async Task ActivatingAsync()
     {
         if (!_options.CreateBucket ||
-            _shellSettings.State == Environment.Shell.Models.TenantState.Uninitialized ||
+            _shellSettings.IsUninitialized() ||
             String.IsNullOrEmpty(_options.BucketName))
         {
             return;

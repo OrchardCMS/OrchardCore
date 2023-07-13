@@ -234,7 +234,7 @@ namespace OrchardCore.Setup.Controllers
             var result = false;
             try
             {
-                var shellScope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName);
+                var shellScope = await _shellHost.GetScopeAsync(ShellSettings.DefaultShellName);
 
                 await shellScope.UsingAsync(scope =>
                 {

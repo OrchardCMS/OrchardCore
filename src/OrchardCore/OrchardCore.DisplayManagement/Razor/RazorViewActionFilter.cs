@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Settings;
 
 namespace OrchardCore.DisplayManagement.Razor
@@ -46,39 +45,39 @@ namespace OrchardCore.DisplayManagement.Razor
         {
             var razorViewFeature = context.HttpContext.Features.Get<RazorViewFeature>();
 
-            if (razorViewFeature == null)
+            if (razorViewFeature is null)
             {
                 razorViewFeature = new RazorViewFeature();
                 context.HttpContext.Features.Set(razorViewFeature);
             }
 
-            if (razorViewFeature.Site == null)
+            if (razorViewFeature.Site is null)
             {
                 var shellSettings = context.HttpContext.RequestServices.GetService<ShellSettings>();
                 var siteService = context.HttpContext.RequestServices.GetService<ISiteService>();
 
                 // 'ISiteService' may be null during a setup and can't be used if the tenant is 'Uninitialized'.
-                if (siteService != null && shellSettings.State != TenantState.Uninitialized)
+                if (siteService is not null && !shellSettings.IsUninitialized())
                 {
                     razorViewFeature.Site = await siteService.GetSiteSettingsAsync();
                 }
             }
 
-            if (razorViewFeature.ThemeLayout == null)
+            if (razorViewFeature.ThemeLayout is null)
             {
                 var layoutAccessor = context.HttpContext.RequestServices.GetService<ILayoutAccessor>();
 
-                if (layoutAccessor != null)
+                if (layoutAccessor is not null)
                 {
                     razorViewFeature.ThemeLayout = await layoutAccessor.GetLayoutAsync();
                 }
             }
 
-            if (razorViewFeature.Theme == null)
+            if (razorViewFeature.Theme is null)
             {
                 var themeManager = context.HttpContext.RequestServices.GetService<IThemeManager>();
 
-                if (themeManager != null)
+                if (themeManager is not null)
                 {
                     razorViewFeature.Theme = await themeManager.GetThemeAsync();
                 }

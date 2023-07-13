@@ -26,7 +26,7 @@ public class RedisCacheWrapper : IDistributedCache
 
     public void Remove(string key) => _cache!.Remove(key);
 
-    public Task RemoveAsync(string key, CancellationToken token = default) => _cache.RemoveAsync(key);
+    public Task RemoveAsync(string key, CancellationToken token = default) => _cache.RemoveAsync(key, token);
 
     public void Set(string key, byte[] value, DistributedCacheEntryOptions options) => _cache.Set(key, value, options);
 

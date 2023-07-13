@@ -19,28 +19,30 @@
     {
         <li class="nav-item dropdown">
             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa-solid fa-user fa-fw" aria-hidden="true"></i> @User.Identity.Name<b class="caret"></b></a>
-            <div class="dropdown-menu">
+            <ul class="dropdown-menu">
                 @if (User.HasClaim("Permission", "AccessAdminPanel"))
                 {
-                    <a class="dropdown-item" asp-route-area="OrchardCore.Admin" asp-controller="Admin" asp-action="Index"><i class="fa-solid fa-desktop fa-fw" aria-hidden="true"></i> @T["Dashboard"]</a>
+                    <li><a class="dropdown-item" asp-route-area="OrchardCore.Admin" asp-controller="Admin" asp-action="Index"><i class="fa-solid fa-desktop fa-fw" aria-hidden="true"></i> @T["Dashboard"]</a></li>
                 }
                 @if (allowChangeEmail)
                 {
-                    <a class="dropdown-item" asp-route-area="OrchardCore.Users" asp-controller="ChangeEmail" asp-action="Index"><i class="fa-solid fa-envelope fa-fw" aria-hidden="true"></i> @T["Change Email"]</a>
+                    <li><a class="dropdown-item" asp-route-area="OrchardCore.Users" asp-controller="ChangeEmail" asp-action="Index"><i class="fa-solid fa-envelope fa-fw" aria-hidden="true"></i> @T["Change Email"]</a></li>
                 }
-                <a class="dropdown-item" asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="ChangePassword" asp-route-returnUrl="@FullRequestPath"><i class="fa-solid fa-lock fa-fw" aria-hidden="true"></i> @T["Change Password"]</a>
+                <li>
+                    <a class="dropdown-item" asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="ChangePassword" asp-route-returnUrl="@FullRequestPath"><i class="fa-solid fa-lock fa-fw" aria-hidden="true"></i> @T["Change Password"]</a>
+                </li>
                 @if (externalAuthenticationSchemes.Count() > 0)
                 {
-                    <a class="dropdown-item" asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="ExternalLogins"><i class="fa-solid fa-user-lock fa-fw" aria-hidden="true"></i> @T["External Logins"]</a>
+                    <li><a class="dropdown-item" asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="ExternalLogins"><i class="fa-solid fa-user-lock fa-fw" aria-hidden="true"></i> @T["External Logins"]</a></li>
                 }
-                @if (loginSettings.IsTwoFactorAuthenticationEnabled())
-                {
-                    <a class="dropdown-item" asp-route-area="OrchardCore.Users" asp-controller="TwoFactorAuthentication" asp-action="Index"><i class="fa-solid fa-shield-halved fa-fw" aria-hidden="true"></i> @T["Security"]</a>
-                }
-                <form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post" class="no-multisubmit">
-                    <button type="submit" class="btn btn-link navbar-btn dropdown-item"><i class="fa-solid fa-sign-out-alt fa-fw" aria-hidden="true"></i> @T["Log off"]</button>
-                </form>
-            </div>
+                @await RenderSectionAsync("UserMenuItems", required: false)
+
+                <li>
+                    <form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post" class="no-multisubmit">
+                        <button type="submit" class="btn btn-link navbar-btn dropdown-item"><i class="fa-solid fa-sign-out-alt fa-fw" aria-hidden="true"></i> @T["Log off"]</button>
+                    </form>
+                </li>
+            </ul>
         </li>
     }
     else

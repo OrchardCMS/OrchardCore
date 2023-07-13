@@ -9,7 +9,6 @@ using OrchardCore.Data;
 using OrchardCore.Data.Documents;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell.Builders;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 using YesSql;
 
@@ -44,7 +43,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
             return;
         }
 
-        if (context.ShellSettings.State == TenantState.Uninitialized)
+        if (context.ShellSettings.IsUninitialized())
         {
             var dbConnectionValidator = ShellScope.Services?.GetService<IDbConnectionValidator>();
             if (dbConnectionValidator == null)
@@ -63,10 +62,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
         }
 
         // Can't resolve 'IStore' if 'Uninitialized', so force to 'Disabled'.
-        var shellSettings = new ShellSettings(context.ShellSettings)
-        {
-            State = TenantState.Disabled,
-        };
+        var shellSettings = new ShellSettings(context.ShellSettings).AsDisabled();
 
         var shellDbTablesInfo = await GetTablesToRemoveAsync(shellSettings);
         if (!context.Success)
