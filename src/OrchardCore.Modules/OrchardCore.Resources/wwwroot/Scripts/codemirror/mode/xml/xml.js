@@ -153,12 +153,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     var indentUnit = editorConf.indentUnit;
     var config = {};
     var defaults = config_.htmlMode ? htmlConfig : xmlConfig;
-    for (var prop in defaults) {
-      config[prop] = defaults[prop];
-    }
-    for (var prop in config_) {
-      config[prop] = config_[prop];
-    }
+    for (var prop in defaults) config[prop] = defaults[prop];
+    for (var prop in config_) config[prop] = config_[prop];
 
     // Return variables for tokenizers
     var type, setStyle;
@@ -451,9 +447,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             if (grabbers && grabbers.hasOwnProperty(lower(tagAfter[2]))) context = context.prev;else break;
           }
         }
-        while (context && context.prev && !context.startOfLine) {
-          context = context.prev;
-        }
+        while (context && context.prev && !context.startOfLine) context = context.prev;
         if (context) return context.indent + indentUnit;else return state.baseIndent || 0;
       },
       electricInput: /<\/[\s\w:]+>$/,
@@ -472,9 +466,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       },
       xmlCurrentContext: function xmlCurrentContext(state) {
         var context = [];
-        for (var cx = state.context; cx; cx = cx.prev) {
-          context.push(cx.tagName);
-        }
+        for (var cx = state.context; cx; cx = cx.prev) context.push(cx.tagName);
         return context.reverse();
       }
     };
