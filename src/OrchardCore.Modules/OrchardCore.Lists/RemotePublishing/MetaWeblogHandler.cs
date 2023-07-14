@@ -356,7 +356,7 @@ namespace OrchardCore.Lists.RemotePublishing
         {
             var user = await ValidateUserAsync(userName, password);
 
-            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired)
+            var contentItem = (await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired))
                 ?? throw new Exception(S["The specified Blog Post doesn't exist anymore. Please create a new Blog Post."]);
 
             await CheckAccessAsync(publish ? CommonPermissions.PublishContent : CommonPermissions.EditContent, user, contentItem);
