@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Microsoft.Authentication.Settings;
 
@@ -46,7 +45,7 @@ public class MicrosoftAccountSettingsConfiguration : IConfigureOptions<Microsoft
         var settings = await _microsoftAccountService.GetSettingsAsync();
         if (_microsoftAccountService.ValidateSettings(settings).Any(result => result != ValidationResult.Success))
         {
-            if (_shellSettings.State == TenantState.Running)
+            if (_shellSettings.IsRunning())
             {
                 _logger.LogWarning("The Microsoft Account Authentication is not correctly configured.");
             }

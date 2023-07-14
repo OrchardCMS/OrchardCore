@@ -62,7 +62,8 @@ markdown_extensions:
   - pymdownx.snippets:
       check_paths: true
   - pymdownx.superfences
-  - pymdownx.tabbed
+  - pymdownx.tabbed:
+      alternate_style: false
   - pymdownx.tasklist
   - pymdownx.tilde
   - toc:

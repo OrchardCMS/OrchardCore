@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Security.Services;
-using OrchardCore.Settings;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
@@ -42,7 +40,6 @@ namespace OrchardCore.Users.Services
         private readonly ILogger _logger;
         private readonly IRoleService _roleService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ISiteService _siteService;
 
         public UserStore(ISession session,
             ILookupNormalizer keyNormalizer,
@@ -50,15 +47,13 @@ namespace OrchardCore.Users.Services
             ILogger<UserStore> logger,
             IEnumerable<IUserEventHandler> handlers,
             IRoleService roleService,
-            IDataProtectionProvider dataProtectionProvider,
-            ISiteService siteService)
+            IDataProtectionProvider dataProtectionProvider)
         {
             _session = session;
             _keyNormalizer = keyNormalizer;
             _userIdGenerator = userIdGenerator;
             _logger = logger;
             _dataProtectionProvider = dataProtectionProvider;
-            _siteService = siteService;
             Handlers = handlers;
             _roleService = roleService;
         }
@@ -970,16 +965,14 @@ namespace OrchardCore.Users.Services
             return Task.CompletedTask;
         }
 
-        public async Task<bool> GetTwoFactorEnabledAsync(IUser user, CancellationToken cancellationToken)
+        public Task<bool> GetTwoFactorEnabledAsync(IUser user, CancellationToken cancellationToken)
         {
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
-
-            if (settings.IsTwoFactorAuthenticationEnabled() && user is User u)
+            if (user is User u)
             {
-                return u.TwoFactorEnabled;
+                return Task.FromResult(u.TwoFactorEnabled);
             }
 
-            return false;
+            return Task.FromResult(false);
         }
         #endregion
 

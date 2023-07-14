@@ -22,7 +22,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
     public class SqlQueryFieldTypeProvider : ISchemaBuilder
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ILogger<SqlQueryFieldTypeProvider> _logger;
+        private readonly ILogger _logger;
 
         public SqlQueryFieldTypeProvider(IHttpContextAccessor httpContextAccessor, ILogger<SqlQueryFieldTypeProvider> logger)
         {
