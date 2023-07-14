@@ -56,7 +56,7 @@ namespace OrchardCore.Environment.Commands
             }
             catch (Exception ex) when (!ex.IsFatal())
             {
-                //TODO: (ngm) fix this message.
+                // TODO: (ngm) fix this message.
                 var message = S["Error converting value \"{0}\" to \"{1}\" for switch \"{2}\"",
                     commandSwitch.Value,
                     propertyInfo.PropertyType.FullName,
