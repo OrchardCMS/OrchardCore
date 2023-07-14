@@ -62,7 +62,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         };
 
         private string _indexPrefix;
-        private bool _disposing;
+        private bool _disposed;
 
         public ElasticIndexManager(
             IElasticClient elasticClient,
@@ -606,19 +606,14 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         public void Dispose()
         {
-            if (_disposing)
+            if (_disposed)
             {
                 return;
             }
 
-            _disposing = true;
+            _disposed = true;
 
             GC.SuppressFinalize(this);
-        }
-
-        ~ElasticIndexManager()
-        {
-            Dispose();
         }
     }
 }
