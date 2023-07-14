@@ -50,9 +50,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     for (var tag in from) {
       var dest = to[tag] || (to[tag] = []);
       var source = from[tag];
-      for (var i = source.length - 1; i >= 0; i--) {
-        dest.unshift(source[i]);
-      }
+      for (var i = source.length - 1; i >= 0; i--) dest.unshift(source[i]);
     }
   }
   function findMatchingMode(tagInfo, tagText) {
@@ -74,9 +72,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       configScript = parserConfig && parserConfig.scriptTypes;
     addTags(defaultTags, tags);
     if (configTags) addTags(configTags, tags);
-    if (configScript) for (var i = configScript.length - 1; i >= 0; i--) {
-      tags.script.unshift(["type", configScript[i].matches, configScript[i].mode]);
-    }
+    if (configScript) for (var i = configScript.length - 1; i >= 0; i--) tags.script.unshift(["type", configScript[i].matches, configScript[i].mode]);
     function html(stream, state) {
       var style = htmlMode.token(stream, state.htmlState),
         tag = /\btag\b/.test(style),
