@@ -282,16 +282,16 @@ namespace OrchardCore.Lists.RemotePublishing
 
             await _contentManager.CreateAsync(contentItem, VersionOptions.Draft);
 
-            // try to get the UTC time zone by default.
+            // Try to get the UTC time zone by default.
             var publishedUtc = content.Optional<DateTime?>("date_created_gmt");
             if (publishedUtc == null)
             {
-                // take the local one
+                // Take the local one
                 publishedUtc = content.Optional<DateTime?>("dateCreated");
             }
             else
             {
-                // ensure it's read as a UTC time.
+                // Ensure it's read as a UTC time.
                 publishedUtc = new DateTime(publishedUtc.Value.Ticks, DateTimeKind.Utc);
             }
 
@@ -366,7 +366,7 @@ namespace OrchardCore.Lists.RemotePublishing
                 driver.EditPost(content, contentItem);
             }
 
-            // try to get the UTC time zone by default.
+            // Try to get the UTC time zone by default.
             var publishedUtc = content.Optional<DateTime?>("date_created_gmt");
             if (publishedUtc == null)
             {
@@ -375,7 +375,7 @@ namespace OrchardCore.Lists.RemotePublishing
             }
             else
             {
-                // ensure it's read as a UTC time.
+                // Ensure it's read as a UTC time.
                 publishedUtc = new DateTime(publishedUtc.Value.Ticks, DateTimeKind.Utc);
             }
 
