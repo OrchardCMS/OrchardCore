@@ -66,10 +66,10 @@
 }
 
 :root[data-theme=darkmode] .dashboard-wrapper .card .card-header {
-  background-color: #181a1b !important;
+  background-color: rgb(24, 26, 27) !important;
 }
 :root[data-theme=darkmode] .dashboard-wrapper .card .card-footer {
-  background-color: #181a1b !important;
+  background-color: rgb(24, 26, 27) !important;
 }
 
 .dashboard-handle {

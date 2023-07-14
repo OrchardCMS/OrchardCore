@@ -16,47 +16,47 @@ namespace OrchardCore.AdminMenu.Models
 
             while (tempStack.Any())
             {
-                // evaluate first node
-                AdminNode item = tempStack.Pop();
+                // Evaluate first node.
+                var item = tempStack.Pop();
                 if (item.UniqueId.Equals(id, StringComparison.OrdinalIgnoreCase))
                 {
                     return item;
                 }
 
-                // not that one; continue with the rest.
+                // Not that one, continue with the rest.
                 foreach (var i in item.Items)
                 {
                     tempStack.Push((AdminNode)i);
                 }
             }
 
-            //not found
+            // Not found.
             return null;
         }
 
-        // return boolean so that caller can check for success
+        // Return boolean so that caller can check for success.
         public bool RemoveMenuItem(AdminNode nodeToRemove)
         {
             var tempStack = new Stack<AdminNode>(new AdminNode[] { this });
 
             while (tempStack.Any())
             {
-                // evaluate first
-                MenuItem item = tempStack.Pop();
+                // Evaluate first.
+                var item = tempStack.Pop();
                 if (item.Items.Contains(nodeToRemove))
                 {
                     item.Items.Remove(nodeToRemove);
-                    return true; //success
+                    return true; // Success.
                 }
 
-                // not that one. continue
+                // Not that one, continue.
                 foreach (var i in item.Items)
                 {
                     tempStack.Push((AdminNode)i);
                 }
             }
 
-            // failure
+            // Failure.
             return false;
         }
 
@@ -65,22 +65,22 @@ namespace OrchardCore.AdminMenu.Models
             var tempStack = new Stack<AdminNode>(new AdminNode[] { this });
             while (tempStack.Any())
             {
-                // evaluate first
-                MenuItem node = tempStack.Pop();
+                // Evaluate first.
+                var node = tempStack.Pop();
                 if (node.Equals(destinationNode))
                 {
                     node.Items.Insert(position, nodeToInsert);
-                    return true; // success
+                    return true; // Success.
                 }
 
-                // not that one. continue
+                // Not that one, continue.
                 foreach (var n in node.Items)
                 {
                     tempStack.Push((AdminNode)n);
                 }
             }
 
-            // failure
+            // Failure.
             return false;
         }
     }
