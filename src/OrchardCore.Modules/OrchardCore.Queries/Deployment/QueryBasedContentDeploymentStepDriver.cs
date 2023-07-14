@@ -15,7 +15,9 @@ namespace OrchardCore.Queries.Deployment
     public class QueryBasedContentDeploymentStepDriver : DisplayDriver<DeploymentStep, QueryBasedContentDeploymentStep>
     {
         private readonly IQueryManager _queryManager;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public QueryBasedContentDeploymentStepDriver(
             IQueryManager queryManager,

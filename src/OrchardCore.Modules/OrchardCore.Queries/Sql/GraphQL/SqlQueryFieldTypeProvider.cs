@@ -83,7 +83,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
             }
         }
 
-        private FieldType BuildSchemaBasedFieldType(SqlQuery query, JToken querySchema, string fieldTypeName)
+        private static FieldType BuildSchemaBasedFieldType(SqlQuery query, JToken querySchema, string fieldTypeName)
         {
             var properties = querySchema["properties"];
             if (properties == null)
@@ -96,7 +96,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                 Name = fieldTypeName
             };
 
-            foreach (JProperty child in properties.Children())
+            foreach (var child in properties.Children().Cast<JProperty>())
             {
                 var name = child.Name;
                 var nameLower = name.Replace('.', '_');
@@ -160,7 +160,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
             return fieldType;
         }
 
-        private FieldType BuildContentTypeFieldType(ISchema schema, string contentType, SqlQuery query, string fieldTypeName)
+        private static FieldType BuildContentTypeFieldType(ISchema schema, string contentType, SqlQuery query, string fieldTypeName)
         {
             var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
             if (typetype == null)

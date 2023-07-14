@@ -10,7 +10,9 @@ namespace OrchardCore.Queries.Sql.Drivers
 {
     public class SqlQueryDisplayDriver : DisplayDriver<Query, SqlQuery>
     {
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public SqlQueryDisplayDriver(IStringLocalizer<SqlQueryDisplayDriver> stringLocalizer)
         {
@@ -38,8 +40,8 @@ namespace OrchardCore.Queries.Sql.Drivers
                 model.Query = query.Template;
                 model.ReturnDocuments = query.ReturnDocuments;
 
-                // Extract query from the query string if we come from the main query editor
-                if (string.IsNullOrEmpty(query.Template))
+                // Extract query from the query string if we come from the main query editor.
+                if (String.IsNullOrEmpty(query.Template))
                 {
                     updater.TryUpdateModelAsync(model, "", m => m.Query);
                 }

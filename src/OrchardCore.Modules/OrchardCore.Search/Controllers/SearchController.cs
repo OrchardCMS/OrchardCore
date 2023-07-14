@@ -29,9 +29,11 @@ public class SearchController : Controller
     private readonly ISiteService _siteService;
     private readonly ISession _session;
     private readonly IServiceProvider _serviceProvider;
-    private readonly dynamic New;
     private readonly INotifier _notifier;
+#pragma warning disable IDE1006 // Naming Styles
+    private readonly dynamic New;
     private readonly IHtmlLocalizer H;
+#pragma warning restore IDE1006 // Naming Styles
     private readonly IEnumerable<ISearchHandler> _searchHandlers;
     private readonly ILogger _logger;
 

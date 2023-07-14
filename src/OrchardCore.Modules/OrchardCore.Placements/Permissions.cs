@@ -7,7 +7,7 @@ namespace OrchardCore.Placements
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManagePlacements = new Permission("ManagePlacements", "Manage placements");
+        public static readonly Permission ManagePlacements = new("ManagePlacements", "Manage placements");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {

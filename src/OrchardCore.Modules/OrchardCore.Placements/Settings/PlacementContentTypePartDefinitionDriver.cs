@@ -8,7 +8,9 @@ namespace OrchardCore.Placements.Settings
 {
     public class PlacementContentTypePartDefinitionDriver : ContentTypePartDefinitionDisplayDriver
     {
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public PlacementContentTypePartDefinitionDriver(IStringLocalizer<PlacementContentTypePartDefinitionDriver> localizer)
         {

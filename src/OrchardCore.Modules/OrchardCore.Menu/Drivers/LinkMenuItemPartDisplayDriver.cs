@@ -20,7 +20,9 @@ namespace OrchardCore.Menu.Drivers
         private readonly IActionContextAccessor _actionContextAccessor;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly HtmlEncoder _htmlencoder;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public LinkMenuItemPartDisplayDriver(
             IUrlHelperFactory urlHelperFactory,

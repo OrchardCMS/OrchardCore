@@ -20,7 +20,9 @@ namespace OrchardCore.Menu.Drivers
     public class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IHtmlLocalizer H;
+#pragma warning restore IDE1006 // Naming Styles
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
 
@@ -90,7 +92,7 @@ namespace OrchardCore.Menu.Drivers
         /// <summary>
         /// Clone the content items at the specific index.
         /// </summary>
-        private JObject GetMenuItemAt(MenuItemsListPart menuItems, int[] indexes)
+        private static JObject GetMenuItemAt(MenuItemsListPart menuItems, int[] indexes)
         {
             ContentItem menuItem = null;
 

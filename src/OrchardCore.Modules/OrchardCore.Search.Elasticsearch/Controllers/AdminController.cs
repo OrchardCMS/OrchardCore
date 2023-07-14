@@ -43,10 +43,12 @@ namespace OrchardCore.Search.Elasticsearch
         private readonly ElasticIndexManager _elasticIndexManager;
         private readonly ElasticIndexingService _elasticIndexingService;
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
-        private readonly dynamic New;
         private readonly JavaScriptEncoder _javaScriptEncoder;
+#pragma warning disable IDE1006 // Naming Styles
+        private readonly dynamic New;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
+#pragma warning restore IDE1006 // Naming Styles
         private readonly ElasticsearchOptions _elasticSearchOptions;
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
@@ -62,8 +64,8 @@ namespace OrchardCore.Search.Elasticsearch
             ElasticIndexManager elasticIndexManager,
             ElasticIndexingService elasticIndexingService,
             ElasticIndexSettingsService elasticIndexSettingsService,
-            IShapeFactory shapeFactory,
             JavaScriptEncoder javaScriptEncoder,
+            IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IOptions<ElasticsearchOptions> elasticSearchOptions,
@@ -81,8 +83,8 @@ namespace OrchardCore.Search.Elasticsearch
             _elasticIndexManager = elasticIndexManager;
             _elasticIndexingService = elasticIndexingService;
             _elasticIndexSettingsService = elasticIndexSettingsService;
-            New = shapeFactory;
             _javaScriptEncoder = javaScriptEncoder;
+            New = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
             _elasticSearchOptions = elasticSearchOptions.Value;

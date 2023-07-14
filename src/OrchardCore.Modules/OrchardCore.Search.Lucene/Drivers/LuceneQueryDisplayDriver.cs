@@ -13,7 +13,9 @@ namespace OrchardCore.Search.Lucene.Drivers
     public class LuceneQueryDisplayDriver : DisplayDriver<Query, LuceneQuery>
     {
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public LuceneQueryDisplayDriver(
             IStringLocalizer<LuceneQueryDisplayDriver> stringLocalizer,
