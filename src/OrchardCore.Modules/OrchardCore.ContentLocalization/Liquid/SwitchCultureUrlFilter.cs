@@ -24,7 +24,7 @@ namespace OrchardCore.ContentLocalization.Liquid
         {
             var urlHelper = _urlHelperFactory.GetUrlHelper(context.ViewContext);
 
-            var request = (_httpContextAccessor.HttpContext?.Request)
+            var request = _httpContextAccessor.HttpContext?.Request
                 ?? throw new ArgumentException("HttpRequest missing while invoking 'switch_culture_url'");
 
             var targetCulture = input.ToStringValue();

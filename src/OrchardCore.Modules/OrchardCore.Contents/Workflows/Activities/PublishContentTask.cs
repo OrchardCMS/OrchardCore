@@ -29,7 +29,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var content = await GetContentAsync(workflowContext)
+            var content = (await GetContentAsync(workflowContext))
                 ?? throw new InvalidOperationException($"The '{nameof(PublishContentTask)}' failed to retrieve the content item.");
 
             if (String.Equals(InlineEvent.ContentItemId, content.ContentItem.ContentItemId, StringComparison.OrdinalIgnoreCase))

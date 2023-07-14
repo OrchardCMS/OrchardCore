@@ -226,7 +226,7 @@ namespace OrchardCore.Lists.RemotePublishing
             // User needs to at least have permission to edit its own blog posts to access the service.
             await CheckAccessAsync(CommonPermissions.EditContent, user, null);
 
-            var list = await _contentManager.GetAsync(contentItemId)
+            var list = (await _contentManager.GetAsync(contentItemId))
                 ?? throw new InvalidOperationException("Could not find content item " + contentItemId);
 
             var array = new XRpcArray();
@@ -266,7 +266,7 @@ namespace OrchardCore.Lists.RemotePublishing
             // User needs permission to edit or publish its own blog posts.
             await CheckAccessAsync(publish ? CommonPermissions.PublishContent : CommonPermissions.EditContent, user, null);
 
-            var list = await _contentManager.GetAsync(contentItemId)
+            var list = (await _contentManager.GetAsync(contentItemId))
                 ?? throw new InvalidOperationException("Could not find content item " + contentItemId);
 
             var postType = GetContainedContentTypes(list).FirstOrDefault();
@@ -326,7 +326,7 @@ namespace OrchardCore.Lists.RemotePublishing
         {
             var user = await ValidateUserAsync(userName, password);
 
-            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest)
+            var contentItem = (await _contentManager.GetAsync(contentItemId, VersionOptions.Latest))
                 ?? throw new InvalidOperationException("Could not find content item " + contentItemId);
 
             await CheckAccessAsync(CommonPermissions.EditContent, user, contentItem);
@@ -409,7 +409,7 @@ namespace OrchardCore.Lists.RemotePublishing
         {
             var user = await ValidateUserAsync(userName, password);
 
-            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest)
+            var contentItem = (await _contentManager.GetAsync(contentItemId, VersionOptions.Latest))
                 ?? throw new InvalidOperationException("Could not find content item " + contentItemId);
 
             if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.DeleteContent, contentItem))
