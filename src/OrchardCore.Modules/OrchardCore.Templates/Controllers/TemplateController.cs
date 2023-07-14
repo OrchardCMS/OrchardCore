@@ -28,9 +28,11 @@ namespace OrchardCore.Templates.Controllers
         private readonly AdminTemplatesManager _adminTemplatesManager;
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
         private readonly dynamic New;
+#pragma warning restore IDE1006 // Naming Styles
 
         public TemplateController(
             IAuthorizationService authorizationService,
@@ -56,7 +58,7 @@ namespace OrchardCore.Templates.Controllers
         {
             options.AdminTemplates = true;
 
-            // Used to provide a different url such that the Admin Templates menu entry doesn't collide with the Templates ones
+            // Used to provide a different url such that the Admin Templates menu entry doesn't collide with the Templates ones.
             return Index(options, pagerParameters);
         }
 
@@ -80,7 +82,7 @@ namespace OrchardCore.Templates.Controllers
 
             var templates = templatesDocument.Templates.ToList();
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
                 templates = templates.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
@@ -116,7 +118,7 @@ namespace OrchardCore.Templates.Controllers
             });
         }
 
-        public async Task<IActionResult> Create(TemplateViewModel model, bool adminTemplates = false, string returnUrl = null)
+        public async Task<IActionResult> Create(bool adminTemplates = false, string returnUrl = null)
         {
             if (!adminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
@@ -192,7 +194,7 @@ namespace OrchardCore.Templates.Controllers
                 }
             }
 
-            // If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form.
             return View(model);
         }
 
@@ -291,7 +293,7 @@ namespace OrchardCore.Templates.Controllers
                 }
             }
 
-            // If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form.
             ViewData["ReturnUrl"] = returnUrl;
             return View(model);
         }
@@ -357,7 +359,7 @@ namespace OrchardCore.Templates.Controllers
                         await _notifier.SuccessAsync(H["Templates successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
 

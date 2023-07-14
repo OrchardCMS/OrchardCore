@@ -7,7 +7,7 @@ namespace OrchardCore.Taxonomies
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageTaxonomies = new Permission("ManageTaxonomy", "Manage taxonomies");
+        public static readonly Permission ManageTaxonomies = new("ManageTaxonomy", "Manage taxonomies");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {

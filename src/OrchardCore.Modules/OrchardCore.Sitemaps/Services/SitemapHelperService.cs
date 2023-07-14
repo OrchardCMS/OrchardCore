@@ -12,14 +12,16 @@ namespace OrchardCore.Sitemaps.Services
     public class SitemapHelperService : ISitemapHelperService
     {
         // Path requirements for sitemaps include . as acceptable character.
-        public static char[] InvalidCharactersForPath = ":?#[]@!$&'()*+,;=<>\\|%".ToCharArray();
+        public static readonly char[] InvalidCharactersForPath = ":?#[]@!$&'()*+,;=<>\\|%".ToCharArray();
         public const int MaxPathLength = 1024;
         public const string Prefix = "";
         public const string Path = "Path";
 
         private readonly ISlugService _slugService;
         private readonly ISitemapManager _sitemapManager;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public SitemapHelperService(
             ISlugService slugService,
@@ -42,7 +44,7 @@ namespace OrchardCore.Sitemaps.Services
 
             if (path.IndexOfAny(InvalidCharactersForPath) > -1 || path.IndexOf(' ') > -1)
             {
-                var invalidCharactersForMessage = string.Join(", ", InvalidCharactersForPath.Select(c => $"\"{c}\""));
+                var invalidCharactersForMessage = String.Join(", ", InvalidCharactersForPath.Select(c => $"\"{c}\""));
                 updater.ModelState.AddModelError(Prefix, Path, S["Please do not use any of the following characters in your permalink: {0}. No spaces are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
             }
 
@@ -58,7 +60,7 @@ namespace OrchardCore.Sitemaps.Services
             }
 
             var routeExists = false;
-            if (string.IsNullOrEmpty(sitemapId))
+            if (String.IsNullOrEmpty(sitemapId))
             {
                 routeExists = (await _sitemapManager.GetSitemapsAsync())
                     .Any(p => String.Equals(p.Path, path.TrimStart('/'), StringComparison.OrdinalIgnoreCase));

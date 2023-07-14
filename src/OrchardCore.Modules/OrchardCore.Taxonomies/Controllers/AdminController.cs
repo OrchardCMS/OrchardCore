@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +23,9 @@ namespace OrchardCore.Taxonomies.Controllers
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IHtmlLocalizer H;
+#pragma warning restore IDE1006 // Naming Styles
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
@@ -128,15 +131,15 @@ namespace OrchardCore.Taxonomies.Controllers
 
             if (taxonomyItemId == null)
             {
-                // Use the taxonomy as the parent if no target is specified
+                // Use the taxonomy as the parent if no target is specified.
                 taxonomy.Alter<TaxonomyPart>(part => part.Terms.Add(contentItem));
             }
             else
             {
-                // Look for the target taxonomy item in the hierarchy
+                // Look for the target taxonomy item in the hierarchy.
                 var parentTaxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
-                // Couldn't find targeted taxonomy item
+                // Couldn't find targeted taxonomy item.
                 if (parentTaxonomyItem == null)
                 {
                     return NotFound();
@@ -176,10 +179,10 @@ namespace OrchardCore.Taxonomies.Controllers
                 return Forbid();
             }
 
-            // Look for the target taxonomy item in the hierarchy
+            // Look for the target taxonomy item in the hierarchy.
             JObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
-            // Couldn't find targeted taxonomy item
+            // Couldn't find targeted taxonomy item.
             if (taxonomyItem == null)
             {
                 return NotFound();
@@ -229,10 +232,10 @@ namespace OrchardCore.Taxonomies.Controllers
                 return NotFound();
             }
 
-            // Look for the target taxonomy item in the hierarchy
+            // Look for the target taxonomy item in the hierarchy.
             JObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
-            // Couldn't find targeted taxonomy item
+            // Couldn't find targeted taxonomy item.
             if (taxonomyItem == null)
             {
                 return NotFound();
@@ -264,7 +267,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 MergeNullValueHandling = MergeNullValueHandling.Merge
             });
 
-            // Merge doesn't copy the properties
+            // Merge doesn't copy the properties.
             taxonomyItem[nameof(ContentItem.DisplayText)] = contentItem.DisplayText;
 
             _session.Save(taxonomy);
@@ -303,10 +306,10 @@ namespace OrchardCore.Taxonomies.Controllers
                 return NotFound();
             }
 
-            // Look for the target taxonomy item in the hierarchy
+            // Look for the target taxonomy item in the hierarchy.
             var taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
-            // Couldn't find targeted taxonomy item
+            // Couldn't find targeted taxonomy item.
             if (taxonomyItem == null)
             {
                 return NotFound();
@@ -336,9 +339,9 @@ namespace OrchardCore.Taxonomies.Controllers
 
             JObject result;
 
-            foreach (JObject taxonomyItem in taxonomyItems)
+            foreach (var taxonomyItem in taxonomyItems.Cast<JObject>())
             {
-                // Search in inner taxonomy items
+                // Search in inner taxonomy items.
                 result = FindTaxonomyItem(taxonomyItem, taxonomyItemId);
 
                 if (result != null)

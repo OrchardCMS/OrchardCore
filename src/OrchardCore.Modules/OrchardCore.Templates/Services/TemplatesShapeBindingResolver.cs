@@ -49,10 +49,7 @@ namespace OrchardCore.Templates.Services
                 }
             }
 
-            if (_templatesDocument == null)
-            {
-                _templatesDocument = await _templatesManager.GetTemplatesDocumentAsync();
-            }
+            _templatesDocument ??= await _templatesManager.GetTemplatesDocumentAsync();
 
             if (_templatesDocument.Templates.TryGetValue(shapeType, out var template))
             {

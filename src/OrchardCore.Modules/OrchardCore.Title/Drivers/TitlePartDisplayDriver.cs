@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -12,7 +13,9 @@ namespace OrchardCore.Title.Drivers
 {
     public class TitlePartDisplayDriver : ContentPartDisplayDriver<TitlePart>
     {
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public TitlePartDisplayDriver(IStringLocalizer<TitlePartDisplayDriver> localizer)
         {
@@ -23,7 +26,7 @@ namespace OrchardCore.Title.Drivers
         {
             var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
 
-            if (!settings.RenderTitle || string.IsNullOrWhiteSpace(titlePart.Title))
+            if (!settings.RenderTitle || String.IsNullOrWhiteSpace(titlePart.Title))
             {
                 return null;
             }
@@ -55,7 +58,7 @@ namespace OrchardCore.Title.Drivers
             if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Title))
             {
                 var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
-                if (settings.Options == TitlePartOptions.EditableRequired && string.IsNullOrWhiteSpace(model.Title))
+                if (settings.Options == TitlePartOptions.EditableRequired && String.IsNullOrWhiteSpace(model.Title))
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(model.Title), S["A value is required for Title."]);
                 }
