@@ -56,7 +56,7 @@ namespace OrchardCore.Modules.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="ModuleAttribute(string, string, string, string, string, string, string, bool, bool, bool)"/>
+        /// Verify the <see cref="ModuleAttribute(String, String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>
         /// ctor, arguments
         /// <c>id, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -123,7 +123,7 @@ namespace OrchardCore.Modules.Manifest
 
         // TODO: TBD: add the ArgumentException path for the bool (object) variations...
         /// <summary>
-        /// Verify the <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, bool, bool, bool)"/>
+        /// Verify the <see cref="ModuleAttribute(String, String, String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>
         /// ctor, arguments
         /// <c>id, name, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -191,7 +191,7 @@ namespace OrchardCore.Modules.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, string, string, bool, bool, bool)"/>
+        /// Verify the <see cref="ModuleAttribute(String, String, String, String, String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>
         /// ctor, arguments
         /// <c>id, name, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -261,7 +261,7 @@ namespace OrchardCore.Modules.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, string, string, string, bool, bool, bool)"/>
+        /// Verify the <see cref="ModuleAttribute(String, String, String, String, String, String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>
         /// ctor, arguments
         /// <c>id, name, type, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
