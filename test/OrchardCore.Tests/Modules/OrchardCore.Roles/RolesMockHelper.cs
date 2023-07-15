@@ -6,6 +6,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
             where TRole : class
         {
             var store = new Mock<IRoleStore<TRole>>().Object;
+
             var validators = new List<IRoleValidator<TRole>>
             {
                 new RoleValidator<TRole>()

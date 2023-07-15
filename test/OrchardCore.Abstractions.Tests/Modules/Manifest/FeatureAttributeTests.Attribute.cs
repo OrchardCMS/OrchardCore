@@ -113,7 +113,8 @@ namespace OrchardCore.Modules.Manifest
                 Types = ctor.GetParameters().Select(_ => _.ParameterType).ToArray()
             }).ToArray();
 
-            var attributeCtor = (allAttributeCtorWithParameterTypes.SingleOrDefault(_ => _.Types.SequenceEqual(types))?.Callback)
+            var attributeCtor = allAttributeCtorWithParameterTypes.SingleOrDefault(_ => _.Types.SequenceEqual(types))
+                ?.Callback
                 ?? throw new ArgumentException($"Unable to align ctor to args({args.Length}).", nameof(args));
 
             var feature = attributeCtor.Invoke(args);
