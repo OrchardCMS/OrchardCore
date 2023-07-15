@@ -9,7 +9,9 @@ namespace OrchardCore.Tests.Workflows.Activities
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
         private readonly TextWriter _output;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public WriteLineTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer stringLocalizer, TextWriter output)
         {

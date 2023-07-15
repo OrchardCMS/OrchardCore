@@ -21,7 +21,7 @@ namespace OrchardCore.Tests.Stubs
 
     public class MockThemeManager : IThemeManager
     {
-        private IExtensionInfo _dec;
+        private readonly IExtensionInfo _dec;
         public MockThemeManager(IExtensionInfo des)
         {
             _dec = des;
