@@ -36,6 +36,7 @@ namespace OrchardCore.Contents.Liquid
                 {
                     return StringValue.Empty;
                 }
+
                 routeValues = new RouteValueDictionary(_autorouteOptions.GlobalRouteValues)
                 {
                     [_autorouteOptions.ContentItemIdKey] = input.ToStringValue()

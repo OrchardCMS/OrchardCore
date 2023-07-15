@@ -53,7 +53,8 @@ namespace OrchardCore.Media.Filters
             {
                 queryStringParams = new Dictionary<string, string>();
 
-                var useNamed = arguments.Names.Any(); // Never mix named and indexed arguments as this leads to unpredictable results
+                // Never mix named and indexed arguments as this leads to unpredictable results.
+                var useNamed = arguments.Names.Any();
 
                 var width = useNamed ? arguments["width"] : arguments.At(0);
                 var height = useNamed ? arguments["height"] : arguments.At(1);

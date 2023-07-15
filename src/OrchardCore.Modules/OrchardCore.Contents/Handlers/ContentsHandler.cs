@@ -39,40 +39,45 @@ namespace OrchardCore.Contents.Handlers
         {
             return context.ForAsync<ContentItemMetadata>(metadata =>
             {
-                metadata.CreateRouteValues ??= new RouteValueDictionary {
-                        {"Area", "OrchardCore.Contents"},
-                        {"Controller", "Admin"},
-                        {"Action", "Create"},
-                        {"Id", context.ContentItem.ContentType}
-                    };
+                metadata.CreateRouteValues ??= new RouteValueDictionary
+                {
+                    { "Area", "OrchardCore.Contents" },
+                    { "Controller", "Admin" },
+                    { "Action", "Create" },
+                    { "Id", context.ContentItem.ContentType },
+                };
 
-                metadata.EditorRouteValues ??= new RouteValueDictionary {
-                        {"Area", "OrchardCore.Contents"},
-                        {"Controller", "Admin"},
-                        {"Action", "Edit"},
-                        {"ContentItemId", context.ContentItem.ContentItemId}
-                    };
+                metadata.EditorRouteValues ??= new RouteValueDictionary
+                {
+                    { "Area", "OrchardCore.Contents" },
+                    { "Controller", "Admin" },
+                    { "Action", "Edit" },
+                    { "ContentItemId", context.ContentItem.ContentItemId },
+                };
 
-                metadata.AdminRouteValues ??= new RouteValueDictionary {
-                        {"Area", "OrchardCore.Contents"},
-                        {"Controller", "Admin"},
-                        {"Action", "Edit"},
-                        {"ContentItemId", context.ContentItem.ContentItemId}
-                    };
+                metadata.AdminRouteValues ??= new RouteValueDictionary
+                {
+                    { "Area", "OrchardCore.Contents" },
+                    { "Controller", "Admin" },
+                    { "Action", "Edit" },
+                    { "ContentItemId", context.ContentItem.ContentItemId },
+                };
 
-                metadata.DisplayRouteValues ??= new RouteValueDictionary {
-                        {"Area", "OrchardCore.Contents"},
-                        {"Controller", "Item"},
-                        {"Action", "Display"},
-                        {"ContentItemId", context.ContentItem.ContentItemId}
-                    };
+                metadata.DisplayRouteValues ??= new RouteValueDictionary
+                {
+                    { "Area", "OrchardCore.Contents" },
+                    { "Controller", "Item" },
+                    { "Action", "Display" },
+                    { "ContentItemId", context.ContentItem.ContentItemId },
+                };
 
-                metadata.RemoveRouteValues ??= new RouteValueDictionary {
-                        {"Area", "OrchardCore.Contents"},
-                        {"Controller", "Admin"},
-                        {"Action", "Remove"},
-                        {"ContentItemId", context.ContentItem.ContentItemId}
-                    };
+                metadata.RemoveRouteValues ??= new RouteValueDictionary
+                {
+                    { "Area", "OrchardCore.Contents" },
+                    { "Controller", "Admin" },
+                    { "Action", "Remove" },
+                    { "ContentItemId", context.ContentItem.ContentItemId },
+                };
 
                 return Task.CompletedTask;
             });
