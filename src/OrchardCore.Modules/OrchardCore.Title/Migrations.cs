@@ -46,7 +46,7 @@ namespace OrchardCore.Title
             // We are patching all content item versions by moving the Title to DisplayText
             // This step doesn't need to be executed for a brand new site
 
-            long lastDocumentId = 0;
+            var lastDocumentId = 0L;
 
             for (; ; )
             {
