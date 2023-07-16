@@ -9,8 +9,10 @@ namespace OrchardCore.Environment.Commands
     public class DefaultCommandManager : ICommandManager
     {
         private readonly IEnumerable<ICommandHandler> _commandHandlers;
-        private readonly CommandHandlerDescriptorBuilder _builder = new CommandHandlerDescriptorBuilder();
+        private readonly CommandHandlerDescriptorBuilder _builder = new();
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public DefaultCommandManager(IEnumerable<ICommandHandler> commandHandlers,
             IStringLocalizer<DefaultCommandManager> localizer)
@@ -31,8 +33,8 @@ namespace OrchardCore.Environment.Commands
             }
             else
             {
-                var commandMatch = string.Join(" ", parameters.Arguments.ToArray());
-                var commandList = string.Join(",", GetCommandDescriptors().SelectMany(d => d.Names).ToArray());
+                var commandMatch = String.Join(" ", parameters.Arguments.ToArray());
+                var commandList = String.Join(",", GetCommandDescriptors().SelectMany(d => d.Names).ToArray());
                 if (matches.Any())
                 {
                     throw new Exception(S["Multiple commands found matching arguments \"{0}\". Commands available: {1}.",
@@ -63,11 +65,12 @@ namespace OrchardCore.Environment.Commands
                 foreach (var name in commandDescriptor.Names)
                 {
                     var names = name.Split(' ');
-                    var namesCount = names.Count();
+                    var namesCount = names.Length;
+
                     // We check here number of arguments a command can recieve against
                     // arguments provided for the command to identify the correct command
                     // and avoid matching multiple commands.
-                    if (name == string.Join(" ", parameters.Arguments.Take(namesCount)) && commandDescriptor.MethodInfo.GetParameters().Length == argCount - namesCount)
+                    if (name == String.Join(" ", parameters.Arguments.Take(namesCount)) && commandDescriptor.MethodInfo.GetParameters().Length == argCount - namesCount)
                     {
                         names = parameters.Arguments.ToArray();
                     }
@@ -78,14 +81,14 @@ namespace OrchardCore.Environment.Commands
                         {
                             Context = new CommandContext
                             {
-                                Arguments = parameters.Arguments.Skip(name.Split(' ').Count()),
-                                Command = string.Join(" ", names),
+                                Arguments = parameters.Arguments.Skip(name.Split(' ').Length),
+                                Command = String.Join(" ", names),
                                 CommandDescriptor = commandDescriptor,
                                 Input = parameters.Input,
                                 Output = parameters.Output,
                                 Switches = parameters.Switches,
                             },
-                            CommandHandler = handler
+                            CommandHandler = handler,
                         };
                     }
                 }

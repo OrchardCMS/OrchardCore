@@ -13,7 +13,9 @@ namespace OrchardCore.DynamicCache.Liquid
 {
     public class CacheExpiresAfterTag
     {
+#pragma warning disable IDE0060 // Remove unused parameter
         public static async ValueTask<Completion> WriteToAsync(Expression argument, TextWriter writer, TextEncoder encoder, TemplateContext context)
+#pragma warning restore IDE0060 // Remove unused parameter
         {
             var services = ((LiquidTemplateContext)context).Services;
 
