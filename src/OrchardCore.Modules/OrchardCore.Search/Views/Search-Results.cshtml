@@ -1,8 +1,6 @@
 @model SearchResultsViewModel
 @inject IContentItemDisplayManager DisplayManager
 
-@await DisplayAsync((await New.SearchForm()).Terms("blabla"))
-
 @if (Model.ContentItems != null && Model.ContentItems.Any())
 {
     <ul class="list-group">

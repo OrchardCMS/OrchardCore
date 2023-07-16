@@ -185,8 +185,8 @@ namespace OrchardCore.Placements.Controllers
 
             try
             {
-                IEnumerable<PlacementNode> placementNodes =
-                    JsonConvert.DeserializeObject<PlacementNode[]>(viewModel.Nodes) ?? Array.Empty<PlacementNode>();
+                var placementNodes = JsonConvert.DeserializeObject<PlacementNode[]>(viewModel.Nodes)
+                    ?? Enumerable.Empty<PlacementNode>();
 
                 // Remove empty nodes.
                 placementNodes = placementNodes.Where(node => !IsEmpty(node));

@@ -34,6 +34,7 @@ namespace OrchardCore.Media.Filters
             var profile = arguments["profile"];
 
             IDictionary<string, string> queryStringParams;
+
             if (!profile.IsNil())
             {
                 queryStringParams = await _mediaProfileService.GetMediaProfileCommands(profile.ToStringValue());

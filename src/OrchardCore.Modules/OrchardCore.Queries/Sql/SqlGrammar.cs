@@ -213,11 +213,12 @@ namespace OrchardCore.Queries.Sql
 
             MarkPunctuation(",", "(", ")");
             MarkPunctuation(asOpt, optionalSemicolon);
+
             // Note: we cannot declare binOp as transient because it includes operators "NOT LIKE", "NOT IN" consisting of two tokens.
             // Transient non-terminals cannot have more than one non-punctuation child nodes.
             // Instead, we set flag InheritPrecedence on binOp , so that it inherits precedence value from it's children, and this precedence is used
             // in conflict resolution when binOp node is sitting on the stack.
-            base.MarkTransient(tableAliasItemOrSubQuery, term, asOpt, tableAliasOpt, columnAliasOpt, statementLine, expression, unOp, tuple);
+            MarkTransient(tableAliasItemOrSubQuery, term, asOpt, tableAliasOpt, columnAliasOpt, statementLine, expression, unOp, tuple);
             binOp.SetFlag(TermFlags.InheritPrecedence);
         }
     }
