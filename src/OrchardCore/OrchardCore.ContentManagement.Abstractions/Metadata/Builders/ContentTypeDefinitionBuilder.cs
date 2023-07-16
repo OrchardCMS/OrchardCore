@@ -151,8 +151,10 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
             else
             {
-                existingPart = new ContentTypePartDefinition(name, partDefinition, new JObject());
-                existingPart.ContentTypeDefinition = Current;
+                existingPart = new ContentTypePartDefinition(name, partDefinition, new JObject())
+                {
+                    ContentTypeDefinition = Current
+                };
             }
 
             var configurer = new PartConfigurerImpl(existingPart);
@@ -181,8 +183,10 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
             else
             {
-                existingPart = new ContentTypePartDefinition(name, partDefinition, new JObject());
-                existingPart.ContentTypeDefinition = Current;
+                existingPart = new ContentTypePartDefinition(name, partDefinition, new JObject())
+                {
+                    ContentTypeDefinition = Current
+                };
             }
 
             var configurer = new PartConfigurerImpl(existingPart);

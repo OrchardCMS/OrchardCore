@@ -14,7 +14,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly GraphQLContentOptions _contentOptions;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
         private readonly Dictionary<string, FieldType> _dynamicPartFields;
 
         public DynamicContentTypeBuilder(IHttpContextAccessor httpContextAccessor,

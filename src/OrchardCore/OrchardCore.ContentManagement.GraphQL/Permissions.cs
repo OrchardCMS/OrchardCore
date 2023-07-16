@@ -7,7 +7,7 @@ namespace OrchardCore.ContentManagement.GraphQL
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ApiViewContent = new Permission("ApiViewContent", "Access view content endpoints");
+        public static readonly Permission ApiViewContent = new("ApiViewContent", "Access view content endpoints");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
