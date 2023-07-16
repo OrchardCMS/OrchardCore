@@ -53,7 +53,7 @@ namespace OrchardCore.Search.Lucene
             }
         }
 
-        public void SetLastTaskId(string indexName, int taskId)
+        public void SetLastTaskId(string indexName, long taskId)
         {
             lock (this)
             {

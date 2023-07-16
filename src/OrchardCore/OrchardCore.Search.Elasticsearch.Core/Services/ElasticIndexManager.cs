@@ -285,7 +285,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// This allows storing the last indexing task id executed on the Elasticsearch index.
         /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-meta-field.html"/>
         /// </summary>
-        public async Task SetLastTaskId(string indexName, int lastTaskId)
+        public async Task SetLastTaskId(string indexName, long lastTaskId)
         {
             var IndexingState = new FluentDictionary<string, object>() {
                 { _lastTaskId, lastTaskId }
@@ -303,14 +303,14 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// Get a last_task_id in the Elasticsearch index _meta mappings.
         /// This allows retrieving the last indexing task id executed on the index.
         /// </summary>
-        public async Task<int> GetLastTaskId(string indexName)
+        public async Task<long> GetLastTaskId(string indexName)
         {
             var jsonDocument = JsonDocument.Parse(await GetIndexMappings(indexName));
             jsonDocument.RootElement.TryGetProperty(GetFullIndexName(indexName), out var jsonElement);
             jsonElement.TryGetProperty("mappings", out var mappings);
             mappings.TryGetProperty("_meta", out var meta);
             meta.TryGetProperty(_lastTaskId, out var lastTaskId);
-            lastTaskId.TryGetInt32(out var intValue);
+            lastTaskId.TryGetInt64(out var intValue);
 
             return intValue;
         }
@@ -464,10 +464,10 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     elasticTopDocs.Count = searchResponse.Hits.Count;
 
                     var topDocs = new List<Dictionary<string, object>>();
-                    
+
                     var documents = searchResponse.Documents.GetEnumerator();
                     var hits = searchResponse.Hits.GetEnumerator();
-                    
+
                     while (documents.MoveNext() && hits.MoveNext())
                     {
                         var document = documents.Current;

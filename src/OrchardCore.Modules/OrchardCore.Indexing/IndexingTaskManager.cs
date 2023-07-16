@@ -164,7 +164,7 @@ namespace OrchardCore.Indexing.Services
             }
         }
 
-        public async Task<IEnumerable<IndexingTask>> GetIndexingTasksAsync(int afterTaskId, int count)
+        public async Task<IEnumerable<IndexingTask>> GetIndexingTasksAsync(long afterTaskId, int count)
         {
             using (var connection = _dbConnectionAccessor.CreateConnection())
             {

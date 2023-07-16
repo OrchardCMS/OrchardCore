@@ -19,7 +19,7 @@ namespace OrchardCore.Autoroute.Core.Indexes
         /// <summary>
         /// The id of the document.
         /// </summary>
-        public int DocumentId { get; set; }
+        public long DocumentId { get; set; }
 
         /// <summary>
         /// The container content item id.

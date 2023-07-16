@@ -56,7 +56,7 @@ namespace OrchardCore.Search.Lucene
         {
             // TODO: Lock over the filesystem in case two instances get a command to rebuild the index concurrently.
             var allIndices = new Dictionary<string, int>();
-            var lastTaskId = Int32.MaxValue;
+            var lastTaskId = Int64.MaxValue;
             IEnumerable<LuceneIndexSettings> indexSettingsList = null;
 
             if (String.IsNullOrEmpty(indexName))
