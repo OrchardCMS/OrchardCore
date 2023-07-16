@@ -165,7 +165,7 @@ namespace OrchardCore.Layers.Controllers
                 {
                     Name = model.Name,
                     Description = model.Description,
-                    LayerRule = new Rule()
+                    LayerRule = new Rule(),
                 };
 
                 _conditionIdGenerator.GenerateUniqueId(layer.LayerRule);

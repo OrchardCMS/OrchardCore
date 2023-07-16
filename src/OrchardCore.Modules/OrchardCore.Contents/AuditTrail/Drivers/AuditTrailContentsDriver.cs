@@ -9,10 +9,6 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
     public class AuditTrailContentsDriver : ContentDisplayDriver
     {
         // TODO: What permission are we looking for here?
-        public AuditTrailContentsDriver()
-        {
-        }
-
         public override IDisplayResult Display(ContentItem contentItem, IUpdateModel updater)
         {
             return Initialize<ContentItemViewModel>("AuditTrailContentsAction_SummaryAdmin", m => m.ContentItem = contentItem).Location("SummaryAdmin", "ActionsMenu:10");

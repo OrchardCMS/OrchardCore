@@ -7,10 +7,6 @@ namespace OrchardCore.ContentPreview
 {
     public class PreviewStartupFilter : IStartupFilter
     {
-        public PreviewStartupFilter()
-        {
-        }
-
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {
             return app =>
