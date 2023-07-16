@@ -17,7 +17,7 @@ namespace OrchardCore.Indexing
             var identityColumnSize = Enum.Parse<IdentityColumnSize>(_shellSettings.GetIdentityColumnSize());
 
             SchemaBuilder.CreateTable(nameof(IndexingTask), table => table
-                .Column(identityColumnSize, nameof(IndexingTask.Id), col => col.PrimaryKey().NotNull())
+                .Column(identityColumnSize, nameof(IndexingTask.Id), col => col.PrimaryKey().Identity())
                 .Column<string>(nameof(IndexingTask.ContentItemId), c => c.WithLength(26))
                 .Column<DateTime>(nameof(IndexingTask.CreatedUtc), col => col.NotNull())
                 .Column<int>(nameof(IndexingTask.Type))
