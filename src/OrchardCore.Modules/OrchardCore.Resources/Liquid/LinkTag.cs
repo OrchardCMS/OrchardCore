@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
@@ -44,27 +45,27 @@ namespace OrchardCore.Resources.Liquid
 
             var linkEntry = new LinkEntry();
 
-            if (!System.String.IsNullOrEmpty(src))
+            if (!String.IsNullOrEmpty(src))
             {
                 linkEntry.Href = src;
             }
 
-            if (!System.String.IsNullOrEmpty(rel))
+            if (!String.IsNullOrEmpty(rel))
             {
                 linkEntry.Rel = rel;
             }
 
-            if (!System.String.IsNullOrEmpty(condition))
+            if (!String.IsNullOrEmpty(condition))
             {
                 linkEntry.Condition = condition;
             }
 
-            if (!System.String.IsNullOrEmpty(title))
+            if (!String.IsNullOrEmpty(title))
             {
                 linkEntry.Title = title;
             }
 
-            if (!System.String.IsNullOrEmpty(type))
+            if (!String.IsNullOrEmpty(type))
             {
                 linkEntry.Type = type;
             }
