@@ -20,7 +20,9 @@ namespace OrchardCore.Environment.Shell.Removing;
 public class ShellDbTablesRemovingHandler : IShellRemovingHandler
 {
     private readonly IShellContextFactory _shellContextFactory;
+#pragma warning disable IDE1006 // Naming Styles
     private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
     private readonly ILogger _logger;
 
     public ShellDbTablesRemovingHandler(

@@ -10,7 +10,7 @@ namespace OrchardCore.DisplayManagement
 {
     public class PositionWrapper : IHtmlContent, IPositioned, IShape
     {
-        private IHtmlContent _value;
+        private readonly IHtmlContent _value;
         public string Position { get; set; }
 
         public ShapeMetadata Metadata { get; set; } = new ShapeMetadata();
@@ -24,6 +24,7 @@ namespace OrchardCore.DisplayManagement
         public IDictionary<string, string> Attributes { get; }
 
         private Dictionary<string, object> _properties;
+
         public IDictionary<string, object> Properties => _properties ??= new Dictionary<string, object>();
 
         public IReadOnlyList<IPositioned> Items => throw new System.NotImplementedException();

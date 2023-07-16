@@ -56,7 +56,7 @@ namespace OrchardCore.DisplayManagement.Notify
 
             if (messageEntries == null)
             {
-                // An error occurred during deserialization
+                // An error occurred during deserialization.
                 _shouldDeleteCookie = true;
                 return;
             }
@@ -161,7 +161,7 @@ namespace OrchardCore.DisplayManagement.Notify
             await next();
         }
 
-        private void DeleteCookies(ResultExecutingContext filterContext)
+        private static void DeleteCookies(ResultExecutingContext filterContext)
         {
             filterContext.HttpContext.Response.Cookies.Delete(CookiePrefix, GetCookieOptions(filterContext.HttpContext));
         }

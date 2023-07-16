@@ -108,10 +108,10 @@ namespace OrchardCore.DisplayManagement.Zones
     }
 
     /// <remarks>
-    /// InterfaceProxyBehavior()
-    /// NilBehavior() => return Nil on GetMember and GetIndex in all cases
-    /// ZoneOnDemandBehavior(_zoneFactory, _parent, name)  => when a zone (Shape) is
-    /// created, replace itself with the zone so that Layout.ZoneName is no more equal to Nil
+    /// InterfaceProxyBehavior().
+    /// NilBehavior() => return Nil on GetMember and GetIndex in all cases.
+    /// ZoneOnDemandBehavior(_zoneFactory, _parent, name) => when a zone (Shape) is
+    /// created, replace itself with the zone so that Layout.ZoneName is no more equal to Nil.
     /// </remarks>
     public class ZoneOnDemand : Shape
     {
@@ -129,14 +129,14 @@ namespace OrchardCore.DisplayManagement.Zones
 
         public override bool TryGetMember(System.Dynamic.GetMemberBinder binder, out object result)
         {
-            // NilBehavior
+            // NilBehavior.
             result = Nil.Instance;
             return true;
         }
 
         public override bool TryGetIndex(System.Dynamic.GetIndexBinder binder, object[] indexes, out object result)
         {
-            // NilBehavior
+            // NilBehavior.
             result = Nil.Instance;
             return true;
         }
@@ -145,7 +145,7 @@ namespace OrchardCore.DisplayManagement.Zones
         {
             var name = binder.Name;
 
-            // NilBehavior
+            // NilBehavior.
             if (!args.Any() && name != "ToString")
             {
                 result = Nil.Instance;
@@ -178,15 +178,17 @@ namespace OrchardCore.DisplayManagement.Zones
             return true;
         }
 
+#pragma warning disable IDE0060 // Remove unused parameter
         public static bool operator ==(ZoneOnDemand a, object b)
+#pragma warning restore IDE0060 // Remove unused parameter
         {
-            // if ZoneOnDemand is compared to null it must return true
+            // If ZoneOnDemand is compared to null it must return true.
             return b == null || ReferenceEquals(b, Nil.Instance);
         }
 
         public static bool operator !=(ZoneOnDemand a, object b)
         {
-            // if ZoneOnDemand is compared to null it must return true
+            // If ZoneOnDemand is compared to null it must return true.
             return !(a == b);
         }
 
