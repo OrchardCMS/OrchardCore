@@ -23,14 +23,14 @@ namespace OrchardCore.ReCaptcha.Services
         }
 
         /// <summary>
-        /// Verifies the supplied token with ReCaptcha Api
+        /// Verifies the supplied token with ReCaptcha Api.
         /// </summary>
-        /// <param name="responseToken">Token received from the ReCaptcha UI</param>
-        /// <param name="secretKey">Key entered by user in the secrets</param>
-        /// <returns>A boolean indicating if the token is valid</returns>
+        /// <param name="responseToken">Token received from the ReCaptcha UI.</param>
+        /// <param name="secretKey">Key entered by user in the secrets.</param>
+        /// <returns>A boolean indicating if the token is valid.</returns>
         public async Task<bool> VerifyAsync(string responseToken, string secretKey)
         {
-            if (string.IsNullOrWhiteSpace(responseToken))
+            if (String.IsNullOrWhiteSpace(responseToken))
             {
                 return false;
             }
@@ -51,7 +51,7 @@ namespace OrchardCore.ReCaptcha.Services
             }
             catch (HttpRequestException e)
             {
-                _logger.LogError(e, "Could not contact Google to verify captcha");
+                _logger.LogError(e, "Could not contact Google to verify captcha.");
             }
 
             return false;

@@ -19,7 +19,9 @@ namespace OrchardCore.ReCaptcha.Services
         private readonly IEnumerable<IDetectRobots> _robotDetectors;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
+#pragma warning disable IDE1006 // Naming Styles
         private readonly IStringLocalizer S;
+#pragma warning restore IDE1006 // Naming Styles
 
         public ReCaptchaService(ReCaptchaClient reCaptchaClient, IOptions<ReCaptchaSettings> optionsAccessor, IEnumerable<IDetectRobots> robotDetectors, IHttpContextAccessor httpContextAccessor, ILogger<ReCaptchaService> logger, IStringLocalizer<ReCaptchaService> stringLocalizer)
         {
@@ -32,7 +34,7 @@ namespace OrchardCore.ReCaptcha.Services
         }
 
         /// <summary>
-        /// Flags the behavior as that of a robot
+        /// Flags the behavior as that of a robot.
         /// </summary>
         public void MaybeThisIsARobot()
         {
@@ -40,9 +42,9 @@ namespace OrchardCore.ReCaptcha.Services
         }
 
         /// <summary>
-        /// Determines if the request has been made by a robot
+        /// Determines if the request has been made by a robot.
         /// </summary>
-        /// <returns>Yes (true) or no (false)</returns>
+        /// <returns>Yes (true) or no (false).</returns>
         public bool IsThisARobot()
         {
             var result = _robotDetectors.Invoke(i => i.DetectRobot(), _logger);
@@ -50,7 +52,7 @@ namespace OrchardCore.ReCaptcha.Services
         }
 
         /// <summary>
-        /// Clears all robot markers, we are dealing with a human
+        /// Clears all robot markers, we are dealing with a human.
         /// </summary>
         /// <returns></returns>
         public void ThisIsAHuman()
@@ -59,7 +61,7 @@ namespace OrchardCore.ReCaptcha.Services
         }
 
         /// <summary>
-        /// Verifies the ReCaptcha response with the ReCaptcha webservice
+        /// Verifies the ReCaptcha response with the ReCaptcha webservice.
         /// </summary>
         /// <param name="reCaptchaResponse"></param>
         /// <returns></returns>
@@ -69,9 +71,9 @@ namespace OrchardCore.ReCaptcha.Services
         }
 
         /// <summary>
-        /// Validates the captcha that is in the Form of the current request
+        /// Validates the captcha that is in the Form of the current request.
         /// </summary>
-        /// <param name="reportError">Lambda for reporting errors</param>
+        /// <param name="reportError">Lambda for reporting errors.</param>
         public async Task<bool> ValidateCaptchaAsync(Action<string, string> reportError)
         {
             if (!_settings.IsValid())
@@ -83,7 +85,7 @@ namespace OrchardCore.ReCaptcha.Services
             // We use the header value as default if it's passed
             var reCaptchaResponse = _httpContextAccessor.HttpContext?.Request.Headers[Constants.ReCaptchaServerResponseHeaderName];
 
-            // If this is a standard form post we get the token from the form values if not affected previously in the header
+            // If this is a standard form post we get the token from the form values if not affected previously in the header.
             if (String.IsNullOrEmpty(reCaptchaResponse) && (_httpContextAccessor.HttpContext?.Request.HasFormContentType ?? false))
             {
                 reCaptchaResponse = _httpContextAccessor.HttpContext.Request.Form[Constants.ReCaptchaServerResponseHeaderName].ToString();
