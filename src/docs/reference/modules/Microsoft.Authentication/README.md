@@ -32,19 +32,19 @@ First, you need to create an Microsoft Entra ID app on the [Azure Portal](https:
 3. Use the following settings:
     - Name: We suggest the name of your web app, e.g. "My App". This is not the same display name that you need to specify for the login later and it doesn't need to match anything else.
     - Supported account types: The feature supports both single and multitenant Microsoft Entra ID, but not personal accounts.
-    - Redirect URI: While supposedly optional, you have to specify one for the login flow to work with web apps. Add the URL that'll handle Microsoft Entra ID login redirects; by default, this is `/signin-oidc` under your app's root URL, e.g. "https://example.com/signin-oidc" (upon login, users will be redirected to the page they visited previously, this isn't for that).
+    - Redirect URI: While supposedly optional, you have to specify one for the login flow to work with web apps. Add the URL that will handle Microsoft Entra ID login redirects; by default, this is `/signin-oidc` under your app's root URL, e.g. "https://example.com/signin-oidc" (upon login, users will be redirected to the page they visited previously, this isn't for that).
 4. Once the app is created, note the following details of it, as displayed in the Azure Portal, which will be necessary to configure in Orchard Core later:
     - Application (client) ID
     - Directory (tenant) ID
 5. Configure the rest of the authentication settings of the app under its "Authentication" menu. There, under "Implicit grant and hybrid flows", enable both "Access tokens (used for implicit flows)" and "ID tokens (used for implicit and hybrid flows)". Without these, login will fail with errors.
 6. Configure the `email` claim under the "Token configuration" menu. Click "Add optional claim", as "Token type" select "ID", then select "email" and click "Add". Without this, Orchard can't match logins based on the user's email, and thus existing users won't be able to log in.
 
-Now you're ready to configure Microsoft Entra ID login in Orchard too. After you enable the "Microsoft Azure Active Directory Authentication" feature, on the Orchard admin you'll see the "Security" → "Azure Active Directory" menu. Configure the following at least:
+You are now ready to configure Microsoft Entra ID login in Orchard too. After enabling the "Microsoft Azure Active Directory Authentication" feature, you will see the "Security" → "Azure Active Directory" menu in the admin. We recommend to configure at least the following settings:
 
-- Display Name: The text that'll be displayed on the Orchard login screen. We recommend something like "My Company Microsoft account".
+- Display Name: The text that will be displayed on the Orchard login screen. We recommend something like "My Company Microsoft account".
 - AppId: Use the above-mentioned "Application (client) ID" from the Azure Portal.
 - TenantId: Use the above-mentioned "Directory (tenant) ID" from the Azure Portal.
-- CallbackPath: We recommend not changing this unless you want to handle the login callback from your custom code, or if the `/signin-oidc` path is used by something else. This is the path within the application's base path where the user-agent will be returned after login. The middleware will process this request when it arrives. If no value is provided, the default `/signin-oidc` is used, which requires no further setup. If you change this, you'll also need to use it under "Redirect URIs" of the app in the Azure Portal.
+- CallbackPath: We recommend not changing this unless you want to handle the login callback from your custom code, or if the `/signin-oidc` path is used by something else. This is the path within the application's base path where the user-agent will be returned after login. The middleware will process this request when it arrives. If no value is provided, the default `/signin-oidc` is used, which requires no further setup. If you change this, you will also need to use it under "Redirect URIs" of the app in the Azure Portal.
 
 Now, the login screen will display a button for Microsoft Entra ID login:
 
@@ -69,7 +69,7 @@ The Azure Active Directory can be set during recipes using the settings step. He
 ## User Registration
 
 - If you want to enable new users to register to the site through their Microsoft Account and/or Microsoft Microsoft Entra ID login, the `OrchardCore.Users.Registration` feature must be enabled and setup accordingly.
-- Apart from during login, an existing user can link their account to their Microsoft Account and/or Microsoft Microsoft Entra ID login through the External Logins link from User menu.
+- Apart from during login, existing users can link their account to their Microsoft Account and/or Microsoft Microsoft Entra ID login through the External Logins link from User menu.
 
 ## Microsoft Account & Azure Active Directory Settings Configuration
 
