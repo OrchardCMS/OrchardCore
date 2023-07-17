@@ -50,7 +50,7 @@ namespace OrchardCore.Shortcodes.Services
             {
                 Args = arguments,
                 Content = content,
-                Context = context
+                Context = context,
             };
 
             var parameters = new Dictionary<string, FluidValue>

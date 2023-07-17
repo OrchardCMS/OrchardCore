@@ -6,9 +6,7 @@ namespace OrchardCore.Media.Filters
 {
     public static class MediaFilters
     {
-#pragma warning disable IDE0060 // Remove unused parameter
-        public static ValueTask<FluidValue> ImgTag(FluidValue input, FilterArguments arguments, TemplateContext ctx)
-#pragma warning restore IDE0060 // Remove unused parameter
+        public static ValueTask<FluidValue> ImgTag(FluidValue input, FilterArguments arguments, TemplateContext _)
         {
             var url = input.ToStringValue();
 
