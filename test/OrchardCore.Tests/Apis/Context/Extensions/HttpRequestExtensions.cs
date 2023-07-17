@@ -68,7 +68,7 @@ namespace OrchardCore.Tests.Apis.Context
             {
                 Method = new HttpMethod("PATCH"),
                 RequestUri = new Uri(client.BaseAddress + requestUri),
-                Content = content
+                Content = content,
             };
 
             request.Headers.ExpectContinue = false;
@@ -142,7 +142,7 @@ namespace OrchardCore.Tests.Apis.Context
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
             {
-                Content = content
+                Content = content,
             };
 
             request.Headers
@@ -164,7 +164,7 @@ namespace OrchardCore.Tests.Apis.Context
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
             {
-                Content = content
+                Content = content,
             };
 
             request.Headers
@@ -186,7 +186,7 @@ namespace OrchardCore.Tests.Apis.Context
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
             {
-                Content = content
+                Content = content,
             };
 
             request.Headers
