@@ -1,6 +1,6 @@
 # Use Microsoft Entra ID / Azure AD as an external identity provider
 
-In order to authenticate users with AzureAD, you must enable and configure The `OrchardCore.MicrosoftAuthentication.AzureAD` (you can learn more about [here](../../reference/modules/Microsoft.Authentication/README.md)) and the `OrchardCore.Users.Registration` features
+In order to authenticate users with Microsoft Entra ID (Azure AD), you must enable and configure The `OrchardCore.MicrosoftAuthentication.AzureAD` (you can learn more about [here](../../reference/modules/Microsoft.Authentication/README.md)) and the `OrchardCore.Users.Registration` features
 
 ## What you will build
 
