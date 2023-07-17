@@ -22,9 +22,7 @@ namespace OrchardCore.OpenId.Services
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
         private readonly ISiteService _siteService;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public OpenIdValidationService(
             ShellDescriptor shellDescriptor,

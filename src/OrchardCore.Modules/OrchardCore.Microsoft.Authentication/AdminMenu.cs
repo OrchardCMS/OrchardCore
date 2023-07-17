@@ -9,9 +9,7 @@ namespace OrchardCore.Microsoft.Authentication
     [Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
     public class AdminMenuMicrosoftAccount : INavigationProvider
     {
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public AdminMenuMicrosoftAccount(IStringLocalizer<AdminMenuMicrosoftAccount> localizer)
         {
@@ -38,9 +36,7 @@ namespace OrchardCore.Microsoft.Authentication
     [Feature(MicrosoftAuthenticationConstants.Features.AAD)]
     public class AdminMenuAAD : INavigationProvider
     {
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public AdminMenuAAD(IStringLocalizer<AdminMenuAAD> localizer) => S = localizer;
 

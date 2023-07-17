@@ -13,9 +13,7 @@ namespace OrchardCore.Twitter.Workflows.Activities
     {
         private readonly TwitterClient _twitterClient;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public UpdateTwitterStatusTask(
             TwitterClient twitterClient,

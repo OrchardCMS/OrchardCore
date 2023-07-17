@@ -13,9 +13,7 @@ namespace OrchardCore.Users.Workflows.Drivers
 {
     public class RegisterUserTaskDisplayDriver : ActivityDisplayDriver<RegisterUserTask, RegisterUserTaskViewModel>
     {
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public RegisterUserTaskDisplayDriver(IStringLocalizer<RegisterUserTaskDisplayDriver> localizer)
         {

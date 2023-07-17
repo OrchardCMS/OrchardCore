@@ -27,9 +27,7 @@ namespace OrchardCore.AuditTrail.Controllers
         private readonly IAuditTrailAdminListQueryService _auditTrailAdminListQueryService;
         private readonly IDisplayManager<AuditTrailEvent> _displayManager;
         private readonly IDisplayManager<AuditTrailIndexOptions> _auditTrailOptionsDisplayManager;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public AdminController(
             IOptions<PagerOptions> pagerOptions,

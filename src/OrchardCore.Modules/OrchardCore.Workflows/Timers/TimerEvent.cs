@@ -13,9 +13,7 @@ namespace OrchardCore.Workflows.Timers
     {
         public static string EventName => nameof(TimerEvent);
         private readonly IClock _clock;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public TimerEvent(IClock clock, IStringLocalizer<TimerEvent> localizer)
         {

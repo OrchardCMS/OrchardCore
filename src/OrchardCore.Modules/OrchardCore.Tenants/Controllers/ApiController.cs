@@ -47,9 +47,7 @@ namespace OrchardCore.Tenants.Controllers
         private readonly TenantsOptions _tenantsOptions;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly ITenantValidator _tenantValidator;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
         private readonly ILogger _logger;
 
         public ApiController(

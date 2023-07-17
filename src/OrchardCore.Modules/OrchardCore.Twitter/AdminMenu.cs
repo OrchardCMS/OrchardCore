@@ -9,9 +9,7 @@ namespace OrchardCore.Twitter
     [Feature(TwitterConstants.Features.Signin)]
     public class AdminMenuSignin : INavigationProvider
     {
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public AdminMenuSignin(IStringLocalizer<AdminMenuSignin> localizer)
         {
@@ -38,9 +36,7 @@ namespace OrchardCore.Twitter
     [Feature(TwitterConstants.Features.Twitter)]
     public class AdminMenu : INavigationProvider
     {
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {

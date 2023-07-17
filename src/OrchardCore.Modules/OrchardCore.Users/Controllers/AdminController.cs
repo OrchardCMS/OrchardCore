@@ -45,11 +45,9 @@ namespace OrchardCore.Users.Controllers
         private readonly IShapeFactory _shapeFactory;
         private readonly ILogger _logger;
 
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly dynamic New;
-        private readonly IHtmlLocalizer H;
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly dynamic New;
+        protected readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
 
         public AdminController(
             IDisplayManager<User> userDisplayManager,

@@ -19,9 +19,7 @@ namespace OrchardCore.Roles.Services
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IDocumentManager<RolesDocument> _documentManager;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
         private readonly ILogger _logger;
 
         private bool _updating;

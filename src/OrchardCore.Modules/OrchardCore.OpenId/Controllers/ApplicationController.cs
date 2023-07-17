@@ -27,18 +27,14 @@ namespace OrchardCore.OpenId.Controllers
     public class ApplicationController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
         private readonly PagerOptions _pagerOptions;
         private readonly IOpenIdApplicationManager _applicationManager;
         private readonly IOpenIdScopeManager _scopeManager;
         private readonly INotifier _notifier;
         private readonly ShellDescriptor _shellDescriptor;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly dynamic New;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly dynamic New;
 
         public ApplicationController(
             IShapeFactory shapeFactory,

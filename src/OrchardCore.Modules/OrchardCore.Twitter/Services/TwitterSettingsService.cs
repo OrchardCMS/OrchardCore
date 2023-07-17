@@ -12,9 +12,7 @@ namespace OrchardCore.Twitter.Services
     public class TwitterSettingsService : ITwitterSettingsService
     {
         private readonly ISiteService _siteService;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public TwitterSettingsService(
             ISiteService siteService,

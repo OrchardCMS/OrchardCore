@@ -11,9 +11,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
     {
         private readonly int _maxNumberOfResults;
         private readonly MaxNumberOfResultsValidationMode _maxNumberOfResultsValidationMode;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
         private readonly ILogger _logger;
 
         public MaxNumberOfResultsValidationRule(

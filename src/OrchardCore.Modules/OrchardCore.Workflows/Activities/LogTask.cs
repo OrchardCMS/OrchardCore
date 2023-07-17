@@ -12,9 +12,7 @@ namespace OrchardCore.Workflows.Activities
     {
         private readonly ILogger _logger;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public LogTask(ILogger<LogTask> logger, IWorkflowExpressionEvaluator expressionEvaluator, IStringLocalizer<LogTask> localizer)
         {

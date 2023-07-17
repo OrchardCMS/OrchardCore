@@ -16,9 +16,7 @@ namespace OrchardCore.Users.Workflows.Activities
         private readonly UserManager<IUser> _userManager;
         private readonly IUserService _userService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public AssignUserRoleTask(UserManager<IUser> userManager, IUserService userService, IWorkflowExpressionEvaluator expressionvaluator, IStringLocalizer<AssignUserRoleTask> localizer)
         {

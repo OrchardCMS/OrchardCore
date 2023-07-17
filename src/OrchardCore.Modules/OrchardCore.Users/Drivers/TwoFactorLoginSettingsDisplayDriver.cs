@@ -16,9 +16,7 @@ public class TwoFactorLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, T
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-#pragma warning disable IDE1006 // Naming Styles
-    private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+    protected readonly IStringLocalizer S;
 
     public TwoFactorLoginSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,

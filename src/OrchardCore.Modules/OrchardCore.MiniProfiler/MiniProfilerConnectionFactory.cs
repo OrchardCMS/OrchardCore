@@ -7,9 +7,7 @@ namespace OrchardCore.MiniProfiler
 {
     internal class MiniProfilerConnectionFactory : IConnectionFactory
     {
-#pragma warning disable IDE1006 // Naming Styles
-        private static readonly string ConnectionName = nameof(ProfiledDbConnection).ToLower();
-#pragma warning restore IDE1006 // Naming Styles
+        protected static readonly string ConnectionName = nameof(ProfiledDbConnection).ToLower();
 
         private readonly IConnectionFactory _factory;
 

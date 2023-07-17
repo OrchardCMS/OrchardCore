@@ -23,10 +23,8 @@ namespace OrchardCore.Users.Controllers
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public RegistrationController(
             UserManager<IUser> userManager,

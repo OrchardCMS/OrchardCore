@@ -32,10 +32,8 @@ namespace OrchardCore.Localization.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly CultureOptions _cultureOptions;
 
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IHtmlLocalizer H;
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
 
         public LocalizationSettingsDisplayDriver(
             INotifier notifier,

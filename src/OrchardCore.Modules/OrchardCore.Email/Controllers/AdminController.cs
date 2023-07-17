@@ -14,9 +14,7 @@ namespace OrchardCore.Email.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
         private readonly ISmtpService _smtpService;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IHtmlLocalizer H;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IHtmlLocalizer H;
 
         public AdminController(
             IHtmlLocalizer<AdminController> h,

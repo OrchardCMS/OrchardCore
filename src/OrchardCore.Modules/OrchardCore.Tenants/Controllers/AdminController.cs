@@ -44,11 +44,9 @@ namespace OrchardCore.Tenants.Controllers
         private readonly TenantsOptions _tenantsOptions;
         private readonly ILogger _logger;
 
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly dynamic New;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly dynamic New;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public AdminController(
             IShellHost shellHost,

@@ -29,10 +29,8 @@ namespace OrchardCore.Users.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IUserEventHandler> _userEventHandlers;
         private readonly ILogger _logger;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IHtmlLocalizer H;
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
 
         public UserDisplayDriver(
             UserManager<IUser> userManager,

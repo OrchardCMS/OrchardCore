@@ -25,9 +25,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
         private readonly IWorkflowManager _workflowManager;
         private readonly INotifier _notifier;
         private readonly IHttpContextAccessor _httpContextAccessor;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IHtmlLocalizer H;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IHtmlLocalizer H;
 
         public UserTaskEventContentDriver(
             IWorkflowStore workflowStore,

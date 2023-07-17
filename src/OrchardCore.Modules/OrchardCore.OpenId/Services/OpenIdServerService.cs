@@ -29,9 +29,7 @@ namespace OrchardCore.OpenId.Services
         private readonly IOptionsMonitor<ShellOptions> _shellOptions;
         private readonly ShellSettings _shellSettings;
         private readonly ISiteService _siteService;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public OpenIdServerService(
             IDataProtectionProvider dataProtectionProvider,

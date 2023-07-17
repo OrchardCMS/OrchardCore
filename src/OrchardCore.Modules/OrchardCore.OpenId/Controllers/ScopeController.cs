@@ -22,18 +22,14 @@ namespace OrchardCore.OpenId.Controllers
     public class ScopeController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
         private readonly IOpenIdScopeManager _scopeManager;
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
         private readonly ShellDescriptor _shellDescriptor;
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly dynamic New;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly dynamic New;
 
         public ScopeController(
             IOpenIdScopeManager scopeManager,

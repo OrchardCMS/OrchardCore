@@ -14,9 +14,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
     {
         public static readonly string ErrorCode = "Unauthorized";
         private readonly IAuthorizationService _authorizationService;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public RequiresPermissionValidationRule(
             IAuthorizationService authorizationService,

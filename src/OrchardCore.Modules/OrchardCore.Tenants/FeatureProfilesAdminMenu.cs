@@ -9,9 +9,7 @@ namespace OrchardCore.Tenants
     public class FeatureProfilesAdminMenu : INavigationProvider
     {
         private readonly ShellSettings _shellSettings;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public FeatureProfilesAdminMenu(IStringLocalizer<FeatureProfilesAdminMenu> localizer, ShellSettings shellSettings)
         {

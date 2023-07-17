@@ -19,9 +19,7 @@ namespace OrchardCore.Settings.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly CultureOptions _cultureOptions;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IHtmlLocalizer H;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IHtmlLocalizer H;
 
         public AdminController(
             ISiteService siteService,

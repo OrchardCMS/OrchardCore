@@ -19,9 +19,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IUserService _userService;
         private readonly UserManager<IUser> _userManager;
         private readonly ISiteService _siteService;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public ChangeEmailController(
             IUserService userService,

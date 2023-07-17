@@ -28,9 +28,7 @@ namespace OrchardCore.Recipes.Controllers
         private readonly IRecipeExecutor _recipeExecutor;
         private readonly IEnumerable<IRecipeEnvironmentProvider> _environmentProviders;
         private readonly INotifier _notifier;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IHtmlLocalizer H;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IHtmlLocalizer H;
         private readonly ILogger _logger;
 
         public AdminController(

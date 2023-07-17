@@ -28,9 +28,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         private readonly ISession _session;
         private readonly RemoteInstanceService _service;
         private readonly INotifier _notifier;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IHtmlLocalizer H;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IHtmlLocalizer H;
 
         public ExportRemoteInstanceController(
             IAuthorizationService authorizationService,
