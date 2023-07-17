@@ -120,6 +120,7 @@ namespace OrchardCore.OpenId.Configuration
             // configurable and are inferred from the selected flows.
             if (settings.AllowAuthorizationCodeFlow)
             {
+                options.CodeChallengeMethods.Add(CodeChallengeMethods.Plain);
                 options.CodeChallengeMethods.Add(CodeChallengeMethods.Sha256);
 
                 options.GrantTypes.Add(GrantTypes.AuthorizationCode);
@@ -138,6 +139,7 @@ namespace OrchardCore.OpenId.Configuration
 
             if (settings.AllowHybridFlow)
             {
+                options.CodeChallengeMethods.Add(CodeChallengeMethods.Plain);
                 options.CodeChallengeMethods.Add(CodeChallengeMethods.Sha256);
 
                 options.GrantTypes.Add(GrantTypes.AuthorizationCode);
