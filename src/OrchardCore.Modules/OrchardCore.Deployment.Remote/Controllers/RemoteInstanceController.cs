@@ -66,8 +66,6 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 remoteInstances = remoteInstances.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            var count = remoteInstances.Count;
-
             var startIndex = pager.GetStartIndex();
             var pageSize = pager.PageSize;
 
@@ -75,7 +73,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             var routeData = new RouteData();
             routeData.Values.Add("Options.Search", options.Search);
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(remoteInstances.Count).RouteData(routeData);
 
             var model = new RemoteInstanceIndexViewModel
             {

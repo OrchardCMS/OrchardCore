@@ -40,7 +40,7 @@ namespace OrchardCore.Features.Controllers
             IOptions<AdminOptions> adminOptions,
             INotifier notifier,
             IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> localizer)
+            IHtmlLocalizer<AdminController> htmlLocalizer)
         {
             _authorizationService = authorizationService;
             _shellHost = shellHost;
@@ -50,7 +50,7 @@ namespace OrchardCore.Features.Controllers
             _adminOptions = adminOptions.Value;
             _notifier = notifier;
             S = stringLocalizer;
-            H = localizer;
+            H = htmlLocalizer;
         }
 
         public async Task<ActionResult> Features(string tenant)
