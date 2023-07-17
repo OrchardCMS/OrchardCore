@@ -15,9 +15,7 @@ namespace OrchardCore.Resources.Liquid
     {
         private static readonly char[] _separators = new[] { ',', ' ' };
 
-#pragma warning disable IDE0060 // Remove unused parameter
-        public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
-#pragma warning restore IDE0060 // Remove unused parameter
+        public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder _, TemplateContext context)
         {
             var services = ((LiquidTemplateContext)context).Services;
             var resourceManager = services.GetRequiredService<IResourceManager>();

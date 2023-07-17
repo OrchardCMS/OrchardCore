@@ -32,9 +32,7 @@ namespace OrchardCore.Users.Liquid
             return new ValueTask<FluidValue>(BooleanValue.False);
         }
 
-#pragma warning disable IDE0060 // Remove unused parameter
-        public static ValueTask<FluidValue> UserId(FluidValue input, FilterArguments args, TemplateContext ctx)
-#pragma warning restore IDE0060 // Remove unused parameter
+        public static ValueTask<FluidValue> UserId(FluidValue input, FilterArguments _, TemplateContext ctx)
         {
             if (input.ToObjectValue() is LiquidUserAccessor)
             {
