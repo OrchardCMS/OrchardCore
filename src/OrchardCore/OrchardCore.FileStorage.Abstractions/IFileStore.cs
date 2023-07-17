@@ -150,9 +150,7 @@ namespace OrchardCore.FileStorage
         /// Backslash is converted to forward slash and any leading or trailing slashes
         /// are removed.
         /// </remarks>
-#pragma warning disable IDE0060 // Remove unused parameter
-        public static string NormalizePath(this IFileStore fileStore, string path)
-#pragma warning restore IDE0060 // Remove unused parameter
+        public static string NormalizePath(this IFileStore _, string path)
         {
             if (path == null)
             {

@@ -12,9 +12,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class HttpContextRemoveItemTag
     {
-#pragma warning disable IDE0060 // Remove unused parameter
-        public static async ValueTask<Completion> WriteToAsync(Expression argument, TextWriter writer, TextEncoder encoder, TemplateContext context)
-#pragma warning restore IDE0060 // Remove unused parameter
+        public static async ValueTask<Completion> WriteToAsync(Expression argument, TextWriter _1, TextEncoder _2, TemplateContext context)
         {
             var services = ((LiquidTemplateContext)context).Services;
 

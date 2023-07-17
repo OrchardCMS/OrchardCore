@@ -273,9 +273,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 return false;
             }
 
-#pragma warning disable IDE0060 // Remove unused parameter
-            private bool EnsureNotAtEnd(RequiredAttributeDescriptorBuilder builder)
-#pragma warning restore IDE0060 // Remove unused parameter
+            private bool EnsureNotAtEnd(RequiredAttributeDescriptorBuilder _)
             {
                 if (AtEnd)
                 {

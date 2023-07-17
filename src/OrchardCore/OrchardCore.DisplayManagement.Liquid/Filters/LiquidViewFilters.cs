@@ -28,9 +28,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             return new ValueTask<FluidValue>(new StringValue(localizer.GetString(input.ToStringValue(), parameters)));
         }
 
-#pragma warning disable IDE0060 // Remove unused parameter
-        public static ValueTask<FluidValue> HtmlClass(FluidValue input, FilterArguments arguments, TemplateContext ctx)
-#pragma warning restore IDE0060 // Remove unused parameter
+        public static ValueTask<FluidValue> HtmlClass(FluidValue input, FilterArguments _1, TemplateContext _2)
         {
             return new ValueTask<FluidValue>(new StringValue(input.ToStringValue().HtmlClassify()));
         }

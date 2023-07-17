@@ -16,9 +16,7 @@ namespace OrchardCore.Environment.Cache
         /// <summary>
         /// Adds a Signal (if not already present) to be sent at the end of the shell scope.
         /// </summary>
-#pragma warning disable IDE0060 // Remove unused parameter
-        public static void DeferredSignalToken(this ISignal signal, string key)
-#pragma warning restore IDE0060 // Remove unused parameter
+        public static void DeferredSignalToken(this ISignal _, string key)
         {
             ShellScope.AddDeferredSignal(key);
         }

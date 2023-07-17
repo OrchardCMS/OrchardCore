@@ -117,9 +117,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             get { return _properties; }
         }
 
-#pragma warning disable IDE0060 // Remove unused parameter
-        public static bool operator ==(Composite a, Nil b)
-#pragma warning restore IDE0060 // Remove unused parameter
+        public static bool operator ==(Composite a, Nil _)
         {
             return null == a;
         }
@@ -202,17 +200,15 @@ namespace OrchardCore.DisplayManagement.Shapes
             return base.TryBinaryOperation(binder, arg, out result);
         }
 
-#pragma warning disable IDE0060 // Remove unused parameter
-        public static bool operator ==(Nil a, Nil b)
+        public static bool operator ==(Nil _1, Nil _2)
         {
             return true;
         }
 
-        public static bool operator !=(Nil a, Nil b)
+        public static bool operator !=(Nil _1, Nil _2)
         {
             return false;
         }
-#pragma warning restore IDE0060 // Remove unused parameter
 
         public static bool operator ==(Nil a, object b)
         {

@@ -178,9 +178,7 @@ namespace OrchardCore.DisplayManagement.Zones
             return true;
         }
 
-#pragma warning disable IDE0060 // Remove unused parameter
-        public static bool operator ==(ZoneOnDemand a, object b)
-#pragma warning restore IDE0060 // Remove unused parameter
+        public static bool operator ==(ZoneOnDemand _, object b)
         {
             // If ZoneOnDemand is compared to null it must return true.
             return b == null || ReferenceEquals(b, Nil.Instance);
