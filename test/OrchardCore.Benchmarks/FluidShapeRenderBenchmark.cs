@@ -105,9 +105,7 @@ namespace OrchardCore.Benchmark
             await _liquidFilterDelegateResolver.ResolveAsync(_input, _filterArguments, templateContext);
         }
 
-#pragma warning disable IDE0060 // Remove unused parameter
-        private static async ValueTask<FluidValue> OriginalShapeRenderDynamic(FluidValue input, FilterArguments arguments, TemplateContext context)
-#pragma warning restore IDE0060 // Remove unused parameter
+        private static async ValueTask<FluidValue> OriginalShapeRenderDynamic(FluidValue input, FilterArguments _, TemplateContext context)
         {
             if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
             {
@@ -125,9 +123,7 @@ namespace OrchardCore.Benchmark
             return NilValue.Instance;
         }
 
-#pragma warning disable IDE0060 // Remove unused parameter
-        private static ValueTask<FluidValue> ShapeRenderWithAmbientValues(FluidValue input, FilterArguments arguments, TemplateContext context)
-#pragma warning restore IDE0060 // Remove unused parameter
+        private static ValueTask<FluidValue> ShapeRenderWithAmbientValues(FluidValue input, FilterArguments _, TemplateContext context)
         {
             static async ValueTask<FluidValue> Awaited(Task<IHtmlContent> task)
             {
@@ -152,9 +148,7 @@ namespace OrchardCore.Benchmark
             return new ValueTask<FluidValue>(NilValue.Instance);
         }
 
-#pragma warning disable IDE0060 // Remove unused parameter
-        private static ValueTask<FluidValue> ShapeRenderStatic(FluidValue input, FilterArguments arguments, TemplateContext context)
-#pragma warning restore IDE0060 // Remove unused parameter
+        private static ValueTask<FluidValue> ShapeRenderStatic(FluidValue input, FilterArguments _, TemplateContext context)
         {
             static async ValueTask<FluidValue> Awaited(Task<IHtmlContent> task)
             {

@@ -60,9 +60,7 @@ namespace OrchardCore.Benchmark
         //     await LiquidViewFilters.ShapeRender(input, _filterArguments, _templateContext);
         // }
 
-#pragma warning disable IDE0060 // Remove unused parameter
-        private static async ValueTask<FluidValue> ShapeRenderOriginal(FluidValue input, FilterArguments arguments, TemplateContext context)
-#pragma warning restore IDE0060 // Remove unused parameter
+        private static async ValueTask<FluidValue> ShapeRenderOriginal(FluidValue input, FilterArguments _, TemplateContext context)
         {
             if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
             {

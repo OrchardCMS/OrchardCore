@@ -60,7 +60,6 @@ namespace OrchardCore.Tests.Commands
         }
 
 #pragma warning disable 660,661
-
         public class PublicMethodsOnly
         {
 #pragma warning restore 660,661
@@ -82,14 +81,12 @@ namespace OrchardCore.Tests.Commands
             }
 
             // No operator.
-#pragma warning disable IDE0060 // Remove unused parameter
-            public static bool operator ==(PublicMethodsOnly a, PublicMethodsOnly b)
+            public static bool operator ==(PublicMethodsOnly _1, PublicMethodsOnly _2)
             {
                 return false;
             }
 
-            public static bool operator !=(PublicMethodsOnly a, PublicMethodsOnly b)
-#pragma warning restore IDE0060 // Remove unused parameter
+            public static bool operator !=(PublicMethodsOnly _1, PublicMethodsOnly _2)
             {
                 return false;
             }
