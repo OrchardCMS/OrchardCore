@@ -10,10 +10,6 @@ namespace OrchardCore.SeoMeta.Settings
 {
     public class SeoMetaPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<SeoMetaPart>
     {
-        public SeoMetaPartSettingsDisplayDriver()
-        {
-        }
-
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
             return Initialize<SeoMetaPartSettingsViewModel>("SeoMetaPartSettings_Edit", model =>
