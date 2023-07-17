@@ -8,17 +8,17 @@ namespace OrchardCore.Apis.GraphQL
 {
     public static class PermissionsExtensions
     {
-        private static readonly string _metaDataKey = "Permissions";
+        private const string MetaDataKey = "Permissions";
 
         public static void RequirePermission(this IProvideMetadata type, Permission permission, object resource = null)
         {
             lock (type)
             {
-                var permissions = type.GetMetadata<List<GraphQLPermissionContext>>(_metaDataKey);
+                var permissions = type.GetMetadata<List<GraphQLPermissionContext>>(MetaDataKey);
 
                 if (permissions == null)
                 {
-                    type.Metadata[_metaDataKey] = permissions = new List<GraphQLPermissionContext>();
+                    type.Metadata[MetaDataKey] = permissions = new List<GraphQLPermissionContext>();
                 }
 
                 permissions.Add(new GraphQLPermissionContext(permission, resource));
@@ -33,12 +33,12 @@ namespace OrchardCore.Apis.GraphQL
 
         public static IEnumerable<GraphQLPermissionContext> GetPermissions(this IProvideMetadata type)
         {
-            return type?.GetMetadata<List<GraphQLPermissionContext>>(_metaDataKey) ?? Enumerable.Empty<GraphQLPermissionContext>();
+            return type?.GetMetadata<List<GraphQLPermissionContext>>(MetaDataKey) ?? Enumerable.Empty<GraphQLPermissionContext>();
         }
 
         public static bool HasPermissions(this IProvideMetadata type)
         {
-            return type != null && type.HasMetadata(_metaDataKey);
+            return type != null && type.HasMetadata(MetaDataKey);
         }
     }
 }

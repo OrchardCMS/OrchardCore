@@ -31,8 +31,8 @@ namespace OrchardCore.DisplayManagement.Liquid
 {
     public class LiquidViewTemplate
     {
-        public static readonly string ViewsFolder = "Views";
-        public static readonly string ViewExtension = ".liquid";
+        public const string ViewsFolder = "Views";
+        public const string ViewExtension = ".liquid";
         public static readonly MemoryCache Cache = new(new MemoryCacheOptions());
         public IFluidTemplate FluidTemplate { get; }
 

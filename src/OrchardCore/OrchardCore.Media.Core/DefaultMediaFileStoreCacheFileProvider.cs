@@ -16,7 +16,7 @@ namespace OrchardCore.Media.Core
         /// The path in the wwwroot folder containing the asset cache.
         /// The tenants name will be prepended to this path.
         /// </summary>
-        public static readonly string AssetsCachePath = "ms-cache";
+        public const string AssetsCachePath = "ms-cache";
 
         // Use default stream copy buffer size to stay in gen0 garbage collection.
         private const int StreamCopyBufferSize = 81920;
