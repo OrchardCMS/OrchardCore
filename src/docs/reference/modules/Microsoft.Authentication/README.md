@@ -21,7 +21,7 @@ Available settings are:
 - CallbackPath: The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives.
 If no value is provided, setup Microsoft Account app to use the default path /signin-microsoft.
 
-## Azure Active Directory
+## Microsoft Entra ID (Azure Active Directory)
 
 Authenticates users with their Microsoft Entra ID Account, like Microsoft work or school accounts. If the site allows to register new users, a local user is created and the Microsoft Entra ID account is linked. If a local user with the same email is found, then the external login is linked to that account, after authenticating.
 
