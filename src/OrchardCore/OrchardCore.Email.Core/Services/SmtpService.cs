@@ -26,9 +26,7 @@ namespace OrchardCore.Email.Services
 
         private readonly SmtpSettings _options;
         private readonly ILogger _logger;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         /// <summary>
         /// Initializes a new instance of a <see cref="SmtpService"/>.

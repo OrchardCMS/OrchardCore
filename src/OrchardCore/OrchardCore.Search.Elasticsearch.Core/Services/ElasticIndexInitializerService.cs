@@ -20,9 +20,7 @@ namespace OrchardCore.Search.Elasticsearch
         private readonly ShellSettings _shellSettings;
         private readonly ElasticIndexManager _elasticIndexManager;
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
         private readonly ILogger _logger;
 
         public ElasticIndexInitializerService(

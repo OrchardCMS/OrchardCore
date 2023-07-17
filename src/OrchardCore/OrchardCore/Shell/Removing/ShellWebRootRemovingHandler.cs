@@ -14,9 +14,7 @@ namespace OrchardCore.Environment.Shell.Removing;
 public class ShellWebRootRemovingHandler : IShellRemovingHandler
 {
     private readonly IWebHostEnvironment _webHostEnvironment;
-#pragma warning disable IDE1006 // Naming Styles
-    private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+    protected readonly IStringLocalizer S;
     private readonly ILogger _logger;
 
     public ShellWebRootRemovingHandler(

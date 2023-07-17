@@ -10,9 +10,7 @@ namespace OrchardCore.Search.Elasticsearch
     [Feature("OrchardCore.Search.Elasticsearch.ContentPicker")]
     public class ElasticContentPickerShapeProvider : IShapeAttributeProvider
     {
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public ElasticContentPickerShapeProvider(IStringLocalizer<ElasticContentPickerShapeProvider> stringLocalizer)
         {

@@ -16,10 +16,8 @@ namespace OrchardCore.DisplayManagement.Shapes
         private const string LongDateTimeFormat = "dddd, MMMM d, yyyy h:mm:ss tt";
         private readonly IClock _clock;
         private readonly ILocalClock _localClock;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public DateTimeShapes(
             IClock clock,

@@ -10,9 +10,7 @@ namespace OrchardCore.Environment.Commands
     {
         private readonly IEnumerable<ICommandHandler> _commandHandlers;
         private readonly CommandHandlerDescriptorBuilder _builder = new();
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public DefaultCommandManager(IEnumerable<ICommandHandler> commandHandlers,
             IStringLocalizer<DefaultCommandManager> localizer)

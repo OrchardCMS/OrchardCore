@@ -21,9 +21,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IOptions<GraphQLContentOptions> _contentOptionsAccessor;
         private readonly IOptions<GraphQLSettings> _settingsAccessor;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public ContentTypeQuery(IHttpContextAccessor httpContextAccessor,
             IOptions<GraphQLContentOptions> contentOptionsAccessor,
