@@ -12,9 +12,7 @@ namespace OrchardCore.ContentFields.Settings
 {
     public class ContentPickerFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<ContentPickerField>
     {
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public ContentPickerFieldSettingsDriver(IStringLocalizer<ContentPickerFieldSettingsDriver> stringLocalizer)
         {

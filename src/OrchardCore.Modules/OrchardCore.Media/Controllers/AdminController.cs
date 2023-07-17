@@ -25,9 +25,7 @@ namespace OrchardCore.Media.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentTypeProvider _contentTypeProvider;
         private readonly ILogger _logger;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
         private readonly MediaOptions _mediaOptions;
         private readonly IUserAssetFolderNameProvider _userAssetFolderNameProvider;
 

@@ -44,11 +44,9 @@ namespace OrchardCore.Search.Elasticsearch
         private readonly ElasticIndexingService _elasticIndexingService;
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
         private readonly JavaScriptEncoder _javaScriptEncoder;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly dynamic New;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly dynamic New;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
         private readonly ElasticsearchOptions _elasticSearchOptions;
         private readonly INotifier _notifier;
         private readonly ILogger _logger;

@@ -16,9 +16,7 @@ namespace OrchardCore.Alias.Drivers
     {
 
         private readonly ISession _session;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public AliasPartDisplayDriver(
             ISession session,

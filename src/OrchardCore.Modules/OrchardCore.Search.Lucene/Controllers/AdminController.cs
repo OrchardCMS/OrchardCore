@@ -46,11 +46,9 @@ namespace OrchardCore.Search.Lucene.Controllers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly PagerOptions _pagerOptions;
         private readonly JavaScriptEncoder _javaScriptEncoder;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly dynamic New;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly dynamic New;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
         private readonly ILogger _logger;
         private readonly IOptions<TemplateOptions> _templateOptions;
 

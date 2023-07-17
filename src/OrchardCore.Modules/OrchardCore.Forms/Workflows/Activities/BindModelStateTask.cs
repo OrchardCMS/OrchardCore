@@ -13,9 +13,7 @@ namespace OrchardCore.Forms.Workflows.Activities
     {
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IHttpContextAccessor _httpContextAccessor;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public BindModelStateTask(
             IHttpContextAccessor httpContextAccessor,

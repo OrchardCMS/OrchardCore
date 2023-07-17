@@ -32,9 +32,7 @@ namespace OrchardCore.Flows.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
         private readonly INotifier _notifier;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IHtmlLocalizer H;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IHtmlLocalizer H;
         private readonly IAuthorizationService _authorizationService;
 
         public BagPartDisplayDriver(

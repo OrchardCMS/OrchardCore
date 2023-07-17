@@ -29,11 +29,9 @@ namespace OrchardCore.Placements.Controllers
         private readonly PlacementsManager _placementsManager;
         private readonly INotifier _notifier;
         private readonly PagerOptions _pagerOptions;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IHtmlLocalizer H;
-        private readonly IStringLocalizer S;
-        private readonly dynamic New;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
+        protected readonly dynamic New;
 
         public AdminController(
             ILogger<AdminController> logger,

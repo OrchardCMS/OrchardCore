@@ -28,9 +28,7 @@ namespace OrchardCore.Markdown.Drivers
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly IShortcodeService _shortcodeService;
         private readonly IMarkdownService _markdownService;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public MarkdownFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder,

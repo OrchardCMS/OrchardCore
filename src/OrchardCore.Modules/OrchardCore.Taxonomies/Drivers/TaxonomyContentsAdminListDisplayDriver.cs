@@ -28,9 +28,7 @@ namespace OrchardCore.Taxonomies.Drivers
         private readonly ISiteService _siteService;
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public TaxonomyContentsAdminListDisplayDriver(
             ISiteService siteService,

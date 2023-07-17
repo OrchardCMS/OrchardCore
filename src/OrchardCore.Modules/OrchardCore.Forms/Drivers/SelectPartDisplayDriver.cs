@@ -19,9 +19,7 @@ namespace OrchardCore.Forms.Drivers
             Formatting = Formatting.Indented
         };
 
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public SelectPartDisplayDriver(IStringLocalizer<SelectPartDisplayDriver> stringLocalizer)
         {

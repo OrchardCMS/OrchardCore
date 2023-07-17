@@ -9,9 +9,7 @@ namespace OrchardCore.ContentFields.Handlers;
 
 public class UserPickerFieldHandler : ContentFieldHandler<UserPickerField>
 {
-#pragma warning disable IDE1006 // Naming Styles
-    private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+    protected readonly IStringLocalizer S;
 
     public UserPickerFieldHandler(IStringLocalizer<UserPickerFieldHandler> stringLocalizer)
     {

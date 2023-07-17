@@ -18,9 +18,7 @@ namespace OrchardCore.Media.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IMediaFileStoreCache _mediaFileStoreCache;
         private readonly INotifier _notifier;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IHtmlLocalizer H;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IHtmlLocalizer H;
 
         public MediaCacheController(
             IAuthorizationService authorizationService,

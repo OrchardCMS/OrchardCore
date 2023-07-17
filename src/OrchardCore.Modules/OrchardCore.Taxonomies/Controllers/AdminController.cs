@@ -23,9 +23,7 @@ namespace OrchardCore.Taxonomies.Controllers
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IHtmlLocalizer H;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 

@@ -23,9 +23,7 @@ namespace OrchardCore.Flows.Drivers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
         private readonly IServiceProvider _serviceProvider;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IHtmlLocalizer H;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
 

@@ -13,9 +13,7 @@ namespace OrchardCore.Alias.Settings
     public class AliasPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<AliasPart>
     {
         private readonly ILiquidTemplateManager _templateManager;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public AliasPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<AliasPartSettingsDisplayDriver> localizer)
         {

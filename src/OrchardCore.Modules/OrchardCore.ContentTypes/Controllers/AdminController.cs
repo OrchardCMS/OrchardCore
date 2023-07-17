@@ -27,10 +27,8 @@ namespace OrchardCore.ContentTypes.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IDocumentStore _documentStore;
         private readonly IContentDefinitionDisplayManager _contentDefinitionDisplayManager;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IHtmlLocalizer H;
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 

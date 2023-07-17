@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
@@ -24,9 +25,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
         private readonly ISession _session;
         private readonly IEnumerable<IDeploymentStepFactory> _factories;
         private readonly INotifier _notifier;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IHtmlLocalizer H;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IHtmlLocalizer H;
 
         public AddToDeploymentPlanController(
             IAuthorizationService authorizationService,

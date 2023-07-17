@@ -18,9 +18,7 @@ namespace OrchardCore.ContentFields.Drivers
     public class ContentPickerFieldDisplayDriver : ContentFieldDisplayDriver<ContentPickerField>
     {
         private readonly IContentManager _contentManager;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public ContentPickerFieldDisplayDriver(
             IContentManager contentManager,

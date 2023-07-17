@@ -27,9 +27,7 @@ namespace OrchardCore.Autoroute.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly YesSql.ISession _session;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public AutoroutePartDisplayDriver(
             IOptions<AutorouteOptions> options,

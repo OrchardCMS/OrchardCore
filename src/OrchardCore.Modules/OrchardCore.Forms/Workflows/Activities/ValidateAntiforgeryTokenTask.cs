@@ -13,9 +13,7 @@ namespace OrchardCore.Forms.Workflows.Activities
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAntiforgery _antiforgery;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public ValidateAntiforgeryTokenTask(
             IHttpContextAccessor httpContextAccessor,

@@ -21,9 +21,7 @@ namespace OrchardCore.ContentTypes.Services
         private readonly IEnumerable<IContentDefinitionEventHandler> _contentDefinitionEventHandlers;
         private readonly IEnumerable<Type> _contentPartTypes;
         private readonly IEnumerable<Type> _contentFieldTypes;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
         private readonly ILogger _logger;
 
         public ContentDefinitionService(

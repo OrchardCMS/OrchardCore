@@ -22,9 +22,7 @@ namespace OrchardCore.AdminMenu.Controllers
         private readonly IEnumerable<IAdminNodeProviderFactory> _factories;
         private readonly IAdminMenuService _adminMenuService;
         private readonly INotifier _notifier;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IHtmlLocalizer H;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IHtmlLocalizer H;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
 

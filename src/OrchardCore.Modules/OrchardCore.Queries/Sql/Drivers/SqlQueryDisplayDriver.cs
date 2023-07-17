@@ -10,9 +10,7 @@ namespace OrchardCore.Queries.Sql.Drivers
 {
     public class SqlQueryDisplayDriver : DisplayDriver<Query, SqlQuery>
     {
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public SqlQueryDisplayDriver(IStringLocalizer<SqlQueryDisplayDriver> stringLocalizer)
         {

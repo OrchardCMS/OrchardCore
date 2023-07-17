@@ -18,9 +18,7 @@ public class RobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, RobotsSet
     private readonly IAuthorizationService _authorizationService;
     private readonly IStaticFileProvider _staticFileProvider;
     private readonly INotifier _notifier;
-#pragma warning disable IDE1006 // Naming Styles
-    private readonly IHtmlLocalizer H;
-#pragma warning restore IDE1006 // Naming Styles
+    protected readonly IHtmlLocalizer H;
 
     public RobotsSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,

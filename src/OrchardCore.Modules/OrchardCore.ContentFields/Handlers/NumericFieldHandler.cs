@@ -10,9 +10,7 @@ namespace OrchardCore.ContentFields.Handlers;
 
 public class NumericFieldHandler : ContentFieldHandler<NumericField>
 {
-#pragma warning disable IDE1006 // Naming Styles
-    private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+    protected readonly IStringLocalizer S;
 
     public NumericFieldHandler(IStringLocalizer<NumericFieldHandler> stringLocalizer)
     {

@@ -28,11 +28,9 @@ namespace OrchardCore.Templates.Controllers
         private readonly AdminTemplatesManager _adminTemplatesManager;
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-        private readonly dynamic New;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
+        protected readonly dynamic New;
 
         public TemplateController(
             IAuthorizationService authorizationService,

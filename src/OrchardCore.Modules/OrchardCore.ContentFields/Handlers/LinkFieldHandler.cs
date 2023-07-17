@@ -16,9 +16,7 @@ public class LinkFieldHandler : ContentFieldHandler<LinkField>
 {
     private readonly IUrlHelperFactory _urlHelperFactory;
     private readonly IActionContextAccessor _actionContextAccessor;
-#pragma warning disable IDE1006 // Naming Styles
-    private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+    protected readonly IStringLocalizer S;
     private readonly IHtmlSanitizerService _htmlSanitizerService;
     private readonly HtmlEncoder _htmlencoder;
 

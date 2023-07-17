@@ -14,9 +14,7 @@ namespace OrchardCore.Forms.Workflows.Activities
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public ValidateFormFieldTask(
             IHttpContextAccessor httpContextAccessor,

@@ -5,9 +5,9 @@ namespace OrchardCore.Search.Lucene.Model
 {
     public class LuceneSettings
     {
-        public static readonly string[] FullTextField = new string[] { IndexingConstants.FullTextKey };
+        public const string StandardAnalyzer = "standardanalyzer";
 
-        public static readonly string StandardAnalyzer = "standardanalyzer";
+        public static readonly string[] FullTextField = new string[] { IndexingConstants.FullTextKey };
 
         public static readonly LuceneVersion DefaultVersion = LuceneVersion.LUCENE_48;
 

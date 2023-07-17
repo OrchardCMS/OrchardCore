@@ -17,9 +17,7 @@ namespace OrchardCore.ContentLocalization.Controllers
         private readonly IContentLocalizationManager _contentLocalizationManager;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IHtmlLocalizer H;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IHtmlLocalizer H;
 
         public AdminController(
             IContentManager contentManager,

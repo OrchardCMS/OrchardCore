@@ -11,9 +11,7 @@ namespace OrchardCore.ContentTypes.Editors
 {
     public class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public ContentTypeSettingsDisplayDriver(IStringLocalizer<ContentTypeSettingsDisplayDriver> stringLocalizer)
         {

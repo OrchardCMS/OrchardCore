@@ -27,9 +27,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly INotifier _notifier;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IHtmlLocalizer H;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IHtmlLocalizer H;
         private readonly ILogger _logger;
 
         public AuditTrailContentController(

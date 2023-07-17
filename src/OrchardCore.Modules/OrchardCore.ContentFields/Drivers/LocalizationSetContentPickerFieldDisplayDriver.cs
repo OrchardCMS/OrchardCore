@@ -22,9 +22,7 @@ namespace OrchardCore.ContentFields.Drivers
     {
         private readonly IContentManager _contentManager;
         private readonly IContentLocalizationManager _contentLocalizationManager;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public LocalizationSetContentPickerFieldDisplayDriver(
             IContentManager contentManager,

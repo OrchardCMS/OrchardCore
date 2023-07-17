@@ -26,9 +26,7 @@ namespace OrchardCore.Html.Drivers
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IShortcodeService _shortcodeService;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public HtmlBodyPartDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
             IHtmlSanitizerService htmlSanitizerService,

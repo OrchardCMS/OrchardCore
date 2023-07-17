@@ -11,9 +11,7 @@ namespace OrchardCore.Forms.Workflows.Activities
     public class ValidateFormTask : TaskActivity
     {
         private readonly IUpdateModelAccessor _updateModelAccessor;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public ValidateFormTask(
             IUpdateModelAccessor updateModelAccessor,

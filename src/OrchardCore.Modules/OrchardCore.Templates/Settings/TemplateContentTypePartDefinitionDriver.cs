@@ -8,9 +8,7 @@ namespace OrchardCore.Templates.Settings
 {
     public class TemplateContentTypePartDefinitionDriver : ContentTypePartDefinitionDisplayDriver
     {
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public TemplateContentTypePartDefinitionDriver(IStringLocalizer<TemplateContentTypePartDefinitionDriver> localizer)
         {

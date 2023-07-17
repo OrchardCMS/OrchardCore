@@ -12,9 +12,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
     public class ContentItemDeploymentStepDriver : DisplayDriver<DeploymentStep, ContentItemDeploymentStep>
     {
         private readonly IContentManager _contentManager;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public ContentItemDeploymentStepDriver(IContentManager contentManager,
             IStringLocalizer<ContentItemDeploymentStepDriver> stringLocalizer)

@@ -36,9 +36,7 @@ namespace OrchardCore.Autoroute.Handlers
         private readonly ITagCache _tagCache;
         private readonly ISession _session;
         private readonly IServiceProvider _serviceProvider;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         private IContentManager _contentManager;
 

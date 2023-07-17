@@ -17,9 +17,7 @@ namespace OrchardCore.Spatial.Drivers
 {
     public class GeoPointFieldDisplayDriver : ContentFieldDisplayDriver<GeoPointField>
     {
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public GeoPointFieldDisplayDriver(IStringLocalizer<GeoPointFieldDisplayDriver> localizer)
         {

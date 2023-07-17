@@ -27,11 +27,9 @@ namespace OrchardCore.AdminMenu.Controllers
         private readonly IAdminMenuService _adminMenuService;
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-        private readonly dynamic New;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
+        protected readonly dynamic New;
         private readonly ILogger _logger;
 
         public MenuController(

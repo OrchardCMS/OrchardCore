@@ -13,9 +13,7 @@ namespace OrchardCore.Liquid.Drivers
     public class LiquidPartDisplayDriver : ContentPartDisplayDriver<LiquidPart>
     {
         private readonly ILiquidTemplateManager _liquidTemplatemanager;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public LiquidPartDisplayDriver(ILiquidTemplateManager liquidTemplatemanager, IStringLocalizer<LiquidPartDisplayDriver> localizer)
         {

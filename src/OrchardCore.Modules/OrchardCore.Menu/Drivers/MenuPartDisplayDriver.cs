@@ -20,9 +20,7 @@ namespace OrchardCore.Menu.Drivers
     public class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IHtmlLocalizer H;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
 

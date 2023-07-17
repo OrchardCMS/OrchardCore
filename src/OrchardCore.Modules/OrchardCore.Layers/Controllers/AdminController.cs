@@ -40,10 +40,8 @@ namespace OrchardCore.Layers.Controllers
         private readonly IDisplayManager<Rule> _ruleDisplayManager;
         private readonly IConditionIdGenerator _conditionIdGenerator;
         private readonly IEnumerable<IConditionFactory> _conditionFactories;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
 

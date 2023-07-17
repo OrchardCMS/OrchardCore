@@ -9,9 +9,7 @@ namespace OrchardCore.ContentFields.Handlers;
 
 public class TimeFieldHandler : ContentFieldHandler<TimeField>
 {
-#pragma warning disable IDE1006 // Naming Styles
-    private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+    protected readonly IStringLocalizer S;
 
     public TimeFieldHandler(IStringLocalizer<TimeFieldHandler> stringLocalizer)
     {

@@ -19,9 +19,7 @@ namespace OrchardCore.Sitemaps.Services
 
         private readonly ISlugService _slugService;
         private readonly ISitemapManager _sitemapManager;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public SitemapHelperService(
             ISlugService slugService,
