@@ -8,9 +8,7 @@ namespace OrchardCore.Tests.Workflows.Activities
     public class AddTask : TaskActivity
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-#pragma warning disable IDE1006 // Naming Styles
-        private readonly IStringLocalizer S;
-#pragma warning restore IDE1006 // Naming Styles
+        protected readonly IStringLocalizer S;
 
         public AddTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<AddTask> stringLocalizer)
         {
