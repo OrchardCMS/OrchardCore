@@ -33,7 +33,7 @@ namespace OrchardCore.Lists.Feeds
         {
             var model = new ListFeedEditViewModel
             {
-                ContentItem = part.ContentItem
+                ContentItem = part.ContentItem,
             };
 
             await updater.TryUpdateModelAsync(model, Prefix, t => t.DisableRssFeed, t => t.FeedProxyUrl, t => t.FeedItemsCount);

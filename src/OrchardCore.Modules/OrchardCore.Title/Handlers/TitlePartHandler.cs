@@ -83,7 +83,7 @@ namespace OrchardCore.Title.Handlers
                 {
                     Title = part.Title,
                     TitlePart = part,
-                    ContentItem = part.ContentItem
+                    ContentItem = part.ContentItem,
                 };
 
                 var title = await _liquidTemplateManager.RenderStringAsync(settings.Pattern, NullEncoder.Default, model,

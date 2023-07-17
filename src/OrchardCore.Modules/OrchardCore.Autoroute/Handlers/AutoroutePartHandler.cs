@@ -388,7 +388,7 @@ namespace OrchardCore.Autoroute.Handlers
                 {
                     Path = part.Path,
                     AutoroutePart = part,
-                    ContentItem = part.ContentItem
+                    ContentItem = part.ContentItem,
                 };
 
                 _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();

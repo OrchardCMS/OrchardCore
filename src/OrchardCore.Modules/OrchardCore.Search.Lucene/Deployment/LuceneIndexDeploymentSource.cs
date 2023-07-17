@@ -36,7 +36,7 @@ namespace OrchardCore.Search.Lucene.Deployment
                 {
                     var indexSettingsDict = new Dictionary<string, LuceneIndexSettings>
                     {
-                        { index.IndexName, index }
+                        { index.IndexName, index },
                     };
 
                     data.Add(JObject.FromObject(indexSettingsDict));

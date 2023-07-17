@@ -39,7 +39,7 @@ namespace OrchardCore.Contents.Liquid
 
                 routeValues = new RouteValueDictionary(_autorouteOptions.GlobalRouteValues)
                 {
-                    [_autorouteOptions.ContentItemIdKey] = input.ToStringValue()
+                    [_autorouteOptions.ContentItemIdKey] = input.ToStringValue(),
                 };
             }
             else

@@ -51,7 +51,7 @@ namespace OrchardCore.Contents.Settings
                 context.Updater.ModelState.AddModelError(
                     nameof(model.FullTextTemplate),
                     S["Full-text doesn't contain a valid Liquid expression. Details: {0}",
-                    String.Join(" ", errors)]);
+                    String.Join(' ', errors)]);
             }
             else
             {

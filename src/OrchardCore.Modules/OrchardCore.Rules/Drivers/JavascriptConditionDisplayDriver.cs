@@ -9,10 +9,6 @@ namespace OrchardCore.Rules.Drivers
 {
     public class JavascriptConditionDisplayDriver : DisplayDriver<Condition, JavascriptCondition>
     {
-        public JavascriptConditionDisplayDriver()
-        {
-        }
-
         public override IDisplayResult Display(JavascriptCondition condition)
         {
             return

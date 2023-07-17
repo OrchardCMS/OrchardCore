@@ -95,7 +95,7 @@ namespace OrchardCore.ContentFields.Drivers
                         Prefix,
                         nameof(viewModel.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}",
                         fieldName,
-                        String.Join(" ", errors)]);
+                        String.Join(' ', errors)]);
                 }
                 else
                 {

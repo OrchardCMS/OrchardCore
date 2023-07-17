@@ -68,8 +68,6 @@ namespace OrchardCore.AdminMenu.Controllers
                 adminMenuList = adminMenuList.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            var count = adminMenuList.Count;
-
             var startIndex = pager.GetStartIndex();
             var pageSize = pager.PageSize;
             IEnumerable<Models.AdminMenu> results = new List<Models.AdminMenu>();
@@ -93,7 +91,7 @@ namespace OrchardCore.AdminMenu.Controllers
             var routeData = new RouteData();
             routeData.Values.Add("Options.Search", options.Search);
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(adminMenuList.Count).RouteData(routeData);
 
             var model = new AdminMenuListViewModel
             {
