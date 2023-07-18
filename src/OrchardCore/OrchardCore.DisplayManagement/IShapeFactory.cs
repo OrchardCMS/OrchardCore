@@ -26,7 +26,7 @@ namespace OrchardCore.DisplayManagement
     public static class ShapeFactoryExtensions
     {
         private static readonly ProxyGenerator _proxyGenerator = new();
-        private static readonly Func<ValueTask<IShape>> _newShape = () => new ValueTask<IShape>(new Shape());
+        private static readonly Func<ValueTask<IShape>> _newShape = () => new(new Shape());
 
         /// <summary>
         /// Creates a new shape by copying the properties of the specific model.

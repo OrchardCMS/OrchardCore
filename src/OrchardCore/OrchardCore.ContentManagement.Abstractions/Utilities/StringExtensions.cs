@@ -193,7 +193,7 @@ namespace OrchardCore.ContentManagement.Utilities
             nameof(ContentItem.CreatedUtc),
             nameof(ContentItem.Owner),
             nameof(ContentItem.Author),
-            nameof(ContentItem.DisplayText)
+            nameof(ContentItem.DisplayText),
         };
 
         public static bool IsReservedContentName(this string name)

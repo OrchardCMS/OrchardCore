@@ -24,7 +24,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 {
                     { '=', RequiredAttributeDescriptor.ValueComparisonMode.FullMatch },
                     { '^', RequiredAttributeDescriptor.ValueComparisonMode.PrefixMatch },
-                    { '$', RequiredAttributeDescriptor.ValueComparisonMode.SuffixMatch }
+                    { '$', RequiredAttributeDescriptor.ValueComparisonMode.SuffixMatch },
                 };
 
             private static readonly char[] _invalidPlainAttributeNameCharacters = { ' ', '\t', ',', RequiredAttributeWildcardSuffix };

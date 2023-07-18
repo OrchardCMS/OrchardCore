@@ -105,7 +105,7 @@ namespace OrchardCore.Contents.Security
 
             var localPermissions = new Dictionary<ValueTuple<string, string>, Permission>(_permissionsByType)
             {
-                [key] = permission
+                [key] = permission,
             };
 
             _permissionsByType = localPermissions;

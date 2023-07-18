@@ -30,7 +30,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
         static ContentItemsFieldType()
         {
-            _contentItemProperties = new();
+            _contentItemProperties = new List<string>();
 
             foreach (var property in typeof(ContentItemIndex).GetProperties())
             {
