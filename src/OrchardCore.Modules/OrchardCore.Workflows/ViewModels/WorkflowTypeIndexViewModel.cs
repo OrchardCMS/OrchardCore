@@ -18,7 +18,7 @@ namespace OrchardCore.Workflows.ViewModels
         public bool IsChecked { get; set; }
         public int Id { get; set; }
         public string Name { get; set; }
-        public int WorkflowCount { get; set; }
+        public bool HasInstances { get; set; }
     }
 
     public class WorkflowTypeIndexOptions

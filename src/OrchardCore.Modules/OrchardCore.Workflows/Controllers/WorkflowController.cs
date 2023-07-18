@@ -86,8 +86,8 @@ namespace OrchardCore.Workflows.Controllers
 
             var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
 
-            var query = _session.Query<Workflow, WorkflowIndex>();
-            query = query.Where(x => x.WorkflowTypeId == workflowType.WorkflowTypeId);
+            var query = _session.QueryIndex<WorkflowIndex>()
+                .Where(x => x.WorkflowTypeId == workflowType.WorkflowTypeId);
 
             switch (model.Options.Filter)
             {
@@ -117,14 +117,14 @@ namespace OrchardCore.Workflows.Controllers
             var pagerShape = (await New.Pager(pager)).TotalItemCount(await query.CountAsync()).RouteData(routeData);
             var pageOfItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
 
+            var workflowIds = pageOfItems.Select(item => item.WorkflowId);
+            var workflows = await _session.Query<Workflow, WorkflowIndex>(item => item.WorkflowId.IsIn(workflowIds))
+                .ListAsync();
+
             var viewModel = new WorkflowIndexViewModel
             {
                 WorkflowType = workflowType,
-                Workflows = pageOfItems.Select(x => new WorkflowEntry
-                {
-                    Workflow = x,
-                    Id = x.Id,
-                }).ToList(),
+                Workflows = workflows.Select(x => new WorkflowEntry { Workflow = x, Id = x.Id }).ToList(),
                 Options = model.Options,
                 Pager = pagerShape,
                 ReturnUrl = returnUrl,
