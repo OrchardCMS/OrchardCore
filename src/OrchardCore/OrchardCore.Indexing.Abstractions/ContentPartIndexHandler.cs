@@ -22,7 +22,7 @@ namespace OrchardCore.Indexing
 
             var keys = new List<string>
             {
-                typePartDefinition.Name
+                typePartDefinition.Name,
             };
 
             foreach (var key in context.Keys)

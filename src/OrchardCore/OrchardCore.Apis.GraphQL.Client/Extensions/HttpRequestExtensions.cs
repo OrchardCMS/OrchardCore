@@ -149,7 +149,7 @@ namespace OrchardCore.Apis.GraphQL.Client
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
             {
-                Content = content
+                Content = content,
             };
 
             request.Headers
@@ -171,7 +171,7 @@ namespace OrchardCore.Apis.GraphQL.Client
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
             {
-                Content = content
+                Content = content,
             };
 
             request.Headers
@@ -193,7 +193,7 @@ namespace OrchardCore.Apis.GraphQL.Client
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
             {
-                Content = content
+                Content = content,
             };
 
             request.Headers

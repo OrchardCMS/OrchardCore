@@ -15,7 +15,7 @@ namespace OrchardCore.Localization.PortableObject
         {
             { 'n', '\n' },
             { 'r', '\r' },
-            { 't', '\t' }
+            { 't', '\t' },
         };
 
         /// <summary>

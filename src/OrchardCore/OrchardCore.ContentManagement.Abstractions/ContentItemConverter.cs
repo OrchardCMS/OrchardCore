@@ -8,7 +8,7 @@ namespace OrchardCore.ContentManagement
     {
         private readonly JsonLoadSettings _jsonLoadSettings = new()
         {
-            LineInfoHandling = LineInfoHandling.Ignore // Defaults to loading which allocates quite a lot.
+            LineInfoHandling = LineInfoHandling.Ignore, // Defaults to loading which allocates quite a lot.
         };
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -27,7 +27,7 @@ namespace OrchardCore.ContentManagement
                 new JProperty(nameof(ContentItem.PublishedUtc), contentItem.PublishedUtc),
                 new JProperty(nameof(ContentItem.CreatedUtc), contentItem.CreatedUtc),
                 new JProperty(nameof(ContentItem.Owner), contentItem.Owner),
-                new JProperty(nameof(ContentItem.Author), contentItem.Author)
+                new JProperty(nameof(ContentItem.Author), contentItem.Author),
             };
 
             // Write all custom content properties.

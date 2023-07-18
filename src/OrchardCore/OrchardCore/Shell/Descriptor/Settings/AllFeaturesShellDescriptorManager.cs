@@ -24,7 +24,7 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
         {
             _shellDescriptor ??= new ShellDescriptor
             {
-                Features = _extensionManager.GetFeatures().Select(x => new ShellFeature { Id = x.Id }).ToList()
+                Features = _extensionManager.GetFeatures().Select(x => new ShellFeature { Id = x.Id }).ToList(),
             };
 
             return Task.FromResult(_shellDescriptor);

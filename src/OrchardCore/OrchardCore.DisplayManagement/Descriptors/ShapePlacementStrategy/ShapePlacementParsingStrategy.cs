@@ -83,7 +83,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
                     var placement = new PlacementInfo
                     {
-                        Location = filter.Location
+                        Location = filter.Location,
                     };
 
                     if (filter.Alternates?.Length > 0)

@@ -52,7 +52,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
                 {
                     BindingName = _bindingName,
                     BindingSource = bindingSource,
-                    BindingAsync = bindingDelegate
+                    BindingAsync = bindingDelegate,
                 };
 
                 // ShapeDescriptor.Bindings is a case insensitive dictionary.

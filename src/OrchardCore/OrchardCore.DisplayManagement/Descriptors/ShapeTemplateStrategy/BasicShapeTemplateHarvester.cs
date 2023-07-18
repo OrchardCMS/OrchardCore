@@ -18,7 +18,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
             {
                 yield return new HarvestShapeHit
                 {
-                    ShapeType = Adjust(info.SubPath, info.FileName, null)
+                    ShapeType = Adjust(info.SubPath, info.FileName, null),
                 };
             }
             else
@@ -27,7 +27,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 yield return new HarvestShapeHit
                 {
                     ShapeType = Adjust(info.SubPath, info.FileName[..lastDot], displayType),
-                    DisplayType = displayType
+                    DisplayType = displayType,
                 };
             }
         }

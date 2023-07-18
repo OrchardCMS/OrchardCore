@@ -520,7 +520,7 @@ namespace OrchardCore.ContentManagement
                 ContentItemVersionId = _idGenerator.GenerateUniqueId(existingContentItem),
                 DisplayText = existingContentItem.DisplayText,
                 Latest = true,
-                Data = new JObject(existingContentItem.Data)
+                Data = new JObject(existingContentItem.Data),
             };
 
             var context = new VersionContentContext(existingContentItem, buildingContentItem);
@@ -577,7 +577,7 @@ namespace OrchardCore.ContentManagement
                     ContentItemVersionId = _idGenerator.GenerateUniqueId(existingContentItem),
                     DisplayText = existingContentItem.DisplayText,
                     Latest = true,
-                    Data = new JObject(existingContentItem.Data)
+                    Data = new JObject(existingContentItem.Data),
                 };
 
                 var context = new VersionContentContext(existingContentItem, buildingContentItem);

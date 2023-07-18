@@ -21,14 +21,14 @@ namespace OrchardCore.Apis.GraphQL.Queries
         public static readonly Dictionary<string, string> EqualityOperators = new()
         {
             { "", "is equal to" },
-            { "_not", "is not equal to" }
+            { "_not", "is not equal to" },
         };
 
         // Applies to all types.
         public static readonly Dictionary<string, string> MultiValueComparisonOperators = new()
         {
             { "_in", "is in collection" },
-            { "_not_in", "is not in collection" }
+            { "_not_in", "is not in collection" },
         };
 
         // Applies to non strings.
@@ -37,7 +37,7 @@ namespace OrchardCore.Apis.GraphQL.Queries
             { "_gt", "is greater than" },
             { "_gte", "is greater than or equal" },
             { "_lt", "is less than" },
-            { "_lte", "is less than or equal" }
+            { "_lte", "is less than or equal" },
         };
 
         // Applies to strings.
@@ -48,7 +48,7 @@ namespace OrchardCore.Apis.GraphQL.Queries
             {"_starts_with", "starts with the string"},
             {"_not_starts_with", "does not start with the string"},
             {"_ends_with", "ends with the string"},
-            {"_not_ends_with", "does not end with the string"}
+            {"_not_ends_with", "does not end with the string"},
         };
 
         public void AddScalarFilterFields<TGraphType>(string fieldName, string description)

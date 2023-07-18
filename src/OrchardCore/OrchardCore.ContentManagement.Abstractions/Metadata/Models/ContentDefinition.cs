@@ -41,7 +41,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
 
                 namedSettings = new Dictionary<Type, object>(_namedSettings)
                 {
-                    [typeof(T)] = result
+                    [typeof(T)] = result,
                 };
 
                 _namedSettings = namedSettings;

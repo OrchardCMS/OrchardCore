@@ -65,7 +65,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             // for instance to change the HtmlFieldPrefix.
             var localContext = new DisplayContext(context)
             {
-                HtmlFieldPrefix = shapeMetadata.Prefix ?? ""
+                HtmlFieldPrefix = shapeMetadata.Prefix ?? "",
             };
 
             var displayContext = new ShapeDisplayContext

@@ -30,7 +30,7 @@ namespace OrchardCore.DisplayManagement.Notify
 
             var notifyEntry = new NotifyEntry
             {
-                Message = new HtmlString(jo.Value<string>("Message"))
+                Message = new HtmlString(jo.Value<string>("Message")),
             };
 
             if (Enum.TryParse(jo.Value<string>("Type"), out type))

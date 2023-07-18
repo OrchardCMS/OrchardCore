@@ -33,8 +33,11 @@ namespace OrchardCore.Flows.Indexing
                 {
                     foreach (var contentItem in FlowPart.Widgets)
                     {
-                        var keys = new List<string>();
-                        keys.Add(contentItem.ContentType);
+                        var keys = new List<string>
+                        {
+                            contentItem.ContentType,
+                        };
+
                         foreach (var key in context.Keys)
                         {
                             keys.Add($"{key}.{contentItem.ContentType}");

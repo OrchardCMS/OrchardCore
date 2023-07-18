@@ -34,7 +34,7 @@ namespace OrchardCore.Apis.GraphQL.Client
             var jsonSerializer = new JsonSerializer
             {
                 NullValueHandling = NullValueHandling.Ignore,
-                Converters = { new StringEnumConverter() }
+                Converters = { new StringEnumConverter() },
             };
 
             return jsonSerializer.Deserialize<T>(jsonReader);

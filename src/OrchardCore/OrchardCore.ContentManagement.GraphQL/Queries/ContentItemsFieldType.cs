@@ -21,7 +21,7 @@ using Expression = OrchardCore.ContentManagement.GraphQL.Queries.Predicates.Expr
 namespace OrchardCore.ContentManagement.GraphQL.Queries
 {
     /// <summary>
-    /// This type is used by <see cref="ContentTypeQuery"/> to represent a query on a content type
+    /// This type is used by <see cref="ContentTypeQuery"/> to represent a query on a content type.
     /// </summary>
     public class ContentItemsFieldType : FieldType
     {
@@ -30,7 +30,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
         static ContentItemsFieldType()
         {
-            _contentItemProperties = new List<string>();
+            _contentItemProperties = new();
 
             foreach (var property in typeof(ContentItemIndex).GetProperties())
             {

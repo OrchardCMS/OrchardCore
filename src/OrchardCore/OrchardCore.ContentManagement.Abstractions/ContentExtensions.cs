@@ -106,7 +106,7 @@ namespace OrchardCore.ContentManagement
             {
                 var newElement = new TElement
                 {
-                    ContentItem = contentElement.ContentItem
+                    ContentItem = contentElement.ContentItem,
                 };
 
                 contentElement.Data[name] = newElement.Data;
