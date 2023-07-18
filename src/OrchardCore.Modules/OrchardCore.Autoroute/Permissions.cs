@@ -15,9 +15,10 @@ namespace OrchardCore.Autoroute
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         {
             return new[] {
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Administrator",
-                    Permissions = GetPermissions()
+                    Permissions = GetPermissions(),
                 }
             };
         }
@@ -26,7 +27,7 @@ namespace OrchardCore.Autoroute
         {
             return new[]
             {
-                SetHomepage
+                SetHomepage,
             };
         }
     }

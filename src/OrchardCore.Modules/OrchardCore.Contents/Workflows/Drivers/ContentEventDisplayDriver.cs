@@ -47,7 +47,7 @@ namespace OrchardCore.Contents.Workflows.Drivers
                     var shape = new ContentEventViewModel<TActivity>
                     {
                         ContentTypeFilter = selectedContentTypeDefinitions,
-                        Activity = activity
+                        Activity = activity,
                     };
 
                     return shape;

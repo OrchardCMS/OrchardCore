@@ -35,7 +35,7 @@ namespace OrchardCore.Flows.Indexing
                     {
                         var keys = new List<string>
                         {
-                            contentItem.ContentType
+                            contentItem.ContentType,
                         };
 
                         foreach (var key in context.Keys)

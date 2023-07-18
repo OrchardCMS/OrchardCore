@@ -10,7 +10,7 @@ namespace OrchardCore.Sitemaps.Deployment
     {
         private static readonly JsonSerializer _serializer = new()
         {
-            TypeNameHandling = TypeNameHandling.Auto
+            TypeNameHandling = TypeNameHandling.Auto,
         };
 
         private readonly ISitemapManager _sitemapManager;

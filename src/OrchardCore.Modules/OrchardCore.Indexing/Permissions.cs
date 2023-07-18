@@ -16,8 +16,8 @@ namespace OrchardCore.Indexing
         private static IEnumerable<Permission> GetPermissions()
         {
             return new[]
-{
-                ManageIndexes
+            {
+                ManageIndexes,
             };
         }
 
@@ -28,7 +28,7 @@ namespace OrchardCore.Indexing
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageIndexes }
+                    Permissions = new[] { ManageIndexes },
                 }
             };
         }

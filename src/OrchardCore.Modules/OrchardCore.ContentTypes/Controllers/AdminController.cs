@@ -518,7 +518,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var viewModel = new EditPartViewModel(contentPartDefinition)
             {
-                Editor = await _contentDefinitionDisplayManager.BuildPartEditorAsync(contentPartDefinition, _updateModelAccessor.ModelUpdater)
+                Editor = await _contentDefinitionDisplayManager.BuildPartEditorAsync(contentPartDefinition, _updateModelAccessor.ModelUpdater),
             };
 
             return View(viewModel);
@@ -542,7 +542,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var viewModel = new EditPartViewModel(contentPartDefinition)
             {
-                Editor = await _contentDefinitionDisplayManager.UpdatePartEditorAsync(contentPartDefinition, _updateModelAccessor.ModelUpdater)
+                Editor = await _contentDefinitionDisplayManager.UpdatePartEditorAsync(contentPartDefinition, _updateModelAccessor.ModelUpdater),
             };
 
             if (!ModelState.IsValid)

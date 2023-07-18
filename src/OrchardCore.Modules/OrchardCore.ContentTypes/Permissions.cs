@@ -17,9 +17,10 @@ namespace OrchardCore.ContentTypes
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         {
             return new[] {
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Administrator",
-                    Permissions = GetPermissions()
+                    Permissions = GetPermissions(),
                 }
             };
         }
@@ -29,7 +30,7 @@ namespace OrchardCore.ContentTypes
             return new[]
             {
                 ViewContentTypes,
-                EditContentTypes
+                EditContentTypes,
             };
         }
     }

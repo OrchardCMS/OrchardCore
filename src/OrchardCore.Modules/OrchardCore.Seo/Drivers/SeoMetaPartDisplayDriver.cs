@@ -20,7 +20,7 @@ namespace OrchardCore.Seo.Drivers
         private static readonly JsonSerializerSettings _serializerSettings = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            Formatting = Formatting.Indented
+            Formatting = Formatting.Indented,
         };
 
         protected readonly IStringLocalizer S;
@@ -47,7 +47,7 @@ namespace OrchardCore.Seo.Drivers
                     model.CustomMetaTags = JsonConvert.SerializeObject(part.CustomMetaTags, _serializerSettings);
                     model.SeoMetaPart = part;
                     model.Settings = settings;
-                }).Location("Parts#SEO;50")
+                }).Location("Parts#SEO;50"),
             };
 
             if (settings.DisplayOpenGraph)

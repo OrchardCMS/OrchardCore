@@ -26,7 +26,7 @@ namespace OrchardCore.Demo.Controllers
                     TodoId = m.TodoId,
                     Text = m.Text,
                     DueDate = m.DueDate,
-                    IsCompleted = m.IsCompleted
+                    IsCompleted = m.IsCompleted,
                 })
                 .ToList();
 
@@ -38,7 +38,7 @@ namespace OrchardCore.Demo.Controllers
             var viewModel = new TodoViewModel
             {
                 TodoId = _idGenerator.GenerateUniqueId(),
-                DisplayMode = "Edit"
+                DisplayMode = "Edit",
             };
 
             return View(nameof(Edit), viewModel);
@@ -61,7 +61,7 @@ namespace OrchardCore.Demo.Controllers
                 Text = model.Text,
                 DueDate = model.DueDate,
                 IsCompleted = model.IsCompleted,
-                DisplayMode = "Edit"
+                DisplayMode = "Edit",
             };
 
             return View(viewModel);

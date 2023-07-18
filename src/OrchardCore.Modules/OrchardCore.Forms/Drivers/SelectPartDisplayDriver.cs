@@ -16,7 +16,7 @@ namespace OrchardCore.Forms.Drivers
         private static readonly JsonSerializerSettings _serializerSettings = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            Formatting = Formatting.Indented
+            Formatting = Formatting.Indented,
         };
 
         protected readonly IStringLocalizer S;

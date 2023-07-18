@@ -19,7 +19,7 @@ namespace OrchardCore.Layers.Recipes
     {
         private readonly static JsonSerializer _jsonSerializer = new()
         {
-            TypeNameHandling = TypeNameHandling.Auto
+            TypeNameHandling = TypeNameHandling.Auto,
         };
 
         private readonly ILayerService _layerService;

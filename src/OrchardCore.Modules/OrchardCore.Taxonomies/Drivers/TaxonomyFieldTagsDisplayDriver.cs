@@ -23,7 +23,7 @@ namespace OrchardCore.Taxonomies.Drivers
     {
         private static readonly JsonSerializerSettings _serializerSettings = new()
         {
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
         };
 
         private readonly IContentManager _contentManager;

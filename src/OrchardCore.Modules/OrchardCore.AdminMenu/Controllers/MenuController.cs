@@ -97,11 +97,12 @@ namespace OrchardCore.AdminMenu.Controllers
             {
                 AdminMenu = results.Select(x => new AdminMenuEntry { AdminMenu = x }).ToList(),
                 Options = options,
-                Pager = pagerShape
+                Pager = pagerShape,
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
+            model.Options.ContentsBulkAction = new List<SelectListItem>()
+            {
+                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) },
             };
 
             return View(model);
