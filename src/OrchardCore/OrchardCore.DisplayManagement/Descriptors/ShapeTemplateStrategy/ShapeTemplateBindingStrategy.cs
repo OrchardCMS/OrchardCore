@@ -27,7 +27,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
             IShellFeaturesManager shellFeaturesManager,
             IEnumerable<IShapeTemplateViewEngine> shapeTemplateViewEngines,
             IShapeTemplateFileProviderAccessor fileProviderAccessor,
-            ILogger<DefaultShapeTableManager> logger)
+            ILogger<ShapeTemplateBindingStrategy> logger)
         {
             _harvesters = harvesters;
             _shellFeaturesManager = shellFeaturesManager;
