@@ -54,7 +54,7 @@ namespace OrchardCore.Microsoft.Authentication
             {
                 builder.Add(S["Security"], security => security
                         .Add(S["Authentication"], authentication => authentication
-                            .Add(S["Azure Active Directory"], S["Azure Active Directory"].PrefixPosition(), client => client
+                            .Add(S["Microsoft Entra ID"], S["Microsoft Entra ID"].PrefixPosition(), client => client
                                 .AddClass("azuread").Id("azuread")
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MicrosoftAuthenticationConstants.Features.AAD })
                                 .Permission(Permissions.ManageMicrosoftAuthentication)

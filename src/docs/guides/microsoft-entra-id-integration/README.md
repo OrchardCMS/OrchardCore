@@ -10,11 +10,11 @@ You will build a blog that allow users to login with their AzureAD account and g
 
 Follow the guide to [create a new Orchard Core CMS website](../../guides/create-cms-application/README.md)
 
-An Azure Account with Azure Active Directory configured.
+An Azure Account with Microsoft Entra ID configured.
 
 ## Login to OrchardCore Admin and enable the required Features
 
-Navigate to <https://localhost:5001/Admin/Features> and enable the Microsoft Authentication Azure Active Directory and the Users Registration features
+Navigate to <https://localhost:5001/Admin/Features> and enable the Microsoft Entra ID Authentication and the Users Registration features
 
 ![image](assets/enable-azuread.jpg)
 
@@ -50,7 +50,7 @@ The last step is to copy Application Id and Tenant Id from Azure Portal
 
 ![image](assets/get-appid-tenantid-from-portal.jpg)
 
-[Navigate to Security/Azure Active Directory](https://localhost:5001/Admin/Settings/OrchardCore.Microsoft.Authentication.AzureAD) in OrchardCore Admin to configure the AzureAD app.
+[Navigate to Security/Microsoft Entra ID](https://localhost:5001/Admin/Settings/OrchardCore.Microsoft.Authentication.MicrosoftEntraID) in OrchardCore Admin to configure the AzureAD app.
 
 ![image](assets/configure-orchardcore-azuread.jpg)
 
@@ -134,4 +134,4 @@ Logout from OrchardCore. Navigate to <https://localhost:5001/admin> and use the 
 
 ## Summary
 
-You just integrated Azure Active Directory to the admin of your Blog! You can experiment with other login settings, such as disabling local login and challenging the AzureAD provider instead of showing the login screen.
+You just integrated Microsoft Entra ID to the admin of your Blog! You can experiment with other login settings, such as disabling local login and challenging the AzureAD provider instead of showing the login screen.
