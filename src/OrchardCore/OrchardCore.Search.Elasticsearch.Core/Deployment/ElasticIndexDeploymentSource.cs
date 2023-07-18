@@ -37,7 +37,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
                 {
                     var indexSettingsDict = new Dictionary<string, ElasticIndexSettings>
                     {
-                        { index.IndexName, index }
+                        { index.IndexName, index },
                     };
 
                     data.Add(JObject.FromObject(indexSettingsDict));

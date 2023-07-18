@@ -14,7 +14,7 @@ namespace OrchardCore.Rules
         public Condition Create()
             => new TCondition()
             {
-                Name = Name
+                Name = Name,
             };
     }
 }
