@@ -21,8 +21,8 @@ namespace OrchardCore.Media.Azure
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ViewAzureMediaOptions }
-                }
+                    Permissions = new[] { ViewAzureMediaOptions },
+                },
             };
         }
     }

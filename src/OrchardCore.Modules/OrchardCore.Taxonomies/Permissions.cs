@@ -21,8 +21,8 @@ namespace OrchardCore.Taxonomies
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageTaxonomies }
-                }
+                    Permissions = new[] { ManageTaxonomies },
+                },
             };
         }
     }

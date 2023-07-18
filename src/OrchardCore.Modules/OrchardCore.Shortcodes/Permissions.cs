@@ -21,13 +21,13 @@ namespace OrchardCore.Shortcodes
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageShortcodeTemplates }
+                    Permissions = new[] { ManageShortcodeTemplates },
                 },
                 new PermissionStereotype
                 {
                     Name = "Editor",
-                    Permissions = new[] { ManageShortcodeTemplates }
-                }
+                    Permissions = new[] { ManageShortcodeTemplates },
+                },
             };
         }
     }

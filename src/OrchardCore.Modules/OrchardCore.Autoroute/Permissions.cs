@@ -14,12 +14,13 @@ namespace OrchardCore.Autoroute
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         {
-            return new[] {
+            return new[]
+            {
                 new PermissionStereotype
                 {
                     Name = "Administrator",
                     Permissions = GetPermissions(),
-                }
+                },
             };
         }
 

@@ -21,8 +21,8 @@ namespace OrchardCore.Layers
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageLayers }
-                }
+                    Permissions = new[] { ManageLayers },
+                },
             };
         }
     }

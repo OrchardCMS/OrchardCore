@@ -109,7 +109,7 @@ namespace OrchardCore.Lists.Drivers
                     m.EnableOrdering = enableOrdering;
                     m.ContentType = contentType;
                 })
-                .Location("Content")
+                .Location("Content"),
             };
 
             if (!String.IsNullOrEmpty(containerContentType))

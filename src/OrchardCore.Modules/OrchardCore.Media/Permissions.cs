@@ -25,7 +25,7 @@ namespace OrchardCore.Media
                 ManageOwnMedia,
                 ManageAttachedMediaFieldsFolder,
                 ManageMediaProfiles,
-                ViewMediaOptions
+                ViewMediaOptions,
             }
             .AsEnumerable());
         }
@@ -37,15 +37,16 @@ namespace OrchardCore.Media
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] {
+                    Permissions = new[]
+                    {
                         ManageMediaFolder,
                         ManageMediaProfiles,
-                        ViewMediaOptions }
+                        ViewMediaOptions },
                 },
                 new PermissionStereotype
                 {
                     Name = "Editor",
-                    Permissions = new[] { ManageMedia, ManageOwnMedia }
+                    Permissions = new[] { ManageMedia, ManageOwnMedia },
                 },
                 new PermissionStereotype
                 {
@@ -54,12 +55,12 @@ namespace OrchardCore.Media
                 new PermissionStereotype
                 {
                     Name = "Author",
-                    Permissions = new[] { ManageOwnMedia }
+                    Permissions = new[] { ManageOwnMedia },
                 },
                 new PermissionStereotype
                 {
                     Name = "Contributor",
-                    Permissions = new[] { ManageOwnMedia }
+                    Permissions = new[] { ManageOwnMedia },
                 },
             };
         }
@@ -81,8 +82,8 @@ namespace OrchardCore.Media
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageAssetCache }
-                }
+                    Permissions = new[] { ManageAssetCache },
+                },
             };
         }
     }

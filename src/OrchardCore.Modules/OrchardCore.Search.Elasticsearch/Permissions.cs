@@ -42,13 +42,13 @@ namespace OrchardCore.Search.Elasticsearch
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageElasticIndexes }
+                    Permissions = new[] { ManageElasticIndexes },
                 },
                 new PermissionStereotype
                 {
                     Name = "Editor",
-                    Permissions = new[] { QueryElasticApi }
-                }
+                    Permissions = new[] { QueryElasticApi },
+                },
             };
         }
     }

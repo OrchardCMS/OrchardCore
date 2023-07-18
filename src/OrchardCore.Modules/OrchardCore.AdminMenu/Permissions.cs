@@ -42,10 +42,11 @@ namespace OrchardCore.AdminMenu
                     Name = "Administrator",
                     Permissions = new[] { ManageAdminMenu }
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Editor",
                     Permissions = new[] { ManageAdminMenu }
-                }
+                },
             };
         }
 

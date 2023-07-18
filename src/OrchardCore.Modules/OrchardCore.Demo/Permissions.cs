@@ -20,26 +20,31 @@ namespace OrchardCore.Demo
         {
             return new[]
             {
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Authenticated",
-                    Permissions = new[] { DemoAPIAccess }
+                    Permissions = new[] { DemoAPIAccess },
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Editor",
-                    Permissions = new[] { ManageOwnUserProfile }
+                    Permissions = new[] { ManageOwnUserProfile },
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Moderator",
-                    Permissions = new[] { ManageOwnUserProfile }
+                    Permissions = new[] { ManageOwnUserProfile },
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Contributor",
-                    Permissions = new[] { ManageOwnUserProfile }
+                    Permissions = new[] { ManageOwnUserProfile },
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Author",
-                    Permissions = new[] { ManageOwnUserProfile }
-                }
+                    Permissions = new[] { ManageOwnUserProfile },
+                },
             };
         }
     }

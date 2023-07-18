@@ -21,13 +21,13 @@ namespace OrchardCore.Placements
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManagePlacements }
+                    Permissions = new[] { ManagePlacements },
                 },
                 new PermissionStereotype
                 {
                     Name = "Editor",
-                    Permissions = new[] { ManagePlacements }
-                }
+                    Permissions = new[] { ManagePlacements },
+                },
             };
         }
     }

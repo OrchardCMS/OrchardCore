@@ -21,13 +21,13 @@ namespace OrchardCore.Templates
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageTemplates }
+                    Permissions = new[] { ManageTemplates },
                 },
                 new PermissionStereotype
                 {
                     Name = "Editor",
-                    Permissions = new[] { ManageTemplates }
-                }
+                    Permissions = new[] { ManageTemplates },
+                },
             };
         }
     }

@@ -34,14 +34,16 @@ namespace OrchardCore.Queries
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         {
             return new[] {
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Administrator",
-                    Permissions = new[] { ManageQueries }
+                    Permissions = new[] { ManageQueries },
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Editor",
-                    Permissions = new[] { ManageQueries }
-                }
+                    Permissions = new[] { ManageQueries },
+                },
             };
         }
 

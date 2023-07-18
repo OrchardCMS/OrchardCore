@@ -37,7 +37,7 @@ namespace OrchardCore.Contents.Scripting
                     }
 
                     return pathBase.Value;
-                }
+                },
             };
         }
 

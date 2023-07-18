@@ -17,7 +17,7 @@ namespace OrchardCore.ContentLocalization
             {
                 LocalizeContent,
                 LocalizeOwnContent,
-                ManageContentCulturePicker
+                ManageContentCulturePicker,
             }
             .AsEnumerable());
         }
@@ -29,34 +29,34 @@ namespace OrchardCore.ContentLocalization
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { LocalizeContent, LocalizeOwnContent, ManageContentCulturePicker }
+                    Permissions = new[] { LocalizeContent, LocalizeOwnContent, ManageContentCulturePicker },
                 },
                 new PermissionStereotype
                 {
                     Name = "Editor",
-                    Permissions = new[] { LocalizeContent, LocalizeOwnContent, ManageContentCulturePicker }
+                    Permissions = new[] { LocalizeContent, LocalizeOwnContent, ManageContentCulturePicker },
                 },
                 new PermissionStereotype
                 {
-                    Name = "Moderator"
+                    Name = "Moderator",
                 },
                 new PermissionStereotype
                 {
                     Name = "Author",
-                    Permissions = new[] { LocalizeOwnContent }
+                    Permissions = new[] { LocalizeOwnContent },
                 },
                 new PermissionStereotype
                 {
                     Name = "Contributor",
-                    Permissions = new[] { LocalizeOwnContent }
+                    Permissions = new[] { LocalizeOwnContent },
                 },
                 new PermissionStereotype
                 {
-                    Name = "Authenticated"
+                    Name = "Authenticated",
                 },
                 new PermissionStereotype
                 {
-                    Name = "Anonymous"
+                    Name = "Anonymous",
                 },
             };
         }

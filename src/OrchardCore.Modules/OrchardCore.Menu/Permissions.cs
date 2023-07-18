@@ -21,8 +21,8 @@ namespace OrchardCore.Menu
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageMenu }
-                }
+                    Permissions = new[] { ManageMenu },
+                },
             };
         }
     }

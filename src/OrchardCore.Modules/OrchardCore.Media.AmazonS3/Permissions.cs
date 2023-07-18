@@ -21,8 +21,8 @@ namespace OrchardCore.Media.AmazonS3
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ViewAmazonS3MediaOptions }
-                }
+                    Permissions = new[] { ViewAmazonS3MediaOptions },
+                },
             };
         }
     }

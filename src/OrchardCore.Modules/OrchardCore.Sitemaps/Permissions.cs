@@ -21,8 +21,8 @@ namespace OrchardCore.Sitemaps
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageSitemaps }
-                }
+                    Permissions = new[] { ManageSitemaps },
+                },
             };
         }
     }

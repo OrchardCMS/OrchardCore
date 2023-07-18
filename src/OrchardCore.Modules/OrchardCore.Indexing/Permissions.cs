@@ -29,7 +29,7 @@ namespace OrchardCore.Indexing
                 {
                     Name = "Administrator",
                     Permissions = new[] { ManageIndexes },
-                }
+                },
             };
         }
     }
