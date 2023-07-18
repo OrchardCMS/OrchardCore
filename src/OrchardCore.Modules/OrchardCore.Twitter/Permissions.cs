@@ -18,7 +18,7 @@ namespace OrchardCore.Twitter
             return Task.FromResult(new[]
             {
                 ManageTwitter,
-                ManageTwitterSignin
+                ManageTwitterSignin,
             }
             .AsEnumerable());
         }
@@ -31,7 +31,7 @@ namespace OrchardCore.Twitter
                 Permissions = new[]
                 {
                     ManageTwitter,
-                    ManageTwitterSignin
+                    ManageTwitterSignin,
                 }
             };
         }

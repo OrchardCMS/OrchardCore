@@ -142,15 +142,15 @@ namespace OrchardCore.Workflows.Controllers
                         WorkflowType = x,
                         Id = x.Id,
                         WorkflowCount = workflowGroups.TryGetValue(x.WorkflowTypeId, out var group) ? group.Count() : 0,
-                        Name = x.Name
+                        Name = x.Name,
                     })
                     .ToList(),
                 Options = options,
-                Pager = pagerShape
+                Pager = pagerShape,
             };
 
             model.Options.WorkflowTypesBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"].Value, Value = nameof(WorkflowTypeBulkAction.Delete) }
+                new SelectListItem() { Text = S["Delete"].Value, Value = nameof(WorkflowTypeBulkAction.Delete) },
             };
 
             return View(model);
@@ -160,8 +160,9 @@ namespace OrchardCore.Workflows.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(WorkflowTypeIndexViewModel model)
         {
-            return RedirectToAction(nameof(Index), new RouteValueDictionary {
-                { "Options.Search", model.Options.Search }
+            return RedirectToAction(nameof(Index), new RouteValueDictionary
+            {
+                { "Options.Search", model.Options.Search },
             });
         }
 
@@ -215,7 +216,7 @@ namespace OrchardCore.Workflows.Controllers
                 return View(new WorkflowTypePropertiesViewModel
                 {
                     IsEnabled = true,
-                    ReturnUrl = returnUrl
+                    ReturnUrl = returnUrl,
                 });
             }
             else
@@ -231,7 +232,7 @@ namespace OrchardCore.Workflows.Controllers
                     LockTimeout = workflowType.LockTimeout,
                     LockExpiration = workflowType.LockExpiration,
                     DeleteFinishedWorkflows = workflowType.DeleteFinishedWorkflows,
-                    ReturnUrl = returnUrl
+                    ReturnUrl = returnUrl,
                 });
             }
         }
@@ -305,7 +306,7 @@ namespace OrchardCore.Workflows.Controllers
                 LockExpiration = workflowType.LockExpiration,
                 Name = "Copy-" + workflowType.Name,
                 IsEnabled = workflowType.IsEnabled,
-                ReturnUrl = returnUrl
+                ReturnUrl = returnUrl,
             });
         }
 
@@ -385,7 +386,7 @@ namespace OrchardCore.Workflows.Controllers
                 x.ActivityRecord.Name,
                 x.ActivityRecord.IsStart,
                 IsEvent = x.Activity.IsEvent(),
-                Outcomes = x.Activity.GetPossibleOutcomes(workflowContext, x).ToArray()
+                Outcomes = x.Activity.GetPossibleOutcomes(workflowContext, x).ToArray(),
             });
             var workflowTypeData = new
             {
@@ -393,7 +394,7 @@ namespace OrchardCore.Workflows.Controllers
                 workflowType.Name,
                 workflowType.IsEnabled,
                 Activities = activitiesDataQuery.ToArray(),
-                workflowType.Transitions
+                workflowType.Transitions,
             };
             var viewModel = new WorkflowTypeViewModel
             {
@@ -404,7 +405,7 @@ namespace OrchardCore.Workflows.Controllers
                 ActivityCategories = _activityLibrary.ListCategories().ToList(),
                 LocalId = newLocalId,
                 LoadLocalState = !String.IsNullOrWhiteSpace(localId),
-                WorkflowCount = workflowCount
+                WorkflowCount = workflowCount,
             };
             return View(viewModel);
         }
@@ -452,7 +453,7 @@ namespace OrchardCore.Workflows.Controllers
                 {
                     SourceActivityId = transitionState.sourceActivityId,
                     DestinationActivityId = transitionState.destinationActivityId,
-                    SourceOutcomeName = transitionState.sourceOutcomeName
+                    SourceOutcomeName = transitionState.sourceOutcomeName,
                 });
             }
 

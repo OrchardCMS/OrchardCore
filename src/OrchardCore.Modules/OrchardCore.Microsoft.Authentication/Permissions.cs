@@ -22,7 +22,7 @@ namespace OrchardCore.Microsoft.Authentication
                 Name = "Administrator",
                 Permissions = new[]
                 {
-                    ManageMicrosoftAuthentication
+                    ManageMicrosoftAuthentication,
                 }
             };
         }

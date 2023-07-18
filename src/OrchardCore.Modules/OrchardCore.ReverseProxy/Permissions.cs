@@ -21,7 +21,7 @@ namespace OrchardCore.ReverseProxy
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageReverseProxySettings }
+                    Permissions = new[] { ManageReverseProxySettings },
                 },
             };
         }

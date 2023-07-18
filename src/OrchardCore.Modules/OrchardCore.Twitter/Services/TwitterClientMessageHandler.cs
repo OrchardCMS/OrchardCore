@@ -66,7 +66,7 @@ namespace OrchardCore.Twitter.Services
                 { Uri.EscapeDataString("oauth_signature_method"), Uri.EscapeDataString("HMAC-SHA1") },
                 { Uri.EscapeDataString("oauth_timestamp"), Uri.EscapeDataString(timeStamp) },
                 { Uri.EscapeDataString("oauth_token"), Uri.EscapeDataString(_twitterSettings.AccessToken) },
-                { Uri.EscapeDataString("oauth_version"), Uri.EscapeDataString("1.0") }
+                { Uri.EscapeDataString("oauth_version"), Uri.EscapeDataString("1.0") },
             };
 
             if (!String.IsNullOrEmpty(request.RequestUri.Query))

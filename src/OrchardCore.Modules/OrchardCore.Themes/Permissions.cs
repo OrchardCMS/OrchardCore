@@ -13,7 +13,7 @@ namespace OrchardCore.Themes
         {
             return Task.FromResult(new[]
             {
-                ApplyTheme
+                ApplyTheme,
             }
             .AsEnumerable());
         }
@@ -25,7 +25,7 @@ namespace OrchardCore.Themes
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ApplyTheme }
+                    Permissions = new[] { ApplyTheme },
                 },
             };
         }

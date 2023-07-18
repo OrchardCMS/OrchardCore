@@ -19,7 +19,7 @@ namespace OrchardCore.AdminDashboard
             return Task.FromResult(new[]
             {
                 AccessAdminDashboard,
-                ManageAdminDashboard
+                ManageAdminDashboard,
             }
             .AsEnumerable());
         }
@@ -31,23 +31,27 @@ namespace OrchardCore.AdminDashboard
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { AccessAdminDashboard, ManageAdminDashboard }
+                    Permissions = new[] { AccessAdminDashboard, ManageAdminDashboard },
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Editor",
-                    Permissions = new[] { AccessAdminDashboard }
+                    Permissions = new[] { AccessAdminDashboard },
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Moderator",
-                    Permissions = new[] { AccessAdminDashboard }
+                    Permissions = new[] { AccessAdminDashboard },
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Author",
-                    Permissions = new[] { AccessAdminDashboard }
+                    Permissions = new[] { AccessAdminDashboard },
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Contributor",
-                    Permissions = new[] { AccessAdminDashboard }
+                    Permissions = new[] { AccessAdminDashboard },
                 }
             };
         }

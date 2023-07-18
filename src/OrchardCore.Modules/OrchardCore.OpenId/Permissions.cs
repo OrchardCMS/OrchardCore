@@ -30,7 +30,7 @@ namespace OrchardCore.OpenId
                 ManageScopes,
                 ManageClientSettings,
                 ManageServerSettings,
-                ManageValidationSettings
+                ManageValidationSettings,
             }
             .AsEnumerable());
         }
@@ -46,7 +46,7 @@ namespace OrchardCore.OpenId
                     ManageScopes,
                     ManageClientSettings,
                     ManageServerSettings,
-                    ManageValidationSettings
+                    ManageValidationSettings,
                 }
             };
         }

@@ -21,7 +21,7 @@ namespace OrchardCore.Https
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageHttps }
+                    Permissions = new[] { ManageHttps },
                 }
             };
         }

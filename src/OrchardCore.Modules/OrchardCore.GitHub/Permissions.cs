@@ -22,7 +22,7 @@ namespace OrchardCore.GitHub
                 Name = "Administrator",
                 Permissions = new[]
                 {
-                    ManageGitHubAuthentication
+                    ManageGitHubAuthentication,
                 }
             };
         }

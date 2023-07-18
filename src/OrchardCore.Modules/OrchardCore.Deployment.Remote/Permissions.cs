@@ -23,7 +23,7 @@ namespace OrchardCore.Deployment.Remote
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageRemoteInstances, ManageRemoteClients, Export }
+                    Permissions = new[] { ManageRemoteInstances, ManageRemoteClients, Export },
                 }
             };
         }

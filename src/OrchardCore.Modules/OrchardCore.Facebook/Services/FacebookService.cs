@@ -54,7 +54,7 @@ namespace OrchardCore.Facebook.Services
             {
                 results.Add(new ValidationResult(S["The AppId is required."], new[]
                 {
-                    nameof(settings.AppId)
+                    nameof(settings.AppId),
                 }));
             }
 
@@ -62,7 +62,7 @@ namespace OrchardCore.Facebook.Services
             {
                 results.Add(new ValidationResult(S["The App Secret is required."], new[]
                 {
-                    nameof(settings.AppSecret)
+                    nameof(settings.AppSecret),
                 }));
             }
 

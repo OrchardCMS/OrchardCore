@@ -18,9 +18,10 @@ namespace OrchardCore.MiniProfiler
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         {
             return new[] {
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Administrator",
-                    Permissions = new[] { ViewMiniProfilerOnFrontEnd, ViewMiniProfilerOnBackEnd }
+                    Permissions = new[] { ViewMiniProfilerOnFrontEnd, ViewMiniProfilerOnBackEnd },
                 }
             };
         }

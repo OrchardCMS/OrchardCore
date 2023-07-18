@@ -13,7 +13,7 @@ namespace OrchardCore.Email
         {
             return Task.FromResult(new[]
             {
-                ManageEmailSettings
+                ManageEmailSettings,
             }
             .AsEnumerable());
         }
@@ -25,7 +25,7 @@ namespace OrchardCore.Email
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageEmailSettings }
+                    Permissions = new[] { ManageEmailSettings },
                 },
             };
         }

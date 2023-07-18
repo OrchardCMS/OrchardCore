@@ -17,7 +17,7 @@ namespace OrchardCore.ReCaptcha
         {
             return Task.FromResult(new[]
             {
-                ManageReCaptchaSettings
+                ManageReCaptchaSettings,
             }
             .AsEnumerable());
         }
@@ -29,7 +29,7 @@ namespace OrchardCore.ReCaptcha
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageReCaptchaSettings }
+                    Permissions = new[] { ManageReCaptchaSettings },
                 }
             };
         }

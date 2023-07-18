@@ -62,7 +62,7 @@ namespace OrchardCore.Email.Drivers
                     model.UseDefaultCredentials = settings.UseDefaultCredentials;
                     model.UserName = settings.UserName;
                     model.Password = settings.Password;
-                }).Location("Content:5").OnGroup(GroupId)
+                }).Location("Content:5").OnGroup(GroupId),
             };
 
             if (settings?.DefaultSender != null)

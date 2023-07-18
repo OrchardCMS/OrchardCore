@@ -123,26 +123,29 @@ namespace OrchardCore.Workflows.Controllers
                 Workflows = pageOfItems.Select(x => new WorkflowEntry
                 {
                     Workflow = x,
-                    Id = x.Id
+                    Id = x.Id,
                 }).ToList(),
                 Options = model.Options,
                 Pager = pagerShape,
-                ReturnUrl = returnUrl
+                ReturnUrl = returnUrl,
             };
 
-            model.Options.WorkflowsSorts = new List<SelectListItem>() {
+            model.Options.WorkflowsSorts = new List<SelectListItem>()
+            {
                 new SelectListItem() { Text = S["Recently created"], Value = nameof(WorkflowOrder.CreatedDesc) },
-                new SelectListItem() { Text = S["Least recently created"], Value = nameof(WorkflowOrder.Created) }
+                new SelectListItem() { Text = S["Least recently created"], Value = nameof(WorkflowOrder.Created) },
             };
 
-            model.Options.WorkflowsStatuses = new List<SelectListItem>() {
+            model.Options.WorkflowsStatuses = new List<SelectListItem>()
+            {
                 new SelectListItem() { Text = S["All"], Value = nameof(WorkflowFilter.All) },
                 new SelectListItem() { Text = S["Faulted"], Value = nameof(WorkflowFilter.Faulted) },
-                new SelectListItem() { Text = S["Finished"], Value = nameof(WorkflowFilter.Finished) }
+                new SelectListItem() { Text = S["Finished"], Value = nameof(WorkflowFilter.Finished) },
             };
 
-            viewModel.Options.WorkflowsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(WorkflowBulkAction.Delete) }
+            viewModel.Options.WorkflowsBulkAction = new List<SelectListItem>()
+            {
+                new SelectListItem() { Text = S["Delete"], Value = nameof(WorkflowBulkAction.Delete) },
             };
 
             return View(viewModel);
@@ -152,9 +155,10 @@ namespace OrchardCore.Workflows.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(WorkflowIndexViewModel model)
         {
-            return RedirectToAction(nameof(Index), new RouteValueDictionary {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary
+            {
                 { "Options.Filter", model.Options.Filter },
-                { "Options.OrderBy", model.Options.OrderBy }
+                { "Options.OrderBy", model.Options.OrderBy },
             });
         }
 
@@ -193,7 +197,7 @@ namespace OrchardCore.Workflows.Controllers
                 x.ActivityRecord.IsStart,
                 IsEvent = x.Activity.IsEvent(),
                 IsBlocking = workflow.BlockingActivities.Any(a => a.ActivityId == x.ActivityRecord.ActivityId),
-                Outcomes = x.Activity.GetPossibleOutcomes(workflowContext, x).ToArray()
+                Outcomes = x.Activity.GetPossibleOutcomes(workflowContext, x).ToArray(),
             });
 
             var workflowTypeData = new
@@ -202,7 +206,7 @@ namespace OrchardCore.Workflows.Controllers
                 workflowType.Name,
                 workflowType.IsEnabled,
                 Activities = activitiesDataQuery.ToArray(),
-                workflowType.Transitions
+                workflowType.Transitions,
             };
 
             var jsonSerializerSettings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
@@ -212,7 +216,7 @@ namespace OrchardCore.Workflows.Controllers
                 WorkflowType = workflowType,
                 WorkflowTypeJson = JsonConvert.SerializeObject(workflowTypeData, Formatting.None, jsonSerializerSettings),
                 WorkflowJson = JsonConvert.SerializeObject(workflow, Formatting.Indented, jsonSerializerSettings),
-                ActivityDesignShapes = activityDesignShapes
+                ActivityDesignShapes = activityDesignShapes,
             };
             return View(viewModel);
         }

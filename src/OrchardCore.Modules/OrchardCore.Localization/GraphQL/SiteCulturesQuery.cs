@@ -69,7 +69,7 @@ namespace OrchardCore.Localization.GraphQL
                new SiteCulture
                {
                    Culture = culture,
-                   IsDefault = String.Equals(defaultCulture, culture, StringComparison.OrdinalIgnoreCase)
+                   IsDefault = String.Equals(defaultCulture, culture, StringComparison.OrdinalIgnoreCase),
                }
            );
 

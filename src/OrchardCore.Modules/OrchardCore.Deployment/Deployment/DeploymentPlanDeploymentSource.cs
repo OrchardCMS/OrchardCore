@@ -45,7 +45,7 @@ namespace OrchardCore.Deployment.Deployment
                                       {
                                           Type = GetStepType(deploymentStepFactories, step),
                                           Step = step
-                                      }).ToArray()
+                                      }).ToArray(),
                          }).ToArray();
 
             // Adding deployment plans.

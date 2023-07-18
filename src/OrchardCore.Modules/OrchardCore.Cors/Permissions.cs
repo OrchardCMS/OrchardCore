@@ -13,7 +13,7 @@ namespace OrchardCore.Cors
         {
             return Task.FromResult(new[]
             {
-                ManageCorsSettings
+                ManageCorsSettings,
             }
             .AsEnumerable());
         }
@@ -21,9 +21,10 @@ namespace OrchardCore.Cors
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         {
             return new[] {
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Administrator",
-                    Permissions = new[] { ManageCorsSettings }
+                    Permissions = new[] { ManageCorsSettings },
                 },
             };
         }

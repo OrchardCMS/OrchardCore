@@ -20,7 +20,7 @@ namespace OrchardCore.Users.Handlers
 
         private static readonly JsonSerializerSettings _jsonSettings = new()
         {
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
         };
 
         public ScriptExternalLoginEventHandler(

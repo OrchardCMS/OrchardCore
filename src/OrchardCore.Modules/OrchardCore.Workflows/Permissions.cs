@@ -18,13 +18,15 @@ namespace OrchardCore.Workflows
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         {
             return new[] {
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Administrator",
-                    Permissions = new[] { ManageWorkflows, ExecuteWorkflows }
+                    Permissions = new[] { ManageWorkflows, ExecuteWorkflows },
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Editor",
-                    Permissions = new[] { ManageWorkflows, ExecuteWorkflows }
+                    Permissions = new[] { ManageWorkflows, ExecuteWorkflows },
                 }
             };
         }

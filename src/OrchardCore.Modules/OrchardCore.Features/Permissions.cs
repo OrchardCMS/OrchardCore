@@ -13,7 +13,7 @@ namespace OrchardCore.Features
         {
             return Task.FromResult(new[]
             {
-                ManageFeatures
+                ManageFeatures,
             }
             .AsEnumerable());
         }
@@ -25,7 +25,7 @@ namespace OrchardCore.Features
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageFeatures }
+                    Permissions = new[] { ManageFeatures },
                 }
             };
         }

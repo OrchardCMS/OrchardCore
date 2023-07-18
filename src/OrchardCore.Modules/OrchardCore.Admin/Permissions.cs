@@ -20,23 +20,27 @@ namespace OrchardCore.Admin
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = GetPermissions()
+                    Permissions = GetPermissions(),
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Editor",
-                    Permissions = GetPermissions()
+                    Permissions = GetPermissions(),
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Moderator",
-                    Permissions = GetPermissions()
+                    Permissions = GetPermissions(),
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Author",
-                    Permissions = GetPermissions()
+                    Permissions = GetPermissions(),
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Contributor",
-                    Permissions = GetPermissions()
+                    Permissions = GetPermissions(),
                 }
             };
         }
@@ -45,7 +49,7 @@ namespace OrchardCore.Admin
         {
             return new[]
             {
-                AccessAdminPanel
+                AccessAdminPanel,
             };
         }
     }

@@ -25,7 +25,7 @@ namespace OrchardCore.Tenants
                     Permissions = new[]
                     {
                         ManageTenants,
-                        ManageTenantFeatureProfiles
+                        ManageTenantFeatureProfiles,
                     }
                 }
             };

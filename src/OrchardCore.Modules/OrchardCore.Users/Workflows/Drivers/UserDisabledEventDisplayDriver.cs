@@ -27,7 +27,7 @@ namespace OrchardCore.Users.Workflows.Drivers
                 {
                     var shape = new UserDisabledEventViewModel
                     {
-                        Activity = activity
+                        Activity = activity,
                     };
 
                     return shape;

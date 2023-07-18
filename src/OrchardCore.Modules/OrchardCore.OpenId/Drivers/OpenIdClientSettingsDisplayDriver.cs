@@ -26,7 +26,7 @@ namespace OrchardCore.OpenId.Drivers
         private const string SettingsGroupId = "OrchardCore.OpenId.Client";
         private static readonly JsonSerializerSettings _jsonSerializerSettings = new()
         {
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
         };
 
         private readonly IAuthorizationService _authorizationService;
