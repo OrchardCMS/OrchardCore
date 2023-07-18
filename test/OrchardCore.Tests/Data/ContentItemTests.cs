@@ -13,7 +13,7 @@ namespace OrchardCore.Tests.Data
                 ContentItemId = "2",
                 ContentType = "Page",
                 Latest = true,
-                Published = true
+                Published = true,
             };
 
             var json = JsonConvert.SerializeObject(contentItem);

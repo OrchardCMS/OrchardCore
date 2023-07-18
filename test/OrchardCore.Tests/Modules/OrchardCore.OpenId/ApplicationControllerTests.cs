@@ -46,7 +46,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 Mock.Of<INotifier>(),
                 Mock.Of<ShellDescriptor>())
             {
-                ControllerContext = CreateControllerContext()
+                ControllerContext = CreateControllerContext(),
             };
 
             var result = await controller.Create();
@@ -71,7 +71,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 Mock.Of<INotifier>(),
                 Mock.Of<ShellDescriptor>())
             {
-                ControllerContext = CreateControllerContext()
+                ControllerContext = CreateControllerContext(),
             };
 
             var model = new CreateOpenIdApplicationViewModel
@@ -79,7 +79,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 Type = clientType,
                 ClientSecret = clientSecret,
                 AllowAuthorizationCodeFlow = allowAuthFlow,
-                AllowPasswordFlow = allowPasswordFlow
+                AllowPasswordFlow = allowPasswordFlow,
             };
 
             var result = await controller.Create(model);
@@ -112,7 +112,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 Mock.Of<INotifier>(),
                 Mock.Of<ShellDescriptor>())
             {
-                ControllerContext = CreateControllerContext()
+                ControllerContext = CreateControllerContext(),
             };
 
             var model = new CreateOpenIdApplicationViewModel
@@ -159,7 +159,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
 
             return new ControllerContext()
             {
-                HttpContext = mockContext.Object
+                HttpContext = mockContext.Object,
             };
         }
 

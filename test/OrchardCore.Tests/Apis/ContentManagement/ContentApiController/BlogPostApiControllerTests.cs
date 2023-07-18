@@ -90,13 +90,13 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
                 ContentType = "BlogPost",
                 DisplayText = displayText,
                 Latest = true,
-                Published = true // Deliberately set these values incorrectly.
+                Published = true, // Deliberately set these values incorrectly.
             };
 
             contentItem
                 .Weld(new AutoroutePart
                 {
-                    Path = "Path2"
+                    Path = "Path2",
                 });
 
             contentItem
@@ -109,13 +109,13 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
             blogFields
                 .Weld("Categories", new TaxonomyField
                 {
-                    TaxonomyContentItemId = context.CategoriesTaxonomyContentItemId
+                    TaxonomyContentItemId = context.CategoriesTaxonomyContentItemId,
                 });
 
             blogFields
                 .Weld("Tags", new TaxonomyField
                 {
-                    TaxonomyContentItemId = context.TagsTaxonomyContentItemId
+                    TaxonomyContentItemId = context.TagsTaxonomyContentItemId,
                 });
 
             contentItem
@@ -147,32 +147,32 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
                 ContentType = "BlogPost",
                 DisplayText = displayText,
                 Latest = false,
-                Published = false // Deliberately set these values incorrectly.
+                Published = false, // Deliberately set these values incorrectly.
             };
 
             contentItem
                 .Weld(new AutoroutePart
                 {
-                    Path = path
+                    Path = path,
                 });
 
             contentItem
                 .Weld(new ContainedPart
                 {
-                    ListContentItemId = context.BlogContentItemId
+                    ListContentItemId = context.BlogContentItemId,
                 });
 
             var blogFields = new ContentPart();
             blogFields
                 .Weld("Categories", new TaxonomyField
                 {
-                    TaxonomyContentItemId = context.CategoriesTaxonomyContentItemId
+                    TaxonomyContentItemId = context.CategoriesTaxonomyContentItemId,
                 });
 
             blogFields
                 .Weld("Tags", new TaxonomyField
                 {
-                    TaxonomyContentItemId = context.TagsTaxonomyContentItemId
+                    TaxonomyContentItemId = context.TagsTaxonomyContentItemId,
                 });
 
             contentItem
@@ -202,32 +202,32 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
                 ContentType = "BlogPost",
                 DisplayText = "some other blog post",
                 Latest = false,
-                Published = false // Deliberately set these values incorrectly.
+                Published = false, // Deliberately set these values incorrectly.
             };
 
             contentItem
                 .Weld(new AutoroutePart
                 {
-                    Path = "blog/post-1" // Deliberately set to an existing path.
+                    Path = "blog/post-1", // Deliberately set to an existing path.
                 });
 
             contentItem
                 .Weld(new ContainedPart
                 {
-                    ListContentItemId = context.BlogContentItemId
+                    ListContentItemId = context.BlogContentItemId,
                 });
 
             var blogFields = new ContentPart();
             blogFields
                 .Weld("Categories", new TaxonomyField
                 {
-                    TaxonomyContentItemId = context.CategoriesTaxonomyContentItemId
+                    TaxonomyContentItemId = context.CategoriesTaxonomyContentItemId,
                 });
 
             blogFields
                 .Weld("Tags", new TaxonomyField
                 {
-                    TaxonomyContentItemId = context.TagsTaxonomyContentItemId
+                    TaxonomyContentItemId = context.TagsTaxonomyContentItemId,
                 });
 
             contentItem
@@ -264,26 +264,26 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
                 ContentType = "BlogPost",
                 DisplayText = "some other blog post",
                 Latest = false,
-                Published = false // Deliberately set these values incorrectly.
+                Published = false, // Deliberately set these values incorrectly.
             };
 
             contentItem
                 .Weld(new ContainedPart
                 {
-                    ListContentItemId = context.BlogContentItemId
+                    ListContentItemId = context.BlogContentItemId,
                 });
 
             var blogFields = new ContentPart();
             blogFields
                 .Weld("Categories", new TaxonomyField
                 {
-                    TaxonomyContentItemId = context.CategoriesTaxonomyContentItemId
+                    TaxonomyContentItemId = context.CategoriesTaxonomyContentItemId,
                 });
 
             blogFields
                 .Weld("Tags", new TaxonomyField
                 {
-                    TaxonomyContentItemId = context.TagsTaxonomyContentItemId
+                    TaxonomyContentItemId = context.TagsTaxonomyContentItemId,
                 });
 
             contentItem
@@ -295,10 +295,10 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
 
             // Test
             var blogPostContentItemIds = new List<string>
-                    {
-                        context.BlogPost.ContentItemId,
-                        publishedContentItem.ContentItemId
-                    };
+            {
+                context.BlogPost.ContentItemId,
+                publishedContentItem.ContentItemId,
+            };
 
             await context.UsingTenantScopeAsync(async scope =>
             {

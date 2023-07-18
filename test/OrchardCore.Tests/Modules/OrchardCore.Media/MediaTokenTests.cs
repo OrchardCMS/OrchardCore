@@ -21,7 +21,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
         {
             _mediaTokenSettings = new MediaTokenSettings
             {
-                HashKey = _hashKey
+                HashKey = _hashKey,
             };
         }
 

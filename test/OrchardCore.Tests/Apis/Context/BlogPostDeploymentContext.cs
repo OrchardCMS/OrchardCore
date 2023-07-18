@@ -81,7 +81,7 @@ namespace OrchardCore.Tests.Apis.Context
             {
                 { new StreamContent(zipStream), nameof(ImportViewModel.Content), "Recipe.zip" },
                 { new StringContent(RemoteDeploymentClientName), nameof(ImportViewModel.ClientName) },
-                { new StringContent(RemoteDeploymentApiKey), nameof(ImportViewModel.ApiKey) }
+                { new StringContent(RemoteDeploymentApiKey), nameof(ImportViewModel.ApiKey) },
             };
 
             var response = await Client.PostAsync("OrchardCore.Deployment.Remote/ImportRemoteInstance/Import", requestContent);

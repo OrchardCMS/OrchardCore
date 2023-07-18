@@ -44,13 +44,13 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     builder
                         .Weld(new AutoroutePart
                         {
-                            Path = "Path1"
+                            Path = "Path1",
                         });
 
                     builder
                         .Weld(new ContainedPart
                         {
-                            ListContentItemId = context.BlogContentItemId
+                            ListContentItemId = context.BlogContentItemId,
                         });
                 });
 
@@ -63,13 +63,13 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     builder
                         .Weld(new AutoroutePart
                         {
-                            Path = "Path2"
+                            Path = "Path2",
                         });
 
                     builder
                         .Weld(new ContainedPart
                         {
-                            ListContentItemId = context.BlogContentItemId
+                            ListContentItemId = context.BlogContentItemId,
                         });
                 });
 
@@ -138,7 +138,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     builder
                         .Weld(new ContainedPart
                         {
-                            ListContentItemId = context.BlogContentItemId
+                            ListContentItemId = context.BlogContentItemId,
                         });
                 });
 
@@ -175,7 +175,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     builder
                         .Weld(new ContainedPart
                         {
-                            ListContentItemId = context.BlogContentItemId
+                            ListContentItemId = context.BlogContentItemId,
                         });
                 }, draft: true);
 
@@ -219,8 +219,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     AuthorizedPermissions = new[]
                     {
                         GraphQLApi.Permissions.ExecuteGraphQL,
-                        Contents.Permissions.ViewContent
-                    }
+                        Contents.Permissions.ViewContent,
+                    },
                 });
 
             await context.InitializeAsync();
@@ -244,8 +244,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     AuthorizedPermissions = new[]
                     {
                         GraphQLApi.Permissions.ExecuteGraphQL,
-                        Contents.Permissions.ViewOwnContent
-                    }
+                        Contents.Permissions.ViewOwnContent,
+                    },
                 });
 
             await context.InitializeAsync();
@@ -268,8 +268,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     UsePermissionsContext = true,
                     AuthorizedPermissions = new[]
                     {
-                        GraphQLApi.Permissions.ExecuteGraphQL
-                    }
+                        GraphQLApi.Permissions.ExecuteGraphQL,
+                    },
                 });
 
             await context.InitializeAsync();

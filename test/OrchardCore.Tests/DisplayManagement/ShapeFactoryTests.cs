@@ -83,8 +83,8 @@ namespace OrchardCore.Tests.DisplayManagement
                     {
                         ctx.Create = () => new SubShape();
                         return Task.CompletedTask;
-                    }
-                }
+                    },
+                },
             };
 
             _shapeTable.Descriptors.Add("Foo", descriptor);
@@ -105,8 +105,8 @@ namespace OrchardCore.Tests.DisplayManagement
                     {
                         ctx.Create = () => new SubShape();
                         return Task.CompletedTask;
-                    }
-                }
+                    },
+                },
             };
 
             _shapeTable.Descriptors.Add("Foo", descriptor);

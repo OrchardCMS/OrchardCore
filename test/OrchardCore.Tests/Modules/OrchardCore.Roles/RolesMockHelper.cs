@@ -9,7 +9,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
 
             var validators = new List<IRoleValidator<TRole>>
             {
-                new RoleValidator<TRole>()
+                new RoleValidator<TRole>(),
             };
 
             return new Mock<RoleManager<TRole>>(store, validators, new UpperInvariantLookupNormalizer(), new IdentityErrorDescriber(), null);

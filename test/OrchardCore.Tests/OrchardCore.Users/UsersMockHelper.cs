@@ -22,7 +22,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
 
             var roles = new List<IRoleValidator<TRole>>
             {
-                new RoleValidator<TRole>()
+                new RoleValidator<TRole>(),
             };
 
             return new Mock<RoleManager<TRole>>(store, roles, new UpperInvariantLookupNormalizer(), new IdentityErrorDescriber(), null);

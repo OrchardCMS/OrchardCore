@@ -26,9 +26,9 @@ namespace OrchardCore.Tests.Apis.Lucene
                     {
                         analyze_wildcard = true,
                         fields = new string[] { "Content.ContentItem.DisplayText.Normalized^2", "Content.BodyAspect.Body" },
-                        query = "orchard*"
-                    }
-                }
+                        query = "orchard*",
+                    },
+                },
             };
 
             var query = JsonConvert.SerializeObject(dynamicQuery);
@@ -62,9 +62,9 @@ namespace OrchardCore.Tests.Apis.Lucene
                     {
                         analyze_wildcard = true,
                         fields = new string[] { "Content.ContentItem.DisplayText_Normalized", "Content.BodyAspect.Body^2" },
-                        query = "orchard*"
-                    }
-                }
+                        query = "orchard*",
+                    },
+                },
             };
 
             var query = JsonConvert.SerializeObject(dynamicQuery);
@@ -100,9 +100,9 @@ namespace OrchardCore.Tests.Apis.Lucene
                     {
                         analyze_wildcard = true,
                         fields = new string[] { "Content.ContentItem.DisplayText.Normalized" },
-                        query = "orch*"
-                    }
-                }
+                        query = "orch*",
+                    },
+                },
             };
 
             var query = JsonConvert.SerializeObject(dynamicQuery);

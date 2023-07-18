@@ -31,7 +31,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Twitter
 
             var signinSettings = new TwitterSigninSettings
             {
-                CallbackPath = null
+                CallbackPath = null,
             };
 
             _mockDataProtectionProvider = Mock.Of<IDataProtectionProvider>(dpp =>
@@ -57,9 +57,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Twitter
             _mockFakeHttpMessageHandler.Setup(c => c.Send(
                     It.IsAny<HttpRequestMessage>())
                 ).Returns((HttpRequestMessage request) =>
-                    new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                    new HttpResponseMessage(HttpStatusCode.OK)
                     {
-                        Content = new StringContent(UpdateStatusResponse)
+                        Content = new StringContent(UpdateStatusResponse),
                     }
                 ).Callback<HttpRequestMessage>((msg) =>
                     message = msg
@@ -67,7 +67,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Twitter
 
             var mockTwitterClient = new Mock<TwitterClient>(
                 new HttpClient(_mockFakeHttpMessageHandler.Object), Mock.Of<ILogger<TwitterClient>>())
-            { CallBase = true };
+            {
+                CallBase = true,
+            };
 
             _mockHttpMessageHandler.Setup(c => c.GetNonce())
                 .Returns(() => "kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg");

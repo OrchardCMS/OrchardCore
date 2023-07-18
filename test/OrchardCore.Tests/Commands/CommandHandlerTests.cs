@@ -37,7 +37,7 @@ namespace OrchardCore.Tests.Commands
                 CommandDescriptor = commandDescriptor,
                 Arguments = args,
                 Input = new StringReader(String.Empty),
-                Output = new StringWriter()
+                Output = new StringWriter(),
             };
         }
 
