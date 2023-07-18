@@ -199,7 +199,6 @@ namespace OrchardCore.Workflows.Controllers
                 IsBlocking = workflow.BlockingActivities.Any(a => a.ActivityId == x.ActivityRecord.ActivityId),
                 Outcomes = x.Activity.GetPossibleOutcomes(workflowContext, x).ToArray(),
             });
-
             var workflowTypeData = new
             {
                 workflowType.Id,
@@ -218,6 +217,7 @@ namespace OrchardCore.Workflows.Controllers
                 WorkflowJson = JsonConvert.SerializeObject(workflow, Formatting.Indented, jsonSerializerSettings),
                 ActivityDesignShapes = activityDesignShapes,
             };
+
             return View(viewModel);
         }
 

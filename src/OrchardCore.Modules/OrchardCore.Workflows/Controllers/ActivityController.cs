@@ -68,7 +68,7 @@ namespace OrchardCore.Workflows.Controllers
                 ActivityId = activityId,
                 ActivityEditor = activityEditor,
                 WorkflowTypeId = workflowTypeId,
-                ReturnUrl = returnUrl
+                ReturnUrl = returnUrl,
             };
 
             if (!activity.HasEditor)
@@ -134,7 +134,7 @@ namespace OrchardCore.Workflows.Controllers
                 ActivityId = activityId,
                 ActivityEditor = activityEditor,
                 WorkflowTypeId = workflowTypeId,
-                ReturnUrl = returnUrl
+                ReturnUrl = returnUrl,
             };
 
             return View("EditActivity", viewModel);
