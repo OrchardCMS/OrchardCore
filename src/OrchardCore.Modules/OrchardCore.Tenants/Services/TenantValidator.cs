@@ -63,13 +63,6 @@ namespace OrchardCore.Tenants.Services
 
             _ = _shellHost.TryGetSettings(model.Name, out var existingShellSettings);
 
-            if (!existingShellSettings.IsDefaultShell() &&
-                String.IsNullOrWhiteSpace(model.RequestUrlHost) &&
-                String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
-            {
-                errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["Host and url prefix can not be empty at the same time."]));
-            }
-
             if (!String.IsNullOrWhiteSpace(model.RequestUrlPrefix) && model.RequestUrlPrefix.Contains('/'))
             {
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["The url prefix can not contain more than one segment."]));

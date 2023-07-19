@@ -245,6 +245,14 @@ namespace OrchardCore.AutoSetup
                 Errors = new Dictionary<string, string>()
             };
 
+            if (shellSettings.IsDefaultShell())
+            {
+                // The 'Default' shell is first created by the infrastructure,
+                // so the following 'Autosetup' options need to be passed.
+                shellSettings.RequestUrlHost = options.RequestUrlHost;
+                shellSettings.RequestUrlPrefix = options.RequestUrlPrefix;
+            }
+
             setupContext.Properties[SetupConstants.AdminEmail] = options.AdminEmail;
             setupContext.Properties[SetupConstants.AdminPassword] = options.AdminPassword;
             setupContext.Properties[SetupConstants.AdminUsername] = options.AdminUsername;
