@@ -13,7 +13,7 @@ namespace OrchardCore.Settings.Drivers
     {
         public const string GroupId = "general";
 
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
 

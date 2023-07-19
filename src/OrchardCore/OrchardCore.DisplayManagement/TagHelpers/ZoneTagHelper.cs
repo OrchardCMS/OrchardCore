@@ -14,7 +14,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         private const string NameAttribute = "name";
 
         private readonly ILayoutAccessor _layoutAccessor;
-        private readonly ILogger<ZoneTagHelper> _logger;
+        private readonly ILogger _logger;
 
         public ZoneTagHelper(ILayoutAccessor layoutAccessor, ILogger<ZoneTagHelper> logger)
         {

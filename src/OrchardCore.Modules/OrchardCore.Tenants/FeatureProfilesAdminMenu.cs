@@ -9,7 +9,7 @@ namespace OrchardCore.Tenants
     public class FeatureProfilesAdminMenu : INavigationProvider
     {
         private readonly ShellSettings _shellSettings;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public FeatureProfilesAdminMenu(IStringLocalizer<FeatureProfilesAdminMenu> localizer, ShellSettings shellSettings)
         {

@@ -121,6 +121,7 @@ namespace OrchardCore.Demo.Controllers
             return View();
         }
 
+#pragma warning disable CA1822 // Mark members as static
         public string GCCollect()
         {
             GC.Collect();
@@ -143,6 +144,7 @@ namespace OrchardCore.Demo.Controllers
 
             return "Check for logs";
         }
+#pragma warning restore CA1822 // Mark members as static
 
         public IActionResult ShapePerformance()
         {

@@ -54,7 +54,7 @@ namespace OrchardCore.AutoSetup
         /// <summary>
         /// The logger.
         /// </summary>
-        private readonly ILogger<AutoSetupMiddleware> _logger;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// The auto setup lock options.
@@ -181,7 +181,7 @@ namespace OrchardCore.AutoSetup
 
             if (setupContext.Errors.Count == 0)
             {
-                _logger.LogInformation($"AutoSetup successfully provisioned the site {setupOptions.SiteName}");
+                _logger.LogInformation("AutoSetup successfully provisioned the site '{SiteName}'.", setupOptions.SiteName);
 
                 return true;
             }
@@ -244,6 +244,14 @@ namespace OrchardCore.AutoSetup
                 ShellSettings = shellSettings,
                 Errors = new Dictionary<string, string>()
             };
+
+            if (shellSettings.IsDefaultShell())
+            {
+                // The 'Default' shell is first created by the infrastructure,
+                // so the following 'Autosetup' options need to be passed.
+                shellSettings.RequestUrlHost = options.RequestUrlHost;
+                shellSettings.RequestUrlPrefix = options.RequestUrlPrefix;
+            }
 
             setupContext.Properties[SetupConstants.AdminEmail] = options.AdminEmail;
             setupContext.Properties[SetupConstants.AdminPassword] = options.AdminPassword;

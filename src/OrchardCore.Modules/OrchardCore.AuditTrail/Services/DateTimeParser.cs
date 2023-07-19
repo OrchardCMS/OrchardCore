@@ -64,7 +64,7 @@ namespace OrchardCore.AuditTrail.Services
             => BuildOperation(context, Expression.Constant(DateTime.UtcDateTime, typeof(DateTime)));
 
         public override string ToString()
-            => $"{(String.IsNullOrEmpty(Operator) ? String.Empty : Operator)}{DateTime.ToString("o")}";
+            => $"{(String.IsNullOrEmpty(Operator) ? String.Empty : Operator)}{DateTime:o}";
     }
 
     public class DateNode2 : OperatorNode
@@ -80,7 +80,7 @@ namespace OrchardCore.AuditTrail.Services
             => BuildOperation(context, Expression.Constant(DateTime, typeof(DateTime)));
 
         public override string ToString()
-            => $"{(String.IsNullOrEmpty(Operator) ? String.Empty : Operator)}{DateTime.ToString("o")}";
+            => $"{(String.IsNullOrEmpty(Operator) ? String.Empty : Operator)}{DateTime:o}";
     }
 
     public class NowNode : OperatorNode
@@ -154,13 +154,12 @@ namespace OrchardCore.AuditTrail.Services
             return Expression.Lambda(context.Type, Expression.AndAlso(left, right), context.Parameter);
         }
 
-        public override string ToString()
-            => $"{Left.ToString()}..{Right.ToString()}";
+        public override string ToString() => $"{Left}..{Right}";
     }
 
     public static class DateTimeParser
     {
-        public static Parser<ExpressionNode> Parser;
+        public static readonly Parser<ExpressionNode> Parser;
 
         static DateTimeParser()
         {
@@ -197,7 +196,7 @@ namespace OrchardCore.AuditTrail.Services
                     var context = (DateTimeParseContext)ctx;
                     var dateValue = x.ToString();
 
-                    // Try o, primarily for times, and fall back to local timezone                    
+                    // Try o, primarily for times, and fall back to local timezone.
                     if (DateTimeOffset.TryParseExact(dateValue, "yyyy-MM-dd'T'HH:mm:ss.FFFK", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateTimeOffset))
                     {
                         return new DateNode2(dateTimeOffset.UtcDateTime);
@@ -213,7 +212,7 @@ namespace OrchardCore.AuditTrail.Services
                             }
                         }
 
-                        // If no timezone is specified, assume local using the configured timezone
+                        // If no timezone is specified, assume local using the configured timezone.
                         if (success)
                         {
                             var converted = context.Clock.ConvertToTimeZone(dateTime, context.UserTimeZone);

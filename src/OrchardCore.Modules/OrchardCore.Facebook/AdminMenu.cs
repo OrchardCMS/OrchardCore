@@ -7,7 +7,7 @@ namespace OrchardCore.Facebook;
 
 public class AdminMenu : INavigationProvider
 {
-    private readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
 
     public AdminMenu(
         IStringLocalizer<AdminMenu> localizer)
@@ -41,7 +41,7 @@ public class AdminMenu : INavigationProvider
 
 public class AdminMenuLogin : INavigationProvider
 {
-    private readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
 
     public AdminMenuLogin(
         IStringLocalizer<AdminMenuLogin> localizer)
@@ -75,7 +75,7 @@ public class AdminMenuLogin : INavigationProvider
 
 public class AdminMenuPixel : INavigationProvider
 {
-    private readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
 
     public AdminMenuPixel(
         IStringLocalizer<AdminMenuLogin> stringLocalizer)

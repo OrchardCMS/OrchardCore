@@ -16,7 +16,7 @@ namespace OrchardCore.Flows.Settings
     public class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<BagPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public BagPartSettingsDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,

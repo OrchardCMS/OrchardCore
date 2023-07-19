@@ -59,7 +59,7 @@ namespace OrchardCore.ContentManagement.Display.Placement
             {
                 if (ct.EndsWith('*'))
                 {
-                    var prefix = ct.Substring(0, ct.Length - 1);
+                    var prefix = ct[..^1];
 
                     return (contentItem.ContentType ?? "").StartsWith(prefix, StringComparison.OrdinalIgnoreCase) || (GetStereotype(context) ?? "").StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
                 }
@@ -68,7 +68,7 @@ namespace OrchardCore.ContentManagement.Display.Placement
             });
         }
 
-        private string GetStereotype(ShapePlacementContext context)
+        private static string GetStereotype(ShapePlacementContext context)
         {
             var shape = context.ZoneShape as Shape;
             object stereotypeVal = null;
@@ -79,13 +79,13 @@ namespace OrchardCore.ContentManagement.Display.Placement
 
     public class ContentPlacementParseFilterProviderBase
     {
-        protected bool HasContent(ShapePlacementContext context)
+        protected static bool HasContent(ShapePlacementContext context)
         {
             var shape = context.ZoneShape as Shape;
             return shape != null && shape.TryGetProperty("ContentItem", out object contentItem) && contentItem != null;
         }
 
-        protected ContentItem GetContent(ShapePlacementContext context)
+        protected static ContentItem GetContent(ShapePlacementContext context)
         {
             if (!HasContent(context))
             {

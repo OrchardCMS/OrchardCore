@@ -18,7 +18,7 @@ public class MediaS3BucketTenantEvents : ModularTenantEvents
     private readonly ShellSettings _shellSettings;
     private readonly AwsStorageOptions _options;
     private readonly IAmazonS3 _amazonS3Client;
-    private readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
     private readonly ILogger _logger;
 
     public MediaS3BucketTenantEvents(

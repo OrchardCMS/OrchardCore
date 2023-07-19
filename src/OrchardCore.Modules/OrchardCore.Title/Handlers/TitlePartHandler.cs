@@ -18,7 +18,7 @@ namespace OrchardCore.Title.Handlers
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly HashSet<ContentItem> _contentItems = new();
 
         public TitlePartHandler(
@@ -83,7 +83,7 @@ namespace OrchardCore.Title.Handlers
                 {
                     Title = part.Title,
                     TitlePart = part,
-                    ContentItem = part.ContentItem
+                    ContentItem = part.ContentItem,
                 };
 
                 var title = await _liquidTemplateManager.RenderStringAsync(settings.Pattern, NullEncoder.Default, model,

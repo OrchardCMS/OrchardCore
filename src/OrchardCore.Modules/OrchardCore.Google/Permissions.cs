@@ -22,7 +22,7 @@ namespace OrchardCore.Google
             {
                 return Task.FromResult(new[]
                 {
-                    ManageGoogleAuthentication
+                    ManageGoogleAuthentication,
                 }
                 .AsEnumerable());
             }
@@ -34,7 +34,7 @@ namespace OrchardCore.Google
                     Name = "Administrator",
                     Permissions = new[]
                     {
-                        ManageGoogleAuthentication
+                        ManageGoogleAuthentication,
                     }
                 };
             }
@@ -46,7 +46,7 @@ namespace OrchardCore.Google
             {
                 return Task.FromResult(new[]
                 {
-                    ManageGoogleAnalytics
+                    ManageGoogleAnalytics,
                 }
                 .AsEnumerable());
             }
@@ -58,7 +58,7 @@ namespace OrchardCore.Google
                     Name = "Administrator",
                     Permissions = new[]
                     {
-                        ManageGoogleAnalytics
+                        ManageGoogleAnalytics,
                     }
                 };
             }
@@ -70,7 +70,7 @@ namespace OrchardCore.Google
             {
                 return Task.FromResult(new[]
                 {
-                    ManageGoogleTagManager
+                    ManageGoogleTagManager,
                 }
                 .AsEnumerable());
             }
@@ -82,7 +82,7 @@ namespace OrchardCore.Google
                     Name = "Administrator",
                     Permissions = new[]
                     {
-                        ManageGoogleTagManager
+                        ManageGoogleTagManager,
                     }
                 };
             }

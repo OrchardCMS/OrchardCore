@@ -15,7 +15,7 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
     public class ElasticQueryDisplayDriver : DisplayDriver<Query, ElasticQuery>
     {
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public ElasticQueryDisplayDriver(
             IStringLocalizer<ElasticQueryDisplayDriver> stringLocalizer,

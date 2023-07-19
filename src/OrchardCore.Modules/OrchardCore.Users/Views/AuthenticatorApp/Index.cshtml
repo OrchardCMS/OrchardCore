@@ -1,14 +1,12 @@
 @using OrchardCore.Users.Services
 @model EnableAuthenticatorViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Configure Authenticator App"])</h1></zone>
-
-@if (User.HasClaim(claim => claim.Type == TwoFactorAuthenticationClaimsProvider.TwoFactorAuthenticationClaimType))
-{
-    <div class="alert alert-danger text-center py-3">
-        @T["Two-factor authentication must be enabled before proceeding."]
-    </div>
-}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="TwoFactorAuthentication">@T["Two-Factor Authentication"]</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@RenderTitleSegments(T["Configure Authenticator App"])</li>
+    </ol>
+</nav>
 
 <div>
     <p>@T["To use an authenticator app go through the following steps:"]</p>
@@ -38,7 +36,7 @@
                     <form id="send-code" method="post">
                         <div class="form-floating mb-3">
                             <input asp-for="Code" class="form-control" autocomplete="off" placeholder="@T["Please enter the code"]" />
-                            <label asp-for="Code" class="control-label form-label">@T["Verification Code"]</label>
+                            <label asp-for="Code" class="control-label form-label">@T["Verification code"]</label>
                             <span asp-validation-for="Code" class="text-danger"></span>
                         </div>
                         <button type="submit" class="w-100 btn btn-lg btn-primary">@T["Verify"]</button>

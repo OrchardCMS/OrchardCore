@@ -28,7 +28,7 @@ namespace OrchardCore.Localization
             public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
                 => Enumerable.Empty<LocalizedString>();
 
-            public LocalizedHtmlString this[string name] => new LocalizedHtmlString(name, name, true);
+            public LocalizedHtmlString this[string name] => new(name, name, true);
 
             public LocalizedHtmlString this[string name, params object[] arguments]
             {

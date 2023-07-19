@@ -1,0 +1,20 @@
+@using OrchardCore.Users.Models
+@model EmailAuthenticatorLoginSettings
+
+<fieldset>
+    <legend>@T["Email Authenticator Settings"]</legend>
+
+    <div class="mb-3" asp-validation-class-for="Subject">
+        <span asp-validation-for="Subject"></span>
+        <label class="form-check-label" asp-for="Subject">@T["Email Subject"]</label>
+        <input type="text" class="form-control" asp-for="Subject" />
+        <span class="hint dashed">@T["The subject to the email for sending the verification code. Liquid syntax is supported."]</span>
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="Body">
+        <span asp-validation-for="Body"></span>
+        <label class="form-check-label" asp-for="Body">@T["Email Body"]</label>
+        <textarea class="form-control" asp-for="Body"></textarea>
+        <span class="hint dashed">@T["The body to the email for sending the verification code. Liquid syntax is supported."]</span>
+    </div>
+</fieldset>

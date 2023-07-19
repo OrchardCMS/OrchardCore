@@ -23,7 +23,7 @@ namespace OrchardCore.Users.Services
         private readonly UserManager<IUser> _userManager;
         private readonly IOptions<IdentityOptions> _identityOptions;
         private readonly IEnumerable<IPasswordRecoveryFormEvents> _passwordRecoveryFormEvents;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly ISiteService _siteService;
         private readonly ILogger _logger;
 
@@ -51,17 +51,17 @@ namespace OrchardCore.Users.Services
 
             if (disableLocalLogin)
             {
-                reportError(string.Empty, S["Local login is disabled."]);
+                reportError(String.Empty, S["Local login is disabled."]);
                 return null;
             }
 
-            if (string.IsNullOrWhiteSpace(userName))
+            if (String.IsNullOrWhiteSpace(userName))
             {
                 reportError("UserName", S["A user name is required."]);
                 return null;
             }
 
-            if (string.IsNullOrWhiteSpace(password))
+            if (String.IsNullOrWhiteSpace(password))
             {
                 reportError("Password", S["A password is required."]);
                 return null;
@@ -70,7 +70,7 @@ namespace OrchardCore.Users.Services
             var user = await GetUserAsync(userName);
             if (user == null)
             {
-                reportError(string.Empty, S["The specified username/password couple is invalid."]);
+                reportError(String.Empty, S["The specified username/password couple is invalid."]);
                 return null;
             }
 
@@ -78,28 +78,28 @@ namespace OrchardCore.Users.Services
 
             if (result.IsLockedOut)
             {
-                reportError(string.Empty, S["The user is locked out."]);
+                reportError(String.Empty, S["The user is locked out."]);
                 return null;
             }
             else if (result.IsNotAllowed)
             {
-                reportError(string.Empty, S["The specified user is not allowed to sign in."]);
+                reportError(String.Empty, S["The specified user is not allowed to sign in."]);
                 return null;
             }
             else if (result.RequiresTwoFactor)
             {
-                reportError(string.Empty, S["The specified user is not allowed to sign in using password authentication."]);
+                reportError(String.Empty, S["The specified user is not allowed to sign in using password authentication."]);
                 return null;
             }
             else if (!result.Succeeded)
             {
-                reportError(string.Empty, S["The specified username/password couple is invalid."]);
+                reportError(String.Empty, S["The specified username/password couple is invalid."]);
                 return null;
             }
 
             if (!(user as User).IsEnabled)
             {
-                reportError(string.Empty, S["The specified user is not allowed to sign in."]);
+                reportError(String.Empty, S["The specified user is not allowed to sign in."]);
 
                 return null;
             }
@@ -114,7 +114,7 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentException("Expected a User instance.", nameof(user));
             }
 
-            // Accounts can be created with no password
+            // Accounts can be created with no password.
             var identityResult = String.IsNullOrWhiteSpace(password)
                 ? await _userManager.CreateAsync(user)
                 : await _userManager.CreateAsync(user, password);
@@ -164,7 +164,7 @@ namespace OrchardCore.Users.Services
 
         public async Task<IUser> GetForgotPasswordUserAsync(string userIdentifier)
         {
-            if (string.IsNullOrWhiteSpace(userIdentifier))
+            if (String.IsNullOrWhiteSpace(userIdentifier))
             {
                 return await Task.FromResult<IUser>(null);
             }
@@ -184,19 +184,19 @@ namespace OrchardCore.Users.Services
         public async Task<bool> ResetPasswordAsync(string emailAddress, string resetToken, string newPassword, Action<string, string> reportError)
         {
             var result = true;
-            if (string.IsNullOrWhiteSpace(emailAddress))
+            if (String.IsNullOrWhiteSpace(emailAddress))
             {
                 reportError("UserName", S["A email address is required."]);
                 result = false;
             }
 
-            if (string.IsNullOrWhiteSpace(newPassword))
+            if (String.IsNullOrWhiteSpace(newPassword))
             {
                 reportError("Password", S["A password is required."]);
                 result = false;
             }
 
-            if (string.IsNullOrWhiteSpace(resetToken))
+            if (String.IsNullOrWhiteSpace(resetToken))
             {
                 reportError("Token", S["A token is required."]);
                 result = false;
@@ -252,7 +252,7 @@ namespace OrchardCore.Users.Services
             {
                 switch (error.Code)
                 {
-                    // Password
+                    // Password.
                     case "PasswordRequiresDigit":
                         reportError("Password", S["Passwords must have at least one digit character ('0'-'9')."]);
                         break;
@@ -272,12 +272,12 @@ namespace OrchardCore.Users.Services
                         reportError("Password", S["Passwords must contain at least {0} unique characters.", _identityOptions.Value.Password.RequiredUniqueChars]);
                         break;
 
-                    // CurrentPassword
+                    // CurrentPassword.
                     case "PasswordMismatch":
                         reportError("CurrentPassword", S["Incorrect password."]);
                         break;
 
-                    // User name
+                    // User name.
                     case "InvalidUserName":
                         reportError("UserName", S["User name '{0}' is invalid, can only contain letters or digits.", user.UserName]);
                         break;
@@ -285,7 +285,7 @@ namespace OrchardCore.Users.Services
                         reportError("UserName", S["User name '{0}' is already used.", user.UserName]);
                         break;
 
-                    // Email
+                    // Email.
                     case "DuplicateEmail":
                         reportError("Email", S["Email '{0}' is already used.", user.Email]);
                         break;
@@ -294,7 +294,7 @@ namespace OrchardCore.Users.Services
                         break;
 
                     default:
-                        reportError(string.Empty, S["Unexpected error: '{0}'.", error.Code]);
+                        reportError(String.Empty, S["Unexpected error: '{0}'.", error.Code]);
                         break;
                 }
             }

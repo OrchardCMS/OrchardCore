@@ -27,7 +27,7 @@ namespace OrchardCore.Autoroute.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly YesSql.ISession _session;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AutoroutePartDisplayDriver(
             IOptions<AutorouteOptions> options,
@@ -60,12 +60,12 @@ namespace OrchardCore.Autoroute.Drivers
 
                 if (homeRoute != null && homeRoute.TryGetValue(_options.ContainedContentItemIdKey, out var containedContentItemId))
                 {
-                    if (string.Equals(autoroutePart.ContentItem.ContentItemId, containedContentItemId.ToString(), StringComparison.OrdinalIgnoreCase))
+                    if (String.Equals(autoroutePart.ContentItem.ContentItemId, containedContentItemId.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
                         model.IsHomepage = true;
                     }
                 }
-                else if (string.Equals(autoroutePart.ContentItem.ContentItemId, homeRoute?[_options.ContentItemIdKey]?.ToString(), StringComparison.OrdinalIgnoreCase))
+                else if (String.Equals(autoroutePart.ContentItem.ContentItemId, homeRoute?[_options.ContentItemIdKey]?.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
                     model.IsHomepage = true;
                 }

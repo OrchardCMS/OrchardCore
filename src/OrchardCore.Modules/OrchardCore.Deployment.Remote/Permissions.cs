@@ -7,9 +7,9 @@ namespace OrchardCore.Deployment.Remote
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageRemoteInstances = new Permission("ManageRemoteInstances", "Manage remote instances");
-        public static readonly Permission ManageRemoteClients = new Permission("ManageRemoteClients", "Manage remote clients");
-        public static readonly Permission Export = new Permission("ExportRemoteInstances", "Export to remote instances");
+        public static readonly Permission ManageRemoteInstances = new("ManageRemoteInstances", "Manage remote instances");
+        public static readonly Permission ManageRemoteClients = new("ManageRemoteClients", "Manage remote clients");
+        public static readonly Permission Export = new("ExportRemoteInstances", "Export to remote instances");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
@@ -23,7 +23,7 @@ namespace OrchardCore.Deployment.Remote
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageRemoteInstances, ManageRemoteClients, Export }
+                    Permissions = new[] { ManageRemoteInstances, ManageRemoteClients, Export },
                 }
             };
         }

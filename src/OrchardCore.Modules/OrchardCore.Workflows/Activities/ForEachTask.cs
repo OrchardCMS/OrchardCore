@@ -11,7 +11,7 @@ namespace OrchardCore.Workflows.Activities
     public class ForEachTask : TaskActivity
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public ForEachTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<ForEachTask> localizer)
         {

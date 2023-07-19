@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.Commands
 {
     public class CommandManagerTests
     {
-        private ICommandManager _manager;
+        private readonly ICommandManager _manager;
 
         public CommandManagerTests()
         {
@@ -41,6 +41,7 @@ namespace OrchardCore.Tests.Commands
             {
             }
 
+#pragma warning disable CA1822 // Mark members as static
             public string FooBar()
             {
                 return "success!";
@@ -51,6 +52,7 @@ namespace OrchardCore.Tests.Commands
             {
                 return bleah;
             }
+#pragma warning restore CA1822 // Mark members as static
         }
     }
 }

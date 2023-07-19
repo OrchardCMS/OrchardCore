@@ -45,9 +45,9 @@ namespace OrchardCore.Contents.Controllers
         private readonly IShapeFactory _shapeFactory;
         private readonly ILogger _logger;
 
-        private readonly IHtmlLocalizer H;
-        private readonly IStringLocalizer S;
-        private readonly dynamic New;
+        protected readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
+        protected readonly dynamic New;
 
         public AdminController(
             IAuthorizationService authorizationService,

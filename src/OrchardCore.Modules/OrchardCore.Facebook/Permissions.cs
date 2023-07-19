@@ -22,7 +22,7 @@ namespace OrchardCore.Facebook
                 Name = "Administrator",
                 Permissions = new[]
                 {
-                    ManageFacebookApp
+                    ManageFacebookApp,
                 }
             };
         }

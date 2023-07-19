@@ -9,7 +9,7 @@ namespace OrchardCore.Users.Events
     {
         public PasswordRecoveryContext(IUser user)
         {
-            User = user ?? throw new ArgumentNullException(nameof(User));
+            User = user ?? throw new ArgumentNullException(nameof(user));
         }
 
         public IUser User { get; }

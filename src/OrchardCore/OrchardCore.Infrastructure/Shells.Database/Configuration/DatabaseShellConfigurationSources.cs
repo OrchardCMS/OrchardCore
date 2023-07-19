@@ -148,14 +148,12 @@ namespace OrchardCore.Shells.Database.Configuration
                 return false;
             }
 
-            using (var file = File.OpenText(appsettings))
-            {
-                var configuration = await file.ReadToEndAsync();
+            using var file = File.OpenText(appsettings);
+            var configuration = await file.ReadToEndAsync();
 
-                if (configuration != null)
-                {
-                    configurations[tenant] = JObject.Parse(configuration);
-                }
+            if (configuration != null)
+            {
+                configurations[tenant] = JObject.Parse(configuration);
             }
 
             return true;
