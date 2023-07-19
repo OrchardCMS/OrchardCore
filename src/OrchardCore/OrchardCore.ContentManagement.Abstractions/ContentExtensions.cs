@@ -13,7 +13,7 @@ namespace OrchardCore.ContentManagement
         /// <summary>
         /// These settings instruct merge to replace current value, even for null values.
         /// </summary>
-        private static readonly JsonMergeSettings JsonMergeSettings = new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace, MergeNullValueHandling = MergeNullValueHandling.Merge };
+        private static readonly JsonMergeSettings _jsonMergeSettings = new() { MergeArrayHandling = MergeArrayHandling.Replace, MergeNullValueHandling = MergeNullValueHandling.Merge };
 
         /// <summary>
         /// Gets a content element by its name.
@@ -104,8 +104,11 @@ namespace OrchardCore.ContentManagement
 
             if (existing == null)
             {
-                var newElement = new TElement();
-                newElement.ContentItem = contentElement.ContentItem;
+                var newElement = new TElement
+                {
+                    ContentItem = contentElement.ContentItem,
+                };
+
                 contentElement.Data[name] = newElement.Data;
                 contentElement.Elements[name] = newElement;
                 return newElement;
@@ -179,7 +182,7 @@ namespace OrchardCore.ContentManagement
 
             if (elementData != null)
             {
-                elementData.Merge(JObject.FromObject(element), JsonMergeSettings);
+                elementData.Merge(JObject.FromObject(element), _jsonMergeSettings);
             }
             else
             {
@@ -211,7 +214,7 @@ namespace OrchardCore.ContentManagement
         {
             if (contentElement.Data != null)
             {
-                contentElement.Data.Merge(JObject.FromObject(element.Data), JsonMergeSettings);
+                contentElement.Data.Merge(JObject.FromObject(element.Data), _jsonMergeSettings);
             }
             else
             {

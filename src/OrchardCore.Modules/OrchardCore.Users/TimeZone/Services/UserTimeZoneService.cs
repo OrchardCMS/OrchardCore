@@ -13,7 +13,7 @@ namespace OrchardCore.Users.TimeZone.Services
     public class UserTimeZoneService
     {
         private const string CacheKey = "UserTimeZone/";
-        private readonly TimeSpan SlidingExpiration = TimeSpan.FromMinutes(1);
+        private readonly TimeSpan _slidingExpiration = TimeSpan.FromMinutes(1);
 
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
@@ -35,7 +35,7 @@ namespace OrchardCore.Users.TimeZone.Services
 
         public async Task<ITimeZone> GetUserTimeZoneAsync()
         {
-            string currentTimeZoneId = await GetCurrentUserTimeZoneIdAsync();
+            var currentTimeZoneId = await GetCurrentUserTimeZoneIdAsync();
             if (String.IsNullOrEmpty(currentTimeZoneId))
             {
                 return null;
@@ -75,13 +75,13 @@ namespace OrchardCore.Users.TimeZone.Services
 
                 if (!String.IsNullOrEmpty(timeZoneId))
                 {
-                    await _distributedCache.SetStringAsync(key, timeZoneId, new DistributedCacheEntryOptions { SlidingExpiration = SlidingExpiration });
+                    await _distributedCache.SetStringAsync(key, timeZoneId, new DistributedCacheEntryOptions { SlidingExpiration = _slidingExpiration });
                 }
             }
 
             return timeZoneId;
         }
 
-        private string GetCacheKey(string userName) => CacheKey + userName;
+        private static string GetCacheKey(string userName) => CacheKey + userName;
     }
 }

@@ -140,7 +140,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                     string shellChangedId;
                     try
                     {
-                        shellChangedId = await distributedCache.GetStringAsync(_shellChangedIdKey);
+                        shellChangedId = await distributedCache.GetStringAsync(_shellChangedIdKey, CancellationToken.None);
                     }
                     catch (Exception ex) when (!ex.IsFatal())
                     {
@@ -162,7 +162,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                     string shellCountChangedId;
                     try
                     {
-                        shellCountChangedId = await distributedCache.GetStringAsync(_shellCountChangedIdKey);
+                        shellCountChangedId = await distributedCache.GetStringAsync(_shellCountChangedIdKey, CancellationToken.None);
                     }
                     catch (Exception ex) when (!ex.IsFatal())
                     {
@@ -207,11 +207,11 @@ namespace OrchardCore.Environment.Shell.Distributed
                         }
 
                         var semaphore = _semaphores.GetOrAdd(settings.Name, name => new SemaphoreSlim(1));
-                        await semaphore.WaitAsync();
+                        await semaphore.WaitAsync(CancellationToken.None);
                         try
                         {
                             // Try to retrieve the release identifier of this tenant from the distributed cache.
-                            var releaseId = await distributedCache.GetStringAsync(ReleaseIdKey(settings.Name));
+                            var releaseId = await distributedCache.GetStringAsync(ReleaseIdKey(settings.Name), CancellationToken.None);
                             if (releaseId is not null)
                             {
                                 // Check if the release identifier of this tenant has changed.
@@ -227,7 +227,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                             }
 
                             // Try to retrieve the reload identifier of this tenant from the distributed cache.
-                            var reloadId = await distributedCache.GetStringAsync(ReloadIdKey(settings.Name));
+                            var reloadId = await distributedCache.GetStringAsync(ReloadIdKey(settings.Name), CancellationToken.None);
                             if (reloadId is not null)
                             {
                                 // Check if the reload identifier of this tenant has changed.

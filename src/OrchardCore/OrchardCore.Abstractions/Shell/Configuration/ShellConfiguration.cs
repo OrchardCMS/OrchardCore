@@ -21,9 +21,9 @@ namespace OrchardCore.Environment.Shell.Configuration
         private readonly IEnumerable<KeyValuePair<string, string>> _initialData;
 
         private readonly string _name;
-        private Func<string, Task<IConfigurationBuilder>> _configBuilderFactory;
+        private readonly Func<string, Task<IConfigurationBuilder>> _configBuilderFactory;
         private readonly IEnumerable<IConfigurationProvider> _configurationProviders;
-        private SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+        private readonly SemaphoreSlim _semaphore = new(1);
 
         public ShellConfiguration()
         {

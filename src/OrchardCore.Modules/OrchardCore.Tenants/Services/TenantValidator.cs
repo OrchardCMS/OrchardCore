@@ -18,7 +18,7 @@ namespace OrchardCore.Tenants.Services
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IFeatureProfilesService _featureProfilesService;
         private readonly IDbConnectionValidator _dbConnectionValidator;
-        private readonly IStringLocalizer<TenantValidator> S;
+        protected readonly IStringLocalizer S;
 
         public TenantValidator(
             IShellHost shellHost,
@@ -62,13 +62,6 @@ namespace OrchardCore.Tenants.Services
             }
 
             _ = _shellHost.TryGetSettings(model.Name, out var existingShellSettings);
-
-            if (!existingShellSettings.IsDefaultShell() &&
-                String.IsNullOrWhiteSpace(model.RequestUrlHost) &&
-                String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
-            {
-                errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["Host and url prefix can not be empty at the same time."]));
-            }
 
             if (!String.IsNullOrWhiteSpace(model.RequestUrlPrefix) && model.RequestUrlPrefix.Contains('/'))
             {

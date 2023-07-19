@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Localization;
@@ -11,7 +11,7 @@ namespace OrchardCore.ContentFields.Handlers;
 
 public class YoutubeFieldHandler : ContentFieldHandler<YoutubeField>
 {
-    private readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
 
     public YoutubeFieldHandler(IStringLocalizer<YoutubeFieldHandler> stringLocalizer)
     {

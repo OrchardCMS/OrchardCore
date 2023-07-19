@@ -7,7 +7,7 @@ namespace OrchardCore.Media
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
@@ -48,7 +48,7 @@ namespace OrchardCore.Media
 
     public class MediaCacheAdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public MediaCacheAdminMenu(IStringLocalizer<AdminMenu> localizer)
         {

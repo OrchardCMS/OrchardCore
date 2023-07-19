@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Http;
+using System;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using OrchardCore.ReCaptcha.Configuration;
@@ -10,12 +10,15 @@ namespace OrchardCore.ReCaptcha.ActionFilters.Detection
         private const string IpAddressAbuseDetectorCacheKey = "IpAddressRobotDetector";
 
         private readonly IMemoryCache _memoryCache;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IClientIpAddressAccessor _clientIpAddressAccessor;
         private readonly ReCaptchaSettings _settings;
 
-        public IpAddressRobotDetector(IHttpContextAccessor httpContextAccessor, IMemoryCache memoryCache, IOptions<ReCaptchaSettings> settingsAccessor)
+        public IpAddressRobotDetector(
+            IClientIpAddressAccessor clientIpAddressAccessor,
+            IMemoryCache memoryCache,
+            IOptions<ReCaptchaSettings> settingsAccessor)
         {
-            _httpContextAccessor = httpContextAccessor;
+            _clientIpAddressAccessor = clientIpAddressAccessor;
             _memoryCache = memoryCache;
             _settings = settingsAccessor.Value;
         }
@@ -28,12 +31,9 @@ namespace OrchardCore.ReCaptcha.ActionFilters.Detection
 
         private string GetIpAddressCacheKey()
         {
-            return $"{IpAddressAbuseDetectorCacheKey}:{GetIpAddress()}";
-        }
+            var address = _clientIpAddressAccessor.GetIpAddressAsync().GetAwaiter().GetResult();
 
-        private string GetIpAddress()
-        {
-            return _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
+            return $"{IpAddressAbuseDetectorCacheKey}:{address?.ToString() ?? String.Empty}";
         }
 
         public RobotDetectionResult DetectRobot()
@@ -51,7 +51,7 @@ namespace OrchardCore.ReCaptcha.ActionFilters.Detection
         {
             var ipAddressKey = GetIpAddressCacheKey();
 
-            // this has race conditions, but it's ok
+            // This has race conditions, but it's ok.
             var faultyRequestCount = _memoryCache.GetOrCreate(ipAddressKey, fact => 0);
             faultyRequestCount++;
             _memoryCache.Set(ipAddressKey, faultyRequestCount);

@@ -16,7 +16,7 @@ namespace OrchardCore.ContentFields.Drivers
 {
     public class NumericFieldDisplayDriver : ContentFieldDisplayDriver<NumericField>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public NumericFieldDisplayDriver(IStringLocalizer<NumericFieldDisplayDriver> localizer)
         {

@@ -70,7 +70,7 @@ namespace OrchardCore.Environment.Commands.Parameters
         /// copy the next character. Otherwise, copy the backslash and the next character.
         /// The semantics of whitespace is: end the current argument and move on to the next one.
         /// </summary>
-        private IEnumerable<string> SplitArgs(string commandLine)
+        private static IEnumerable<string> SplitArgs(string commandLine)
         {
             var state = new State(commandLine);
             while (!state.EOF)
@@ -103,7 +103,7 @@ namespace OrchardCore.Environment.Commands.Parameters
             return state.Arguments;
         }
 
-        private void ProcessQuote(State state)
+        private static void ProcessQuote(State state)
         {
             state.MoveNext();
             while (!state.EOF)
@@ -120,7 +120,7 @@ namespace OrchardCore.Environment.Commands.Parameters
             state.AddArgument();
         }
 
-        private void ProcessBackslash(State state)
+        private static void ProcessBackslash(State state)
         {
             state.MoveNext();
             if (state.EOF)

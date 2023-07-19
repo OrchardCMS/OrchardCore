@@ -13,7 +13,7 @@ namespace OrchardCore.Mvc.Core.Utilities
             }
 
             return controllerType.Name.EndsWith(nameof(Controller), StringComparison.OrdinalIgnoreCase)
-                ? controllerType.Name.Substring(0, controllerType.Name.Length - nameof(Controller).Length)
+                ? controllerType.Name[..^nameof(Controller).Length]
                 : controllerType.Name;
         }
     }

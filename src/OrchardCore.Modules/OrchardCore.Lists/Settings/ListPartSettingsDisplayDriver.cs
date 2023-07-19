@@ -16,7 +16,7 @@ namespace OrchardCore.Lists.Settings
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContainerService _containerService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public ListPartSettingsDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,

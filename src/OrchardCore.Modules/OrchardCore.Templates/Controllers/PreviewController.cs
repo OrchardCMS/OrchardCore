@@ -59,7 +59,7 @@ namespace OrchardCore.Templates.Controllers
             var name = Request.Form["Name"];
             var content = Request.Form["Content"];
 
-            if (!String.IsNullOrEmpty(name) && !string.IsNullOrEmpty(content))
+            if (!String.IsNullOrEmpty(name) && !String.IsNullOrEmpty(content))
             {
                 HttpContext.Items["OrchardCore.PreviewTemplate"] = new TemplateViewModel { Name = name, Content = content };
             }

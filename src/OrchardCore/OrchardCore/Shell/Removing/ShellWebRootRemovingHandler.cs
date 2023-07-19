@@ -14,7 +14,7 @@ namespace OrchardCore.Environment.Shell.Removing;
 public class ShellWebRootRemovingHandler : IShellRemovingHandler
 {
     private readonly IWebHostEnvironment _webHostEnvironment;
-    private readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
     private readonly ILogger _logger;
 
     public ShellWebRootRemovingHandler(

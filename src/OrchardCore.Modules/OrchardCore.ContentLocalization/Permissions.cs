@@ -7,9 +7,9 @@ namespace OrchardCore.ContentLocalization
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission LocalizeContent = new Permission("LocalizeContent", "Localize content for others");
-        public static readonly Permission LocalizeOwnContent = new Permission("LocalizeOwnContent", "Localize own content", new[] { LocalizeContent });
-        public static readonly Permission ManageContentCulturePicker = new Permission("ManageContentCulturePicker", "Manage ContentCulturePicker settings");
+        public static readonly Permission LocalizeContent = new("LocalizeContent", "Localize content for others");
+        public static readonly Permission LocalizeOwnContent = new("LocalizeOwnContent", "Localize own content", new[] { LocalizeContent });
+        public static readonly Permission ManageContentCulturePicker = new("ManageContentCulturePicker", "Manage ContentCulturePicker settings");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
@@ -17,7 +17,7 @@ namespace OrchardCore.ContentLocalization
             {
                 LocalizeContent,
                 LocalizeOwnContent,
-                ManageContentCulturePicker
+                ManageContentCulturePicker,
             }
             .AsEnumerable());
         }
@@ -29,34 +29,34 @@ namespace OrchardCore.ContentLocalization
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { LocalizeContent, LocalizeOwnContent, ManageContentCulturePicker }
+                    Permissions = new[] { LocalizeContent, LocalizeOwnContent, ManageContentCulturePicker },
                 },
                 new PermissionStereotype
                 {
                     Name = "Editor",
-                    Permissions = new[] { LocalizeContent, LocalizeOwnContent, ManageContentCulturePicker }
+                    Permissions = new[] { LocalizeContent, LocalizeOwnContent, ManageContentCulturePicker },
                 },
                 new PermissionStereotype
                 {
-                    Name = "Moderator"
+                    Name = "Moderator",
                 },
                 new PermissionStereotype
                 {
                     Name = "Author",
-                    Permissions = new[] { LocalizeOwnContent }
+                    Permissions = new[] { LocalizeOwnContent },
                 },
                 new PermissionStereotype
                 {
                     Name = "Contributor",
-                    Permissions = new[] { LocalizeOwnContent }
+                    Permissions = new[] { LocalizeOwnContent },
                 },
                 new PermissionStereotype
                 {
-                    Name = "Authenticated"
+                    Name = "Authenticated",
                 },
                 new PermissionStereotype
                 {
-                    Name = "Anonymous"
+                    Name = "Anonymous",
                 },
             };
         }

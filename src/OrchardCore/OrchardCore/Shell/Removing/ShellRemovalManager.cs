@@ -15,7 +15,7 @@ public class ShellRemovalManager : IShellRemovalManager
     private readonly IShellHost _shellHost;
     private readonly IShellContextFactory _shellContextFactory;
     private readonly IEnumerable<IShellRemovingHandler> _shellRemovingHandlers;
-    private readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
     private readonly ILogger _logger;
 
     public ShellRemovalManager(

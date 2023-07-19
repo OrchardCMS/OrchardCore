@@ -27,7 +27,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
         private readonly ILogger _logger;
 
         public AuditTrailContentController(

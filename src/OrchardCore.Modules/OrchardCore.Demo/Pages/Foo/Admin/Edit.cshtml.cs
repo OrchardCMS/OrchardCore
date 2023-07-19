@@ -77,7 +77,7 @@ namespace OrchardCore.Demo.Pages
             }
 
             var updater = _updateModelAccessor.ModelUpdater;
-            var shape = await _contentDisplay.UpdateEditorAsync(contentItem, updater, false);
+            _ = await _contentDisplay.UpdateEditorAsync(contentItem, updater, false);
 
             if (!ModelState.IsValid)
             {

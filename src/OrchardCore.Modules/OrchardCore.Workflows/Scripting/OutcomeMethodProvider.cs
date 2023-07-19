@@ -13,7 +13,7 @@ namespace OrchardCore.Workflows.Scripting
             _setOutcomeMethod = new GlobalMethod
             {
                 Name = "setOutcome",
-                Method = serviceProvider => (Action<string>)(name => outcomes.Add(name))
+                Method = serviceProvider => (Action<string>)(name => outcomes.Add(name)),
             };
         }
 

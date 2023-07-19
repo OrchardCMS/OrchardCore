@@ -9,7 +9,7 @@ namespace OrchardCore.Twitter
     [Feature(TwitterConstants.Features.Signin)]
     public class AdminMenuSignin : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenuSignin(IStringLocalizer<AdminMenuSignin> localizer)
         {
@@ -36,7 +36,7 @@ namespace OrchardCore.Twitter
     [Feature(TwitterConstants.Features.Twitter)]
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {

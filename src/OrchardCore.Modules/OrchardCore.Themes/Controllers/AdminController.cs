@@ -23,7 +23,7 @@ namespace OrchardCore.Themes.Controllers
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
 
         public AdminController(
             ISiteThemeService siteThemeService,
@@ -53,8 +53,8 @@ namespace OrchardCore.Themes.Controllers
 
             var currentSiteThemeExtensionInfo = await _siteThemeService.GetSiteThemeAsync();
             var currentAdminThemeExtensionInfo = await _adminThemeService.GetAdminThemeAsync();
-            var currentAdminTheme = currentAdminThemeExtensionInfo != null ? new ThemeEntry(currentAdminThemeExtensionInfo) : default(ThemeEntry);
-            var currentSiteTheme = currentSiteThemeExtensionInfo != null ? new ThemeEntry(currentSiteThemeExtensionInfo) : default(ThemeEntry);
+            var currentAdminTheme = currentAdminThemeExtensionInfo != null ? new ThemeEntry(currentAdminThemeExtensionInfo) : default;
+            var currentSiteTheme = currentSiteThemeExtensionInfo != null ? new ThemeEntry(currentSiteThemeExtensionInfo) : default;
             var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
 
             var themes = (await _shellFeaturesManager.GetAvailableFeaturesAsync())

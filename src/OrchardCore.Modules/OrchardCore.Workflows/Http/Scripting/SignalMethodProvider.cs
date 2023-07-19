@@ -28,7 +28,7 @@ namespace OrchardCore.Workflows.Http.Scripting
                     var linkGenerator = serviceProvider.GetRequiredService<LinkGenerator>();
 
                     return linkGenerator.GetPathByAction(httpContextAccessor.HttpContext, "Trigger", "HttpWorkflow", new { area = "OrchardCore.Workflows", token });
-                })
+                }),
             };
         }
 

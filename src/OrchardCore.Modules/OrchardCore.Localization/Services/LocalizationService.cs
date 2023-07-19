@@ -11,8 +11,8 @@ namespace OrchardCore.Localization.Services
     /// </summary>
     public class LocalizationService : ILocalizationService
     {
-        private static readonly string DefaultCulture = CultureInfo.InstalledUICulture.Name;
-        private static readonly string[] SupportedCultures = new[] { CultureInfo.InstalledUICulture.Name };
+        private static readonly string _defaultCulture = CultureInfo.InstalledUICulture.Name;
+        private static readonly string[] _supportedCultures = new[] { CultureInfo.InstalledUICulture.Name };
 
         private readonly ISiteService _siteService;
 
@@ -32,7 +32,7 @@ namespace OrchardCore.Localization.Services
         {
             await InitializeLocalizationSettingsAsync();
 
-            return _localizationSettings.DefaultCulture ?? DefaultCulture;
+            return _localizationSettings.DefaultCulture ?? _defaultCulture;
         }
 
         /// <inheritdocs />
@@ -41,7 +41,7 @@ namespace OrchardCore.Localization.Services
             await InitializeLocalizationSettingsAsync();
 
             return _localizationSettings.SupportedCultures == null || _localizationSettings.SupportedCultures.Length == 0
-                ? SupportedCultures
+                ? _supportedCultures
                 : _localizationSettings.SupportedCultures
                 ;
         }
