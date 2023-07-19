@@ -22,7 +22,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
     /// <summary>
     /// Provides methods to manage Elasticsearch indices.
     /// </summary>
-    public class ElasticIndexManager : IDisposable
+    public sealed class ElasticIndexManager : IDisposable
     {
         private readonly IElasticClient _elasticClient;
         private readonly ShellSettings _shellSettings;
@@ -62,7 +62,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         };
 
         private string _indexPrefix;
-        private bool _disposing;
+        private bool _disposed;
 
         public ElasticIndexManager(
             IElasticClient elasticClient,
@@ -81,13 +81,13 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         /// <summary>
         /// <para>Creates an Elasticsearch index with _source mapping.</para>
-        /// <para><see href="https://www.elastic.co/guide/en/elasticsearch/reference/8.3/mapping-source-field.html#disable-source-field"/></para>
-        /// <para>Specify an analyzer for an index based on the ElasticsearchIndexSettings
-        /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/specify-analyzer.html#specify-index-time-default-analyzer"/>
-        /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-analyzers.html"/>
+        /// <para><see href="https://www.elastic.co/guide/en/elasticsearch/reference/8.3/mapping-source-field.html#disable-source-field"/>.</para>
+        /// <para>Specify an analyzer for an index based on the ElasticsearchIndexSettings.
+        /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/specify-analyzer.html#specify-index-time-default-analyzer"/>,
+        /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-analyzers.html"/>.
         /// </para>
         /// </summary>
-        /// <returns><see cref="Boolean"/></returns>
+        /// <returns><see cref="Boolean"/>.</returns>
         public async Task<bool> CreateIndexAsync(ElasticIndexSettings elasticIndexSettings)
         {
             //Get Index name scoped by ShellName
@@ -113,7 +113,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 indexSettingsDescriptor.Analysis(an => analysisDescriptor);
             }
 
-            // Custom metadata to store the last indexing task id
+            // Custom metadata to store the last indexing task id.
             var IndexingState = new FluentDictionary<string, object>() {
                     { _lastTaskId, 0 }
                 };
@@ -146,7 +146,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     )
                 ));
 
-            // ContainedPart mappings
+            // ContainedPart mappings.
             await _elasticClient.MapAsync<ContainedPartModel>(p => p
                 .Index(fullIndexName)
                 .Properties(p => p
@@ -283,7 +283,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// <summary>
         /// Store a last_task_id in the Elasticsearch index _meta mappings.
         /// This allows storing the last indexing task id executed on the Elasticsearch index.
-        /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-meta-field.html"/>
+        /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-meta-field.html"/>.
         /// </summary>
         public async Task SetLastTaskId(string indexName, int lastTaskId)
         {
@@ -385,7 +385,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         /// <summary>
         /// Makes sure that the index names are compliant with Elasticsearch specifications.
-        /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html#indices-create-api-path-params"/>
+        /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html#indices-create-api-path-params"/>.
         /// </summary>
         public static string ToSafeIndexName(string indexName)
         {
@@ -440,7 +440,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// <param name="sort"></param>
         /// <param name="from"></param>
         /// <param name="size"></param>
-        /// <returns><see cref="ElasticTopDocs"/></returns>
+        /// <returns><see cref="ElasticTopDocs"/>.</returns>
         public async Task<ElasticTopDocs> SearchAsync(string indexName, QueryContainer query, List<ISort> sort, int from, int size)
         {
             var elasticTopDocs = new ElasticTopDocs();
@@ -464,10 +464,10 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     elasticTopDocs.Count = searchResponse.Hits.Count;
 
                     var topDocs = new List<Dictionary<string, object>>();
-                    
+
                     var documents = searchResponse.Documents.GetEnumerator();
                     var hits = searchResponse.Hits.GetEnumerator();
-                    
+
                     while (documents.MoveNext() && hits.MoveNext())
                     {
                         var document = documents.Current;
@@ -530,7 +530,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 switch (entry.Type)
                 {
                     case DocumentIndex.Types.Boolean:
-                        // store "true"/"false" for booleans
+
+                        // Store "true"/"false" for booleans.
                         entries.Add(entry.Name, (bool)(entry.Value));
                         break;
 
@@ -606,17 +607,12 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         public void Dispose()
         {
-            if (_disposing)
+            if (_disposed)
             {
                 return;
             }
 
-            _disposing = true;
-        }
-
-        ~ElasticIndexManager()
-        {
-            Dispose();
+            _disposed = true;
         }
     }
 }

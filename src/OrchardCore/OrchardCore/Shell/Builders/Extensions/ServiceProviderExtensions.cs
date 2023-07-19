@@ -90,21 +90,19 @@ namespace OrchardCore.Environment.Shell.Builders
                 else
                 {
                     // We need a service scope to resolve them.
-                    using (var scope = serviceProvider.CreateScope())
-                    {
-                        var instances = scope.ServiceProvider.GetServices(services.Key);
+                    using var scope = serviceProvider.CreateScope();
+                    var instances = scope.ServiceProvider.GetServices(services.Key);
 
-                        // Then we only keep singleton instances.
-                        for (var i = 0; i < services.Count(); i++)
+                    // Then we only keep singleton instances.
+                    for (var i = 0; i < services.Count(); i++)
+                    {
+                        if (services.ElementAt(i).Lifetime == ServiceLifetime.Singleton)
                         {
-                            if (services.ElementAt(i).Lifetime == ServiceLifetime.Singleton)
-                            {
-                                clonedCollection.CloneSingleton(services.ElementAt(i), instances.ElementAt(i));
-                            }
-                            else
-                            {
-                                clonedCollection.Add(services.ElementAt(i));
-                            }
+                            clonedCollection.CloneSingleton(services.ElementAt(i), instances.ElementAt(i));
+                        }
+                        else
+                        {
+                            clonedCollection.Add(services.ElementAt(i));
                         }
                     }
                 }

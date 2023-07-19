@@ -1,3 +1,5 @@
+using System;
+
 namespace OrchardCore.Modules
 {
     public class Asset
@@ -9,13 +11,13 @@ namespace OrchardCore.Modules
 
             if (index == -1)
             {
-                ModuleAssetPath = string.Empty;
-                ProjectAssetPath = string.Empty;
+                ModuleAssetPath = String.Empty;
+                ProjectAssetPath = String.Empty;
             }
             else
             {
-                ModuleAssetPath = asset.Substring(0, index);
-                ProjectAssetPath = asset.Substring(index + 1);
+                ModuleAssetPath = asset[..index];
+                ProjectAssetPath = asset[(index + 1)..];
             }
         }
 

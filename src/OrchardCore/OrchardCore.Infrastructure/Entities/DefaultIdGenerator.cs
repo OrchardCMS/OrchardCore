@@ -5,7 +5,7 @@ namespace OrchardCore.Entities
     public class DefaultIdGenerator : IIdGenerator
     {
         // Some confusing chars are ignored: http://www.crockford.com/wrmg/base32.html
-        private static readonly string _encode32Chars = "0123456789abcdefghjkmnpqrstvwxyz";
+        private const string _encode32Chars = "0123456789abcdefghjkmnpqrstvwxyz";
 
         public string GenerateUniqueId()
         {
