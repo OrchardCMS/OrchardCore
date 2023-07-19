@@ -22,7 +22,7 @@ namespace OrchardCore.DisplayManagement.Manifest
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="ThemeAttribute(string, string, string, string, string, string, string, string, bool, bool, bool)"/>,
+        /// <see cref="ThemeAttribute(String, String, String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>,
         /// arguments in order,
         /// <c>id, baseTheme, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -48,7 +48,7 @@ namespace OrchardCore.DisplayManagement.Manifest
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="ThemeAttribute(string, string, string, string, string, string, string, string, string, bool, bool, bool)"/>,
+        /// <see cref="ThemeAttribute(String, String, String, String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>,
         /// arguments in order,
         /// <c>id, name, baseTheme, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -64,7 +64,7 @@ namespace OrchardCore.DisplayManagement.Manifest
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="ThemeAttribute(string, string, string, string, string, string, string, string, string, string, string, bool, bool, bool)"/>,
+        /// <see cref="ThemeAttribute(String, String, String, String, String, String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>,
         /// arguments in order,
         /// <c>id, name, baseTheme, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -79,7 +79,7 @@ namespace OrchardCore.DisplayManagement.Manifest
             };
 
         /// <summary>
-        /// Verify the <see cref="ThemeAttribute(string, string, string, string, string, string, string ,string, bool, bool, bool)"/>
+        /// Verify the <see cref="ThemeAttribute(String, String, String, String, String, String, String ,String, Boolean, Boolean, Boolean)"/>
         /// ctor, arguments
         /// <c>id, baseTheme, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -145,7 +145,7 @@ namespace OrchardCore.DisplayManagement.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="ThemeAttribute(string, string, string, string, string, string, string, string ,string, bool, bool, bool)"/>
+        /// Verify the <see cref="ThemeAttribute(String, String, String, String, String, String, String, String ,String, Boolean, Boolean, Boolean)"/>
         /// ctor, arguments
         /// <c>id, name, baseTheme, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -213,7 +213,7 @@ namespace OrchardCore.DisplayManagement.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="ThemeAttribute(string, string, string, string, string, string, string, string, string, string ,string, bool, bool, bool)"/>
+        /// Verify the <see cref="ThemeAttribute(String, String, String, String, String, String, String, String, String, String ,String, Boolean, Boolean, Boolean)"/>
         /// ctor, arguments
         /// <c>id, name, baseTheme, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
