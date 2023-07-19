@@ -37,7 +37,7 @@ namespace OrchardCore.Queries.Recipes
 
             var model = context.Step.ToObject<QueryStepModel>();
 
-            foreach (JObject token in model.Queries)
+            foreach (var token in model.Queries.Cast<JObject>())
             {
                 var sourceName = token[nameof(Query.Source)].ToString();
                 var sample = _querySources.FirstOrDefault(x => x.Name == sourceName)?.Create();

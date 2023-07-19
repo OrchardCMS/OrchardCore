@@ -54,11 +54,9 @@ namespace OrchardCore.Sitemaps.Cache
         {
             var cachePath = Path.Combine(_fileProvider.Root, cacheFileName);
 
-            using (var fileStream = File.Create(cachePath))
-            {
-                stream.Position = 0;
-                await stream.CopyToAsync(fileStream, StreamCopyBufferSize, cancellationToken);
-            }
+            using var fileStream = File.Create(cachePath);
+            stream.Position = 0;
+            await stream.CopyToAsync(fileStream, StreamCopyBufferSize, cancellationToken);
         }
 
         public Task CleanSitemapCacheAsync(IEnumerable<string> validCacheFileNames)

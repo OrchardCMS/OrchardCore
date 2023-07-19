@@ -8,7 +8,7 @@ namespace OrchardCore.Seo.Models
 {
     public class SeoMetaPart : ContentPart
     {
-        public static char[] InvalidCharactersForCanoncial = "?#[]@!$&'()*+,;=<>\\|%".ToCharArray();
+        public static readonly char[] InvalidCharactersForCanoncial = "?#[]@!$&'()*+,;=<>\\|%".ToCharArray();
         public string PageTitle { get; set; }
 
         [DefaultValue(true)]

@@ -7,7 +7,7 @@ namespace OrchardCore.Templates
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageTemplates = new Permission("ManageTemplates", "Manage templates", isSecurityCritical: true);
+        public static readonly Permission ManageTemplates = new("ManageTemplates", "Manage templates", isSecurityCritical: true);
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
@@ -21,13 +21,13 @@ namespace OrchardCore.Templates
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageTemplates }
+                    Permissions = new[] { ManageTemplates },
                 },
                 new PermissionStereotype
                 {
                     Name = "Editor",
-                    Permissions = new[] { ManageTemplates }
-                }
+                    Permissions = new[] { ManageTemplates },
+                },
             };
         }
     }

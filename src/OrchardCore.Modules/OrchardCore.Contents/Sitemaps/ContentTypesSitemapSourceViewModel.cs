@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Sitemaps.Models;
 
@@ -13,9 +14,9 @@ namespace OrchardCore.Contents.Sitemaps
 
         public int Priority { get; set; } = 5;
 
-        public ContentTypeSitemapEntryViewModel[] ContentTypes { get; set; } = new ContentTypeSitemapEntryViewModel[] { };
+        public ContentTypeSitemapEntryViewModel[] ContentTypes { get; set; } = Array.Empty<ContentTypeSitemapEntryViewModel>();
 
-        public ContentTypeLimitedSitemapEntryViewModel[] LimitedContentTypes { get; set; } = new ContentTypeLimitedSitemapEntryViewModel[] { };
+        public ContentTypeLimitedSitemapEntryViewModel[] LimitedContentTypes { get; set; } = Array.Empty<ContentTypeLimitedSitemapEntryViewModel>();
 
         public string LimitedContentType { get; set; }
 

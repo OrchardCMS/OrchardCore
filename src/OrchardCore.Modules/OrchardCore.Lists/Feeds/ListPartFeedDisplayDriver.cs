@@ -31,8 +31,10 @@ namespace OrchardCore.Lists.Feeds
 
         public override async Task<IDisplayResult> UpdateAsync(ListPart part, IUpdateModel updater)
         {
-            var model = new ListFeedEditViewModel();
-            model.ContentItem = part.ContentItem;
+            var model = new ListFeedEditViewModel
+            {
+                ContentItem = part.ContentItem,
+            };
 
             await updater.TryUpdateModelAsync(model, Prefix, t => t.DisableRssFeed, t => t.FeedProxyUrl, t => t.FeedItemsCount);
 

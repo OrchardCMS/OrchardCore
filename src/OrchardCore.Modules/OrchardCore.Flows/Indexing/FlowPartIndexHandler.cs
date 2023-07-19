@@ -26,7 +26,7 @@ namespace OrchardCore.Flows.Indexing
 
             if (FlowPart.Widgets.Count != 0)
             {
-                // Lazy resolution to prevent cyclic dependency
+                // Lazy resolution to prevent cyclic dependency.
                 var contentItemIndexHandlers = _serviceProvider.GetServices<IContentItemIndexHandler>();
 
                 foreach (var contentItemIndexHandler in contentItemIndexHandlers)
