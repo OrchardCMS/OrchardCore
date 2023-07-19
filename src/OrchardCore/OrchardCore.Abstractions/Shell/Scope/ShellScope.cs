@@ -14,7 +14,7 @@ namespace OrchardCore.Environment.Shell.Scope
     /// <summary>
     /// Custom 'IServiceScope' managing the shell state and the execution flow.
     /// </summary>
-    public class ShellScope : IServiceScope, IAsyncDisposable
+    public sealed class ShellScope : IServiceScope, IAsyncDisposable
     {
         private static readonly AsyncLocal<ShellScopeHolder> _current = new();
 
@@ -513,8 +513,6 @@ namespace OrchardCore.Environment.Shell.Scope
             _disposed = true;
 
             DisposeInternal();
-
-            GC.SuppressFinalize(this);
         }
 
         public async ValueTask DisposeAsync()
