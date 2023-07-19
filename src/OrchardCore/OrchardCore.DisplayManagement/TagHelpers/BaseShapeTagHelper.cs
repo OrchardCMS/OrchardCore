@@ -8,14 +8,15 @@ namespace OrchardCore.DisplayManagement.TagHelpers
 {
     public abstract class BaseShapeTagHelper : TagHelper
     {
-        private static readonly HashSet<string> InternalProperties = new HashSet<string>
+        protected const string PropertyDictionaryName = "prop-all";
+        protected const string PropertyPrefix = "prop-";
+
+        private static readonly HashSet<string> _internalProperties = new()
         {
             "id", "alternate", "wrapper", "cache-id", "cache-context", "cache-tag", "cache-fixed-duration", "cache-sliding-duration"
         };
 
-        protected const string PropertyDictionaryName = "prop-all";
-        protected const string PropertyPrefix = "prop-";
-        private static readonly char[] Separators = { ',', ' ' };
+        private static readonly char[] _separators = { ',', ' ' };
 
         protected IShapeFactory _shapeFactory;
         protected IDisplayHelper _displayHelper;
@@ -59,7 +60,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
             foreach (var pair in output.Attributes)
             {
                 // Check it's not a reserved property name
-                if (!InternalProperties.Contains(pair.Name))
+                if (!_internalProperties.Contains(pair.Name))
                 {
                     var normalizedName = pair.Name.ToPascalCaseDash();
 
@@ -70,22 +71,22 @@ namespace OrchardCore.DisplayManagement.TagHelpers
                 }
             }
 
-            if (string.IsNullOrWhiteSpace(Type))
+            if (String.IsNullOrWhiteSpace(Type))
             {
                 Type = output.TagName;
             }
 
-            if (string.IsNullOrWhiteSpace(Cache) && output.Attributes.ContainsName("cache-id"))
+            if (String.IsNullOrWhiteSpace(Cache) && output.Attributes.ContainsName("cache-id"))
             {
                 Cache = Convert.ToString(output.Attributes["cache-id"].Value);
             }
 
-            if (string.IsNullOrWhiteSpace(Context) && output.Attributes.ContainsName("cache-context"))
+            if (String.IsNullOrWhiteSpace(Context) && output.Attributes.ContainsName("cache-context"))
             {
                 Context = Convert.ToString(output.Attributes["cache-context"].Value);
             }
 
-            if (string.IsNullOrWhiteSpace(Tag) && output.Attributes.ContainsName("cache-tag"))
+            if (String.IsNullOrWhiteSpace(Tag) && output.Attributes.ContainsName("cache-tag"))
             {
                 Tag = Convert.ToString(output.Attributes["cache-tag"].Value);
             }
@@ -127,7 +128,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
 
             tagHelperContext.Items.Add(typeof(IShape), shape);
 
-            if (!string.IsNullOrWhiteSpace(Cache))
+            if (!String.IsNullOrWhiteSpace(Cache))
             {
                 var metadata = shape.Metadata;
 
@@ -143,15 +144,15 @@ namespace OrchardCore.DisplayManagement.TagHelpers
                     metadata.Cache().WithExpirySliding(SlidingDuration.Value);
                 }
 
-                if (!string.IsNullOrWhiteSpace(Context))
+                if (!String.IsNullOrWhiteSpace(Context))
                 {
-                    var contexts = Context.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
+                    var contexts = Context.Split(_separators, StringSplitOptions.RemoveEmptyEntries);
                     metadata.Cache().AddContext(contexts);
                 }
 
-                if (!string.IsNullOrWhiteSpace(Tag))
+                if (!String.IsNullOrWhiteSpace(Tag))
                 {
-                    var tags = Tag.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
+                    var tags = Tag.Split(_separators, StringSplitOptions.RemoveEmptyEntries);
                     metadata.Cache().AddTag(tags);
                 }
             }

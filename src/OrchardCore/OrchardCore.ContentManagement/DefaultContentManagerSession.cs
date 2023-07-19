@@ -4,8 +4,8 @@ namespace OrchardCore.ContentManagement
 {
     public class DefaultContentManagerSession : IContentManagerSession
     {
-        private readonly Dictionary<long, ContentItem> _itemByVersionId = new Dictionary<long, ContentItem>();
-        private readonly Dictionary<string, ContentItem> _publishedItemsById = new Dictionary<string, ContentItem>();
+        private readonly Dictionary<long, ContentItem> _itemByVersionId = new();
+        private readonly Dictionary<string, ContentItem> _publishedItemsById = new();
 
         private bool _hasItems;
 

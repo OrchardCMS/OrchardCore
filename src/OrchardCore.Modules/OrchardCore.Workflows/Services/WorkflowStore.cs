@@ -145,7 +145,7 @@ namespace OrchardCore.Workflows.Services
             return _handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger);
         }
 
-        private IQuery<Workflow, WorkflowIndex> FilterByWorkflowTypeId(IQuery<Workflow, WorkflowIndex> query, string workflowTypeId)
+        private static IQuery<Workflow, WorkflowIndex> FilterByWorkflowTypeId(IQuery<Workflow, WorkflowIndex> query, string workflowTypeId)
         {
             if (workflowTypeId != null)
             {

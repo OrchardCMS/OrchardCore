@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata.Models;
+
+namespace OrchardCore.ContentManagement.Handlers;
 
 public class ValidateContentPartContext : ValidateContentContext
 {

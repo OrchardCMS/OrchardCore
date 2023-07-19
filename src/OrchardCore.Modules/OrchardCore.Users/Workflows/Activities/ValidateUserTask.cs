@@ -14,7 +14,7 @@ namespace OrchardCore.Users.Workflows.Activities
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly string _roleClaimType;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public ValidateUserTask(IHttpContextAccessor httpContextAccessor, IOptions<IdentityOptions> optionsAccessor, IStringLocalizer<ValidateUserTask> localizer)
         {

@@ -164,7 +164,7 @@ namespace OrchardCore.Autoroute.Core.Indexes
             {
                 var items = accessor.Invoke(content);
 
-                foreach (JObject jItem in items)
+                foreach (var jItem in items.Cast<JObject>())
                 {
                     var contentItem = jItem.ToObject<ContentItem>();
                     var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);

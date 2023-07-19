@@ -13,9 +13,9 @@ namespace OrchardCore.Documents
     /// </summary>
     public class DefaultDocumentSerializer : IDocumentSerialiser
     {
-        public static DefaultDocumentSerializer Instance = new DefaultDocumentSerializer();
+        public static readonly DefaultDocumentSerializer Instance = new();
 
-        private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
+        private static readonly JsonSerializerSettings _jsonSettings = new()
         {
             TypeNameHandling = TypeNameHandling.Auto,
             DateTimeZoneHandling = DateTimeZoneHandling.Utc
@@ -49,18 +49,18 @@ namespace OrchardCore.Documents
             return Task.FromResult(document);
         }
 
-        private static readonly byte[] GZipHeaderBytes = { 0x1f, 0x8b };
+        private static readonly byte[] _gZipHeaderBytes = { 0x1f, 0x8b };
 
         internal static bool IsCompressed(byte[] data)
         {
-            if (data.Length < GZipHeaderBytes.Length)
+            if (data.Length < _gZipHeaderBytes.Length)
             {
                 return false;
             }
 
-            for (var i = 0; i < GZipHeaderBytes.Length; i++)
+            for (var i = 0; i < _gZipHeaderBytes.Length; i++)
             {
-                if (data[i] != GZipHeaderBytes[i])
+                if (data[i] != _gZipHeaderBytes[i])
                 {
                     return false;
                 }

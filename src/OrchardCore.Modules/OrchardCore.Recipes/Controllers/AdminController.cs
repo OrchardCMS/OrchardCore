@@ -28,7 +28,7 @@ namespace OrchardCore.Recipes.Controllers
         private readonly IRecipeExecutor _recipeExecutor;
         private readonly IEnumerable<IRecipeEnvironmentProvider> _environmentProviders;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
         private readonly ILogger _logger;
 
         public AdminController(

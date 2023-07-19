@@ -50,22 +50,22 @@ namespace OrchardCore.ContentManagement.Records
 
                     if (contentItemIndex.ContentType?.Length > ContentItemIndex.MaxContentTypeSize)
                     {
-                        contentItemIndex.ContentType = contentItem.ContentType.Substring(0, ContentItemIndex.MaxContentTypeSize);
+                        contentItemIndex.ContentType = contentItem.ContentType[..ContentItemIndex.MaxContentTypeSize];
                     }
 
                     if (contentItemIndex.Owner?.Length > ContentItemIndex.MaxOwnerSize)
                     {
-                        contentItemIndex.Owner = contentItem.Owner.Substring(0, ContentItemIndex.MaxOwnerSize);
+                        contentItemIndex.Owner = contentItem.Owner[..ContentItemIndex.MaxOwnerSize];
                     }
 
                     if (contentItemIndex.Author?.Length > ContentItemIndex.MaxAuthorSize)
                     {
-                        contentItemIndex.Author = contentItem.Author.Substring(0, ContentItemIndex.MaxAuthorSize);
+                        contentItemIndex.Author = contentItem.Author[..ContentItemIndex.MaxAuthorSize];
                     }
 
                     if (contentItemIndex.DisplayText?.Length > ContentItemIndex.MaxDisplayTextSize)
                     {
-                        contentItemIndex.DisplayText = contentItem.DisplayText.Substring(0, ContentItemIndex.MaxDisplayTextSize);
+                        contentItemIndex.DisplayText = contentItem.DisplayText[..ContentItemIndex.MaxDisplayTextSize];
                     }
 
                     return contentItemIndex;

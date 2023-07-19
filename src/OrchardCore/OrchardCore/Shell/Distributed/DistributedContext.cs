@@ -8,7 +8,7 @@ namespace OrchardCore.Environment.Shell.Distributed
 {
     internal class DistributedContext : IDisposable
     {
-        private ShellContext _context;
+        private readonly ShellContext _context;
         private volatile int _count;
         private bool _released;
 

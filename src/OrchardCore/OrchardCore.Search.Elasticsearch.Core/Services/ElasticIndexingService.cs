@@ -194,7 +194,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                                 var cultureAspect = await contentManager.PopulateAspectAsync<CultureAspect>(context.ContentItem);
                                 var culture = cultureAspect.HasCulture ? cultureAspect.Culture.Name : null;
-                                var ignoreIndexedCulture = settings.Culture == "any" ? false : culture != settings.Culture;
+                                var ignoreIndexedCulture = settings.Culture != "any" && culture != settings.Culture;
 
                                 // Ignore if the content item content type or culture is not indexed in this index
                                 if (!settings.IndexedContentTypes.Contains(context.ContentItem.ContentType) || ignoreIndexedCulture)

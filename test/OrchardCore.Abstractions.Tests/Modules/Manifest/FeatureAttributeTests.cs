@@ -37,7 +37,7 @@ namespace OrchardCore.Modules.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="FeatureAttribute(string, string, string, bool, bool, bool)"/>
+        /// Verify the <see cref="FeatureAttribute(String, String, String, Boolean, Boolean, Boolean)"/>
         /// ctor, arguments
         /// <c>id, description, featureDependencies, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -82,7 +82,7 @@ namespace OrchardCore.Modules.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="FeatureAttribute(string, string, string, string, bool, bool, bool)"/>
+        /// Verify the <see cref="FeatureAttribute(String, String, String, String, Boolean, Boolean, Boolean)"/>
         /// ctor, arguments
         /// <c>id, name, description, featureDependencies, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -129,7 +129,7 @@ namespace OrchardCore.Modules.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="FeatureAttribute(string, string, string, string, string, string, bool, bool, bool)"/>
+        /// Verify the <see cref="FeatureAttribute(String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>
         /// ctor, arguments
         /// <c>id, name, category, priority, description, featureDependencies, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>

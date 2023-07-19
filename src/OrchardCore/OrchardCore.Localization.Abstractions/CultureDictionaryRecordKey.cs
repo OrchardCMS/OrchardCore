@@ -5,7 +5,7 @@ namespace OrchardCore.Localization
     /// <summary>
     /// Represents a key for <see cref="CultureDictionaryRecord"/>.
     /// </summary>
-    public struct CultureDictionaryRecordKey : IEquatable<CultureDictionaryRecordKey>
+    public readonly struct CultureDictionaryRecordKey : IEquatable<CultureDictionaryRecordKey>
     {
         private readonly string _messageId;
         private readonly string _context;
@@ -55,5 +55,9 @@ namespace OrchardCore.Localization
             => String.IsNullOrEmpty(_context)
                 ? _messageId
                 : _context.ToLowerInvariant() + "|" + _messageId;
+
+        public static bool operator ==(CultureDictionaryRecordKey left, CultureDictionaryRecordKey right) => left.Equals(right);
+
+        public static bool operator !=(CultureDictionaryRecordKey left, CultureDictionaryRecordKey right) => !(left == right);
     }
 }

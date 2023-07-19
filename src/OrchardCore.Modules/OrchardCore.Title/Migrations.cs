@@ -73,7 +73,7 @@ namespace OrchardCore.Title
                 await _session.SaveChangesAsync();
             }
 
-            bool UpdateTitle(JToken content)
+            static bool UpdateTitle(JToken content)
             {
                 var changed = false;
 

@@ -77,10 +77,7 @@ namespace OrchardCore.Cors.Services
                 }
             }
 
-            if (options.DefaultPolicyName == null)
-            {
-                options.DefaultPolicyName = corsSettings.Policies.FirstOrDefault()?.Name;
-            }
+            options.DefaultPolicyName ??= corsSettings.Policies.FirstOrDefault()?.Name;
         }
     }
 }

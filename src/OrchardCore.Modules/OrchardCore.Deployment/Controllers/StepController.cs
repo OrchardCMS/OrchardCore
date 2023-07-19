@@ -23,8 +23,8 @@ namespace OrchardCore.Deployment.Controllers
         private readonly ISession _session;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IHtmlLocalizer H;
-        private readonly dynamic New;
+        protected readonly IHtmlLocalizer H;
+        protected readonly dynamic New;
 
         public StepController(
             IAuthorizationService authorizationService,

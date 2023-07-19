@@ -13,198 +13,188 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
         public async Task ShouldListAllBlogs()
         {
-            using (var context = new BlogContext())
-            {
-                await context.InitializeAsync();
+            using var context = new BlogContext();
+            await context.InitializeAsync();
 
-                var result = await context
-                    .GraphQLClient
-                    .Content
-                    .Query("Blog", builder =>
-                    {
-                        builder
-                            .WithField("contentItemId");
-                    });
+            var result = await context
+                .GraphQLClient
+                .Content
+                .Query("Blog", builder =>
+                {
+                    builder
+                        .WithField("contentItemId");
+                });
 
-                Assert.Single(result["data"]["blog"].Children()["contentItemId"]
-                    .Where(b => b.ToString() == context.BlogContentItemId));
-            }
+            Assert.Single(result["data"]["blog"].Children()["contentItemId"]
+                .Where(b => b.ToString() == context.BlogContentItemId));
         }
 
         [Fact]
         public async Task ShouldQueryByBlogPostAutoroutePart()
         {
-            using (var context = new BlogContext())
-            {
-                await context.InitializeAsync();
+            using var context = new BlogContext();
+            await context.InitializeAsync();
 
-                var blogPostContentItemId1 = await context
-                    .CreateContentItem("BlogPost", builder =>
-                    {
-                        builder
-                            .DisplayText = "Some sorta blogpost!";
+            var blogPostContentItemId1 = await context
+                .CreateContentItem("BlogPost", builder =>
+                {
+                    builder
+                        .DisplayText = "Some sorta blogpost!";
 
-                        builder
-                            .Weld(new AutoroutePart
-                            {
-                                Path = "Path1"
-                            });
+                    builder
+                        .Weld(new AutoroutePart
+                        {
+                            Path = "Path1",
+                        });
 
-                        builder
-                            .Weld(new ContainedPart
-                            {
-                                ListContentItemId = context.BlogContentItemId
-                            });
-                    });
+                    builder
+                        .Weld(new ContainedPart
+                        {
+                            ListContentItemId = context.BlogContentItemId,
+                        });
+                });
 
-                var blogPostContentItemId2 = await context
-                    .CreateContentItem("BlogPost", builder =>
-                    {
-                        builder
-                            .DisplayText = "Some sorta other blogpost!";
+            var blogPostContentItemId2 = await context
+                .CreateContentItem("BlogPost", builder =>
+                {
+                    builder
+                        .DisplayText = "Some sorta other blogpost!";
 
-                        builder
-                            .Weld(new AutoroutePart
-                            {
-                                Path = "Path2"
-                            });
+                    builder
+                        .Weld(new AutoroutePart
+                        {
+                            Path = "Path2",
+                        });
 
-                        builder
-                            .Weld(new ContainedPart
-                            {
-                                ListContentItemId = context.BlogContentItemId
-                            });
-                    });
+                    builder
+                        .Weld(new ContainedPart
+                        {
+                            ListContentItemId = context.BlogContentItemId,
+                        });
+                });
 
-                var result = await context
-                    .GraphQLClient
-                    .Content
-                    .Query("BlogPost", builder =>
-                    {
-                        builder
-                            .WithQueryStringArgument("where", "path", "Path1");
+            var result = await context
+                .GraphQLClient
+                .Content
+                .Query("BlogPost", builder =>
+                {
+                    builder
+                        .WithQueryStringArgument("where", "path", "Path1");
 
-                        builder
-                            .WithField("DisplayText");
-                    });
+                    builder
+                        .WithField("DisplayText");
+                });
 
-                Assert.Equal(
-                    "Some sorta blogpost!",
-                    result["data"]["blogPost"][0]["displayText"].ToString());
-            }
+            Assert.Equal(
+                "Some sorta blogpost!",
+                result["data"]["blogPost"][0]["displayText"].ToString());
         }
 
         [Fact]
         public async Task WhenThePartHasTheSameNameAsTheContentTypeShouldCollapseFieldsToContentType()
         {
-            using (var context = new BlogContext())
-            {
-                await context.InitializeAsync();
+            using var context = new BlogContext();
+            await context.InitializeAsync();
 
-                var result = await context
-                    .GraphQLClient
-                    .Content
-                    .Query("BlogPost", builder =>
-                    {
-                        builder.WithField("Subtitle");
-                    });
+            var result = await context
+                .GraphQLClient
+                .Content
+                .Query("BlogPost", builder =>
+                {
+                    builder.WithField("Subtitle");
+                });
 
-                Assert.Equal(
-                    "Problems look mighty small from 150 miles up",
-                    result["data"]["blogPost"][0]["subtitle"].ToString());
-            }
+            Assert.Equal(
+                "Problems look mighty small from 150 miles up",
+                result["data"]["blogPost"][0]["subtitle"].ToString());
         }
 
         [Fact]
         public async Task WhenCreatingABlogPostShouldBeAbleToPopulateField()
         {
-            using (var context = new BlogContext())
-            {
-                await context.InitializeAsync();
+            using var context = new BlogContext();
+            await context.InitializeAsync();
 
-                var blogPostContentItemId = await context
-                    .CreateContentItem("BlogPost", builder =>
-                    {
-                        builder
-                            .DisplayText = "Some sorta blogpost!";
+            var blogPostContentItemId = await context
+                .CreateContentItem("BlogPost", builder =>
+                {
+                    builder
+                        .DisplayText = "Some sorta blogpost!";
 
-                        builder
-                            .Weld("BlogPost", new ContentPart());
+                    builder
+                        .Weld("BlogPost", new ContentPart());
 
-                        builder
-                            .Alter<ContentPart>("BlogPost", (cp) =>
+                    builder
+                        .Alter<ContentPart>("BlogPost", (cp) =>
+                        {
+                            cp.Weld("Subtitle", new TextField());
+
+                            cp.Alter<TextField>("Subtitle", tf =>
                             {
-                                cp.Weld("Subtitle", new TextField());
-
-                                cp.Alter<TextField>("Subtitle", tf =>
-                                {
-                                    tf.Text = "Hey - Is this working!?!?!?!?";
-                                });
+                                tf.Text = "Hey - Is this working!?!?!?!?";
                             });
+                        });
 
-                        builder
-                            .Weld(new ContainedPart
-                            {
-                                ListContentItemId = context.BlogContentItemId
-                            });
-                    });
+                    builder
+                        .Weld(new ContainedPart
+                        {
+                            ListContentItemId = context.BlogContentItemId,
+                        });
+                });
 
-                var result = await context
-                    .GraphQLClient
-                    .Content
-                    .Query("BlogPost", builder =>
-                    {
-                        builder
-                            .WithQueryStringArgument("where", "ContentItemId", blogPostContentItemId);
+            var result = await context
+                .GraphQLClient
+                .Content
+                .Query("BlogPost", builder =>
+                {
+                    builder
+                        .WithQueryStringArgument("where", "ContentItemId", blogPostContentItemId);
 
-                        builder
-                            .WithField("Subtitle");
-                    });
+                    builder
+                        .WithField("Subtitle");
+                });
 
-                Assert.Equal(
-                    "Hey - Is this working!?!?!?!?",
-                    result["data"]["blogPost"][0]["subtitle"].ToString());
-            }
+            Assert.Equal(
+                "Hey - Is this working!?!?!?!?",
+                result["data"]["blogPost"][0]["subtitle"].ToString());
         }
 
         [Fact]
         public async Task ShouldQueryByStatus()
         {
-            using (var context = new BlogContext())
-            {
-                await context.InitializeAsync();
+            using var context = new BlogContext();
+            await context.InitializeAsync();
 
-                var draft = await context
-                    .CreateContentItem("BlogPost", builder =>
-                    {
-                        builder.DisplayText = "Draft blog post";
-                        builder.Published = false;
-                        builder.Latest = true;
+            var draft = await context
+                .CreateContentItem("BlogPost", builder =>
+                {
+                    builder.DisplayText = "Draft blog post";
+                    builder.Published = false;
+                    builder.Latest = true;
 
-                        builder
-                            .Weld(new ContainedPart
-                            {
-                                ListContentItemId = context.BlogContentItemId
-                            });
-                    }, draft: true);
+                    builder
+                        .Weld(new ContainedPart
+                        {
+                            ListContentItemId = context.BlogContentItemId,
+                        });
+                }, draft: true);
 
-                var result = await context.GraphQLClient.Content
-                    .Query("blogPost(status: PUBLISHED) { displayText, published }");
+            var result = await context.GraphQLClient.Content
+                .Query("blogPost(status: PUBLISHED) { displayText, published }");
 
-                Assert.Single(result["data"]["blogPost"]);
-                Assert.Equal(true, result["data"]["blogPost"][0]["published"]);
+            Assert.Single(result["data"]["blogPost"]);
+            Assert.Equal(true, result["data"]["blogPost"][0]["published"]);
 
-                result = await context.GraphQLClient.Content
-                    .Query("blogPost(status: DRAFT) { displayText, published }");
+            result = await context.GraphQLClient.Content
+                .Query("blogPost(status: DRAFT) { displayText, published }");
 
-                Assert.Single(result["data"]["blogPost"]);
-                Assert.Equal(false, result["data"]["blogPost"][0]["published"]);
+            Assert.Single(result["data"]["blogPost"]);
+            Assert.Equal(false, result["data"]["blogPost"][0]["published"]);
 
-                result = await context.GraphQLClient.Content
-                    .Query("blogPost(status: LATEST) { displayText, published }");
+            result = await context.GraphQLClient.Content
+                .Query("blogPost(status: LATEST) { displayText, published }");
 
-                Assert.Equal(2, result["data"]["blogPost"].Count());
-            }
+            Assert.Equal(2, result["data"]["blogPost"].Count());
         }
 
         [Fact]
@@ -229,8 +219,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     AuthorizedPermissions = new[]
                     {
                         GraphQLApi.Permissions.ExecuteGraphQL,
-                        Contents.Permissions.ViewContent
-                    }
+                        Contents.Permissions.ViewContent,
+                    },
                 });
 
             await context.InitializeAsync();
@@ -254,8 +244,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     AuthorizedPermissions = new[]
                     {
                         GraphQLApi.Permissions.ExecuteGraphQL,
-                        Contents.Permissions.ViewOwnContent
-                    }
+                        Contents.Permissions.ViewOwnContent,
+                    },
                 });
 
             await context.InitializeAsync();
@@ -278,8 +268,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     UsePermissionsContext = true,
                     AuthorizedPermissions = new[]
                     {
-                        GraphQLApi.Permissions.ExecuteGraphQL
-                    }
+                        GraphQLApi.Permissions.ExecuteGraphQL,
+                    },
                 });
 
             await context.InitializeAsync();

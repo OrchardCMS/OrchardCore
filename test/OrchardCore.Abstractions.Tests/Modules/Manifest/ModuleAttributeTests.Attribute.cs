@@ -18,12 +18,12 @@ namespace OrchardCore.Modules.Manifest
         /// <summary>
         /// Gets the <see cref="ModuleAttribute.DefaultVersionZero"/>.
         /// </summary>
-        protected static string DefaultVersionZero = ModuleAttribute.DefaultVersionZero;
+        protected static string DefaultVersionZero => ModuleAttribute.DefaultVersionZero;
 
         /// <summary>
         /// Gets the <see cref="ModuleAttribute.DefaultWebsiteUrl"/>.
         /// </summary>
-        protected static string DefaultWebsiteUrl = ModuleAttribute.DefaultWebsiteUrl;
+        protected static string DefaultWebsiteUrl => ModuleAttribute.DefaultWebsiteUrl;
 
         /// <summary>
         /// &quot;lorem://assyattrib.ipsum&quot;
@@ -123,7 +123,7 @@ namespace OrchardCore.Modules.Manifest
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="ModuleAttribute(string, string, string, string, string, string, string, bool, bool, bool)"/>,
+        /// <see cref="ModuleAttribute(String, String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>,
         /// arguments in order,
         /// <c>id, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -139,7 +139,7 @@ namespace OrchardCore.Modules.Manifest
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, bool, bool, bool)"/>,
+        /// <see cref="ModuleAttribute(String, String, String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>,
         /// arguments in order,
         /// <c>id, name, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -155,7 +155,7 @@ namespace OrchardCore.Modules.Manifest
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, string, string, bool, bool, bool)"/>,
+        /// <see cref="ModuleAttribute(String, String, String, String, String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>,
         /// arguments in order,
         /// <c>id, name, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -171,7 +171,7 @@ namespace OrchardCore.Modules.Manifest
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, string, string, string, bool, bool, bool)"/>,
+        /// <see cref="ModuleAttribute(String, String, String, String, String, String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>,
         /// arguments in order,
         /// <c>id, name, type, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>

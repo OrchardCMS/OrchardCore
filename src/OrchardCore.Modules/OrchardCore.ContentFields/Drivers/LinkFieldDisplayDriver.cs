@@ -21,7 +21,7 @@ namespace OrchardCore.ContentFields.Drivers
     {
         private readonly IUrlHelperFactory _urlHelperFactory;
         private readonly IActionContextAccessor _actionContextAccessor;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly HtmlEncoder _htmlencoder;
 
@@ -79,7 +79,7 @@ namespace OrchardCore.ContentFields.Drivers
                     var indexAnchor = urlToValidate.IndexOf('#');
                     if (indexAnchor > -1)
                     {
-                        urlToValidate = urlToValidate.Substring(0, indexAnchor);
+                        urlToValidate = urlToValidate[..indexAnchor];
                     }
 
                     if (urlToValidate.StartsWith("~/", StringComparison.Ordinal))

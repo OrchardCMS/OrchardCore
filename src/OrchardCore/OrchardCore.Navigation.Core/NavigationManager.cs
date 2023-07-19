@@ -59,7 +59,7 @@ namespace OrchardCore.Navigation
             // Merge all menu hierarchies into a single one.
             Merge(menuItems);
 
-            // Remove unauthorized menu items
+            // Remove unauthorized menu items.
             menuItems = await AuthorizeAsync(menuItems, actionContext.HttpContext.User);
 
             // Compute Url and RouteValues properties to Href.
@@ -209,7 +209,6 @@ namespace OrchardCore.Navigation
         private async Task<List<MenuItem>> AuthorizeAsync(IEnumerable<MenuItem> items, ClaimsPrincipal user)
         {
             var filtered = new List<MenuItem>();
-
             foreach (var item in items)
             {
                 // TODO: Attach actual user and remove this clause.

@@ -7,7 +7,7 @@ namespace OrchardCore.Shortcodes
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageShortcodeTemplates = new Permission("ManageShortcodeTemplates", "Manage shortcode templates", isSecurityCritical: true);
+        public static readonly Permission ManageShortcodeTemplates = new("ManageShortcodeTemplates", "Manage shortcode templates", isSecurityCritical: true);
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
@@ -21,13 +21,13 @@ namespace OrchardCore.Shortcodes
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageShortcodeTemplates }
+                    Permissions = new[] { ManageShortcodeTemplates },
                 },
                 new PermissionStereotype
                 {
                     Name = "Editor",
-                    Permissions = new[] { ManageShortcodeTemplates }
-                }
+                    Permissions = new[] { ManageShortcodeTemplates },
+                },
             };
         }
     }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Extensions.Primitives;
+using System;
 
 namespace System.IO
 {
@@ -37,7 +38,7 @@ namespace System.IO
             }
             else
             {
-                result = path.Substring(0, index + 1) + other;
+                result = String.Concat(path.AsSpan(0, index + 1), other);
             }
 
             return result;

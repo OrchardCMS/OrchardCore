@@ -12,7 +12,8 @@ namespace OrchardCore.Apis.GraphQL
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
             return Task.FromResult<IEnumerable<Permission>>(
-                new[] {
+                new[]
+                {
                     ExecuteGraphQLMutations,
                     ExecuteGraphQL,
                 }
@@ -22,9 +23,10 @@ namespace OrchardCore.Apis.GraphQL
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         {
             return new[] {
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Administrator",
-                    Permissions = new[] { ExecuteGraphQLMutations }
+                    Permissions = new[] { ExecuteGraphQLMutations },
                 }
             };
         }

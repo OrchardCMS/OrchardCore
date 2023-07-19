@@ -9,7 +9,7 @@ namespace OrchardCore.Notifications.Services;
 public class EmailNotificationProvider : INotificationMethodProvider
 {
     private readonly ISmtpService _smtpService;
-    private readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
 
     public EmailNotificationProvider(
         ISmtpService smtpService,

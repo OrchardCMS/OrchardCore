@@ -31,7 +31,7 @@ namespace OrchardCore.Workflows.Services
         private readonly IStringLocalizer<MissingActivity> _missingActivityLocalizer;
         private readonly IClock _clock;
 
-        private readonly Dictionary<string, int> _recursions = new Dictionary<string, int>();
+        private readonly Dictionary<string, int> _recursions = new();
         private int _currentRecursionDepth;
 
         public WorkflowManager
@@ -85,9 +85,14 @@ namespace OrchardCore.Workflows.Services
             var state = workflow.State.ToObject<WorkflowState>();
             var activityQuery = await Task.WhenAll(workflowType.Activities.Select(x =>
             {
-                var activityState = state.ActivityStates.ContainsKey(x.ActivityId) ? state.ActivityStates[x.ActivityId] : new JObject();
+                if (!state.ActivityStates.TryGetValue(x.ActivityId, out var activityState))
+                {
+                    activityState = new JObject();
+                }
+
                 return CreateActivityExecutionContextAsync(x, activityState);
             }));
+
             var mergedInput = (await DeserializeAsync(state.Input)).Merge(input ?? new Dictionary<string, object>());
             var properties = await DeserializeAsync(state.Properties);
             var output = await DeserializeAsync(state.Output);

@@ -154,11 +154,10 @@ namespace OrchardCore.Shells.Database.Configuration
                 return false;
             }
 
-            using (var file = File.OpenText(_tenants))
-            {
-                var settings = await file.ReadToEndAsync();
-                document.ShellsSettings = JObject.Parse(settings);
-            }
+            using var file = File.OpenText(_tenants);
+            var settings = await file.ReadToEndAsync();
+
+            document.ShellsSettings = JObject.Parse(settings);
 
             return true;
         }
