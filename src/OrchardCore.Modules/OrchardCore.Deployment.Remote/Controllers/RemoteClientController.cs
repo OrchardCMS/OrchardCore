@@ -29,9 +29,10 @@ namespace OrchardCore.Deployment.Remote.Controllers
         private readonly PagerOptions _pagerOptions;
         private readonly RemoteClientService _remoteClientService;
         private readonly INotifier _notifier;
-        private readonly dynamic New;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
+
+        protected readonly dynamic New;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public RemoteClientController(
             IDataProtectionProvider dataProtectionProvider,
@@ -65,12 +66,12 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             var remoteClients = (await _remoteClientService.GetRemoteClientListAsync()).RemoteClients;
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
                 remoteClients = remoteClients.Where(x => x.ClientName.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            var count = remoteClients.Count();
+            var count = remoteClients.Count;
 
             var startIndex = pager.GetStartIndex();
             var pageSize = pager.PageSize;
@@ -246,7 +247,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                         await _notifier.SuccessAsync(H["Remote clients successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
 

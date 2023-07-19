@@ -18,7 +18,7 @@ namespace OrchardCore.Tenants.Services
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IFeatureProfilesService _featureProfilesService;
         private readonly IDbConnectionValidator _dbConnectionValidator;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public TenantValidator(
             IShellHost shellHost,

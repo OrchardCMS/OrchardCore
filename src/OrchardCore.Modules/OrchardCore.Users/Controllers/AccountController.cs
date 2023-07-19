@@ -42,8 +42,8 @@ namespace OrchardCore.Users.Controllers
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
         private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
-        private readonly IHtmlLocalizer H;
-        private readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
 
         public AccountController(
             IUserService userService,
@@ -403,8 +403,8 @@ namespace OrchardCore.Users.Controllers
                 // No user could be matched, check if a new user can register.
                 if (registrationSettings.UsersCanRegister == UserRegistrationType.NoRegistration)
                 {
-                    string message = S["Site does not allow user registration."];
-                    _logger.LogWarning(message);
+                    var message = S["Site does not allow user registration."];
+                    _logger.LogWarning("Site does not allow user registration.");
                     ModelState.AddModelError(String.Empty, message);
                 }
                 else

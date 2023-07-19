@@ -9,7 +9,7 @@ namespace OrchardCore.Google
     [Feature(GoogleConstants.Features.GoogleAuthentication)]
     public class GoogleAuthenticationAdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public GoogleAuthenticationAdminMenu(IStringLocalizer<GoogleAuthenticationAdminMenu> localizer)
         {
@@ -36,7 +36,7 @@ namespace OrchardCore.Google
     [Feature(GoogleConstants.Features.GoogleAnalytics)]
     public class GoogleAnalyticsAdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public GoogleAnalyticsAdminMenu(IStringLocalizer<GoogleAnalyticsAdminMenu> localizer)
         {
@@ -64,7 +64,7 @@ namespace OrchardCore.Google
     [Feature(GoogleConstants.Features.GoogleTagManager)]
     public class GoogleTagManagerAdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public GoogleTagManagerAdminMenu(IStringLocalizer<GoogleTagManagerAdminMenu> localizer)
         {

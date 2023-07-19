@@ -57,11 +57,11 @@ namespace OrchardCore.Security
             PermissionsPolicyValue.WebXR
         };
 
-        public static string[] ContentSecurityPolicy = Array.Empty<string>();
+        public static readonly string[] ContentSecurityPolicy = Array.Empty<string>();
 
         public static readonly string ContentTypeOptions = ContentTypeOptionsValue.NoSniff;
 
-        public static string[] PermissionsPolicy = Array.Empty<string>();
+        public static readonly string[] PermissionsPolicy = Array.Empty<string>();
 
         public static readonly string ReferrerPolicy = ReferrerPolicyValue.NoReferrer;
     }

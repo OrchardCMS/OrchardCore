@@ -18,7 +18,7 @@ namespace OrchardCore.Security
                     new PermissionStereotype
                     {
                         Name = "Administrator",
-                        Permissions = new[] { ManageSecurityHeadersSettings }
+                        Permissions = new[] { ManageSecurityHeadersSettings },
                     },
                 };
     }

@@ -10,7 +10,7 @@ namespace OrchardCore.Deployment
     public class RemoteInstanceDeploymentTargetProvider : IDeploymentTargetProvider
     {
         private readonly RemoteInstanceService _service;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public RemoteInstanceDeploymentTargetProvider(
             IStringLocalizer<RemoteInstanceDeploymentTargetProvider> stringLocalizer,

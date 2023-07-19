@@ -8,7 +8,7 @@ namespace OrchardCore.Microsoft.Authentication
     public class Permissions : IPermissionProvider
     {
         public static readonly Permission ManageMicrosoftAuthentication
-            = new Permission(nameof(ManageMicrosoftAuthentication), "Manage Microsoft Authentication settings");
+            = new(nameof(ManageMicrosoftAuthentication), "Manage Microsoft Authentication settings");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
@@ -22,7 +22,7 @@ namespace OrchardCore.Microsoft.Authentication
                 Name = "Administrator",
                 Permissions = new[]
                 {
-                    ManageMicrosoftAuthentication
+                    ManageMicrosoftAuthentication,
                 }
             };
         }

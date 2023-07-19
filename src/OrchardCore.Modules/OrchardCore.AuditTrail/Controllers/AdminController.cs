@@ -27,7 +27,7 @@ namespace OrchardCore.AuditTrail.Controllers
         private readonly IAuditTrailAdminListQueryService _auditTrailAdminListQueryService;
         private readonly IDisplayManager<AuditTrailEvent> _displayManager;
         private readonly IDisplayManager<AuditTrailIndexOptions> _auditTrailOptionsDisplayManager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminController(
             IOptions<PagerOptions> pagerOptions,
