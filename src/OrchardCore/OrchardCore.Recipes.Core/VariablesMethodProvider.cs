@@ -41,7 +41,7 @@ namespace OrchardCore.Recipes
                     }
 
                     return value;
-                })
+                }),
             };
         }
 

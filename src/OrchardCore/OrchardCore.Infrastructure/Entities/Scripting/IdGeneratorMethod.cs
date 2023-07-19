@@ -13,7 +13,7 @@ namespace OrchardCore.Entities.Scripting
            {
                var idGenerator = serviceProvider.GetRequiredService<IIdGenerator>();
                return idGenerator.GenerateUniqueId();
-           }
+           },
         };
 
         public IEnumerable<GlobalMethod> GetMethods()

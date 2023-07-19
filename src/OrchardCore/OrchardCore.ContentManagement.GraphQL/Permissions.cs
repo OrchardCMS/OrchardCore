@@ -13,7 +13,7 @@ namespace OrchardCore.ContentManagement.GraphQL
         {
             return Task.FromResult(new[]
             {
-                ApiViewContent
+                ApiViewContent,
             }
             .AsEnumerable());
         }
@@ -21,28 +21,35 @@ namespace OrchardCore.ContentManagement.GraphQL
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         {
             return new[] {
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Administrator",
                     Permissions = new[] { ApiViewContent }
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Editor"
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Moderator"
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Author"
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Contributor"
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Authenticated"
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Anonymous"
-                }
+                },
             };
         }
     }

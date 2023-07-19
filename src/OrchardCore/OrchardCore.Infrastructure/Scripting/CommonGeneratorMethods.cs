@@ -15,7 +15,7 @@ namespace OrchardCore.Scripting
             Method = serviceProvider => (Func<string, string>)(encoded =>
             {
                 return Encoding.UTF8.GetString(Convert.FromBase64String(encoded));
-            })
+            }),
         };
 
         private static readonly GlobalMethod _html = new()
@@ -24,7 +24,7 @@ namespace OrchardCore.Scripting
             Method = serviceProvider => (Func<string, string>)(encoded =>
             {
                 return WebUtility.HtmlDecode(encoded);
-            })
+            }),
         };
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace OrchardCore.Scripting
                 }
 
                 return Convert.ToBase64String(decompressed.ToArray());
-            })
+            }),
         };
 
         public IEnumerable<GlobalMethod> GetMethods() => new[] { _base64, _html, _gZip };
