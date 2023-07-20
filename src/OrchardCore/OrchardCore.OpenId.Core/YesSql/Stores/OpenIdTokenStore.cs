@@ -607,11 +607,6 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 throw new ArgumentNullException(nameof(token));
             }
 
-            if (String.IsNullOrEmpty(status))
-            {
-                throw new ArgumentException("The status cannot be null or empty.", nameof(status));
-            }
-
             token.Status = status;
 
             return default;
@@ -625,11 +620,6 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 throw new ArgumentNullException(nameof(token));
             }
 
-            if (String.IsNullOrEmpty(subject))
-            {
-                throw new ArgumentException("The subject cannot be null or empty.", nameof(subject));
-            }
-
             token.Subject = subject;
 
             return default;
@@ -641,11 +631,6 @@ namespace OrchardCore.OpenId.YesSql.Stores
             if (token == null)
             {
                 throw new ArgumentNullException(nameof(token));
-            }
-
-            if (String.IsNullOrEmpty(type))
-            {
-                throw new ArgumentException("The token type cannot be null or empty.", nameof(type));
             }
 
             token.Type = type;
