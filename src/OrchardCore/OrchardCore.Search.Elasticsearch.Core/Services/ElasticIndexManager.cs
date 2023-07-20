@@ -310,9 +310,9 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             jsonElement.TryGetProperty("mappings", out var mappings);
             mappings.TryGetProperty("_meta", out var meta);
             meta.TryGetProperty(_lastTaskId, out var lastTaskId);
-            lastTaskId.TryGetInt64(out var intValue);
+            lastTaskId.TryGetInt64(out var longValue);
 
-            return intValue;
+            return longValue;
         }
 
         public async Task<bool> DeleteDocumentsAsync(string indexName, IEnumerable<string> contentItemIds)
