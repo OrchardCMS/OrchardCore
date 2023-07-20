@@ -18,7 +18,7 @@ namespace OrchardCore.Data.Migration.Records
         /// <summary>
         /// Gete or sets the record Id.
         /// </summary>
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// Gets or sets the database migrations.
