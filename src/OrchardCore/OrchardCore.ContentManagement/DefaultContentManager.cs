@@ -89,14 +89,13 @@ namespace OrchardCore.ContentManagement
 
         public async Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, bool latest = false)
         {
-            if (contentItemIds == null)
-            {
-                throw new ArgumentNullException(nameof(contentItemIds));
-            }
+            contentItemIds = contentItemIds
+                ?.Where(id => id is not null)
+                .Distinct()
+                ?? throw new ArgumentNullException(nameof(contentItemIds)); ;
 
             List<ContentItem> contentItems = null;
             List<ContentItem> storedItems = null;
-
             if (latest)
             {
                 contentItems = (await _session
@@ -118,7 +117,7 @@ namespace OrchardCore.ContentManagement
                 }
 
                 // Only query the ids not already stored.
-                var itemIdsToQuery = storedItems != null
+                var itemIdsToQuery = storedItems is not null
                     ? contentItemIds.Except(storedItems.Select(x => x.ContentItemId))
                     : contentItemIds;
 
@@ -126,24 +125,25 @@ namespace OrchardCore.ContentManagement
                 {
                     contentItems = (await _session
                        .Query<ContentItem, ContentItemIndex>()
-                       .Where(x => x.ContentItemId.IsIn(itemIdsToQuery) && x.Published == true)
-                       .ListAsync()).ToList();
+                       .Where(i => i.ContentItemId.IsIn(itemIdsToQuery) && i.Published == true)
+                       .ListAsync())
+                       .ToList();
                 }
             }
 
-            if (contentItems != null)
+            if (contentItems is not null)
             {
                 for (var i = 0; i < contentItems.Count; i++)
                 {
                     contentItems[i] = await LoadAsync(contentItems[i]);
                 }
 
-                if (storedItems != null)
+                if (storedItems is not null)
                 {
                     contentItems.AddRange(storedItems);
                 }
             }
-            else if (storedItems != null)
+            else if (storedItems is not null)
             {
                 contentItems = storedItems;
             }
