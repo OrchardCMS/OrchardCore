@@ -50,7 +50,7 @@ namespace OrchardCore.Workflows.Http.Filters
 
                 foreach (var entry in workflowTypeEntries)
                 {
-                    if (workflowTypes.TryGetValue(Int32.Parse(entry.WorkflowId), out var workflowType))
+                    if (workflowTypes.TryGetValue(Int64.Parse(entry.WorkflowId), out var workflowType))
                     {
                         var activity = workflowType.Activities.Single(x => x.ActivityId == entry.ActivityId);
 

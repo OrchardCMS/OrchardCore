@@ -53,7 +53,7 @@ namespace OrchardCore.Workflows.Http.Controllers
 
         [HttpPost]
         [Admin]
-        public async Task<IActionResult> GenerateUrl(int workflowTypeId, string activityId, int tokenLifeSpan)
+        public async Task<IActionResult> GenerateUrl(long workflowTypeId, string activityId, int tokenLifeSpan)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
