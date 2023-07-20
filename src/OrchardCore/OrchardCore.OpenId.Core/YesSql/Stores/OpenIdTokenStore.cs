@@ -208,7 +208,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.GetAsync<TToken>(Int32.Parse(identifier, CultureInfo.InvariantCulture), collection: OpenIdCollection);
+            return await _session.GetAsync<TToken>(Int64.Parse(identifier, CultureInfo.InvariantCulture), collection: OpenIdCollection);
         }
 
         /// <inheritdoc/>
