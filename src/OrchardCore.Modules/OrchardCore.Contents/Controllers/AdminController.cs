@@ -255,7 +255,7 @@ namespace OrchardCore.Contents.Controllers
 
         [HttpPost, ActionName(nameof(List))]
         [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> ListPOST(ContentOptionsViewModel options, IEnumerable<int> itemIds)
+        public async Task<ActionResult> ListPOST(ContentOptionsViewModel options, IEnumerable<long> itemIds)
         {
             if (itemIds?.Count() > 0)
             {
