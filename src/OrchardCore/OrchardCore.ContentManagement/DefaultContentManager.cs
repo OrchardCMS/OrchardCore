@@ -92,7 +92,7 @@ namespace OrchardCore.ContentManagement
             contentItemIds = contentItemIds
                 ?.Where(id => id is not null)
                 .Distinct()
-                ?? throw new ArgumentNullException(nameof(contentItemIds)); 
+                ?? throw new ArgumentNullException(nameof(contentItemIds));
 
             List<ContentItem> contentItems = null;
             List<ContentItem> storedItems = null;
