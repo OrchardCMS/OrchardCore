@@ -89,10 +89,16 @@ namespace OrchardCore.ContentManagement
 
         public async Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, bool latest = false)
         {
-            contentItemIds = contentItemIds
+            var allItemIds = contentItemIds
                 ?.Where(id => id is not null)
                 .Distinct()
+                .ToList()
                 ?? throw new ArgumentNullException(nameof(contentItemIds));
+
+            if (allItemIds.Count == 0)
+            {
+                return Enumerable.Empty<ContentItem>();
+            }
 
             List<ContentItem> contentItems = null;
             List<ContentItem> storedItems = null;
@@ -100,12 +106,13 @@ namespace OrchardCore.ContentManagement
             {
                 contentItems = (await _session
                     .Query<ContentItem, ContentItemIndex>()
-                    .Where(x => x.ContentItemId.IsIn(contentItemIds) && x.Latest == true)
-                    .ListAsync()).ToList();
+                    .Where(i => i.ContentItemId.IsIn(allItemIds) && i.Latest == true)
+                    .ListAsync())
+                    .ToList();
             }
             else
             {
-                foreach (var contentItemId in contentItemIds)
+                foreach (var contentItemId in allItemIds)
                 {
                     // If the published version is already stored, we can return it.
                     if (_contentManagerSession.RecallPublishedItemId(contentItemId, out var contentItem))
@@ -118,8 +125,8 @@ namespace OrchardCore.ContentManagement
 
                 // Only query the ids not already stored.
                 var itemIdsToQuery = storedItems is not null
-                    ? contentItemIds.Except(storedItems.Select(x => x.ContentItemId))
-                    : contentItemIds;
+                    ? allItemIds.Except(storedItems.Select(c => c.ContentItemId)).ToList()
+                    : allItemIds;
 
                 if (itemIdsToQuery.Any())
                 {
@@ -152,9 +159,7 @@ namespace OrchardCore.ContentManagement
                 return Enumerable.Empty<ContentItem>();
             }
 
-            var contentItemIdsArray = contentItemIds.ToImmutableArray();
-
-            return contentItems.OrderBy(c => contentItemIdsArray.IndexOf(c.ContentItemId));
+            return contentItems.OrderBy(c => allItemIds.IndexOf(c.ContentItemId));
         }
 
         public async Task<ContentItem> GetAsync(string contentItemId, VersionOptions options)
