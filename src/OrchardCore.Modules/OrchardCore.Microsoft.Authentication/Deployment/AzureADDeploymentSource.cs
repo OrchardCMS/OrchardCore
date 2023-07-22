@@ -26,8 +26,8 @@ namespace OrchardCore.Microsoft.Authentication.Deployment
             var settings = await _azureADService.GetSettingsAsync();
 
             result.Steps.Add(new JObject(
-                new JProperty("name", "MicrosoftEntraID"),
-                new JProperty("MicrosoftEntraID", JObject.FromObject(settings))
+                new JProperty("name", "AzureAD"),
+                new JProperty("AzureAD", JObject.FromObject(settings))
             ));
         }
     }
