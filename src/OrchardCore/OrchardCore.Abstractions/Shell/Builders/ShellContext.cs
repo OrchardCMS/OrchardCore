@@ -68,12 +68,6 @@ namespace OrchardCore.Environment.Shell.Builders
         /// <summary>
         /// Creates a <see cref="ShellScope"/> on this shell context.
         /// </summary>
-        [Obsolete("This method will be removed in a future version, use CreateScopeAsync instead.", false)]
-        public ShellScope CreateScope() => CreateScopeAsync().GetAwaiter().GetResult();
-
-        /// <summary>
-        /// Creates a <see cref="ShellScope"/> on this shell context.
-        /// </summary>
         public async Task<ShellScope> CreateScopeAsync()
         {
             // Don't create a shell scope on a released shell.
@@ -105,12 +99,6 @@ namespace OrchardCore.Environment.Shell.Builders
         /// Returns the number of active scopes on this tenant.
         /// </summary>
         public int ActiveScopes => _refCount;
-
-        /// <summary>
-        /// Mark the <see cref="ShellContext"/> as released and then a candidate to be disposed.
-        /// </summary>
-        [Obsolete("This method will be removed in a future version, use ReleaseAsync instead.", false)]
-        public void Release() => ReleaseInternalAsync().GetAwaiter().GetResult();
 
         /// <summary>
         /// Mark the <see cref="ShellContext"/> as released and then a candidate to be disposed.
@@ -194,12 +182,6 @@ namespace OrchardCore.Environment.Shell.Builders
             FromLastScope,
             FromDependency
         }
-
-        /// <summary>
-        /// Registers the specified shellContext as dependent such that it is also released when the current shell context is released.
-        /// </summary>
-        [Obsolete("This method will be removed in a future version, use AddDependentShellAsync instead.", false)]
-        public void AddDependentShell(ShellContext shellContext) => AddDependentShellAsync(shellContext).GetAwaiter().GetResult();
 
         /// <summary>
         /// Registers the specified shellContext as dependent such that it is also released when the current shell context is released.
@@ -288,7 +270,7 @@ namespace OrchardCore.Environment.Shell.Builders
             Terminate();
         }
 
-        public void Terminate()
+        private void Terminate()
         {
             ServiceProvider = null;
             IsActivated = false;
