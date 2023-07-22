@@ -14,7 +14,7 @@ namespace OrchardCore.Email.Workflows.Activities
     {
         private readonly ISmtpService _smtpService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly HtmlEncoder _htmlEncoder;
 
         public EmailTask(
@@ -88,7 +88,7 @@ namespace OrchardCore.Email.Workflows.Activities
             get => GetProperty(() => true);
             set => SetProperty(value);
         }
-  
+
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {

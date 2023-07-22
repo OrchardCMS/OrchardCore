@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -31,12 +32,15 @@ namespace OrchardCore.Contents.Liquid
 
             if (contentItem == null)
             {
-                if (string.IsNullOrEmpty(input.ToStringValue()))
+                if (String.IsNullOrEmpty(input.ToStringValue()))
                 {
                     return StringValue.Empty;
                 }
-                routeValues = new RouteValueDictionary(_autorouteOptions.GlobalRouteValues);
-                routeValues[_autorouteOptions.ContentItemIdKey] = input.ToStringValue();
+
+                routeValues = new RouteValueDictionary(_autorouteOptions.GlobalRouteValues)
+                {
+                    [_autorouteOptions.ContentItemIdKey] = input.ToStringValue(),
+                };
             }
             else
             {

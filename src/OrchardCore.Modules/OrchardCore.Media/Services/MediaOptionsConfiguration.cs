@@ -11,9 +11,9 @@ namespace OrchardCore.Media.Services
 {
     public class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
     {
-        private static readonly int[] DefaultSupportedSizes = new[] { 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048 };
+        private static readonly int[] _defaultSupportedSizes = new[] { 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048 };
 
-        private static readonly string[] DefaultAllowedFileExtensions = new string[] {
+        private static readonly string[] _defaultAllowedFileExtensions = new string[] {
             // Images
             ".jpg",
             ".jpeg",
@@ -78,10 +78,10 @@ namespace OrchardCore.Media.Services
             // Because IShellConfiguration treats arrays as key value pairs, we replace the array value,
             // rather than letting Configure merge the default array with the appsettings value.
             options.SupportedSizes = section.GetSection("SupportedSizes")
-                .Get<int[]>()?.OrderBy(s => s).ToArray() ?? DefaultSupportedSizes;
+                .Get<int[]>()?.OrderBy(s => s).ToArray() ?? _defaultSupportedSizes;
 
             options.AllowedFileExtensions = new HashSet<string>(
-                section.GetSection("AllowedFileExtensions").Get<string[]>() ?? DefaultAllowedFileExtensions,
+                section.GetSection("AllowedFileExtensions").Get<string[]>() ?? _defaultAllowedFileExtensions,
                 StringComparer.OrdinalIgnoreCase);
 
             options.MaxBrowserCacheDays = section.GetValue("MaxBrowserCacheDays", DefaultMaxBrowserCacheDays);

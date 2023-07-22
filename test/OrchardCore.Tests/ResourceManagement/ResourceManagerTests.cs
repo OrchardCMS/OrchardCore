@@ -10,11 +10,11 @@ namespace OrchardCore.Tests.ResourceManagement
     {
         private const string basePath = "http://host";
 
-        private readonly IBrowsingContext browsingContext;
+        private readonly IBrowsingContext _browsingContext;
 
         public ResourceManagerTests()
         {
-            browsingContext = BrowsingContext.New();
+            _browsingContext = BrowsingContext.New();
         }
 
         [Fact]
@@ -858,12 +858,11 @@ namespace OrchardCore.Tests.ResourceManagement
         #region Helpers
         private async Task<IDocument> ParseHtmlAsync(IHtmlContent content)
         {
-            using (var writer = new StringWriter())
-            {
-                content.WriteTo(writer, HtmlEncoder.Default);
+            using var writer = new StringWriter();
 
-                return await browsingContext.OpenAsync(res => res.Content(writer.ToString()).Address(basePath));
-            }
+            content.WriteTo(writer, HtmlEncoder.Default);
+
+            return await _browsingContext.OpenAsync(res => res.Content(writer.ToString()).Address(basePath));
         }
 
         #endregion

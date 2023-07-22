@@ -150,10 +150,12 @@ namespace OrchardCore.FileStorage
         /// Backslash is converted to forward slash and any leading or trailing slashes
         /// are removed.
         /// </remarks>
-        public static string NormalizePath(this IFileStore fileStore, string path)
+        public static string NormalizePath(this IFileStore _, string path)
         {
             if (path == null)
+            {
                 return null;
+            }
 
             return path.Replace('\\', '/').Trim('/', ' ');
         }

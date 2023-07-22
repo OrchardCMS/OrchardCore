@@ -24,7 +24,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
 
         public ActivityController
         (
@@ -68,7 +68,7 @@ namespace OrchardCore.Workflows.Controllers
                 ActivityId = activityId,
                 ActivityEditor = activityEditor,
                 WorkflowTypeId = workflowTypeId,
-                ReturnUrl = returnUrl
+                ReturnUrl = returnUrl,
             };
 
             if (!activity.HasEditor)
@@ -134,7 +134,7 @@ namespace OrchardCore.Workflows.Controllers
                 ActivityId = activityId,
                 ActivityEditor = activityEditor,
                 WorkflowTypeId = workflowTypeId,
-                ReturnUrl = returnUrl
+                ReturnUrl = returnUrl,
             };
 
             return View("EditActivity", viewModel);

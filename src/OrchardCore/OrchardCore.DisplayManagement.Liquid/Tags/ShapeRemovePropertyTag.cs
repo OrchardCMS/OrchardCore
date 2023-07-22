@@ -10,7 +10,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class ShapeRemovePropertyTag
     {
-        public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, TextWriter _1, TextEncoder _2, TemplateContext context)
         {
             var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
 
@@ -18,7 +18,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             {
                 var propName = (await arguments.Item2.EvaluateAsync(context)).ToStringValue();
 
-                if (!string.IsNullOrEmpty(propName))
+                if (!String.IsNullOrEmpty(propName))
                 {
                     shape.Properties.Remove(propName.ToPascalCaseUnderscore());
                 }

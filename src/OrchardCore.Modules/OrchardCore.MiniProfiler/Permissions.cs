@@ -7,8 +7,8 @@ namespace OrchardCore.MiniProfiler
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ViewMiniProfilerOnFrontEnd = new Permission("ViewMiniProfilerOnFrontEnd", "View Mini Profiler widget on front end pages");
-        public static readonly Permission ViewMiniProfilerOnBackEnd = new Permission("ViewMiniProfilerOnBackEnd", "View Mini Profiler widget on back end pages");
+        public static readonly Permission ViewMiniProfilerOnFrontEnd = new("ViewMiniProfilerOnFrontEnd", "View Mini Profiler widget on front end pages");
+        public static readonly Permission ViewMiniProfilerOnBackEnd = new("ViewMiniProfilerOnBackEnd", "View Mini Profiler widget on back end pages");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
@@ -18,9 +18,10 @@ namespace OrchardCore.MiniProfiler
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         {
             return new[] {
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Administrator",
-                    Permissions = new[] { ViewMiniProfilerOnFrontEnd, ViewMiniProfilerOnBackEnd }
+                    Permissions = new[] { ViewMiniProfilerOnFrontEnd, ViewMiniProfilerOnBackEnd },
                 }
             };
         }

@@ -16,7 +16,7 @@ namespace OrchardCore.ContentLocalization.Drivers
     public class LocalizationContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>
     {
         private readonly ILocalizationService _localizationService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public LocalizationContentsAdminListDisplayDriver(
             ILocalizationService localizationService,

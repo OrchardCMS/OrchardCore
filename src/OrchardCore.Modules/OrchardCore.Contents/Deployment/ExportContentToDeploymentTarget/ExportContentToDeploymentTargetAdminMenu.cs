@@ -7,7 +7,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 {
     public class ExportContentToDeploymentTargetAdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public ExportContentToDeploymentTargetAdminMenu(IStringLocalizer<AdminMenu> localizer)
         {

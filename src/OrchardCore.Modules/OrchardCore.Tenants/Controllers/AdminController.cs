@@ -43,9 +43,10 @@ namespace OrchardCore.Tenants.Controllers
         private readonly PagerOptions _pagerOptions;
         private readonly TenantsOptions _tenantsOptions;
         private readonly ILogger _logger;
-        private readonly dynamic New;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
+
+        protected readonly dynamic New;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public AdminController(
             IShellHost shellHost,

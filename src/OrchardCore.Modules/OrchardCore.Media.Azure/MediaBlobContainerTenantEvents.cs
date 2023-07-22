@@ -16,7 +16,7 @@ namespace OrchardCore.Media.Azure
     {
         private readonly MediaBlobStorageOptions _options;
         private readonly ShellSettings _shellSettings;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly ILogger _logger;
 
         public MediaBlobContainerTenantEvents(

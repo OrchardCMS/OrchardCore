@@ -14,7 +14,7 @@ namespace OrchardCore.Title
 {
     public class Migrations : DataMigration
     {
-        private IContentDefinitionManager _contentDefinitionManager;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
         private readonly ILogger _logger;
 
@@ -73,7 +73,7 @@ namespace OrchardCore.Title
                 await _session.SaveChangesAsync();
             }
 
-            bool UpdateTitle(JToken content)
+            static bool UpdateTitle(JToken content)
             {
                 var changed = false;
 

@@ -71,11 +71,9 @@ namespace OrchardCore.Tests.DisplayManagement
             Composite zoneComposite1 = zoneOnDemand, zoneComposite2 = zoneOnDemand;
             object zoneObject1 = zoneOnDemand, zoneObject2 = zoneOnDemand;
 
-#pragma warning disable 252,253
-            // Intended reference comparison
+            // Intended reference comparison.
             Assert.True(zoneShape1 == zoneShape2);
             Assert.True(zoneComposite1 == zoneComposite2);
-#pragma warning restore 252,253
             Assert.True(zoneObject1 == zoneObject2);
         }
 
@@ -187,9 +185,9 @@ namespace OrchardCore.Tests.DisplayManagement
             Assert.True((string)zoneOnDemand == null);
         }
 
-        private static ZoneHolding CreateZoneHolding() => new ZoneHolding(() => new ValueTask<IShape>(new Shape()));
+        private static ZoneHolding CreateZoneHolding() => new(() => new ValueTask<IShape>(new Shape()));
 
         private static ZoneOnDemand CreateZoneOnDemand(string name, ZoneHolding zoneHolding = null) =>
-            new ZoneOnDemand(() => new ValueTask<IShape>(new Shape()), zoneHolding ?? CreateZoneHolding(), name);
+            new(() => new ValueTask<IShape>(new Shape()), zoneHolding ?? CreateZoneHolding(), name);
     }
 }

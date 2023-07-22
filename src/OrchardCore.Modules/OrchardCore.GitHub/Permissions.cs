@@ -8,7 +8,7 @@ namespace OrchardCore.GitHub
     public class Permissions : IPermissionProvider
     {
         public static readonly Permission ManageGitHubAuthentication
-            = new Permission(nameof(ManageGitHubAuthentication), "Manage GitHub Authentication settings");
+            = new(nameof(ManageGitHubAuthentication), "Manage GitHub Authentication settings");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
@@ -22,7 +22,7 @@ namespace OrchardCore.GitHub
                 Name = "Administrator",
                 Permissions = new[]
                 {
-                    ManageGitHubAuthentication
+                    ManageGitHubAuthentication,
                 }
             };
         }

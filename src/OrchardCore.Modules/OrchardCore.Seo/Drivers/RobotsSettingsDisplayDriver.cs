@@ -18,7 +18,7 @@ public class RobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, RobotsSet
     private readonly IAuthorizationService _authorizationService;
     private readonly IStaticFileProvider _staticFileProvider;
     private readonly INotifier _notifier;
-    private readonly IHtmlLocalizer H;
+    protected readonly IHtmlLocalizer H;
 
     public RobotsSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,

@@ -30,7 +30,7 @@ namespace OrchardCore.Setup.Controllers
         private readonly IEmailAddressValidator _emailAddressValidator;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public SetupController(
             IClock clock,

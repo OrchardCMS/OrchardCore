@@ -7,7 +7,7 @@ namespace OrchardCore.Admin
 {
     public class PermissionsAdminSettings : IPermissionProvider
     {
-        public static readonly Permission ManageAdminSettings = new Permission("ManageAdminSettings", "Manage Admin Settings");
+        public static readonly Permission ManageAdminSettings = new("ManageAdminSettings", "Manage Admin Settings");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
@@ -21,7 +21,7 @@ namespace OrchardCore.Admin
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageAdminSettings }
+                    Permissions = new[] { ManageAdminSettings },
                 }
             };
         }

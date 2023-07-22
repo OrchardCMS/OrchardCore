@@ -95,7 +95,7 @@ public class RoleAuthorizationHandler : AuthorizationHandler<PermissionRequireme
         }
     }
 
-    private Permission GetPermissionVariation(Permission permission, string roleName)
+    private static Permission GetPermissionVariation(Permission permission, string roleName)
     {
         if (permission.Name == CommonPermissions.ListUsers.Name)
         {

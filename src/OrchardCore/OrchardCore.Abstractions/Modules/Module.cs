@@ -13,7 +13,7 @@ namespace OrchardCore.Modules
     public class Module
     {
         public const string WebRootPath = "wwwroot";
-        public static string WebRoot = WebRootPath + "/";
+        public const string WebRoot = WebRootPath + "/";
 
         private readonly string _baseNamespace;
         private readonly DateTimeOffset _lastModified;
@@ -29,7 +29,7 @@ namespace OrchardCore.Modules
         /// <param name="isApplication">Whether the Module may be considered to be the &quot;Application&quot;.</param>
         public Module(string assyName, bool isApplication = false)
         {
-            if (!string.IsNullOrWhiteSpace(assyName))
+            if (!String.IsNullOrWhiteSpace(assyName))
             {
                 Assembly = Assembly.Load(new AssemblyName(assyName));
 
@@ -107,7 +107,7 @@ namespace OrchardCore.Modules
             _baseNamespace = Name + '.';
             _lastModified = DateTimeOffset.UtcNow;
 
-            if (!string.IsNullOrEmpty(Assembly?.Location))
+            if (!String.IsNullOrEmpty(Assembly?.Location))
             {
                 try
                 {

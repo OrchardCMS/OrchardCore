@@ -25,8 +25,8 @@ namespace OrchardCore.ContentLocalization.Records
     public class LocalizedContentItemIndexProvider : ContentHandlerBase, IIndexProvider, IScopedIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly HashSet<ContentItem> _itemRemoved = new HashSet<ContentItem>();
-        private readonly HashSet<string> _partRemoved = new HashSet<string>();
+        private readonly HashSet<ContentItem> _itemRemoved = new();
+        private readonly HashSet<string> _partRemoved = new();
         private IContentDefinitionManager _contentDefinitionManager;
 
         public LocalizedContentItemIndexProvider(IServiceProvider serviceProvider)

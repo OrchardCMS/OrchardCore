@@ -10,7 +10,7 @@ namespace OrchardCore.Tests.Apis.Context
 {
     public class SiteContext : IDisposable
     {
-        private static readonly TablePrefixGenerator TablePrefixGenerator = new TablePrefixGenerator();
+        private static readonly TablePrefixGenerator _tablePrefixGenerator = new();
         public static OrchardTestFixture<SiteStartup> Site { get; }
         public static IShellHost ShellHost { get; private set; }
         public static IShellSettingsManager ShellSettingsManager { get; private set; }
@@ -38,7 +38,7 @@ namespace OrchardCore.Tests.Apis.Context
         public virtual async Task InitializeAsync()
         {
             var tenantName = Guid.NewGuid().ToString("n");
-            var tablePrefix = await TablePrefixGenerator.GeneratePrefixAsync();
+            var tablePrefix = await _tablePrefixGenerator.GeneratePrefixAsync();
 
             var createModel = new Tenants.Models.TenantApiModel
             {
@@ -161,7 +161,9 @@ namespace OrchardCore.Tests.Apis.Context
             return Client.DeleteAsync("api/content/" + contentItemId);
         }
 
+#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
         public void Dispose()
+#pragma warning restore CA1816 // Dispose methods should call SuppressFinalize
         {
             Client?.Dispose();
         }

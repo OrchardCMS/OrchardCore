@@ -16,7 +16,7 @@ public class TwoFactorLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, T
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
 
     public TwoFactorLoginSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,

@@ -69,10 +69,7 @@ namespace OrchardCore.ContentLocalization.Drivers
             model.LocalizationPart = localizationPart;
 
             // Invariant culture name is empty so we only do a null check.
-            if (model.Culture == null)
-            {
-                model.Culture = await _localizationService.GetDefaultCultureAsync();
-            }
+            model.Culture ??= await _localizationService.GetDefaultCultureAsync();
 
             var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
             var currentCultures = supportedCultures.Where(c => c != model.Culture).Select(culture =>
