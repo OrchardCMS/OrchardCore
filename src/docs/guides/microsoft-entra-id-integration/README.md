@@ -50,7 +50,7 @@ The last step is to copy Application Id and Tenant Id from Azure Portal
 
 ![image](assets/get-appid-tenantid-from-portal.jpg)
 
-[Navigate to Security/Microsoft Entra ID](https://localhost:5001/Admin/Settings/OrchardCore.Microsoft.Authentication.MicrosoftEntraID) in OrchardCore Admin to configure the AzureAD app.
+[Navigate to Security/Microsoft Entra ID](https://localhost:5001/Admin/Settings/OrchardCore.Microsoft.Authentication.AzureAD) in OrchardCore Admin to configure the AzureAD app.
 
 ![image](assets/configure-orchardcore-azuread.jpg)
 
