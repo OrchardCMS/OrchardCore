@@ -25,4 +25,9 @@ public interface IChunkFileUploadService
         HttpRequest request,
         Func<Guid, IFormFile, ContentRangeHeaderValue, Task<IActionResult>> chunkAsync,
         Func<IEnumerable<IFormFile>, Task<IActionResult>> completedAsync);
+
+    /// <summary>
+    /// Purges temporary files left by abandoned uploads from the temporary directory.
+    /// </summary>
+    void PurgeTempDirectory();
 }

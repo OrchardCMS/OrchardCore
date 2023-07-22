@@ -93,7 +93,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
         }
     }
 
-    private void PurgeTempDirectory()
+    public void PurgeTempDirectory()
     {
         if (_purgeLock.CurrentCount == 0)
         {
@@ -104,14 +104,14 @@ public class ChunkFileUploadService : IChunkFileUploadService
 
         try
         {
-            var siteTempFolderPath = GetTempFolderPath();
+            var tempFolderPath = GetTempFolderPath();
             if (_options.Value.TemporaryFileLifetime <= TimeSpan.Zero
-                || !Directory.Exists(siteTempFolderPath))
+                || !Directory.Exists(tempFolderPath))
             {
                 return;
             }
 
-            var tempFiles = Directory.GetFiles(siteTempFolderPath)
+            var tempFiles = Directory.GetFiles(tempFolderPath)
                 .Select(filePath => new FileInfo(filePath))
                 .Where(fileInfo => fileInfo.LastWriteTimeUtc + _options.Value.TemporaryFileLifetime < _clock.UtcNow)
                 .ToList();
