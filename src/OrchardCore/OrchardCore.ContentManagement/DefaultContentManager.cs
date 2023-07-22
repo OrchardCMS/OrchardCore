@@ -89,13 +89,13 @@ namespace OrchardCore.ContentManagement
 
         public async Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, bool latest = false)
         {
-            var allItemIds = contentItemIds
+            var itemIds = contentItemIds
                 ?.Where(id => id is not null)
                 .Distinct()
-                .ToList()
+                .ToArray()
                 ?? throw new ArgumentNullException(nameof(contentItemIds));
 
-            if (allItemIds.Count == 0)
+            if (itemIds.Length == 0)
             {
                 return Enumerable.Empty<ContentItem>();
             }
@@ -106,35 +106,34 @@ namespace OrchardCore.ContentManagement
             {
                 contentItems = (await _session
                     .Query<ContentItem, ContentItemIndex>()
-                    .Where(i => i.ContentItemId.IsIn(allItemIds) && i.Latest == true)
-                    .ListAsync())
-                    .ToList();
+                    .Where(i => i.ContentItemId.IsIn(itemIds) && i.Latest == true)
+                    .ListAsync()
+                    ).ToList();
             }
             else
             {
-                foreach (var contentItemId in allItemIds)
+                foreach (var itemId in itemIds)
                 {
                     // If the published version is already stored, we can return it.
-                    if (_contentManagerSession.RecallPublishedItemId(contentItemId, out var contentItem))
+                    if (_contentManagerSession.RecallPublishedItemId(itemId, out var contentItem))
                     {
                         storedItems ??= new List<ContentItem>();
-
                         storedItems.Add(contentItem);
                     }
                 }
 
                 // Only query the ids not already stored.
                 var itemIdsToQuery = storedItems is not null
-                    ? allItemIds.Except(storedItems.Select(c => c.ContentItemId)).ToList()
-                    : allItemIds;
+                    ? itemIds.Except(storedItems.Select(c => c.ContentItemId)).ToArray()
+                    : itemIds;
 
-                if (itemIdsToQuery.Any())
+                if (itemIdsToQuery.Length > 0)
                 {
                     contentItems = (await _session
                        .Query<ContentItem, ContentItemIndex>()
                        .Where(i => i.ContentItemId.IsIn(itemIdsToQuery) && i.Published == true)
-                       .ListAsync())
-                       .ToList();
+                       .ListAsync()
+                       ).ToList();
                 }
             }
 
@@ -159,7 +158,7 @@ namespace OrchardCore.ContentManagement
                 return Enumerable.Empty<ContentItem>();
             }
 
-            return contentItems.OrderBy(c => allItemIds.IndexOf(c.ContentItemId));
+            return contentItems.OrderBy(c => Array.IndexOf(itemIds, c.ContentItemId));
         }
 
         public async Task<ContentItem> GetAsync(string contentItemId, VersionOptions options)
