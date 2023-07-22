@@ -512,7 +512,14 @@ namespace OrchardCore.Environment.Shell.Scope
 
             _disposed = true;
 
-            DisposeInternal();
+            _serviceScope.Dispose();
+
+            if (_shellTerminated)
+            {
+                ShellContext.Dispose();
+            }
+
+            Terminate();
         }
 
         public async ValueTask DisposeAsync()
@@ -524,25 +531,6 @@ namespace OrchardCore.Environment.Shell.Scope
 
             _disposed = true;
 
-            await DisposeInternalAsync();
-
-            GC.SuppressFinalize(this);
-        }
-
-        public void DisposeInternal()
-        {
-            _serviceScope.Dispose();
-
-            if (_shellTerminated)
-            {
-                ShellContext.Dispose();
-            }
-
-            Terminate();
-        }
-
-        public async ValueTask DisposeInternalAsync()
-        {
             await _serviceScope.DisposeAsync();
 
             if (_shellTerminated)

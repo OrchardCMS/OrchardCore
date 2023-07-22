@@ -238,38 +238,24 @@ namespace OrchardCore.Environment.Shell.Builders
 
         public void Dispose()
         {
-            if (_disposed)
-            {
-                return;
-            }
-
-            _disposed = true;
-
-            DisposeInternal();
-
+            Close();
             GC.SuppressFinalize(this);
         }
 
         public async ValueTask DisposeAsync()
         {
+            await CloseAsync();
+            GC.SuppressFinalize(this);
+        }
+
+        private void Close()
+        {
             if (_disposed)
             {
                 return;
             }
 
             _disposed = true;
-
-            await DisposeInternalAsync();
-
-            GC.SuppressFinalize(this);
-        }
-
-        public void DisposeInternal()
-        {
-            if (_disposed)
-            {
-                return;
-            }
 
             // Disposes all the services registered for this shell.
             if (ServiceProvider is IDisposable disposable)
@@ -280,12 +266,14 @@ namespace OrchardCore.Environment.Shell.Builders
             Terminate();
         }
 
-        public async ValueTask DisposeInternalAsync()
+        private async ValueTask CloseAsync()
         {
             if (_disposed)
             {
                 return;
             }
+
+            _disposed = true;
 
             // Disposes all the services registered for this shell.
             if (ServiceProvider is IAsyncDisposable asyncDisposable)
@@ -308,9 +296,6 @@ namespace OrchardCore.Environment.Shell.Builders
             Pipeline = null;
         }
 
-        ~ShellContext()
-        {
-            DisposeInternal();
-        }
+        ~ShellContext() => Close();
     }
 }
