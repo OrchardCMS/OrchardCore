@@ -152,6 +152,7 @@ namespace OrchardCore.Media.Controllers
 
             return await _chunkFileUploadService.ProcessRequestAsync(
                 Request,
+
                 // We need this empty object because the frontend expects a JSON object in the response.
                 (_, _, _) => Task.FromResult<IActionResult>(Ok(new { })),
                 async (files) =>
@@ -163,11 +164,9 @@ namespace OrchardCore.Media.Controllers
 
                     var result = new List<object>();
 
-                    // Loop through each file in the request
+                    // Loop through each file in the request.
                     foreach (var file in files)
                     {
-                        // TODO: support clipboard
-
                         if (!_allowedFileExtensions.Contains(Path.GetExtension(file.FileName), StringComparer.OrdinalIgnoreCase))
                         {
                             result.Add(new
@@ -178,7 +177,10 @@ namespace OrchardCore.Media.Controllers
                                 error = S["This file extension is not allowed: {0}", Path.GetExtension(file.FileName)].ToString()
                             });
 
-                            _logger.LogInformation("File extension not allowed: '{File}'", file.FileName);
+                            if (_logger.IsEnabled(LogLevel.Information))
+                            {
+                                _logger.LogInformation("File extension not allowed: '{File}'", file.FileName);
+                            }
 
                             continue;
                         }

@@ -11,24 +11,27 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Services;
 
 public class ChunkFileUploadService : IChunkFileUploadService
 {
-    private const String UploadIdFormKey = "__chunkedFileUploadId";
-    private const String TempFolderPrefix = "ChunkedFileUploads";
-    private static readonly SemaphoreSlim _purgeLock = new(1, 1);
-    private readonly IOptions<MediaOptions> _options;
-    private readonly ILogger _logger;
+    private const string UploadIdFormKey = "__chunkedFileUploadId";
+    private const string TempFolderPrefix = "ChunkedFileUploads";
+    private readonly ShellSettings _shellSettings;
     private readonly IClock _clock;
+    private readonly ILogger _logger;
+    private readonly IOptions<MediaOptions> _options;
 
     public ChunkFileUploadService(
+        ShellSettings shellSettings,
         IClock clock,
         ILogger<ChunkFileUploadService> logger,
         IOptions<MediaOptions> options)
     {
+        _shellSettings = shellSettings;
         _clock = clock;
         _logger = logger;
         _options = options;
@@ -41,25 +44,25 @@ public class ChunkFileUploadService : IChunkFileUploadService
     {
         var contentRangeHeader = request.Headers.ContentRange;
 
-        if (_options.Value.MaxUploadChunkSize <= 0
-            || contentRangeHeader.Count is 0
-            || !request.Form.TryGetValue(UploadIdFormKey, out var uploadIdValue))
+        if (_options.Value.MaxUploadChunkSize <= 0 ||
+            contentRangeHeader.Count is 0 ||
+            !request.Form.TryGetValue(UploadIdFormKey, out var uploadIdValue))
         {
             return await completedAsync(request.Form.Files);
         }
 
-        if (request.Form.Files.Count != 1
-            || !ContentRangeHeaderValue.TryParse(contentRangeHeader, out var contentRange)
-            || !Guid.TryParse(uploadIdValue, out var uploadId)
-            || !contentRange.HasLength
-            || !contentRange.HasRange
-            || contentRange.Length > _options.Value.MaxFileSize
-            || contentRange.To - contentRange.From > _options.Value.MaxUploadChunkSize)
+        if (request.Form.Files.Count != 1 ||
+            !ContentRangeHeaderValue.TryParse(contentRangeHeader, out var contentRange) ||
+            !Guid.TryParse(uploadIdValue, out var uploadId) ||
+            !contentRange.HasLength ||
+            !contentRange.HasRange ||
+            contentRange.Length > _options.Value.MaxFileSize ||
+            contentRange.To - contentRange.From > _options.Value.MaxUploadChunkSize)
         {
             return new BadRequestResult();
         }
 
-        var formFile = request.Form.Files.First();
+        var formFile = request.Form.Files[0];
         using (var fileStream = GetOrCreateTemporaryFile(
             uploadId,
             formFile,
@@ -79,73 +82,64 @@ public class ChunkFileUploadService : IChunkFileUploadService
         IFormFile formFile,
         Func<IEnumerable<IFormFile>, Task<IActionResult>> completedAsync)
     {
-        var chunkedFormFile = GetTemporaryFileForRead(uploadId, formFile);
-
         try
         {
+            using var chunkedFormFile = GetTemporaryFileForRead(uploadId, formFile);
+
             return await completedAsync(new[] { chunkedFormFile });
         }
         finally
         {
-            chunkedFormFile.Dispose();
             DeleteTemporaryFile(uploadId, formFile);
-            PurgeTempDirectory();
         }
     }
 
     public void PurgeTempDirectory()
     {
-        if (_purgeLock.CurrentCount == 0)
+        var tempFolderPath = GetTempFolderPath();
+        if (_options.Value.TemporaryFileLifetime <= TimeSpan.Zero ||
+            !Directory.Exists(tempFolderPath))
         {
             return;
         }
 
-        _purgeLock.Wait();
+        var tempFiles = Directory.GetFiles(tempFolderPath, $"{_shellSettings.TenantId}_*")
+            .Select(filePath => new FileInfo(filePath))
+            .Where(fileInfo => fileInfo.LastWriteTimeUtc + _options.Value.TemporaryFileLifetime < _clock.UtcNow)
+            .ToArray();
 
-        try
+        foreach (var tempFile in tempFiles)
         {
-            var tempFolderPath = GetTempFolderPath();
-            if (_options.Value.TemporaryFileLifetime <= TimeSpan.Zero
-                || !Directory.Exists(tempFolderPath))
+            if (!DeleteTemporaryFile(tempFile.FullName))
             {
-                return;
+                break;
             }
-
-            var tempFiles = Directory.GetFiles(tempFolderPath)
-                .Select(filePath => new FileInfo(filePath))
-                .Where(fileInfo => fileInfo.LastWriteTimeUtc + _options.Value.TemporaryFileLifetime < _clock.UtcNow)
-                .ToList();
-
-            foreach (var tempFile in tempFiles)
-            {
-                DeleteTemporaryFile(tempFile.FullName);
-            }
-        }
-        finally
-        {
-            _purgeLock.Release();
         }
     }
 
-    private void DeleteTemporaryFile(Guid uploadId, IFormFile formFile) =>
+    private bool DeleteTemporaryFile(Guid uploadId, IFormFile formFile) =>
         DeleteTemporaryFile(GetTempFilePath(uploadId, formFile));
 
-    private void DeleteTemporaryFile(string tempFilePath)
+    private bool DeleteTemporaryFile(string tempFilePath)
     {
         try
         {
             File.Delete(tempFilePath);
         }
-        catch (Exception exception)
+        catch (Exception exception) when (exception.IsFileSharingViolation())
         {
             _logger.LogError(
                 exception,
                 "An error occurred while deleting the temporary file '{TempFilePath}'.",
                 tempFilePath);
+
+            return false;
         }
+
+        return true;
     }
 
-    private static Stream GetOrCreateTemporaryFile(Guid uploadId, IFormFile formFile, long size)
+    private Stream GetOrCreateTemporaryFile(Guid uploadId, IFormFile formFile, long size)
     {
         var siteTempFolderPath = GetTempFolderPath();
 
@@ -163,7 +157,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
         };
     }
 
-    private static ChunkedFormFile GetTemporaryFileForRead(Guid uploadId, IFormFile formFile)
+    private ChunkedFormFile GetTemporaryFileForRead(Guid uploadId, IFormFile formFile)
     {
         var tempFilePath = GetTempFilePath(uploadId, formFile);
 
@@ -177,22 +171,13 @@ public class ChunkFileUploadService : IChunkFileUploadService
         };
     }
 
-    private static string GetTempFolderPath()
-    {
-        var siteTempFolderPath = Path.Combine(Path.GetTempPath(), TempFolderPrefix);
+    private static string GetTempFolderPath() =>
+        Path.Combine(Path.GetTempPath(), TempFolderPrefix);
 
-        return siteTempFolderPath;
-    }
-
-    private static string GetTempFilePath(Guid uploadId, IFormFile formFile)
-    {
-        var siteTempFolderPath = GetTempFolderPath();
-        var tempFilePath = Path.Combine(
-            siteTempFolderPath,
-            CalculateHash(uploadId.ToString(), formFile.FileName, formFile.Name));
-
-        return tempFilePath;
-    }
+    private string GetTempFilePath(Guid uploadId, IFormFile formFile) =>
+        Path.Combine(
+            GetTempFolderPath(),
+            $"{_shellSettings.TenantId}_{CalculateHash(uploadId.ToString(), formFile.FileName, formFile.Name)}");
 
     private static Stream CreateTemporaryFile(string tempPath, long size)
     {
@@ -207,56 +192,51 @@ public class ChunkFileUploadService : IChunkFileUploadService
 
     private static string CalculateHash(params string[] parts)
     {
-        using var sha256 = SHA256.Create();
-        var hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(String.Join(String.Empty, parts)));
+        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(String.Join(String.Empty, parts)));
 
         return Convert.ToHexString(hash);
     }
-}
 
-internal sealed class ChunkedFormFile : IFormFile, IDisposable
-{
-    private readonly Stream _stream;
-    private bool _disposed;
-
-    public string ContentType { get; set; }
-
-    public string ContentDisposition { get; set; }
-
-    public IHeaderDictionary Headers { get; set; }
-
-    public long Length => _stream.Length;
-
-    public string Name { get; set; }
-
-    public string FileName { get; set; }
-
-    public ChunkedFormFile(Stream stream) =>
-        _stream = stream;
-
-    public void CopyTo(Stream target) =>
-        _stream.CopyTo(target);
-
-    public Task CopyToAsync(Stream target, CancellationToken cancellationToken = default) =>
-        _stream.CopyToAsync(target, cancellationToken);
-
-    public Stream OpenReadStream() =>
-        _stream;
-
-    private void Dispose(bool disposing)
+    private sealed class ChunkedFormFile : IFormFile, IDisposable
     {
-        if (!_disposed)
+        private readonly Stream _stream;
+        private bool _disposed;
+
+        public string ContentType { get; set; }
+
+        public string ContentDisposition { get; set; }
+
+        public IHeaderDictionary Headers { get; set; }
+
+        public long Length => _stream.Length;
+
+        public string Name { get; set; }
+
+        public string FileName { get; set; }
+
+        public ChunkedFormFile(Stream stream) =>
+            _stream = stream;
+
+        public void CopyTo(Stream target) =>
+            _stream.CopyTo(target);
+
+        public Task CopyToAsync(Stream target, CancellationToken cancellationToken = default) =>
+            _stream.CopyToAsync(target, cancellationToken);
+
+        public Stream OpenReadStream() =>
+            _stream;
+
+        public void Dispose()
         {
-            if (disposing)
+            if (_disposed)
             {
-                _stream?.Dispose();
+                return;
             }
+
+            _stream?.Dispose();
 
             _disposed = true;
         }
     }
-
-    public void Dispose() =>
-        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        Dispose(disposing: true);
 }
+
