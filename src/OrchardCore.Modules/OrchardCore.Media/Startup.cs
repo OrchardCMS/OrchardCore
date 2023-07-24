@@ -188,7 +188,7 @@ namespace OrchardCore.Media
             services.AddScoped<IMediaNameNormalizerService, NullMediaNameNormalizerService>();
 
             services.AddScoped<IUserAssetFolderNameProvider, DefaultUserAssetFolderNameProvider>();
-            services.AddTransient<IChunkFileUploadService, ChunkFileUploadService>();
+            services.AddSingleton<IChunkFileUploadService, ChunkFileUploadService>();
             services.AddSingleton<IBackgroundTask, ChunkFileUploadBackgroundTask>();
         }
 

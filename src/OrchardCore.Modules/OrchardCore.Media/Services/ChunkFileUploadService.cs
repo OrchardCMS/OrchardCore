@@ -20,10 +20,10 @@ public class ChunkFileUploadService : IChunkFileUploadService
 {
     private const string UploadIdFormKey = "__chunkedFileUploadId";
     private const string TempFolderPrefix = "ChunkedFileUploads";
-    private readonly ShellSettings _shellSettings;
     private readonly IClock _clock;
     private readonly ILogger _logger;
     private readonly IOptions<MediaOptions> _options;
+    private readonly string _tempFileNamePrefix;
 
     public ChunkFileUploadService(
         ShellSettings shellSettings,
@@ -31,10 +31,11 @@ public class ChunkFileUploadService : IChunkFileUploadService
         ILogger<ChunkFileUploadService> logger,
         IOptions<MediaOptions> options)
     {
-        _shellSettings = shellSettings;
         _clock = clock;
         _logger = logger;
         _options = options;
+
+        _tempFileNamePrefix = $"{shellSettings.TenantId}_";
     }
 
     public async Task<IActionResult> ProcessRequestAsync(
@@ -103,7 +104,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
             return;
         }
 
-        var tempFiles = Directory.GetFiles(tempFolderPath, $"{_shellSettings.TenantId}_*")
+        var tempFiles = Directory.GetFiles(tempFolderPath, $"{_tempFileNamePrefix}*")
             .Select(filePath => new FileInfo(filePath))
             .Where(fileInfo => fileInfo.LastWriteTimeUtc + _options.Value.TemporaryFileLifetime < _clock.UtcNow)
             .ToArray();
@@ -125,18 +126,25 @@ public class ChunkFileUploadService : IChunkFileUploadService
         try
         {
             File.Delete(tempFilePath);
+
+            return true;
         }
         catch (Exception exception) when (exception.IsFileSharingViolation())
         {
             _logger.LogError(
                 exception,
+                "Sharing violation while deleting the temporary file '{TempFilePath}'.",
+                tempFilePath);
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(
+                exception,
                 "An error occurred while deleting the temporary file '{TempFilePath}'.",
                 tempFilePath);
-
-            return false;
         }
 
-        return true;
+        return false;
     }
 
     private Stream GetOrCreateTemporaryFile(Guid uploadId, IFormFile formFile, long size)
@@ -177,7 +185,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
     private string GetTempFilePath(Guid uploadId, IFormFile formFile) =>
         Path.Combine(
             GetTempFolderPath(),
-            $"{_shellSettings.TenantId}_{CalculateHash(uploadId.ToString(), formFile.FileName, formFile.Name)}");
+            $"{_tempFileNamePrefix}{CalculateHash(uploadId.ToString(), formFile.FileName, formFile.Name)}");
 
     private static Stream CreateTemporaryFile(string tempPath, long size)
     {
@@ -232,11 +240,9 @@ public class ChunkFileUploadService : IChunkFileUploadService
             {
                 return;
             }
+            _disposed = true;
 
             _stream?.Dispose();
-
-            _disposed = true;
         }
     }
 }
-
