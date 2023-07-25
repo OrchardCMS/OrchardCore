@@ -2735,6 +2735,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "BinderDyn",
+      "name": "Marvin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/43495737?v=4",
+      "profile": "https://github.com/BinderDyn",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
