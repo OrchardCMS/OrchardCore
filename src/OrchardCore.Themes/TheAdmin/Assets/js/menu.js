@@ -54,7 +54,7 @@ function setCompactStatus(explicit) {
     // We want it expanded so that hovering over the root buttons shows the full submenu
     $('#left-nav ul.menu-admin > li > figure > ul').removeClass('collapse');
     // When hovering, don't want toggling when clicking on label
-    $('#left-nav ul.menu-admin > li > figure > figcaption > a').attr('data-toggle', '');
+    $('#left-nav ul.menu-admin > li > figure > figcaption > a').attr('data-bs-toggle', '');
     $('#left-nav li.has-items').removeClass("visible");
 
     //after menu has collapsed we set the transitions to none so that we don't do any transition
@@ -74,7 +74,7 @@ function unSetCompactStatus() {
 
     // resetting what we disabled for compact state
     $('#left-nav ul.menu-admin > li > figure > ul').addClass('collapse');    
-    $('#left-nav ul.menu-admin > li > figure > figcaption a').attr('data-toggle', 'collapse');
+    $('#left-nav ul.menu-admin > li > figure > figcaption a').attr('data-bs-toggle', 'collapse');
     $('#left-nav li.has-items').removeClass("visible");
     $('#left-nav > ul > li').css("transition", "");
 

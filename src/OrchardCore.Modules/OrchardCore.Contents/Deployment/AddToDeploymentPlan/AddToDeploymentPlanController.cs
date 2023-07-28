@@ -1,10 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
@@ -25,7 +25,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
         private readonly ISession _session;
         private readonly IEnumerable<IDeploymentStepFactory> _factories;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
 
         public AddToDeploymentPlanController(
             IAuthorizationService authorizationService,
@@ -75,7 +75,15 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
                 return Forbid();
             }
 
-            var step = (ContentItemDeploymentStep)_factories.FirstOrDefault(x => x.Name == nameof(ContentItemDeploymentStep)).Create();
+            var stepFactory = _factories.FirstOrDefault(x => x.Name == nameof(ContentItemDeploymentStep));
+
+            if (stepFactory == null)
+            {
+                return BadRequest();
+            }
+
+            var step = (ContentItemDeploymentStep)stepFactory.Create();
+
             step.ContentItemId = contentItem.ContentItemId;
 
             deploymentPlan.DeploymentSteps.Add(step);

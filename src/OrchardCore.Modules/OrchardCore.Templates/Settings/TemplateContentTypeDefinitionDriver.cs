@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Templates.ViewModels;
@@ -9,7 +8,7 @@ namespace OrchardCore.Templates.Settings
 {
     public class TemplateContentTypeDefinitionDriver : ContentTypeDefinitionDisplayDriver
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public TemplateContentTypeDefinitionDriver(IStringLocalizer<TemplateContentTypeDefinitionDriver> localizer)
         {
@@ -20,9 +19,7 @@ namespace OrchardCore.Templates.Settings
         {
             return Initialize<ContentSettingsViewModel>("TemplateSettings", model =>
             {
-                var stereotype = contentTypeDefinition.GetSettings<ContentTypeSettings>().Stereotype;
-
-                if (string.IsNullOrWhiteSpace(stereotype))
+                if (!contentTypeDefinition.TryGetStereotype(out var stereotype))
                 {
                     stereotype = "Content";
                 }

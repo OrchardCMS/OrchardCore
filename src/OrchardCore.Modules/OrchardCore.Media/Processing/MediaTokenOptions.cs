@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Media.Processing
 {
     public class MediaTokenOptions

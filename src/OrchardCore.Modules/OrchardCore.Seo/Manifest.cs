@@ -5,7 +5,11 @@ using OrchardCore.Modules.Manifest;
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
-    Description = "Provides SEO Meta features",
+    Description = "Provides SEO meta features",
     Category = "Content Management",
-    Dependencies = new string[] { "OrchardCore.Contents "}
+    Dependencies = new string[]
+    {
+        "OrchardCore.Contents",
+        "OrchardCore.Recipes.Core",
+    }
 )]

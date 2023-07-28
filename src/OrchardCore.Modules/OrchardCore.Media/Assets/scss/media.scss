@@ -20,7 +20,7 @@
     @import "modal-view.scss";
     @import "utils.scss";
 }
-
+ 
 :root[data-theme='darkmode'] {
     // media variables
     @import "variables_dark.scss";
@@ -42,4 +42,9 @@
     @import "media-field.scss";
     @import "modal-view.scss";
     @import "utils.scss";
+}
+
+[dir="rtl"]:root[data-theme='default'] #mediaApp, [dir="rtl"]:root[data-theme='darkmode'] #mediaApp {
+    left: 0;
+    right: 259px;
 }

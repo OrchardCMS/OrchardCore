@@ -17,7 +17,7 @@ namespace OrchardCore.Configuration.KeyVault.Extensions
         /// <returns>The web host builder.</returns>
         public static IHostBuilder AddOrchardCoreAzureKeyVault(this IHostBuilder builder)
         {
-            if (builder == null) 
+            if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
@@ -35,7 +35,7 @@ namespace OrchardCore.Configuration.KeyVault.Extensions
         /// <returns>The web host builder.</returns>
         public static IHostBuilder AddOrchardCoreAzureKeyVault(this IHostBuilder builder, TokenCredential tokenCredential)
         {
-            if (builder == null) 
+            if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }

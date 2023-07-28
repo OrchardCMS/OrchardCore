@@ -9,7 +9,7 @@ namespace OrchardCore.Microsoft.Authentication.Deployment
     {
         public AzureADDeploymentStep()
         {
-            Name = "Azure AD";
+            Name = "Microsoft Entra ID";
         }
     }
 }

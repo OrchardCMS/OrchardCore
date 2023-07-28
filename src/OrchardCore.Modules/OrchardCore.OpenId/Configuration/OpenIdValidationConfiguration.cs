@@ -9,13 +9,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
+using OpenIddict.Abstractions;
 using OpenIddict.Validation;
 using OpenIddict.Validation.AspNetCore;
 using OpenIddict.Validation.DataProtection;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
@@ -105,6 +104,7 @@ namespace OrchardCore.OpenId.Configuration
             if (settings.Authority != null)
             {
                 options.Issuer = settings.Authority;
+                options.ConfigurationEndpoint = settings.MetadataAddress;
                 options.Audiences.Add(settings.Audience);
 
                 // Note: OpenIddict 3.0 only accepts tokens issued with a non-empty token type (e.g "at+jwt")
@@ -139,10 +139,9 @@ namespace OrchardCore.OpenId.Configuration
                     return;
                 }
 
-                options.Configuration = new OpenIdConnectConfiguration
-                {
-                    Issuer = configuration.Authority?.AbsoluteUri
-                };
+                options.Configuration = new OpenIddictConfiguration();
+
+                options.Issuer = configuration.Authority;
 
                 // Import the signing keys from the OpenID server configuration.
                 foreach (var key in await service.GetSigningKeysAsync())
@@ -249,7 +248,7 @@ namespace OrchardCore.OpenId.Configuration
             var settings = await service.GetSettingsAsync();
             if ((await service.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
             {
-                if (_shellSettings.State == TenantState.Running)
+                if (_shellSettings.IsRunning())
                 {
                     _logger.LogWarning("The OpenID Connect module is not correctly configured.");
                 }
@@ -265,7 +264,7 @@ namespace OrchardCore.OpenId.Configuration
             var settings = await _validationService.GetSettingsAsync();
             if ((await _validationService.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
             {
-                if (_shellSettings.State == TenantState.Running)
+                if (_shellSettings.IsRunning())
                 {
                     _logger.LogWarning("The OpenID Connect module is not correctly configured.");
                 }

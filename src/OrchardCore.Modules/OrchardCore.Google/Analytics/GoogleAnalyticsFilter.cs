@@ -1,5 +1,7 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -32,11 +34,13 @@ namespace OrchardCore.Google.Analytics
             if ((context.Result is ViewResult || context.Result is PageResult) &&
                 !AdminAttribute.IsApplied(context.HttpContext))
             {
-                if (_scriptsCache == null)
+                var canTrack = context.HttpContext.Features.Get<ITrackingConsentFeature>()?.CanTrack ?? true;
+
+                if (_scriptsCache == null && canTrack)
                 {
                     var settings = (await _siteService.GetSiteSettingsAsync()).As<GoogleAnalyticsSettings>();
 
-                    if (!string.IsNullOrWhiteSpace(settings?.TrackingID))
+                    if (!String.IsNullOrWhiteSpace(settings?.TrackingID))
                     {
                         _scriptsCache = new HtmlString($"<!-- Global site tag (gtag.js) - Google Analytics -->\n<script async src=\"https://www.googletagmanager.com/gtag/js?id={settings.TrackingID}\"></script>\n<script>window.dataLayer = window.dataLayer || [];function gtag() {{ dataLayer.push(arguments); }}gtag('js', new Date());gtag('config', '{settings.TrackingID}')</script>\n<!-- End Global site tag (gtag.js) - Google Analytics -->");
                     }

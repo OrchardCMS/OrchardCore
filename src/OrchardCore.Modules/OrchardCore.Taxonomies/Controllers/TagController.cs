@@ -8,7 +8,7 @@ using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Modules;
 using OrchardCore.Taxonomies.Models;
@@ -52,18 +52,15 @@ namespace OrchardCore.Taxonomies.Controllers
                 return Unauthorized();
             }
 
-            ContentItem taxonomy;
-
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Taxonomy");
+            var versionOption = VersionOptions.Latest;
 
-            if (!contentTypeDefinition.GetSettings<ContentTypeSettings>().Draftable)
+            if (contentTypeDefinition.IsDraftable())
             {
-                taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
+                versionOption = VersionOptions.DraftRequired;
             }
-            else
-            {
-                taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.DraftRequired);
-            }
+
+            var taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, versionOption);
 
             if (taxonomy == null)
             {
@@ -94,7 +91,7 @@ namespace OrchardCore.Taxonomies.Controllers
             taxonomy.Alter<TaxonomyPart>(part => part.Terms.Add(contentItem));
 
             // Auto publish draftable taxonomies when creating a new tag term.
-            if (contentTypeDefinition.GetSettings<ContentTypeSettings>().Draftable)
+            if (contentTypeDefinition.IsDraftable())
             {
                 await _contentManager.PublishAsync(taxonomy);
             }

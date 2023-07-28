@@ -56,3 +56,20 @@ If no value is provided, setup Callback URL in Google API to use the default pat
 
 + If you want to enable new users to register to the site through their Google account, the `OrchardCore.Users.Registration` feature must be enabled and setup accordingly.
 + An existing user can link his account to his Google account through the External Logins link from User menu.
+
+## Google Settings Configuration
+
+The `OrchardCore.Google` module allows the user to use configuration values to override the settings configured from the admin area by calling the `ConfigureGoogleSettings()` extension method on `OrchardCoreBuilder` when initializing the app.
+
+The following configuration values can be customized:
+
+```json
+    "OrchardCore_Google": {
+      "ClientID": "",
+      "ClientSecret": "",
+      "CallbackPath": "/signin-google",
+      "SaveTokens": false
+    }
+```
+
+For more information please refer to [Configuration](../../core/Configuration/README.md).

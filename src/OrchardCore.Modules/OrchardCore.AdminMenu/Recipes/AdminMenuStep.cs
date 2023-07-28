@@ -1,10 +1,11 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OrchardCore.AdminMenu.Services;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
-using OrchardCore.AdminMenu.Services;
 
 namespace OrchardCore.AdminMenu.Recipes
 {
@@ -31,7 +32,7 @@ namespace OrchardCore.AdminMenu.Recipes
 
             var serializer = new JsonSerializer() { TypeNameHandling = TypeNameHandling.Auto };
 
-            foreach (JObject token in model.Data)
+            foreach (var token in model.Data.Cast<JObject>())
             {
                 var adminMenu = token.ToObject<Models.AdminMenu>(serializer);
 

@@ -17,10 +17,7 @@ namespace OrchardCore.Modules
     {
         private readonly IApplicationContext _applicationContext;
 
-        public ModuleEmbeddedFileProvider(IApplicationContext applicationContext)
-        {
-            _applicationContext = applicationContext;
-        }
+        public ModuleEmbeddedFileProvider(IApplicationContext applicationContext) => _applicationContext = applicationContext;
 
         private Application Application => _applicationContext.Application;
 
@@ -51,11 +48,11 @@ namespace OrchardCore.Modules
             else if (folder.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
             {
                 // Skip "Areas/" from the folder path.
-                var path = folder.Substring(Application.ModulesRoot.Length);
+                var path = folder[Application.ModulesRoot.Length..];
                 var index = path.IndexOf('/');
 
                 // Resolve the module id and get all its asset paths.
-                var name = index == -1 ? path : path.Substring(0, index);
+                var name = index == -1 ? path : path[..index];
                 var paths = Application.GetModule(name).AssetPaths;
 
                 // Resolve all files and folders directly under this given folder.
@@ -82,17 +79,17 @@ namespace OrchardCore.Modules
             if (path.StartsWith(Application.ModulesRoot, StringComparison.Ordinal))
             {
                 // Skip the "Areas/" root.
-                path = path.Substring(Application.ModulesRoot.Length);
+                path = path[Application.ModulesRoot.Length..];
                 var index = path.IndexOf('/');
 
                 // "{ModuleId}/**/*.*".
                 if (index != -1)
                 {
                     // Resolve the module id.
-                    var module = path.Substring(0, index);
+                    var module = path[..index];
 
                     // Skip the module id to resolve the subpath.
-                    var fileSubPath = path.Substring(index + 1);
+                    var fileSubPath = path[(index + 1)..];
 
                     // If it is the app's module.
                     if (module == Application.Name)
@@ -109,14 +106,8 @@ namespace OrchardCore.Modules
             return new NotFoundFileInfo(subpath);
         }
 
-        public IChangeToken Watch(string filter)
-        {
-            return NullChangeToken.Singleton;
-        }
+        public IChangeToken Watch(string filter) => NullChangeToken.Singleton;
 
-        private string NormalizePath(string path)
-        {
-            return path.Replace('\\', '/').Trim('/').Replace("//", "/");
-        }
+        private static string NormalizePath(string path) => path.Replace('\\', '/').Trim('/').Replace("//", "/");
     }
 }

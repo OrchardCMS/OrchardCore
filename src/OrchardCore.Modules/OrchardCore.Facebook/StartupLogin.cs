@@ -13,7 +13,6 @@ using OrchardCore.Facebook.Login.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
-using OrchardCore.Recipes.Services;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Facebook

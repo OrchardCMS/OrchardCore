@@ -2,21 +2,24 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.AutoSetup.Options
 {
-    using System.Text.RegularExpressions;
-
     /// <summary>
     /// The tenant setup options.
     /// </summary>
     public class TenantSetupOptions
     {
+        private readonly string _requiredErrorMessageFormat = "The {0} field is required.";
+
+        private bool? _isDefault;
+
         /// <summary>
-        /// The Shell Name
+        /// The Shell Name.
         /// </summary>
         public string ShellName { get; set; }
 
@@ -56,6 +59,11 @@ namespace OrchardCore.AutoSetup.Options
         public string DatabaseTablePrefix { get; set; }
 
         /// <summary>
+        /// Gets or sets the database's schema.
+        /// </summary>
+        public string DatabaseSchema { get; set; }
+
+        /// <summary>
         /// Gets or sets the recipe name.
         /// </summary>
         public string RecipeName { get; set; }
@@ -76,14 +84,15 @@ namespace OrchardCore.AutoSetup.Options
         public string RequestUrlPrefix { get; set; }
 
         /// <summary>
-        /// Gets the Flag which indicates a Default/Root shell/tenant.
+        /// Gets or sets the name of the feature profile applied to the tenant. May be <see langword="null"/> or empty
+        /// for no profile being selected.
         /// </summary>
-        public bool IsDefault => ShellName == ShellHelper.DefaultShellName;
+        public string FeatureProfile { get; set; }
 
         /// <summary>
-        /// Error Message Format
+        /// Gets the Flag which indicates a Default/Root shell/tenant.
         /// </summary>
-        private readonly string RequiredErrorMessageFormat = "The {0} field is required.";
+        public bool IsDefault => _isDefault ??= ShellName.IsDefaultShellName();
 
         /// <summary>
         /// Tenant validation.
@@ -97,9 +106,9 @@ namespace OrchardCore.AutoSetup.Options
                 yield return new ValidationResult("ShellName Can not be empty and must contain characters only and no spaces.");
             }
 
-            if (!IsDefault && String.IsNullOrWhiteSpace(RequestUrlPrefix) && String.IsNullOrWhiteSpace(RequestUrlHost))
+            if (!IsDefault && ShellName.IsDefaultShellNameIgnoreCase())
             {
-                yield return new ValidationResult("RequestUrlPrefix or RequestUrlHost should be provided for no Default Tenant");
+                yield return new ValidationResult("The tenant name is in conflict with the 'Default' tenant name.");
             }
 
             if (!String.IsNullOrWhiteSpace(RequestUrlPrefix) && RequestUrlPrefix.Contains('/'))
@@ -109,43 +118,43 @@ namespace OrchardCore.AutoSetup.Options
 
             if (String.IsNullOrWhiteSpace(SiteName))
             {
-                yield return new ValidationResult(String.Format(RequiredErrorMessageFormat, nameof(SiteName)));
+                yield return new ValidationResult(String.Format(_requiredErrorMessageFormat, nameof(SiteName)));
             }
 
             if (String.IsNullOrWhiteSpace(AdminUsername))
             {
-                yield return new ValidationResult(String.Format(RequiredErrorMessageFormat, nameof(AdminUsername)));
+                yield return new ValidationResult(String.Format(_requiredErrorMessageFormat, nameof(AdminUsername)));
             }
 
             if (String.IsNullOrWhiteSpace(AdminEmail))
             {
-                yield return new ValidationResult(String.Format(RequiredErrorMessageFormat, nameof(AdminEmail)));
+                yield return new ValidationResult(String.Format(_requiredErrorMessageFormat, nameof(AdminEmail)));
             }
 
             if (String.IsNullOrWhiteSpace(AdminPassword))
             {
-                yield return new ValidationResult(String.Format(RequiredErrorMessageFormat, nameof(AdminPassword)));
+                yield return new ValidationResult(String.Format(_requiredErrorMessageFormat, nameof(AdminPassword)));
             }
 
             var selectedProvider = validationContext.GetServices<DatabaseProvider>().FirstOrDefault(x => x.Value == DatabaseProvider);
             if (selectedProvider == null)
             {
-                yield return new ValidationResult(String.Format(RequiredErrorMessageFormat, nameof(DatabaseProvider)));
+                yield return new ValidationResult(String.Format(_requiredErrorMessageFormat, nameof(DatabaseProvider)));
             }
 
             if (selectedProvider != null && selectedProvider.HasConnectionString && String.IsNullOrWhiteSpace(DatabaseConnectionString))
             {
-                yield return new ValidationResult(String.Format(RequiredErrorMessageFormat, nameof(DatabaseConnectionString)));
+                yield return new ValidationResult(String.Format(_requiredErrorMessageFormat, nameof(DatabaseConnectionString)));
             }
 
             if (String.IsNullOrWhiteSpace(RecipeName))
             {
-                yield return new ValidationResult(String.Format(RequiredErrorMessageFormat, nameof(RecipeName)));
+                yield return new ValidationResult(String.Format(_requiredErrorMessageFormat, nameof(RecipeName)));
             }
 
             if (String.IsNullOrWhiteSpace(SiteTimeZone))
             {
-                yield return new ValidationResult(String.Format(RequiredErrorMessageFormat, nameof(SiteTimeZone)));
+                yield return new ValidationResult(String.Format(_requiredErrorMessageFormat, nameof(SiteTimeZone)));
             }
         }
     }

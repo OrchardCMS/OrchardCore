@@ -21,13 +21,13 @@ namespace OrchardCore.Rules.Services
                     new StringNotEqualsOperatorComparer(),
                     typeof(StringNotEqualsOperator),
                     new ConditionOperatorFactory<StringNotEqualsOperator>()
-                ),                
+                ),
                 new ConditionOperatorOption<ConditionOperatorConfigureOptions>(
                     (S) => S["Starts with"],
                     new StringStartsWithOperatorComparer(),
                     typeof(StringStartsWithOperator),
                     new ConditionOperatorFactory<StringStartsWithOperator>()
-                ),           
+                ),
                 new ConditionOperatorOption<ConditionOperatorConfigureOptions>(
                     (S) => S["Does not start with"],
                     new StringNotStartsWithOperatorComparer(),
@@ -45,7 +45,7 @@ namespace OrchardCore.Rules.Services
                     new StringNotEndsWithOperatorComparer(),
                     typeof(StringNotEndsWithOperator),
                     new ConditionOperatorFactory<StringNotEndsWithOperator>()
-                ),                
+                ),
                 new ConditionOperatorOption<ConditionOperatorConfigureOptions>(
                     (S) => S["Contains"],
                     new StringContainsOperatorComparer(),
@@ -57,7 +57,7 @@ namespace OrchardCore.Rules.Services
                     new StringNotContainsOperatorComparer(),
                     typeof(StringNotContainsOperator),
                     new ConditionOperatorFactory<StringNotContainsOperator>()
-                )                
+                )
             });
         }
     }

@@ -7,9 +7,9 @@ namespace OrchardCore.Templates
 {
     public class AdminTemplatesAdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
-        public AdminTemplatesAdminMenu(IStringLocalizer<AdminMenu> localizer)
+        public AdminTemplatesAdminMenu(IStringLocalizer<AdminTemplatesAdminMenu> localizer)
         {
             S = localizer;
         }

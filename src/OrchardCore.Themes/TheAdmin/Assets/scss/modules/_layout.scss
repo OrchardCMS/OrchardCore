@@ -1,4 +1,4 @@
-.preload * { 
+.preload * {
     -webkit-transition: none !important;
     -moz-transition: none !important;
     -ms-transition: none !important;
@@ -9,6 +9,15 @@ body {
     margin-bottom: $footer-height;
     cursor: default;
     height: 100%;
+    font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+a {
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
 }
 
 @include cursor-class(move);
@@ -18,7 +27,6 @@ body {
 // -----------------------------
 
 .ta-wrapper {
-
 }
 
 .ta-content {
@@ -57,21 +65,14 @@ body {
 
 // Sortable
 // ------------------------------
-.ui-sortable {
-    min-height: $font-size-base;
-}
+// .ui-sortable {
+//     min-height: $font-size-base;
+// }
 
 .with-checkbox .list-group-item {
     padding: 0.75rem 0.5rem;
 }
 
-.properties {
-    @extend .w-100 !optional;
-}
-
-.related {
-    @extend .float-right !optional;
-}
 
 // No transitions on load
 // Prevents Firefox and Edge transitions on load.
@@ -89,7 +90,11 @@ body {
     z-index: $zindex-sticky;
 }
 
-.list-group-item+.list-group-item {
+.second-action-bar {
+    z-index: calc(#{$zindex-sticky} + 1);
+}
+
+.list-group-item + .list-group-item {
     border-top-width: 0px;
 }
 
@@ -117,7 +122,7 @@ svg {
             border-width: 5px;
             opacity: 1;
         }
-    }     
+    }
 }
 
 .btn-dropdown {
@@ -143,7 +148,8 @@ svg {
     z-index: 1000;
     opacity: 0.8;
     transition: 0.3s opacity;
-    > .btn-group {        
+
+    > .btn-group {
         margin: 0 auto;
         bottom: 17px;
     }
@@ -154,13 +160,25 @@ svg {
 }
 
 [dir="ltr"] .btn-dropdown {
-    >  .btn-group {
+    > .btn-group {
         left: calc(-14px + 50%);
     }
 }
 
 [dir="rtl"] .btn-dropdown {
-    >  .btn-group {
+    > .btn-group {
         right: calc(-14px + 50%);
     }
+}
+
+.btn:hover {
+    text-decoration: none;
+}
+
+.dropdown-item:hover {
+    text-decoration: none !important;
+}
+
+.unset {
+    all: unset;
 }

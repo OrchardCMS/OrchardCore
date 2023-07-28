@@ -78,17 +78,71 @@ In this example we exclude all Features starting with `MyModules.Custom.`, and t
 
 Rules are processed in the order they are supplied, so reversing the order of the above will cause the last rule, i.e. the `Exclude` rule to be applied, negating the `Include` rule.
 
+#### Defining Feature Profiles in Recipes
+
+By using the `FeatureProfiles` recipe step, you can define profiles from recipes as well (don't forget to also enable the `OrchardCore.Tenants.FeatureProfiles` feature in the recipe too):
+
+```json
+{
+  "name": "FeatureProfiles",
+  "FeatureProfiles": {
+    "my-profile": {
+      "FeatureRules": [
+        {
+          "Rule": "Exclude",
+          "Expression": "OrchardCore.Contents.FileContentDefinition"
+        },
+        {
+          "Rule": "Exclude",
+          "Expression": "OrchardCore.MiniProfiler"
+        },
+        {
+          "Rule": "Exclude",
+          "Expression": "OrchardCore.Placements.FileStorage"
+        },
+        {
+          "Rule": "Exclude",
+          "Expression": "OrchardCore.Tenants.FileProvider"
+        },
+        {
+          "Rule": "Exclude",
+          "Expression": "OrchardCore.Workflows.Session"
+        }
+      ]
+    }
+  }
+}
+```
+
 ### Selecting a feature profile
 
 1. Create a Feature Profile.
 2. Go to the _Configuration -> Tenants_ menu.
 3. Edit the tenant.
-4 Select a feature profile from the dropdown.
+4. Select a feature profile from the dropdown.
 
 The _Feature Profile_ drop down will only be available if at least one Feature Profile has been configured.
 
 A feature profile can also be set when creating a tenant via the web API.
 
+If you're using [Auto Setup](../AutoSetup/README.md), you can specify the `FeatureProfile` property for tenants as well; see the Auto Setup documentation for more information.
+
+## Tenant Removal
+
+Allows removing a tenant if it is not yet set up or is in the disabled state. By default, this feature is not allowed.
+
+Tenant Removal can be allowed from any configuration source (e.g. `appsettings.json`) under the `OrchardCore` section. See the [configuration documentation](../../core/Configuration/README.md) for details.
+
+```json
+{
+  "OrchardCore": {
+    "OrchardCore_Tenants": {
+      "TenantRemovalAllowed": false // Whether tenant removal is allowed or not. Default is false.
+    }
+  }
+}
+```
+
 ## Video
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/aQAjTG2ma64" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/aQAjTG2ma64" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

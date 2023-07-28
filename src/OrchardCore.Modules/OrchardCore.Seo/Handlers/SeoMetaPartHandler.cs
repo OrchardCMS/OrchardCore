@@ -77,10 +77,7 @@ namespace OrchardCore.Seo.Drivers
 
                 var actionContext = _actionContextAccessor.ActionContext;
 
-                if (actionContext == null)
-                {
-                    actionContext = await GetActionContextAsync(_httpContextAccessor.HttpContext);
-                }
+                actionContext ??= await GetActionContextAsync(_httpContextAccessor.HttpContext);
 
                 var urlHelper = _urlHelperFactory.GetUrlHelper(actionContext);
 
@@ -94,7 +91,7 @@ namespace OrchardCore.Seo.Drivers
                     var relativeUrl = urlHelper.RouteUrl(contentItemMetadata.DisplayRouteValues);
                     aspect.Canonical = urlHelper.ToAbsoluteUrl(relativeUrl);
                 }
-                
+
                 // OpenGraph
                 if (part.OpenGraphImage?.Paths?.Length > 0)
                 {

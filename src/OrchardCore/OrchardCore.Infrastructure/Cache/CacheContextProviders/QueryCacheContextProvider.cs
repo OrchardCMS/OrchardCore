@@ -29,13 +29,13 @@ namespace OrchardCore.Environment.Cache.CacheContextProviders
                         value: query[x].ToString().ToLowerInvariant())
                     ));
 
-                // If we track any query value, we don't need to look into specific ones
+                // If we track any query value, we don't need to look into specific ones.
                 return Task.CompletedTask;
             }
 
             foreach (var context in contexts.Where(ctx => ctx.StartsWith(QueryPrefix, StringComparison.OrdinalIgnoreCase)))
             {
-                var key = context.Substring(QueryPrefix.Length);
+                var key = context[QueryPrefix.Length..];
 
                 var httpContext = _httpContextAccessor.HttpContext;
                 var query = httpContext.Request.Query;

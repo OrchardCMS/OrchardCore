@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -39,7 +40,7 @@ namespace OrchardCore.Admin.Drivers
                 model.DisplayMenuFilter = settings.DisplayMenuFilter;
                 model.DisplayNewMenu = settings.DisplayNewMenu;
                 model.DisplayTitlesInTopbar = settings.DisplayTitlesInTopbar;
-                }).Location("Content:3").OnGroup(GroupId);
+            }).Location("Content:3").OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(AdminSettings settings, BuildEditorContext context)
@@ -51,7 +52,7 @@ namespace OrchardCore.Admin.Drivers
                 return null;
             }
 
-            if (context.GroupId == GroupId)
+            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
                 var model = new AdminSettingsViewModel();
 

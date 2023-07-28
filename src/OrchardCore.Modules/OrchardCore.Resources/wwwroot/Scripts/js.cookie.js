@@ -3,16 +3,13 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 /*! js-cookie v3.0.1 | MIT */
 ;
-
 (function (global, factory) {
   (typeof exports === "undefined" ? "undefined" : _typeof(exports)) === 'object' && typeof module !== 'undefined' ? module.exports = factory() : typeof define === 'function' && define.amd ? define(factory) : (global = global || self, function () {
     var current = global.Cookies;
     var exports = global.Cookies = factory();
-
     exports.noConflict = function () {
       global.Cookies = current;
       return exports;
@@ -20,30 +17,25 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }());
 })(this, function () {
   'use strict';
-  /* eslint-disable no-var */
 
+  /* eslint-disable no-var */
   function assign(target) {
     for (var i = 1; i < arguments.length; i++) {
       var source = arguments[i];
-
       for (var key in source) {
         target[key] = source[key];
       }
     }
-
     return target;
   }
   /* eslint-enable no-var */
 
   /* eslint-disable no-var */
-
-
   var defaultConverter = {
     read: function read(value) {
       if (value[0] === '"') {
         value = value.slice(1, -1);
       }
-
       return value.replace(/(%[\dA-F]{2})+/gi, decodeURIComponent);
     },
     write: function write(value) {
@@ -59,71 +51,57 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       if (typeof document === 'undefined') {
         return;
       }
-
       attributes = assign({}, defaultAttributes, attributes);
-
       if (typeof attributes.expires === 'number') {
         attributes.expires = new Date(Date.now() + attributes.expires * 864e5);
       }
-
       if (attributes.expires) {
         attributes.expires = attributes.expires.toUTCString();
       }
-
       key = encodeURIComponent(key).replace(/%(2[346B]|5E|60|7C)/g, decodeURIComponent).replace(/[()]/g, escape);
       var stringifiedAttributes = '';
-
       for (var attributeName in attributes) {
         if (!attributes[attributeName]) {
           continue;
         }
-
         stringifiedAttributes += '; ' + attributeName;
-
         if (attributes[attributeName] === true) {
           continue;
-        } // Considers RFC 6265 section 5.2:
+        }
+
+        // Considers RFC 6265 section 5.2:
         // ...
         // 3.  If the remaining unparsed-attributes contains a %x3B (";")
         //     character:
         // Consume the characters of the unparsed-attributes up to,
         // not including, the first %x3B (";") character.
         // ...
-
-
         stringifiedAttributes += '=' + attributes[attributeName].split(';')[0];
       }
-
       return document.cookie = key + '=' + converter.write(value, key) + stringifiedAttributes;
     }
-
     function get(key) {
       if (typeof document === 'undefined' || arguments.length && !key) {
         return;
-      } // To prevent the for loop in the first place assign an empty array
+      }
+
+      // To prevent the for loop in the first place assign an empty array
       // in case there are no cookies at all.
-
-
       var cookies = document.cookie ? document.cookie.split('; ') : [];
       var jar = {};
-
       for (var i = 0; i < cookies.length; i++) {
         var parts = cookies[i].split('=');
         var value = parts.slice(1).join('=');
-
         try {
           var foundKey = decodeURIComponent(parts[0]);
           jar[foundKey] = converter.read(value, foundKey);
-
           if (key === foundKey) {
             break;
           }
         } catch (e) {}
       }
-
       return key ? jar[key] : jar;
     }
-
     return Object.create({
       set: set,
       get: get,
@@ -147,7 +125,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       }
     });
   }
-
   var api = init(defaultConverter, {
     path: '/'
   });

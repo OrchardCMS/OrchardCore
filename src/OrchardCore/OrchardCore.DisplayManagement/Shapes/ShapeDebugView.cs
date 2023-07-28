@@ -47,13 +47,15 @@ namespace OrchardCore.DisplayManagement.Shapes
             }
 
             [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-            private string _key;
+#pragma warning disable IDE0052 // Remove unread private members
+            private readonly string _key;
+#pragma warning restore IDE0052 // Remove unread private members
 
             [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-            private object _shapeType;
+            private readonly object _shapeType;
 
             [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            private object _value;
+            private readonly object _value;
         }
     }
 }

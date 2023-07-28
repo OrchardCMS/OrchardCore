@@ -11,11 +11,11 @@ namespace OrchardCore.Locking
     /// <summary>
     /// This component is a tenant singleton which allows to acquire named locks for a given tenant.
     /// </summary>
-    public class LocalLock : IDistributedLock, ILocalLock, IDisposable
+    public sealed class LocalLock : IDistributedLock, ILocalLock, IDisposable
     {
         private readonly ILogger _logger;
 
-        private readonly Dictionary<string, Semaphore> _semaphores = new Dictionary<string, Semaphore>();
+        private readonly Dictionary<string, Semaphore> _semaphores = new();
 
         public LocalLock(ILogger<LocalLock> logger)
         {
@@ -49,7 +49,7 @@ namespace OrchardCore.Locking
 
             if (_logger.IsEnabled(LogLevel.Debug))
             {
-                _logger.LogWarning("Timeout elapsed before acquiring the named lock '{LockName}' after the given timeout of '{Timeout}'.",
+                _logger.LogDebug("Timeout elapsed before acquiring the named lock '{LockName}' after the given timeout of '{Timeout}'.",
                     key, timeout.ToString());
             }
 

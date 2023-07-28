@@ -154,6 +154,9 @@ The following JavaScript functions are available by default to any activity that
 | `input` | Returns the input parameter with the specified name. Input to the workflow is provided when the workflow is executed by the workflow manager. | `input(name: string): any` |
 | `output` | Sets an output parameter with the specified name. Workflow output can be collected by the invoker of the workflow. | `output(name: string, value: any): void` |
 | `property` | Returns the property value with the specified name. Properties are a dictionary that workflow activities can read and write information from and to. | `property(name: string): any` |
+| `setProperty` | Stores the specified data in workflow properties. | `setProperty(name: string,data:any):void` |
+| `executeQuery` | Returns the result of the query, see [more](../Queries/#scripting). | `executeQuery(name: String, parameters: Dictionary<string,object>): IEnumerable<object>` |
+| `log` | Output logs according to the specified log level. Allowed log levels : `'Trace','Debug','Information','Warning','Error','Critical','None'` | `log(level: string, text: string, param: object): void` |
 | `lastResult` | Returns the value that the previous activity provided, if any. | `lastResult(): any` |
 | `correlationId` | Returns the correlation value of the workflow instance. | `correlationId(): string` |
 | `signalUrl` | Returns workflow trigger URL with a protected SAS token into which the specified signal name is encoded. Use this to generate URLs that can be shared with trusted parties to trigger the current workflow if it is blocked on the Signal activity that is configured with the same signal name. | `signalUrl(signal: string): string` |
@@ -254,6 +257,29 @@ Developing custom activities involve the following steps:
 3. Optionally implement a **view model** if your activity has properties that the user should be able to configure.
 4. Implement the various Razor views for the various shapes provided by the driver. Although not required, it is recommended to store these files in the `Views/Items` folder. Note that it is required for your views to be discoverable by the display engine.  
 
+You may trigger a custom event activity by calling the `TriggerEventAsync` method on `IWorkflowManager`. The following is an example of how to trigger the workflow for a custom event named `CustomTaskActivity`
+
+```csharp
+var customData = new CustomDto();
+
+var input = new Dictionary<string, object>()
+{
+    // Here we are passing custom data to the workflow's input.
+    { "data", customData}
+};
+
+await workflowManager.TriggerEventAsync("CustomTaskActivity", input);
+```
+
+You may passing an instance of a custom object to the workflow's input by adding it to the input collection. If you are looking to use liquid to access the member of the custom object, you must register a member access strategy. The following example for defining a custom type.
+
+```csharp
+services.Configure<TemplateOptions>(o =>
+{
+    o.MemberAccessStrategy.Register<CustomDto>();
+});
+```
+
 ### Activity Display Types
 
 An activity has the following display types:
@@ -273,6 +299,7 @@ Used when the activity is rendered as part of the workflow editor design surface
 
 - `Name`
 - `Category`
+- `DisplayText`
 - `Properties`
 - `HasEditor`
 - `GetPossibleOutcomes`
@@ -287,11 +314,7 @@ Used when the activity is rendered as part of the workflow editor design surface
 - `OnActivityExecutingAsync`
 - `OnActivityExecutedAsync`
 
-The `IEvent` interface adds the following member:
-
-- `CanStartWorkflow`
-
-The following is an example of a simple activity implementation that displays a notification:
+The following is an example of a simple task activity implementation that displays a notification:
 
 ```csharp
 public class NotifyTask : TaskActivity
@@ -335,13 +358,13 @@ public class NotifyTask : TaskActivity
     }
 
     // Returns the possible outcomes of this activity.
-    public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext)
+    public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         return Outcomes(S["Done"]);
     }
 
     // This is the heart of the activity and actually performs the work to be done.
-    public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
+    public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         var message = await workflowContext.EvaluateExpressionAsync(Message);
         _notifier.Add(NotificationType, H[message]);
@@ -414,3 +437,9 @@ Continuing with the `NotifyTask` example, we now need to create the following Ra
 - `NotifyTask.Fields.Design.cshtml`
 - `NotifyTask.Fields.Thumbnail.cshtml`
 - `NotifyTask.Fields.Edit.cshtml`
+
+## Videos
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/n-O4WO6dVJk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/IcR-YpxKlGQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

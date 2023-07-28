@@ -67,20 +67,17 @@ namespace OrchardCore.Placements.Services
                             continue;
                         }
 
-                        if (placement == null)
+                        placement ??= new PlacementInfo
                         {
-                            placement = new PlacementInfo
-                            {
-                                Source = "OrchardCore.Placements"
-                            };
-                        }
+                            Source = "OrchardCore.Placements",
+                        };
 
-                        if (!string.IsNullOrEmpty(placementRule.Location))
+                        if (!String.IsNullOrEmpty(placementRule.Location))
                         {
                             placement.Location = placementRule.Location;
                         }
 
-                        if (!string.IsNullOrEmpty(placementRule.ShapeType))
+                        if (!String.IsNullOrEmpty(placementRule.ShapeType))
                         {
                             placement.ShapeType = placementRule.ShapeType;
                         }

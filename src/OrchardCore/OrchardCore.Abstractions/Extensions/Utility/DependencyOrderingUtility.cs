@@ -28,7 +28,7 @@ namespace OrchardCore.Environment.Extensions.Utility
                 Add(node, result, nodes, hasDependency);
             }
 
-            for (int index = 1; index < result.Count; index++)
+            for (var index = 1; index < result.Count; index++)
             {
                 MoveUp(result, index, LowestIndex(result, index, hasDependency, getPriority));
             }
@@ -55,8 +55,8 @@ namespace OrchardCore.Environment.Extensions.Utility
         {
             double priority = getPriority(list[index]);
 
-            int lowestIndex = index;
-            for (int i = index - 1; i >= 0; i--)
+            var lowestIndex = index;
+            for (var i = index - 1; i >= 0; i--)
             {
                 if (hasDependency(list[index], list[i]))
                 {
@@ -77,12 +77,12 @@ namespace OrchardCore.Environment.Extensions.Utility
         {
             if (index < lowerIndex)
             {
-                throw new ArgumentException("lowerIndex");
+                throw new ArgumentException("Should be higher or equal to 'lowerIndex'.", nameof(index));
             }
 
             if (index != lowerIndex)
             {
-                T temp = list[index];
+                var temp = list[index];
 
                 for (; index > lowerIndex; index--)
                 {

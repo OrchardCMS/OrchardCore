@@ -1,0 +1,23 @@
+@model ShowRecoveryCodesViewModel
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="TwoFactorAuthentication">@T["Two-Factor Authentication"]</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@RenderTitleSegments(T["Recovery Codes"])</li>
+    </ol>
+</nav>
+
+<div class="alert alert-warning" role="alert">
+    <p><strong>@T["Store these codes in a safe place."]</strong></p>
+    <p>@T["If you lose your device and don't have the recovery codes you will lose access to your account."]</p>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <p>@T["Any of the following codes can be used to login."]</p>
+        @foreach (var line in Model.RecoveryCodes)
+        {
+            <p class="mb-0"><code class="recovery-code">@line</code></p>
+        }
+    </div>
+</div>

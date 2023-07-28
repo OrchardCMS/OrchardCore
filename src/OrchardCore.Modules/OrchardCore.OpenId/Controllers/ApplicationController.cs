@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
@@ -14,13 +15,11 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
-using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.ViewModels;
 using OrchardCore.Security.Services;
-using OrchardCore.Settings;
 
 namespace OrchardCore.OpenId.Controllers
 {
@@ -28,18 +27,18 @@ namespace OrchardCore.OpenId.Controllers
     public class ApplicationController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-        private readonly ISiteService _siteService;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
+        private readonly PagerOptions _pagerOptions;
         private readonly IOpenIdApplicationManager _applicationManager;
         private readonly IOpenIdScopeManager _scopeManager;
         private readonly INotifier _notifier;
         private readonly ShellDescriptor _shellDescriptor;
-        private readonly dynamic New;
+        protected readonly dynamic New;
 
         public ApplicationController(
             IShapeFactory shapeFactory,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             IStringLocalizer<ApplicationController> stringLocalizer,
             IAuthorizationService authorizationService,
             IOpenIdApplicationManager applicationManager,
@@ -49,7 +48,7 @@ namespace OrchardCore.OpenId.Controllers
             ShellDescriptor shellDescriptor)
         {
             New = shapeFactory;
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
             S = stringLocalizer;
             H = htmlLocalizer;
             _authorizationService = authorizationService;
@@ -66,8 +65,7 @@ namespace OrchardCore.OpenId.Controllers
                 return Forbid();
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
             var count = await _applicationManager.CountAsync();
 
             var model = new OpenIdApplicationsIndexViewModel
@@ -134,18 +132,18 @@ namespace OrchardCore.OpenId.Controllers
                 return Forbid();
             }
 
-            if (!string.IsNullOrEmpty(model.ClientSecret) &&
-                 string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
+            if (!String.IsNullOrEmpty(model.ClientSecret) &&
+                 String.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError(nameof(model.ClientSecret), S["No client secret can be set for public applications."]);
             }
-            else if (string.IsNullOrEmpty(model.ClientSecret) &&
-                     string.Equals(model.Type, OpenIddictConstants.ClientTypes.Confidential, StringComparison.OrdinalIgnoreCase))
+            else if (String.IsNullOrEmpty(model.ClientSecret) &&
+                     String.Equals(model.Type, OpenIddictConstants.ClientTypes.Confidential, StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError(nameof(model.ClientSecret), S["The client secret is required for confidential applications."]);
             }
 
-            if (!string.IsNullOrEmpty(model.ClientId) && await _applicationManager.FindByClientIdAsync(model.ClientId) != null)
+            if (!String.IsNullOrEmpty(model.ClientId) && await _applicationManager.FindByClientIdAsync(model.ClientId) != null)
             {
                 ModelState.AddModelError(nameof(model.ClientId), S["The client identifier is already taken by another application."]);
             }
@@ -157,93 +155,32 @@ namespace OrchardCore.OpenId.Controllers
                 return View(model);
             }
 
-            var descriptor = new OpenIdApplicationDescriptor
+            var settings = new OpenIdApplicationSettings()
             {
+                AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow,
+                AllowClientCredentialsFlow = model.AllowClientCredentialsFlow,
+                AllowHybridFlow = model.AllowHybridFlow,
+                AllowImplicitFlow = model.AllowImplicitFlow,
+                AllowIntrospectionEndpoint = model.AllowIntrospectionEndpoint,
+                AllowLogoutEndpoint = model.AllowLogoutEndpoint,
+                AllowPasswordFlow = model.AllowPasswordFlow,
+                AllowRefreshTokenFlow = model.AllowRefreshTokenFlow,
+                AllowRevocationEndpoint = model.AllowRevocationEndpoint,
                 ClientId = model.ClientId,
                 ClientSecret = model.ClientSecret,
                 ConsentType = model.ConsentType,
                 DisplayName = model.DisplayName,
-                Type = model.Type
+                PostLogoutRedirectUris = model.PostLogoutRedirectUris,
+                RedirectUris = model.RedirectUris,
+                Roles = model.RoleEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
+                Scopes = model.ScopeEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
+                Type = model.Type,
+                RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange
             };
 
-            if (model.AllowLogoutEndpoint)
-            {
-                descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Logout);
-            }
-            if (model.AllowAuthorizationCodeFlow)
-            {
-                descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode);
-            }
-            if (model.AllowClientCredentialsFlow)
-            {
-                descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.ClientCredentials);
-            }
-            if (model.AllowImplicitFlow)
-            {
-                descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.Implicit);
-            }
-            if (model.AllowPasswordFlow)
-            {
-                descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.Password);
-            }
-            if (model.AllowRefreshTokenFlow)
-            {
-                descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.RefreshToken);
-            }
-            if (model.AllowAuthorizationCodeFlow || model.AllowImplicitFlow)
-            {
-                descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Authorization);
-            }
-            if (model.AllowAuthorizationCodeFlow || model.AllowClientCredentialsFlow ||
-                model.AllowPasswordFlow || model.AllowRefreshTokenFlow)
-            {
-                descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Token);
-            }
+            await _applicationManager.UpdateDescriptorFromSettings(settings);
 
-            if (model.AllowAuthorizationCodeFlow)
-            {
-                descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.Code);
-            }
-            if (model.AllowImplicitFlow)
-            {
-                descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.IdToken);
-
-                if (string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
-                {
-                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.IdTokenToken);
-                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.Token);
-                }
-            }
-            if (model.AllowHybridFlow)
-            {
-                descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeIdToken);
-
-                if (string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
-                {
-                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeIdTokenToken);
-                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeToken);
-                }
-            }
-
-            descriptor.PostLogoutRedirectUris.UnionWith(
-                from uri in model.PostLogoutRedirectUris?.Split(new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
-                select new Uri(uri, UriKind.Absolute));
-
-            descriptor.RedirectUris.UnionWith(
-                from uri in model.RedirectUris?.Split(new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
-                select new Uri(uri, UriKind.Absolute));
-
-            descriptor.Roles.UnionWith(model.RoleEntries
-                .Where(role => role.Selected)
-                .Select(role => role.Name));
-
-            descriptor.Permissions.UnionWith(model.ScopeEntries
-                .Where(scope => scope.Selected)
-                .Select(scope => OpenIddictConstants.Permissions.Prefixes.Scope + scope.Name));
-
-            await _applicationManager.CreateAsync(descriptor);
-
-            if (string.IsNullOrEmpty(returnUrl))
+            if (String.IsNullOrEmpty(returnUrl))
             {
                 return RedirectToAction(nameof(Index));
             }
@@ -265,22 +202,42 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             ValueTask<bool> HasPermissionAsync(string permission) => _applicationManager.HasPermissionAsync(application, permission);
+            ValueTask<bool> HasRequirementAsync(string requirement) => _applicationManager.HasRequirementAsync(application, requirement);
 
             var model = new EditOpenIdApplicationViewModel
             {
-                AllowAuthorizationCodeFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode),
+                AllowAuthorizationCodeFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode) &&
+                                             await HasPermissionAsync(OpenIddictConstants.Permissions.ResponseTypes.Code),
+
                 AllowClientCredentialsFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.ClientCredentials),
-                AllowImplicitFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.Implicit),
+
+                // Note: the hybrid flow doesn't have a dedicated grant_type but is treated as a combination
+                // of both the authorization code and implicit grants. As such, to determine whether the hybrid
+                // flow is enabled, both the authorization code grant and the implicit grant MUST be enabled.
+                AllowHybridFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode) &&
+                                  await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.Implicit) &&
+                                  (await HasPermissionAsync(OpenIddictConstants.Permissions.ResponseTypes.CodeIdToken) ||
+                                   await HasPermissionAsync(OpenIddictConstants.Permissions.ResponseTypes.CodeIdTokenToken) ||
+                                   await HasPermissionAsync(OpenIddictConstants.Permissions.ResponseTypes.CodeToken)),
+
+                AllowImplicitFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.Implicit) &&
+                                    (await HasPermissionAsync(OpenIddictConstants.Permissions.ResponseTypes.IdToken) ||
+                                     await HasPermissionAsync(OpenIddictConstants.Permissions.ResponseTypes.IdTokenToken) ||
+                                     await HasPermissionAsync(OpenIddictConstants.Permissions.ResponseTypes.Token)),
+
                 AllowPasswordFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.Password),
                 AllowRefreshTokenFlow = await HasPermissionAsync(OpenIddictConstants.Permissions.GrantTypes.RefreshToken),
                 AllowLogoutEndpoint = await HasPermissionAsync(OpenIddictConstants.Permissions.Endpoints.Logout),
+                AllowIntrospectionEndpoint = await HasPermissionAsync(OpenIddictConstants.Permissions.Endpoints.Introspection),
+                AllowRevocationEndpoint = await HasPermissionAsync(OpenIddictConstants.Permissions.Endpoints.Revocation),
                 ClientId = await _applicationManager.GetClientIdAsync(application),
                 ConsentType = await _applicationManager.GetConsentTypeAsync(application),
                 DisplayName = await _applicationManager.GetDisplayNameAsync(application),
                 Id = await _applicationManager.GetPhysicalIdAsync(application),
-                PostLogoutRedirectUris = string.Join(" ", await _applicationManager.GetPostLogoutRedirectUrisAsync(application)),
-                RedirectUris = string.Join(" ", await _applicationManager.GetRedirectUrisAsync(application)),
-                Type = await _applicationManager.GetClientTypeAsync(application)
+                PostLogoutRedirectUris = String.Join(" ", await _applicationManager.GetPostLogoutRedirectUrisAsync(application)),
+                RedirectUris = String.Join(" ", await _applicationManager.GetRedirectUrisAsync(application)),
+                Type = await _applicationManager.GetClientTypeAsync(application),
+                RequireProofKeyForCodeExchange = await HasRequirementAsync(OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange)
             };
 
             var roleService = HttpContext.RequestServices?.GetService<IRoleService>();
@@ -333,15 +290,15 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             // If the application was a public client and is now a confidential client, ensure a client secret was provided.
-            if (string.IsNullOrEmpty(model.ClientSecret) &&
-               !string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase) &&
+            if (String.IsNullOrEmpty(model.ClientSecret) &&
+               !String.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase) &&
                 await _applicationManager.HasClientTypeAsync(application, OpenIddictConstants.ClientTypes.Public))
             {
                 ModelState.AddModelError(nameof(model.ClientSecret), S["Setting a new client secret is required."]);
             }
 
-            if (!string.IsNullOrEmpty(model.ClientSecret) &&
-                 string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
+            if (!String.IsNullOrEmpty(model.ClientSecret) &&
+                 String.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError(nameof(model.ClientSecret), S["No client secret can be set for public applications."]);
             }
@@ -349,7 +306,7 @@ namespace OrchardCore.OpenId.Controllers
             if (ModelState.IsValid)
             {
                 var other = await _applicationManager.FindByClientIdAsync(model.ClientId);
-                if (other != null && !string.Equals(
+                if (other != null && !String.Equals(
                     await _applicationManager.GetIdAsync(other),
                     await _applicationManager.GetIdAsync(application), StringComparison.Ordinal))
                 {
@@ -364,185 +321,32 @@ namespace OrchardCore.OpenId.Controllers
                 return View(model);
             }
 
-            var descriptor = new OpenIdApplicationDescriptor();
-            await _applicationManager.PopulateAsync(descriptor, application);
+            var settings = new OpenIdApplicationSettings()
+            {
+                AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow,
+                AllowClientCredentialsFlow = model.AllowClientCredentialsFlow,
+                AllowHybridFlow = model.AllowHybridFlow,
+                AllowImplicitFlow = model.AllowImplicitFlow,
+                AllowIntrospectionEndpoint = model.AllowIntrospectionEndpoint,
+                AllowLogoutEndpoint = model.AllowLogoutEndpoint,
+                AllowPasswordFlow = model.AllowPasswordFlow,
+                AllowRefreshTokenFlow = model.AllowRefreshTokenFlow,
+                AllowRevocationEndpoint = model.AllowRevocationEndpoint,
+                ClientId = model.ClientId,
+                ClientSecret = model.ClientSecret,
+                ConsentType = model.ConsentType,
+                DisplayName = model.DisplayName,
+                PostLogoutRedirectUris = model.PostLogoutRedirectUris,
+                RedirectUris = model.RedirectUris,
+                Roles = model.RoleEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
+                Scopes = model.ScopeEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
+                Type = model.Type,
+                RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange
+            };
 
-            descriptor.ClientId = model.ClientId;
-            descriptor.ConsentType = model.ConsentType;
-            descriptor.DisplayName = model.DisplayName;
-            descriptor.Type = model.Type;
+            await _applicationManager.UpdateDescriptorFromSettings(settings, application);
 
-            if (!string.IsNullOrEmpty(model.ClientSecret))
-            {
-                descriptor.ClientSecret = model.ClientSecret;
-            }
-
-            if (string.Equals(descriptor.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
-            {
-                descriptor.ClientSecret = null;
-            }
-
-            if (model.AllowLogoutEndpoint)
-            {
-                descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Logout);
-            }
-            else
-            {
-                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.Endpoints.Logout);
-            }
-
-            if (model.AllowAuthorizationCodeFlow)
-            {
-                descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode);
-            }
-            else
-            {
-                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode);
-            }
-
-            if (model.AllowClientCredentialsFlow)
-            {
-                descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.ClientCredentials);
-            }
-            else
-            {
-                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.GrantTypes.ClientCredentials);
-            }
-
-            if (model.AllowImplicitFlow)
-            {
-                descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.Implicit);
-            }
-            else
-            {
-                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.GrantTypes.Implicit);
-            }
-
-            if (model.AllowPasswordFlow)
-            {
-                descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.Password);
-            }
-            else
-            {
-                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.GrantTypes.Password);
-            }
-
-            if (model.AllowRefreshTokenFlow)
-            {
-                descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.RefreshToken);
-            }
-            else
-            {
-                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.GrantTypes.RefreshToken);
-            }
-
-            if (model.AllowAuthorizationCodeFlow || model.AllowImplicitFlow)
-            {
-                descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Authorization);
-            }
-            else
-            {
-                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.Endpoints.Authorization);
-            }
-
-            if (model.AllowAuthorizationCodeFlow || model.AllowClientCredentialsFlow ||
-                model.AllowPasswordFlow || model.AllowRefreshTokenFlow)
-            {
-                descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Token);
-            }
-            else
-            {
-                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.Endpoints.Token);
-            }
-
-            if (model.AllowAuthorizationCodeFlow)
-            {
-                descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.Code);
-            }
-            else
-            {
-                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.Code);
-            }
-
-            if (model.AllowImplicitFlow)
-            {
-                descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.IdToken);
-
-                if (string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
-                {
-                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.IdTokenToken);
-                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.Token);
-                }
-                else
-                {
-                    descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.IdTokenToken);
-                    descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.Token);
-                }
-            }
-            else
-            {
-                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.IdToken);
-                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.IdTokenToken);
-                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.Token);
-            }
-            if (model.AllowHybridFlow)
-            {
-                descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeIdToken);
-
-                if (string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
-                {
-                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeIdTokenToken);
-                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeToken);
-                }
-                else
-                {
-                    descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.CodeIdTokenToken);
-                    descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.CodeToken);
-                }
-            }
-            else
-            {
-                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.CodeIdToken);
-                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.CodeIdTokenToken);
-                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.CodeToken);
-            }
-
-            descriptor.Roles.Clear();
-
-            foreach (var selectedRole in (model.RoleEntries
-                .Where(role => role.Selected)
-                .Select(role => role.Name)))
-            {
-                descriptor.Roles.Add(selectedRole);
-            }
-
-            descriptor.Permissions.RemoveWhere(permission => permission.StartsWith(OpenIddictConstants.Permissions.Prefixes.Scope));
-            foreach (var selectedScope in (model.ScopeEntries
-                .Where(scope => scope.Selected)
-                .Select(scope => scope.Name)))
-            {
-                descriptor.Permissions.Add(OpenIddictConstants.Permissions.Prefixes.Scope + selectedScope);
-            }
-
-            descriptor.PostLogoutRedirectUris.Clear();
-            foreach (Uri uri in
-                (from uri in model.PostLogoutRedirectUris?.Split(new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
-                 select new Uri(uri, UriKind.Absolute)))
-            {
-                descriptor.PostLogoutRedirectUris.Add(uri);
-            }
-
-            descriptor.RedirectUris.Clear();
-            foreach (Uri uri in
-               (from uri in model.RedirectUris?.Split(new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
-                select new Uri(uri, UriKind.Absolute)))
-            {
-                descriptor.RedirectUris.Add(uri);
-            }
-
-            await _applicationManager.UpdateAsync(application, descriptor);
-
-            if (string.IsNullOrEmpty(returnUrl))
+            if (String.IsNullOrEmpty(returnUrl))
             {
                 return RedirectToAction(nameof(Index));
             }

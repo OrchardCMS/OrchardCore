@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using OrchardCore.Data.Migration;
-using OrchardCore.OpenId.YesSql.Models;
 using OrchardCore.OpenId.YesSql.Indexes;
+using OrchardCore.OpenId.YesSql.Models;
 using YesSql;
 using YesSql.Sql;
 

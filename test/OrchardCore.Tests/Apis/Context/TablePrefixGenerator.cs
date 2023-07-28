@@ -1,7 +1,3 @@
-﻿using System;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace OrchardCore.Tests.Apis.Context
 {
     /// <summary>
@@ -13,21 +9,23 @@ namespace OrchardCore.Tests.Apis.Context
     /// </remarks>
     internal class TablePrefixGenerator
     {
-        private static readonly char[] CharList = "abcdefghijklmnopqrstuvwxyz".ToCharArray();
+        private static readonly char[] _charList = "abcdefghijklmnopqrstuvwxyz".ToCharArray();
 
+#pragma warning disable CA1822 // Mark members as static
         internal async Task<string> GeneratePrefixAsync()
+#pragma warning restore CA1822 // Mark members as static
         {
             await Task.Delay(1);
             var ticks = DateTime.Now.Ticks;
 
-			var result = new StringBuilder();
-			while (ticks != 0)
-			{
-				result.Append(CharList[ticks % CharList.Length]);
-				ticks /= CharList.Length;
-			}
+            var result = new StringBuilder();
+            while (ticks != 0)
+            {
+                result.Append(_charList[ticks % _charList.Length]);
+                ticks /= _charList.Length;
+            }
 
-			return result.ToString();
+            return result.ToString();
         }
     }
 }

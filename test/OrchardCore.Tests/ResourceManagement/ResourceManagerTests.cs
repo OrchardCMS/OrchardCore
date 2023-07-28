@@ -1,18 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using AngleSharp;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
-using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.Options;
 using OrchardCore.ResourceManagement;
-using Xunit;
+using ResourceLocation = OrchardCore.ResourceManagement.ResourceLocation;
 
 namespace OrchardCore.Tests.ResourceManagement
 {
@@ -20,11 +10,11 @@ namespace OrchardCore.Tests.ResourceManagement
     {
         private const string basePath = "http://host";
 
-        private readonly IBrowsingContext browsingContext;
+        private readonly IBrowsingContext _browsingContext;
 
         public ResourceManagerTests()
         {
-            browsingContext = BrowsingContext.New();
+            _browsingContext = BrowsingContext.New();
         }
 
         [Fact]
@@ -187,7 +177,7 @@ namespace OrchardCore.Tests.ResourceManagement
             manifest.DefineResource("foo", "required")
                 .SetDependencies("dependency");
             manifest.DefineResource("foo", "dependency")
-                .SetDependencies("required"); ;
+                .SetDependencies("required");
 
             options.ResourceManifests.Add(manifest);
 
@@ -868,12 +858,11 @@ namespace OrchardCore.Tests.ResourceManagement
         #region Helpers
         private async Task<IDocument> ParseHtmlAsync(IHtmlContent content)
         {
-            using (var writer = new StringWriter())
-            {
-                content.WriteTo(writer, HtmlEncoder.Default);
+            using var writer = new StringWriter();
 
-                return await browsingContext.OpenAsync(res => res.Content(writer.ToString()).Address(basePath));
-            }
+            content.WriteTo(writer, HtmlEncoder.Default);
+
+            return await _browsingContext.OpenAsync(res => res.Content(writer.ToString()).Address(basePath));
         }
 
         #endregion

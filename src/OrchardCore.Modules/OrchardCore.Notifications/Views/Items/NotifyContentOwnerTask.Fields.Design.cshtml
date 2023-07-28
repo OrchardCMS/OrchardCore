@@ -1,0 +1,10 @@
+@using OrchardCore.Workflows.Helpers
+@using OrchardCore.Notifications.Activities
+@using OrchardCore.Workflows.ViewModels
+
+@model ActivityViewModel<NotifyContentOwnerTask>
+
+<header>
+    <h4><i class="fa-solid fa-envelope" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Notify user"])</h4>
+</header>
+<em>&quot;@Model.Activity.Subject&quot;</em>

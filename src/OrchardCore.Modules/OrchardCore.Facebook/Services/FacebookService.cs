@@ -13,7 +13,7 @@ namespace OrchardCore.Facebook.Services
     public class FacebookService : IFacebookService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public FacebookService(
             ISiteService siteService,
@@ -41,7 +41,7 @@ namespace OrchardCore.Facebook.Services
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 
-        public Task<IEnumerable<ValidationResult>> ValidateSettingsAsync(FacebookSettings settings)
+        public IEnumerable<ValidationResult> ValidateSettings(FacebookSettings settings)
         {
             if (settings == null)
             {
@@ -50,23 +50,23 @@ namespace OrchardCore.Facebook.Services
 
             var results = new List<ValidationResult>();
 
-            if (string.IsNullOrEmpty(settings.AppId))
+            if (String.IsNullOrEmpty(settings.AppId))
             {
                 results.Add(new ValidationResult(S["The AppId is required."], new[]
                 {
-                    nameof(settings.AppId)
+                    nameof(settings.AppId),
                 }));
             }
 
-            if (string.IsNullOrEmpty(settings.AppSecret))
+            if (String.IsNullOrEmpty(settings.AppSecret))
             {
                 results.Add(new ValidationResult(S["The App Secret is required."], new[]
                 {
-                    nameof(settings.AppSecret)
+                    nameof(settings.AppSecret),
                 }));
             }
 
-            return Task.FromResult<IEnumerable<ValidationResult>>(results);
+            return results;
         }
     }
 }

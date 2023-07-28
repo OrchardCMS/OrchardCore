@@ -1,6 +1,6 @@
 @model dynamic
 
-<div class="card">
+<div class="card h-100">
     <div class="card-body">
         @if (Model.Content != null)
         {
@@ -12,7 +12,7 @@
             <p>@Model.MenuItemTypeDisplayName</p>
         }
     </div>
-    <div class="card-footer text-muted text-xs-right">
+    <div class="card-footer text-muted text-sm-end">
         <a class="btn btn-primary btn-sm thumbnail-link-create" asp-route-action="Create" asp-route-controller="Admin" asp-route-id="@Model.MenuItemType" asp-route-menuContentItemId="@Model.MenuContentItemId" asp-route-area="OrchardCore.Menu">@T["Add"]</a>
     </div>
 </div>

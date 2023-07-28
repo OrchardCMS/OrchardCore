@@ -1,7 +1,6 @@
-﻿using OrchardCore.Deployment.Remote.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.Deployment.Remote.Models;
 
 namespace OrchardCore.Deployment.Remote.ViewModels
 {

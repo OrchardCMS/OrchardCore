@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
@@ -11,12 +10,10 @@ namespace OrchardCore.ContentManagement.Handlers
         }
 
         public ContentValidateResult ContentValidateResult { get; } = new ContentValidateResult();
-
     }
 
     public static class ValidateContentContextExtensions
     {
-
         public static void Fail(this ValidateContentContext context, ValidationResult error)
         {
             context.ContentValidateResult.Fail(error);

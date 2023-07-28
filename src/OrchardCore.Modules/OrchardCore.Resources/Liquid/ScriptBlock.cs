@@ -8,7 +8,6 @@ using Fluid;
 using Fluid.Ast;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.DisplayManagement;
 using OrchardCore.Liquid;
 using OrchardCore.ResourceManagement;
 
@@ -16,7 +15,7 @@ namespace OrchardCore.Resources.Liquid
 {
     public class ScriptBlock
     {
-        private static readonly char[] Separators = new[] {',', ' '};
+        private static readonly char[] _separators = new[] { ',', ' ' };
 
         public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
@@ -88,7 +87,7 @@ namespace OrchardCore.Resources.Liquid
                 // This allows additions to the pre registered scripts dependencies.
                 if (!String.IsNullOrEmpty(dependsOn))
                 {
-                    setting.SetDependencies(dependsOn.Split(Separators, StringSplitOptions.RemoveEmptyEntries));
+                    setting.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 // Allow Inline to work with both named scripts, and named inline scripts.

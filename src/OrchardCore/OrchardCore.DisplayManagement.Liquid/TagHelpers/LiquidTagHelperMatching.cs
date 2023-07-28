@@ -8,8 +8,9 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
     public class LiquidTagHelperMatching
     {
         private const string AspPrefix = "asp-";
-        public readonly static LiquidTagHelperMatching None = new LiquidTagHelperMatching();
+        public readonly static LiquidTagHelperMatching None = new();
         public readonly TagMatchingRuleDescriptor[] _rules = Array.Empty<TagMatchingRuleDescriptor>();
+
         public LiquidTagHelperMatching()
         {
         }
@@ -73,7 +74,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
             return false;
         }
-        
+
         public bool Match(string helper, IEnumerable<string> arguments)
         {
             foreach (var rule in _rules)

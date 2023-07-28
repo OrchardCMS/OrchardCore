@@ -8,10 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -30,7 +28,7 @@ namespace OrchardCore.Recipes.Controllers
         private readonly IRecipeExecutor _recipeExecutor;
         private readonly IEnumerable<IRecipeEnvironmentProvider> _environmentProviders;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
         private readonly ILogger _logger;
 
         public AdminController(
@@ -108,7 +106,7 @@ namespace OrchardCore.Recipes.Controllers
 
             // Set shell state to "Initializing" so that subsequent HTTP requests
             // are responded to with "Service Unavailable" while running the recipe.
-            _shellSettings.State = TenantState.Initializing;
+            _shellSettings.AsInitializing();
 
             try
             {
@@ -117,7 +115,7 @@ namespace OrchardCore.Recipes.Controllers
             finally
             {
                 // Don't lock the tenant if the recipe fails.
-                _shellSettings.State = TenantState.Running;
+                _shellSettings.AsRunning();
             }
 
             await _shellHost.ReleaseShellContextAsync(_shellSettings);
@@ -131,9 +129,9 @@ namespace OrchardCore.Recipes.Controllers
         {
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
             var recipes = recipeCollections.SelectMany(x => x)
-                .Where(r => r.IsSetupRecipe == false &&
-                    !r.Tags.Contains("hidden", StringComparer.InvariantCultureIgnoreCase) &&
-                    features.Any(f => r.BasePath.Contains(f.Extension.SubPath, StringComparison.OrdinalIgnoreCase)));
+                .Where(r => !r.IsSetupRecipe &&
+                    (r.Tags == null || !r.Tags.Contains("hidden", StringComparer.InvariantCultureIgnoreCase)) &&
+                    features.Any(f => r.BasePath != null && f.Extension?.SubPath != null && r.BasePath.Contains(f.Extension.SubPath, StringComparison.OrdinalIgnoreCase)));
 
             return recipes;
         }

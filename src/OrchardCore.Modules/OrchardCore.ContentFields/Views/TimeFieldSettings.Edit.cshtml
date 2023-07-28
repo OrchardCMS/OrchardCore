@@ -1,13 +1,13 @@
 @model OrchardCore.ContentFields.Settings.TimeFieldSettings
 
-<div class="form-group">
-    <div class="custom-control custom-checkbox">
-        <input asp-for="Required" type="checkbox" class="custom-control-input">
-        <label class="custom-control-label" asp-for="Required">@T["Required"]</label>
+<div class="mb-3">
+    <div class="form-check">
+        <input asp-for="Required" type="checkbox" class="form-check-input">
+        <label class="form-check-label" asp-for="Required">@T["Required"]</label>
         <span class="hint dashed">@T["Whether a value is required."]</span>
     </div>
 </div>
-<div class="form-group">
+<div class="mb-3">
     <div class="w-sm-75 w-md-50 w-lg-25 pr-md-3">
         <label asp-for="Step">@T["Step"]</label>
         <input asp-for="Step" class="form-control" />
@@ -16,8 +16,8 @@
         <span class="hint">@T["For seconds use a divisor of 60 e.g. '15', for ms a decimal equal to a divisor of 1000 divided by 1000 e.g. '0.250'."]</span>
 </div>
 
-<div class="form-group">
-    <div class="w-md-75 w-xl-50 pr-md-3">
+<div class="mb-3">
+    <div class="w-md-75 w-xl-50 pe-md-3">
         <label asp-for="Hint">@T["Hint"]</label>
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
     </div>

@@ -27,7 +27,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
         private readonly ILogger _logger;
 
         public AuditTrailContentController(
@@ -111,12 +111,15 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
             }
 
             var result = await _contentManager.RestoreAsync(contentItem);
+
             if (!result.Succeeded)
             {
                 await _notifier.WarningAsync(H["'{0}' was not restored, the version is not valid.", contentItem.DisplayText]);
+
                 foreach (var error in result.Errors)
                 {
-                    await _notifier.WarningAsync(new LocalizedHtmlString(error.ErrorMessage, error.ErrorMessage));
+                    // Pass ErrorMessage as an argument to ensure it is encoded
+                    await _notifier.WarningAsync(new LocalizedHtmlString(nameof(AuditTrailContentController.Restore), "{0}", false, error.ErrorMessage));
                 }
 
                 return RedirectToAction("Index", "Admin", new { area = "OrchardCore.AuditTrail" });

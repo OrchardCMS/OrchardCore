@@ -1,0 +1,7 @@
+@{
+    Model.Classes.Add("widget-body mb-3");
+}
+
+<div class="@String.Join(" ", Model.Classes.ToArray())">
+    @await DisplayAsync(Model.Content)
+</div>

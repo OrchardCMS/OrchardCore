@@ -26,7 +26,7 @@ namespace OrchardCore.Taxonomies.Indexing
     public class TaxonomyIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly HashSet<string> _ignoredTypes = new HashSet<string>();
+        private readonly HashSet<string> _ignoredTypes = new();
         private IContentDefinitionManager _contentDefinitionManager;
 
         public TaxonomyIndexProvider(IServiceProvider serviceProvider)
@@ -87,7 +87,7 @@ namespace OrchardCore.Taxonomies.Indexing
                             continue;
                         }
 
-                        var jField = (JObject)jPart[fieldDefinition.Name];
+                        var jField = jPart[fieldDefinition.Name] as JObject;
 
                         if (jField == null)
                         {

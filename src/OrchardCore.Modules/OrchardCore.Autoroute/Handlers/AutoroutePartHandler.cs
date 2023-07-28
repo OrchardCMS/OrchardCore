@@ -9,13 +9,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Autoroute.Core.Indexes;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid;
@@ -36,7 +36,7 @@ namespace OrchardCore.Autoroute.Handlers
         private readonly ITagCache _tagCache;
         private readonly ISession _session;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         private IContentManager _contentManager;
 
@@ -82,11 +82,11 @@ namespace OrchardCore.Autoroute.Handlers
                 await SetHomeRouteAsync(part, homeRoute =>
                 {
                     homeRoute[_options.ContentItemIdKey] = context.ContentItem.ContentItemId;
-                    homeRoute[_options.JsonPathKey] = "";
+                    homeRoute.Remove(_options.JsonPathKey);
                 });
             }
 
-            // Evict any dependent item from cache
+            // Evict any dependent item from cache.
             await RemoveTagAsync(part);
         }
 
@@ -97,7 +97,7 @@ namespace OrchardCore.Autoroute.Handlers
                 // Update entries from the index table after the session is committed.
                 await _entries.UpdateEntriesAsync();
 
-                // Evict any dependent item from cache
+                // Evict any dependent item from cache.
                 await RemoveTagAsync(part);
             }
         }
@@ -109,7 +109,7 @@ namespace OrchardCore.Autoroute.Handlers
                 // Update entries from the index table after the session is committed.
                 await _entries.UpdateEntriesAsync();
 
-                // Evict any dependent item from cache
+                // Evict any dependent item from cache.
                 await RemoveTagAsync(part);
             }
         }
@@ -172,10 +172,7 @@ namespace OrchardCore.Autoroute.Handlers
         {
             var site = await _siteService.LoadSiteSettingsAsync();
 
-            if (site.HomeRoute == null)
-            {
-                site.HomeRoute = new RouteValueDictionary();
-            }
+            site.HomeRoute ??= new RouteValueDictionary();
 
             var homeRoute = site.HomeRoute;
 
@@ -204,7 +201,7 @@ namespace OrchardCore.Autoroute.Handlers
             {
                 var jItems = accessor.Invoke(content);
 
-                foreach (JObject jItem in jItems)
+                foreach (var jItem in jItems.Cast<JObject>())
                 {
                     var contentItem = jItem.ToObject<ContentItem>();
                     var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
@@ -252,7 +249,7 @@ namespace OrchardCore.Autoroute.Handlers
             {
                 var jItems = accessor.Invoke(content);
 
-                foreach (JObject jItem in jItems)
+                foreach (var jItem in jItems.Cast<JObject>())
                 {
                     var contentItem = jItem.ToObject<ContentItem>();
                     var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
@@ -284,7 +281,7 @@ namespace OrchardCore.Autoroute.Handlers
             {
                 var jItems = accessor.Invoke(content);
 
-                foreach (JObject jItem in jItems)
+                foreach (var jItem in jItems.Cast<JObject>())
                 {
                     var contentItem = jItem.ToObject<ContentItem>();
                     var containedAutoroutePart = contentItem.As<AutoroutePart>();
@@ -316,7 +313,7 @@ namespace OrchardCore.Autoroute.Handlers
                             {
                                 path = GenerateRelativeUniquePath(entries, path, containedAutoroutePart);
                                 // Remove base path and update part path.
-                                containedAutoroutePart.Path = path.Substring(currentItemBasePath.Length);
+                                containedAutoroutePart.Path = path[currentItemBasePath.Length..];
                                 containedAutoroutePart.Apply();
 
                                 // Merge because we have disconnected the content item from it's json owner.
@@ -327,7 +324,7 @@ namespace OrchardCore.Autoroute.Handlers
                                 });
                             }
 
-                            path = path.Substring(currentItemBasePath.Length);
+                            path = path[currentItemBasePath.Length..];
                         }
 
                         var containedItemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + path;
@@ -344,15 +341,15 @@ namespace OrchardCore.Autoroute.Handlers
             return result;
         }
 
-        private string GenerateRelativeUniquePath(List<AutorouteEntry> entries, string path, AutoroutePart context)
+        private static string GenerateRelativeUniquePath(List<AutorouteEntry> entries, string path, AutoroutePart context)
         {
             var version = 1;
             var unversionedPath = path;
 
             var versionSeparatorPosition = path.LastIndexOf('-');
-            if (versionSeparatorPosition > -1 && Int32.TryParse(path.Substring(versionSeparatorPosition).TrimStart('-'), out version))
+            if (versionSeparatorPosition > -1 && Int32.TryParse(path[versionSeparatorPosition..].TrimStart('-'), out version))
             {
-                unversionedPath = path.Substring(0, versionSeparatorPosition);
+                unversionedPath = path[..versionSeparatorPosition];
             }
 
             while (true)
@@ -361,7 +358,7 @@ namespace OrchardCore.Autoroute.Handlers
                 var quantityCharactersToTrim = unversionedPath.Length + 1 + version.ToString().Length - AutoroutePart.MaxPathLength;
                 if (quantityCharactersToTrim > 0)
                 {
-                    unversionedPath = unversionedPath.Substring(0, unversionedPath.Length - quantityCharactersToTrim);
+                    unversionedPath = unversionedPath[..^quantityCharactersToTrim];
                 }
 
                 var versionedPath = $"{unversionedPath}-{version++}";
@@ -377,7 +374,7 @@ namespace OrchardCore.Autoroute.Handlers
 
         private async Task GenerateContainerPathFromPatternAsync(AutoroutePart part)
         {
-            // Compute the Path only if it's empty
+            // Compute the Path only if it's empty.
             if (!String.IsNullOrWhiteSpace(part.Path))
             {
                 return;
@@ -391,13 +388,16 @@ namespace OrchardCore.Autoroute.Handlers
                 {
                     Path = part.Path,
                     AutoroutePart = part,
-                    ContentItem = part.ContentItem
+                    ContentItem = part.ContentItem,
                 };
 
                 _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
 
                 var cultureAspect = await _contentManager.PopulateAspectAsync(part.ContentItem, new CultureAspect());
-                using (CultureScope.Create(cultureAspect.Culture))
+
+                var cultureOptions = _serviceProvider.GetService<IOptions<CultureOptions>>().Value;
+
+                using (CultureScope.Create(cultureAspect.Culture, ignoreSystemSettings: cultureOptions.IgnoreSystemSettings))
                 {
                     part.Path = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
                         new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
@@ -407,7 +407,7 @@ namespace OrchardCore.Autoroute.Handlers
 
                 if (part.Path?.Length > AutoroutePart.MaxPathLength)
                 {
-                    part.Path = part.Path.Substring(0, AutoroutePart.MaxPathLength);
+                    part.Path = part.Path[..AutoroutePart.MaxPathLength];
                 }
 
                 if (!await IsAbsolutePathUniqueAsync(part.Path, part.ContentItem.ContentItemId))
@@ -420,7 +420,7 @@ namespace OrchardCore.Autoroute.Handlers
         }
 
         /// <summary>
-        /// Get the pattern from the AutoroutePartSettings property for its type
+        /// Get the pattern from the AutoroutePartSettings property for its type.
         /// </summary>
         private string GetPattern(AutoroutePart part)
         {
@@ -437,9 +437,9 @@ namespace OrchardCore.Autoroute.Handlers
             var unversionedPath = path;
 
             var versionSeparatorPosition = path.LastIndexOf('-');
-            if (versionSeparatorPosition > -1 && Int32.TryParse(path.Substring(versionSeparatorPosition).TrimStart('-'), out version))
+            if (versionSeparatorPosition > -1 && Int32.TryParse(path[versionSeparatorPosition..].TrimStart('-'), out version))
             {
-                unversionedPath = path.Substring(0, versionSeparatorPosition);
+                unversionedPath = path[..versionSeparatorPosition];
             }
 
             while (true)
@@ -448,7 +448,7 @@ namespace OrchardCore.Autoroute.Handlers
                 var quantityCharactersToTrim = unversionedPath.Length + 1 + version.ToString().Length - AutoroutePart.MaxPathLength;
                 if (quantityCharactersToTrim > 0)
                 {
-                    unversionedPath = unversionedPath.Substring(0, unversionedPath.Length - quantityCharactersToTrim);
+                    unversionedPath = unversionedPath[..^quantityCharactersToTrim];
                 }
 
                 var versionedPath = $"{unversionedPath}-{version++}";

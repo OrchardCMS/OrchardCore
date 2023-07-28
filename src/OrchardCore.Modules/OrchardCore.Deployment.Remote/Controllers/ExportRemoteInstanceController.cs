@@ -21,14 +21,14 @@ namespace OrchardCore.Deployment.Remote.Controllers
     [Admin]
     public class ExportRemoteInstanceController : Controller
     {
-        private static readonly HttpClient _httpClient = new HttpClient();
+        private static readonly HttpClient _httpClient = new();
 
         private readonly IDeploymentManager _deploymentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
         private readonly RemoteInstanceService _service;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
 
         public ExportRemoteInstanceController(
             IAuthorizationService authorizationService,
@@ -117,7 +117,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 System.IO.File.Delete(archiveFileName);
             }
 
-            if (!string.IsNullOrEmpty(returnUrl))
+            if (!String.IsNullOrEmpty(returnUrl))
             {
                 return this.LocalRedirect(returnUrl, true);
             }

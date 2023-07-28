@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -18,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
@@ -27,18 +27,42 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Localization;
 using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
+using OrchardCore.Modules.Services;
 using SameSiteMode = Microsoft.AspNetCore.Http.SameSiteMode;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Routing singleton and global config types used to isolate tenants from the host.
+        /// </summary>
+        private static readonly Type[] _routingTypesToIsolate = new ServiceCollection()
+            .AddRouting()
+            .Where(sd =>
+                sd.Lifetime == ServiceLifetime.Singleton ||
+                sd.ServiceType == typeof(IConfigureOptions<RouteOptions>))
+            .Select(sd => sd.GetImplementationType())
+            .ToArray();
+
+        /// <summary>
+        /// Http client singleton types used to isolate tenants from the host.
+        /// </summary>
+        private static readonly Type[] _httpClientTypesToIsolate = new ServiceCollection()
+            .AddHttpClient()
+            .Where(sd => sd.Lifetime == ServiceLifetime.Singleton)
+            .Select(sd => sd.GetImplementationType())
+            .Except(new ServiceCollection()
+                .AddLogging()
+                .Where(sd => sd.Lifetime == ServiceLifetime.Singleton)
+                .Select(sd => sd.GetImplementationType()))
+            .ToArray();
+
         /// <summary>
         /// Adds OrchardCore services to the host service collection.
         /// </summary>
@@ -66,6 +90,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 AddStaticFiles(builder);
 
                 AddRouting(builder);
+                IsolateHttpClient(builder);
                 AddEndpointsApiExplorer(builder);
                 AddAntiForgery(builder);
                 AddSameSiteCookieBackwardsCompatibility(builder);
@@ -120,13 +145,20 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
 
             services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
+            services.AddScoped<IClientIpAddressAccessor, DefaultClientIpAddressAccessor>();
 
-            builder.ConfigureServices(s =>
+            builder.ConfigureServices((services, serviceProvider) =>
             {
-                s.AddSingleton<LocalLock>();
-                s.AddSingleton<ILocalLock>(sp => sp.GetRequiredService<LocalLock>());
-                s.AddSingleton<IDistributedLock>(sp => sp.GetRequiredService<LocalLock>());
+                services.AddSingleton<LocalLock>();
+                services.AddSingleton<ILocalLock>(sp => sp.GetRequiredService<LocalLock>());
+                services.AddSingleton<IDistributedLock>(sp => sp.GetRequiredService<LocalLock>());
+
+                var configuration = serviceProvider.GetService<IShellConfiguration>();
+
+                services.Configure<CultureOptions>(configuration.GetSection("OrchardCore_Localization_CultureOptions"));
             });
+
+            services.AddSingleton<ISlugService, SlugService>();
         }
 
         private static void AddShellServices(OrchardCoreBuilder builder)
@@ -168,6 +200,8 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.ConfigureServices(services =>
             {
                 services.AddExtensionManager();
+                services.AddScoped<IShellFeaturesManager, ShellFeaturesManager>();
+                services.AddScoped<IShellDescriptorFeaturesManager, ShellDescriptorFeaturesManager>();
             });
         }
 
@@ -220,10 +254,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     RequestPath = String.Empty,
                     FileProvider = fileProvider,
-
-#if NET5_0_OR_GREATER
                     RedirectToAppendTrailingSlash = options.RedirectToAppendTrailingSlash,
-#endif
                     ContentTypeProvider = options.ContentTypeProvider,
                     DefaultContentType = options.DefaultContentType,
                     ServeUnknownFileTypes = options.ServeUnknownFileTypes,
@@ -252,22 +283,54 @@ namespace Microsoft.Extensions.DependencyInjection
                 // setup by the default configuration of 'RouteOptions' and mutated on each call of 'UseEndPoints()'.
                 // So, we need isolated routing singletons (and a default configuration) per tenant.
 
-                var implementationTypesToRemove = new ServiceCollection().AddRouting()
-                    .Where(sd => sd.Lifetime == ServiceLifetime.Singleton || sd.ServiceType == typeof(IConfigureOptions<RouteOptions>))
-                    .Select(sd => sd.GetImplementationType())
-                    .ToArray();
-
                 var descriptorsToRemove = collection
-                    .Where(sd => (sd is ClonedSingletonDescriptor || sd.ServiceType == typeof(IConfigureOptions<RouteOptions>)) &&
-                        implementationTypesToRemove.Contains(sd.GetImplementationType()))
+                    .Where(sd =>
+                        (sd is ClonedSingletonDescriptor ||
+                        sd.ServiceType == typeof(IConfigureOptions<RouteOptions>)) &&
+                        _routingTypesToIsolate.Contains(sd.GetImplementationType()))
                     .ToArray();
 
+                // Isolate each tenant from the host.
                 foreach (var descriptor in descriptorsToRemove)
                 {
                     collection.Remove(descriptor);
                 }
 
                 collection.AddRouting();
+            },
+            order: Int32.MinValue + 100);
+        }
+
+        /// <summary>
+        /// Isolates tenant http client singletons and configurations from the host.
+        /// </summary>
+        private static void IsolateHttpClient(OrchardCoreBuilder builder)
+        {
+            builder.ConfigureServices(collection =>
+            {
+                // Each tenant needs isolated http client singletons and configurations, so that
+                // typed clients/handlers are activated/resolved from the right tenant container.
+
+                // Retrieve current options configurations.
+                var configurationDescriptorsToRemove = collection
+                    .Where(sd =>
+                        sd.ServiceType.IsGenericType &&
+                        sd.ServiceType.GenericTypeArguments.Contains(typeof(HttpClientFactoryOptions)))
+                    .ToArray();
+
+                // Retrieve all descriptors to remove.
+                var descriptorsToRemove = collection
+                    .Where(sd =>
+                        sd is ClonedSingletonDescriptor &&
+                        _httpClientTypesToIsolate.Contains(sd.GetImplementationType()))
+                    .Concat(configurationDescriptorsToRemove)
+                    .ToArray();
+
+                // Isolate each tenant from the host.
+                foreach (var descriptor in descriptorsToRemove)
+                {
+                    collection.Remove(descriptor);
+                }
             },
             order: Int32.MinValue + 100);
         }
@@ -283,20 +346,20 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 // Remove the related host singletons as they are not tenant aware.
                 var descriptorsToRemove = collection
-                    .Where(sd => sd is ClonedSingletonDescriptor &&
+                    .Where(sd =>
+                        sd is ClonedSingletonDescriptor &&
                         (sd.ServiceType == typeof(IActionDescriptorCollectionProvider) ||
                         sd.ServiceType == typeof(IApiDescriptionGroupCollectionProvider)))
                     .ToArray();
 
+                // Isolate each tenant from the host.
                 foreach (var descriptor in descriptorsToRemove)
                 {
                     collection.Remove(descriptor);
                 }
 
-#if NET6_0_OR_GREATER
                 // Configure ApiExplorer at the tenant level.
                 collection.AddEndpointsApiExplorer();
-#endif
             },
             order: Int32.MinValue + 100);
         }
@@ -311,32 +374,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.ConfigureServices((services, serviceProvider) =>
             {
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
-                var environment = serviceProvider.GetRequiredService<IHostEnvironment>();
-
-                var cookieName = "orchantiforgery_" + HttpUtility.UrlEncode(settings.Name + environment.ContentRootPath);
-
-                // If uninitialized, we use the host services.
-                if (settings.State == TenantState.Uninitialized)
-                {
-                    // And delete a cookie that may have been created by another instance.
-                    var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
-
-                    // Use case when creating a container without ambient context.
-                    if (httpContextAccessor.HttpContext == null)
-                    {
-                        return;
-                    }
-
-                    // Use case when creating a container in a deferred task.
-                    if (httpContextAccessor.HttpContext.Response.HasStarted)
-                    {
-                        return;
-                    }
-
-                    httpContextAccessor.HttpContext.Response.Cookies.Delete(cookieName);
-
-                    return;
-                }
+                var cookieName = "__orchantiforgery_" + settings.VersionId;
 
                 // Re-register the antiforgery services to be tenant-aware.
                 var collection = new ServiceCollection()
@@ -359,18 +397,18 @@ namespace Microsoft.Extensions.DependencyInjection
         private static void AddSameSiteCookieBackwardsCompatibility(OrchardCoreBuilder builder)
         {
             builder.ConfigureServices(services =>
+            {
+                services.Configure<CookiePolicyOptions>(options =>
                 {
-                    services.Configure<CookiePolicyOptions>(options =>
-                    {
-                        options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
-                        options.OnAppendCookie = cookieContext => CheckSameSiteBackwardsCompatiblity(cookieContext.Context, cookieContext.CookieOptions);
-                        options.OnDeleteCookie = cookieContext => CheckSameSiteBackwardsCompatiblity(cookieContext.Context, cookieContext.CookieOptions);
-                    });
-                })
-                .Configure(app =>
-                {
-                    app.UseCookiePolicy();
+                    options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
+                    options.OnAppendCookie = cookieContext => CheckSameSiteBackwardsCompatiblity(cookieContext.Context, cookieContext.CookieOptions);
+                    options.OnDeleteCookie = cookieContext => CheckSameSiteBackwardsCompatiblity(cookieContext.Context, cookieContext.CookieOptions);
                 });
+            })
+            .Configure(app =>
+            {
+                app.UseCookiePolicy();
+            });
         }
 
         private static void CheckSameSiteBackwardsCompatiblity(HttpContext httpContext, CookieOptions options)
@@ -385,25 +423,25 @@ namespace Microsoft.Extensions.DependencyInjection
                 }
 
                 // Cover all iOS based browsers here. This includes:
-                // - Safari on iOS 12 for iPhone, iPod Touch, iPad
-                // - WkWebview on iOS 12 for iPhone, iPod Touch, iPad
-                // - Chrome on iOS 12 for iPhone, iPod Touch, iPad
-                // All of which are broken by SameSite=None, because they use the iOS networking stack
+                // - Safari on iOS 12 for iPhone, iPod Touch, iPad.
+                // - WkWebview on iOS 12 for iPhone, iPod Touch, iPad.
+                // - Chrome on iOS 12 for iPhone, iPod Touch, iPad.
+                // All of which are broken by SameSite=None, because they use the iOS networking stack.
                 if (userAgent.Contains("CPU iPhone OS 12") || userAgent.Contains("iPad; CPU OS 12"))
                 {
-                    options.SameSite = AspNetCore.Http.SameSiteMode.Unspecified;
+                    options.SameSite = SameSiteMode.Unspecified;
                     return;
                 }
 
                 // Cover Mac OS X based browsers that use the Mac OS networking stack. This includes:
                 // - Safari on Mac OS X.
                 // This does not include:
-                // - Chrome on Mac OS X
+                // - Chrome on Mac OS X.
                 // Because they do not use the Mac OS networking stack.
                 if (userAgent.Contains("Macintosh; Intel Mac OS X 10_14") &&
                     userAgent.Contains("Version/") && userAgent.Contains("Safari"))
                 {
-                    options.SameSite = AspNetCore.Http.SameSiteMode.Unspecified;
+                    options.SameSite = SameSiteMode.Unspecified;
                     return;
                 }
 
@@ -413,7 +451,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 // but pre-Chromium Edge does not require SameSite=None.
                 if (userAgent.Contains("Chrome/5") || userAgent.Contains("Chrome/6"))
                 {
-                    options.SameSite = AspNetCore.Http.SameSiteMode.Unspecified;
+                    options.SameSite = SameSiteMode.Unspecified;
                 }
             }
         }
@@ -465,7 +503,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     .AddDataProtection()
                     .PersistKeysToFileSystem(directory)
                     .SetApplicationName(settings.Name)
-                    .AddKeyManagementOptions(o => o.XmlEncryptor = o.XmlEncryptor ?? new NullXmlEncryptor())
+                    .AddKeyManagementOptions(o => o.XmlEncryptor ??= new NullXmlEncryptor())
                     .Services;
 
                 // Remove any previously registered options setups.

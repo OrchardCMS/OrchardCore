@@ -11,7 +11,7 @@ Any module or theme can contain an optional `placement.json` file providing cust
 
 ### Format
 
-A `placement.json` file contains an object whose properties are shape names. Each of these properties is an array of placement rules.
+A `placement.json` file contains an object whose properties are shape types. Each of these properties is an array of placement rules.
 
 In the following example, we describe the placement for the `TextField` and `Parts_Contents_Publish` shapes.
 
@@ -29,9 +29,21 @@ A placement rule contains two sets of data:
 
 Currently you can filter shapes by:
 
-- Their original type, which is the property name of the placement rule, like `TextField`.
+- Their original type, which is the property name of the placement rule, like `TextField` or `ContentPart`.
 - `displayType` (Optional): The display type, like `Summary` and `Detail` for the most common ones.
 - `differentiator` (Optional): The differentiator which is used to distinguish shape types that are reused for multiple elements, like field names.
+
+!!! note
+    Shape type (placement.json property name) DOES NOT necessarily align with with your part type. For instance, if you created a Content Part `GalleryPart` without a part driver, your shape type will be `ContentPart` with differentiator `GalleryPart`. So your placement.json would look like
+```json
+{
+  "ContentPart": [{
+  "place":"SomeZone"
+  "differentiator":"GalleryPart"
+  }],
+  "GalleryPart": [{...}], //this wont work unless you registered a driver for the part
+}
+```
 
 Additional custom filter providers can be added by implementing `IPlacementNodeFilterProvider`.
 
@@ -307,7 +319,52 @@ We also specify that the `Content` column will take 9 columns, of the default 12
 !!! note
     By default the columns will break responsively at the `md` breakpoint, and a modifier will be parsed to `col-md-9`.
     If you want to change the breakpoint, you could also specifiy `Content_lg-9`, which is parsed to `col-lg-9`.
+    
+### Dynamic part placement
+
+In the following example we place a dynamic part (part without driver, i.e. created in json) `GalleryPart` in a zone called `MyGalleryZone`. When displaying that part inside Content template we would execute:
+
+=== Content-Product.Detail.html
+``` html
+@await DisplayAsync(Model.MyGalleryZone)
+```
+
+Dynamic parts use `ContentPart` shape for detail display with differentiator of Part name, so the placement file would look like this:
+``` json
+{
+  "ContentPart": [
+    {
+      "place": "MyGalleryZone",
+      "differentiator": "GalleryPart"
+    }
+  ]
+}
+```
+
+This setup would then show your template (e.g. `GalleryPart.cshtml` or `GalleryPart.Detail.cshtml`) where `DisplayAsync` was called.
+
+If we would like to show the same part in a summary display content template (or any other that isn't `Detail` display type):
+
+=== Content-Product.Summary.html
+``` html
+@await DisplayAsync(Model.MyGalleryZone)
+```
+
+Our placement would look like this (note the `_Summary` suffix to ContentPart name; change your suffix accordingly):
+
+``` json
+{
+  "ContentPart_Summary": [
+    {
+      "place": "MyGalleryZone",
+      "differentiator": "GalleryPart"
+    }
+  ]
+}
+```
+
+This setup would then show your template  (e.g. `GalleryPart.cshtml` or `GalleryPart.Summary.cshtml`) where `DisplayAsync` was called.
 
 ## Video
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/h0lZMQkUApo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/h0lZMQkUApo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

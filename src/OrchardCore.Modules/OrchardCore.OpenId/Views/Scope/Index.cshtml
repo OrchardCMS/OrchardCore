@@ -1,10 +1,10 @@
 @model OpenIdScopeIndexViewModel
-@using OrchardCore.OpenId.ViewModels;
+@using OrchardCore.OpenId.ViewModels
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Scopes"])</h1></zone>
 
-<div class="card mb-3">
-    <div class="card-body bg-primary p-3">
+<div class="card bg-primary mb-3">
+    <div class="card-body">
         <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add a scope"]</a>
     </div>
 </div>
@@ -15,8 +15,8 @@
         @foreach (var entry in Model.Scopes)
         {
             <li class="list-group-item">
-                <div class="properties">
-                    <div class="related float-xs-right">
+                <div class="w-100">
+                    <div class="float-end float-sm-end">
                         <a asp-action="Edit" asp-route-id="@entry.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
                         <a class="delete btn btn-danger btn-sm" asp-route-id="@entry.Id" role="button" asp-action="Delete" data-url-af="UnsafeUrl RemoveUrl">@T["Delete"]</a>
                     </div>

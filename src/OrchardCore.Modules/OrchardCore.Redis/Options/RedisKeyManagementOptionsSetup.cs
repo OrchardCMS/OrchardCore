@@ -19,7 +19,6 @@ namespace OrchardCore.Redis.Options
         public void Configure(KeyManagementOptions options)
         {
             var redis = _redis;
-
             options.XmlRepository = new RedisXmlRepository(() =>
             {
                 if (redis.Database == null)
@@ -29,7 +28,7 @@ namespace OrchardCore.Redis.Options
 
                 return redis.Database;
             }
-            , redis.InstancePrefix + _tenant + ":DataProtection-Keys");
+            , $"({redis.InstancePrefix}{_tenant}:DataProtection-Keys");
         }
     }
 }

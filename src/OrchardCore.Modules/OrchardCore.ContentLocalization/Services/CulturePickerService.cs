@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement.Routing;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 
 namespace OrchardCore.ContentLocalization.Services

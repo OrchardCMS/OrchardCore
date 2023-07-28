@@ -3,34 +3,32 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: https://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/5/LICENSE
+
 (function (mod) {
-  if ((typeof exports === "undefined" ? "undefined" : _typeof(exports)) == "object" && (typeof module === "undefined" ? "undefined" : _typeof(module)) == "object") // CommonJS
-    mod(require("../../lib/codemirror"));else if (typeof define == "function" && define.amd) // AMD
-    define(["../../lib/codemirror"], mod);else // Plain browser env
+  if ((typeof exports === "undefined" ? "undefined" : _typeof(exports)) == "object" && (typeof module === "undefined" ? "undefined" : _typeof(module)) == "object")
+    // CommonJS
+    mod(require("../../lib/codemirror"));else if (typeof define == "function" && define.amd)
+    // AMD
+    define(["../../lib/codemirror"], mod);else
+    // Plain browser env
     mod(CodeMirror);
 })(function (CodeMirror) {
   "use strict";
 
-  CodeMirror.multiplexingMode = function (outer
-  /*, others */
-  ) {
+  CodeMirror.multiplexingMode = function (outer /*, others */) {
     // Others should be {open, close, mode [, delimStyle] [, innerStyle] [, parseDelimiters]} objects
     var others = Array.prototype.slice.call(arguments, 1);
-
     function indexOf(string, pattern, from, returnEnd) {
       if (typeof pattern == "string") {
         var found = string.indexOf(pattern, from);
         return returnEnd && found > -1 ? found + pattern.length : found;
       }
-
       var m = pattern.exec(from ? string.slice(from) : string);
       return m ? m.index + from + (returnEnd ? m[0].length : 0) : -1;
     }
-
     return {
       startState: function startState() {
         return {
@@ -51,61 +49,51 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       token: function token(stream, state) {
         if (!state.innerActive) {
           var cutOff = Infinity,
-              oldContent = stream.string;
-
+            oldContent = stream.string;
           for (var i = 0; i < others.length; ++i) {
             var other = others[i];
             var found = indexOf(oldContent, other.open, stream.pos);
-
             if (found == stream.pos) {
               if (!other.parseDelimiters) stream.match(other.open);
               state.startingInner = !!other.parseDelimiters;
-              state.innerActive = other; // Get the outer indent, making sure to handle CodeMirror.Pass
+              state.innerActive = other;
 
+              // Get the outer indent, making sure to handle CodeMirror.Pass
               var outerIndent = 0;
-
               if (outer.indent) {
                 var possibleOuterIndent = outer.indent(state.outer, "", "");
                 if (possibleOuterIndent !== CodeMirror.Pass) outerIndent = possibleOuterIndent;
               }
-
               state.inner = CodeMirror.startState(other.mode, outerIndent);
               return other.delimStyle && other.delimStyle + " " + other.delimStyle + "-open";
             } else if (found != -1 && found < cutOff) {
               cutOff = found;
             }
           }
-
           if (cutOff != Infinity) stream.string = oldContent.slice(0, cutOff);
           var outerToken = outer.token(stream, state.outer);
           if (cutOff != Infinity) stream.string = oldContent;
           return outerToken;
         } else {
           var curInner = state.innerActive,
-              oldContent = stream.string;
-
+            oldContent = stream.string;
           if (!curInner.close && stream.sol()) {
             state.innerActive = state.inner = null;
             return this.token(stream, state);
           }
-
           var found = curInner.close && !state.startingInner ? indexOf(oldContent, curInner.close, stream.pos, curInner.parseDelimiters) : -1;
-
           if (found == stream.pos && !curInner.parseDelimiters) {
             stream.match(curInner.close);
             state.innerActive = state.inner = null;
             return curInner.delimStyle && curInner.delimStyle + " " + curInner.delimStyle + "-close";
           }
-
           if (found > -1) stream.string = oldContent.slice(0, found);
           var innerToken = curInner.mode.token(stream, state.inner);
           if (found > -1) stream.string = oldContent;else if (stream.pos > stream.start) state.startingInner = false;
           if (found == stream.pos && curInner.parseDelimiters) state.innerActive = state.inner = null;
-
           if (curInner.innerStyle) {
             if (innerToken) innerToken = innerToken + " " + curInner.innerStyle;else innerToken = curInner.innerStyle;
           }
-
           return innerToken;
         }
       },
@@ -116,15 +104,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       },
       blankLine: function blankLine(state) {
         var mode = state.innerActive ? state.innerActive.mode : outer;
-
         if (mode.blankLine) {
           mode.blankLine(state.innerActive ? state.inner : state.outer);
         }
-
         if (!state.innerActive) {
           for (var i = 0; i < others.length; ++i) {
             var other = others[i];
-
             if (other.open === "\n") {
               state.innerActive = other;
               state.inner = CodeMirror.startState(other.mode, mode.indent ? mode.indent(state.outer, "", "") : 0);

@@ -13,7 +13,7 @@ using YesSql;
 
 namespace OrchardCore.Taxonomies.Services
 {
-    // TODO Create a Terms Index independant of the standard index, which can index taxonomy terms by their display text
+    // TODO Create a Terms Index independent of the standard index, which can index taxonomy terms by their display text
     // Refer https://github.com/OrchardCMS/OrchardCore/issues/5214
     // This could then be migrated to use the filter parser.
     public class TaxonomyContentsAdminListFilter : IContentsAdminListFilter
@@ -38,14 +38,14 @@ namespace OrchardCore.Taxonomies.Services
                     {
                         if (viewModel.SelectedContentItemId.StartsWith("Taxonomy:", StringComparison.OrdinalIgnoreCase))
                         {
-                            viewModel.SelectedContentItemId = viewModel.SelectedContentItemId.Substring(9);
+                            viewModel.SelectedContentItemId = viewModel.SelectedContentItemId[9..];
                             query.All(
                                 x => query.With<TaxonomyIndex>(x => x.TaxonomyContentItemId == viewModel.SelectedContentItemId)
                             );
                         }
                         else if (viewModel.SelectedContentItemId.StartsWith("Term:", StringComparison.OrdinalIgnoreCase))
                         {
-                            viewModel.SelectedContentItemId = viewModel.SelectedContentItemId.Substring(5);
+                            viewModel.SelectedContentItemId = viewModel.SelectedContentItemId[5..];
                             query.All(
                                 x => query.With<TaxonomyIndex>(x => x.TermContentItemId == viewModel.SelectedContentItemId)
                             );

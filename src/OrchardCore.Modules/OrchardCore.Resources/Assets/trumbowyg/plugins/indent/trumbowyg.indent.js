@@ -13,9 +13,18 @@
 
     $.extend(true, $.trumbowyg, {
         langs: {
+            // jshint camelcase:false
             en: {
                 indent: 'Indent',
                 outdent: 'Outdent'
+            },
+            az: {
+                indent: 'Girinti',
+                outdent: 'Çıxıntı'
+            },
+            by: {
+                indent: 'Водступ',
+                outdent: 'Выступ'
             },
             et: {
                 indent: 'Taande suurendamine',
@@ -24,7 +33,24 @@
             fr: {
                 indent: 'Augmenter le retrait',
                 outdent: 'Diminuer le retrait'
-            }
+            },
+            pt_br: {
+                indent: 'Aumentar Recuo',
+                outdent: 'Diminuir Recuo'
+            },
+            ru: {
+                indent: 'Отступ',
+                outdent: 'Выступ'
+            },
+            sl: {
+                indent: 'Povečaj zamik',
+                outdent: 'Zmanjšaj zamik'
+            },
+            tr: {
+                indent: 'Girinti',
+                outdent: 'Çıkıntı'
+            },
+            // jshint camelcase:true
         }
     });
 

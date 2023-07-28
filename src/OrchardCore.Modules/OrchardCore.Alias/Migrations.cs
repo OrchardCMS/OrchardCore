@@ -9,7 +9,7 @@ namespace OrchardCore.Alias
 {
     public class Migrations : DataMigration
     {
-        private IContentDefinitionManager _contentDefinitionManager;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
 
         public Migrations(IContentDefinitionManager contentDefinitionManager)
         {
@@ -24,7 +24,7 @@ namespace OrchardCore.Alias
 
             // NOTE: The Alias Length has been upgraded from 64 characters to 767.
             // For existing SQL databases update the AliasPartIndex tables Alias column length manually.
-            // INFO: The Alias Length is now of 740 chars, but this is only used on a new installation.
+            // INFO: The Alias Length is now of 735 chars, but this is only used on a new installation.
             SchemaBuilder.CreateMapIndexTable<AliasPartIndex>(table => table
                 .Column<string>("Alias", col => col.WithLength(AliasPart.MaxAliasLength))
                 .Column<string>("ContentItemId", c => c.WithLength(26))

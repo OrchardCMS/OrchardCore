@@ -1,7 +1,8 @@
 # Liquid (`OrchardCore.Liquid`)
 
 This module provides a way to create templates securely from the admin site.  
-For more information about the Liquid syntax, please refer to this site: <https://shopify.github.io/liquid/>
+For more information about the Liquid syntax, please refer to this site: <https://shopify.github.io/liquid/>.
+Liquid syntax is powered by Fluid. Check <https://github.com/sebastienros/fluid> for extra examples and custom filters.
 
 ## General concepts
 
@@ -98,6 +99,22 @@ or
 
 ```liquid
 {{ Model.ContentItem.CreatedUtc | local | date: "%c" }}
+```
+
+Output
+
+```text
+Wednesday, 02 August 2017 11:54:48
+```
+
+### `utc`
+
+Converts a local date and time to the UTC date and time based on the site settings.
+
+Input
+
+```liquid
+{{ "now" | utc | date: "%c" }}
 ```
 
 Output
@@ -900,23 +917,23 @@ Using `helper` invokes the `validation_for` tag helper of ASP.NET Core with `spa
 
 ### `link`
 
-Invokes the `link` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/README.md#link-tag)
+Invokes the `link` tag helper from the `Orchard.ResourceManagement` package. [See this section.](../Resources/README.md#link-tag)
 
 ### `meta`
 
-Invokes the `meta` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/README.md#meta-tags)
+Invokes the `meta` tag helper from the `Orchard.ResourceManagement` package. [See this section.](../Resources/README.md#meta-tags)
 
 ### `resources`
 
-Invokes the `resources` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/README.md#rendering)
+Invokes the `resources` tag helper from the `Orchard.ResourceManagement` package. [See this section.](../Resources/README.md#rendering)
 
 ### `script`
 
-Invokes the `script` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/README.md#inline-definition)
+Invokes the `script` tag helper from the `Orchard.ResourceManagement` package. [See this section.](../Resources/README.md#inline-definition)
 
 ### `style`
 
-Invokes the `style` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/README.md#inline-definition)
+Invokes the `style` tag helper from the `Orchard.ResourceManagement` package. [See this section.](../Resources/README.md#inline-definition)
 
 ### `a`
 

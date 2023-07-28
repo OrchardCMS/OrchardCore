@@ -1,7 +1,4 @@
-using System;
-using System.Globalization;
 using OrchardCore.Localization;
-using Xunit;
 
 namespace OrchardCore.Tests.Localization
 {
@@ -14,12 +11,11 @@ namespace OrchardCore.Tests.Localization
             var culture = "ar-YE";
 
             // Act
-            using (var cultureScope = CultureScope.Create(culture))
-            {
-                // Assert
-                Assert.Equal(culture, cultureScope.Culture.Name);
-                Assert.Equal(culture, cultureScope.UICulture.Name);
-            }
+            using var cultureScope = CultureScope.Create(culture);
+
+            // Assert
+            Assert.Equal(culture, cultureScope.Culture.Name);
+            Assert.Equal(culture, cultureScope.UICulture.Name);
         }
 
         [Fact]
@@ -30,12 +26,11 @@ namespace OrchardCore.Tests.Localization
             var uiCulture = "ar-YE";
 
             // Act
-            using (var cultureScope = CultureScope.Create(culture, uiCulture))
-            {
-                // Assert
-                Assert.Equal(culture, cultureScope.Culture.Name);
-                Assert.Equal(uiCulture, cultureScope.UICulture.Name);
-            }
+            using var cultureScope = CultureScope.Create(culture, uiCulture);
+
+            // Assert
+            Assert.Equal(culture, cultureScope.Culture.Name);
+            Assert.Equal(uiCulture, cultureScope.UICulture.Name);
         }
 
         [Fact]
@@ -57,20 +52,19 @@ namespace OrchardCore.Tests.Localization
         }
 
         [Fact]
-        public void CultureScopeRetrievesTheOrginalCulturesIfExceptionOccurs()
+        public async Task CultureScopeRetrievesTheOrginalCulturesIfExceptionOccurs()
         {
             // Arrange
             var culture = CultureInfo.CurrentCulture;
             var uiCulture = CultureInfo.CurrentUICulture;
 
             // Act & Assert
-            Assert.ThrowsAsync<Exception>(() =>
+            await Assert.ThrowsAsync<Exception>(() =>
             {
-                using (var cultureScope = CultureScope.Create("FR"))
-                {
-                    throw new Exception("Something goes wrong!!");
-                }
+                using var cultureScope = CultureScope.Create("FR");
+                throw new Exception("Something goes wrong!!");
             });
+
             Assert.Equal(culture, CultureInfo.CurrentCulture);
             Assert.Equal(uiCulture, CultureInfo.CurrentUICulture);
         }

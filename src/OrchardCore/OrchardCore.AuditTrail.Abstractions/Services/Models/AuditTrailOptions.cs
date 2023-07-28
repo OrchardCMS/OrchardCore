@@ -18,7 +18,7 @@ namespace OrchardCore.AuditTrail.Services.Models
             CategoryDescriptorBuilders = null;
 
             return categoryDescriptors;
-        }  
+        }
     }
 
     public static class AuditTrailOptionsExtensions
@@ -32,9 +32,9 @@ namespace OrchardCore.AuditTrail.Services.Models
             }
 
             return auditTrailCategoryDescriptorBuilder;
-        }        
+        }
 
         public static bool Remove(this AuditTrailOptions options, string categoryName)
             => options.CategoryDescriptorBuilders.Remove(categoryName);
-    }    
+    }
 }

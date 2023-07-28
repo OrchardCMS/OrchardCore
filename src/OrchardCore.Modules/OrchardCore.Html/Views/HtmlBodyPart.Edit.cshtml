@@ -1,5 +1,5 @@
 @model HtmlBodyPartViewModel
-
+@using OrchardCore
 @{
     var settings = Model.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.ContentItem);
@@ -7,10 +7,12 @@
 
 @await DisplayAsync(await New.ShortcodeModal())
 
-<div class="form-group">
-    <label asp-for="Html">@Model.TypePartDefinition.DisplayName()</label>
-    <textarea asp-for="Html" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
-    <span class="hint">@T["The body of the content item."]</span>
+<div class="@Orchard.GetWrapperCssClasses()">
+    <label asp-for="Html" class="@Orchard.GetLabelCssClasses()">@Model.TypePartDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndCssClasses()">
+        <textarea asp-for="Html" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
+        <span class="hint">@T["The body of the content item."]</span>
+    </div>
 </div>
 
 <style asp-name="codemirror"></style>
@@ -25,7 +27,7 @@
 <script at="Foot">
     $(function () {
         var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Html)');
-        @* When part rendered by a flow part only the elements scripts are rendered, so the html element will not exist. *@
+    @* When part rendered by a flow part only the elements scripts are rendered, so the html element will not exist. *@
         if (optionsTextArea) {
             var editor = CodeMirror.fromTextArea(optionsTextArea, {
                 autoCloseTags: true,
@@ -39,7 +41,7 @@
 
             initializeCodeMirrorShortcodeWrapper(editor);
 
-            editor.on('change', function(cmEditor){
+            editor.on('change', function (cmEditor) {
                 cmEditor.save();
                 $(document).trigger('contentpreview:render');
             });

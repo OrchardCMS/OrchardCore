@@ -21,7 +21,7 @@ namespace OrchardCore.Alias.Services
         {
             if (handle.StartsWith("alias:", StringComparison.OrdinalIgnoreCase))
             {
-                handle = handle.Substring(6);
+                handle = handle[6..];
 
                 var aliasPartIndex = await AliasPartContentHandleHelper.QueryAliasIndex(_session, handle);
                 return aliasPartIndex?.ContentItemId;

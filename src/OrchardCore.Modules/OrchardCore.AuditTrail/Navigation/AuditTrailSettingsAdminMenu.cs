@@ -8,7 +8,7 @@ namespace OrchardCore.AuditTrail.Navigation
 {
     public class AuditTrailSettingsAdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AuditTrailSettingsAdminMenu(IStringLocalizer<AuditTrailSettingsAdminMenu> stringLocalizer)
         {
@@ -26,7 +26,7 @@ namespace OrchardCore.AuditTrail.Navigation
                  .Add(S["Configuration"], configuration => configuration
                      .Add(S["Settings"], settings => settings
                         .Add(S["Audit Trail"], S["Audit Trail"].PrefixPosition(), settings => settings
-                            .AddClass("audittrail").Id("audittrail")
+                            .AddClass("audittrail").Id("audittrailSettings")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = AuditTrailSettingsGroup.Id })
                             .Permission(AuditTrailPermissions.ManageAuditTrailSettings)
                             .LocalNav())));

@@ -27,8 +27,8 @@ namespace OrchardCore.ContentTypes.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IDocumentStore _documentStore;
         private readonly IContentDefinitionDisplayManager _contentDefinitionDisplayManager;
-        private readonly IHtmlLocalizer H;
-        private readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
@@ -94,7 +94,7 @@ namespace OrchardCore.ContentTypes.Controllers
             }
 
             viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? String.Empty;
-            viewModel.Name = viewModel.Name ?? String.Empty;
+            viewModel.Name ??= String.Empty;
 
             if (String.IsNullOrWhiteSpace(viewModel.DisplayName))
             {
@@ -249,7 +249,7 @@ namespace OrchardCore.ContentTypes.Controllers
             {
                 Type = typeViewModel,
                 PartSelections = _contentDefinitionService.GetParts(metadataPartsOnly: false)
-                    .Where(cpd => !typePartNames.Contains(cpd.Name) && cpd.PartDefinition != null ? cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable : false)
+                    .Where(cpd => !typePartNames.Contains(cpd.Name, StringComparer.OrdinalIgnoreCase) && cpd.PartDefinition != null && cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable)
                     .Select(cpd => new PartSelectionViewModel { PartName = cpd.Name, PartDisplayName = cpd.DisplayName, PartDescription = cpd.Description })
                     .ToList()
             };
@@ -272,9 +272,9 @@ namespace OrchardCore.ContentTypes.Controllers
             }
 
             var reusableParts = _contentDefinitionService.GetParts(metadataPartsOnly: false)
-                    .Where(cpd => cpd.PartDefinition != null ?
-                        (cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable &&
-                        cpd.PartDefinition.GetSettings<ContentPartSettings>().Reusable) : false);
+                    .Where(cpd => cpd.PartDefinition != null &&
+                        cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable &&
+                        cpd.PartDefinition.GetSettings<ContentPartSettings>().Reusable);
 
             var viewModel = new AddReusablePartViewModel
             {
@@ -347,7 +347,7 @@ namespace OrchardCore.ContentTypes.Controllers
             }
 
             viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? String.Empty;
-            viewModel.Name = viewModel.Name ?? String.Empty;
+            viewModel.Name ??= String.Empty;
 
             if (String.IsNullOrWhiteSpace(viewModel.DisplayName))
             {
@@ -409,7 +409,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var typeViewModel = _contentDefinitionService.LoadType(id);
 
-            if (typeViewModel == null || !typeViewModel.TypeDefinition.Parts.Any(p => p.Name == name))
+            if (typeViewModel == null || !typeViewModel.TypeDefinition.Parts.Any(p => String.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase)))
             {
                 return NotFound();
             }
@@ -457,7 +457,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return Forbid();
             }
 
-            viewModel.Name = viewModel.Name ?? String.Empty;
+            viewModel.Name ??= String.Empty;
 
             if (String.IsNullOrWhiteSpace(viewModel.Name))
             {
@@ -516,8 +516,10 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var viewModel = new EditPartViewModel(contentPartDefinition);
-            viewModel.Editor = await _contentDefinitionDisplayManager.BuildPartEditorAsync(contentPartDefinition, _updateModelAccessor.ModelUpdater);
+            var viewModel = new EditPartViewModel(contentPartDefinition)
+            {
+                Editor = await _contentDefinitionDisplayManager.BuildPartEditorAsync(contentPartDefinition, _updateModelAccessor.ModelUpdater),
+            };
 
             return View(viewModel);
         }
@@ -538,8 +540,10 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var viewModel = new EditPartViewModel(contentPartDefinition);
-            viewModel.Editor = await _contentDefinitionDisplayManager.UpdatePartEditorAsync(contentPartDefinition, _updateModelAccessor.ModelUpdater);
+            var viewModel = new EditPartViewModel(contentPartDefinition)
+            {
+                Editor = await _contentDefinitionDisplayManager.UpdatePartEditorAsync(contentPartDefinition, _updateModelAccessor.ModelUpdater),
+            };
 
             if (!ModelState.IsValid)
             {
@@ -585,6 +589,15 @@ namespace OrchardCore.ContentTypes.Controllers
                 return Forbid();
             }
 
+            var fields = _contentDefinitionService.GetFields().ToList();
+
+            if (!fields.Any())
+            {
+                await _notifier.WarningAsync(H["There are no fields."]);
+
+                return RedirectToAction(nameof(List));
+            }
+
             var partViewModel = _contentDefinitionService.LoadPart(id);
 
             if (partViewModel == null)
@@ -595,7 +608,7 @@ namespace OrchardCore.ContentTypes.Controllers
             var viewModel = new AddFieldViewModel
             {
                 Part = partViewModel.PartDefinition,
-                Fields = _contentDefinitionService.GetFields().Select(x => x.Name).OrderBy(x => x).ToList()
+                Fields = fields.Select(field => field.Name).OrderBy(name => name).ToList()
             };
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -617,10 +630,17 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
+            var fields = _contentDefinitionService.GetFields().ToList();
+
+            if (!fields.Any(field => String.Equals(field.Name, viewModel.FieldTypeName, StringComparison.OrdinalIgnoreCase)))
+            {
+                return NotFound();
+            }
+
             var partDefinition = partViewModel.PartDefinition;
 
             viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? String.Empty;
-            viewModel.Name = viewModel.Name ?? String.Empty;
+            viewModel.Name ??= String.Empty;
 
             if (String.IsNullOrWhiteSpace(viewModel.DisplayName))
             {
@@ -691,9 +711,10 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var partFieldDefinition = partViewModel.PartDefinition.Fields.FirstOrDefault(x => x.Name == name);
+            var partFieldDefinition = partViewModel.PartDefinition.Fields.FirstOrDefault(x => String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
-            if (partFieldDefinition == null)
+            if (partFieldDefinition?.FieldDefinition?.Name == null
+                || !_contentDefinitionService.GetFields().Any(field => String.Equals(field.Name, partFieldDefinition.FieldDefinition.Name, StringComparison.OrdinalIgnoreCase)))
             {
                 return NotFound();
             }
@@ -733,7 +754,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var field = _contentDefinitionManager.LoadPartDefinition(id).Fields.FirstOrDefault(x => x.Name == viewModel.Name);
+            var field = _contentDefinitionManager.LoadPartDefinition(id).Fields.FirstOrDefault(x => String.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase));
 
             if (field == null)
             {
@@ -773,7 +794,7 @@ namespace OrchardCore.ContentTypes.Controllers
             _contentDefinitionService.AlterField(partViewModel, viewModel);
 
             // Refresh the local field variable in case it has been altered
-            field = _contentDefinitionManager.LoadPartDefinition(id).Fields.FirstOrDefault(x => x.Name == viewModel.Name);
+            field = _contentDefinitionManager.LoadPartDefinition(id).Fields.FirstOrDefault(x => String.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase));
 
             viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, _updateModelAccessor.ModelUpdater);
 
@@ -821,7 +842,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var field = partViewModel.PartDefinition.Fields.FirstOrDefault(x => x.Name == name);
+            var field = partViewModel.PartDefinition.Fields.FirstOrDefault(x => String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
             if (field == null)
             {
@@ -858,7 +879,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var typePartDefinition = typeDefinition.Parts.FirstOrDefault(x => x.Name == name);
+            var typePartDefinition = typeDefinition.Parts.FirstOrDefault(x => String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
             if (typePartDefinition == null)
             {
@@ -900,7 +921,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var part = typeDefinition.Parts.FirstOrDefault(x => x.Name == viewModel.Name);
+            var part = typeDefinition.Parts.FirstOrDefault(x => String.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase));
 
             if (part == null)
             {
@@ -938,7 +959,7 @@ namespace OrchardCore.ContentTypes.Controllers
             _contentDefinitionService.AlterTypePart(viewModel);
 
             // Refresh the local part variable in case it has been altered
-            part = _contentDefinitionManager.LoadTypeDefinition(id).Parts.FirstOrDefault(x => x.Name == viewModel.Name);
+            part = _contentDefinitionManager.LoadTypeDefinition(id).Parts.FirstOrDefault(x => String.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase));
 
             viewModel.Shape = await _contentDefinitionDisplayManager.UpdateTypePartEditorAsync(part, _updateModelAccessor.ModelUpdater);
 

@@ -55,7 +55,7 @@ namespace OrchardCore.DisplayManagement.Zones
     /// <remarks>
     /// Returns a ZoneOnDemand object the first time the indexer is invoked.
     /// If an item is added to the ZoneOnDemand then the zoneFactory is invoked to create a zone shape and this item is added to the zone.
-    /// Then the zone shape is assigned in palce of the ZoneOnDemand. A ZoneOnDemand returns true when compared to null such that we can
+    /// Then the zone shape is assigned in place of the ZoneOnDemand. A ZoneOnDemand returns true when compared to null such that we can
     /// do Zones["Foo"] == null to see if anything has been added to a zone, without instantiating a zone when accessing the indexer.
     /// </remarks>
     public class Zones : Composite
@@ -63,7 +63,7 @@ namespace OrchardCore.DisplayManagement.Zones
         private readonly Func<ValueTask<IShape>> _zoneFactory;
         private readonly ZoneHolding _parent;
 
-        public bool IsNotEmpty(string name) => !(this[name] is ZoneOnDemand);
+        public bool IsNotEmpty(string name) => this[name] is not ZoneOnDemand;
 
         public Zones(Func<ValueTask<IShape>> zoneFactory, ZoneHolding parent)
         {
@@ -108,10 +108,10 @@ namespace OrchardCore.DisplayManagement.Zones
     }
 
     /// <remarks>
-    /// InterfaceProxyBehavior()
-    /// NilBehavior() => return Nil on GetMember and GetIndex in all cases
-    /// ZoneOnDemandBehavior(_zoneFactory, _parent, name)  => when a zone (Shape) is
-    /// created, replace itself with the zone so that Layout.ZoneName is no more equal to Nil
+    /// InterfaceProxyBehavior().
+    /// NilBehavior() => return Nil on GetMember and GetIndex in all cases.
+    /// ZoneOnDemandBehavior(_zoneFactory, _parent, name) => when a zone (Shape) is
+    /// created, replace itself with the zone so that Layout.ZoneName is no more equal to Nil.
     /// </remarks>
     public class ZoneOnDemand : Shape
     {
@@ -129,14 +129,14 @@ namespace OrchardCore.DisplayManagement.Zones
 
         public override bool TryGetMember(System.Dynamic.GetMemberBinder binder, out object result)
         {
-            // NilBehavior
+            // NilBehavior.
             result = Nil.Instance;
             return true;
         }
 
         public override bool TryGetIndex(System.Dynamic.GetIndexBinder binder, object[] indexes, out object result)
         {
-            // NilBehavior
+            // NilBehavior.
             result = Nil.Instance;
             return true;
         }
@@ -145,7 +145,7 @@ namespace OrchardCore.DisplayManagement.Zones
         {
             var name = binder.Name;
 
-            // NilBehavior
+            // NilBehavior.
             if (!args.Any() && name != "ToString")
             {
                 result = Nil.Instance;
@@ -178,15 +178,15 @@ namespace OrchardCore.DisplayManagement.Zones
             return true;
         }
 
-        public static bool operator ==(ZoneOnDemand a, object b)
+        public static bool operator ==(ZoneOnDemand _, object b)
         {
-            // if ZoneOnDemand is compared to null it must return true
+            // If ZoneOnDemand is compared to null it must return true.
             return b == null || ReferenceEquals(b, Nil.Instance);
         }
 
         public static bool operator !=(ZoneOnDemand a, object b)
         {
-            // if ZoneOnDemand is compared to null it must return true
+            // If ZoneOnDemand is compared to null it must return true.
             return !(a == b);
         }
 

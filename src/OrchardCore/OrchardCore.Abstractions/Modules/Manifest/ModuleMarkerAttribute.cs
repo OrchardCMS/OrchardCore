@@ -8,14 +8,18 @@ namespace OrchardCore.Modules.Manifest
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
     public class ModuleMarkerAttribute : ModuleAttribute
     {
-        private string _type;
-
-        public ModuleMarkerAttribute(string name, string type)
+        /// <summary>
+        /// Constructs the attribute given <paramref name="id"/> and <paramref name="type"/>.
+        /// </summary>
+        /// <param name="id">The identifier for the Module.</param>
+        /// <param name="type">Allows authors to specify a module specific Type.</param>
+        public ModuleMarkerAttribute(
+            string id
+            , string type
+        )
         {
-            Name = name;
-            _type = type;
+            Id = id;
+            Type = type;
         }
-
-        public override string Type => _type;
     }
 }

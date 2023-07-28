@@ -4,7 +4,6 @@ using Fluid;
 using Fluid.Filters;
 using Fluid.Values;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Liquid;

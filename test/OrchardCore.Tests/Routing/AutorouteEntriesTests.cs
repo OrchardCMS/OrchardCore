@@ -1,15 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Autoroute.Services;
+using OrchardCore.Autoroute.Core.Services;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
-using Xunit;
 
 namespace OrchardCore.Tests.Routing
 {
@@ -234,7 +228,7 @@ namespace OrchardCore.Tests.Routing
         {
             return new ShellContext()
             {
-                Settings = new ShellSettings() { Name = ShellHelper.DefaultShellName, State = TenantState.Running },
+                Settings = new ShellSettings().AsDefaultShell().AsRunning(),
                 ServiceProvider = CreateServiceProvider()
             };
         }

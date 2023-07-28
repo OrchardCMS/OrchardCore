@@ -29,7 +29,7 @@ namespace OrchardCore.Seo.Drivers
         private IContentManager _contentManager;
 
         public SeoMetaSettingsHandler(
-            IMediaFileStore mediaFileStore, 
+            IMediaFileStore mediaFileStore,
             ISiteService siteService,
             IActionContextAccessor actionContextAccessor,
             IHttpContextAccessor httpContextAccessor,
@@ -37,12 +37,12 @@ namespace OrchardCore.Seo.Drivers
             )
         {
             _mediaFileStore = mediaFileStore;
-            _siteService = siteService;  
+            _siteService = siteService;
             _actionContextAccessor = actionContextAccessor;
             _httpContextAccessor = httpContextAccessor;
-            _urlHelperFactory = urlHelperFactory; 
+            _urlHelperFactory = urlHelperFactory;
         }
-        
+
         public override Task GetContentItemAspectAsync(ContentItemAspectContext context)
         {
             return context.ForAsync<SeoAspect>(async aspect =>
@@ -55,10 +55,7 @@ namespace OrchardCore.Seo.Drivers
 
                 var actionContext = _actionContextAccessor.ActionContext;
 
-                if (actionContext == null)
-                {
-                    actionContext = await GetActionContextAsync(_httpContextAccessor.HttpContext);
-                }
+                actionContext ??= await GetActionContextAsync(_httpContextAccessor.HttpContext);
 
                 var urlHelper = _urlHelperFactory.GetUrlHelper(actionContext);
                 var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(context.ContentItem);
@@ -92,7 +89,7 @@ namespace OrchardCore.Seo.Drivers
 
                 // OpenGraph
 
-                aspect.OpenGraphUrl = absoluteUrl;
+                aspect.OpenGraphUrl = aspect.Canonical ??= absoluteUrl;
 
                 if (String.IsNullOrEmpty(aspect.OpenGraphType))
                 {
@@ -121,7 +118,7 @@ namespace OrchardCore.Seo.Drivers
                 if (String.IsNullOrEmpty(aspect.OpenGraphAppId))
                 {
                     aspect.OpenGraphAppId = metaSettings.Content.SocialMetaSettings?.OpenGraphAppId?.Text.ToString();
-                }                
+                }
 
                 if (String.IsNullOrEmpty(aspect.OpenGraphImage))
                 {
@@ -129,12 +126,12 @@ namespace OrchardCore.Seo.Drivers
                     {
                         if (!String.IsNullOrEmpty(defaultImage))
                         {
-                            aspect.OpenGraphImage = urlHelper.ToAbsoluteUrl(_mediaFileStore.MapPathToPublicUrl(defaultImage));   
+                            aspect.OpenGraphImage = urlHelper.ToAbsoluteUrl(_mediaFileStore.MapPathToPublicUrl(defaultImage));
                         }
                     }
                     else
                     {
-                        aspect.OpenGraphImage = urlHelper.ToAbsoluteUrl(_mediaFileStore.MapPathToPublicUrl(openGraphImage));    
+                        aspect.OpenGraphImage = urlHelper.ToAbsoluteUrl(_mediaFileStore.MapPathToPublicUrl(openGraphImage));
                     }
                 }
 
@@ -151,7 +148,7 @@ namespace OrchardCore.Seo.Drivers
                 }
 
                 // Twitter
-                aspect.TwitterUrl = absoluteUrl;
+                aspect.TwitterUrl = aspect.Canonical ??= absoluteUrl;
 
                 if (String.IsNullOrEmpty(aspect.TwitterTitle))
                 {
@@ -176,7 +173,7 @@ namespace OrchardCore.Seo.Drivers
                 if (String.IsNullOrEmpty(aspect.TwitterCreator))
                 {
                     aspect.TwitterCreator = twitterCreator;
-                }                
+                }
 
                 if (String.IsNullOrEmpty(aspect.TwitterImage))
                 {
@@ -184,12 +181,12 @@ namespace OrchardCore.Seo.Drivers
                     {
                         if (!String.IsNullOrEmpty(defaultImage))
                         {
-                            aspect.TwitterImage = urlHelper.ToAbsoluteUrl(_mediaFileStore.MapPathToPublicUrl(defaultImage));   
+                            aspect.TwitterImage = urlHelper.ToAbsoluteUrl(_mediaFileStore.MapPathToPublicUrl(defaultImage));
                         }
                     }
                     else
                     {
-                        aspect.TwitterImage = urlHelper.ToAbsoluteUrl(_mediaFileStore.MapPathToPublicUrl(twitterImage));    
+                        aspect.TwitterImage = urlHelper.ToAbsoluteUrl(_mediaFileStore.MapPathToPublicUrl(twitterImage));
                     }
                 }
 

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using OrchardCore.Admin;
@@ -16,7 +17,6 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
@@ -30,7 +30,7 @@ namespace OrchardCore.Workflows.Controllers
     [Admin]
     public class WorkflowController : Controller
     {
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly ISession _session;
         private readonly IWorkflowManager _workflowManager;
         private readonly IWorkflowTypeStore _workflowTypeStore;
@@ -39,11 +39,11 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IHtmlLocalizer H;
-        private readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
 
         public WorkflowController(
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             ISession session,
             IWorkflowManager workflowManager,
             IWorkflowTypeStore workflowTypeStore,
@@ -56,7 +56,7 @@ namespace OrchardCore.Workflows.Controllers
             IStringLocalizer<WorkflowController> stringLocalizer,
             IUpdateModelAccessor updateModelAccessor)
         {
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
             _session = session;
             _workflowManager = workflowManager;
             _workflowTypeStore = workflowTypeStore;
@@ -85,10 +85,9 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
 
-            var query = _session.Query<Workflow, WorkflowIndex>();
-            query = query.Where(x => x.WorkflowTypeId == workflowType.WorkflowTypeId);
+            var query = _session.QueryIndex<WorkflowIndex>()
+                .Where(x => x.WorkflowTypeId == workflowType.WorkflowTypeId);
 
             switch (model.Options.Filter)
             {
@@ -103,20 +102,14 @@ namespace OrchardCore.Workflows.Controllers
                     break;
             }
 
-            switch (model.Options.OrderBy)
+            query = model.Options.OrderBy switch
             {
-                case WorkflowOrder.CreatedDesc:
-                    query = query.OrderByDescending(x => x.CreatedUtc);
-                    break;
-                case WorkflowOrder.Created:
-                    query = query.OrderBy(x => x.CreatedUtc);
-                    break;
-                default:
-                    query = query.OrderByDescending(x => x.CreatedUtc);
-                    break;
-            }
+                WorkflowOrder.CreatedDesc => query.OrderByDescending(x => x.CreatedUtc),
+                WorkflowOrder.Created => query.OrderBy(x => x.CreatedUtc),
+                _ => query.OrderByDescending(x => x.CreatedUtc),
+            };
 
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var routeData = new RouteData();
             routeData.Values.Add("Filter", model.Options.Filter);
@@ -124,32 +117,35 @@ namespace OrchardCore.Workflows.Controllers
             var pagerShape = (await New.Pager(pager)).TotalItemCount(await query.CountAsync()).RouteData(routeData);
             var pageOfItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
 
+            var workflowIds = pageOfItems.Select(item => item.WorkflowId);
+            var workflows = await _session.Query<Workflow, WorkflowIndex>(item => item.WorkflowId.IsIn(workflowIds))
+                .ListAsync();
+
             var viewModel = new WorkflowIndexViewModel
             {
                 WorkflowType = workflowType,
-                Workflows = pageOfItems.Select(x => new WorkflowEntry
-                {
-                    Workflow = x,
-                    Id = x.Id
-                }).ToList(),
+                Workflows = workflows.Select(x => new WorkflowEntry { Workflow = x, Id = x.Id }).ToList(),
                 Options = model.Options,
                 Pager = pagerShape,
-                ReturnUrl = returnUrl
+                ReturnUrl = returnUrl,
             };
 
-            model.Options.WorkflowsSorts = new List<SelectListItem>() {
+            model.Options.WorkflowsSorts = new List<SelectListItem>()
+            {
                 new SelectListItem() { Text = S["Recently created"], Value = nameof(WorkflowOrder.CreatedDesc) },
-                new SelectListItem() { Text = S["Least recently created"], Value = nameof(WorkflowOrder.Created) }
+                new SelectListItem() { Text = S["Least recently created"], Value = nameof(WorkflowOrder.Created) },
             };
 
-            model.Options.WorkflowsStatuses = new List<SelectListItem>() {
+            model.Options.WorkflowsStatuses = new List<SelectListItem>()
+            {
                 new SelectListItem() { Text = S["All"], Value = nameof(WorkflowFilter.All) },
                 new SelectListItem() { Text = S["Faulted"], Value = nameof(WorkflowFilter.Faulted) },
-                new SelectListItem() { Text = S["Finished"], Value = nameof(WorkflowFilter.Finished) }
+                new SelectListItem() { Text = S["Finished"], Value = nameof(WorkflowFilter.Finished) },
             };
 
-            viewModel.Options.WorkflowsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(WorkflowBulkAction.Delete) }
+            viewModel.Options.WorkflowsBulkAction = new List<SelectListItem>()
+            {
+                new SelectListItem() { Text = S["Delete"], Value = nameof(WorkflowBulkAction.Delete) },
             };
 
             return View(viewModel);
@@ -159,9 +155,10 @@ namespace OrchardCore.Workflows.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(WorkflowIndexViewModel model)
         {
-            return RedirectToAction(nameof(Index), new RouteValueDictionary {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary
+            {
                 { "Options.Filter", model.Options.Filter },
-                { "Options.OrderBy", model.Options.OrderBy }
+                { "Options.OrderBy", model.Options.OrderBy },
             });
         }
 
@@ -194,21 +191,21 @@ namespace OrchardCore.Workflows.Controllers
             var activitiesDataQuery = activityContexts.Select(x => new
             {
                 Id = x.ActivityRecord.ActivityId,
-                X = x.ActivityRecord.X,
-                Y = x.ActivityRecord.Y,
-                Name = x.ActivityRecord.Name,
-                IsStart = x.ActivityRecord.IsStart,
+                x.ActivityRecord.X,
+                x.ActivityRecord.Y,
+                x.ActivityRecord.Name,
+                x.ActivityRecord.IsStart,
                 IsEvent = x.Activity.IsEvent(),
                 IsBlocking = workflow.BlockingActivities.Any(a => a.ActivityId == x.ActivityRecord.ActivityId),
-                Outcomes = x.Activity.GetPossibleOutcomes(workflowContext, x).ToArray()
+                Outcomes = x.Activity.GetPossibleOutcomes(workflowContext, x).ToArray(),
             });
             var workflowTypeData = new
             {
-                Id = workflowType.Id,
-                Name = workflowType.Name,
-                IsEnabled = workflowType.IsEnabled,
+                workflowType.Id,
+                workflowType.Name,
+                workflowType.IsEnabled,
                 Activities = activitiesDataQuery.ToArray(),
-                Transitions = workflowType.Transitions
+                workflowType.Transitions,
             };
 
             var jsonSerializerSettings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
@@ -218,8 +215,9 @@ namespace OrchardCore.Workflows.Controllers
                 WorkflowType = workflowType,
                 WorkflowTypeJson = JsonConvert.SerializeObject(workflowTypeData, Formatting.None, jsonSerializerSettings),
                 WorkflowJson = JsonConvert.SerializeObject(workflow, Formatting.Indented, jsonSerializerSettings),
-                ActivityDesignShapes = activityDesignShapes
+                ActivityDesignShapes = activityDesignShapes,
             };
+
             return View(viewModel);
         }
 
@@ -275,10 +273,10 @@ namespace OrchardCore.Workflows.Controllers
                         break;
 
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
-            return RedirectToAction(nameof(Index), new { workflowTypeId, page = pagerParameters.Page, pageSize = pagerParameters.PageSize });
+            return RedirectToAction(nameof(Index), new { workflowTypeId, pagenum = pagerParameters.Page, pagesize = pagerParameters.PageSize });
         }
 
         private async Task<dynamic> BuildActivityDisplayAsync(ActivityContext activityContext, int workflowTypeId, bool isBlocking, string displayType)

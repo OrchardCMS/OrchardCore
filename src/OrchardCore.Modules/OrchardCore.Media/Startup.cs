@@ -22,6 +22,7 @@ using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.Environment.Shell;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
+using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Media.Controllers;
 using OrchardCore.Media.Core;
@@ -31,6 +32,7 @@ using OrchardCore.Media.Events;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Filters;
 using OrchardCore.Media.Handlers;
+using OrchardCore.Media.Indexing;
 using OrchardCore.Media.Liquid;
 using OrchardCore.Media.Processing;
 using OrchardCore.Media.Recipes;
@@ -46,6 +48,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Shortcodes;
+using SixLabors.ImageSharp.Web.Caching;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 using SixLabors.ImageSharp.Web.Middleware;
 using SixLabors.ImageSharp.Web.Providers;
@@ -54,11 +57,15 @@ namespace OrchardCore.Media
 {
     public class Startup : StartupBase
     {
-        private readonly AdminOptions _adminOptions;
+        private const string _imageSharpCacheFolder = "is-cache";
 
-        public Startup(IOptions<AdminOptions> adminOptions)
+        private readonly AdminOptions _adminOptions;
+        private readonly ShellSettings _shellSettings;
+
+        public Startup(IOptions<AdminOptions> adminOptions, ShellSettings shellSettings)
         {
             _adminOptions = adminOptions.Value;
+            _shellSettings = shellSettings;
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -110,8 +117,9 @@ namespace OrchardCore.Media
 
                 var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath);
 
-                var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>()
-                    .HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? null;
+                var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext
+                    ?.Features.Get<ShellContextFeature>()
+                    ?.OriginalPathBase ?? PathString.Empty;
 
                 if (originalPathBase.HasValue)
                 {
@@ -130,14 +138,22 @@ namespace OrchardCore.Media
             // Add ImageSharp Configuration first, to override ImageSharp defaults.
             services.AddTransient<IConfigureOptions<ImageSharpMiddlewareOptions>, MediaImageSharpConfiguration>();
 
-            services.AddImageSharp()
+            services
+                .AddImageSharp()
                 .RemoveProvider<PhysicalFileSystemProvider>()
+                // For multitenancy we must use an absolute path to prevent leakage across tenants on different hosts.
+                .SetCacheKey<BackwardsCompatibleCacheKey>()
+                .Configure<PhysicalFileSystemCacheOptions>(options =>
+                {
+                    options.CacheFolder = $"{_shellSettings.Name}/{_imageSharpCacheFolder}";
+                    options.CacheFolderDepth = 12;
+                })
                 .AddProvider<MediaResizingFileProvider>()
                 .AddProcessor<ImageVersionProcessor>()
                 .AddProcessor<TokenCommandProcessor>();
 
             services.AddScoped<MediaTokenSettingsUpdater>();
-            services.AddScoped<IMediaTokenService, MediaTokenService>();
+            services.AddSingleton<IMediaTokenService, MediaTokenService>();
             services.AddTransient<IConfigureOptions<MediaTokenOptions>, MediaTokenOptionsConfiguration>();
             services.AddScoped<IFeatureEventHandler>(sp => sp.GetRequiredService<MediaTokenSettingsUpdater>());
             services.AddScoped<IModularTenantEvents>(sp => sp.GetRequiredService<MediaTokenSettingsUpdater>());
@@ -149,7 +165,9 @@ namespace OrchardCore.Media
             services.AddScoped<AttachedMediaFieldFileService, AttachedMediaFieldFileService>();
             services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();
             services.AddScoped<IModularTenantEvents, TempDirCleanerService>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
+            services.AddScoped<IContentFieldIndexHandler, MediaFieldIndexHandler>();
+            services.AddMediaFileTextProvider<PdfMediaFileTextProvider>(".pdf");
 
             services.AddRecipeExecutionStep<MediaStep>();
 
@@ -332,7 +350,7 @@ namespace OrchardCore.Media
             );
         }
 
-        private string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsPath)
+        private static string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsPath)
         {
             return PathExtensions.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, assetsPath);
         }
@@ -393,6 +411,21 @@ namespace OrchardCore.Media
   <tr>
     <td></td>
     <td>class, alt</td>
+  </tr>
+</table>";
+                d.Categories = new string[] { "HTML Content", "Media" };
+            });
+
+            services.AddShortcode<AssetUrlShortcodeProvider>("asset_url", d =>
+            {
+                d.DefaultValue = "[asset_url] [/asset_url]";
+                d.Hint = "Return a url from the media library.";
+                d.Usage =
+@"[asset_url]foo.jpg[/asset_url]<br>
+<table>
+  <tr>
+    <td>Args:</td>
+    <td>width, height, mode</td>
   </tr>
 </table>";
                 d.Categories = new string[] { "HTML Content", "Media" };

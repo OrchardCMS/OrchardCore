@@ -6,7 +6,9 @@ using OrchardCore.Alias.Services;
 using OrchardCore.ContentManagement;
 using YesSql;
 
+#pragma warning disable CA1050 // Declare types in namespaces
 public static class AliasPartRazorHelperExtensions
+#pragma warning restore CA1050 // Declare types in namespaces
 {
     /// <summary>
     /// Returns a content item id by its alias.
@@ -25,7 +27,7 @@ public static class AliasPartRazorHelperExtensions
         // Provided for backwards compatability and avoiding confusion.
         if (alias.StartsWith("alias:", StringComparison.OrdinalIgnoreCase))
         {
-            alias = alias.Substring(6);
+            alias = alias[6..];
         }
 
         var session = orchardHelper.HttpContext.RequestServices.GetService<ISession>();

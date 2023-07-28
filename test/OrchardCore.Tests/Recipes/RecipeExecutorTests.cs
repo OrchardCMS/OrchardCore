@@ -1,16 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Logging;
-using Moq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
@@ -18,7 +7,6 @@ using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Scripting;
-using Xunit;
 
 namespace OrchardCore.Recipes
 {
@@ -61,9 +49,9 @@ namespace OrchardCore.Recipes
 
         private static Task<ShellScope> GetScopeAsync() => Task.FromResult(ShellScope.Context.CreateScope());
 
-        private static ShellContext CreateShellContext() => new ShellContext()
+        private static ShellContext CreateShellContext() => new()
         {
-            Settings = new ShellSettings() { Name = ShellHelper.DefaultShellName, State = TenantState.Running },
+            Settings = new ShellSettings().AsDefaultShell().AsRunning(),
             ServiceProvider = CreateServiceProvider(),
         };
 

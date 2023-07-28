@@ -4,7 +4,7 @@
 
 <div class="row">
     <div class="col">
-        <div class="form-group" asp-validation-class-for="Json">
+        <div class="mb-3" asp-validation-class-for="Json">
             <label asp-for="Json">@T["Recipe"]</label>
             <div class="form-control" style="min-height: 400px;">
                 <div id="@Html.IdFor(x => x.Json)_editor" style="min-height: 385px;" dir="@Orchard.CultureDir()" data-schema='@Model.Schema'></div>

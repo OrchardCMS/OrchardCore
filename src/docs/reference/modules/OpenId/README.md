@@ -56,6 +56,7 @@ to allow third-party resource servers to use the JWT tokens produced by the Orch
 - Allow Authorization Code Flow: It requires that the Authorization and Token Endpoints are enabled. More info at <http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth>
 - Allow Implicit Flow: It requires that the Authorization Endpoint is enabled. More info at <http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth>
 - Allow Refresh Token Flow: It allows to refresh access token using a refresh token. It can be used in combination with Password Flow, Authorization Code Flow and Hybrid Flow. More info at <http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens>
+- Require Proof Key for Code Exchange: Global setting that applies PKCE to all registered clients whether or not the 'Require PKCE' flag was set in the Application settings page.
 
 A sample of OpenID Connect Settings recipe step:
 
@@ -79,7 +80,8 @@ A sample of OpenID Connect Settings recipe step:
       "AllowClientCredentialsFlow": false,
       "AllowAuthorizationCodeFlow": false,
       "AllowRefreshTokenFlow": false,
-      "AllowImplicitFlow": false
+      "AllowImplicitFlow": false,
+      "RequireProofKeyForCodeExchange" : false
 }
 ```
 
@@ -109,6 +111,7 @@ OpenID Connect apps require the following configuration.
 - Redirect Uri: callback URL.
 - Skip Consent: sets whether a consent form has to be completed by the user after log in.
 - Advanced Parameters: Allows setting additional parameters that can be sent with the authorize request. Note: The default parameters are set from the options above.
+- Require PKCE: Applies PKCE for the registered application.  Ensure that the client library being used suppports PKCE.  
 
 A sample of OpenID Connect App recipe step:
 
@@ -127,7 +130,8 @@ A sample of OpenID Connect App recipe step:
       "AllowClientCredentialsFlow": false,
       "AllowAuthorizationCodeFlow": false,
       "AllowRefreshTokenFlow": false,
-      "AllowImplicitFlow": false
+      "AllowImplicitFlow": false,
+      "RequireProofKeyForCodeExchange": false
 }
 ```
 

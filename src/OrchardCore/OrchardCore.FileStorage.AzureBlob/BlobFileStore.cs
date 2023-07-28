@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.StaticFiles;
@@ -64,14 +65,14 @@ namespace OrchardCore.FileStorage.AzureBlob
             {
                 var blob = GetBlobReference(path);
 
-                if (!await blob.ExistsAsync())
-                {
-                    return null;
-                }
-
                 var properties = await blob.GetPropertiesAsync();
 
                 return new BlobFile(path, properties.Value.ContentLength, properties.Value.LastModified);
+            }
+            catch (RequestFailedException ex) when (ex.ErrorCode == BlobErrorCode.BlobNotFound)
+            {
+                // Instead of ExistsAsync() check which is 'slow' if we're expecting to find the blob we rely on the exception.
+                return null;
             }
             catch (Exception ex)
             {
@@ -136,7 +137,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                     var folderPath = blob.Prefix;
                     if (!String.IsNullOrEmpty(_basePrefix))
                     {
-                        folderPath = folderPath.Substring(_basePrefix.Length - 1);
+                        folderPath = folderPath[(_basePrefix.Length - 1)..];
                     }
 
                     folderPath = folderPath.Trim('/');
@@ -145,6 +146,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                 else
                 {
                     var itemName = Path.GetFileName(WebUtility.UrlDecode(blob.Blob.Name)).Trim('/');
+
                     // Ignore directory marker files.
                     if (itemName != _directoryMarkerFileName)
                     {
@@ -172,13 +174,18 @@ namespace OrchardCore.FileStorage.AzureBlob
                 // We can infer a hierarchy by examining the paths returned for the file contents
                 // and evaluate whether a directory exists and should be added to the results listing.
                 var directory = Path.GetDirectoryName(name);
+
                 // Strip base folder from directory name.
                 if (!String.IsNullOrEmpty(_basePrefix))
                 {
-                    directory = directory.Substring(_basePrefix.Length - 1);
+                    directory = directory[(_basePrefix.Length - 1)..];
                 }
+
                 // Do not include root folder, or current path, or multiple folders in folder listing.
-                if (!String.IsNullOrEmpty(directory) && !directories.Contains(directory) && (String.IsNullOrEmpty(path) ? true : !directory.EndsWith(path)))
+                if (!String.IsNullOrEmpty(directory) &&
+                    !directories.Contains(directory) &&
+                    (String.IsNullOrEmpty(path) ||
+                    !directory.EndsWith(path)))
                 {
                     directories.Add(directory);
                     yield return new BlobDirectory(directory, _clock.UtcNow);
@@ -189,7 +196,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                 {
                     if (!String.IsNullOrEmpty(_basePrefix))
                     {
-                        name = name.Substring(_basePrefix.Length - 1);
+                        name = name[(_basePrefix.Length - 1)..];
                     }
                     yield return new BlobFile(name.Trim('/'), blob.Properties.ContentLength, blob.Properties.LastModified);
                 }
@@ -253,7 +260,7 @@ namespace OrchardCore.FileStorage.AzureBlob
 
                 var blobsWereDeleted = false;
                 var prefix = this.Combine(_basePrefix, path);
-                prefix = this.NormalizePrefix(prefix);
+                prefix = NormalizePrefix(prefix);
 
                 var page = _blobContainer.GetBlobsAsync(BlobTraits.Metadata, BlobStates.None, prefix);
                 await foreach (var blob in page)
@@ -318,6 +325,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                 while (properties.Value.CopyStatus == CopyStatus.Pending)
                 {
                     await Task.Delay(250);
+
                     // Need to fetch properties or CopyStatus will never update.
                     properties = await newBlob.GetPropertiesAsync();
                 }
@@ -431,16 +439,14 @@ namespace OrchardCore.FileStorage.AzureBlob
             var placeholderBlob = GetBlobReference(this.Combine(path, _directoryMarkerFileName));
 
             // Create a directory marker file to make this directory appear when listing directories.
-            using (var stream = new MemoryStream(Encoding.UTF8.GetBytes("This is a directory marker file created by Orchard Core. It is safe to delete it.")))
-            {
-                await placeholderBlob.UploadAsync(stream);
-            }
+            using var stream = new MemoryStream(Encoding.UTF8.GetBytes("This is a directory marker file created by Orchard Core. It is safe to delete it."));
+            await placeholderBlob.UploadAsync(stream);
         }
 
         /// <summary>
         /// Blob prefix requires a trailing slash except when loading the root of the container.
         /// </summary>
-        private string NormalizePrefix(string prefix)
+        private static string NormalizePrefix(string prefix)
         {
             prefix = prefix.Trim('/') + '/';
             if (prefix.Length == 1)

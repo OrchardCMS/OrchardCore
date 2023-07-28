@@ -1,0 +1,51 @@
+@model LuceneIndexRebuildDeploymentStepViewModel
+
+<h5>@T["Rebuild Lucene Search Indices"]</h5>
+
+<div class="mb-3 mt-4 mb-5">
+    <div class="row">
+        <div class="col">
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IncludeAll" data-element-id-to-collapse="indexes-list"/>
+                    @T["Include all Lucene search indices."]
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="indexes-list" class="mt-4 mb-5 collapse @(Model.IncludeAll ? "" : "show")">
+    <div class="row">
+        <div class="col-small">
+            <span class="hint">@T["The Lucene search indices to rebuild as part of the plan."]</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-small">
+            <ul class="list-group">
+                @foreach (var indexName in Model.AllIndexNames)
+                {
+                    var isChecked = Model.IndexNames?.Contains(indexName);
+
+                    <li class="list-group-item">
+                        <div class="form-check">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="checkbox" name="@Html.NameFor(m => m.IndexNames)" value="@indexName" checked="@isChecked">
+                                @indexName
+                            </label>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script at="Foot">
+    (function () {
+        document.getElementById('@Html.IdFor(x => x.IncludeAll)').addEventListener('change', (e) => {
+            new bootstrap.Collapse(document.getElementById(e.target.dataset.elementIdToCollapse));
+        });
+    })();
+</script>

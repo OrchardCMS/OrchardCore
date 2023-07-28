@@ -2,6 +2,6 @@
   "name": "orchardcore.themes",
   "version": "1.0.0",
   "dependencies": {
-    "bootstrap": "4.6.1"
+    "bootstrap": "5.1.3"
   }
 }
