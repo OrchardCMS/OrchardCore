@@ -26,10 +26,11 @@ namespace OrchardCore.Microsoft.Authentication.Deployment
 
             var settings = await _azureADService.GetSettingsAsync();
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", nameof(AzureADSettings)),
-                new JProperty(nameof(AzureADSettings), JObject.FromObject(settings))
-            ));
+            var obj = new JObject(new JProperty("name", nameof(AzureADSettings)));
+
+            obj.Merge(JObject.FromObject(settings));
+
+            result.Steps.Add(obj);
         }
     }
 }
