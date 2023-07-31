@@ -5,16 +5,16 @@ using OrchardCore.ReCaptcha.Configuration;
 
 namespace OrchardCore.ReCaptcha.ActionFilters.Detection
 {
-    public class IpAddressRobotDetector : IDetectRobots
+    public class IPAddressRobotDetector : IDetectRobots
     {
         private const string IpAddressAbuseDetectorCacheKey = "IpAddressRobotDetector";
 
         private readonly IMemoryCache _memoryCache;
-        private readonly IClientIpAddressAccessor _clientIpAddressAccessor;
+        private readonly IClientIPAddressAccessor _clientIpAddressAccessor;
         private readonly ReCaptchaSettings _settings;
 
-        public IpAddressRobotDetector(
-            IClientIpAddressAccessor clientIpAddressAccessor,
+        public IPAddressRobotDetector(
+            IClientIPAddressAccessor clientIpAddressAccessor,
             IMemoryCache memoryCache,
             IOptions<ReCaptchaSettings> settingsAccessor)
         {
@@ -31,7 +31,7 @@ namespace OrchardCore.ReCaptcha.ActionFilters.Detection
 
         private string GetIpAddressCacheKey()
         {
-            var address = _clientIpAddressAccessor.GetIpAddressAsync().GetAwaiter().GetResult();
+            var address = _clientIpAddressAccessor.GetIPAddressAsync().GetAwaiter().GetResult();
 
             return $"{IpAddressAbuseDetectorCacheKey}:{address?.ToString() ?? String.Empty}";
         }

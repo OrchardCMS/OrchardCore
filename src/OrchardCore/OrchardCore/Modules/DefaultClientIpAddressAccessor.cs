@@ -4,16 +4,16 @@ using Microsoft.AspNetCore.Http;
 
 namespace OrchardCore.Modules;
 
-public class DefaultClientIpAddressAccessor : IClientIpAddressAccessor
+public class DefaultClientIPAddressAccessor : IClientIPAddressAccessor
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public DefaultClientIpAddressAccessor(IHttpContextAccessor httpContextAccessor)
+    public DefaultClientIPAddressAccessor(IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public Task<IPAddress> GetIpAddressAsync()
+    public Task<IPAddress> GetIPAddressAsync()
     {
         var address = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress;
 
