@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore;
 
-public interface IClientIpAddressAccessor
+public interface IClientIPAddressAccessor
 {
-    Task<IPAddress> GetIpAddressAsync();
+    Task<IPAddress> GetIPAddressAsync();
 }
