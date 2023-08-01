@@ -14,7 +14,7 @@ namespace OrchardCore.ContentLocalization.Records
 {
     public class LocalizedContentItemIndex : MapIndex
     {
-        public int DocumentId { get; set; }
+        public long DocumentId { get; set; }
         public string ContentItemId { get; set; }
         public string LocalizationSet { get; set; }
         public string Culture { get; set; }

@@ -119,7 +119,7 @@ namespace OrchardCore.Deployment.Controllers
 
         [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> IndexBulkActionPOST(ContentOptions options, IEnumerable<int> itemIds)
+        public async Task<ActionResult> IndexBulkActionPOST(ContentOptions options, IEnumerable<long> itemIds)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
@@ -148,7 +148,7 @@ namespace OrchardCore.Deployment.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Display(int id)
+        public async Task<IActionResult> Display(long id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
@@ -236,7 +236,7 @@ namespace OrchardCore.Deployment.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(long id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
@@ -306,7 +306,7 @@ namespace OrchardCore.Deployment.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(long id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {

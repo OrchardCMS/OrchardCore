@@ -47,7 +47,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Execute(int id, string remoteInstanceId, string returnUrl)
+        public async Task<IActionResult> Execute(long id, string remoteInstanceId, string returnUrl)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Export))
             {
