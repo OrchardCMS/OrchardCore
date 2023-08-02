@@ -7,7 +7,7 @@ namespace OrchardCore.Users.Models
 {
     public class User : Entity, IUser
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public string UserId { get; set; }
 
