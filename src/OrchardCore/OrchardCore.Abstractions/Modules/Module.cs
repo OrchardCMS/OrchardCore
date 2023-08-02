@@ -17,7 +17,7 @@ namespace OrchardCore.Modules
 
         private readonly string _baseNamespace;
         private readonly DateTimeOffset _lastModified;
-        private readonly IDictionary<string, IFileInfo> _fileInfos = new Dictionary<string, IFileInfo>();
+        private readonly Dictionary<string, IFileInfo> _fileInfos = new();
 
         // TODO: MWP: trace back to usage, etc...
         // TODO: MWP: perhaps we filter up front so we are not discovering all this during ctor...

@@ -10,9 +10,9 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>612,618</WarningsNotAsErrors>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
-    <RazorRuntimeCompilation>true</RazorRuntimeCompilation>
-    <Nullable>enable</Nullable>
+    <RazorRuntimeCompilation>false</RazorRuntimeCompilation>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <!-- For Unit Tests-->
   <ItemGroup>

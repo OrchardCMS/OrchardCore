@@ -38,7 +38,7 @@ namespace OrchardCore.Tests.Modules
             // Arrange
             string key = "X-Powered-By", value = "OrchardCore";
             var httpResponseMock = new Mock<HttpResponse>();
-            httpResponseMock.Setup(r => r.Headers.Add(key, value));
+            httpResponseMock.Setup(r => r.Headers.Append(key, value));
 
             Func<Task> dueTask = null;
             httpResponseMock.Setup(r => r.OnStarting(It.IsAny<Func<Task>>()))
@@ -59,7 +59,7 @@ namespace OrchardCore.Tests.Modules
 
             // Assert
             Assert.Null(dueTask);
-            httpResponseMock.Verify(r => r.Headers.Add(key, value), Times.Never);
+            httpResponseMock.Verify(r => r.Headers.Append(key, value), Times.Never);
         }
     }
 }
