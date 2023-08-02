@@ -38,7 +38,9 @@ namespace OrchardCore.Tests.Modules
             // Arrange
             string key = "X-Powered-By", value = "OrchardCore";
             var httpResponseMock = new Mock<HttpResponse>();
-            httpResponseMock.Setup(r => r.Headers.Append(key, value));
+#pragma warning disable ASP0019 // Suggest using IHeaderDictionary.Append or the indexer
+            _ = httpResponseMock.Setup(r => r.Headers.Add(key, value));
+#pragma warning restore ASP0019 // Suggest using IHeaderDictionary.Append or the indexer
 
             Func<Task> dueTask = null;
             httpResponseMock.Setup(r => r.OnStarting(It.IsAny<Func<Task>>()))
@@ -59,7 +61,9 @@ namespace OrchardCore.Tests.Modules
 
             // Assert
             Assert.Null(dueTask);
-            httpResponseMock.Verify(r => r.Headers.Append(key, value), Times.Never);
+#pragma warning disable ASP0019 // Suggest using IHeaderDictionary.Append or the indexer
+            httpResponseMock.Verify(r => r.Headers.Add(key, value), Times.Never);
+#pragma warning restore ASP0019 // Suggest using IHeaderDictionary.Append or the indexer
         }
     }
 }

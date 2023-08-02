@@ -293,7 +293,7 @@ namespace OrchardCore.Tenants.Controllers
 
         [HttpPost]
         [Route("setup")]
-        public async Task<ActionResult> Setup(SetupApiViewModel model)
+        public async Task<ActionResult> Setup(SetupApiViewModel model, [FromForm] IFormFile recipe = null)
         {
             if (!_currentShellSettings.IsDefaultShell())
             {
@@ -391,7 +391,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (String.IsNullOrEmpty(recipeName))
             {
-                if (model.Recipe == null)
+                if (recipe == null)
                 {
                     return BadRequest(S["Either 'Recipe' or 'RecipeName' is required."]);
                 }
@@ -400,7 +400,7 @@ namespace OrchardCore.Tenants.Controllers
 
                 using (var fs = System.IO.File.Create(tempFilename))
                 {
-                    await model.Recipe.CopyToAsync(fs);
+                    await recipe.CopyToAsync(fs);
                 }
 
                 var fileProvider = new PhysicalFileProvider(Path.GetDirectoryName(tempFilename));
