@@ -393,7 +393,7 @@ namespace OrchardCore.Tenants.Controllers
             {
                 if (recipe == null)
                 {
-                    return BadRequest(S["Either 'Recipe' or 'RecipeName' is required."]);
+                    return BadRequest(S["Either a 'recipe' file or 'RecipeName' is required."]);
                 }
 
                 var tempFilename = Path.GetTempFileName();
