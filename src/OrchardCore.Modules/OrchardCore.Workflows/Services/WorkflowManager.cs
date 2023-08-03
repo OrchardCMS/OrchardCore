@@ -22,10 +22,10 @@ namespace OrchardCore.Workflows.Services
 
         private readonly IActivityLibrary _activityLibrary;
         private readonly IWorkflowTypeStore _workflowTypeStore;
-        private readonly IWorkflowFaultHandler _workflowFaultHandler;
         private readonly IWorkflowStore _workflowStore;
         private readonly IWorkflowIdGenerator _workflowIdGenerator;
         private readonly Resolver<IEnumerable<IWorkflowValueSerializer>> _workflowValueSerializers;
+        private readonly IWorkflowFaultHandler _workflowFaultHandler;
         private readonly IDistributedLock _distributedLock;
         private readonly ILogger _logger;
         private readonly ILogger<MissingActivity> _missingActivityLogger;
@@ -42,24 +42,24 @@ namespace OrchardCore.Workflows.Services
             IWorkflowStore workflowRepository,
             IWorkflowIdGenerator workflowIdGenerator,
             Resolver<IEnumerable<IWorkflowValueSerializer>> workflowValueSerializers,
+            IWorkflowFaultHandler workflowFaultHandler,
             IDistributedLock distributedLock,
             ILogger<WorkflowManager> logger,
             ILogger<MissingActivity> missingActivityLogger,
             IStringLocalizer<MissingActivity> missingActivityLocalizer,
-            IClock clock,
-            IWorkflowFaultHandler workflowFaultHandler)
+            IClock clock)
         {
             _activityLibrary = activityLibrary;
             _workflowTypeStore = workflowTypeRepository;
             _workflowStore = workflowRepository;
             _workflowIdGenerator = workflowIdGenerator;
             _workflowValueSerializers = workflowValueSerializers;
+            _workflowFaultHandler = workflowFaultHandler;
             _distributedLock = distributedLock;
             _logger = logger;
             _missingActivityLogger = missingActivityLogger;
             _missingActivityLocalizer = missingActivityLocalizer;
             _clock = clock;
-            _workflowFaultHandler = workflowFaultHandler;
         }
 
         public Workflow NewWorkflow(WorkflowType workflowType, string correlationId = null)

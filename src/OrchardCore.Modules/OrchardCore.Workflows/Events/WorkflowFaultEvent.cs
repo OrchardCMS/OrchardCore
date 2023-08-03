@@ -10,7 +10,7 @@ namespace OrchardCore.Workflows.Events
 {
     public class WorkflowFaultEvent : EventActivity
     {
-        private readonly IStringLocalizer<WorkflowFaultEvent> S;
+        protected readonly IStringLocalizer<WorkflowFaultEvent> S;
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
 
         public WorkflowFaultEvent(
@@ -20,6 +20,7 @@ namespace OrchardCore.Workflows.Events
             S = stringLocalizer;
             _scriptEvaluator = scriptEvaluator;
         }
+
         public override string Name => nameof(WorkflowFaultEvent);
         public override LocalizedString DisplayText => S["Catch Workflow Fault Event"];
         public override LocalizedString Category => S["Background"];
@@ -44,7 +45,7 @@ namespace OrchardCore.Workflows.Events
         {
             var faultModel = workflowContext.Input[WorkflowFaultModel.WorkflowFaultInputKey] as WorkflowFaultModel;
 
-            //Avoid endless loops
+            // Avoid endless loops.
             if (faultModel == null || faultModel.WorkflowName == workflowContext.WorkflowType.Name)
             {
                 return false;
@@ -53,7 +54,7 @@ namespace OrchardCore.Workflows.Events
             return await _scriptEvaluator.EvaluateAsync(ErrorFilter, workflowContext);
         }
 
-        private string GetDefaultValue()
+        private static string GetDefaultValue()
         {
             var sample = $@"//sample code
 var errorInfo= input('{WorkflowFaultModel.WorkflowFaultInputKey}');
