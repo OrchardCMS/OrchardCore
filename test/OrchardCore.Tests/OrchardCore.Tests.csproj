@@ -48,6 +48,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\OrchardCore.Cms.Web\OrchardCore.Cms.Web.csproj" />
     <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Apis.GraphQL.Client\OrchardCore.Apis.GraphQL.Client.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.ContentManagement.Abstractions\OrchardCore.ContentManagement.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -60,6 +61,11 @@
 
   <ItemGroup>
     <PackageReference Include="AngleSharp" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="FluentAssertions.Analyzers">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="System.Linq.Async" />

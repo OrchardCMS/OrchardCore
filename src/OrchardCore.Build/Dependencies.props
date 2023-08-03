@@ -19,6 +19,8 @@
     <PackageManagement Include="BenchmarkDotNet" Version="0.13.6" />
     <PackageManagement Include="Castle.Core" Version="5.1.1" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
+    <PackageManagement Include="FluentAssertions" Version="6.11.0" />
+    <PackageManagement Include="FluentAssertions.Analyzers" Version="0.21.0" />
     <PackageManagement Include="Fluid.Core" Version="2.4.0" />
     <PackageManagement Include="GraphQL" Version="4.8.0" />
     <PackageManagement Include="GraphQL.DataLoader" Version="4.8.0" />
