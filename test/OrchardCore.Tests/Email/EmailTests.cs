@@ -230,7 +230,7 @@ namespace OrchardCore.Tests.Email
             Assert.Null(result.Response);
         }
 
-        private async Task<string> SendEmailAsync(MailMessage message, string defaultSender = null)
+        private static async Task<string> SendEmailAsync(MailMessage message, string defaultSender = null)
         {
             var pickupDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Email");
 

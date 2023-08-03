@@ -13,7 +13,7 @@ namespace OrchardCore.Settings.Drivers
     {
         public const string GroupId = "general";
 
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
 
@@ -45,7 +45,7 @@ namespace OrchardCore.Settings.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(ISite site, UpdateEditorContext context)
         {
-            if (context.GroupId == GroupId)
+            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
                 var model = new SiteSettingsViewModel();
 

@@ -1,0 +1,22 @@
+@model OrchardCore.Users.ViewModels.RoleLoginSettingsViewModel
+
+<div class="mb-3" asp-validation-class-for="RequireTwoFactorAuthenticationForSpecificRoles">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="RequireTwoFactorAuthenticationForSpecificRoles" data-bs-toggle="collapse" data-bs-target="#rolesContainer" aria-expanded="false" aria-controls="rolesContainer" />
+        <span asp-validation-for="RequireTwoFactorAuthenticationForSpecificRoles"></span>
+        <label class="form-check-label" asp-for="RequireTwoFactorAuthenticationForSpecificRoles">@T["Require two-factor authentication specific roles"]</label>
+    </div>
+</div>
+
+<div class="mb-3 ps-3 collapse@(Model.RequireTwoFactorAuthenticationForSpecificRoles ? " show": String.Empty)" asp-validation-class-for="Roles" id="rolesContainer">
+    <span class="hint dashed">@T["Select the roles to require two-factor authentication for."]</span>
+
+    @for (var i = 0; i < Model.Roles.Length; i++)
+    {
+        <div class="form-check">
+            <input asp-for="Roles[i].IsSelected" type="checkbox" class="form-check-input">
+            <input type="hidden" asp-for="Roles[i].Role" />
+            <label class="form-check-label cursor-pointer" asp-for="Roles[i].IsSelected">@Model.Roles[i].Role</label>
+        </div>
+    }
+</div>

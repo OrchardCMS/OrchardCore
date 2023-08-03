@@ -1,7 +1,10 @@
 using System;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Elasticsearch.Net;
 using Fluid;
+using GraphQL;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -23,7 +26,6 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Queries;
 using OrchardCore.Search.Abstractions;
-using OrchardCore.Search.Abstractions.ViewModels;
 using OrchardCore.Search.Elasticsearch.Core.Deployment;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Providers;
@@ -31,6 +33,7 @@ using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Drivers;
 using OrchardCore.Search.Elasticsearch.Services;
 using OrchardCore.Search.Lucene.Handler;
+using OrchardCore.Search.ViewModels;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
@@ -38,7 +41,7 @@ namespace OrchardCore.Search.Elasticsearch
 {
     public class Startup : StartupBase
     {
-        private const string ConfigSectionName = "OrchardCore_Elasticsearch";
+        private const string _configSectionName = "OrchardCore_Elasticsearch";
         private readonly AdminOptions _adminOptions;
         private readonly IShellConfiguration _shellConfiguration;
         private readonly ILogger<Startup> _logger;
@@ -54,7 +57,7 @@ namespace OrchardCore.Search.Elasticsearch
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            var configuration = _shellConfiguration.GetSection(ConfigSectionName);
+            var configuration = _shellConfiguration.GetSection(_configSectionName);
             var elasticConfiguration = configuration.Get<ElasticConnectionOptions>();
 
             if (CheckOptions(elasticConfiguration, _logger))
@@ -116,8 +119,40 @@ namespace OrchardCore.Search.Elasticsearch
 
                 var client = new ElasticClient(settings);
                 services.AddSingleton<IElasticClient>(client);
-                services.Configure<ElasticOptions>(o =>
-                    o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.StandardAnalyzer, new StandardAnalyzer())));
+                services.Configure<ElasticsearchOptions>(o =>
+                {
+                    o.IndexPrefix = configuration.GetValue<string>(nameof(o.IndexPrefix));
+
+                    var jsonNode = configuration.GetSection(nameof(o.Analyzers)).AsJsonNode();
+                    var jsonElement = JsonSerializer.Deserialize<JsonElement>(jsonNode);
+
+                    var analyzersObject = JsonObject.Create(jsonElement, new JsonNodeOptions()
+                    {
+                        PropertyNameCaseInsensitive = true,
+                    });
+
+                    if (analyzersObject != null)
+                    {
+                        foreach (var analyzer in analyzersObject)
+                        {
+                            if (analyzer.Value == null)
+                            {
+                                continue;
+                            }
+
+                            o.Analyzers.Add(analyzer.Key, analyzer.Value.AsObject());
+                        }
+                    }
+
+                    if (o.Analyzers.Count == 0)
+                    {
+                        // When no analyzers are configured, we'll define a default analyzer.
+                        o.Analyzers.Add(ElasticsearchConstants.DefaultAnalyzer, new JsonObject
+                        {
+                            ["type"] = "standard",
+                        });
+                    }
+                });
 
                 try
                 {

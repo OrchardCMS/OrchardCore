@@ -2,7 +2,7 @@
 Vue.component('upload', {
     template: '\
         <div :class="{ \'upload-warning\' : model.errorMessage }" class="upload m-2 p-2 pt-0"> \
-            <span v-if="model.errorMessage" v-on:click="dismissWarning()" class="close-warning"><i class="fa fa-times" aria-hidden="true"></i> </span>\
+            <span v-if="model.errorMessage" v-on:click="dismissWarning()" class="close-warning"><i class="fa-solid fa-times" aria-hidden="true"></i> </span>\
             <p class="upload-name" :title="model.errorMessage">{{ model.name }}</p> \
             <div> \
                <span v-show="!model.errorMessage" :style="{ width: model.percentage + \'%\'}" class="progress-bar"> </span> \
@@ -11,18 +11,20 @@ Vue.component('upload', {
         </div> \
         ',
     props: {
-        model: Object
+        model: Object,
+        uploadInputId: String
     },
     mounted: function () {
         var self = this;
-        $('#fileupload').bind('fileuploadprogress', function (e, data) {
+        var uploadInput = document.getElementById(self.uploadInputId ?? 'fileupload');
+        $(uploadInput).bind('fileuploadprogress', function (e, data) {
             if (data.files[0].name !== self.model.name) {
                 return;
             }            
             self.model.percentage = parseInt(data.loaded / data.total * 100, 10);
         });
 
-        $('#fileupload').bind('fileuploaddone', function (e, data) {
+        $(uploadInput).bind('fileuploaddone', function (e, data) {
             if (data.files[0].name !== self.model.name) {
                 return;
             }
@@ -33,7 +35,7 @@ Vue.component('upload', {
             }
         });
 
-        $('#fileupload').bind('fileuploadfail', function (e, data) {
+        $(uploadInput).bind('fileuploadfail', function (e, data) {
             if (data.files[0].name !== self.model.name) {
                 return;
             }

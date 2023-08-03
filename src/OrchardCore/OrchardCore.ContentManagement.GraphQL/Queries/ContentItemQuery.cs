@@ -14,7 +14,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
     public class ContentItemQuery : ISchemaBuilder
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public ContentItemQuery(IHttpContextAccessor httpContextAccessor,
             IStringLocalizer<ContentItemQuery> localizer)

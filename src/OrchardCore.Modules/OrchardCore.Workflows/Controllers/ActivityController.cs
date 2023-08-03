@@ -24,7 +24,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
 
         public ActivityController
         (
@@ -49,7 +49,7 @@ namespace OrchardCore.Workflows.Controllers
             H = h;
         }
 
-        public async Task<IActionResult> Create(string activityName, int workflowTypeId, string returnUrl)
+        public async Task<IActionResult> Create(string activityName, long workflowTypeId, string returnUrl)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -68,7 +68,7 @@ namespace OrchardCore.Workflows.Controllers
                 ActivityId = activityId,
                 ActivityEditor = activityEditor,
                 WorkflowTypeId = workflowTypeId,
-                ReturnUrl = returnUrl
+                ReturnUrl = returnUrl,
             };
 
             if (!activity.HasEditor)
@@ -114,7 +114,7 @@ namespace OrchardCore.Workflows.Controllers
             return Url.IsLocalUrl(model.ReturnUrl) ? (IActionResult)this.Redirect(model.ReturnUrl, true) : RedirectToAction(nameof(Edit), "WorkflowType", new { id = model.WorkflowTypeId });
         }
 
-        public async Task<IActionResult> Edit(int workflowTypeId, string activityId, string returnUrl)
+        public async Task<IActionResult> Edit(long workflowTypeId, string activityId, string returnUrl)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -134,7 +134,7 @@ namespace OrchardCore.Workflows.Controllers
                 ActivityId = activityId,
                 ActivityEditor = activityEditor,
                 WorkflowTypeId = workflowTypeId,
-                ReturnUrl = returnUrl
+                ReturnUrl = returnUrl,
             };
 
             return View("EditActivity", viewModel);

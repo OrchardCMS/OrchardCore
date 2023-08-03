@@ -1,11 +1,11 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.BackgroundJobs;
@@ -20,7 +20,7 @@ public static class HttpBackgroundJob
         var scope = ShellScope.Current;
 
         // Allow a job to be triggered e.g. during a tenant setup, but later on only check if the tenant is running.
-        if (scope.ShellContext.Settings.State != TenantState.Running && scope.ShellContext.Settings.State != TenantState.Initializing)
+        if (!scope.ShellContext.Settings.IsRunning() && !scope.ShellContext.Settings.IsInitializing())
         {
             return Task.CompletedTask;
         }
@@ -52,12 +52,23 @@ public static class HttpBackgroundJob
             var shellContext = await shellHost.GetOrCreateShellContextAsync(scope.ShellContext.Settings);
 
             // Can't be executed e.g. if a tenant setup failed.
-            if (shellContext == null || shellContext.Settings.State != TenantState.Running)
+            if (!shellContext.Settings.IsRunning())
             {
                 return;
             }
 
+            // Initialize a new 'HttpContext' to be used in the background.
             httpContextAccessor.HttpContext = shellContext.CreateHttpContext();
+
+            // Here the 'IActionContextAccessor.ActionContext' need to be cleared, this 'AsyncLocal'
+            // field is not cleared by 'AspnetCore' and still references the previous 'HttpContext'.
+            var actionContextAccessor = scope.ServiceProvider.GetService<IActionContextAccessor>();
+            if (actionContextAccessor is not null)
+            {
+                // Clear the stale 'ActionContext' that may be used e.g.
+                // by 'ILiquidTemplateManager.RenderStringAsync()'.
+                actionContextAccessor.ActionContext = null;
+            }
 
             // Use a new scope as the shell context may have been reloaded.
             await ShellScope.UsingChildScopeAsync(async scope =>

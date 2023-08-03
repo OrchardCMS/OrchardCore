@@ -9,7 +9,7 @@ namespace OrchardCore.Notifications.Services;
 public class EmailNotificationProvider : INotificationMethodProvider
 {
     private readonly ISmtpService _smtpService;
-    private readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
 
     public EmailNotificationProvider(
         ISmtpService smtpService,
@@ -41,12 +41,12 @@ public class EmailNotificationProvider : INotificationMethodProvider
         if (message.IsHtmlPreferred && !String.IsNullOrWhiteSpace(message.HtmlBody))
         {
             mailMessage.Body = message.HtmlBody;
-            mailMessage.IsBodyHtml = true;
+            mailMessage.IsHtmlBody = true;
         }
         else
         {
-            mailMessage.BodyText = message.TextBody;
-            mailMessage.IsBodyText = true;
+            mailMessage.Body = message.TextBody;
+            mailMessage.IsHtmlBody = false;
         }
 
         var result = await _smtpService.SendAsync(mailMessage);

@@ -15,11 +15,11 @@ namespace OrchardCore.DisplayManagement.Liquid
     public class LiquidViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeature>
     {
         public const string DefaultLiquidViewName = "DefaultLiquidViewName";
-        public static string DefaultRazorViewPath = '/' + DefaultLiquidViewName + RazorViewEngine.ViewExtension;
-        public static string DefaultLiquidViewPath = '/' + DefaultLiquidViewName + LiquidViewTemplate.ViewExtension;
+        public static readonly string DefaultRazorViewPath = '/' + DefaultLiquidViewName + RazorViewEngine.ViewExtension;
+        public static readonly string DefaultLiquidViewPath = '/' + DefaultLiquidViewName + LiquidViewTemplate.ViewExtension;
 
         private static List<string> _sharedPaths;
-        private static object _synLock = new object();
+        private static readonly object _synLock = new();
 
         public LiquidViewsFeatureProvider(IOptions<TemplateOptions> templateOptions)
         {

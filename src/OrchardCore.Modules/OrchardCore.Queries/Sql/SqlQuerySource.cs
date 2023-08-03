@@ -60,16 +60,13 @@ namespace OrchardCore.Queries.Sql
 
             if (sqlQuery.ReturnDocuments)
             {
-                IEnumerable<int> documentIds;
-
+                IEnumerable<long> documentIds;
                 using (connection)
                 {
                     await connection.OpenAsync();
 
-                    using (var transaction = connection.BeginTransaction(_session.Store.Configuration.IsolationLevel))
-                    {
-                        documentIds = await connection.QueryAsync<int>(rawQuery, parameters, transaction);
-                    }
+                    using var transaction = connection.BeginTransaction(_session.Store.Configuration.IsolationLevel);
+                    documentIds = await connection.QueryAsync<long>(rawQuery, parameters, transaction);
                 }
 
                 sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds.ToArray());
@@ -78,15 +75,12 @@ namespace OrchardCore.Queries.Sql
             else
             {
                 IEnumerable<dynamic> queryResults;
-
                 using (connection)
                 {
                     await connection.OpenAsync();
 
-                    using (var transaction = connection.BeginTransaction(_session.Store.Configuration.IsolationLevel))
-                    {
-                        queryResults = await connection.QueryAsync(rawQuery, parameters, transaction);
-                    }
+                    using var transaction = connection.BeginTransaction(_session.Store.Configuration.IsolationLevel);
+                    queryResults = await connection.QueryAsync(rawQuery, parameters, transaction);
                 }
 
                 var results = new List<JObject>();

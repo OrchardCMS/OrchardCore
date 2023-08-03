@@ -12,7 +12,7 @@ namespace OrchardCore.Workflows.Activities
     {
         private readonly ISession _session;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public CommitTransactionTask(
             ISession session,

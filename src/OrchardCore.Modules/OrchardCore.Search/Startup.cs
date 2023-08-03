@@ -7,7 +7,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -16,14 +15,14 @@ using OrchardCore.Search.Configuration;
 using OrchardCore.Search.Deployment;
 using OrchardCore.Search.Drivers;
 using OrchardCore.Search.Migrations;
-using OrchardCore.Search.Model;
+using OrchardCore.Search.Models;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Search
 {
     /// <summary>
-    /// These services are registered on the tenant service collection
+    /// These services are registered on the tenant service collection.
     /// </summary>
     public class Startup : StartupBase
     {
@@ -33,11 +32,9 @@ namespace OrchardCore.Search
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IDisplayDriver<ISite>, SearchSettingsDisplayDriver>();
-            services.AddScoped<IShapeTableProvider, SearchShapesTableProvider>();
-            services.AddShapeAttributes<SearchShapes>();
 
-            services.AddContentPart<SearchPart>()
-                    .UseDisplayDriver<SearchPartDisplayDriver>();
+            services.AddContentPart<SearchFormPart>()
+                    .UseDisplayDriver<SearchFormPartDisplayDriver>();
 
             services.AddDataMigration<SearchMigrations>();
         }
