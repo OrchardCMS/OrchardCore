@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 
 namespace OrchardCore.ContentFields.Settings
 {
@@ -10,5 +11,11 @@ namespace OrchardCore.ContentFields.Settings
         public bool DisplayAllContentTypes { get; set; }
         public string[] DisplayedContentTypes { get; set; } = Array.Empty<string>();
         public string[] DisplayedStereotypes { get; set; } = Array.Empty<string>();
+
+        /// <summary>
+        /// The pattern used to build custom title
+        /// </summary>
+        [DefaultValue("{{ Model.ContentItem.DisplayText }}")]
+        public string TitlePattern { get; set; } = "{{ Model.ContentItem.DisplayText }}";
     }
 }

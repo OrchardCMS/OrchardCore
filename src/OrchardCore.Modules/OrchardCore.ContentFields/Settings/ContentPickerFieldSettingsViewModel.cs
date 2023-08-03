@@ -15,4 +15,6 @@ public class ContentPickerFieldSettingsViewModel
     public bool Multiple { get; set; }
 
     public string[] DisplayedContentTypes { get; set; } = Array.Empty<string>();
+
+    public string TitlePattern { get; set; } = "{{ Model.ContentItem.DisplayText }}";
 }
