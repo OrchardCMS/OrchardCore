@@ -7,7 +7,7 @@ namespace OrchardCore.Media.AmazonS3
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ViewAmazonS3MediaOptions = new Permission(nameof(ViewAmazonS3MediaOptions), "View Amazon S3 Media Options");
+        public static readonly Permission ViewAmazonS3MediaOptions = new(nameof(ViewAmazonS3MediaOptions), "View Amazon S3 Media Options");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
@@ -21,8 +21,8 @@ namespace OrchardCore.Media.AmazonS3
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ViewAmazonS3MediaOptions }
-                }
+                    Permissions = new[] { ViewAmazonS3MediaOptions },
+                },
             };
         }
     }

@@ -117,8 +117,9 @@ namespace OrchardCore.Media
 
                 var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath);
 
-                var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>()
-                    .HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? null;
+                var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext
+                    ?.Features.Get<ShellContextFeature>()
+                    ?.OriginalPathBase ?? PathString.Empty;
 
                 if (originalPathBase.HasValue)
                 {
@@ -349,7 +350,7 @@ namespace OrchardCore.Media
             );
         }
 
-        private string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsPath)
+        private static string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsPath)
         {
             return PathExtensions.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, assetsPath);
         }

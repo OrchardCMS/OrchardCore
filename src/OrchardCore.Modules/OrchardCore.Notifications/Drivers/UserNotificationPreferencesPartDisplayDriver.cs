@@ -30,7 +30,7 @@ public class UserNotificationPreferencesPartDisplayDriver : SectionDisplayDriver
             var optout = part.Optout ?? Array.Empty<string>();
 
             // By default the use is opted into all available methods until explicitly optout.
-            model.Methods = _notificationMethodProviders.Select(x => x.Method).Except(optout, StringComparer.OrdinalIgnoreCase).ToArray();
+            model.Methods = _notificationMethodProviders.Select(x => x.Method).Except(optout).ToArray();
 
             model.Optout = optout;
 
@@ -69,13 +69,13 @@ public class UserNotificationPreferencesPartDisplayDriver : SectionDisplayDriver
                 // Store all methods in the same order they appear.
                 part.Methods = _notificationMethodProviders
                     .OrderBy(provider => sortedMethods.IndexOf(provider.Method))
-                    .ThenBy(provider => provider.Name)
+                    .ThenBy(provider => provider.Name.ToString())
                     .Select(x => x.Method)
                     .ToArray();
             }
             else
             {
-                part.Methods = _notificationMethodProviders.OrderBy(provider => provider.Name)
+                part.Methods = _notificationMethodProviders.OrderBy(provider => provider.Name.ToString())
                     .Select(x => x.Method)
                     .ToArray();
             }
@@ -83,7 +83,7 @@ public class UserNotificationPreferencesPartDisplayDriver : SectionDisplayDriver
             var selectedMethods = new List<string>(model.Methods ?? Array.Empty<string>());
 
             // Store any method that is not selected as an optout.
-            part.Optout = _notificationMethodProviders.Where(provider => !selectedMethods.Contains(provider.Method, StringComparer.OrdinalIgnoreCase))
+            part.Optout = _notificationMethodProviders.Where(provider => !selectedMethods.Contains(provider.Method))
                 .Select(provider => provider.Method)
                 .ToArray();
         }

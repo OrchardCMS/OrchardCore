@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Alias.Models;
@@ -12,7 +13,7 @@ namespace OrchardCore.Alias.Settings
     public class AliasPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<AliasPart>
     {
         private readonly ILiquidTemplateManager _templateManager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AliasPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<AliasPartSettingsDisplayDriver> localizer)
         {
@@ -38,9 +39,9 @@ namespace OrchardCore.Alias.Settings
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Pattern, m => m.Options))
             {
-                if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
+                if (!String.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
                 {
-                    context.Updater.ModelState.AddModelError(nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                    context.Updater.ModelState.AddModelError(nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", String.Join(" ", errors)]);
                 }
                 else
                 {

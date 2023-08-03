@@ -77,7 +77,9 @@ namespace OrchardCore.ContentLocalization.Records
         }
 
         // Migrate null LocalizedContentItemIndex Latest column.
+#pragma warning disable CA1822 // Mark members as static
         public int UpdateFrom3()
+#pragma warning restore CA1822 // Mark members as static
         {
             // Defer this until after the subsequent migrations have succeded as the schema has changed.
             ShellScope.AddDeferredTask(async scope =>

@@ -3,9 +3,7 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Queries;
 using OrchardCore.Recipes;
-using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Elasticsearch.Core.Handlers;
-using OrchardCore.Search.Elasticsearch.Core.Providers;
 using OrchardCore.Search.Elasticsearch.Core.Recipes;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 
@@ -20,7 +18,6 @@ namespace OrchardCore.Search.Elasticsearch
         {
             services.AddSingleton<ElasticIndexSettingsService>();
             services.AddSingleton<ElasticIndexManager>();
-            services.AddSingleton<ElasticAnalyzerManager>();
             services.AddScoped<ElasticIndexingService>();
             services.AddScoped<IModularTenantEvents, ElasticIndexInitializerService>();
             services.AddScoped<IElasticSearchQueryService, ElasticSearchQueryService>();

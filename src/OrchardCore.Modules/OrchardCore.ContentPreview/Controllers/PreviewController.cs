@@ -66,7 +66,7 @@ namespace OrchardCore.ContentPreview.Controllers
             var contentItemVersionId = Request.Form["PreviewContentItemVersionId"];
 
             // Unique contentItem.Id that only Preview is using such that another
-            // stored document can't have the same one in the IContentManagerSession index
+            // stored document can't have the same one in the IContentManagerSession index.
 
             contentItem.Id = -1;
             contentItem.ContentItemId = contentItemId;
@@ -76,8 +76,8 @@ namespace OrchardCore.ContentPreview.Controllers
             contentItem.PublishedUtc = _clock.UtcNow;
             contentItem.Published = true;
 
-            // TODO: we should probably get this value from the main editor as it might impact validators
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
+            // TODO: we should probably get this value from the main editor as it might impact validators.
+            _ = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
             if (!ModelState.IsValid)
             {
@@ -99,7 +99,7 @@ namespace OrchardCore.ContentPreview.Controllers
 
             if (!String.IsNullOrEmpty(previewAspect.PreviewUrl))
             {
-                // The PreviewPart is configured, we need to set the fake content item
+                // The PreviewPart is configured, we need to set the fake content item.
                 _contentManagerSession.Store(contentItem);
 
                 if (!previewAspect.PreviewUrl.StartsWith('/'))
@@ -112,7 +112,7 @@ namespace OrchardCore.ContentPreview.Controllers
                 return Ok();
             }
 
-            model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, "Detail");
+            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, "Detail");
 
             return View(model);
         }
@@ -124,13 +124,13 @@ namespace OrchardCore.ContentPreview.Controllers
         {
             Debug.Assert(modelError != null);
 
-            if (!string.IsNullOrEmpty(modelError.ErrorMessage))
+            if (!String.IsNullOrEmpty(modelError.ErrorMessage))
             {
                 return modelError.ErrorMessage;
             }
 
             // Default in the ValidationSummary case is no error message.
-            return string.Empty;
+            return String.Empty;
         }
 
         public static string GetModelErrorMessageOrDefault(
@@ -142,7 +142,7 @@ namespace OrchardCore.ContentPreview.Controllers
             Debug.Assert(containingEntry != null);
             Debug.Assert(modelExplorer != null);
 
-            if (!string.IsNullOrEmpty(modelError.ErrorMessage))
+            if (!String.IsNullOrEmpty(modelError.ErrorMessage))
             {
                 return modelError.ErrorMessage;
             }

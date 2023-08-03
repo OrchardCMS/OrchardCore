@@ -29,7 +29,7 @@ namespace OrchardCore.Queries
 
                     var result = queryManager.ExecuteQueryAsync(query, (IDictionary<string, object>)parameters).GetAwaiter().GetResult();
                     return result.Items;
-                })
+                }),
             };
         }
 

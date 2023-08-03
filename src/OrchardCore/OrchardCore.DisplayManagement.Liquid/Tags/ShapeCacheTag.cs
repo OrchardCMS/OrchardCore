@@ -10,9 +10,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class ShapeCacheTag
     {
-        private static readonly char[] Separators = { ',', ' ' };
+        private static readonly char[] _separators = { ',', ' ' };
 
-        public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, List<FilterArgument>> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, List<FilterArgument>> arguments, TextWriter _1, TextEncoder _2, TemplateContext context)
         {
             var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
 
@@ -29,13 +29,13 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
                 if (expressions.HasNamed("cache_context"))
                 {
-                    var contexts = (await expressions["cache_context"].EvaluateAsync(context)).ToStringValue().Split(Separators, StringSplitOptions.RemoveEmptyEntries);
+                    var contexts = (await expressions["cache_context"].EvaluateAsync(context)).ToStringValue().Split(_separators, StringSplitOptions.RemoveEmptyEntries);
                     metadata.Cache().AddContext(contexts);
                 }
 
                 if (expressions.HasNamed("cache_tag"))
                 {
-                    var tags = (await expressions["cache_tag"].EvaluateAsync(context)).ToStringValue().Split(Separators, StringSplitOptions.RemoveEmptyEntries);
+                    var tags = (await expressions["cache_tag"].EvaluateAsync(context)).ToStringValue().Split(_separators, StringSplitOptions.RemoveEmptyEntries);
                     metadata.Cache().AddTag(tags);
                 }
 

@@ -21,13 +21,13 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Liquid;
+using OrchardCore.Localization;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.Services;
 using OrchardCore.Search.Lucene.ViewModels;
-using OrchardCore.Settings;
 using YesSql;
 
 namespace OrchardCore.Search.Lucene.Controllers
@@ -45,10 +45,10 @@ namespace OrchardCore.Search.Lucene.Controllers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly PagerOptions _pagerOptions;
-        private readonly dynamic New;
         private readonly JavaScriptEncoder _javaScriptEncoder;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
+        protected readonly dynamic New;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
         private readonly ILogger _logger;
         private readonly IOptions<TemplateOptions> _templateOptions;
 
@@ -64,8 +64,8 @@ namespace OrchardCore.Search.Lucene.Controllers
             ILiquidTemplateManager liquidTemplateManager,
             INotifier notifier,
             IOptions<PagerOptions> pagerOptions,
-            IShapeFactory shapeFactory,
             JavaScriptEncoder javaScriptEncoder,
+            IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             ILogger<AdminController> logger,
@@ -82,9 +82,9 @@ namespace OrchardCore.Search.Lucene.Controllers
             _contentDefinitionManager = contentDefinitionManager;
             _notifier = notifier;
             _pagerOptions = pagerOptions.Value;
+            _javaScriptEncoder = javaScriptEncoder;
 
             New = shapeFactory;
-            _javaScriptEncoder = javaScriptEncoder;
             S = stringLocalizer;
             H = htmlLocalizer;
             _logger = logger;
@@ -104,9 +104,9 @@ namespace OrchardCore.Search.Lucene.Controllers
             var count = indexes.Count();
             var results = indexes;
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
-                results = results.Where(q => q.Name.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) >= 0);
+                results = results.Where(q => q.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase));
             }
 
             results = results
@@ -169,7 +169,7 @@ namespace OrchardCore.Search.Lucene.Controllers
                 AnalyzerName = IsCreate ? "standardanalyzer" : settings.AnalyzerName,
                 IndexLatest = settings.IndexLatest,
                 Culture = settings.Culture,
-                Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
+                Cultures = ILocalizationService.GetAllCulturesAndAliases()
                     .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" }),
                 Analyzers = _luceneAnalyzerManager.GetAnalyzers()
                     .Select(x => new SelectListItem { Text = x.Name, Value = x.Name }),
@@ -330,7 +330,7 @@ namespace OrchardCore.Search.Lucene.Controllers
                 catch (Exception e)
                 {
                     await _notifier.ErrorAsync(H["An error occurred while deleting the index."]);
-                    _logger.LogError(e, "An error occurred while deleting the index " + model.IndexName);
+                    _logger.LogError(e, "An error occurred while deleting the index '{IndexName}'.", model.IndexName);
                 }
             }
             else
@@ -472,7 +472,7 @@ namespace OrchardCore.Search.Lucene.Controllers
                         }
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
 
@@ -481,7 +481,7 @@ namespace OrchardCore.Search.Lucene.Controllers
 
         private void ValidateModel(LuceneIndexSettingsViewModel model)
         {
-            if (model.IndexedContentTypes == null || model.IndexedContentTypes.Count() < 1)
+            if (model.IndexedContentTypes == null || model.IndexedContentTypes.Length < 1)
             {
                 ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexedContentTypes), S["At least one content type selection is required."]);
             }

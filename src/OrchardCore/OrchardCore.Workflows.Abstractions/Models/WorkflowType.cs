@@ -7,11 +7,15 @@ namespace OrchardCore.Workflows.Models
     /// </summary>
     public class WorkflowType
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
+
+        /// <summary>
+        /// A unique identifier for this workflow type.
+        /// </summary>
         public string WorkflowTypeId { get; set; }
 
         /// <summary>
-        /// The name of this workflow.
+        /// The name of this workflow type.
         /// </summary>
         public string Name { get; set; }
 

@@ -22,6 +22,7 @@ namespace OrchardCore.Workflows.Services
 
         private readonly IActivityLibrary _activityLibrary;
         private readonly IWorkflowTypeStore _workflowTypeStore;
+        private readonly IWorkflowFaultHandler _workflowFaultHandler;
         private readonly IWorkflowStore _workflowStore;
         private readonly IWorkflowIdGenerator _workflowIdGenerator;
         private readonly Resolver<IEnumerable<IWorkflowValueSerializer>> _workflowValueSerializers;
@@ -31,7 +32,7 @@ namespace OrchardCore.Workflows.Services
         private readonly IStringLocalizer<MissingActivity> _missingActivityLocalizer;
         private readonly IClock _clock;
 
-        private readonly Dictionary<string, int> _recursions = new Dictionary<string, int>();
+        private readonly Dictionary<string, int> _recursions = new();
         private int _currentRecursionDepth;
 
         public WorkflowManager
@@ -45,8 +46,8 @@ namespace OrchardCore.Workflows.Services
             ILogger<WorkflowManager> logger,
             ILogger<MissingActivity> missingActivityLogger,
             IStringLocalizer<MissingActivity> missingActivityLocalizer,
-            IClock clock
-        )
+            IClock clock,
+            IWorkflowFaultHandler workflowFaultHandler)
         {
             _activityLibrary = activityLibrary;
             _workflowTypeStore = workflowTypeRepository;
@@ -58,6 +59,7 @@ namespace OrchardCore.Workflows.Services
             _missingActivityLogger = missingActivityLogger;
             _missingActivityLocalizer = missingActivityLocalizer;
             _clock = clock;
+            _workflowFaultHandler = workflowFaultHandler;
         }
 
         public Workflow NewWorkflow(WorkflowType workflowType, string correlationId = null)
@@ -85,9 +87,14 @@ namespace OrchardCore.Workflows.Services
             var state = workflow.State.ToObject<WorkflowState>();
             var activityQuery = await Task.WhenAll(workflowType.Activities.Select(x =>
             {
-                var activityState = state.ActivityStates.ContainsKey(x.ActivityId) ? state.ActivityStates[x.ActivityId] : new JObject();
+                if (!state.ActivityStates.TryGetValue(x.ActivityId, out var activityState))
+                {
+                    activityState = new JObject();
+                }
+
                 return CreateActivityExecutionContextAsync(x, activityState);
             }));
+
             var mergedInput = (await DeserializeAsync(state.Input)).Merge(input ?? new Dictionary<string, object>());
             var properties = await DeserializeAsync(state.Properties);
             var output = await DeserializeAsync(state.Output);
@@ -415,6 +422,8 @@ namespace OrchardCore.Workflows.Services
 
                     // Decrement the workflow scope recursion count.
                     DecrementRecursion(workflowContext.Workflow);
+
+                    await _workflowFaultHandler.OnWorkflowFaultAsync(this, workflowContext, activityContext, ex);
 
                     return blocking.Distinct();
                 }

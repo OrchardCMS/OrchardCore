@@ -89,11 +89,11 @@ namespace OrchardCore.Tenants
     public class FileProviderStartup : StartupBase
     {
         /// <summary>
-        /// The path in the tenant's App_Data folder containing the files
+        /// The path in the tenant's App_Data folder containing the files.
         /// </summary>
         private const string AssetsPath = "wwwroot";
 
-        // Run after other middlewares
+        // Run after other middlewares.
         public override int Order => 10;
 
         public override void ConfigureServices(IServiceCollection services)
@@ -103,7 +103,7 @@ namespace OrchardCore.Tenants
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
 
-                string contentRoot = GetContentRoot(shellOptions.Value, shellSettings);
+                var contentRoot = GetContentRoot(shellOptions.Value, shellSettings);
 
                 if (!Directory.Exists(contentRoot))
                 {
@@ -128,7 +128,7 @@ namespace OrchardCore.Tenants
                 DefaultContentType = "application/octet-stream",
                 ServeUnknownFileTypes = true,
 
-                // Cache the tenant static files for 30 days
+                // Cache the tenant static files for 30 days.
                 OnPrepareResponse = ctx =>
                 {
                     ctx.Context.Response.Headers[HeaderNames.CacheControl] = $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}, s-max-age={TimeSpan.FromDays(365.25).TotalSeconds}";
@@ -136,10 +136,8 @@ namespace OrchardCore.Tenants
             });
         }
 
-        private string GetContentRoot(ShellOptions shellOptions, ShellSettings shellSettings)
-        {
-            return Path.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, AssetsPath);
-        }
+        private static string GetContentRoot(ShellOptions shellOptions, ShellSettings shellSettings) =>
+            Path.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, AssetsPath);
     }
 
     [Feature("OrchardCore.Tenants.Distributed")]
@@ -167,6 +165,7 @@ namespace OrchardCore.Tenants
             services.AddScoped<FeatureProfilesManager>();
             services.AddScoped<IFeatureProfilesService, FeatureProfilesService>();
             services.AddScoped<IFeatureProfilesSchemaService, FeatureProfilesSchemaService>();
+            services.AddScoped<IShapeTableProvider, TenantFeatureProfileShapeTableProvider>();
 
             services.AddRecipeExecutionStep<FeatureProfilesStep>();
         }
@@ -192,14 +191,14 @@ namespace OrchardCore.Tenants
             routes.MapAreaControllerRoute(
                 name: "TenantFeatureProfilesEdit",
                 areaName: "OrchardCore.Tenants",
-                pattern: _adminOptions.AdminUrlPrefix + "/TenantFeatureProfiles/Edit/{name}",
+                pattern: _adminOptions.AdminUrlPrefix + "/TenantFeatureProfiles/Edit/{id}",
                 defaults: new { controller = featureProfilesControllerName, action = nameof(FeatureProfilesController.Edit) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "TenantFeatureProfilesDelete",
                 areaName: "OrchardCore.Tenants",
-                pattern: _adminOptions.AdminUrlPrefix + "/TenantFeatureProfiles/Delete/{name}",
+                pattern: _adminOptions.AdminUrlPrefix + "/TenantFeatureProfiles/Delete/{id}",
                 defaults: new { controller = featureProfilesControllerName, action = nameof(FeatureProfilesController.Delete) }
             );
         }

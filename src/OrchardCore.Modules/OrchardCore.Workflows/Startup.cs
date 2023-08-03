@@ -21,7 +21,9 @@ using OrchardCore.Workflows.Controllers;
 using OrchardCore.Workflows.Deployment;
 using OrchardCore.Workflows.Drivers;
 using OrchardCore.Workflows.Evaluators;
+using OrchardCore.Workflows.Events;
 using OrchardCore.Workflows.Expressions;
+using OrchardCore.Workflows.Handlers;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
@@ -71,6 +73,8 @@ namespace OrchardCore.Workflows
             services.AddScoped<IWorkflowExpressionEvaluator, LiquidWorkflowExpressionEvaluator>();
             services.AddScoped<IWorkflowScriptEvaluator, JavaScriptWorkflowScriptEvaluator>();
 
+            services.AddScoped<IWorkflowFaultHandler, DefaultWorkflowFaultHandler>();
+            services.AddActivity<WorkflowFaultEvent, WorkflowFaultEventDisplayDriver>();
             services.AddActivity<Activity, ActivityMetadataDisplayDriver>();
             services.AddActivity<NotifyTask, NotifyTaskDisplayDriver>();
             services.AddActivity<SetPropertyTask, SetVariableTaskDisplayDriver>();

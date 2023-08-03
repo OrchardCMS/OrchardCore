@@ -1,4 +1,4 @@
-@using OrchardCore.Microsoft.Authentication.ViewModels;
+@using OrchardCore.Microsoft.Authentication.ViewModels
 @model AzureADSettingsViewModel
 
 <p class="alert alert-warning">
@@ -6,7 +6,7 @@
     <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Microsoft.Authentication/#azure-active-directory" target="_blank">@T["See documentation"]</a>
 </p>
 
-<h3>@T["Azure AD Authentication Settings"]</h3>
+<h3>@T["Microsoft Entra ID Authentication Settings"]</h3>
 
 <div class="mb-3" asp-validation-class-for="DisplayName">
     <label>@T["Display Name"]</label>
@@ -19,14 +19,14 @@
     <label>@T["AppId"]</label>
     <input asp-for="AppId" class="form-control" />
     <span asp-validation-for="AppId"></span>
-    <span class="hint">@T["The Application ID found on the Azure AD App registration parameters."]</span>
+    <span class="hint">@T["The Application ID found on the Microsoft Entra ID App registration parameters."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="TenantId">
     <label>@T["TenantId"]</label>
     <input asp-for="TenantId" class="form-control" />
     <span asp-validation-for="TenantId"></span>
-    <span class="hint">@T["The Tenant (Directory) ID found on the Azure AD App registration parameters."]</span>
+    <span class="hint">@T["The Tenant (Directory) ID found on the Microsoft Entra ID App registration parameters."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="CallbackPath">

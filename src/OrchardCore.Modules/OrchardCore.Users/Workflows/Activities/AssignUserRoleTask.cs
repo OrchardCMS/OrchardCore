@@ -16,7 +16,7 @@ namespace OrchardCore.Users.Workflows.Activities
         private readonly UserManager<IUser> _userManager;
         private readonly IUserService _userService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AssignUserRoleTask(UserManager<IUser> userManager, IUserService userService, IWorkflowExpressionEvaluator expressionvaluator, IStringLocalizer<AssignUserRoleTask> localizer)
         {
@@ -54,7 +54,7 @@ namespace OrchardCore.Users.Workflows.Activities
             var userName = await _expressionEvaluator.EvaluateAsync(UserName, workflowContext, null);
             var roleName = await _expressionEvaluator.EvaluateAsync(RoleName, workflowContext, null);
 
-            User user = (User)await _userService.GetUserAsync(userName);
+            var user = (User)await _userService.GetUserAsync(userName);
 
             if (user != null)
             {

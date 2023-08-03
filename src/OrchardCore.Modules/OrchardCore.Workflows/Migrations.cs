@@ -10,7 +10,7 @@ namespace OrchardCore.Workflows
         public int Create()
         {
             SchemaBuilder.CreateMapIndexTable<WorkflowTypeIndex>(table => table
-                .Column<string>("WorkflowTypeId")
+                .Column<string>("WorkflowTypeId", c => c.WithLength(26))
                 .Column<string>("Name")
                 .Column<bool>("IsEnabled")
                 .Column<bool>("HasStart")
@@ -43,9 +43,9 @@ namespace OrchardCore.Workflows
             );
 
             SchemaBuilder.CreateMapIndexTable<WorkflowIndex>(table => table
-                .Column<string>("WorkflowTypeId")
-                .Column<string>("WorkflowId")
-                .Column<string>("WorkflowStatus")
+                .Column<string>("WorkflowTypeId", c => c.WithLength(26))
+                .Column<string>("WorkflowId", c => c.WithLength(26))
+                .Column<string>("WorkflowStatus", c => c.WithLength(26))
                 .Column<DateTime>("CreatedUtc")
             );
 

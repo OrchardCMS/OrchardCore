@@ -1,0 +1,87 @@
+@using OrchardCore.DisplayManagement.ModelBinding
+@using OrchardCore.Settings
+@using OrchardCore.Users.Models
+@using OrchardCore.Entities
+
+@model LoginWithTwoFactorAuthenticationViewModel
+
+@inject IDisplayManager<TwoFactorMethod> DisplayManager
+@inject IUpdateModelAccessor UpdateModelAccessor
+@{
+    ViewLayout = "Layout__Login";
+}
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Two-factor authentication"])</h1></zone>
+
+<div class="container">
+
+    <h3 class="text-center mb-3">@T["Your login is protected with a second authentication method."]</h3>
+
+    <div class="row">
+
+        @if (!ViewContext.ModelState.IsValid)
+        {
+            <div class="col-12">
+                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            </div>
+        }
+
+        @if (!String.IsNullOrEmpty(Model.CurrentProvider))
+        {
+            var shape = await DisplayManager.BuildEditorAsync(new TwoFactorMethod(), UpdateModelAccessor.ModelUpdater, false, Model.CurrentProvider, String.Empty);
+
+            @await DisplayAsync(shape)
+        }
+
+        <div class="offset-md-3 col-md-6">
+            <form method="post" asp-action="LoginWithTwoFactorAuthentication" asp-controller="TwoFactorAuthentication" asp-route-returnUrl="@Model.ReturnUrl">
+                <input asp-for="RememberMe" type="hidden" />
+                <input asp-for="CurrentProvider" type="hidden" />
+
+                <div class="form-floating mb-3">
+                    <input asp-for="VerificationCode" class="form-control" autocomplete="off" />
+                    <label asp-for="VerificationCode">@T["Verification code"]</label>
+                    <span asp-validation-for="VerificationCode" class="text-danger"></span>
+                </div>
+                @if (Model.AllowRememberDevice)
+                {
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input asp-for="RememberDevice" class="form-check-input" />
+                            <label asp-for="RememberDevice" class="form-check-label">@T["Remember this device"]</label>
+                        </div>
+                    </div>
+                }
+                <div>
+                    <button type="submit" class="w-100 btn btn-lg btn-primary">@T["Log in"]</button>
+                </div>
+
+            </form>
+
+            @if (Model.HasMultipleProviders)
+            {
+                var link = Url.ActionLink("LoginWithTwoFactorAuthentication", controller: null, new
+                {
+                    returnUrl = Model.ReturnUrl,
+                    next = true,
+                    provider = Model.CurrentProvider,
+                    rememberMe = Model.RememberMe,
+                });
+
+                <p class="text-center my-3">@T["Having trouble? <a href=\"{0}\">Sign in another way</a>.", link]</p>
+            }
+
+            <p class="text-center">
+                @{
+                    var url = Url.ActionLink("LoginWithRecoveryCode", controller: null, new
+                    {
+                        returnUrl = Model.ReturnUrl,
+                    });
+                }
+
+                @T["Don't have access to your authenticator device? You can <a href=\"{0}\">log in with a recovery code</a>.", url]
+            </p>
+
+        </div>
+    </div>
+</div>

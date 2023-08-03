@@ -11,7 +11,6 @@ namespace OrchardCore.Users
 {
     public class Migrations : DataMigration
     {
-        // This is a sequenced migration. On a new schemas this is complete after UpdateFrom2.
         public int Create()
         {
             SchemaBuilder.CreateMapIndexTable<UserIndex>(table => table
@@ -124,7 +123,9 @@ namespace OrchardCore.Users
         // The UserName property rather than the NormalizedUserName is used as the ContentItem.Owner property matches the UserName.
         // New users will be created with a generated Id.
         // This code can be removed in a later version.
+#pragma warning disable CA1822 // Mark members as static
         public int UpdateFrom5()
+#pragma warning restore CA1822 // Mark members as static
         {
             // Defer this until after the subsequent migrations have succeded as the schema has changed.
             ShellScope.AddDeferredTask(async scope =>
@@ -143,20 +144,24 @@ namespace OrchardCore.Users
 
         // This buggy migration has been removed.
         // This code can be removed in a later version.
+#pragma warning disable CA1822 // Mark members as static
         public int UpdateFrom6()
+#pragma warning restore CA1822 // Mark members as static
         {
             return 7;
         }
 
         // Migrate any user names replacing '@' with '+' as user names can no longer be an email address.
         // This code can be removed in a later version.
+#pragma warning disable CA1822 // Mark members as static
         public int UpdateFrom7()
+#pragma warning restore CA1822 // Mark members as static
         {
             // Defer this until after the subsequent migrations have succeded as the schema has changed.
             ShellScope.AddDeferredTask(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                var users = await session.Query<User, UserIndex>(u => u.NormalizedUserName.Contains("@")).ListAsync();
+                var users = await session.Query<User, UserIndex>(u => u.NormalizedUserName.Contains('@')).ListAsync();
                 foreach (var user in users)
                 {
                     user.UserName = user.UserName.Replace('@', '+');

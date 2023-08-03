@@ -16,7 +16,7 @@ namespace OrchardCore.Search.Lucene.QueryProviders
             }
 
             var queryString = query["query"]?.Value<string>();
-            var fields = query["fields"]?.Values<string>() ?? new string[0];
+            var fields = query["fields"]?.Values<string>() ?? Array.Empty<string>();
             var defaultOperator = query["default_operator"]?.Value<string>().ToLowerInvariant() ?? "or";
             var weight = 1.0f;
             var weights = fields.ToDictionary(field => field, field => weight);

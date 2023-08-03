@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
@@ -137,7 +136,7 @@ namespace OrchardCore.Navigation
 
     public class PagerShapes : IShapeAttributeProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public PagerShapes(IStringLocalizer<PagerShapes> localizer)
         {
@@ -352,6 +351,7 @@ namespace OrchardCore.Navigation
         }
 
         [Shape]
+#pragma warning disable CA1822 // Mark members as static
         public Task<IHtmlContent> Pager(Shape shape, DisplayContext displayContext)
         {
             shape.Metadata.Alternates.Clear();
@@ -538,6 +538,7 @@ namespace OrchardCore.Navigation
             parentTag.AddCssClass("disabled");
             return displayContext.DisplayHelper.ShapeExecuteAsync(shape);
         }
+#pragma warning restore CA1822 // Mark members as static
 
         private static IHtmlContent CoerceHtmlString(object value)
         {

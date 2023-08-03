@@ -7,7 +7,7 @@ namespace OrchardCore.Media.AmazonS3
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {

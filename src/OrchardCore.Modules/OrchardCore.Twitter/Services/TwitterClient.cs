@@ -25,11 +25,14 @@ namespace OrchardCore.Twitter.Services
         {
             try
             {
-                var parameters = new Dictionary<string, string>();
-                parameters.Add("status", status);
-                if (optionalParameters is object)
+                var parameters = new Dictionary<string, string>
                 {
-                    for (int i = 0; i < optionalParameters.Length; i++)
+                    { "status", status }
+                };
+
+                if (optionalParameters is not null)
+                {
+                    for (var i = 0; i < optionalParameters.Length; i++)
                     {
                         var optionalParameter = optionalParameters[i];
                         var parts = optionalParameter.Split('=', 2);

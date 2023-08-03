@@ -7,7 +7,7 @@ namespace OrchardCore.ResourceManagement
 {
     public class MetaEntry
     {
-        private readonly TagBuilder _builder = new TagBuilder("meta");
+        private readonly TagBuilder _builder = new("meta");
 
         public MetaEntry()
         {

@@ -23,9 +23,9 @@ namespace OrchardCore.Placements.Services
         {
             var document = await _placementStore.GetPlacementsAsync();
 
-            if (document.Placements.ContainsKey(shapeType))
+            if (document.Placements.TryGetValue(shapeType, out var nodes))
             {
-                return document.Placements[shapeType];
+                return nodes;
             }
             else
             {
@@ -46,10 +46,8 @@ namespace OrchardCore.Placements.Services
         {
             var document = await _placementStore.LoadPlacementsAsync();
 
-            if (document.Placements.ContainsKey(shapeType))
+            if (document.Placements.Remove(shapeType))
             {
-                document.Placements.Remove(shapeType);
-
                 await _placementStore.SavePlacementsAsync(document);
             }
         }

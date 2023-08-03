@@ -24,7 +24,7 @@ namespace OrchardCore.Queries.Sql.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IStore _store;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly TemplateOptions _templateOptions;
 
         public AdminController(

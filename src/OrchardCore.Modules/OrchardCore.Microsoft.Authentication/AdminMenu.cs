@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 
@@ -10,7 +9,7 @@ namespace OrchardCore.Microsoft.Authentication
     [Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
     public class AdminMenuMicrosoftAccount : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenuMicrosoftAccount(IStringLocalizer<AdminMenuMicrosoftAccount> localizer)
         {
@@ -37,16 +36,9 @@ namespace OrchardCore.Microsoft.Authentication
     [Feature(MicrosoftAuthenticationConstants.Features.AAD)]
     public class AdminMenuAAD : INavigationProvider
     {
-        private readonly ShellDescriptor _shellDescriptor;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
-        public AdminMenuAAD(
-            IStringLocalizer<AdminMenuAAD> localizer,
-            ShellDescriptor shellDescriptor)
-        {
-            S = localizer;
-            _shellDescriptor = shellDescriptor;
-        }
+        public AdminMenuAAD(IStringLocalizer<AdminMenuAAD> localizer) => S = localizer;
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -61,6 +53,7 @@ namespace OrchardCore.Microsoft.Authentication
                                 .LocalNav())
                     ));
             }
+
             return Task.CompletedTask;
         }
     }

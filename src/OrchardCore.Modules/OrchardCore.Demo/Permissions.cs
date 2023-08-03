@@ -8,8 +8,8 @@ namespace OrchardCore.Demo
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission DemoAPIAccess = new Permission("DemoAPIAccess", "Access to Demo API ");
-        public static readonly Permission ManageOwnUserProfile = new Permission("ManageOwnUserProfile", "Manage own user profile", new Permission[] { CommonPermissions.ManageUsers });
+        public static readonly Permission DemoAPIAccess = new("DemoAPIAccess", "Access to Demo API ");
+        public static readonly Permission ManageOwnUserProfile = new("ManageOwnUserProfile", "Manage own user profile", new Permission[] { CommonPermissions.ManageUsers });
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
@@ -20,26 +20,31 @@ namespace OrchardCore.Demo
         {
             return new[]
             {
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Authenticated",
-                    Permissions = new[] { DemoAPIAccess }
+                    Permissions = new[] { DemoAPIAccess },
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Editor",
-                    Permissions = new[] { ManageOwnUserProfile }
+                    Permissions = new[] { ManageOwnUserProfile },
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Moderator",
-                    Permissions = new[] { ManageOwnUserProfile }
+                    Permissions = new[] { ManageOwnUserProfile },
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Contributor",
-                    Permissions = new[] { ManageOwnUserProfile }
+                    Permissions = new[] { ManageOwnUserProfile },
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Author",
-                    Permissions = new[] { ManageOwnUserProfile }
-                }
+                    Permissions = new[] { ManageOwnUserProfile },
+                },
             };
         }
     }

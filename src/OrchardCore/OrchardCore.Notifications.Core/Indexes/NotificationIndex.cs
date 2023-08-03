@@ -40,9 +40,9 @@ public class NotificationIndexProvider : IndexProvider<Notification>
 
                 var bodyInfo = notification.As<NotificationBodyInfo>();
 
-                if (!String.IsNullOrEmpty(bodyInfo?.Body))
+                if (!String.IsNullOrEmpty(bodyInfo?.TextBody))
                 {
-                    content += $" {bodyInfo.Body}";
+                    content += $" {bodyInfo.TextBody}";
                 }
 
                 content = StripHTML(content);
@@ -66,10 +66,10 @@ public class NotificationIndexProvider : IndexProvider<Notification>
             });
     }
 
-    private static readonly Regex HtmlRegex = new("<.*?>", RegexOptions.Compiled);
+    private static readonly Regex _htmlRegex = new("<.*?>", RegexOptions.Compiled);
 
     public static string StripHTML(string html)
     {
-        return HtmlRegex.Replace(html, String.Empty);
+        return _htmlRegex.Replace(html, String.Empty);
     }
 }

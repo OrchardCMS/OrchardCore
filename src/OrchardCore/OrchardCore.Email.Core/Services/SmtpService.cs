@@ -22,11 +22,11 @@ namespace OrchardCore.Email.Services
     {
         private const string EmailExtension = ".eml";
 
-        private static readonly char[] EmailsSeparator = new char[] { ',', ';' };
+        private static readonly char[] _emailsSeparator = new char[] { ',', ';' };
 
         private readonly SmtpSettings _options;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         /// <summary>
         /// Initializes a new instance of a <see cref="SmtpService"/>.
@@ -37,8 +37,7 @@ namespace OrchardCore.Email.Services
         public SmtpService(
             IOptions<SmtpSettings> options,
             ILogger<SmtpService> logger,
-            IStringLocalizer<SmtpService> stringLocalizer
-            )
+            IStringLocalizer<SmtpService> stringLocalizer)
         {
             _options = options.Value;
             _logger = logger;
@@ -92,7 +91,7 @@ namespace OrchardCore.Email.Services
                         response = await SendOnlineMessageAsync(mimeMessage);
                         break;
                     case SmtpDeliveryMethod.SpecifiedPickupDirectory:
-                        await SendOfflineMessage(mimeMessage, _options.PickupDirectoryLocation);
+                        await SendOfflineMessageAsync(mimeMessage, _options.PickupDirectoryLocation);
                         break;
                     default:
                         throw new NotSupportedException($"The '{_options.DeliveryMethod}' delivery method is not supported.");
@@ -133,7 +132,7 @@ namespace OrchardCore.Email.Services
 
             if (!String.IsNullOrWhiteSpace(message.From))
             {
-                foreach (var address in message.From.Split(EmailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+                foreach (var address in message.From.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
                 {
                     if (MailboxAddress.TryParse(address, out var mailBox))
                     {
@@ -148,7 +147,7 @@ namespace OrchardCore.Email.Services
 
             if (!String.IsNullOrWhiteSpace(message.To))
             {
-                foreach (var address in message.To.Split(EmailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+                foreach (var address in message.To.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
                 {
                     if (MailboxAddress.TryParse(address, out var mailBox))
                     {
@@ -163,7 +162,7 @@ namespace OrchardCore.Email.Services
 
             if (!String.IsNullOrWhiteSpace(message.Cc))
             {
-                foreach (var address in message.Cc.Split(EmailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+                foreach (var address in message.Cc.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
                 {
                     if (MailboxAddress.TryParse(address, out var mailBox))
                     {
@@ -178,7 +177,7 @@ namespace OrchardCore.Email.Services
 
             if (!String.IsNullOrWhiteSpace(message.Bcc))
             {
-                foreach (var address in message.Bcc.Split(EmailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+                foreach (var address in message.Bcc.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
                 {
                     if (MailboxAddress.TryParse(address, out var mailBox))
                     {
@@ -200,7 +199,7 @@ namespace OrchardCore.Email.Services
             }
             else
             {
-                foreach (var address in message.ReplyTo.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var address in message.ReplyTo.Split(_emailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
                     if (MailboxAddress.TryParse(address, out var mailBox))
                     {
@@ -217,14 +216,13 @@ namespace OrchardCore.Email.Services
 
             var body = new BodyBuilder();
 
-            if (message.IsBodyHtml)
+            if (message.IsHtmlBody)
             {
                 body.HtmlBody = message.Body;
             }
-
-            if (message.IsBodyText)
+            else
             {
-                body.TextBody = message.BodyText;
+                body.TextBody = message.Body;
             }
 
             foreach (var attachment in message.Attachments)
@@ -243,14 +241,21 @@ namespace OrchardCore.Email.Services
 
         private bool CertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
-            if (sslPolicyErrors == SslPolicyErrors.None)
-                return true;
+            const string LogErrorMessage = "SMTP Server's certificate {CertificateSubject} issued by {CertificateIssuer} " +
+                "with thumbprint {CertificateThumbprint} and expiration date {CertificateExpirationDate} " +
+                "is considered invalid with {SslPolicyErrors} policy errors";
 
-            _logger.LogError(string.Concat("SMTP Server's certificate {CertificateSubject} issued by {CertificateIssuer} ",
-                "with thumbprint {CertificateThumbprint} and expiration date {CertificateExpirationDate} ",
-                "is considered invalid with {SslPolicyErrors} policy errors"),
-                certificate.Subject, certificate.Issuer, certificate.GetCertHashString(),
-                certificate.GetExpirationDateString(), sslPolicyErrors);
+            if (sslPolicyErrors == SslPolicyErrors.None)
+            {
+                return true;
+            }
+
+            _logger.LogError(LogErrorMessage,
+                certificate.Subject,
+                certificate.Issuer,
+                certificate.GetCertHashString(),
+                certificate.GetExpirationDateString(),
+                sslPolicyErrors);
 
             if (sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateChainErrors) && chain?.ChainStatus != null)
             {
@@ -263,10 +268,7 @@ namespace OrchardCore.Email.Services
             return false;
         }
 
-        protected virtual async Task OnMessageSendingAsync(SmtpClient client, MimeMessage message)
-        {
-            await Task.CompletedTask;
-        }
+        protected virtual Task OnMessageSendingAsync(SmtpClient client, MimeMessage message) => Task.CompletedTask;
 
         private async Task<string> SendOnlineMessageAsync(MimeMessage message)
         {
@@ -277,8 +279,8 @@ namespace OrchardCore.Email.Services
                 secureSocketOptions = _options.EncryptionMethod switch
                 {
                     SmtpEncryptionMethod.None => SecureSocketOptions.None,
-                    SmtpEncryptionMethod.SSLTLS => SecureSocketOptions.SslOnConnect,
-                    SmtpEncryptionMethod.STARTTLS => SecureSocketOptions.StartTls,
+                    SmtpEncryptionMethod.SslTls => SecureSocketOptions.SslOnConnect,
+                    SmtpEncryptionMethod.StartTls => SecureSocketOptions.StartTls,
                     _ => SecureSocketOptions.Auto,
                 };
             }
@@ -316,10 +318,10 @@ namespace OrchardCore.Email.Services
             return response;
         }
 
-        private static async Task SendOfflineMessage(MimeMessage message, string pickupDirectory)
+        private static Task SendOfflineMessageAsync(MimeMessage message, string pickupDirectory)
         {
             var mailPath = Path.Combine(pickupDirectory, Guid.NewGuid().ToString() + EmailExtension);
-            await message.WriteToAsync(mailPath, CancellationToken.None);
+            return message.WriteToAsync(mailPath, CancellationToken.None);
         }
     }
 }

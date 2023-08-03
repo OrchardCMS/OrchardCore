@@ -16,7 +16,7 @@ namespace OrchardCore.Layers.GraphQL
 {
     public class SiteLayersQuery : ISchemaBuilder
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly GraphQLContentOptions _graphQLContentOptions;
 
         public SiteLayersQuery(

@@ -1,7 +1,6 @@
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -15,14 +14,10 @@ namespace OrchardCore.Flows.Settings
     public class FlowPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<FlowPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IStringLocalizer S;
 
-        public FlowPartSettingsDisplayDriver(
-            IContentDefinitionManager contentDefinitionManager,
-            IStringLocalizer<FlowPartSettingsDisplayDriver> localizer)
+        public FlowPartSettingsDisplayDriver(IContentDefinitionManager contentDefinitionManager)
         {
             _contentDefinitionManager = contentDefinitionManager;
-            S = localizer;
         }
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)

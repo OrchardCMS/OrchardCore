@@ -26,7 +26,7 @@ namespace OrchardCore.Contents.Scripting
                     var contentItem = contentManager.NewAsync(contentType).GetAwaiter().GetResult();
 
                     return contentItem;
-                })
+                }),
             };
 
             _createContentItemMethod = new GlobalMethod
@@ -44,9 +44,9 @@ namespace OrchardCore.Contents.Scripting
                     }
                     else
                     {
-                        throw new ValidationException(string.Join(", ", result.Errors));
+                        throw new ValidationException(String.Join(", ", result.Errors));
                     }
-                })
+                }),
             };
 
             _updateContentItemMethod = new GlobalMethod
@@ -60,9 +60,9 @@ namespace OrchardCore.Contents.Scripting
                     var result = contentManager.ValidateAsync(contentItem).GetAwaiter().GetResult();
                     if (!result.Succeeded)
                     {
-                        throw new ValidationException(string.Join(", ", result.Errors));
+                        throw new ValidationException(String.Join(", ", result.Errors));
                     }
-                })
+                }),
             };
 
             _deleteContentItemMethod = new GlobalMethod
@@ -72,7 +72,7 @@ namespace OrchardCore.Contents.Scripting
                 {
                     var contentManager = serviceProvider.GetRequiredService<IContentManager>();
                     contentManager.RemoveAsync(contentItem).GetAwaiter().GetResult();
-                })
+                }),
             };
         }
 

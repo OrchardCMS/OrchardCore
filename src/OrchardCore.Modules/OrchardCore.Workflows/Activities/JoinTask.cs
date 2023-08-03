@@ -9,7 +9,7 @@ namespace OrchardCore.Workflows.Activities
 {
     public class JoinTask : TaskActivity
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public enum JoinMode
         {
@@ -104,7 +104,7 @@ namespace OrchardCore.Workflows.Activities
             return Task.CompletedTask;
         }
 
-        private string GetTransitionKey(Transition transition)
+        private static string GetTransitionKey(Transition transition)
         {
             var sourceActivityId = transition.SourceActivityId;
             var sourceOutcomeName = transition.SourceOutcomeName;

@@ -12,7 +12,7 @@ namespace OrchardCore.Twitter.Services
     public class TwitterSettingsService : ITwitterSettingsService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public TwitterSettingsService(
             ISiteService siteService,
