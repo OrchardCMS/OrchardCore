@@ -275,7 +275,10 @@ namespace OrchardCore.Modules
         {
             if (IsLogged(ex))
             {
-                logger.LogError(ex, "{Type} thrown from {Method} by {Exception}", sourceType, method, ex.GetType().Name);
+                logger.LogError(ex, "{Type} thrown from {Method} by {Exception}",
+                    sourceType,
+                    method,
+                    ex.GetType().Name);
             }
 
             if (ex.IsFatal())
