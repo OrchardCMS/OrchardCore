@@ -52,6 +52,15 @@ namespace OrchardCore.Users.Drivers
 
                     model.AllowEditing = context.IsNew || (settings.AllowChangingEmail && await CanEditUserInfoAsync(user));
 
+                }).Location("Content:1.3"),
+
+                Initialize<EditUserPhoneNumberViewModel>("UserPhoneNumber_Edit", async model =>
+                {
+                    model.PhoneNumber = user.PhoneNumber;
+                    model.PhoneNumberConfirmed = user.PhoneNumberConfirmed;
+
+                    model.AllowEditing = context.IsNew || await CanEditUserInfoAsync(user);
+
                 }).Location("Content:1.3")
             );
         }
@@ -66,6 +75,7 @@ namespace OrchardCore.Users.Drivers
 
             var userNameModel = new EditUserNameViewModel();
             var emailModel = new EditUserEmailViewModel();
+            var phoneNumberModel = new EditUserPhoneNumberViewModel();
 
             // Do not use the user manager to set these values, or validate them here, as they will validate at the incorrect time.
             // After this driver runs the IUserService.UpdateAsync or IUserService.CreateAsync method will
@@ -84,6 +94,11 @@ namespace OrchardCore.Users.Drivers
                 {
                     user.Email = emailModel.Email;
                 }
+
+                if (await context.Updater.TryUpdateModelAsync(phoneNumberModel, Prefix))
+                {
+                    user.PhoneNumber = phoneNumberModel.PhoneNumber;
+                }
             }
             else
             {
@@ -98,6 +113,11 @@ namespace OrchardCore.Users.Drivers
                 if (settings.AllowChangingEmail && await CanEditUserInfoAsync(user) && await context.Updater.TryUpdateModelAsync(emailModel, Prefix))
                 {
                     user.Email = emailModel.Email;
+                }
+
+                if (await CanEditUserInfoAsync(user) && await context.Updater.TryUpdateModelAsync(phoneNumberModel, Prefix))
+                {
+                    user.PhoneNumber = phoneNumberModel.PhoneNumber;
                 }
             }
 

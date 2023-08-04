@@ -167,16 +167,16 @@ namespace OrchardCore.Users
                 options.User.RequireUniqueEmail = true;
             });
 
-            //var phoneNumberProviderType = typeof(PhoneNumberTokenProvider<>).MakeGenericType(identityBuilder.UserType);
-            //identityBuilder.AddTokenProvider(TokenOptions.DefaultPhoneProvider, phoneNumberProviderType);
-
-            var emailTokenProviderType = typeof(EmailTokenProvider<>).MakeGenericType(typeof(IUser));
+            var phoneNumberProviderType = typeof(PhoneNumberTokenProvider<>).MakeGenericType(identityBuilder.UserType);
+            identityBuilder.AddTokenProvider(TokenOptions.DefaultPhoneProvider, phoneNumberProviderType);
+            var emailTokenProviderType = typeof(EmailTokenProvider<>).MakeGenericType(identityBuilder.UserType);
             identityBuilder.AddTokenProvider(TokenOptions.DefaultEmailProvider, emailTokenProviderType);
             services.Configure<IdentityOptions>(options =>
             {
                 options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
                 options.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultEmailProvider;
                 options.Tokens.ChangeEmailTokenProvider = TokenOptions.DefaultEmailProvider;
+                options.Tokens.ChangePhoneNumberTokenProvider = TokenOptions.DefaultPhoneProvider;
             });
 
             // Configure the authentication options to use the application cookie scheme as the default sign-out handler.

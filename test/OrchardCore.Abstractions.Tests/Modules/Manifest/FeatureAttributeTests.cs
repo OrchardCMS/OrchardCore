@@ -54,12 +54,12 @@ namespace OrchardCore.Modules.Manifest
             var depString = String.Join(';', deps);
 
             ReportKeyValuePairs(
-                new RenderKeyValuePair(nameof(id), id)
-                , new RenderKeyValuePair(nameof(description), description)
-                , new RenderKeyValuePair(nameof(deps), depString)
-                , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
-                , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
-                , new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
+                new RenderKeyValuePair(nameof(id), id),
+                new RenderKeyValuePair(nameof(description), description),
+                new RenderKeyValuePair(nameof(deps), depString),
+                new RenderKeyValuePair(nameof(defaultTenant), defaultTenant),
+                new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled),
+                new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
             var feature = CreateFromArgs(FeatureString3Object3CtorClassifier, id, description, depString, defaultTenant, alwaysEnabled, enabledByDependencyOnly);
@@ -100,13 +100,13 @@ namespace OrchardCore.Modules.Manifest
             var depString = String.Join(';', deps);
 
             ReportKeyValuePairs(
-                new RenderKeyValuePair(nameof(id), id)
-                , new RenderKeyValuePair(nameof(name), name)
-                , new RenderKeyValuePair(nameof(description), description)
-                , new RenderKeyValuePair(nameof(deps), depString)
-                , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
-                , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
-                , new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
+                new RenderKeyValuePair(nameof(id), id),
+                new RenderKeyValuePair(nameof(name), name),
+                new RenderKeyValuePair(nameof(description), description),
+                new RenderKeyValuePair(nameof(deps), depString),
+                new RenderKeyValuePair(nameof(defaultTenant), defaultTenant),
+                new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled),
+                new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
             var feature = CreateFromArgs(FeatureString4Object3CtorClassifier, id, name, description, depString, defaultTenant, alwaysEnabled, enabledByDependencyOnly);
@@ -150,15 +150,15 @@ namespace OrchardCore.Modules.Manifest
             var priString = $"{priority}";
 
             ReportKeyValuePairs(
-                new RenderKeyValuePair(nameof(id), id)
-                , new RenderKeyValuePair(nameof(name), name)
-                , new RenderKeyValuePair(nameof(category), category)
-                , new RenderKeyValuePair(nameof(priority), priority)
-                , new RenderKeyValuePair(nameof(description), description)
-                , new RenderKeyValuePair(nameof(deps), depString)
-                , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
-                , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
-                , new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
+                new RenderKeyValuePair(nameof(id), id),
+                new RenderKeyValuePair(nameof(name), name),
+                new RenderKeyValuePair(nameof(category), category),
+                new RenderKeyValuePair(nameof(priority), priority),
+                new RenderKeyValuePair(nameof(description), description),
+                new RenderKeyValuePair(nameof(deps), depString),
+                new RenderKeyValuePair(nameof(defaultTenant), defaultTenant),
+                new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled),
+                new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
             var feature = CreateFromArgs(FeatureString6Object3CtorClassifier, id, name, category, priString, description, depString, defaultTenant, alwaysEnabled, enabledByDependencyOnly);
@@ -210,18 +210,18 @@ namespace OrchardCore.Modules.Manifest
             var rootType = typeof(Examples.Features.AssyAttrib.Root);
 
             //ReportKeyValuePairs(
-            //    new RenderKeyValuePair(nameof(id), id)
-            //    , new RenderKeyValuePair(nameof(name), name)
-            //    , new RenderKeyValuePair(nameof(category), category)
-            //    , new RenderKeyValuePair(nameof(priority), priority)
-            //    , new RenderKeyValuePair(nameof(description), description)
-            //    , new RenderKeyValuePair(nameof(author), author)
-            //    , new RenderKeyValuePair(nameof(semVer), semVer)
-            //    , new RenderKeyValuePair(nameof(website), website)
-            //    , new RenderKeyValuePair(nameof(deps), depString)
-            //    , new RenderKeyValuePair(nameof(tags), tagString)
-            //    , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
-            //    , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
+            //    new RenderKeyValuePair(nameof(id), id),
+            //    new RenderKeyValuePair(nameof(name), name),
+            //    new RenderKeyValuePair(nameof(category), category),
+            //    new RenderKeyValuePair(nameof(priority), priority),
+            //    new RenderKeyValuePair(nameof(description), description),
+            //    new RenderKeyValuePair(nameof(author), author),
+            //    new RenderKeyValuePair(nameof(semVer), semVer),
+            //    new RenderKeyValuePair(nameof(website), website),
+            //    new RenderKeyValuePair(nameof(deps), depString),
+            //    new RenderKeyValuePair(nameof(tags), tagString),
+            //    new RenderKeyValuePair(nameof(defaultTenant), defaultTenant),
+            //    new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
             //);
 
             var features = GetAssemblyAttributes<FeatureAttribute>(rootType, _ => _.GetType() == typeof(FeatureAttribute));
@@ -280,16 +280,16 @@ namespace OrchardCore.Modules.Manifest
 
             // TODO: TBD: also for attributes created using property initializers
             FeatureAttribute CreateForPriority(string priString = null) => CreateFromArgs(
-                FeatureString6Object3CtorClassifier
-                , LoremWords(1)
-                , name
-                , category
-                , priString ?? String.Empty
-                , description
-                , depString
-                , defaultTenant
-                , alwaysEnabled
-                , enabledByDependencyOnly
+                FeatureString6Object3CtorClassifier,
+                LoremWords(1),
+                name,
+                category,
+                priString ?? String.Empty,
+                description,
+                depString,
+                defaultTenant,
+                alwaysEnabled,
+                enabledByDependencyOnly
             );
 
             var alpha = CreateForPriority();
@@ -321,16 +321,16 @@ namespace OrchardCore.Modules.Manifest
 
             // TODO: TBD: also for attributes created using property initializers
             FeatureAttribute CreateForDescription(string description = null) => CreateFromArgs(
-                FeatureString6Object3CtorClassifier
-                , LoremWords(1)
-                , name
-                , category
-                , priority
-                , description
-                , depString
-                , defaultTenant
-                , alwaysEnabled
-                , enabledByDependencyOnly
+                FeatureString6Object3CtorClassifier,
+                LoremWords(1),
+                name,
+                category,
+                priority,
+                description,
+                depString,
+                defaultTenant,
+                alwaysEnabled,
+                enabledByDependencyOnly
             );
 
             var alpha = CreateForDescription();
@@ -362,16 +362,16 @@ namespace OrchardCore.Modules.Manifest
 
             // TODO: TBD: also for attributes created using property initializers
             FeatureAttribute CreateForCategory(string category = null) => CreateFromArgs(
-                FeatureString6Object3CtorClassifier
-                , LoremWords(1)
-                , name
-                , category
-                , priority
-                , description
-                , depString
-                , defaultTenant
-                , alwaysEnabled
-                , enabledByDependencyOnly
+                FeatureString6Object3CtorClassifier,
+                LoremWords(1),
+                name,
+                category,
+                priority,
+                description,
+                depString,
+                defaultTenant,
+                alwaysEnabled,
+                enabledByDependencyOnly
             );
 
             var alpha = CreateForCategory();
@@ -389,12 +389,13 @@ namespace OrchardCore.Modules.Manifest
         /// a handful of delimiter scenarios.
         /// </summary>
         /// <param name="delim"></param>
-        [Theory
-            , InlineData(';')
-            , InlineData(',')
-            , InlineData(' ')
-            , InlineData(':')
-            ]
+        [
+            Theory,
+            InlineData(';'),
+            InlineData(','),
+            InlineData(' '),
+            InlineData(':')
+        ]
         public virtual void Dependencies(char delim)
         {
             var deps = LoremWords(5).Split(' ');
@@ -403,16 +404,16 @@ namespace OrchardCore.Modules.Manifest
             var listDelims = FeatureAttribute.ListDelims;
 
             FeatureAttribute CreateForDeps(params string[] deps) => CreateFromArgs(
-                FeatureString6Object3CtorClassifier
-                , LoremWords(1)
-                , null
-                , null
-                , null
-                , null
-                , depString
-                , default(bool)
-                , default(bool)
-                , default(bool)
+                FeatureString6Object3CtorClassifier,
+                LoremWords(1),
+                null,
+                null,
+                null,
+                null,
+                depString,
+                default(bool),
+                default(bool),
+                default(bool)
             );
 
             var feature = CreateForDeps(deps);

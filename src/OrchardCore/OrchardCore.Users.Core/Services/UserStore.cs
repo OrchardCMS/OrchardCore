@@ -27,7 +27,8 @@ namespace OrchardCore.Users.Services
         IUserAuthenticationTokenStore<IUser>,
         IUserTwoFactorRecoveryCodeStore<IUser>,
         IUserTwoFactorStore<IUser>,
-        IUserAuthenticatorKeyStore<IUser>
+        IUserAuthenticatorKeyStore<IUser>,
+        IUserPhoneNumberStore<IUser>
     {
         private const string _tokenProtector = "OrchardCore.UserStore.Token";
         private const string _internalLoginProvider = "[OrchardCoreUserStore]";
@@ -1057,6 +1058,68 @@ namespace OrchardCore.Users.Services
 
         public virtual Task<string> GetAuthenticatorKeyAsync(IUser user, CancellationToken cancellationToken)
             => GetTokenAsync(user, _internalLoginProvider, _authenticatorKeyTokenName, cancellationToken);
+        #endregion
+
+        #region IUserPhoneNumberStore<IUser>
+        public Task SetPhoneNumberAsync(IUser user, string phoneNumber, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (user is User u)
+            {
+                u.PhoneNumber = phoneNumber;
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task SetPhoneNumberConfirmedAsync(IUser user, bool confirmed, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (user is User u)
+            {
+                u.PhoneNumberConfirmed = confirmed;
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task<string> GetPhoneNumberAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (user is User u)
+            {
+                return Task.FromResult(u.PhoneNumber);
+            }
+
+            return Task.FromResult<string>(null);
+        }
+
+        public Task<bool> GetPhoneNumberConfirmedAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (user is User u)
+            {
+                return Task.FromResult(u.PhoneNumberConfirmed);
+            }
+
+            return Task.FromResult<bool>(false);
+        }
         #endregion
     }
 }
