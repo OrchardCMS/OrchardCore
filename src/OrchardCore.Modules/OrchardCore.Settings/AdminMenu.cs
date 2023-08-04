@@ -31,8 +31,8 @@ namespace OrchardCore.Settings
                         .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" })
                         .Permission(Permissions.ManageGroupSettings)
                         .LocalNav()
-                    )
-                , priority: 1)
+                    ),
+                    priority: 1)
             );
 
             return Task.CompletedTask;

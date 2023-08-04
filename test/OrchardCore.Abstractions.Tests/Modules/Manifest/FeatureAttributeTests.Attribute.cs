@@ -108,9 +108,8 @@ namespace OrchardCore.Modules.Manifest
             // Identify the Ctor with the Parameters aligned to the Classified Arguments.
             var allAttributeCtorWithParameterTypes = allAttributeCtors.Select(ctor => new
             {
-                Callback = ctor
-                ,
-                Types = ctor.GetParameters().Select(_ => _.ParameterType).ToArray()
+                Callback = ctor,
+                Types = ctor.GetParameters().Select(_ => _.ParameterType).ToArray(),
             }).ToArray();
 
             var attributeCtor = allAttributeCtorWithParameterTypes.SingleOrDefault(_ => _.Types.SequenceEqual(types))

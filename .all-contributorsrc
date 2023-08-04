@@ -2726,6 +2726,24 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "wAsnk",
+      "name": "Krisztián Németh",
+      "avatar_url": "https://avatars.githubusercontent.com/u/19938236?v=4",
+      "profile": "https://github.com/wAsnk",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "BinderDyn",
+      "name": "Marvin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/43495737?v=4",
+      "profile": "https://github.com/BinderDyn",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true

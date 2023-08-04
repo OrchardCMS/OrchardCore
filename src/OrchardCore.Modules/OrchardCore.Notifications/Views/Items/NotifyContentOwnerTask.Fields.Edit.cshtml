@@ -13,7 +13,7 @@
     <span class="hint">@T["This optional text body does not support HTML. You may use Liquid syntax."]</span>
 </div>
 
-<div class="mb-3" asp-validation-class-for="TextBody">
+<div class="mb-3" asp-validation-class-for="HtmlBody">
     <label asp-for="HtmlBody">@T["HTML Body"]</label>
     <textarea asp-for="HtmlBody" rows="10" class="form-control"></textarea>
     <span class="hint">@T["HTML message will only be sent if the notification provider supports it. You may use Liquid syntax."]</span>

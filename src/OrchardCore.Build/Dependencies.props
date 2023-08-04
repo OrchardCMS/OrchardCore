@@ -25,16 +25,16 @@
     <PackageManagement Include="GraphQL.MicrosoftDI" Version="4.8.0" />
     <PackageManagement Include="GraphQL.SystemTextJson" Version="4.8.0" />
     <PackageManagement Include="Jint" Version="3.0.0-beta-2049" />
-    <PackageManagement Include="HtmlSanitizer" Version="8.0.645" />
+    <PackageManagement Include="HtmlSanitizer" Version="8.0.692" />
     <PackageManagement Include="Lorem.Universal.NET" Version="4.0.80" />
     <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00016" />
     <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00016" />
     <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00016" />
     <PackageManagement Include="Lucene.Net.Spatial" Version="4.8.0-beta00016" />
     <PackageManagement Include="MailKit" Version="4.1.0" />
-    <PackageManagement Include="Markdig" Version="0.31.0" />
+    <PackageManagement Include="Markdig" Version="0.32.0" />
     <PackageManagement Include="MessagePack" Version="2.2.60" />
-    <PackageManagement Include="Microsoft.Identity.Web" Version="2.13.0" />
+    <PackageManagement Include="Microsoft.Identity.Web" Version="2.13.2" />
     <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="17.6.3" />
     <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
     <PackageManagement Include="MimeKit" Version="4.1.0" />

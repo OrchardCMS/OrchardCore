@@ -145,7 +145,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
 
             services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
-            services.AddScoped<IClientIpAddressAccessor, DefaultClientIpAddressAccessor>();
+            services.AddScoped<IClientIPAddressAccessor, DefaultClientIPAddressAccessor>();
 
             builder.ConfigureServices((services, serviceProvider) =>
             {
