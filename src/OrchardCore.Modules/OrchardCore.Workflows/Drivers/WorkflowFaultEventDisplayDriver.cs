@@ -11,7 +11,7 @@ namespace OrchardCore.Workflows.Drivers
         {
             model.ErrorFilter = activity.ErrorFilter.Expression;
         }
-        
+
         protected override void UpdateActivity(WorkflowFaultViewModel model, WorkflowFaultEvent activity)
         {
             activity.ErrorFilter = new WorkflowExpression<bool>(model.ErrorFilter);

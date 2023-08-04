@@ -112,12 +112,12 @@ namespace OrchardCore.Tests.Workflows
                 workflowStore.Object,
                 workflowIdGenerator.Object,
                 workflowValueSerializers,
+                workflowFaultHandler.Object,
                 distributedLock.Object,
                 workflowManagerLogger.Object,
                 missingActivityLogger.Object,
                 missingActivityLocalizer.Object,
-                clock.Object,
-                workflowFaultHandler.Object
+                clock.Object
                 );
 
             foreach (var activity in activities)
