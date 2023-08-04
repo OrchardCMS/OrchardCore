@@ -15,8 +15,8 @@ public class NotificationMigrations : DataMigration
             .Column<bool>("IsRead")
             .Column<DateTime>("ReadAtUtc")
             .Column<DateTime>("CreatedAtUtc")
-            .Column<string>("Content", column => column.WithLength(NotificationConstants.NotificationIndexContentLength))
-            , collection: NotificationConstants.NotificationCollection
+            .Column<string>("Content", column => column.WithLength(NotificationConstants.NotificationIndexContentLength)),
+            collection: NotificationConstants.NotificationCollection
         );
 
         SchemaBuilder.AlterIndexTable<NotificationIndex>(table => table

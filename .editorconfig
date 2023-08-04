@@ -86,7 +86,7 @@ dotnet_naming_rule.private_const_fields_ignore_camel_case_leading_underscore.sty
 # StyleCop: Spacing Rules
 [*.cs]
 dotnet_diagnostic.SA1000.severity = none            # Keywords should be spaced correctly.
-dotnet_diagnostic.SA1001.severity = none        	# Commas should be spaced correctly.
+dotnet_diagnostic.SA1001.severity = suggestion      # Commas should be spaced correctly.
 dotnet_diagnostic.SA1002.severity = none        	# Semicolons should be spaced correctly.
 dotnet_diagnostic.SA1003.severity = none        	# Symbols should be spaced correctly.
 dotnet_diagnostic.SA1004.severity = none        	# Documentation lines should begin with single space.
