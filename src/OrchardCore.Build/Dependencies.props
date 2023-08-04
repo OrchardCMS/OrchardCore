@@ -32,7 +32,7 @@
     <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00016" />
     <PackageManagement Include="Lucene.Net.Spatial" Version="4.8.0-beta00016" />
     <PackageManagement Include="MailKit" Version="4.1.0" />
-    <PackageManagement Include="Markdig" Version="0.31.0" />
+    <PackageManagement Include="Markdig" Version="0.32.0" />
     <PackageManagement Include="MessagePack" Version="2.2.60" />
     <PackageManagement Include="Microsoft.Identity.Web" Version="2.13.2" />
     <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="17.6.3" />
