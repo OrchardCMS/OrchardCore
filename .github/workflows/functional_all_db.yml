@@ -17,7 +17,7 @@ jobs:
       # We need to install dotnet in the docker container.
     - uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '7.0.x'
+        dotnet-version: '8.0.100-preview.6.23330.14'
     - uses: actions/setup-node@v3
       with:
         node-version: "15"
@@ -43,7 +43,7 @@ jobs:
       # We need to install dotnet in the docker container.
     - uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '7.0.x'
+        dotnet-version: '8.0.100-preview.6.23330.14'
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -87,7 +87,7 @@ jobs:
       # We need to install dotnet in the docker container.
     - uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '7.0.x'
+        dotnet-version: '8.0.100-preview.6.23330.14'
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -127,7 +127,7 @@ jobs:
       # We need to install dotnet in the docker container.
     - uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '7.0.x'
+        dotnet-version: '8.0.100-preview.6.23330.14'
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
@@ -166,7 +166,7 @@ jobs:
       # We need to install dotnet in the docker container.
     - uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '7.0.x'
+        dotnet-version: '8.0.100-preview.6.23330.14'
     - name: Fix nuget restore issue
       run: |
           apt update && apt --only-upgrade install ca-certificates -y
