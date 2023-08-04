@@ -1,16 +1,18 @@
-using OrchardCore.Workflows.Events;
-using OrchardCore.Workflows.Models;
-using OrchardCore.Workflows.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Workflows.Events;
+using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Handlers
 {
     public class DefaultWorkflowFaultHandler : IWorkflowFaultHandler
     {
-        public async Task OnWorkflowFaultAsync(IWorkflowManager workflowManager, WorkflowExecutionContext workflowContext,
+        public async Task OnWorkflowFaultAsync(
+            IWorkflowManager workflowManager,
+            WorkflowExecutionContext workflowContext,
             ActivityContext activityContext,
             Exception exception)
         {
@@ -19,7 +21,7 @@ namespace OrchardCore.Workflows.Handlers
             {
                 WorkflowId = workflowContext.Workflow.WorkflowId,
                 WorkflowName = workflowContext.WorkflowType.Name,
-                ExecutedActivityCount = workflowContext.ExecutedActivities.Count(),
+                ExecutedActivityCount = workflowContext.ExecutedActivities.Count,
                 FaultMessage = workflowContext.Workflow.FaultMessage,
                 ActivityId = activityContext.ActivityRecord.ActivityId,
                 ActivityTypeName = activityContext.Activity.Name,
@@ -30,9 +32,7 @@ namespace OrchardCore.Workflows.Handlers
 
             var input = new Dictionary<string, object>
             {
-                {
-                    WorkflowFaultModel.WorkflowFaultInputKey, faultContext
-                }
+                { WorkflowFaultModel.WorkflowFaultInputKey, faultContext },
             };
 
             await workflowManager.TriggerEventAsync(name, input);
