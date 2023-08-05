@@ -13,7 +13,7 @@ namespace OrchardCore.Users.Workflows.Drivers
 {
     public class RegisterUserTaskDisplayDriver : ActivityDisplayDriver<RegisterUserTask, RegisterUserTaskViewModel>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public RegisterUserTaskDisplayDriver(IStringLocalizer<RegisterUserTaskDisplayDriver> localizer)
         {

@@ -151,8 +151,10 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
             else
             {
-                existingPart = new ContentTypePartDefinition(name, partDefinition, new JObject());
-                existingPart.ContentTypeDefinition = Current;
+                existingPart = new ContentTypePartDefinition(name, partDefinition, new JObject())
+                {
+                    ContentTypeDefinition = Current,
+                };
             }
 
             var configurer = new PartConfigurerImpl(existingPart);
@@ -181,8 +183,10 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
             else
             {
-                existingPart = new ContentTypePartDefinition(name, partDefinition, new JObject());
-                existingPart.ContentTypeDefinition = Current;
+                existingPart = new ContentTypePartDefinition(name, partDefinition, new JObject())
+                {
+                    ContentTypeDefinition = Current,
+                };
             }
 
             var configurer = new PartConfigurerImpl(existingPart);
@@ -211,6 +215,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
                 {
                     throw new ArgumentException("Content part name must start with a letter", "name");
                 }
+
                 if (!String.Equals(Current.Name, Current.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
                 {
                     throw new ArgumentException("Content part name contains invalid characters", "name");

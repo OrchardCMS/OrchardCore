@@ -10,7 +10,7 @@ public class NotificationService : INotificationService
 {
     private readonly INotificationMethodProviderAccessor _notificationMethodProviderAccessor;
     private readonly IEnumerable<INotificationEvents> _notificationEvents;
-    private readonly ILogger<NotificationService> _logger;
+    private readonly ILogger _logger;
     private readonly ISession _session;
     private readonly IClock _clock;
 

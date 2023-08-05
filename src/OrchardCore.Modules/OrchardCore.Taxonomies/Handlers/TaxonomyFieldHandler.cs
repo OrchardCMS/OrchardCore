@@ -9,7 +9,7 @@ namespace OrchardCore.Taxonomies.Handlers;
 
 public class TaxonomyFieldHandler : ContentFieldHandler<TaxonomyField>
 {
-    private readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
 
     public TaxonomyFieldHandler(IStringLocalizer<TaxonomyFieldHandler> stringLocalizer)
     {

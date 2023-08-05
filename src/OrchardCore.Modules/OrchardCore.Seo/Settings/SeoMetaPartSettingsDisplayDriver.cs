@@ -1,10 +1,8 @@
 using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Liquid;
 using OrchardCore.Seo.Models;
 using OrchardCore.Seo.ViewModels;
 
@@ -12,15 +10,6 @@ namespace OrchardCore.SeoMeta.Settings
 {
     public class SeoMetaPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<SeoMetaPart>
     {
-        private readonly ILiquidTemplateManager _templateManager;
-        private readonly IStringLocalizer S;
-
-        public SeoMetaPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<SeoMetaPartSettingsDisplayDriver> localizer)
-        {
-            _templateManager = templateManager;
-            S = localizer;
-        }
-
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
             return Initialize<SeoMetaPartSettingsViewModel>("SeoMetaPartSettings_Edit", model =>

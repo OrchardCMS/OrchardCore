@@ -9,7 +9,6 @@ using OrchardCore.Abstractions.Setup;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using OrchardCore.Setup.Services;
@@ -133,12 +132,12 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 return Outcomes("Failed");
             }
 
-            if (shellSettings.State == TenantState.Running)
+            if (shellSettings.IsRunning())
             {
                 return Outcomes("Failed");
             }
 
-            if (shellSettings.State != TenantState.Uninitialized)
+            if (!shellSettings.IsUninitialized())
             {
                 return Outcomes("Failed");
             }

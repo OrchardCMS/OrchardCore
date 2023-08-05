@@ -9,7 +9,7 @@ namespace OrchardCore.Tests.Workflows.Activities
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
         private readonly TextWriter _output;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public WriteLineTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer stringLocalizer, TextWriter output)
         {

@@ -9,7 +9,7 @@ namespace OrchardCore.Tenants
     public class AdminMenu : INavigationProvider
     {
         private readonly ShellSettings _shellSettings;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer, ShellSettings shellSettings)
         {
@@ -38,8 +38,8 @@ namespace OrchardCore.Tenants
                         .Action("Index", "Admin", new { area = "OrchardCore.Tenants" })
                         .Permission(Permissions.ManageTenants)
                         .LocalNav()
-                    )
-                , priority: 1);
+                    ),
+                    priority: 1);
 
             return Task.CompletedTask;
         }

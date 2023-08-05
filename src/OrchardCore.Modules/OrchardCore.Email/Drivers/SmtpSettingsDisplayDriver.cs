@@ -62,7 +62,7 @@ namespace OrchardCore.Email.Drivers
                     model.UseDefaultCredentials = settings.UseDefaultCredentials;
                     model.UserName = settings.UserName;
                     model.Password = settings.Password;
-                }).Location("Content:5").OnGroup(GroupId)
+                }).Location("Content:5").OnGroup(GroupId),
             };
 
             if (settings?.DefaultSender != null)
@@ -88,7 +88,7 @@ namespace OrchardCore.Email.Drivers
                 await context.Updater.TryUpdateModelAsync(section, Prefix);
 
                 // Restore password if the input is empty, meaning that it has not been reset.
-                if (string.IsNullOrWhiteSpace(section.Password))
+                if (String.IsNullOrWhiteSpace(section.Password))
                 {
                     section.Password = previousPassword;
                 }
@@ -99,7 +99,7 @@ namespace OrchardCore.Email.Drivers
                     section.Password = protector.Protect(section.Password);
                 }
 
-                // Release the tenant to apply the settings
+                // Release the tenant to apply the settings.
                 await _shellHost.ReleaseShellContextAsync(_shellSettings);
             }
 

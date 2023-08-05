@@ -9,7 +9,7 @@ namespace OrchardCore.Environment.Shell
     public interface IShellHost : IShellEvents, IShellDescriptorManagerEventHandler
     {
         /// <summary>
-        /// Ensure that all the <see cref="ShellContext"/> are pre-created and available to process requests.
+        /// Ensures that all the <see cref="ShellContext"/> are pre-created and available to process requests.
         /// </summary>
         Task InitializeAsync();
 
@@ -72,12 +72,13 @@ namespace OrchardCore.Environment.Shell
         IEnumerable<ShellSettings> GetAllSettings();
 
         /// <summary>
-        /// Removes a shell configuration.
+        /// Removes a shell context and its settings from memory and from the storage.
         /// </summary>
         Task RemoveShellSettingsAsync(ShellSettings settings);
 
         /// <summary>
-        /// Removes a shell.
+        /// Removes a shell context and its settings but only from memory, used for syncing
+        /// when the settings has been already removed from the storage by another instance.
         /// </summary>
         Task RemoveShellContextAsync(ShellSettings settings, bool eventSource = true);
     }

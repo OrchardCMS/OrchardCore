@@ -80,7 +80,6 @@ namespace OrchardCore.ContentManagement.Handlers
 
         public override Task UnpublishedAsync(PublishContentContext context)
         {
-            var utcNow = _clock.UtcNow;
             context.ContentItem.PublishedUtc = null;
             return Task.CompletedTask;
         }

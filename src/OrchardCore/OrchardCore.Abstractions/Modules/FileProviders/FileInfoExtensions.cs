@@ -12,16 +12,13 @@ namespace OrchardCore.Modules.FileProviders
 
             if (fileInfo?.Exists ?? false)
             {
-                using (var reader = fileInfo.CreateReadStream())
+                using var reader = fileInfo.CreateReadStream();
+                using var sr = new StreamReader(reader);
+
+                string line;
+                while ((line = sr.ReadLine()) != null)
                 {
-                    using (var sr = new StreamReader(reader))
-                    {
-                        string line;
-                        while ((line = sr.ReadLine()) != null)
-                        {
-                            lines.Add(line);
-                        }
-                    }
+                    lines.Add(line);
                 }
             }
 

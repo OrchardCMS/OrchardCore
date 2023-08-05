@@ -25,14 +25,13 @@ namespace OrchardCore.Scripting
             IEnumerable<IGlobalMethodProvider> scopedMethodProviders)
         {
             var directiveIndex = directive.IndexOf(':');
-
             if (directiveIndex == -1 || directiveIndex >= directive.Length - 2)
             {
                 return directive;
             }
 
-            var prefix = directive.Substring(0, directiveIndex);
-            var script = directive.Substring(directiveIndex + 1);
+            var prefix = directive[..directiveIndex];
+            var script = directive[(directiveIndex + 1)..];
 
             var engine = GetScriptingEngine(prefix);
             if (engine == null)

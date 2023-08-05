@@ -13,7 +13,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class ShapeTag
     {
-        private static readonly char[] Separators = { ',', ' ' };
+        private static readonly char[] _separators = { ',', ' ' };
 
         public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
@@ -40,8 +40,12 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 switch (argument.Name)
                 {
                     case "cache_id": cacheId = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+
+#pragma warning disable CA1806 // Do not ignore method results
                     case "cache_fixed_duration": TimeSpan.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), out var fd); cacheFixedDuration = fd; break;
                     case "cache_sliding_duration": TimeSpan.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), out var sd); cacheSlidingDuration = sd; break;
+#pragma warning restore CA1806 // Do not ignore method results
+
                     // case "cache_dependency": cacheDependency = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "cache_context": cacheContext = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "cache_tag": cacheTag = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
@@ -93,13 +97,13 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
                 if (!String.IsNullOrWhiteSpace(cacheContext))
                 {
-                    var contexts = cacheContext.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
+                    var contexts = cacheContext.Split(_separators, StringSplitOptions.RemoveEmptyEntries);
                     metadata.Cache().AddContext(contexts);
                 }
 
                 if (!String.IsNullOrWhiteSpace(cacheTag))
                 {
-                    var tags = cacheTag.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
+                    var tags = cacheTag.Split(_separators, StringSplitOptions.RemoveEmptyEntries);
                     metadata.Cache().AddTag(tags);
                 }
             }

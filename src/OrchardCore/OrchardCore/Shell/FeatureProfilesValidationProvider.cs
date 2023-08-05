@@ -16,7 +16,7 @@ namespace OrchardCore.Environment.Shell
         private readonly ShellSettings _shellSettings;
 
         // Cached across requests as this is called a lot and can be calculated once.
-        private readonly Dictionary<string, bool> _allowed = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, bool> _allowed = new(StringComparer.OrdinalIgnoreCase);
         private (bool NotFound, FeatureProfile FeatureProfile) _featureProfileLookup;
 
         public FeatureProfilesValidationProvider(
@@ -42,7 +42,7 @@ namespace OrchardCore.Environment.Shell
 
             if (!_featureProfileLookup.NotFound)
             {
-                var scope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName);
+                var scope = await _shellHost.GetScopeAsync(ShellSettings.DefaultShellName);
 
                 await scope.UsingAsync(async (scope) =>
                 {

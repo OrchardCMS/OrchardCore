@@ -18,7 +18,7 @@ namespace OrchardCore.Search.Lucene.Handlers
 {
     public class LuceneIndexingContentHandler : ContentHandlerBase
     {
-        private readonly List<ContentContextBase> _contexts = new List<ContentContextBase>();
+        private readonly List<ContentContextBase> _contexts = new();
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public LuceneIndexingContentHandler(IHttpContextAccessor httpContextAccessor)
@@ -67,6 +67,7 @@ namespace OrchardCore.Search.Lucene.Handlers
             var luceneIndexManager = services.GetRequiredService<LuceneIndexManager>();
             var luceneIndexSettingsService = services.GetRequiredService<LuceneIndexSettingsService>();
             var logger = services.GetRequiredService<ILogger<LuceneIndexingContentHandler>>();
+
             // Multiple items may have been updated in the same scope, e.g through a recipe.
             var contextsGroupById = contexts.GroupBy(c => c.ContentItem.ContentItemId, c => c);
 
@@ -83,7 +84,7 @@ namespace OrchardCore.Search.Lucene.Handlers
                 {
                     var cultureAspect = await contentManager.PopulateAspectAsync<CultureAspect>(context.ContentItem);
                     var culture = cultureAspect.HasCulture ? cultureAspect.Culture.Name : null;
-                    var ignoreIndexedCulture = indexSettings.Culture == "any" ? false : culture != indexSettings.Culture;
+                    var ignoreIndexedCulture = indexSettings.Culture != "any" && culture != indexSettings.Culture;
 
                     if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType) && !ignoreIndexedCulture)
                     {

@@ -11,7 +11,6 @@ using Microsoft.Extensions.Options;
 using OrchardCore.AutoSetup.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 using OrchardCore.Routing;
 
@@ -86,7 +85,7 @@ namespace OrchardCore.AutoSetup
         /// </param>
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            if (_shellSettings.State == TenantState.Uninitialized)
+            if (_shellSettings.IsUninitialized())
             {
                 var options = serviceProvider.GetRequiredService<IOptions<AutoSetupOptions>>().Value;
                 if (!options.ConfigurationExists)
