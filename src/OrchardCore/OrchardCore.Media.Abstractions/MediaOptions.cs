@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -29,6 +30,11 @@ namespace OrchardCore.Media
         /// The maximum number of days a cached resized media item will be valid for, before being rebuilt on request.
         /// </summary>
         public int MaxCacheDays { get; set; }
+
+        /// <summary>
+        /// The lifetime of a resized media whose cache has expired, if no value is provided there is no cache cleanup.
+        /// </summary>
+        public TimeSpan? InvalidCacheLifetime { get; set; }
 
         /// <summary>
         /// The maximum size of an uploaded file in bytes.

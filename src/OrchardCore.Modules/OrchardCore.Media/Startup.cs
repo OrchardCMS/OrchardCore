@@ -73,7 +73,9 @@ namespace OrchardCore.Media
         {
             services.AddSingleton<IAnchorTag, MediaAnchorTag>();
 
-            services.AddSingleton<IBackgroundTask, ImageSharpCacheBackgroundTask>();
+            // Resized and remote media caches cleanups.
+            services.AddSingleton<IBackgroundTask, ResizedImageCacheBackgroundTask>();
+            services.AddSingleton<IBackgroundTask, RemoteImageCacheBackgroundTask>();
 
             services.Configure<TemplateOptions>(o =>
             {
