@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Media.Core;
@@ -20,11 +21,13 @@ public class RemoteImageCacheBackgroundTask : IBackgroundTask
     private readonly ILogger _logger;
 
     private readonly string _cachePath;
+    private readonly bool _cacheCleanup;
 
     public RemoteImageCacheBackgroundTask(
         ShellSettings shellSettings,
         IMediaFileStore mediaFileStore,
         IWebHostEnvironment webHostEnvironment,
+        IOptions<MediaOptions> mediaOptions,
         ILogger<RemoteImageCacheBackgroundTask> logger)
     {
         _mediaFileStore = mediaFileStore;
@@ -34,6 +37,7 @@ public class RemoteImageCacheBackgroundTask : IBackgroundTask
             shellSettings.Name,
             DefaultMediaFileStoreCacheFileProvider.AssetsCachePath);
 
+        _cacheCleanup = mediaOptions.Value.RemoteCacheCleanup;
         _logger = logger;
     }
 
@@ -41,8 +45,8 @@ public class RemoteImageCacheBackgroundTask : IBackgroundTask
     {
         try
         {
-            // Check if the cache exists.
-            if (!Directory.Exists(_cachePath))
+            // Check if the cache exists and should be cleaned.
+            if (!_cacheCleanup || !Directory.Exists(_cachePath))
             {
                 return;
             }
