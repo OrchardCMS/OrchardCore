@@ -216,6 +216,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{184139CF
 	ProjectSection(SolutionItems) = preProject
 		src\OrchardCore.Build\Dependencies.AspNetCore.props = src\OrchardCore.Build\Dependencies.AspNetCore.props
 		src\OrchardCore.Build\Dependencies.props = src\OrchardCore.Build\Dependencies.props
+		Directory.Build.props = Directory.Build.props
 		src\OrchardCore\Directory.Build.targets = src\OrchardCore\Directory.Build.targets
 		NuGet.config = NuGet.config
 		src\OrchardCore.Build\OrchardCore.Commons.props = src\OrchardCore.Build\OrchardCore.Commons.props
@@ -297,8 +298,16 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Application.Pages", "test\OrchardCore.Tests.Pages\OrchardCore.Application.Pages\OrchardCore.Application.Pages.csproj", "{4521E800-BFA3-4A62-8F1A-658B179D7E41}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Themes.Pages", "OrchardCore.Themes.Pages", "{102FB182-10BB-4A7C-B4BE-EE7DC74565B7}"
+	ProjectSection(SolutionItems) = preProject
+		test\OrchardCore.Tests.Pages\OrchardCore.Themes.Pages\Directory.Build.props = test\OrchardCore.Tests.Pages\OrchardCore.Themes.Pages\Directory.Build.props
+		test\OrchardCore.Tests.Pages\OrchardCore.Themes.Pages\Directory.Build.targets = test\OrchardCore.Tests.Pages\OrchardCore.Themes.Pages\Directory.Build.targets
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrchardCore.Modules.Pages", "OrchardCore.Modules.Pages", "{1547C14D-17C9-488E-A9F2-D81AD602B8A7}"
+	ProjectSection(SolutionItems) = preProject
+		test\OrchardCore.Tests.Pages\OrchardCore.Modules.Pages\Directory.Build.props = test\OrchardCore.Tests.Pages\OrchardCore.Modules.Pages\Directory.Build.props
+		test\OrchardCore.Tests.Pages\OrchardCore.Modules.Pages\Directory.Build.targets = test\OrchardCore.Tests.Pages\OrchardCore.Modules.Pages\Directory.Build.targets
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Theme.Pages", "test\OrchardCore.Tests.Pages\OrchardCore.Themes.Pages\Theme.Pages\Theme.Pages.csproj", "{3D437344-AD44-400D-890F-B6508ED82695}"
 EndProject

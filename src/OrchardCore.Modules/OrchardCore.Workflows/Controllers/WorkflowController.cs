@@ -72,7 +72,7 @@ namespace OrchardCore.Workflows.Controllers
 
         private dynamic New { get; }
 
-        public async Task<IActionResult> Index(int workflowTypeId, WorkflowIndexViewModel model, PagerParameters pagerParameters, string returnUrl = null)
+        public async Task<IActionResult> Index(long workflowTypeId, WorkflowIndexViewModel model, PagerParameters pagerParameters, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -162,7 +162,7 @@ namespace OrchardCore.Workflows.Controllers
             });
         }
 
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(long id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -222,7 +222,7 @@ namespace OrchardCore.Workflows.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(long id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -245,7 +245,7 @@ namespace OrchardCore.Workflows.Controllers
         [HttpPost]
         [ActionName(nameof(Index))]
         [FormValueRequired("submit.BulkAction")]
-        public async Task<IActionResult> BulkEdit(int workflowTypeId, WorkflowIndexOptions options, PagerParameters pagerParameters, IEnumerable<int> itemIds)
+        public async Task<IActionResult> BulkEdit(long workflowTypeId, WorkflowIndexOptions options, PagerParameters pagerParameters, IEnumerable<long> itemIds)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -279,7 +279,7 @@ namespace OrchardCore.Workflows.Controllers
             return RedirectToAction(nameof(Index), new { workflowTypeId, pagenum = pagerParameters.Page, pagesize = pagerParameters.PageSize });
         }
 
-        private async Task<dynamic> BuildActivityDisplayAsync(ActivityContext activityContext, int workflowTypeId, bool isBlocking, string displayType)
+        private async Task<dynamic> BuildActivityDisplayAsync(ActivityContext activityContext, long workflowTypeId, bool isBlocking, string displayType)
         {
             dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity, _updateModelAccessor.ModelUpdater, displayType);
             activityShape.Metadata.Type = $"Activity_{displayType}ReadOnly";

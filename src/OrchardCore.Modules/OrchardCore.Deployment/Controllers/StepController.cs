@@ -46,7 +46,7 @@ namespace OrchardCore.Deployment.Controllers
             H = htmlLocalizer;
         }
 
-        public async Task<IActionResult> Create(int id, string type)
+        public async Task<IActionResult> Create(long id, string type)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
@@ -124,7 +124,7 @@ namespace OrchardCore.Deployment.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Edit(int id, string stepId)
+        public async Task<IActionResult> Edit(long id, string stepId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
@@ -199,7 +199,7 @@ namespace OrchardCore.Deployment.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(int id, string stepId)
+        public async Task<IActionResult> Delete(long id, string stepId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
@@ -229,7 +229,7 @@ namespace OrchardCore.Deployment.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateOrder(int id, int oldIndex, int newIndex)
+        public async Task<IActionResult> UpdateOrder(long id, int oldIndex, int newIndex)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {

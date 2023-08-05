@@ -22,12 +22,12 @@ namespace OrchardCore.Workflows.Services
             _logger = logger;
         }
 
-        public Task<WorkflowType> GetAsync(int id)
+        public Task<WorkflowType> GetAsync(long id)
         {
             return _session.GetAsync<WorkflowType>(id);
         }
 
-        public Task<IEnumerable<WorkflowType>> GetAsync(IEnumerable<int> ids)
+        public Task<IEnumerable<WorkflowType>> GetAsync(IEnumerable<long> ids)
         {
             return _session.GetAsync<WorkflowType>(ids.ToArray());
         }
