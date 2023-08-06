@@ -22,7 +22,8 @@ public class ResizedMediaCacheBackgroundTask : IBackgroundTask
 
     private readonly string _cachePath;
     private readonly string _cacheFolder;
-    private readonly TimeSpan? _cacheMaxAge;
+    private readonly TimeSpan _cacheMaxAge;
+    private readonly TimeSpan? _cacheMaxStale;
     private readonly bool _cacheCleanup;
 
     public ResizedMediaCacheBackgroundTask(
@@ -37,9 +38,11 @@ public class ResizedMediaCacheBackgroundTask : IBackgroundTask
 
         if (mediaOptions.Value.CacheMaxStale.HasValue)
         {
-            _cacheMaxAge = middlewareOptions.Value.CacheMaxAge + mediaOptions.Value.CacheMaxStale.Value;
+            _cacheMaxStale = middlewareOptions.Value.CacheMaxAge + mediaOptions.Value.CacheMaxStale.Value;
         }
 
+        _cacheMaxAge = middlewareOptions.Value.CacheMaxAge;
+        _cacheMaxStale = mediaOptions.Value.CacheMaxStale;
         _cacheCleanup = mediaOptions.Value.CacheCleanup;
         _logger = logger;
     }
@@ -47,21 +50,21 @@ public class ResizedMediaCacheBackgroundTask : IBackgroundTask
     public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
         // Ensure that the cache folder exists and should be cleaned.
-        if (!_cacheCleanup || !_cacheMaxAge.HasValue || !Directory.Exists(_cachePath))
+        if (!_cacheCleanup || !_cacheMaxStale.HasValue || !Directory.Exists(_cachePath))
         {
             return Task.CompletedTask;
         }
 
-        var maxAge = DateTimeOffset.UtcNow - _cacheMaxAge;
+        var minAge = DateTimeOffset.UtcNow - _cacheMaxAge - _cacheMaxStale.Value;
         try
         {
             // Lookup for all '*.meta' files.
             var files = Directory.GetFiles(_cachePath, "*.meta", _enumerationOptions);
             foreach (var file in files)
             {
-                // Check if the cache is not stale.
+                // Check if the file is too recent.
                 var fileInfo = new FileInfo(file);
-                if (fileInfo.LastWriteTimeUtc > maxAge)
+                if (fileInfo.LastWriteTimeUtc > minAge)
                 {
                     continue;
                 }

@@ -73,7 +73,7 @@ namespace OrchardCore.Media
         {
             services.AddSingleton<IAnchorTag, MediaAnchorTag>();
 
-            // Resized and remote media caches cleanups.
+            // Resized media and remote media caches cleanups.
             services.AddSingleton<IBackgroundTask, ResizedMediaCacheBackgroundTask>();
             services.AddSingleton<IBackgroundTask, RemoteMediaCacheBackgroundTask>();
 

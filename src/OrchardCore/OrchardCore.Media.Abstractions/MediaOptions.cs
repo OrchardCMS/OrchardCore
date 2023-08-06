@@ -32,19 +32,14 @@ namespace OrchardCore.Media
         public int MaxCacheDays { get; set; }
 
         /// <summary>
-        /// The lifetime of a cached resized media that has expired, if no value is provided there is no cache cleanup.
-        /// </summary>
-        public TimeSpan? CacheMaxStale { get; set; }
-
-        /// <summary>
-        /// Wether or not the resized media cache is cleanup if the max age of an invalid resized media has expired.
+        /// Wether or not the resized media and remote media caches cleanups are done periodically.
         /// </summary>
         public bool CacheCleanup { get; set; }
 
         /// <summary>
-        /// Wether or not the remote media cache is cleanup if a related remote media no longer exists or was updated.
+        /// The time before a staled media item is removed from the cache, if null no cleanup.
         /// </summary>
-        public bool RemoteCacheCleanup { get; set; }
+        public TimeSpan? CacheMaxStale { get; set; }
 
         /// <summary>
         /// The maximum size of an uploaded file in bytes.

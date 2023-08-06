@@ -22,6 +22,7 @@ public class RemoteMediaCacheBackgroundTask : IBackgroundTask
     private readonly ILogger _logger;
 
     private readonly string _cachePath;
+    private readonly TimeSpan? _cacheMaxStale;
     private readonly bool _cacheCleanup;
 
     public RemoteMediaCacheBackgroundTask(
@@ -38,26 +39,39 @@ public class RemoteMediaCacheBackgroundTask : IBackgroundTask
             shellSettings.Name,
             DefaultMediaFileStoreCacheFileProvider.AssetsCachePath);
 
-        _cacheCleanup = mediaOptions.Value.RemoteCacheCleanup;
+        _cacheMaxStale = mediaOptions.Value.CacheMaxStale.Value;
+        _cacheCleanup = mediaOptions.Value.CacheCleanup;
         _logger = logger;
     }
 
     public async Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
         // Ensure that the cache folder exists and should be cleaned.
-        if (!_cacheCleanup ||
-            serviceProvider.GetService<IMediaFileStoreCache>() is null ||
-            !Directory.Exists(_cachePath))
+        if (!_cacheCleanup || !_cacheMaxStale.HasValue || !Directory.Exists(_cachePath))
         {
             return;
         }
 
+        // Ensure that a remote media cache has been registered.
+        if (serviceProvider.GetService<IMediaFileStoreCache>() is null)
+        {
+            return;
+        }
+
+        var maxStale = _cacheMaxStale.Value;
+        var minAge = DateTimeOffset.UtcNow - maxStale;
         try
         {
             var directories = Directory.GetDirectories(_cachePath, "*", _enumerationOptions);
             foreach (var directory in directories)
             {
+                // Check if the directory is too recent.
                 var directoryInfo = new DirectoryInfo(directory);
+                if (directoryInfo.LastWriteTimeUtc > minAge)
+                {
+                    continue;
+                }
+
                 var path = Path.GetRelativePath(_cachePath, directoryInfo.FullName);
 
                 // Check if the remote directory no longer exists.
@@ -71,13 +85,18 @@ public class RemoteMediaCacheBackgroundTask : IBackgroundTask
             var files = Directory.GetFiles(_cachePath, "*", _enumerationOptions);
             foreach (var file in files)
             {
+                // Check if the file is too recent.
                 var fileInfo = new FileInfo(file);
+                if (fileInfo.LastWriteTimeUtc > minAge)
+                {
+                    continue;
+                }
+
                 var path = Path.GetRelativePath(_cachePath, fileInfo.FullName);
 
                 // Check if the remote media no longer exists or was updated.
                 var entry = await _mediaFileStore.GetFileInfoAsync(path);
-                if (entry is null ||
-                    entry.LastModifiedUtc > fileInfo.LastWriteTimeUtc)
+                if (entry is null || entry.LastModifiedUtc > (fileInfo.LastWriteTimeUtc + maxStale))
                 {
                     File.Delete(fileInfo.FullName);
                 }
