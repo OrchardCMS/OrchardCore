@@ -32,12 +32,7 @@ namespace OrchardCore.Media
         public int MaxCacheDays { get; set; }
 
         /// <summary>
-        /// Wether or not the resized media and remote media caches cleanups are done periodically.
-        /// </summary>
-        public bool CacheCleanup { get; set; }
-
-        /// <summary>
-        /// The time before a staled media item is removed from the cache, if null no cleanup.
+        /// The time before a staled media item is removed from its cache, if no value is provided there is no cleanup.
         /// </summary>
         public TimeSpan? CacheMaxStale { get; set; }
 

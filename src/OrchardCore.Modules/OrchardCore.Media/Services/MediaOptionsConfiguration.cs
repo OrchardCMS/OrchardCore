@@ -83,7 +83,6 @@ namespace OrchardCore.Media.Services
 
             options.MaxBrowserCacheDays = section.GetValue("MaxBrowserCacheDays", DefaultMaxBrowserCacheDays);
             options.MaxCacheDays = section.GetValue("MaxCacheDays", DefaultMaxCacheDays);
-            options.CacheCleanup = section.GetValue<bool>(nameof(options.CacheCleanup));
             options.CacheMaxStale = section.GetValue<TimeSpan?>(nameof(options.CacheMaxStale));
             options.MaxFileSize = section.GetValue("MaxFileSize", DefaultMaxFileSize);
             options.CdnBaseUrl = section.GetValue("CdnBaseUrl", String.Empty).TrimEnd('/').ToLower();

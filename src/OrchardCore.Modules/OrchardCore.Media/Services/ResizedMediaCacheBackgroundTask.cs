@@ -24,7 +24,6 @@ public class ResizedMediaCacheBackgroundTask : IBackgroundTask
     private readonly string _cacheFolder;
     private readonly TimeSpan _cacheMaxAge;
     private readonly TimeSpan? _cacheMaxStale;
-    private readonly bool _cacheCleanup;
 
     public ResizedMediaCacheBackgroundTask(
         IWebHostEnvironment webHostEnvironment,
@@ -35,27 +34,21 @@ public class ResizedMediaCacheBackgroundTask : IBackgroundTask
     {
         _cachePath = Path.Combine(webHostEnvironment.WebRootPath, cacheOptions.Value.CacheFolder);
         _cacheFolder = Path.GetFileName(cacheOptions.Value.CacheFolder);
-
-        if (mediaOptions.Value.CacheMaxStale.HasValue)
-        {
-            _cacheMaxStale = middlewareOptions.Value.CacheMaxAge + mediaOptions.Value.CacheMaxStale.Value;
-        }
-
         _cacheMaxAge = middlewareOptions.Value.CacheMaxAge;
         _cacheMaxStale = mediaOptions.Value.CacheMaxStale;
-        _cacheCleanup = mediaOptions.Value.CacheCleanup;
         _logger = logger;
     }
 
     public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
         // Ensure that the cache folder exists and should be cleaned.
-        if (!_cacheCleanup || !_cacheMaxStale.HasValue || !Directory.Exists(_cachePath))
+        if (!_cacheMaxStale.HasValue || !Directory.Exists(_cachePath))
         {
             return Task.CompletedTask;
         }
 
-        var minAge = DateTimeOffset.UtcNow - _cacheMaxAge - _cacheMaxStale.Value;
+        // the time from which a cache item is too recent to be removed.
+        var recentTimeUtc = DateTimeOffset.UtcNow - _cacheMaxAge - _cacheMaxStale.Value;
         try
         {
             // Lookup for all '*.meta' files.
@@ -64,7 +57,7 @@ public class ResizedMediaCacheBackgroundTask : IBackgroundTask
             {
                 // Check if the file is too recent.
                 var fileInfo = new FileInfo(file);
-                if (fileInfo.LastWriteTimeUtc > minAge)
+                if (fileInfo.LastWriteTimeUtc > recentTimeUtc)
                 {
                     continue;
                 }

@@ -23,7 +23,6 @@ public class RemoteMediaCacheBackgroundTask : IBackgroundTask
 
     private readonly string _cachePath;
     private readonly TimeSpan? _cacheMaxStale;
-    private readonly bool _cacheCleanup;
 
     public RemoteMediaCacheBackgroundTask(
         ShellSettings shellSettings,
@@ -39,18 +38,19 @@ public class RemoteMediaCacheBackgroundTask : IBackgroundTask
             shellSettings.Name,
             DefaultMediaFileStoreCacheFileProvider.AssetsCachePath);
 
-        _cacheMaxStale = mediaOptions.Value.CacheMaxStale.Value;
-        _cacheCleanup = mediaOptions.Value.CacheCleanup;
+        _cacheMaxStale = mediaOptions.Value.CacheMaxStale;
         _logger = logger;
     }
 
     public async Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
         // Ensure that the cache folder exists and should be cleaned.
-        if (!_cacheCleanup || !_cacheMaxStale.HasValue || !Directory.Exists(_cachePath))
+        if (!_cacheMaxStale.HasValue || !Directory.Exists(_cachePath))
         {
             return;
         }
+
+        var maxStale = _cacheMaxStale.Value;
 
         // Ensure that a remote media cache has been registered.
         if (serviceProvider.GetService<IMediaFileStoreCache>() is null)
@@ -58,16 +58,17 @@ public class RemoteMediaCacheBackgroundTask : IBackgroundTask
             return;
         }
 
-        var maxStale = _cacheMaxStale.Value;
-        var minAge = DateTimeOffset.UtcNow - maxStale;
+        // the time from which a cache item is too recent to be removed.
+        var recentTimeUtc = DateTimeOffset.UtcNow - maxStale;
         try
         {
+            // Lookup for all cache directories.
             var directories = Directory.GetDirectories(_cachePath, "*", _enumerationOptions);
             foreach (var directory in directories)
             {
                 // Check if the directory is too recent.
                 var directoryInfo = new DirectoryInfo(directory);
-                if (directoryInfo.LastWriteTimeUtc > minAge)
+                if (directoryInfo.LastWriteTimeUtc > recentTimeUtc)
                 {
                     continue;
                 }
@@ -82,12 +83,13 @@ public class RemoteMediaCacheBackgroundTask : IBackgroundTask
                 }
             }
 
+            // Lookup for all cache files.
             var files = Directory.GetFiles(_cachePath, "*", _enumerationOptions);
             foreach (var file in files)
             {
                 // Check if the file is too recent.
                 var fileInfo = new FileInfo(file);
-                if (fileInfo.LastWriteTimeUtc > minAge)
+                if (fileInfo.LastWriteTimeUtc > recentTimeUtc)
                 {
                     continue;
                 }
