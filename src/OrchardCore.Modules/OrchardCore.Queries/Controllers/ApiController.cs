@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System;
+
 
 namespace OrchardCore.Queries.Controllers
 {
@@ -27,7 +29,9 @@ namespace OrchardCore.Queries.Controllers
 
         [HttpPost, HttpGet]
         [Route("{name}")]
-        public async Task<IActionResult> Query(string name)
+        public async Task<IActionResult> Query(
+            string name,
+            string parameters)
         {
             var query = await _queryManager.GetQueryAsync(name);
 
@@ -43,30 +47,21 @@ namespace OrchardCore.Queries.Controllers
                 return NotFound();
             }
 
-            string parameters;
-            if (Request.Method == "GET")
+            if (Request.Method == "POST")
             {
-                parameters = Request.Query["parameters"].ToString();
-            }
-            else if (Request.Method == "POST")
-            {
-                using (var reader = new StreamReader(Request.Body, Encoding.UTF8))
+                if (String.IsNullOrEmpty(parameters))
                 {
+                    using var reader = new StreamReader(Request.Body, Encoding.UTF8);
                     parameters = await reader.ReadToEndAsync();
                 }
             }
-            else
-            {
-                return BadRequest("Invalid request method");
-            }
 
-            var queryParameters = !string.IsNullOrEmpty(parameters) ?
+            var queryParameters = !String.IsNullOrEmpty(parameters) ?
                 JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                 : new Dictionary<string, object>();
 
             var result = await _queryManager.ExecuteQueryAsync(query, queryParameters);
             return new ObjectResult(result);
         }
-
     }
 }
