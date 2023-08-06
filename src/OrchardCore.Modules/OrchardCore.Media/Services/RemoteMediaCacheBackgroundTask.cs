@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundTasks;
@@ -13,7 +14,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.Media.Services;
 
 [BackgroundTask(Schedule = "* * * * *", Description = "'Remote image cache cleanup.")]
-public class RemoteImageCacheBackgroundTask : IBackgroundTask
+public class RemoteMediaCacheBackgroundTask : IBackgroundTask
 {
     private static readonly EnumerationOptions _enumerationOptions = new() { RecurseSubdirectories = true };
 
@@ -23,12 +24,12 @@ public class RemoteImageCacheBackgroundTask : IBackgroundTask
     private readonly string _cachePath;
     private readonly bool _cacheCleanup;
 
-    public RemoteImageCacheBackgroundTask(
+    public RemoteMediaCacheBackgroundTask(
         ShellSettings shellSettings,
         IMediaFileStore mediaFileStore,
         IWebHostEnvironment webHostEnvironment,
         IOptions<MediaOptions> mediaOptions,
-        ILogger<RemoteImageCacheBackgroundTask> logger)
+        ILogger<RemoteMediaCacheBackgroundTask> logger)
     {
         _mediaFileStore = mediaFileStore;
 
@@ -43,21 +44,23 @@ public class RemoteImageCacheBackgroundTask : IBackgroundTask
 
     public async Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
+        // Ensure that the cache folder exists and should be cleaned.
+        if (!_cacheCleanup ||
+            serviceProvider.GetService<IMediaFileStoreCache>() is null ||
+            !Directory.Exists(_cachePath))
+        {
+            return;
+        }
+
         try
         {
-            // Check if the cache exists and should be cleaned.
-            if (!_cacheCleanup || !Directory.Exists(_cachePath))
-            {
-                return;
-            }
-
             var directories = Directory.GetDirectories(_cachePath, "*", _enumerationOptions);
             foreach (var directory in directories)
             {
                 var directoryInfo = new DirectoryInfo(directory);
                 var path = Path.GetRelativePath(_cachePath, directoryInfo.FullName);
 
-                // Check if the remote directory still exists.
+                // Check if the remote directory no longer exists.
                 var entry = await _mediaFileStore.GetDirectoryInfoAsync(path);
                 if (entry is null)
                 {
@@ -71,7 +74,7 @@ public class RemoteImageCacheBackgroundTask : IBackgroundTask
                 var fileInfo = new FileInfo(file);
                 var path = Path.GetRelativePath(_cachePath, fileInfo.FullName);
 
-                // Check if the remote image still exists or was updated.
+                // Check if the remote media no longer exists or was updated.
                 var entry = await _mediaFileStore.GetFileInfoAsync(path);
                 if (entry is null ||
                     entry.LastModifiedUtc > fileInfo.LastWriteTimeUtc)

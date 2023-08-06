@@ -34,7 +34,12 @@ namespace OrchardCore.Media
         /// <summary>
         /// The lifetime of a cached resized media that has expired, if no value is provided there is no cache cleanup.
         /// </summary>
-        public TimeSpan? InvalidCacheLifetime { get; set; }
+        public TimeSpan? CacheMaxStale { get; set; }
+
+        /// <summary>
+        /// Wether or not the resized media cache is cleanup if the max age of an invalid resized media has expired.
+        /// </summary>
+        public bool CacheCleanup { get; set; }
 
         /// <summary>
         /// Wether or not the remote media cache is cleanup if a related remote media no longer exists or was updated.

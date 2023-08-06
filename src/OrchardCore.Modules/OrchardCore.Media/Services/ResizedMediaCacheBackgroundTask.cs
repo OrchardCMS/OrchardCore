@@ -14,7 +14,7 @@ using SixLabors.ImageSharp.Web.Middleware;
 namespace OrchardCore.Media.Services;
 
 [BackgroundTask(Schedule = "* * * * *", Description = "'Resized image cache cleanup.")]
-public class ResizedImageCacheBackgroundTask : IBackgroundTask
+public class ResizedMediaCacheBackgroundTask : IBackgroundTask
 {
     private static readonly EnumerationOptions _enumerationOptions = new() { RecurseSubdirectories = true };
 
@@ -23,41 +23,45 @@ public class ResizedImageCacheBackgroundTask : IBackgroundTask
     private readonly string _cachePath;
     private readonly string _cacheFolder;
     private readonly TimeSpan? _cacheMaxAge;
+    private readonly bool _cacheCleanup;
 
-    public ResizedImageCacheBackgroundTask(
+    public ResizedMediaCacheBackgroundTask(
         IWebHostEnvironment webHostEnvironment,
         IOptions<MediaOptions> mediaOptions,
         IOptions<ImageSharpMiddlewareOptions> middlewareOptions,
         IOptions<PhysicalFileSystemCacheOptions> cacheOptions,
-        ILogger<ResizedImageCacheBackgroundTask> logger)
+        ILogger<ResizedMediaCacheBackgroundTask> logger)
     {
         _cachePath = Path.Combine(webHostEnvironment.WebRootPath, cacheOptions.Value.CacheFolder);
         _cacheFolder = Path.GetFileName(cacheOptions.Value.CacheFolder);
 
-        if (mediaOptions.Value.InvalidCacheLifetime.HasValue)
+        if (mediaOptions.Value.CacheMaxStale.HasValue)
         {
-            _cacheMaxAge = middlewareOptions.Value.CacheMaxAge + mediaOptions.Value.InvalidCacheLifetime.Value;
+            _cacheMaxAge = middlewareOptions.Value.CacheMaxAge + mediaOptions.Value.CacheMaxStale.Value;
         }
 
+        _cacheCleanup = mediaOptions.Value.CacheCleanup;
         _logger = logger;
     }
 
     public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
+        // Ensure that the cache folder exists and should be cleaned.
+        if (!_cacheCleanup || !_cacheMaxAge.HasValue || !Directory.Exists(_cachePath))
+        {
+            return Task.CompletedTask;
+        }
+
+        var maxAge = DateTimeOffset.UtcNow - _cacheMaxAge;
         try
         {
-            // Check if the cache exists and should be cleaned.
-            if (!_cacheMaxAge.HasValue || !Directory.Exists(_cachePath))
-            {
-                return Task.CompletedTask;
-            }
-
+            // Lookup for all '*.meta' files.
             var files = Directory.GetFiles(_cachePath, "*.meta", _enumerationOptions);
             foreach (var file in files)
             {
-                // Check from the meta file if the cache is still valid.
+                // Check if the cache is not stale.
                 var fileInfo = new FileInfo(file);
-                if (fileInfo.LastWriteTimeUtc > (DateTimeOffset.UtcNow - _cacheMaxAge))
+                if (fileInfo.LastWriteTimeUtc > maxAge)
                 {
                     continue;
                 }
