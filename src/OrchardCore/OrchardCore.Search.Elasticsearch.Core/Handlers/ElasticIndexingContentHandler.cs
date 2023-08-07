@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.BackgroundJobs;
 using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
@@ -52,7 +53,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Handlers
                 var contexts = _contexts;
 
                 // Using a local var prevents the lambda from holding a ref on this scoped service.
-                ShellScope.AddDeferredTask(scope => IndexingAsync(scope, contexts));
+                HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(nameof(ElasticIndexingContentHandler), scope => IndexingAsync(scope, contexts));
             }
 
             _contexts.Add(context);
