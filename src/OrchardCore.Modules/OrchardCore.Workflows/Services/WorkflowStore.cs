@@ -56,7 +56,7 @@ namespace OrchardCore.Workflows.Services
             return _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowTypeId.IsIn(workflowTypeIds)).ListAsync();
         }
 
-        public Task<Workflow> GetAsync(int id)
+        public Task<Workflow> GetAsync(long id)
         {
             return _session.GetAsync<Workflow>(id);
         }
@@ -71,7 +71,7 @@ namespace OrchardCore.Workflows.Services
             return _session.Query<Workflow, WorkflowBlockingActivitiesIndex>(x => x.WorkflowId.IsIn(workflowIds)).ListAsync();
         }
 
-        public Task<IEnumerable<Workflow>> GetAsync(IEnumerable<int> ids)
+        public Task<IEnumerable<Workflow>> GetAsync(IEnumerable<long> ids)
         {
             return _session.GetAsync<Workflow>(ids.ToArray());
         }

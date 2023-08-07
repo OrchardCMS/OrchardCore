@@ -80,7 +80,7 @@ namespace OrchardCore.Workflows.Http.Activities
 
             foreach (var header in headers)
             {
-                response.Headers.Add(header);
+                response.Headers.Append(header.Key, header.Value);
             }
 
             if (!String.IsNullOrWhiteSpace(contentType))

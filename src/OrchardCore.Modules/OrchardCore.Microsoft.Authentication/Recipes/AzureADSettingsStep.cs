@@ -8,7 +8,7 @@ using OrchardCore.Recipes.Services;
 namespace OrchardCore.Microsoft.Authentication.Recipes
 {
     /// <summary>
-    /// This recipe step sets general OpenID Connect Client settings.
+    /// This recipe step sets general Microsoft Entra ID settings.
     /// </summary>
     public class AzureADSettingsStep : IRecipeStepHandler
     {

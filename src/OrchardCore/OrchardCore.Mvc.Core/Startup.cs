@@ -91,9 +91,6 @@ namespace OrchardCore.Mvc
             // System.Text.Json. Here, we manually add JSON.NET based formatters.
             builder.AddNewtonsoftJson();
 
-#if !NET6_0_OR_GREATER
-            builder.SetCompatibilityVersion(CompatibilityVersion.Latest);
-#endif
             services.AddModularRazorPages();
 
             AddModularFrameworkParts(_serviceProvider, builder.PartManager);
