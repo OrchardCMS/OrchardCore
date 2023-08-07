@@ -13,7 +13,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Services;
 
-[BackgroundTask(Schedule = "* * * * *", Description = "'Remote image cache cleanup.")]
+[BackgroundTask(Schedule = "* * * * *", Description = "'Remote media cache cleanup.")]
 public class RemoteMediaCacheBackgroundTask : IBackgroundTask
 {
     private static readonly EnumerationOptions _enumerationOptions = new() { RecurseSubdirectories = true };
@@ -38,7 +38,7 @@ public class RemoteMediaCacheBackgroundTask : IBackgroundTask
             shellSettings.Name,
             DefaultMediaFileStoreCacheFileProvider.AssetsCachePath);
 
-        _cacheMaxStale = mediaOptions.Value.CacheMaxStale;
+        _cacheMaxStale = mediaOptions.Value.RemoteCacheMaxStale;
         _logger = logger;
     }
 
@@ -58,24 +58,25 @@ public class RemoteMediaCacheBackgroundTask : IBackgroundTask
             return;
         }
 
-        // the time from which a cache item is too recent to be removed.
-        var recentTimeUtc = DateTimeOffset.UtcNow - maxStale;
+        // The min write time for an item to be retained in the cache,
+        // without having to get the item info from the remote store.
+        var minWriteTimeUtc = DateTimeOffset.UtcNow - maxStale;
         try
         {
             // Lookup for all cache directories.
             var directories = Directory.GetDirectories(_cachePath, "*", _enumerationOptions);
             foreach (var directory in directories)
             {
-                // Check if the directory is too recent.
+                // Check if the directory is retained.
                 var directoryInfo = new DirectoryInfo(directory);
-                if (directoryInfo.LastWriteTimeUtc > recentTimeUtc)
+                if (directoryInfo.LastWriteTimeUtc > minWriteTimeUtc)
                 {
                     continue;
                 }
 
                 var path = Path.GetRelativePath(_cachePath, directoryInfo.FullName);
 
-                // Check if the remote directory no longer exists.
+                // Check if the remote directory doesn't exist.
                 var entry = await _mediaFileStore.GetDirectoryInfoAsync(path);
                 if (entry is null)
                 {
@@ -87,16 +88,16 @@ public class RemoteMediaCacheBackgroundTask : IBackgroundTask
             var files = Directory.GetFiles(_cachePath, "*", _enumerationOptions);
             foreach (var file in files)
             {
-                // Check if the file is too recent.
+                // Check if the file is retained.
                 var fileInfo = new FileInfo(file);
-                if (fileInfo.LastWriteTimeUtc > recentTimeUtc)
+                if (fileInfo.LastWriteTimeUtc > minWriteTimeUtc)
                 {
                     continue;
                 }
 
                 var path = Path.GetRelativePath(_cachePath, fileInfo.FullName);
 
-                // Check if the remote media no longer exists or was updated.
+                // Check if the remote media doesn't exist or was updated.
                 var entry = await _mediaFileStore.GetFileInfoAsync(path);
                 if (entry is null || entry.LastModifiedUtc > (fileInfo.LastWriteTimeUtc + maxStale))
                 {
@@ -113,7 +114,7 @@ public class RemoteMediaCacheBackgroundTask : IBackgroundTask
             {
                 _logger.LogWarning(
                     ex,
-                    "Sharing violation while cleaning the remote image cache at '{CachePath}'.",
+                    "Sharing violation while cleaning the remote media cache at '{CachePath}'.",
                     _cachePath);
             }
         }
@@ -121,7 +122,7 @@ public class RemoteMediaCacheBackgroundTask : IBackgroundTask
         {
             _logger.LogError(
                 ex,
-                "Failed to clean the remote image cache at '{CachePath}'.",
+                "Failed to clean the remote media cache at '{CachePath}'.",
                 _cachePath);
         }
 

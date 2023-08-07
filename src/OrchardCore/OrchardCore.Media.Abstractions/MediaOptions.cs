@@ -32,9 +32,14 @@ namespace OrchardCore.Media
         public int MaxCacheDays { get; set; }
 
         /// <summary>
-        /// The time before a staled media item is removed from its cache, if no value is provided there is no cleanup.
+        /// The time before a staled item is removed from the resized media cache, if not provided there is no cleanup.
         /// </summary>
-        public TimeSpan? CacheMaxStale { get; set; }
+        public TimeSpan? ResizedCacheMaxStale { get; set; }
+
+        /// <summary>
+        /// The time before a staled remote media item is removed from the cache, if not provided there is no cleanup.
+        /// </summary>
+        public TimeSpan? RemoteCacheMaxStale { get; set; }
 
         /// <summary>
         /// The maximum size of an uploaded file in bytes.

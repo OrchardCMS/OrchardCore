@@ -13,7 +13,7 @@ using SixLabors.ImageSharp.Web.Middleware;
 
 namespace OrchardCore.Media.Services;
 
-[BackgroundTask(Schedule = "* * * * *", Description = "'Resized image cache cleanup.")]
+[BackgroundTask(Schedule = "* * * * *", Description = "'Resized media cache cleanup.")]
 public class ResizedMediaCacheBackgroundTask : IBackgroundTask
 {
     private static readonly EnumerationOptions _enumerationOptions = new() { RecurseSubdirectories = true };
@@ -35,7 +35,7 @@ public class ResizedMediaCacheBackgroundTask : IBackgroundTask
         _cachePath = Path.Combine(webHostEnvironment.WebRootPath, cacheOptions.Value.CacheFolder);
         _cacheFolder = Path.GetFileName(cacheOptions.Value.CacheFolder);
         _cacheMaxAge = middlewareOptions.Value.CacheMaxAge;
-        _cacheMaxStale = mediaOptions.Value.CacheMaxStale;
+        _cacheMaxStale = mediaOptions.Value.ResizedCacheMaxStale;
         _logger = logger;
     }
 
@@ -47,25 +47,25 @@ public class ResizedMediaCacheBackgroundTask : IBackgroundTask
             return Task.CompletedTask;
         }
 
-        // the time from which a cache item is too recent to be removed.
-        var recentTimeUtc = DateTimeOffset.UtcNow - _cacheMaxAge - _cacheMaxStale.Value;
+        // The min write time for an item to be retained in the cache.
+        var minWriteTimeUtc = DateTime.UtcNow.Subtract(_cacheMaxAge + _cacheMaxStale.Value);
         try
         {
-            // Lookup for all '*.meta' files.
+            // Lookup for all meta files.
             var files = Directory.GetFiles(_cachePath, "*.meta", _enumerationOptions);
             foreach (var file in files)
             {
-                // Check if the file is too recent.
+                // Check if the file is retained.
                 var fileInfo = new FileInfo(file);
-                if (fileInfo.LastWriteTimeUtc > recentTimeUtc)
+                if (fileInfo.LastWriteTimeUtc > minWriteTimeUtc)
                 {
                     continue;
                 }
 
-                // Delete the folder including the resized image.
+                // Delete the folder including the media item.
                 Directory.Delete(fileInfo.DirectoryName, true);
 
-                // Delete all new empty parent directories.
+                // Delete new empty parent directories.
                 var parent = fileInfo.Directory.Parent;
                 while (parent is not null && parent.Name != _cacheFolder)
                 {
@@ -88,7 +88,7 @@ public class ResizedMediaCacheBackgroundTask : IBackgroundTask
             {
                 _logger.LogWarning(
                     ex,
-                    "Sharing violation while cleaning the resized image cache at '{CachePath}'.",
+                    "Sharing violation while cleaning the resized media cache at '{CachePath}'.",
                     _cachePath);
             }
         }
@@ -96,7 +96,7 @@ public class ResizedMediaCacheBackgroundTask : IBackgroundTask
         {
             _logger.LogError(
                 ex,
-                "Failed to clean the resized image cache at '{CachePath}'.",
+                "Failed to clean the resized media cache at '{CachePath}'.",
                 _cachePath);
         }
 

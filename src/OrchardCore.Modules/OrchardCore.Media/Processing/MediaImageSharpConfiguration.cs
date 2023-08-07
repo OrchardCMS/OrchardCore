@@ -23,10 +23,10 @@ namespace OrchardCore.Media.Processing
         public void Configure(ImageSharpMiddlewareOptions options)
         {
             options.Configuration = Configuration.Default;
-            options.BrowserMaxAge = TimeSpan.FromDays(_mediaOptions.MaxBrowserCacheDays);
-            options.CacheMaxAge = TimeSpan.FromDays(_mediaOptions.MaxCacheDays);
-            //options.BrowserMaxAge = TimeSpan.FromSeconds(10);
-            //options.CacheMaxAge = TimeSpan.FromSeconds(30);
+            //options.BrowserMaxAge = TimeSpan.FromDays(_mediaOptions.MaxBrowserCacheDays);
+            //options.CacheMaxAge = TimeSpan.FromDays(_mediaOptions.MaxCacheDays);
+            options.BrowserMaxAge = TimeSpan.FromSeconds(10);
+            options.CacheMaxAge = TimeSpan.FromSeconds(30);
             options.CacheHashLength = 12;
             options.OnParseCommandsAsync = context =>
             {
