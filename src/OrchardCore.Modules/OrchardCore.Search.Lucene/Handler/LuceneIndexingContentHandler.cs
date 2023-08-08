@@ -51,7 +51,9 @@ namespace OrchardCore.Search.Lucene.Handlers
             {
                 var contexts = _contexts;
 
-                HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(nameof(LuceneIndexingContentHandler), scope => IndexingAsync(scope, contexts));
+                HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(
+                    nameof(LuceneIndexingContentHandler),
+                    scope => IndexingAsync(scope, contexts));
             }
 
             _contexts.Add(context);

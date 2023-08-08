@@ -53,7 +53,9 @@ namespace OrchardCore.Search.Elasticsearch.Core.Handlers
                 var contexts = _contexts;
 
                 // Using a local var prevents the lambda from holding a ref on this scoped service.
-                HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(nameof(ElasticIndexingContentHandler), scope => IndexingAsync(scope, contexts));
+                HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(
+                    nameof(ElasticIndexingContentHandler),
+                    scope => IndexingAsync(scope, contexts));
             }
 
             _contexts.Add(context);
