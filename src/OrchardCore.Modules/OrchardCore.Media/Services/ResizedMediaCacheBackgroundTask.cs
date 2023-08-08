@@ -57,7 +57,7 @@ public class ResizedMediaCacheBackgroundTask : IBackgroundTask
             {
                 // Check if the file is retained.
                 var fileInfo = new FileInfo(file);
-                if (fileInfo.LastWriteTimeUtc > minWriteTimeUtc)
+                if (!fileInfo.Exists || fileInfo.LastWriteTimeUtc > minWriteTimeUtc)
                 {
                     continue;
                 }
@@ -72,7 +72,7 @@ public class ResizedMediaCacheBackgroundTask : IBackgroundTask
                     Directory.Delete(parent.FullName);
 
                     parent = parent.Parent;
-                    if (parent.EnumerateFileSystemInfos().Any())
+                    if (!parent.Exists || parent.EnumerateFileSystemInfos().Any())
                     {
                         break;
                     }

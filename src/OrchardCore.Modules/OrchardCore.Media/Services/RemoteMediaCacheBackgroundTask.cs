@@ -50,8 +50,6 @@ public class RemoteMediaCacheBackgroundTask : IBackgroundTask
             return;
         }
 
-        var maxStale = _cacheMaxStale.Value;
-
         // Ensure that a remote media cache has been registered.
         if (serviceProvider.GetService<IMediaFileStoreCache>() is null)
         {
@@ -60,7 +58,7 @@ public class RemoteMediaCacheBackgroundTask : IBackgroundTask
 
         // The min write time for an item to be retained in the cache,
         // without having to get the item info from the remote store.
-        var minWriteTimeUtc = DateTimeOffset.UtcNow - maxStale;
+        var minWriteTimeUtc = DateTimeOffset.UtcNow - _cacheMaxStale.Value;
         try
         {
             // Lookup for all cache directories.
@@ -69,7 +67,7 @@ public class RemoteMediaCacheBackgroundTask : IBackgroundTask
             {
                 // Check if the directory is retained.
                 var directoryInfo = new DirectoryInfo(directory);
-                if (directoryInfo.LastWriteTimeUtc > minWriteTimeUtc)
+                if (!directoryInfo.Exists || directoryInfo.LastWriteTimeUtc > minWriteTimeUtc)
                 {
                     continue;
                 }
@@ -90,7 +88,7 @@ public class RemoteMediaCacheBackgroundTask : IBackgroundTask
             {
                 // Check if the file is retained.
                 var fileInfo = new FileInfo(file);
-                if (fileInfo.LastWriteTimeUtc > minWriteTimeUtc)
+                if (!fileInfo.Exists || fileInfo.LastWriteTimeUtc > minWriteTimeUtc)
                 {
                     continue;
                 }
@@ -99,7 +97,9 @@ public class RemoteMediaCacheBackgroundTask : IBackgroundTask
 
                 // Check if the remote media doesn't exist or was updated.
                 var entry = await _mediaFileStore.GetFileInfoAsync(path);
-                if (entry is null || entry.LastModifiedUtc > (fileInfo.LastWriteTimeUtc + maxStale))
+                if (entry is null ||
+                    (entry.LastModifiedUtc > fileInfo.LastWriteTimeUtc &&
+                    entry.LastModifiedUtc < minWriteTimeUtc))
                 {
                     File.Delete(fileInfo.FullName);
                 }
