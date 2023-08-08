@@ -81,6 +81,10 @@ namespace OrchardCore.Tests.Apis.Context
                 TenantName = tenantName;
             }
 
+            // Search indexes are no longer updated in a deferred task at the end of a shell scope
+            // but in a background job after the http request, so they are not already up to date.
+            await Task.Delay(1_500);
+
             if (PermissionsContext != null)
             {
                 var permissionContextKey = Guid.NewGuid().ToString();

@@ -33,6 +33,10 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
 
             await context.PostRecipeAsync(recipe);
 
+            // Search indexes are no longer updated in a deferred task at the end of a shell scope
+            // but in a background job after the http request, so they are not already up to date.
+            await Task.Delay(1_500);
+
             // Test
             var result = await context
                 .GraphQLClient
