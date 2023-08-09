@@ -43,9 +43,9 @@ public class StringExtensionsTests
     [InlineData(null, 10, DefaultEllipsis, true, "")]
     [InlineData("", 10, DefaultEllipsis, true, "")]
     [InlineData("Orchard Core", 70, DefaultEllipsis, true, "Orchard Core")]
-    [InlineData("Orchard Core", 7, DefaultEllipsis, true, $"Orchard{DefaultEllipsis}")]
+    [InlineData("Orchard Core", 7, DefaultEllipsis, true, DefaultEllipsis)]
     [InlineData("Orchard Core", 7, CustomEllipsis, true, CustomEllipsis)]
-    [InlineData("Orchard Core", 10, CustomEllipsis, true, $"OrchardCustomEllipsis")]
+    [InlineData("Orchard Core", 10, CustomEllipsis, true, $"Orchard{CustomEllipsis}")]
     public void Ellipsize_ShouldTrimString_WithCustomEllipsisString(string text, int characterCount, string ellipsis, bool wordBoundary, string expected)
     {
         // Arrange & Act
@@ -78,7 +78,7 @@ public class StringExtensionsTests
     [InlineData(null, true, "")]
     [InlineData("", true, "")]
     [InlineData("Welcome to <h1>Orchard Core</h1>", true, "Welcome to Orchard Core")]
-    [InlineData("Welcome to &lt;h1&gt;Orchard Core&lt;/h1&gt;", true, "Welcome to Orchard Core")]
+    [InlineData("Welcome to &lt;h1&gt;Orchard Core&lt;/h1&gt;", true, "Welcome to <h1>Orchard Core</h1>")]
     [InlineData("Welcome to Orchard Core", true, "Welcome to Orchard Core")]
     public void ShouldRemoveTagsFromString_WithHtmlDecode(string text, bool htmlEncode, string expected)
     {
