@@ -11,6 +11,24 @@ namespace OrchardCore.ContentManagement.Utilities
 {
     public static class StringExtensions
     {
+        private static readonly char[] _validSegmentChars = "/?#[]@\"^{}|`<>\t\r\n\f ".ToCharArray();
+
+        private static readonly HashSet<string> _reservedNames = new(StringComparer.OrdinalIgnoreCase)
+        {
+            nameof(ContentItem.Id),
+            nameof(ContentItem.ContentItemId),
+            nameof(ContentItem.ContentItemVersionId),
+            nameof(ContentItem.ContentType),
+            nameof(ContentItem.Published),
+            nameof(ContentItem.Latest),
+            nameof(ContentItem.ModifiedUtc),
+            nameof(ContentItem.PublishedUtc),
+            nameof(ContentItem.CreatedUtc),
+            nameof(ContentItem.Owner),
+            nameof(ContentItem.Author),
+            nameof(ContentItem.DisplayText),
+        };
+
         public static string CamelFriendly(this string camel)
         {
             // optimize common cases
@@ -70,11 +88,9 @@ namespace OrchardCore.ContentManagement.Utilities
         }
 
         public static LocalizedString OrDefault(this string text, LocalizedString defaultValue)
-        {
-            return String.IsNullOrEmpty(text)
+            => String.IsNullOrEmpty(text)
                 ? defaultValue
                 : new LocalizedString(null, text);
-        }
 
         public static string RemoveTags(this string html, bool htmlDecode = false)
         {
@@ -119,16 +135,12 @@ namespace OrchardCore.ContentManagement.Utilities
 
         // not accounting for only \r (e.g. Apple OS 9 carriage return only new lines)
         public static string ReplaceNewLinesWith(this string text, string replacement)
-        {
-            return String.IsNullOrWhiteSpace(text)
-                       ? String.Empty
-                       : text
-                             .Replace("\r\n", "\r\r")
-                             .Replace("\n", String.Format(replacement, "\r\n"))
-                             .Replace("\r\r", String.Format(replacement, "\r\n"));
-        }
+            => String.IsNullOrWhiteSpace(text)
+                ? String.Empty
+                : text.Replace("\r\n", "\r\r")
+                    .Replace("\n", String.Format(replacement, "\r\n"))
+                    .Replace("\r\r", String.Format(replacement, "\r\n"));
 
-        private static readonly char[] _validSegmentChars = "/?#[]@\"^{}|`<>\t\r\n\f ".ToCharArray();
         public static bool IsValidUrlSegment(this string segment)
         {
             // valid isegment from rfc3987 - http://tools.ietf.org/html/rfc3987#page-8
@@ -180,22 +192,6 @@ namespace OrchardCore.ContentManagement.Utilities
             return name;
         }
 
-        private static readonly HashSet<string> _reservedNames = new(StringComparer.OrdinalIgnoreCase)
-        {
-            nameof(ContentItem.Id),
-            nameof(ContentItem.ContentItemId),
-            nameof(ContentItem.ContentItemVersionId),
-            nameof(ContentItem.ContentType),
-            nameof(ContentItem.Published),
-            nameof(ContentItem.Latest),
-            nameof(ContentItem.ModifiedUtc),
-            nameof(ContentItem.PublishedUtc),
-            nameof(ContentItem.CreatedUtc),
-            nameof(ContentItem.Owner),
-            nameof(ContentItem.Author),
-            nameof(ContentItem.DisplayText),
-        };
-
         public static bool IsReservedContentName(this string name)
         {
             if (_reservedNames.Contains(name))
@@ -209,15 +205,9 @@ namespace OrchardCore.ContentManagement.Utilities
         /// <summary>
         /// Whether the char is a letter between A and Z or not
         /// </summary>
-        public static bool IsLetter(this char c)
-        {
-            return ('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z');
-        }
+        public static bool IsLetter(this char c) => ('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z');
 
-        public static bool IsSpace(this char c)
-        {
-            return (c == '\r' || c == '\n' || c == '\t' || c == '\f' || c == ' ');
-        }
+        public static bool IsSpace(this char c) => (c == '\r' || c == '\n' || c == '\t' || c == '\f' || c == ' ');
 
         public static string RemoveDiacritics(this string name)
         {
@@ -367,13 +357,16 @@ namespace OrchardCore.ContentManagement.Utilities
         public static string ReplaceAll(this string original, IDictionary<string, string> replacements)
         {
             var pattern = $"{String.Join("|", replacements.Keys)}";
+
             return Regex.Replace(original, pattern, match => replacements[match.Value]);
         }
 
         public static string TrimEnd(this string rough, string trim = "")
         {
             if (rough == null)
+            {
                 return null;
+            }
 
             return rough.EndsWith(trim, StringComparison.Ordinal)
                        ? rough[..^trim.Length]
@@ -383,6 +376,7 @@ namespace OrchardCore.ContentManagement.Utilities
         public static string ReplaceLastOccurrence(this string source, string find, string replace)
         {
             var place = source.LastIndexOf(find, StringComparison.Ordinal);
+
             return source.Remove(place, find.Length).Insert(place, replace);
         }
     }
