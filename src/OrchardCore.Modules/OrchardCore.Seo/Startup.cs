@@ -7,6 +7,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -16,7 +17,6 @@ using OrchardCore.Seo.Indexes;
 using OrchardCore.Seo.Models;
 using OrchardCore.Seo.Services;
 using OrchardCore.SeoMeta.Settings;
-using YesSql.Indexes;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Seo
