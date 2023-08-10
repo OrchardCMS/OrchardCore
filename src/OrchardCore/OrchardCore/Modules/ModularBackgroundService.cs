@@ -108,7 +108,7 @@ namespace OrchardCore.Modules
             {
                 var tenant = shell.Settings.Name;
 
-                _httpContextAccessor.HttpContext = shell.CreateHttpContext();
+                _httpContextAccessor.HttpContext = shell.CreateHttpContext(false);
 
                 var schedulers = GetSchedulersToRun(tenant);
                 foreach (var scheduler in schedulers)
@@ -149,6 +149,21 @@ namespace OrchardCore.Modules
                         var tenantPipelineInitializer = scope.ServiceProvider.GetRequiredService<TenantPipelineInitializer>();
 
                         await tenantPipelineInitializer.InitializeAsync(_httpContextAccessor.HttpContext, shell, new FeatureCollection());
+
+                        var siteService = scope.ServiceProvider.GetService<ISiteService>();
+                        if (siteService is not null)
+                        {
+                            try
+                            {
+                                // 'SetBaseUrl' is called after initializing the `HttpContext` to allow the `BaseUrl` to take precedence.
+
+                                _httpContextAccessor.HttpContext.SetBaseUrl((await siteService.GetSiteSettingsAsync()).BaseUrl);
+                            }
+                            catch (Exception ex) when (!ex.IsFatal())
+                            {
+                                _logger.LogError(ex, "Error while getting the base url from the site settings of the tenant '{TenantName}'.", tenant);
+                            }
+                        }
 
                         var context = new BackgroundTaskEventContext(taskName, scope);
                         var handlers = scope.ServiceProvider.GetServices<IBackgroundTaskEventHandler>();

@@ -24,14 +24,12 @@ namespace OrchardCore.Modules
             // Define a new 'PathBase' for the current request based on the tenant 'RequestUrlPrefix'.
             // Because IIS or another middleware might have already set it, we just append the prefix.
             // This allows to use any helper accepting the '~/' path to resolve the tenant's base url.
-            if (!httpContext.Items.ContainsKey("IsHttpPathConfigured") && !String.IsNullOrEmpty(shellContext.Settings.RequestUrlPrefix))
+            if (!String.IsNullOrEmpty(shellContext.Settings.RequestUrlPrefix))
             {
                 PathString prefix = '/' + shellContext.Settings.RequestUrlPrefix;
                 httpContext.Request.PathBase += prefix;
                 httpContext.Request.Path.StartsWithSegments(prefix, StringComparison.OrdinalIgnoreCase, out var remainingPath);
                 httpContext.Request.Path = remainingPath;
-
-                httpContext.Items.Add("IsHttpPathConfigured", true);
             }
 
             // Do we need to rebuild the pipeline?

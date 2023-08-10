@@ -11,9 +11,9 @@ public static class ShellContextExtensions
 {
     private const string _localhost = "localhost";
 
-    public static HttpContext CreateHttpContext(this ShellContext shell)
+    public static HttpContext CreateHttpContext(this ShellContext shell, bool setPathBase = true)
     {
-        var context = CreateHttpContext(shell.Settings);
+        var context = CreateHttpContext(shell.Settings, setPathBase);
         context.Features.Set(new ShellContextFeature
         {
             ShellContext = shell,
@@ -24,7 +24,7 @@ public static class ShellContextExtensions
         return context;
     }
 
-    private static HttpContext CreateHttpContext(ShellSettings settings)
+    private static HttpContext CreateHttpContext(ShellSettings settings, bool setPathBase)
     {
         var context = new DefaultHttpContext().UseShellScopeServices();
 
@@ -32,14 +32,13 @@ public static class ShellContextExtensions
         var urlHost = settings.RequestUrlHosts.FirstOrDefault();
         context.Request.Host = new HostString(urlHost ?? _localhost);
 
-        if (!String.IsNullOrWhiteSpace(settings.RequestUrlPrefix))
+        if (setPathBase && !String.IsNullOrWhiteSpace(settings.RequestUrlPrefix))
         {
             context.Request.PathBase = "/" + settings.RequestUrlPrefix;
         }
 
         context.Request.Path = "/";
         context.Items["IsBackground"] = true;
-        context.Items["IsHttpPathConfigured"] = true;
 
         return context;
     }
