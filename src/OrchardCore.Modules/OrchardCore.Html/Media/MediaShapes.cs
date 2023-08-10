@@ -3,7 +3,6 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Html.Media
 {
-    [Feature("OrchardCore.Html")]
     [RequireFeatures("OrchardCore.Media")]
     public class MediaShapes : IShapeTableProvider
     {

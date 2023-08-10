@@ -4,12 +4,10 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
-using OrchardCore.Modules;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Navigation
 {
-    [Feature("OrchardCore.Navigation")]
     public class NavigationShapes : IShapeTableProvider
     {
         public void Discover(ShapeTableBuilder builder)

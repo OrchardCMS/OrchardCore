@@ -10,7 +10,6 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Liquid.Services
 {
-    [Feature("OrchardCore.Liquid")]
     [RequireFeatures("OrchardCore.Contents")]
     public class LiquidShapes : IShapeTableProvider
     {

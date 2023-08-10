@@ -4,7 +4,6 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.ContentFields.Media
 {
-    [Feature("OrchardCore.ContentFields")]
     [RequireFeatures("OrchardCore.Media")]
     public class MediaShapes : IShapeTableProvider
     {
