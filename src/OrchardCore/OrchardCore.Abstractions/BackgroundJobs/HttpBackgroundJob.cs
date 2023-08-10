@@ -27,7 +27,7 @@ public static class HttpBackgroundJob
 
         // Can't be executed outside the context of a real http request scope.
         var httpContextAccessor = scope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-        if (httpContextAccessor.HttpContext == null || httpContextAccessor.HttpContext.Items.TryGetValue("IsBackground", out _))
+        if (httpContextAccessor.HttpContext == null || httpContextAccessor.HttpContext.Items.ContainsKey("IsBackground"))
         {
             return Task.CompletedTask;
         }
@@ -87,6 +87,9 @@ public static class HttpBackgroundJob
                         scope.ShellContext.Settings.Name);
                 }
             });
+
+            // Clear the 'HttpContext' for this async flow.
+            httpContextAccessor.HttpContext = null;
         });
 
         return Task.CompletedTask;

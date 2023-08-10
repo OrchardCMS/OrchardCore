@@ -1,3 +1,6 @@
+using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
@@ -99,6 +102,22 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddOptions<BackgroundServiceOptions>()
                 .Configure<IConfiguration>((options, config) => config
                     .Bind("OrchardCore:OrchardCore_BackgroundService", options));
+
+            builder.Configure(app =>
+            {
+                app.Use((context, next) =>
+                {
+                    // If running in the background.
+                    if (context.Items.ContainsKey("IsBackground"))
+                    {
+                        // Shortcut the pipeline.
+                        return Task.CompletedTask;
+                    }
+
+                    return next(context);
+                });
+            },
+            order: Int32.MinValue);
 
             return builder;
         }
