@@ -146,23 +146,9 @@ namespace OrchardCore.Modules
                             return;
                         }
 
-                        var siteService = scope.ServiceProvider.GetService<ISiteService>();
-                        if (siteService is not null)
-                        {
-                            try
-                            {
-                                _httpContextAccessor.HttpContext.SetBaseUrl((await siteService.GetSiteSettingsAsync()).BaseUrl);
-                            }
-                            catch (Exception ex) when (!ex.IsFatal())
-                            {
-                                _logger.LogError(ex, "Error while getting the base url from the site settings of the tenant '{TenantName}'.", tenant);
-                            }
-                        }
-
                         var tenantPipelineInitializer = scope.ServiceProvider.GetRequiredService<TenantPipelineInitializer>();
-                        var features = scope.ServiceProvider.GetRequiredService<IFeatureCollection>();
 
-                        await tenantPipelineInitializer.InitializeAsync(_httpContextAccessor.HttpContext, shell, features);
+                        await tenantPipelineInitializer.InitializeAsync(_httpContextAccessor.HttpContext, shell, new FeatureCollection());
 
                         var context = new BackgroundTaskEventContext(taskName, scope);
                         var handlers = scope.ServiceProvider.GetServices<IBackgroundTaskEventHandler>();

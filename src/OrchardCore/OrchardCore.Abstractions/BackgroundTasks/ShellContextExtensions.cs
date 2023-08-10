@@ -39,6 +39,7 @@ public static class ShellContextExtensions
 
         context.Request.Path = "/";
         context.Items["IsBackground"] = true;
+        context.Items["IsHttpPathConfigured"] = true;
 
         return context;
     }
