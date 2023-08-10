@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
@@ -157,6 +158,11 @@ namespace OrchardCore.Modules
                                 _logger.LogError(ex, "Error while getting the base url from the site settings of the tenant '{TenantName}'.", tenant);
                             }
                         }
+
+                        var tenantPipelineInitializer = scope.ServiceProvider.GetRequiredService<TenantPipelineInitializer>();
+                        var features = scope.ServiceProvider.GetRequiredService<IFeatureCollection>();
+
+                        await tenantPipelineInitializer.InitializeAsync(_httpContextAccessor.HttpContext, shell, features);
 
                         var context = new BackgroundTaskEventContext(taskName, scope);
                         var handlers = scope.ServiceProvider.GetServices<IBackgroundTaskEventHandler>();

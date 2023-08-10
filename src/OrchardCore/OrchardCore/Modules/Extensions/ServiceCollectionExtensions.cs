@@ -146,6 +146,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
             services.AddScoped<IClientIPAddressAccessor, DefaultClientIPAddressAccessor>();
+            services.AddSingleton<TenantPipelineInitializer>();
 
             builder.ConfigureServices((services, serviceProvider) =>
             {
