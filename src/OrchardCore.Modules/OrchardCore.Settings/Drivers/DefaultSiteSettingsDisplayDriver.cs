@@ -14,33 +14,40 @@ namespace OrchardCore.Settings.Drivers
         public const string GroupId = "general";
 
         protected readonly IStringLocalizer S;
+
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
 
-        public DefaultSiteSettingsDisplayDriver(IStringLocalizer<DefaultSiteSettingsDisplayDriver> stringLocalizer,
+        public DefaultSiteSettingsDisplayDriver(
             IShellHost shellHost,
-            ShellSettings shellSettings)
+            ShellSettings shellSettings,
+            IStringLocalizer<DefaultSiteSettingsDisplayDriver> stringLocalizer)
         {
-            S = stringLocalizer;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
+            S = stringLocalizer;
         }
 
-        public override IDisplayResult Edit(ISite site)
+        public override Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
         {
-            return Initialize<SiteSettingsViewModel>("Settings_Edit", model =>
-            {
-                model.SiteName = site.SiteName;
-                model.PageTitleFormat = site.PageTitleFormat;
-                model.BaseUrl = site.BaseUrl;
-                model.TimeZone = site.TimeZoneId;
-                model.PageSize = site.PageSize;
-                model.UseCdn = site.UseCdn;
-                model.CdnBaseUrl = site.CdnBaseUrl;
-                model.ResourceDebugMode = site.ResourceDebugMode;
-                model.AppendVersion = site.AppendVersion;
-                model.CacheMode = site.CacheMode;
-            }).Location("Content:1").OnGroup(GroupId);
+            context.Shape.Metadata.Wrappers.Add("GeneralSettingsWrapper");
+
+            var result = Combine(
+
+                Initialize<SiteSettingsViewModel>("Settings_Edit", model => PopulateProperties(site, model))
+                    .Location("Content:1#Site;10")
+                    .OnGroup(GroupId),
+
+                Initialize<SiteSettingsViewModel>("SettingsResources_Edit", model => PopulateProperties(site, model))
+                    .Location("Content:1#Resources;20")
+                    .OnGroup(GroupId),
+
+                Initialize<SiteSettingsViewModel>("SettingsCache_Edit", model => PopulateProperties(site, model))
+                    .Location("Content:1#Cache;30")
+                    .OnGroup(GroupId)
+            );
+
+            return Task.FromResult<IDisplayResult>(result);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ISite site, UpdateEditorContext context)
@@ -84,7 +91,21 @@ namespace OrchardCore.Settings.Drivers
                 }
             }
 
-            return Edit(site);
+            return await EditAsync(site, context);
+        }
+
+        private static void PopulateProperties(ISite site, SiteSettingsViewModel model)
+        {
+            model.SiteName = site.SiteName;
+            model.PageTitleFormat = site.PageTitleFormat;
+            model.BaseUrl = site.BaseUrl;
+            model.TimeZone = site.TimeZoneId;
+            model.PageSize = site.PageSize;
+            model.UseCdn = site.UseCdn;
+            model.CdnBaseUrl = site.CdnBaseUrl;
+            model.ResourceDebugMode = site.ResourceDebugMode;
+            model.AppendVersion = site.AppendVersion;
+            model.CacheMode = site.CacheMode;
         }
     }
 }
