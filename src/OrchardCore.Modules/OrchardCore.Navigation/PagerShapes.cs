@@ -13,9 +13,11 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Navigation
 {
+    [Feature("OrchardCore.Navigation")]
     public class PagerShapesTableProvider : IShapeTableProvider
     {
         public void Discover(ShapeTableBuilder builder)

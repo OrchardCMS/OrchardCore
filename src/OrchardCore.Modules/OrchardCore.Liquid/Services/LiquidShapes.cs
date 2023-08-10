@@ -6,9 +6,12 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Liquid.ViewModels;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Liquid.Services
 {
+    [Feature("OrchardCore.Liquid")]
+    [RequireFeatures("OrchardCore.Contents")]
     public class LiquidShapes : IShapeTableProvider
     {
         private readonly HtmlEncoder _htmlEncoder;

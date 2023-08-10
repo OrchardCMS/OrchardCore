@@ -5,9 +5,11 @@ using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Contents
 {
+    [Feature("OrchardCore.Contents")]
     public class Shapes : IShapeTableProvider
     {
         public void Discover(ShapeTableBuilder builder)

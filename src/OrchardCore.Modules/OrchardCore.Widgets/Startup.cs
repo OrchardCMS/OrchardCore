@@ -29,9 +29,10 @@ namespace OrchardCore.Widgets
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            //Add Widget Card Shapes
+            // Add Widget Card Shapes.
             services.AddScoped<IShapeTableProvider, ContentCardShapes>();
-            // Widgets List Part
+
+            // Widgets List Part.
             services.AddContentPart<WidgetsListPart>()
                 .UseDisplayDriver<WidgetsListPartDisplayDriver>();
 

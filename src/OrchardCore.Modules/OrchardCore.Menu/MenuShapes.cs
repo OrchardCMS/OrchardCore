@@ -6,10 +6,12 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Menu.Models;
+using OrchardCore.Modules;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Menu
 {
+    [Feature("OrchardCore.Menu")]
     public class MenuShapes : IShapeTableProvider
     {
         public void Discover(ShapeTableBuilder builder)

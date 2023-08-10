@@ -7,12 +7,14 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.Modules;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Taxonomies.Models;
 using OrchardCore.Taxonomies.ViewModels;
 
 namespace OrchardCore.Taxonomies
 {
+    [Feature("OrchardCore.Taxonomies")]
     public class TermShapes : IShapeTableProvider
     {
         public void Discover(ShapeTableBuilder builder)

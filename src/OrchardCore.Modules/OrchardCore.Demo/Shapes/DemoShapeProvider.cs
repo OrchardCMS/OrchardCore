@@ -1,8 +1,10 @@
 using System.Text;
 using Microsoft.AspNetCore.Html;
+using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Descriptors
 {
+    [Feature("OrchardCore.Demo")]
     public class DemoShapeProvider : IShapeTableProvider, IShapeAttributeProvider
     {
         public void Discover(ShapeTableBuilder builder)

@@ -1,8 +1,10 @@
 using System;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Widgets
 {
+    [Feature("OrchardCore.Widgets")]
     public class ContentCardShapes : IShapeTableProvider
     {
         //Card Shape

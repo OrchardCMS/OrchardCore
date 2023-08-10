@@ -1,7 +1,10 @@
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Html.Media
 {
+    [Feature("OrchardCore.Html")]
+    [RequireFeatures("OrchardCore.Media")]
     public class MediaShapes : IShapeTableProvider
     {
         public void Discover(ShapeTableBuilder builder)

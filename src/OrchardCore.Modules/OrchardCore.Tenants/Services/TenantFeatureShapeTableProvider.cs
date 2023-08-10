@@ -1,10 +1,13 @@
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Modules;
 using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Services;
 
+[Feature("OrchardCore.Tenants")]
+[RequireFeatures("OrchardCore.Tenants", "OrchardCore.Features")]
 public class TenantFeatureShapeTableProvider : IShapeTableProvider
 {
     public void Discover(ShapeTableBuilder builder)
