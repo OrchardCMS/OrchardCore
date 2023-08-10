@@ -52,39 +52,39 @@ namespace OrchardCore.Modules.Manifest
         /// properties.</param>
         /// <param name="tags">Tags associated with the Module.</param>
         /// <param name="defaultTenant">Whether considered default tenant only.
-        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
+        /// Supported types are <see cref="String"/> and <see cref="Boolean"/> only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.
-        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
+        /// Supported types are <see cref="String"/> and <see cref="Boolean"/> only.</param>
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
         /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
-        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
+        /// Supported types are <see cref="String"/> and <see cref="Boolean"/> only.</param>
         public ModuleAttribute(
-            string id
-            , string description
-            , string author
-            , string semVer
-            , string websiteUrl
-            , string featureDependencies
-            , string tags
-            , object defaultTenant
-            , object alwaysEnabled
-            , object enabledByDependencyOnly
+            string id,
+            string description,
+            string author,
+            string semVer,
+            string websiteUrl,
+            string featureDependencies,
+            string tags,
+            object defaultTenant,
+            object alwaysEnabled,
+            object enabledByDependencyOnly
         ) : this(
-            id
-            , default
-            , default
-            , default
-            , description
-            , author
-            , semVer
-            , websiteUrl
-            , featureDependencies
-            , tags
-            , defaultTenant
-            , alwaysEnabled
-            , enabledByDependencyOnly
+            id,
+            default,
+            default,
+            default,
+            description,
+            author,
+            semVer,
+            websiteUrl,
+            featureDependencies,
+            tags,
+            defaultTenant,
+            alwaysEnabled,
+            enabledByDependencyOnly
         )
         {
         }
@@ -105,40 +105,40 @@ namespace OrchardCore.Modules.Manifest
         /// properties.</param>
         /// <param name="tags">Tags associated with the Module.</param>
         /// <param name="defaultTenant">Whether considered default tenant only.
-        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
+        /// Supported types are <see cref="String"/> and <see cref="Boolean"/> only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.
-        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
+        /// Supported types are <see cref="String"/> and <see cref="Boolean"/> only.</param>
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
         /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
-        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
+        /// Supported types are <see cref="String"/> and <see cref="Boolean"/> only.</param>
         public ModuleAttribute(
-            string id
-            , string name
-            , string description
-            , string author
-            , string semVer
-            , string websiteUrl
-            , string featureDependencies
-            , string tags
-            , object defaultTenant
-            , object alwaysEnabled
-            , object enabledByDependencyOnly
+            string id,
+            string name,
+            string description,
+            string author,
+            string semVer,
+            string websiteUrl,
+            string featureDependencies,
+            string tags,
+            object defaultTenant,
+            object alwaysEnabled,
+            object enabledByDependencyOnly
         ) : this(
-            id
-            , name
-            , default
-            , default
-            , description
-            , author
-            , semVer
-            , websiteUrl
-            , featureDependencies
-            , tags
-            , defaultTenant
-            , alwaysEnabled
-            , enabledByDependencyOnly
+            id,
+            name,
+            default,
+            default,
+            description,
+            author,
+            semVer,
+            websiteUrl,
+            featureDependencies,
+            tags,
+            defaultTenant,
+            alwaysEnabled,
+            enabledByDependencyOnly
         )
         {
         }
@@ -161,38 +161,38 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="websiteUrl">The module website URL.</param>
         /// <param name="tags">Tags associated with the Module.</param>
         /// <param name="defaultTenant">Whether considered default tenant only.
-        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
+        /// Supported types are <see cref="String"/> and <see cref="Boolean"/> only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.
-        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
+        /// Supported types are <see cref="String"/> and <see cref="Boolean"/> only.</param>
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
         /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
-        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
+        /// Supported types are <see cref="String"/> and <see cref="Boolean"/> only.</param>
         public ModuleAttribute(
-            string id
-            , string name
-            , string category
-            , string priority
-            , string description
-            , string author
-            , string semVer
-            , string websiteUrl
-            , string featureDependencies
-            , string tags
-            , object defaultTenant
-            , object alwaysEnabled
-            , object enabledByDependencyOnly
+            string id,
+            string name,
+            string category,
+            string priority,
+            string description,
+            string author,
+            string semVer,
+            string websiteUrl,
+            string featureDependencies,
+            string tags,
+            object defaultTenant,
+            object alwaysEnabled,
+            object enabledByDependencyOnly
         ) : base(
-            id
-            , name
-            , category
-            , priority
-            , description
-            , featureDependencies
-            , defaultTenant
-            , alwaysEnabled
-            , enabledByDependencyOnly
+            id,
+            name,
+            category,
+            priority,
+            description,
+            featureDependencies,
+            defaultTenant,
+            alwaysEnabled,
+            enabledByDependencyOnly
         )
         {
             Author = author;
@@ -220,43 +220,43 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="websiteUrl">The module website URL.</param>
         /// <param name="tags">Tags associated with the Module.</param>
         /// <param name="defaultTenant">Whether considered default tenant only.
-        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
+        /// Supported types are <see cref="String"/> and <see cref="Boolean"/> only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.
-        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
+        /// Supported types are <see cref="String"/> and <see cref="Boolean"/> only.</param>
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
         /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
-        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
+        /// Supported types are <see cref="String"/> and <see cref="Boolean"/> only.</param>
         public ModuleAttribute(
-            string id
-            , string name
-            , string type
-            , string category
-            , string priority
-            , string description
-            , string author
-            , string semVer
-            , string websiteUrl
-            , string featureDependencies
-            , string tags
-            , object defaultTenant
-            , object alwaysEnabled
-            , object enabledByDependencyOnly
+            string id,
+            string name,
+            string type,
+            string category,
+            string priority,
+            string description,
+            string author,
+            string semVer,
+            string websiteUrl,
+            string featureDependencies,
+            string tags,
+            object defaultTenant,
+            object alwaysEnabled,
+            object enabledByDependencyOnly
         ) : this(
-            id
-            , name
-            , category
-            , priority
-            , description
-            , author
-            , semVer
-            , websiteUrl
-            , featureDependencies
-            , tags
-            , defaultTenant
-            , alwaysEnabled
-            , enabledByDependencyOnly
+            id,
+            name,
+            category,
+            priority,
+            description,
+            author,
+            semVer,
+            websiteUrl,
+            featureDependencies,
+            tags,
+            defaultTenant,
+            alwaysEnabled,
+            enabledByDependencyOnly
         )
         {
             type = (type ?? String.Empty).Trim();
@@ -276,7 +276,7 @@ namespace OrchardCore.Modules.Manifest
             // Drops the 'Attribute' suffix from the conventional abbreviation, or leaves it alone
             static string GetTypeNamePrefix(string typeName) =>
                 typeName.EndsWith(attributeSuffix)
-                ? typeName.Substring(0, typeName.Length - attributeSuffix.Length)
+                ? typeName[..^attributeSuffix.Length]
                 : typeName
                 ;
 

@@ -10,7 +10,7 @@ namespace OrchardCore.ContentLocalization
     [Feature("OrchardCore.ContentLocalization.ContentCulturePicker")]
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
@@ -25,7 +25,7 @@ namespace OrchardCore.ContentLocalization
             }
 
             builder
-                .Add(S["Configuration"], localization => localization
+                .Add(S["Configuration"], configuration => configuration
                     .Add(S["Settings"], settings => settings
                         .Add(S["Localization"], localization => localization
                             .Add(S["Content Request Culture Provider"], S["Content Request Culture Provider"].PrefixPosition(), registration => registration

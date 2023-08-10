@@ -11,9 +11,9 @@ namespace OrchardCore.Tests.DisplayManagement
 {
     public class DefaultDisplayManagerTests
     {
-        private ShapeTable _defaultShapeTable;
-        private TestShapeBindingsDictionary _additionalBindings;
-        private IServiceProvider _serviceProvider;
+        private readonly ShapeTable _defaultShapeTable;
+        private readonly TestShapeBindingsDictionary _additionalBindings;
+        private readonly IServiceProvider _serviceProvider;
 
         public DefaultDisplayManagerTests()
         {

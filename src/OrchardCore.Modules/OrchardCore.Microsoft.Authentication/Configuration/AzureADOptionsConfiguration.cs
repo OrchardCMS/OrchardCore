@@ -1,22 +1,22 @@
 using System;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Options;
+using Microsoft.Identity.Web;
 using OrchardCore.Microsoft.Authentication.Settings;
+using MicrosoftIdentityDefaults = Microsoft.Identity.Web.Constants;
 
-#pragma warning disable CS0618
-// The net5.0 5.0.3 build obsoletes 'AzureADOptions' and 'AzureADDefaults', 'Microsoft.Identity.Web' should be used instead.
-// The build warning is disabled temporarily until the code can be migrated.
 
 namespace OrchardCore.Microsoft.Authentication.Configuration
 {
     public class AzureADOptionsConfiguration :
         IConfigureOptions<AuthenticationOptions>,
         IConfigureNamedOptions<PolicySchemeOptions>,
-        IConfigureNamedOptions<AzureADOptions>
+        IConfigureNamedOptions<MicrosoftIdentityOptions>
     {
+        public const string AzureAdOpenIdConnectScheme = MicrosoftIdentityDefaults.AzureAd + OpenIdConnectDefaults.AuthenticationScheme;
+
         private readonly AzureADSettings _azureADSettings;
 
         public AzureADOptionsConfiguration(IOptions<AzureADSettings> azureADSettings)
@@ -33,22 +33,21 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             }
 
             // Register the OpenID Connect client handler in the authentication handlers collection.
-            options.AddScheme(AzureADDefaults.AuthenticationScheme, builder =>
+            options.AddScheme(Constants.AzureAd, builder =>
             {
                 builder.DisplayName = settings.DisplayName;
                 builder.HandlerType = typeof(PolicySchemeHandler);
             });
 
-            options.AddScheme(AzureADDefaults.OpenIdScheme, builder =>
+            options.AddScheme(AzureAdOpenIdConnectScheme, builder =>
             {
-                builder.DisplayName = "";
                 builder.HandlerType = typeof(OpenIdConnectHandler);
             });
         }
 
-        public void Configure(string name, AzureADOptions options)
+        public void Configure(string name, MicrosoftIdentityOptions options)
         {
-            if (!String.Equals(name, AzureADDefaults.AuthenticationScheme))
+            if (!String.Equals(name, MicrosoftIdentityDefaults.AzureAd))
             {
                 return;
             }
@@ -69,21 +68,18 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             }
         }
 
-        public void Configure(AzureADOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
+        public void Configure(MicrosoftIdentityOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
 
         public void Configure(string name, PolicySchemeOptions options)
         {
-            if (!String.Equals(name, AzureADDefaults.AuthenticationScheme))
+            if (!String.Equals(name, MicrosoftIdentityDefaults.AzureAd))
             {
                 return;
             }
 
             options.ForwardDefault = "Identity.External";
-            options.ForwardChallenge = AzureADDefaults.OpenIdScheme;
+            options.ForwardChallenge = AzureAdOpenIdConnectScheme;
         }
         public void Configure(PolicySchemeOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
     }
 }
-
-// Restore the obsolete warning disabled above
-#pragma warning restore CS0618

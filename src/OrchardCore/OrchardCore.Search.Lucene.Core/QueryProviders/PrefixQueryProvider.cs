@@ -17,7 +17,7 @@ namespace OrchardCore.Search.Lucene.QueryProviders
 
             var first = query.Properties().First();
 
-            // A prefix query has only one member, which can either be a string or an object
+            // A prefix query has only one member, which can either be a string or an object.
 
             switch (first.Value.Type)
             {
@@ -25,7 +25,7 @@ namespace OrchardCore.Search.Lucene.QueryProviders
                     return new PrefixQuery(new Term(first.Name, first.Value.ToString()));
                 case JTokenType.Object:
                     var obj = (JObject)first.Value;
-                    PrefixQuery prefixQuery = null;
+                    PrefixQuery prefixQuery;
 
                     if (obj.TryGetValue("value", out var value))
                     {

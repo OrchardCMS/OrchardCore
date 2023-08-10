@@ -167,7 +167,7 @@ namespace OrchardCore.Lists.Services
             {
                 if (enableOrdering)
                 {
-                    var beforeValue = int.Parse(pager.Before);
+                    var beforeValue = Int32.Parse(pager.Before);
                     query = _session.Query<ContentItem>()
                         .With(CreateOrderedContainedPartIndexFilter(beforeValue, null, contentItemId))
                         .OrderByDescending(x => x.Order);
@@ -233,7 +233,7 @@ namespace OrchardCore.Lists.Services
                 }
                 else
                 {
-                    var afterValue = new DateTime(long.Parse(pager.After));
+                    var afterValue = new DateTime(Int64.Parse(pager.After));
                     query = _session.Query<ContentItem>()
                         .With(CreateOrderedContainedPartIndexFilter(null, null, contentItemId));
 

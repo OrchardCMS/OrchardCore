@@ -4,6 +4,7 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
 using OrchardCore.Media.Settings;
+using OrchardCore.Recipes;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Seo.Indexes;
 using YesSql.Sql;
@@ -47,7 +48,7 @@ namespace OrchardCore.Seo
 
         public async Task<int> UpdateFrom1Async()
         {
-            await _recipeMigrator.ExecuteAsync("socialmetasettings.recipe.json", this);
+            await _recipeMigrator.ExecuteAsync($"socialmetasettings{RecipesConstants.RecipeExtension}", this);
 
             return 2;
         }

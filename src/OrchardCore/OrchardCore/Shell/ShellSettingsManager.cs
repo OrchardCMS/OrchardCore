@@ -21,10 +21,10 @@ namespace OrchardCore.Environment.Shell
 
         private IConfiguration _configuration;
         private IEnumerable<string> _configuredTenants;
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+        private readonly SemaphoreSlim _semaphore = new(1);
 
         private Func<string, Task<IConfigurationBuilder>> _tenantConfigBuilderFactory;
-        private readonly SemaphoreSlim _tenantConfigSemaphore = new SemaphoreSlim(1);
+        private readonly SemaphoreSlim _tenantConfigSemaphore = new(1);
 
         public ShellSettingsManager(
             IConfiguration applicationConfiguration,

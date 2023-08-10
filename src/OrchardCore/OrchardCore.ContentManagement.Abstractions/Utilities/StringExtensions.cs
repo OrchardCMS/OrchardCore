@@ -14,7 +14,7 @@ namespace OrchardCore.ContentManagement.Utilities
         public static string CamelFriendly(this string camel)
         {
             // optimize common cases
-            if (string.IsNullOrWhiteSpace(camel))
+            if (String.IsNullOrWhiteSpace(camel))
             {
                 return "";
             }
@@ -23,7 +23,7 @@ namespace OrchardCore.ContentManagement.Utilities
             for (var i = 0; i < camel.Length; ++i)
             {
                 var c = camel[i];
-                if (i != 0 && char.IsUpper(c))
+                if (i != 0 && Char.IsUpper(c))
                 {
                     sb.Append(' ');
                 }
@@ -40,7 +40,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static string Ellipsize(this string text, int characterCount, string ellipsis, bool wordBoundary = false)
         {
-            if (string.IsNullOrWhiteSpace(text))
+            if (String.IsNullOrWhiteSpace(text))
                 return "";
 
             if (characterCount < 0 || text.Length <= characterCount)
@@ -65,46 +65,13 @@ namespace OrchardCore.ContentManagement.Utilities
                 characterCount = backup;
             }
 
-            var trimmed = text.Substring(0, characterCount);
+            var trimmed = text[..characterCount];
             return trimmed + ellipsis;
-        }
-
-        public static string HtmlClassify(this string text)
-        {
-            if (string.IsNullOrWhiteSpace(text))
-                return "";
-
-            var friendlier = text.CamelFriendly();
-
-            var result = new char[friendlier.Length];
-
-            var cursor = 0;
-            var previousIsNotLetter = false;
-            for (var i = 0; i < friendlier.Length; i++)
-            {
-                char current = friendlier[i];
-                if (IsLetter(current) || (char.IsDigit(current) && cursor > 0))
-                {
-                    if (previousIsNotLetter && i != 0 && cursor > 0)
-                    {
-                        result[cursor++] = '-';
-                    }
-
-                    result[cursor++] = char.ToLowerInvariant(current);
-                    previousIsNotLetter = false;
-                }
-                else
-                {
-                    previousIsNotLetter = true;
-                }
-            }
-
-            return new string(result, 0, cursor);
         }
 
         public static LocalizedString OrDefault(this string text, LocalizedString defaultValue)
         {
-            return string.IsNullOrEmpty(text)
+            return String.IsNullOrEmpty(text)
                 ? defaultValue
                 : new LocalizedString(null, text);
         }
@@ -122,7 +89,7 @@ namespace OrchardCore.ContentManagement.Utilities
             var inside = false;
             for (var i = 0; i < html.Length; i++)
             {
-                char current = html[i];
+                var current = html[i];
 
                 switch (current)
                 {
@@ -161,7 +128,7 @@ namespace OrchardCore.ContentManagement.Utilities
                              .Replace("\r\r", String.Format(replacement, "\r\n"));
         }
 
-        private static readonly char[] validSegmentChars = "/?#[]@\"^{}|`<>\t\r\n\f ".ToCharArray();
+        private static readonly char[] _validSegmentChars = "/?#[]@\"^{}|`<>\t\r\n\f ".ToCharArray();
         public static bool IsValidUrlSegment(this string segment)
         {
             // valid isegment from rfc3987 - http://tools.ietf.org/html/rfc3987#page-8
@@ -175,7 +142,7 @@ namespace OrchardCore.ContentManagement.Utilities
             //
             // rough blacklist regex == m/^[^/?#[]@"^{}|\s`<>]+$/ (leaving off % to keep the regex simple)
 
-            return !segment.Any(validSegmentChars);
+            return !segment.Any(_validSegmentChars);
         }
 
         /// <summary>
@@ -186,13 +153,15 @@ namespace OrchardCore.ContentManagement.Utilities
         /// </remarks>
         public static string ToSafeName(this string name)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                return string.Empty;
+            if (String.IsNullOrWhiteSpace(name))
+            {
+                return String.Empty;
+            }
 
             name = RemoveDiacritics(name);
             name = name.Strip(c =>
                 !c.IsLetter()
-                && !char.IsDigit(c)
+                && !Char.IsDigit(c)
                 );
 
             name = name.Trim();
@@ -200,16 +169,18 @@ namespace OrchardCore.ContentManagement.Utilities
             // don't allow non A-Z chars as first letter, as they are not allowed in prefixes
             while (name.Length > 0 && !IsLetter(name[0]))
             {
-                name = name.Substring(1);
+                name = name[1..];
             }
 
             if (name.Length > 128)
-                name = name.Substring(0, 128);
+            {
+                name = name[..128];
+            }
 
             return name;
         }
 
-        private static HashSet<string> _reservedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        private static readonly HashSet<string> _reservedNames = new(StringComparer.OrdinalIgnoreCase)
         {
             nameof(ContentItem.Id),
             nameof(ContentItem.ContentItemId),
@@ -222,7 +193,7 @@ namespace OrchardCore.ContentManagement.Utilities
             nameof(ContentItem.CreatedUtc),
             nameof(ContentItem.Owner),
             nameof(ContentItem.Author),
-            nameof(ContentItem.DisplayText)
+            nameof(ContentItem.DisplayText),
         };
 
         public static bool IsReservedContentName(this string name)
@@ -250,12 +221,12 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static string RemoveDiacritics(this string name)
         {
-            string stFormD = name.Normalize(NormalizationForm.FormD);
+            var stFormD = name.Normalize(NormalizationForm.FormD);
             var sb = new StringBuilder();
 
-            foreach (char t in stFormD)
+            foreach (var t in stFormD)
             {
-                UnicodeCategory uc = CharUnicodeInfo.GetUnicodeCategory(t);
+                var uc = CharUnicodeInfo.GetUnicodeCategory(t);
                 if (uc != UnicodeCategory.NonSpacingMark)
                 {
                     sb.Append(t);
@@ -267,7 +238,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static string Strip(this string subject, params char[] stripped)
         {
-            if (stripped == null || stripped.Length == 0 || string.IsNullOrEmpty(subject))
+            if (stripped == null || stripped.Length == 0 || String.IsNullOrEmpty(subject))
             {
                 return subject;
             }
@@ -277,7 +248,7 @@ namespace OrchardCore.ContentManagement.Utilities
             var cursor = 0;
             for (var i = 0; i < subject.Length; i++)
             {
-                char current = subject[i];
+                var current = subject[i];
                 if (Array.IndexOf(stripped, current) < 0)
                 {
                     result[cursor++] = current;
@@ -294,7 +265,7 @@ namespace OrchardCore.ContentManagement.Utilities
             var cursor = 0;
             for (var i = 0; i < subject.Length; i++)
             {
-                char current = subject[i];
+                var current = subject[i];
                 if (!predicate(current))
                 {
                     result[cursor++] = current;
@@ -306,14 +277,14 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static bool Any(this string subject, params char[] chars)
         {
-            if (string.IsNullOrEmpty(subject) || chars == null || chars.Length == 0)
+            if (String.IsNullOrEmpty(subject) || chars == null || chars.Length == 0)
             {
                 return false;
             }
 
             for (var i = 0; i < subject.Length; i++)
             {
-                char current = subject[i];
+                var current = subject[i];
                 if (Array.IndexOf(chars, current) >= 0)
                 {
                     return true;
@@ -325,7 +296,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static bool All(this string subject, params char[] chars)
         {
-            if (string.IsNullOrEmpty(subject))
+            if (String.IsNullOrEmpty(subject))
             {
                 return true;
             }
@@ -337,7 +308,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
             for (var i = 0; i < subject.Length; i++)
             {
-                char current = subject[i];
+                var current = subject[i];
                 if (Array.IndexOf(chars, current) < 0)
                 {
                     return false;
@@ -349,14 +320,19 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static string Translate(this string subject, char[] from, char[] to)
         {
-            if (string.IsNullOrEmpty(subject))
+            if (String.IsNullOrEmpty(subject))
             {
                 return subject;
             }
 
-            if (from == null || to == null)
+            if (from == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(from));
+            }
+
+            if (to == null)
+            {
+                throw new ArgumentNullException(nameof(to));
             }
 
             if (from.Length != to.Length)
@@ -390,7 +366,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static string ReplaceAll(this string original, IDictionary<string, string> replacements)
         {
-            var pattern = $"{string.Join("|", replacements.Keys)}";
+            var pattern = $"{String.Join("|", replacements.Keys)}";
             return Regex.Replace(original, pattern, match => replacements[match.Value]);
         }
 
@@ -400,13 +376,13 @@ namespace OrchardCore.ContentManagement.Utilities
                 return null;
 
             return rough.EndsWith(trim, StringComparison.Ordinal)
-                       ? rough.Substring(0, rough.Length - trim.Length)
+                       ? rough[..^trim.Length]
                        : rough;
         }
 
         public static string ReplaceLastOccurrence(this string source, string find, string replace)
         {
-            int place = source.LastIndexOf(find, StringComparison.Ordinal);
+            var place = source.LastIndexOf(find, StringComparison.Ordinal);
             return source.Remove(place, find.Length).Insert(place, replace);
         }
     }

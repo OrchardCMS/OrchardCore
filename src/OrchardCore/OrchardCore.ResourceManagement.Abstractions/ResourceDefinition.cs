@@ -52,10 +52,7 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceDefinition SetAttribute(string name, string value)
         {
-            if (Attributes == null)
-            {
-                Attributes = new AttributeDictionary();
-            }
+            Attributes ??= new AttributeDictionary();
 
             Attributes[name] = value;
             return this;
@@ -167,10 +164,7 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceDefinition SetDependencies(params string[] dependencies)
         {
-            if (Dependencies == null)
-            {
-                Dependencies = new List<string>();
-            }
+            Dependencies ??= new List<string>();
 
             Dependencies.AddRange(dependencies);
 
@@ -199,7 +193,8 @@ namespace OrchardCore.ResourceManagement
             IFileVersionProvider fileVersionProvider)
         {
             string url, filePathAttributeName = null;
-            // Url priority:
+
+            // Url priority.
             if (settings.DebugMode)
             {
                 url = settings.CdnMode
@@ -230,15 +225,15 @@ namespace OrchardCore.ResourceManagement
             {
                 if (!String.IsNullOrEmpty(_basePath))
                 {
-                    url = _basePath + url.Substring(1);
+                    url = String.Concat(_basePath, url.AsSpan(1));
                 }
                 else
                 {
-                    url = applicationPath + url.Substring(1);
+                    url = String.Concat(applicationPath, url.AsSpan(1));
                 }
             }
 
-            // If settings has value, it can override resource definition, otherwise use resource definition
+            // If settings has value, it can override resource definition, otherwise use resource definition.
             if (url != null && ((settings.AppendVersion.HasValue && settings.AppendVersion == true) ||
                 (!settings.AppendVersion.HasValue && AppendVersion == true)))
             {
@@ -247,6 +242,7 @@ namespace OrchardCore.ResourceManagement
 
             // Don't prefix cdn if the path includes a protocol, i.e. is an external url, or is in debug mode.
             if (url != null && !settings.DebugMode && !String.IsNullOrEmpty(settings.CdnBaseUrl) &&
+
                 // Don't evaluate with Uri.TryCreate as it produces incorrect results on Linux.
                 !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
                 !url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
@@ -273,7 +269,7 @@ namespace OrchardCore.ResourceManagement
                 case "stylesheet":
                     if (url == null && InnerContent != null)
                     {
-                        // Inline style declaration
+                        // Inline style declaration.
                         tagBuilder = new TagBuilder("style")
                         {
                             Attributes = {
@@ -283,7 +279,7 @@ namespace OrchardCore.ResourceManagement
                     }
                     else
                     {
-                        // Stylesheet resource
+                        // Stylesheet resource.
                         tagBuilder = new TagBuilder("link")
                         {
                             TagRenderMode = TagRenderMode.SelfClosing,
@@ -339,7 +335,7 @@ namespace OrchardCore.ResourceManagement
 
         public string FindNearestCulture(string culture)
         {
-            // go for an exact match
+            // Go for an exact match.
             if (Cultures == null)
             {
                 return null;
@@ -349,7 +345,7 @@ namespace OrchardCore.ResourceManagement
             {
                 return Cultures[selectedIndex];
             }
-            // try parent culture if any
+            // Try parent culture if any.
             var cultureInfo = new CultureInfo(culture);
             if (cultureInfo.Parent.Name != culture)
             {

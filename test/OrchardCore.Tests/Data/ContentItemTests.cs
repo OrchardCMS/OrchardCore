@@ -7,12 +7,14 @@ namespace OrchardCore.Tests.Data
         [Fact]
         public void ShouldSerializeContent()
         {
-            var contentItem = new ContentItem();
-            contentItem.Id = 1;
-            contentItem.ContentItemId = "2";
-            contentItem.ContentType = "Page";
-            contentItem.Latest = true;
-            contentItem.Published = true;
+            var contentItem = new ContentItem
+            {
+                Id = 1,
+                ContentItemId = "2",
+                ContentType = "Page",
+                Latest = true,
+                Published = true,
+            };
 
             var json = JsonConvert.SerializeObject(contentItem);
 

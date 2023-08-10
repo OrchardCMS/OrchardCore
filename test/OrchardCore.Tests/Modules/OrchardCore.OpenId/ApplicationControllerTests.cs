@@ -33,7 +33,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
         public async Task UsersShouldBeAbleToCreateApplicationIfAllowed()
         {
             var mockOpenIdScopeManager = new Mock<IOpenIdScopeManager>();
-            object[] mockData = Array.Empty<object>();
+            var mockData = Array.Empty<object>();
             mockOpenIdScopeManager.Setup(m => m.ListAsync(null, null, default)).Returns(mockData.ToAsyncEnumerable());
             var controller = new ApplicationController(
                 Mock.Of<IShapeFactory>(),
@@ -44,9 +44,10 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 mockOpenIdScopeManager.Object,
                 Mock.Of<IHtmlLocalizer<ApplicationController>>(),
                 Mock.Of<INotifier>(),
-                Mock.Of<ShellDescriptor>());
-
-            controller.ControllerContext = CreateControllerContext();
+                Mock.Of<ShellDescriptor>())
+            {
+                ControllerContext = CreateControllerContext(),
+            };
 
             var result = await controller.Create();
             Assert.IsType<ViewResult>(result);
@@ -68,15 +69,19 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 Mock.Of<IOpenIdScopeManager>(),
                 Mock.Of<IHtmlLocalizer<ApplicationController>>(),
                 Mock.Of<INotifier>(),
-                Mock.Of<ShellDescriptor>());
+                Mock.Of<ShellDescriptor>())
+            {
+                ControllerContext = CreateControllerContext(),
+            };
 
-            controller.ControllerContext = CreateControllerContext();
+            var model = new CreateOpenIdApplicationViewModel
+            {
+                Type = clientType,
+                ClientSecret = clientSecret,
+                AllowAuthorizationCodeFlow = allowAuthFlow,
+                AllowPasswordFlow = allowPasswordFlow,
+            };
 
-            var model = new CreateOpenIdApplicationViewModel();
-            model.Type = clientType;
-            model.ClientSecret = clientSecret;
-            model.AllowAuthorizationCodeFlow = allowAuthFlow;
-            model.AllowPasswordFlow = allowPasswordFlow;
             var result = await controller.Create(model);
             if (expectValidModel)
             {
@@ -107,7 +112,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 Mock.Of<INotifier>(),
                 Mock.Of<ShellDescriptor>())
             {
-                ControllerContext = CreateControllerContext()
+                ControllerContext = CreateControllerContext(),
             };
 
             var model = new CreateOpenIdApplicationViewModel
@@ -137,12 +142,13 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             }
         }
 
+#pragma warning disable CA1822 // Mark members as static
         public Mock<IAuthorizationService> MockAuthorizationServiceMock()
         {
             var securityMock = new Mock<IAuthorizationService>(MockBehavior.Strict);
 
-            securityMock.Setup(x => x.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<Object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>())).Returns(Task.FromResult(AuthorizationResult.Success()));
-            securityMock.Setup(x => x.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<Object>(), It.IsAny<string>())).Returns(Task.FromResult(AuthorizationResult.Success()));
+            securityMock.Setup(x => x.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>())).Returns(Task.FromResult(AuthorizationResult.Success()));
+            securityMock.Setup(x => x.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<string>())).Returns(Task.FromResult(AuthorizationResult.Success()));
             return securityMock;
         }
 
@@ -153,11 +159,12 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
 
             return new ControllerContext()
             {
-                HttpContext = mockContext.Object
+                HttpContext = mockContext.Object,
             };
         }
 
         public Mock<IStringLocalizer<ApplicationController>> MockStringLocalizer()
+#pragma warning restore CA1822 // Mark members as static
         {
             var localizerMock = new Mock<IStringLocalizer<ApplicationController>>();
             localizerMock.Setup(x => x[It.IsAny<string>()]).Returns(new LocalizedString("TextToLocalize", "localizedText"));

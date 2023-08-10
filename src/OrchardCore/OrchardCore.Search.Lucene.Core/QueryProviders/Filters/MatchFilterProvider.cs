@@ -59,7 +59,6 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
                             {
                                 var matchAllDocsQuery = new MatchAllDocsQuery();
                                 booleanQuery.Add(matchAllDocsQuery, Occur.MUST);
-                                queryFilter = new QueryWrapperFilter(matchAllDocsQuery);
                                 break;
                             }
                         }

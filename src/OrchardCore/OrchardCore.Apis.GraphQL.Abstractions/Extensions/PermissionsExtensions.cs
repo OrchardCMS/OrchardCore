@@ -8,7 +8,7 @@ namespace OrchardCore.Apis.GraphQL
 {
     public static class PermissionsExtensions
     {
-        private static readonly string MetaDataKey = "Permissions";
+        private const string MetaDataKey = "Permissions";
 
         public static void RequirePermission(this IProvideMetadata type, Permission permission, object resource = null)
         {

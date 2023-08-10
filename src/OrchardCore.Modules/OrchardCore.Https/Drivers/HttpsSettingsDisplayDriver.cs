@@ -22,7 +22,7 @@ namespace OrchardCore.Https.Drivers
         private readonly INotifier _notifier;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
 
         public HttpsSettingsDisplayDriver(IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,

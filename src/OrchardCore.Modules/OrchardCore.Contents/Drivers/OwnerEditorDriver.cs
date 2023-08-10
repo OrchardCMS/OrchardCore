@@ -10,7 +10,6 @@ using OrchardCore.Contents.Models;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
-using OrchardCore.Security;
 using OrchardCore.Users;
 
 namespace OrchardCore.Contents.Drivers
@@ -20,7 +19,7 @@ namespace OrchardCore.Contents.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<IUser> _userManager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public OwnerEditorDriver(IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor,
@@ -37,7 +36,7 @@ namespace OrchardCore.Contents.Drivers
         {
             var currentUser = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(currentUser, StandardPermissions.SiteOwner, part))
+            if (!await _authorizationService.AuthorizeAsync(currentUser, CommonPermissions.EditContentOwner, part.ContentItem))
             {
                 return null;
             }
@@ -65,7 +64,7 @@ namespace OrchardCore.Contents.Drivers
         {
             var currentUser = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(currentUser, StandardPermissions.SiteOwner, part))
+            if (!await _authorizationService.AuthorizeAsync(currentUser, CommonPermissions.EditContentOwner, part.ContentItem))
             {
                 return null;
             }

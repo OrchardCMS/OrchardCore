@@ -50,7 +50,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 });
         }
 
-        private void UnionIfNotNull<TItem>(ISet<TItem> itemSet, IEnumerable<TItem> items)
+        private static void UnionIfNotNull<TItem>(ISet<TItem> itemSet, IEnumerable<TItem> items)
         {
             if (items != null)
             {

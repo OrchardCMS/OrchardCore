@@ -31,38 +31,30 @@ namespace OrchardCore.Scripting.Files
 
             if (script.StartsWith("text('", StringComparison.Ordinal) && script.EndsWith("')", StringComparison.Ordinal))
             {
-                var filePath = script.Substring(6, script.Length - 8);
+                var filePath = script[6..^2];
                 var fileInfo = fileScope.FileProvider.GetRelativeFileInfo(fileScope.BasePath, filePath);
                 if (!fileInfo.Exists)
                 {
                     throw new FileNotFoundException(filePath);
                 }
 
-                using (var fileStream = fileInfo.CreateReadStream())
-                {
-                    using (var streamReader = new StreamReader(fileStream))
-                    {
-                        return streamReader.ReadToEnd();
-                    }
-                }
+                using var fileStream = fileInfo.CreateReadStream();
+                using var streamReader = new StreamReader(fileStream);
+                return streamReader.ReadToEnd();
             }
             else if (script.StartsWith("base64('", StringComparison.Ordinal) && script.EndsWith("')", StringComparison.Ordinal))
             {
-                var filePath = script.Substring(8, script.Length - 10);
+                var filePath = script[8..^2];
                 var fileInfo = fileScope.FileProvider.GetRelativeFileInfo(fileScope.BasePath, filePath);
                 if (!fileInfo.Exists)
                 {
                     throw new FileNotFoundException(filePath);
                 }
 
-                using (var fileStream = fileInfo.CreateReadStream())
-                {
-                    using (var ms = new MemoryStream())
-                    {
-                        fileStream.CopyTo(ms);
-                        return Convert.ToBase64String(ms.ToArray());
-                    }
-                }
+                using var fileStream = fileInfo.CreateReadStream();
+                using var ms = new MemoryStream();
+                fileStream.CopyTo(ms);
+                return Convert.ToBase64String(ms.ToArray());
             }
             else
             {

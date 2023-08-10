@@ -12,7 +12,7 @@ namespace OrchardCore.Layers.Deployment
 {
     public class AllLayersDeploymentSource : IDeploymentSource
     {
-        private readonly static JsonSerializer JsonSerializer = new JsonSerializer()
+        private readonly static JsonSerializer _jsonSerializer = new()
         {
             TypeNameHandling = TypeNameHandling.Auto
         };
@@ -39,7 +39,7 @@ namespace OrchardCore.Layers.Deployment
 
             result.Steps.Add(new JObject(
                 new JProperty("name", "Layers"),
-                new JProperty("Layers", layers.Layers.Select(layer => JObject.FromObject(layer, JsonSerializer)))
+                new JProperty("Layers", layers.Layers.Select(layer => JObject.FromObject(layer, _jsonSerializer)))
             ));
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();

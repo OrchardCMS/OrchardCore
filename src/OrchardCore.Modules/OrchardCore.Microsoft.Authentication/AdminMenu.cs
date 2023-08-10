@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 
@@ -10,7 +9,7 @@ namespace OrchardCore.Microsoft.Authentication
     [Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
     public class AdminMenuMicrosoftAccount : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenuMicrosoftAccount(IStringLocalizer<AdminMenuMicrosoftAccount> localizer)
         {
@@ -37,16 +36,9 @@ namespace OrchardCore.Microsoft.Authentication
     [Feature(MicrosoftAuthenticationConstants.Features.AAD)]
     public class AdminMenuAAD : INavigationProvider
     {
-        private readonly ShellDescriptor _shellDescriptor;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
-        public AdminMenuAAD(
-            IStringLocalizer<AdminMenuAAD> localizer,
-            ShellDescriptor shellDescriptor)
-        {
-            S = localizer;
-            _shellDescriptor = shellDescriptor;
-        }
+        public AdminMenuAAD(IStringLocalizer<AdminMenuAAD> localizer) => S = localizer;
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -54,13 +46,14 @@ namespace OrchardCore.Microsoft.Authentication
             {
                 builder.Add(S["Security"], security => security
                         .Add(S["Authentication"], authentication => authentication
-                            .Add(S["Azure Active Directory"], S["Azure Active Directory"].PrefixPosition(), client => client
-                                .AddClass("azuread").Id("azuread")
+                            .Add(S["Microsoft Entra ID"], S["Microsoft Entra ID"].PrefixPosition(), client => client
+                                .AddClass("microsoft-entra-id").Id("microsoft-entra-id")
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MicrosoftAuthenticationConstants.Features.AAD })
                                 .Permission(Permissions.ManageMicrosoftAuthentication)
                                 .LocalNav())
                     ));
             }
+
             return Task.CompletedTask;
         }
     }

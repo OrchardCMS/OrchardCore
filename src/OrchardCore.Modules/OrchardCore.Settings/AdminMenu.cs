@@ -7,7 +7,7 @@ namespace OrchardCore.Settings
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
@@ -31,8 +31,8 @@ namespace OrchardCore.Settings
                         .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" })
                         .Permission(Permissions.ManageGroupSettings)
                         .LocalNav()
-                    )
-                , priority: 1)
+                    ),
+                    priority: 1)
             );
 
             return Task.CompletedTask;

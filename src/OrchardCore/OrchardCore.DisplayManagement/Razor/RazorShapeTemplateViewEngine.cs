@@ -28,7 +28,7 @@ namespace OrchardCore.DisplayManagement.Razor
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ViewContextAccessor _viewContextAccessor;
         private readonly ITempDataProvider _tempDataProvider;
-        private readonly List<string> _templateFileExtensions = new List<string>(new[] { RazorViewEngine.ViewExtension });
+        private readonly List<string> _templateFileExtensions = new(new[] { RazorViewEngine.ViewExtension });
 
         public RazorShapeTemplateViewEngine(
             IOptions<MvcViewOptions> options,
@@ -79,7 +79,7 @@ namespace OrchardCore.DisplayManagement.Razor
 
             if (viewEngines.Count == 0)
             {
-                throw new InvalidOperationException(string.Format("'{0}.{1}' must not be empty. At least one '{2}' is required to locate a view for rendering.",
+                throw new InvalidOperationException(String.Format("'{0}.{1}' must not be empty. At least one '{2}' is required to locate a view for rendering.",
                     typeof(MvcViewOptions).FullName,
                     nameof(MvcViewOptions.ViewEngines),
                     typeof(IViewEngine).FullName));
@@ -118,7 +118,7 @@ namespace OrchardCore.DisplayManagement.Razor
             return output.ToString();
         }
 
-        private IView FindView(ActionContext actionContext, string viewName, IViewEngine viewEngine)
+        private static IView FindView(ActionContext actionContext, string viewName, IViewEngine viewEngine)
         {
             var getViewResult = viewEngine.GetView(executingFilePath: null, viewPath: viewName, isMainPage: true);
             if (getViewResult.Success)
@@ -133,7 +133,7 @@ namespace OrchardCore.DisplayManagement.Razor
             }
 
             var searchedLocations = getViewResult.SearchedLocations.Concat(findViewResult.SearchedLocations);
-            var errorMessage = string.Join(
+            var errorMessage = String.Join(
                 System.Environment.NewLine,
                 new[] { $"Unable to find view '{viewName}'. The following locations were searched:" }.Concat(searchedLocations));
 

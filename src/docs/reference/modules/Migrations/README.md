@@ -1,13 +1,11 @@
 # Data Migrations (`OrchardCore.Data.Migration.DataMigration`)
 
+## Configuring Data Migration
+
 Data Migration classes can be used to alter the content type definitions (like by adding new __types__, or configuring their __parts__ and __fields__), 
 initializing recipes or creating indices.
 
-There should be one Migrations file per module inheriting from __DataMigration__. However, if a module has more than one feature and multiple migrations per feature, each migration should be decorated with the Feature attribute i.e. `[Feature("OrchardCore.ContentFields.Indexing.SQL")]`
-
-Initial migration method should be named `public int Create` or `public Task<int> CreateAsync` and it should return a number (like  `return 1`).
-Any subsequent migration should follow the convention `public int UpdateFromX` or `public Task<int> UpdateFromXAsync`, where __X__ is the number returned from the last migration method. Migrations are strictly chained:
-eg. UpdateFrom4 will only be executed if the last executed migration returned the number 4. You should not revise these numbers after the fact because it could break migrations for other people.
+To implement a migration, your class should inherit from the DataMigration class. The initial migration method must be named `public int Create()` or `public Task<int> CreateAsync()`, and it should return a number (e.g., 1). Subsequent migrations should adhere to the convention public int `UpdateFromX()` or `public Task<int> UpdateFromXAsync()`, where `X` represents the number returned by the last migration method. The migration process strictly follows this chain: for instance, `UpdateFrom4()` will only execute if the last migration returned the number `4`. It is crucial not to modify these numbers afterward, as doing so may disrupt migrations for other tenants.
 
 Migrations are executed automatically on application start.
 

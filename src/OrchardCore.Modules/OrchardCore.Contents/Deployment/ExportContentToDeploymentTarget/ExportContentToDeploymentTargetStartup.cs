@@ -24,7 +24,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ExportContentToDeploymentTargetDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, ExportContentToDeploymentTargetDeploymentStepDriver>();
 
-            services.AddScoped<IDataMigration, ExportContentToDeploymentTargetMigrations>();
+            services.AddDataMigration<ExportContentToDeploymentTargetMigrations>();
             services.AddScoped<IContentDisplayDriver, ExportContentToDeploymentTargetContentDriver>();
             services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ExportContentToDeploymentTargetContentsAdminListDisplayDriver>();
 

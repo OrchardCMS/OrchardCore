@@ -1,28 +1,28 @@
-@media (max-width: 567.98px) {
+@media (min-width: 576px) and (max-width: 767.98px) {
   :root {
     --dashboard-columns: 1;
     --dashboard-columns-default: 1;
   }
 }
-@media (min-width: 576px) and (max-width: 767.98px) {
+@media (min-width: 768px) and (max-width: 991.98px) {
   :root {
     --dashboard-columns: 2;
     --dashboard-columns-default: 2;
   }
 }
-@media (min-width: 768px) and (max-width: 991.98px) {
+@media (min-width: 992px) and (max-width: 1199.98px) {
   :root {
     --dashboard-columns: 3;
     --dashboard-columns-default: 3;
   }
 }
-@media (min-width: 992px) and (max-width: 1199.98px) {
+@media (min-width: 1200px) and (max-width: 1399.98px) {
   :root {
     --dashboard-columns: 4;
     --dashboard-columns-default: 4;
   }
 }
-@media (min-width: 1200px) {
+@media (min-width: 1400px) {
   :root {
     --dashboard-columns: 6;
     --dashboard-columns-default: 6;
@@ -38,13 +38,16 @@
   grid-column: span var(--dashboard-width);
   overflow-x: hidden;
   grid-row: span var(--dashboard-height);
-  overflow-y: hidden;
+  overflow-y: auto;
 }
 .dashboard-container .dashboard-wrapper .card .card-header {
   border-bottom: none !important;
 }
 .dashboard-container .dashboard-wrapper .card .card-footer {
   border-top: none !important;
+}
+.dashboard-container .dashboard-wrapper.ui-resizable {
+  overflow-y: hidden;
 }
 
 .dashboard-meta {
@@ -63,10 +66,10 @@
 }
 
 :root[data-theme=darkmode] .dashboard-wrapper .card .card-header {
-  background-color: #181a1b !important;
+  background-color: rgb(24, 26, 27) !important;
 }
 :root[data-theme=darkmode] .dashboard-wrapper .card .card-footer {
-  background-color: #181a1b !important;
+  background-color: rgb(24, 26, 27) !important;
 }
 
 .dashboard-handle {

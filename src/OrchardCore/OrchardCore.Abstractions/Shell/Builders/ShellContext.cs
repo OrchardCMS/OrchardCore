@@ -1,31 +1,40 @@
 using System;
 using System.Collections.Generic;
 using OrchardCore.Environment.Shell.Builders.Models;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Environment.Shell.Builders
 {
     /// <summary>
-    /// The shell context represents the shell's state that is kept alive
-    /// for the whole life of the application
+    /// Represents the state of a tenant.
     /// </summary>
     public class ShellContext : IDisposable
     {
         private bool _disposed;
         private List<WeakReference<ShellContext>> _dependents;
-        private readonly object _synLock = new object();
+        private readonly object _synLock = new();
 
         internal volatile int _refCount;
         internal volatile int _terminated;
         internal bool _released;
 
+        /// <summary>
+        /// The <see cref="ShellSettings"/> holding the tenant settings and configuration.
+        /// </summary>
         public ShellSettings Settings { get; set; }
+
+        /// <summary>
+        /// The <see cref="ShellBlueprint"/> describing the tenant container.
+        /// </summary>
         public ShellBlueprint Blueprint { get; set; }
+
+        /// <summary>
+        /// The <see cref="IServiceProvider"/> of the tenant container.
+        /// </summary>
         public IServiceProvider ServiceProvider { get; set; }
 
         /// <summary>
-        /// Whether the shell is activated.
+        /// Whether the shell is activated or not.
         /// </summary>
         public bool IsActivated { get; set; }
 
@@ -34,16 +43,24 @@ namespace OrchardCore.Environment.Shell.Builders
         /// </summary>
         public IShellPipeline Pipeline { get; set; }
 
+        /// <summary>
+        /// PlaceHolder class used for shell lazy initialization.
+        /// </summary>
         public class PlaceHolder : ShellContext
         {
             /// <summary>
-            /// Used as a place holder for a shell that will be lazily created.
+            /// Initializes a placeHolder used for shell lazy initialization.
             /// </summary>
             public PlaceHolder()
             {
                 _released = true;
                 _disposed = true;
             }
+
+            /// <summary>
+            /// Wether or not the tenant has been pre-created on first loading.
+            /// </summary>
+            public bool PreCreated { get; init; }
         }
 
         /// <summary>
@@ -71,7 +88,8 @@ namespace OrchardCore.Environment.Shell.Builders
         }
 
         /// <summary>
-        /// Whether the <see cref="ShellContext"/> instance is not yet built or has been released, for instance when a tenant is changed.
+        /// Whether the <see cref="ShellContext"/> instance is not yet built or has been released,
+        /// for instance when a tenant has changed.
         /// </summary>
         public bool Released => _released;
 
@@ -98,15 +116,14 @@ namespace OrchardCore.Environment.Shell.Builders
             }
 
             // A disabled shell still in use will be released by its last scope, as checked at the host level.
-            if (mode == ReleaseMode.FromDependency && Settings.State == TenantState.Disabled && _refCount != 0)
+            if (mode == ReleaseMode.FromDependency && Settings.IsDisabled() && _refCount != 0)
             {
                 return;
             }
 
-            // When a tenant is changed and should be restarted, its shell context is replaced with a new one,
-            // so that new request can't use it anymore. However some existing request might still be running and try to
-            // resolve or use its services. We then call this method to count the remaining references and dispose it
-            // when the number reached zero.
+            // When a tenant has changed its shell context is replaced with a new one, so that new requests can't use it anymore.
+            // However, some uncompleted requests may still try to use or resolve services from child shell scopes. In that case,
+            // this is the last shell scope (when the shell reference count reaches zero) that disposes its parent shell context.
 
             ShellScope scope = null;
             lock (_synLock)
@@ -116,7 +133,7 @@ namespace OrchardCore.Environment.Shell.Builders
                     return;
                 }
 
-                if (_dependents != null)
+                if (_dependents is not null)
                 {
                     foreach (var dependent in _dependents)
                     {
@@ -127,7 +144,7 @@ namespace OrchardCore.Environment.Shell.Builders
                     }
                 }
 
-                if (mode != ReleaseMode.FromLastScope && ServiceProvider != null)
+                if (mode != ReleaseMode.FromLastScope && ServiceProvider is not null)
                 {
                     // Before marking the shell as released, we create a new scope that will manage the shell state,
                     // so that we always use the same shell scope logic to check if the reference counter reached 0.
@@ -142,7 +159,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 return;
             }
 
-            if (scope != null)
+            if (scope is not null)
             {
                 // Use this scope to manage the shell state as usual.
                 scope.TerminateShellAsync().GetAwaiter().GetResult();
@@ -180,10 +197,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
             lock (_synLock)
             {
-                if (_dependents == null)
-                {
-                    _dependents = new List<WeakReference<ShellContext>>();
-                }
+                _dependents ??= new List<WeakReference<ShellContext>>();
 
                 // Remove any previous instance that represent the same tenant in case it has been released (restarted).
                 _dependents.RemoveAll(x => !x.TryGetTarget(out var shell) || shell.Settings.Name == shellContext.Settings.Name);
@@ -207,8 +221,8 @@ namespace OrchardCore.Environment.Shell.Builders
 
             _disposed = true;
 
-            // Disposes all the services registered for this shell
-            if (ServiceProvider != null)
+            // Disposes all the services registered for this shell.
+            if (ServiceProvider is not null)
             {
                 (ServiceProvider as IDisposable)?.Dispose();
                 ServiceProvider = null;

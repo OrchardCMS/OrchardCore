@@ -67,7 +67,7 @@ namespace OrchardCore.Taxonomies.Drivers
         /// <summary>
         /// Clone the content items at the specific index.
         /// </summary>
-        private JObject GetTaxonomyItemAt(List<ContentItem> taxonomyItems, int[] indexes)
+        private static JObject GetTaxonomyItemAt(List<ContentItem> taxonomyItems, int[] indexes)
         {
             ContentItem taxonomyItem = null;
 

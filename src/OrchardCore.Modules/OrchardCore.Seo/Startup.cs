@@ -1,3 +1,6 @@
+using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -6,11 +9,15 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
+using OrchardCore.Security.Permissions;
 using OrchardCore.Seo.Drivers;
 using OrchardCore.Seo.Indexes;
 using OrchardCore.Seo.Models;
+using OrchardCore.Seo.Services;
 using OrchardCore.SeoMeta.Settings;
 using YesSql.Indexes;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Seo
 {
@@ -30,6 +37,16 @@ namespace OrchardCore.Seo
             // This must be last, and the module dependant on Contents so this runs after the part handlers.
             services.AddScoped<IContentHandler, SeoMetaSettingsHandler>();
             services.AddScoped<IContentItemIndexHandler, SeoMetaPartContentIndexHandler>();
+
+            services.AddScoped<IPermissionProvider, SeoPermissionProvider>();
+            services.AddScoped<IDisplayDriver<ISite>, RobotsSettingsDisplayDriver>();
+            services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddTransient<IRobotsProvider, SiteSettingsRobotsProvider>();
+        }
+
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            app.UseMiddleware<RobotsMiddleware>();
         }
     }
 }
