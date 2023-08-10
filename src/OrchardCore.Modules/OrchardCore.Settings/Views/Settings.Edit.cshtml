@@ -1,6 +1,7 @@
+@using System.Globalization
+
 @model SiteSettingsViewModel
 @inject OrchardCore.Modules.IClock Clock
-@using System.Globalization
 
 <div class="mb-3" asp-validation-class-for="SiteName">
     <label asp-for="SiteName">@T["Site name"]</label>

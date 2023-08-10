@@ -33,15 +33,12 @@ namespace OrchardCore.Settings.Drivers
             context.Shape.Metadata.Wrappers.Add("GeneralSettingsWrapper");
 
             var result = Combine(
-
                 Initialize<SiteSettingsViewModel>("Settings_Edit", model => PopulateProperties(site, model))
                     .Location("Content:1#Site;10")
                     .OnGroup(GroupId),
-
                 Initialize<SiteSettingsViewModel>("SettingsResources_Edit", model => PopulateProperties(site, model))
                     .Location("Content:1#Resources;20")
                     .OnGroup(GroupId),
-
                 Initialize<SiteSettingsViewModel>("SettingsCache_Edit", model => PopulateProperties(site, model))
                     .Location("Content:1#Cache;30")
                     .OnGroup(GroupId)
