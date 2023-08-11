@@ -16,6 +16,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Settings;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace OrchardCore.Modules
 {
@@ -83,13 +84,14 @@ namespace OrchardCore.Modules
 
             while (!stoppingToken.IsCancellationRequested)
             {
+                var pollingDelay = Task.CompletedTask;
                 try
                 {
                     var runningShells = GetRunningShells();
                     await UpdateAsync(previousShells, runningShells, stoppingToken);
                     previousShells = runningShells;
 
-                    var pollingDelay = Task.Delay(_pollingTime, stoppingToken);
+                    pollingDelay = Task.Delay(_pollingTime, stoppingToken);
 
                     await RunAsync(runningShells, stoppingToken);
                     await WaitAsync(pollingDelay, stoppingToken);
@@ -97,6 +99,9 @@ namespace OrchardCore.Modules
                 catch (Exception ex) when (!ex.IsFatal())
                 {
                     _logger.LogError(ex, "Error while executing '{ServiceName}'.", nameof(ModularBackgroundService));
+
+                    // On exception, still wait before retrying.
+                    await WaitAsync(pollingDelay, stoppingToken);
                 }
             }
         }
@@ -138,18 +143,38 @@ namespace OrchardCore.Modules
 
                     await shellScope.UsingAsync(async scope =>
                     {
-                        if (shell.HasPipeline())
-                        {
-                            // Run the pipeline to make the 'HttpContext' aware of endpoints.
-                            await shell.Pipeline.Invoke(_httpContextAccessor.HttpContext);
-                        }
-
                         var taskName = scheduler.Name;
 
                         var task = scope.ServiceProvider.GetServices<IBackgroundTask>().GetTaskByName(taskName);
                         if (task is null)
                         {
                             return;
+                        }
+
+                        if (_options.PipelineWarmup && !scope.ShellContext.HasPipeline())
+                        {
+                            try
+                            {
+                                // Build the shell pipeline to configure endpoint data sources.
+                                await ModularTenantRouterMiddleware.InitializePipelineAsync(scope.ShellContext);
+                            }
+                            catch (Exception ex) when (!ex.IsFatal())
+                            {
+                                _logger.LogError(ex, "Failed to build in the background the pipeline of tenant '{TenantName}'.", tenant);
+                            }
+                        }
+
+                        if (scope.ShellContext.HasPipeline())
+                        {
+                            try
+                            {
+                                // Run the pipeline to make the 'HttpContext' aware of endpoints.
+                                await shell.Pipeline.Invoke(_httpContextAccessor.HttpContext);
+                            }
+                            catch (Exception ex) when (!ex.IsFatal())
+                            {
+                                _logger.LogError(ex, "Failed to run in the background the pipeline of tenant '{TenantName}'.", tenant);
+                            }
                         }
 
                         var siteService = scope.ServiceProvider.GetService<ISiteService>();

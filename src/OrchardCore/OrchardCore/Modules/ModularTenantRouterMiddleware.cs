@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,18 +23,12 @@ namespace OrchardCore.Modules
     /// </summary>
     public class ModularTenantRouterMiddleware
     {
-        private readonly IFeatureCollection _features;
-        private readonly ILogger _logger;
-        private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new();
+        private static readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new();
 
-        public ModularTenantRouterMiddleware(
-            RequestDelegate _,
-            IFeatureCollection features,
-            ILogger<ModularTenantRouterMiddleware> logger)
-        {
-            _features = features;
-            _logger = logger;
-        }
+        private readonly ILogger _logger;
+
+        public ModularTenantRouterMiddleware(RequestDelegate _, ILogger<ModularTenantRouterMiddleware> logger)
+            => _logger = logger;
 
         public async Task Invoke(HttpContext httpContext)
         {
@@ -64,7 +59,7 @@ namespace OrchardCore.Modules
             await shellContext.Pipeline.Invoke(httpContext);
         }
 
-        private async Task InitializePipelineAsync(ShellContext shellContext)
+        public static async Task InitializePipelineAsync(ShellContext shellContext)
         {
             var semaphore = _semaphores.GetOrAdd(shellContext.Settings.Name, _ => new SemaphoreSlim(1));
 
@@ -74,7 +69,7 @@ namespace OrchardCore.Modules
             {
                 if (!shellContext.HasPipeline())
                 {
-                    shellContext.Pipeline = BuildTenantPipeline();
+                    shellContext.Pipeline = BuildTenantPipeline(shellContext.ServiceProvider);
                 }
             }
             finally
@@ -84,9 +79,10 @@ namespace OrchardCore.Modules
         }
 
         // Build the middleware pipeline for the current tenant.
-        private IShellPipeline BuildTenantPipeline()
+        private static IShellPipeline BuildTenantPipeline(IServiceProvider shellServices)
         {
-            var appBuilder = new ApplicationBuilder(ShellScope.Context.ServiceProvider, _features);
+            var features = shellServices.GetService<IServer>()?.Features;
+            var appBuilder = new ApplicationBuilder(shellServices, features ?? new FeatureCollection());
 
             // Create a nested pipeline to configure the tenant middleware pipeline.
             var startupFilters = appBuilder.ApplicationServices.GetService<IEnumerable<IStartupFilter>>();
