@@ -151,6 +151,20 @@ namespace OrchardCore.Modules
                             return;
                         }
 
+                        var siteService = scope.ServiceProvider.GetService<ISiteService>();
+                        if (siteService is not null)
+                        {
+                            try
+                            {
+                                // Use the base url, if defined, to set the 'Scheme', 'Host' and 'PathBase'.
+                                _httpContextAccessor.HttpContext.SetBaseUrl((await siteService.GetSiteSettingsAsync()).BaseUrl);
+                            }
+                            catch (Exception ex) when (!ex.IsFatal())
+                            {
+                                _logger.LogError(ex, "Error while getting the base url from the site settings of the tenant '{TenantName}'.", tenant);
+                            }
+                        }
+
                         if (_options.PipelineWarmup && !scope.ShellContext.HasPipeline())
                         {
                             try
@@ -174,19 +188,6 @@ namespace OrchardCore.Modules
                             catch (Exception ex) when (!ex.IsFatal())
                             {
                                 _logger.LogError(ex, "Failed to run in the background the pipeline of tenant '{TenantName}'.", tenant);
-                            }
-                        }
-
-                        var siteService = scope.ServiceProvider.GetService<ISiteService>();
-                        if (siteService is not null)
-                        {
-                            try
-                            {
-                                _httpContextAccessor.HttpContext.SetBaseUrl((await siteService.GetSiteSettingsAsync()).BaseUrl);
-                            }
-                            catch (Exception ex) when (!ex.IsFatal())
-                            {
-                                _logger.LogError(ex, "Error while getting the base url from the site settings of the tenant '{TenantName}'.", tenant);
                             }
                         }
 
