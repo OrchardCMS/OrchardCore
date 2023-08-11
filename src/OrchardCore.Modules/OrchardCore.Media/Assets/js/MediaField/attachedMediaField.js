@@ -189,7 +189,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                         }
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
-                        console.log('error on upload!!');
+                        console.log('Error on upload.');
                         console.log(jqXHR);
                         console.log(textStatus);
                         console.log(errorThrown);
