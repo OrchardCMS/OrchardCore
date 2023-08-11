@@ -18,7 +18,7 @@ namespace OrchardCore.ContentFields.Settings
         public string[] DisplayedStereotypes { get; set; } = Array.Empty<string>();
 
         /// <summary>
-        /// The pattern used to build title.
+        /// The Liquid pattern used to build the title.
         /// </summary>
         [DefaultValue("{{ Model.ContentItem | display_text }}")]
         public string TitlePattern { get; set; } = "{{ Model.ContentItem | display_text }}";
