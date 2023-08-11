@@ -165,30 +165,23 @@ namespace OrchardCore.Modules
                             }
                         }
 
-                        if (_options.PipelineWarmup && !scope.ShellContext.HasPipeline())
+                        try
                         {
-                            try
+                            if (_options.PipelineWarmup && !scope.ShellContext.HasPipeline())
                             {
                                 // Build the shell pipeline to configure endpoint data sources.
                                 await ModularTenantRouterMiddleware.InitializePipelineAsync(scope.ShellContext);
                             }
-                            catch (Exception ex) when (!ex.IsFatal())
-                            {
-                                _logger.LogError(ex, "Failed to build in the background the pipeline of tenant '{TenantName}'.", tenant);
-                            }
-                        }
 
-                        if (scope.ShellContext.HasPipeline())
-                        {
-                            try
+                            if (scope.ShellContext.HasPipeline())
                             {
                                 // Run the pipeline to make the 'HttpContext' aware of endpoints.
                                 await shell.Pipeline.Invoke(_httpContextAccessor.HttpContext);
                             }
-                            catch (Exception ex) when (!ex.IsFatal())
-                            {
-                                _logger.LogError(ex, "Failed to run in the background the pipeline of tenant '{TenantName}'.", tenant);
-                            }
+                        }
+                        catch (Exception ex) when (!ex.IsFatal())
+                        {
+                            _logger.LogError(ex, "Error while running in the background the pipeline of tenant '{TenantName}'.", tenant);
                         }
 
                         var context = new BackgroundTaskEventContext(taskName, scope);
