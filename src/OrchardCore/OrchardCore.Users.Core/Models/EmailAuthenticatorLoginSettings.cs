@@ -10,3 +10,8 @@ public class EmailAuthenticatorLoginSettings
 
     public string Body { get; set; }
 }
+
+public class SmsAuthenticatorLoginSettings
+{
+    public string Body { get; set; }
+}

@@ -13,13 +13,13 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public class EmailAuthenticatorLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailAuthenticatorLoginSettings>
+public class SmsAuthenticatorLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsAuthenticatorLoginSettings>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
 
-    public EmailAuthenticatorLoginSettingsDisplayDriver(
+    public SmsAuthenticatorLoginSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         ILiquidTemplateManager liquidTemplateManager)
@@ -29,18 +29,20 @@ public class EmailAuthenticatorLoginSettingsDisplayDriver : SectionDisplayDriver
         _liquidTemplateManager = liquidTemplateManager;
     }
 
-    public override IDisplayResult Edit(EmailAuthenticatorLoginSettings settings)
+    public override IDisplayResult Edit(SmsAuthenticatorLoginSettings settings)
     {
-        return Initialize<EmailAuthenticatorLoginSettings>("EmailAuthenticatorLoginSettings_Edit", model =>
+        return Initialize<SmsAuthenticatorLoginSettings>("SmsAuthenticatorLoginSettings_Edit", model =>
         {
-            model.Subject = String.IsNullOrWhiteSpace(settings.Subject) ? EmailAuthenticatorLoginSettings.DefaultSubject : settings.Subject;
-            model.Body = String.IsNullOrWhiteSpace(settings.Body) ? EmailAuthenticatorLoginSettings.DefaultBody : settings.Body;
-        }).Location("Content:10#Two-Factor Authentication")
+            model.Body = String.IsNullOrWhiteSpace(settings.Body)
+            ? EmailAuthenticatorLoginSettings.DefaultBody
+            : settings.Body;
+
+        }).Location("Content:15#Two-Factor Authentication")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
         .OnGroup(LoginSettingsDisplayDriver.GroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(EmailAuthenticatorLoginSettings settings, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(SmsAuthenticatorLoginSettings settings, BuildEditorContext context)
     {
         if (!context.GroupId.Equals(LoginSettingsDisplayDriver.GroupId, StringComparison.OrdinalIgnoreCase)
             || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
@@ -49,11 +51,6 @@ public class EmailAuthenticatorLoginSettingsDisplayDriver : SectionDisplayDriver
         }
 
         await context.Updater.TryUpdateModelAsync(settings, Prefix);
-
-        if (!_liquidTemplateManager.Validate(settings.Subject, out var subjectErrors))
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(settings.Subject), String.Join(' ', subjectErrors));
-        }
 
         if (!_liquidTemplateManager.Validate(settings.Body, out var bodyErrors))
         {

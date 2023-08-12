@@ -3,19 +3,19 @@
 @{
     var tokenSet = AntiforgeryService.GetAndStoreTokens(ViewContext.HttpContext);
 }
-<h5 class="text-center mb-3">@T["Please <a href=\"#\" id=\"RequestCode\">click here</a> to receive a one-time verification code via email."]</h5>
+<h5 class="text-center mb-3">@T["Please <a href=\"#\" id=\"RequestCode\">click here</a> to receive a one-time verification code via SMS."]</h5>
 
 <div class="text-center alert d-none"
      id="RequestCodeFeedback"
      data-token-field-name="@tokenSet.FormFieldName"
-     data-token-endpoint="@Url.ActionLink("SendCode", "EmailAuthenticator")"
+     data-token-endpoint="@Url.ActionLink("SendCode", "SmsAuthenticator")"
      data-antiforgery-token="@tokenSet.RequestToken">
 </div>
 
-<form id="RequestCodeForm" method="post" asp-action="SendCode" asp-controller="EmailAuthenticator" class="d-none">
+<form id="RequestCodeForm" method="post" asp-action="SendCode" asp-controller="SmsAuthenticator" class="d-none">
 </form>
 
-<script at="Head" asp-name="RequestVerificationCodeViaEmail">
+<script at="Head" asp-name="RequestVerificationCodeViaSms">
     document.addEventListener('DOMContentLoaded', () => {
 
         const box = document.getElementById('RequestCodeFeedback');
