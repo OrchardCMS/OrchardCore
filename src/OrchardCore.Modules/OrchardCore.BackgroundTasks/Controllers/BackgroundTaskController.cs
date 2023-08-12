@@ -74,6 +74,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                         Title = defaultSettings.Title,
                         Description = settings.Description,
                         Enable = settings.Enable,
+                        PipelineWarmup = settings.PipelineWarmup,
                     };
                 }
 
@@ -83,6 +84,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                     Title = defaultSettings.Title,
                     Description = defaultSettings.Description,
                     Enable = defaultSettings.Enable,
+                    PipelineWarmup = defaultSettings.PipelineWarmup,
                 };
             });
 
@@ -167,6 +169,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 Description = settings.Description,
                 LockTimeout = settings.LockTimeout,
                 LockExpiration = settings.LockExpiration,
+                PipelineWarmup = settings.PipelineWarmup,
             };
 
             return View(model);
@@ -201,6 +204,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 settings.Description = model.Description;
                 settings.LockTimeout = model.LockTimeout;
                 settings.LockExpiration = model.LockExpiration;
+                settings.PipelineWarmup = model.PipelineWarmup;
 
                 await _backgroundTaskManager.UpdateAsync(model.Name, settings);
 

@@ -167,7 +167,7 @@ namespace OrchardCore.Modules
 
                         try
                         {
-                            if (_options.PipelineWarmup && !scope.ShellContext.HasPipeline())
+                            if (scheduler.Settings.PipelineWarmup && !scope.ShellContext.HasPipeline())
                             {
                                 // Build the shell pipeline to configure endpoint data sources.
                                 await ModularTenantRouterMiddleware.InitializePipelineAsync(scope.ShellContext);

@@ -23,5 +23,7 @@ namespace OrchardCore.BackgroundTasks.ViewModels
         public bool Enable { get; set; }
 
         public string Description { get; set; }
+
+        public bool PipelineWarmup { get; set; }
     }
 }
