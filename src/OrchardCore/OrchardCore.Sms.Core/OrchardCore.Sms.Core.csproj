@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>OrchardCore.Sms</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore SMS Core</Title>
+    <Description>
+      $(OCCMSDescription)
+
+      Core Services for the SMS module.
+    </Description>
+    <PackageTags>$(PackageTags) OrchardCore Core</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="libphonenumber-csharp" Version="8.13.18" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Sms.Abstractions\OrchardCore.Sms.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

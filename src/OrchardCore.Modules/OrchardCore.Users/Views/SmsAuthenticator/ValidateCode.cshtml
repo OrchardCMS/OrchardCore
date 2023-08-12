@@ -1,17 +1,23 @@
+@using OrchardCore.Users.Services
 @model EnableSmsAuthenticatorViewModel
 
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a asp-action="Index" asp-controller="TwoFactorAuthentication">@T["Two-Factor Authentication"]</a></li>
-        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="EmailAuthenticator">@T["Configure SMS Authenticator"]</a></li>
-        <li class="breadcrumb-item active" aria-current="page">@RenderTitleSegments(T["Validate Phone Number"])</li>
+        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="SmsAuthenticator">@T["Configure SMS Authenticator"]</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@RenderTitleSegments(T["SMS Code Validation"])</li>
     </ol>
 </nav>
 
+<div class="alert alert-info">
+    @T["Phone check your phone for a verification code and provide it below."]
+</div>
+
 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
 
-<form method="post" asp-action="ValidateCode">
+<form method="post">
     <div class="form-floating mb-3">
+        <input type="hidden" asp-for="PhoneNumber" />
         <input asp-for="Code" class="form-control" autocomplete="off" placeholder="@T["Please enter the code"]" />
         <label asp-for="Code" class="control-label form-label">@T["Verification code"]</label>
         <span asp-validation-for="Code" class="text-danger"></span>

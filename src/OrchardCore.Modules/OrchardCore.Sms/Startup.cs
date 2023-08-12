@@ -1,7 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Facebook;
 using OrchardCore.Modules;
-using OrchardCore.Sms.Services;
+using OrchardCore.Navigation;
+using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
+using OrchardCore.Sms.Drivers;
 
 namespace OrchardCore.Sms;
 
@@ -9,22 +14,12 @@ public class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<TwilioSmsService>();
-        services.Configure<SmsServiceOptions>(options =>
-        {
-            options.SmsServices.Add("Twilio", (sp) => sp.GetService<TwilioSmsService>());
-        });
-
-        services.AddScoped(sp =>
-        {
-            var options = sp.GetService<IOptions<SmsServiceOptions>>().Value;
-
-            if (options.SmsServices.TryGetValue(options.Name, out var service))
-            {
-                return service(sp);
-            }
-
-            return new ConsoleSmsService();
-        });
+        services.AddSmsServices();
+        services.AddPhoneFormatValidator();
+        services.AddTwilioProvider();
+        services.AddConsoleProvider();
+        services.AddScoped<IPermissionProvider, SmsPermissionProvider>();
+        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddScoped<IDisplayDriver<ISite>, SmsSettingsDisplayDriver>();
     }
 }

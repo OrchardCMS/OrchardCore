@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Sms.Abstractions;
+namespace OrchardCore.Sms;
 
 public class SmsMessage
 {

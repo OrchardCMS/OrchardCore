@@ -236,13 +236,6 @@ public class SmsAuthenticatorStartup : StartupBase
         );
 
         routes.MapAreaControllerRoute(
-            name: "ConfigureSmsAuthenticatorRequestCode",
-            areaName: UserConstants.Features.Users,
-            pattern: _adminOptions.AdminUrlPrefix + "/Authenticator/Configure/Sms/RequestCode",
-            defaults: new { controller = _smsAuthenticatorControllerName, action = nameof(SmsAuthenticatorController.RequestCode) }
-        );
-
-        routes.MapAreaControllerRoute(
             name: "ConfigureSmsAuthenticatorValidateCode",
             areaName: UserConstants.Features.Users,
             pattern: _adminOptions.AdminUrlPrefix + "/Authenticator/Configure/Sms/ValidateCode",

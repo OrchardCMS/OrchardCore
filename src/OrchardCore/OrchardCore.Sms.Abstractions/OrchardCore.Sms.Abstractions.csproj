@@ -12,4 +12,8 @@
     <PackageTags>$(PackageTags) OrchardCore Abstractions</PackageTags>
   </PropertyGroup>
 
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
 </Project>

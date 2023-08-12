@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace OrchardCore.Users.Models;
 
 public class EmailAuthenticatorLoginSettings
@@ -13,5 +15,8 @@ public class EmailAuthenticatorLoginSettings
 
 public class SmsAuthenticatorLoginSettings
 {
+    [DefaultValue(true)]
+    public bool AllowChangePhoneNumber { get; set; } = true;
+
     public string Body { get; set; }
 }
