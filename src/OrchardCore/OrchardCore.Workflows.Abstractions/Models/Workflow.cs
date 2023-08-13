@@ -9,7 +9,7 @@ namespace OrchardCore.Workflows.Models
     /// </summary>
     public class Workflow
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// A unique identifier for this workflow.

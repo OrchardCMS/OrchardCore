@@ -46,13 +46,25 @@ namespace OrchardCore.Lists.Drivers
 
             var viewModel = new EditContainedPartViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)) && viewModel.ContainerId != null && viewModel.ContentType == model.ContentType)
+            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart))
+                && viewModel.ContainerId != null
+                && viewModel.ContentType == model.ContentType)
             {
-                // We are creating a content item that needs to be added to a container
-                // so we render the container id as part of the form, the content type,
-                // and the enable ordering setting.
+                // We are creating a content item that needs to be added to a container.
+                // Render the container id as part of the form. The content type, and the enable ordering setting.
                 // The content type must be included to prevent any contained items,
                 // such as widgets, from also having a ContainedPart shape built for them.
+
+                // Attach ContainedPart to the contentitem during edit to provide handlers container info.
+                await model.AlterAsync<ContainedPart>(async part =>
+                {
+                    part.ListContentItemId = viewModel.ContainerId;
+                    part.ListContentType = viewModel.ContainerContentType;
+                    if (viewModel.EnableOrdering)
+                    {
+                        part.Order = await _containerService.GetNextOrderNumberAsync(viewModel.ContainerId);
+                    }
+                });
 
                 return BuildViewModel(viewModel.ContainerId, viewModel.ContainerContentType, model.ContentType, viewModel.EnableOrdering);
             }
@@ -66,20 +78,21 @@ namespace OrchardCore.Lists.Drivers
 
             // The content type must match the value provided in the query string
             // in order for the ContainedPart to be included on the Content Item.
-            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)) && viewModel.ContainerId != null && viewModel.ContentType == model.ContentType)
+            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart))
+                && viewModel.ContainerId != null
+                && viewModel.ContentType == model.ContentType)
             {
-                model.Alter<ContainedPart>(x =>
+                await model.AlterAsync<ContainedPart>(async part =>
                 {
-                    x.ListContentItemId = viewModel.ContainerId;
-                    x.ListContentType = viewModel.ContainerContentType;
-                });
+                    part.ListContentItemId = viewModel.ContainerId;
+                    part.ListContentType = viewModel.ContainerContentType;
 
-                // If creating get next order number so item is added to the end of the list
-                if (viewModel.EnableOrdering)
-                {
-                    var nextOrder = await _containerService.GetNextOrderNumberAsync(viewModel.ContainerId);
-                    model.Alter<ContainedPart>(x => x.Order = nextOrder);
-                }
+                    // If creating get next order number so item is added to the end of the list.
+                    if (viewModel.EnableOrdering)
+                    {
+                        part.Order = await _containerService.GetNextOrderNumberAsync(viewModel.ContainerId);
+                    }
+                });
             }
 
             return await EditAsync(model, updater);
@@ -96,7 +109,7 @@ namespace OrchardCore.Lists.Drivers
                     m.EnableOrdering = enableOrdering;
                     m.ContentType = contentType;
                 })
-                .Location("Content")
+                .Location("Content"),
             };
 
             if (!String.IsNullOrEmpty(containerContentType))
@@ -151,11 +164,10 @@ namespace OrchardCore.Lists.Drivers
             }).Location("Content:1");
         }
 
-        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ListPartSettings settings)
-        {
-            var contentTypes = settings.ContainedContentTypes ?? Enumerable.Empty<string>();
-
-            return contentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
-        }
+        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ListPartSettings settings) =>
+            settings.ContainedContentTypes
+                ?.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
+                .Where(definition => definition is not null)
+                ?? Enumerable.Empty<ContentTypeDefinition>();
     }
 }

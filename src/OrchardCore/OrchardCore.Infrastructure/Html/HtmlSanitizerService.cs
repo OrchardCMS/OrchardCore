@@ -5,7 +5,7 @@ namespace OrchardCore.Infrastructure.Html
 {
     public class HtmlSanitizerService : IHtmlSanitizerService
     {
-        private readonly HtmlSanitizer _sanitizer = new HtmlSanitizer();
+        private readonly HtmlSanitizer _sanitizer = new();
 
         public HtmlSanitizerService(IOptions<HtmlSanitizerOptions> options)
         {
@@ -15,9 +15,6 @@ namespace OrchardCore.Infrastructure.Html
             }
         }
 
-        public string Sanitize(string html)
-        {
-            return _sanitizer.Sanitize(html);
-        }
+        public string Sanitize(string html) => _sanitizer.Sanitize(html);
     }
 }

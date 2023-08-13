@@ -56,7 +56,7 @@ namespace OrchardCore.Workflows.Http.Services
                 .ToArray();
         }
 
-        public void AddEntries(TWorkflowRouteDocument document, IEnumerable<WorkflowRoutesEntry> entries)
+        public static void AddEntries(TWorkflowRouteDocument document, IEnumerable<WorkflowRoutesEntry> entries)
         {
             foreach (var group in entries.GroupBy(x => x.WorkflowId))
             {
@@ -64,7 +64,7 @@ namespace OrchardCore.Workflows.Http.Services
             }
         }
 
-        public void RemoveEntries(TWorkflowRouteDocument document, string workflowId) => document.Entries.Remove(workflowId);
+        public static void RemoveEntries(TWorkflowRouteDocument document, string workflowId) => document.Entries.Remove(workflowId);
 
         /// <summary>
         /// Loads the workflow route document for updating and that should not be cached.

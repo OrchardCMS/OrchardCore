@@ -31,7 +31,7 @@ namespace OrchardCore.Mvc
         {
             EnsureScopedServices();
 
-            PopulateFeatureInternal(parts, feature);
+            PopulateFeatureInternal(feature);
 
             // Apply views feature providers registered at the tenant level.
             foreach (var provider in _featureProviders)
@@ -51,7 +51,7 @@ namespace OrchardCore.Mvc
             if (_hostingEnvironment.IsDevelopment() && refsFolderExists)
             {
                 var viewsFeature = new ViewsFeature();
-                PopulateFeatureInternal(parts, viewsFeature);
+                PopulateFeatureInternal(viewsFeature);
 
                 // Apply views feature providers registered at the tenant level.
                 foreach (var provider in _featureProviders)
@@ -66,7 +66,7 @@ namespace OrchardCore.Mvc
             }
         }
 
-        private void PopulateFeatureInternal(IEnumerable<ApplicationPart> parts, ViewsFeature feature)
+        private void PopulateFeatureInternal(ViewsFeature feature)
         {
             // Retrieve mvc views feature providers but not this one.
             var mvcFeatureProviders = _applicationPartManager.FeatureProviders
@@ -115,8 +115,7 @@ namespace OrchardCore.Mvc
                     }
                 }
 
-                // Look for compiled views in the same assembly as the module
-
+                // Look for compiled views in the same assembly as the module.
                 if (module.Assembly.GetCustomAttributes<RazorCompiledItemAttribute>().Any())
                 {
                     assembliesWithViews.Add(module.Assembly);

@@ -23,7 +23,7 @@ namespace OrchardCore.Flows.Drivers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
 
@@ -106,6 +106,7 @@ namespace OrchardCore.Flows.Drivers
             {
                 var contentItem = await _contentManager.NewAsync(model.ContentTypes[i]);
                 var existingContentItem = part.Widgets.FirstOrDefault(x => String.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
+
                 // When the content item already exists merge its elements to preverse nested content item ids.
                 // All of the data for these merged items is then replaced by the model values on update, while a nested content item id is maintained.
                 // This prevents nested items which rely on the content item id, i.e. the media attached field, losing their reference point.
@@ -133,12 +134,11 @@ namespace OrchardCore.Flows.Drivers
 
             if (settings.ContainedContentTypes == null || !settings.ContainedContentTypes.Any())
             {
-                return _contentDefinitionManager.ListTypeDefinitions().Where(t => t.GetStereotype() == "Widget");
+                return _contentDefinitionManager.ListTypeDefinitions().Where(t => t.StereotypeEquals("Widget"));
             }
 
-            return settings.ContainedContentTypes
-                .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
-                .Where(t => t != null && t.GetStereotype() == "Widget");
+            return _contentDefinitionManager.ListTypeDefinitions()
+                .Where(t => settings.ContainedContentTypes.Contains(t.Name) && t.StereotypeEquals("Widget"));
         }
     }
 }

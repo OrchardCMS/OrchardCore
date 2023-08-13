@@ -7,7 +7,6 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.ViewModels;
 
@@ -31,8 +30,7 @@ namespace OrchardCore.OpenId.Drivers
 
                 var availableTenants = new List<string>();
 
-                foreach (var shellSettings in _shellHost.GetAllSettings()
-                    .Where(s => s.State == TenantState.Running))
+                foreach (var shellSettings in _shellHost.GetAllSettings().Where(s => s.IsRunning()))
                 {
                     var shellScope = await _shellHost.GetScopeAsync(shellSettings);
 

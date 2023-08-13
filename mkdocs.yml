@@ -62,7 +62,8 @@ markdown_extensions:
   - pymdownx.snippets:
       check_paths: true
   - pymdownx.superfences
-  - pymdownx.tabbed
+  - pymdownx.tabbed:
+      alternate_style: false
   - pymdownx.tasklist
   - pymdownx.tilde
   - toc:
@@ -105,7 +106,7 @@ nav:
       - Understanding Content Definitions Stores: docs/guides/content-definitions/README.md
       - Change password configuration: docs/guides/password-configuration/README.md
       - Change lockout configuration: docs/guides/lockout-configuration/README.md
-      - Azure AD integration: docs/guides/azuread-integration/README.md
+      - Microsoft Entra ID (Azure AD) integration: docs/guides/microsoft-entra-id-integration/README.md
       - Create a Liquid Widget: docs/guides/create-liquid-widget/README.md
       - Query Content Items Based on Taxonomy: docs/guides/query-content-items-based-on-taxonomy/README.md
       - Gulp pipeline: docs/guides/gulp-pipeline/README.md
@@ -125,6 +126,7 @@ nav:
       - Publishing a new release: docs/topics/publishing-releases/README.md
       - Using Docker: docs/topics/docker/README.md
       - Using local NuGet packages: docs/topics/local-nuget-packages/README.md
+      - Managing the Orchard Core Red Hat Ecosystem Catalog certification:  docs/topics/red-hat-ecosystem-catalog-certification/README.md
   - Reference:
       - docs/reference/README.md
       - CMS Modules:

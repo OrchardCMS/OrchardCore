@@ -19,25 +19,12 @@ namespace OrchardCore.Taxonomies.Liquid
 
         public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
-            ContentItem taxonomy = null;
-            string termContentItemId = null;
-
-            if (input.Type == FluidValues.Object && input.ToObjectValue() is ContentItem term)
-            {
-                termContentItemId = term.ContentItemId;
-            }
-            else
-            {
-                termContentItemId = input.ToStringValue();
-            }
+            var termContentItemId = input.Type == FluidValues.Object && input.ToObjectValue() is ContentItem term
+                ? term.ContentItemId
+                : input.ToStringValue();
 
             var firstArg = arguments.At(0);
-
-            if (firstArg.Type == FluidValues.Object && input.ToObjectValue() is ContentItem contentItem)
-            {
-                taxonomy = contentItem;
-            }
-            else
+            if (firstArg.Type != FluidValues.Object || input.ToObjectValue() is not ContentItem taxonomy)
             {
                 taxonomy = await _contentManager.GetAsync(firstArg.ToStringValue());
             }

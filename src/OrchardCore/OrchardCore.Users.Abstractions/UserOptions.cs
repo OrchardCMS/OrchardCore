@@ -7,7 +7,7 @@ namespace OrchardCore.Users
         private string _changePasswordUrl = "ChangePassword";
         private string _changePasswordConfirmationUrl = "ChangePasswordConfirmation";
         private string _externalLoginsUrl = "ExternalLogins";
-        private string _enableAuthenticatorPath = "EnableAuthenticator";
+        private string _twoFactorAuthenticationPath = "TwoFactor";
 
         public string LoginPath
         {
@@ -39,10 +39,10 @@ namespace OrchardCore.Users
             set => _externalLoginsUrl = value.Trim(' ', '/');
         }
 
-        public string EnableAuthenticatorPath
+        public string TwoFactorAuthenticationPath
         {
-            get => _enableAuthenticatorPath;
-            set => _enableAuthenticatorPath = value.Trim(' ', '/');
+            get => _twoFactorAuthenticationPath;
+            set => _twoFactorAuthenticationPath = value.Trim(' ', '/');
         }
     }
 }

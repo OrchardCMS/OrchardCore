@@ -10,7 +10,7 @@ namespace OrchardCore.Workflows.Activities
     public class CorrelateTask : TaskActivity
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public CorrelateTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<CorrelateTask> localizer)
         {

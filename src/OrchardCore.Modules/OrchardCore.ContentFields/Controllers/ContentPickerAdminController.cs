@@ -83,7 +83,7 @@ namespace OrchardCore.ContentFields.Controllers
                 Query = query,
                 DisplayAllContentTypes = fieldSettings.DisplayAllContentTypes,
                 ContentTypes = contentTypes,
-                PartFieldDefinition = partFieldDefinition
+                PartFieldDefinition = partFieldDefinition,
             });
 
             var contentItems = await _contentManager

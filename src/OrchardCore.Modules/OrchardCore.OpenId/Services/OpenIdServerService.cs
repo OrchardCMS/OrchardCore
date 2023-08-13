@@ -29,7 +29,7 @@ namespace OrchardCore.OpenId.Services
         private readonly IOptionsMonitor<ShellOptions> _shellOptions;
         private readonly ShellSettings _shellSettings;
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public OpenIdServerService(
             IDataProtectionProvider dataProtectionProvider,
@@ -431,10 +431,7 @@ namespace OrchardCore.OpenId.Services
                     }
                     catch (Exception exception)
                     {
-                        if (exceptions == null)
-                        {
-                            exceptions = new List<Exception>();
-                        }
+                        exceptions ??= new List<Exception>();
 
                         exceptions.Add(exception);
                     }
@@ -545,7 +542,7 @@ namespace OrchardCore.OpenId.Services
             }
         }
 
-        private X509Certificate2 GenerateEncryptionCertificate(ShellSettings settings)
+        private static X509Certificate2 GenerateEncryptionCertificate(ShellSettings settings)
         {
             var algorithm = GenerateRsaSecurityKey(size: 2048);
             var certificate = GenerateCertificate(X509KeyUsageFlags.KeyEncipherment, algorithm, settings);

@@ -16,7 +16,7 @@ namespace OrchardCore.Themes.Services
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly INotifier _notifier;
         private readonly ISiteThemeService _siteThemeService;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
 
         public ThemeService(
             IExtensionManager extensionManager,
@@ -45,12 +45,12 @@ namespace OrchardCore.Themes.Services
                     break;
                 themes.Enqueue(themeName);
 
-                themeName = !string.IsNullOrWhiteSpace(theme.Manifest.Name)
+                themeName = !String.IsNullOrWhiteSpace(theme.Manifest.Name)
                     ? theme.Manifest.Name
                     : null;
             }
 
-            var currentTheme = await _siteThemeService.GetCurrentThemeNameAsync();
+            var currentTheme = await _siteThemeService.GetSiteThemeNameAsync();
 
             while (themes.Count > 0)
             {

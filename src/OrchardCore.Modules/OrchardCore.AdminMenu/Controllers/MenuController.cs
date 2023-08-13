@@ -27,9 +27,9 @@ namespace OrchardCore.AdminMenu.Controllers
         private readonly IAdminMenuService _adminMenuService;
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-        private readonly dynamic New;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
+        protected readonly dynamic New;
         private readonly ILogger _logger;
 
         public MenuController(
@@ -63,12 +63,10 @@ namespace OrchardCore.AdminMenu.Controllers
 
             var adminMenuList = (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu;
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
                 adminMenuList = adminMenuList.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
-
-            var count = adminMenuList.Count();
 
             var startIndex = pager.GetStartIndex();
             var pageSize = pager.PageSize;
@@ -93,17 +91,18 @@ namespace OrchardCore.AdminMenu.Controllers
             var routeData = new RouteData();
             routeData.Values.Add("Options.Search", options.Search);
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(adminMenuList.Count).RouteData(routeData);
 
             var model = new AdminMenuListViewModel
             {
                 AdminMenu = results.Select(x => new AdminMenuEntry { AdminMenu = x }).ToList(),
                 Options = options,
-                Pager = pagerShape
+                Pager = pagerShape,
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
+            model.Options.ContentsBulkAction = new List<SelectListItem>()
+            {
+                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) },
             };
 
             return View(model);
@@ -261,7 +260,7 @@ namespace OrchardCore.AdminMenu.Controllers
                         await _notifier.SuccessAsync(H["Admin menus successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
 

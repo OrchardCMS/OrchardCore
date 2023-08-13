@@ -5,7 +5,7 @@ namespace OrchardCore.Facebook
 {
     public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
     {
-        private static ResourceManifest _manifest;
+        private static readonly ResourceManifest _manifest;
 
         static ResourceManagementOptionsConfiguration()
         {
@@ -21,9 +21,6 @@ namespace OrchardCore.Facebook
                 .SetUrl("~/OrchardCore.Facebook/sdk/fbsdk.js");
         }
 
-        public void Configure(ResourceManagementOptions options)
-        {
-            options.ResourceManifests.Add(_manifest);
-        }
+        public void Configure(ResourceManagementOptions options) => options.ResourceManifests.Add(_manifest);
     }
 }

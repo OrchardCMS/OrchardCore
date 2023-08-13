@@ -5,7 +5,7 @@ namespace OrchardCore.ContentManagement.Handlers
 {
     public class ContentValidateResult
     {
-        private readonly List<ValidationResult> _errors = new List<ValidationResult>();
+        private readonly List<ValidationResult> _errors = new();
 
         public IReadOnlyList<ValidationResult> Errors => _errors;
 

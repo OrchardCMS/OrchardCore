@@ -9,7 +9,7 @@ namespace OrchardCore.GitHub
     [Feature(GitHubConstants.Features.GitHubAuthentication)]
     public class AdminMenuGitHubLogin : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenuGitHubLogin(IStringLocalizer<AdminMenuGitHubLogin> localizer)
         {

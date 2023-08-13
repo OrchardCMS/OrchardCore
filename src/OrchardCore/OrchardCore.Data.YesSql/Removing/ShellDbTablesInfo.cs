@@ -49,6 +49,7 @@ internal class ShellDbTablesInfo : ISchemaBuilder
         Transaction = transaction;
         Connection = transaction.Connection;
         ThrowOnError = throwOnError;
+        _logger = logger;
 
         return this;
     }

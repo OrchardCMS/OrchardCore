@@ -6,7 +6,7 @@ namespace OrchardCore.BackgroundTasks
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageBackgroundTasks = new Permission("ManageBackgroundTasks", "Manage background tasks");
+        public static readonly Permission ManageBackgroundTasks = new("ManageBackgroundTasks", "Manage background tasks");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
@@ -20,12 +20,12 @@ namespace OrchardCore.BackgroundTasks
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageBackgroundTasks }
+                    Permissions = new[] { ManageBackgroundTasks },
                 }
             };
         }
 
-        private IEnumerable<Permission> GetPermissions()
+        private static IEnumerable<Permission> GetPermissions()
         {
             return new[] { ManageBackgroundTasks };
         }

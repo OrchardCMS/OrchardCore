@@ -1,7 +1,7 @@
 namespace OrchardCore.Rules
 {
     /// <comment>
-    /// Migrates existing script rules to rules
+    /// Migrates existing script rules to rules.
     /// </comment>
     /// <remarks>
     /// For migrations purposes only. This code can be removed in a later release.

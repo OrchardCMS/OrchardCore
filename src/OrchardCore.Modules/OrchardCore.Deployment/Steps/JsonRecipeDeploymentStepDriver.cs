@@ -31,7 +31,7 @@ namespace OrchardCore.Deployment.Steps
 }
 ";
 
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public JsonRecipeDeploymentStepDriver(IStringLocalizer<JsonRecipeDeploymentStepDriver> stringLocalizer)
         {

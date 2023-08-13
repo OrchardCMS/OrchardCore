@@ -1,19 +1,25 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
+using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Models;
 using OrchardCore.Contents;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Liquid;
+using OrchardCore.Localization;
 using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentFields.Drivers
@@ -21,6 +27,8 @@ namespace OrchardCore.ContentFields.Drivers
     public class ContentPickerFieldDisplayDriver : ContentFieldDisplayDriver<ContentPickerField>
     {
         private readonly IContentManager _contentManager;
+        private readonly ILiquidTemplateManager _templateManager;
+        protected readonly IStringLocalizer S;
         private readonly IStringLocalizer S;
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -28,22 +36,24 @@ namespace OrchardCore.ContentFields.Drivers
         public ContentPickerFieldDisplayDriver(
             IContentManager contentManager,
             IStringLocalizer<ContentPickerFieldDisplayDriver> localizer,
+            ILiquidTemplateManager templateManager,
             IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor)
         {
             _contentManager = contentManager;
             S = localizer;
+            _templateManager = templateManager;
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public override IDisplayResult Display(ContentPickerField field, BuildFieldDisplayContext context)
+        public override IDisplayResult Display(ContentPickerField field, BuildFieldDisplayContext fieldDisplayContext)
         {
-            return Initialize<DisplayContentPickerFieldViewModel>(GetDisplayShapeType(context), model =>
+            return Initialize<DisplayContentPickerFieldViewModel>(GetDisplayShapeType(fieldDisplayContext), model =>
             {
                 model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
+                model.Part = fieldDisplayContext.ContentPart;
+                model.PartFieldDefinition = fieldDisplayContext.PartFieldDefinition;
             })
             .Location("Detail", "Content")
             .Location("Summary", "Content");
@@ -53,13 +63,14 @@ namespace OrchardCore.ContentFields.Drivers
         {
             return Initialize<EditContentPickerFieldViewModel>(GetEditorShapeType(context), async model =>
             {
-                model.ContentItemIds = string.Join(",", field.ContentItemIds);
+                model.ContentItemIds = String.Join(",", field.ContentItemIds);
 
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
 
                 model.SelectedItems = new List<VueMultiselectItemViewModel>();
+                var settings = context.PartFieldDefinition.GetSettings<ContentPickerFieldSettings>();
 
                 foreach (var contentItemId in field.ContentItemIds)
                 {
@@ -70,13 +81,20 @@ namespace OrchardCore.ContentFields.Drivers
                         continue;
                     }
 
-                    model.SelectedItems.Add(new VueMultiselectItemViewModel
+                    var cultureAspect = await _contentManager.PopulateAspectAsync(contentItem, new CultureAspect());
+
+                    using (CultureScope.Create(cultureAspect.Culture))
                     {
-                        Id = contentItemId,
-                        DisplayText = contentItem.ToString(),
-                        HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem),
-                        IsViewable = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext!.User, CommonPermissions.EditContent, contentItem)
-                    });
+                        model.SelectedItems.Add(new VueMultiselectItemViewModel
+                        {
+                            Id = contentItemId,
+                            DisplayText = await _templateManager.RenderStringAsync(settings.TitlePattern, NullEncoder.Default, contentItem,
+                                new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(contentItem) }),
+                            HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem),
+                            IsViewable = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext!.User, CommonPermissions.EditContent, contentItem)
+                        });
+                    }
+                        
                 }
             });
         }
