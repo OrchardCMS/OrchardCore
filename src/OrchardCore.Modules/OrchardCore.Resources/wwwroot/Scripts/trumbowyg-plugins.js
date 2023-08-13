@@ -4631,380 +4631,155 @@
   'use strict';
 
   var defaultOptions = {
-    minSize: 32,
-    step: 4
-  };
-  function preventDefault(e) {
-    e.stopPropagation();
-    e.preventDefault();
-  }
-  var ResizeWithCanvas = function ResizeWithCanvas(trumbowyg) {
-    // variable to create canvas and save img in resize mode
-    this.resizeCanvas = document.createElement('canvas');
-    // to allow canvas to get focus
-    this.resizeCanvas.setAttribute('tabindex', '0');
-    this.resizeCanvas.id = 'trumbowyg-resizimg-' + +new Date();
-    this.ctx = null;
-    this.resizeImg = null;
-    this.pressEscape = function (obj) {
-      obj.reset();
-    };
-    this.pressBackspaceOrDelete = function (obj) {
-      $(obj.resizeCanvas).remove();
-      obj.resizeImg = null;
-      if (trumbowyg !== null) {
-        trumbowyg.syncCode();
-        // notify changes
-        trumbowyg.$c.trigger('tbwchange');
-      }
-    };
-
-    // PRIVATE FUNCTION
-    var focusedNow = false;
-    var isCursorSeResize = false;
-
-    // calculate offset to change mouse over square in the canvas
-    var offsetX, offsetY;
-    var reOffset = function reOffset(canvas) {
-      var BB = canvas.getBoundingClientRect();
-      offsetX = BB.left;
-      offsetY = BB.top;
-    };
-    var updateCanvas = function updateCanvas(canvas, ctx, img, canvasWidth, canvasHeight) {
-      ctx.translate(0.5, 0.5);
-      ctx.lineWidth = 1;
-
-      // image
-      ctx.drawImage(img, 5, 5, canvasWidth - 10, canvasHeight - 10);
-
-      // border
-      ctx.beginPath();
-      ctx.rect(5, 5, canvasWidth - 10, canvasHeight - 10);
-      ctx.stroke();
-
-      // square in the angle
-      ctx.beginPath();
-      ctx.fillStyle = 'rgb(255, 255, 255)';
-      ctx.rect(canvasWidth - 10, canvasHeight - 10, 9, 9);
-      ctx.fill();
-      ctx.stroke();
-
-      // get the offset to change the mouse cursor
-      reOffset(canvas);
-      return ctx;
-    };
-
-    // PUBLIC FUNCTION
-    // necessary to correctly print cursor over square. Called once for instance. Useless with trumbowyg.
-    this.init = function () {
-      var _this = this;
-      $(window).on('scroll resize', function () {
-        _this.reCalcOffset();
-      });
-    };
-    this.reCalcOffset = function () {
-      reOffset(this.resizeCanvas);
-    };
-    this.canvasId = function () {
-      return this.resizeCanvas.id;
-    };
-    this.isActive = function () {
-      return this.resizeImg !== null;
-    };
-    this.isFocusedNow = function () {
-      return focusedNow;
-    };
-    this.blurNow = function () {
-      focusedNow = false;
-    };
-
-    // restore image in the HTML of the editor
-    this.reset = function () {
-      if (this.resizeImg === null) {
-        return;
-      }
-
-      // set style of image to avoid issue on resize because this attribute have priority over width and height attribute
-      this.resizeImg.setAttribute('style', 'width: 100%; max-width: ' + (this.resizeCanvas.clientWidth - 10) + 'px; height: auto; max-height: ' + (this.resizeCanvas.clientHeight - 10) + 'px;');
-      $(this.resizeCanvas).replaceWith($(this.resizeImg));
-
-      // reset canvas style
-      this.resizeCanvas.removeAttribute('style');
-      this.resizeImg = null;
-    };
-
-    // setup canvas with points and border to allow the resizing operation
-    this.setup = function (img, resizableOptions) {
-      this.resizeImg = img;
-      if (!this.resizeCanvas.getContext) {
-        return false;
-      }
-      focusedNow = true;
-
-      // draw canvas
-      this.resizeCanvas.width = $(this.resizeImg).width() + 10;
-      this.resizeCanvas.height = $(this.resizeImg).height() + 10;
-      this.resizeCanvas.style.margin = '-5px';
-      this.ctx = this.resizeCanvas.getContext('2d');
-
-      // replace image with canvas
-      $(this.resizeImg).replaceWith($(this.resizeCanvas));
-      updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height);
-
-      // enable resize
-      $(this.resizeCanvas).resizableSafe(resizableOptions).on('mousedown', preventDefault);
-      var _this = this;
-      $(this.resizeCanvas).on('mousemove', function (e) {
-        var mouseX = Math.round(e.clientX - offsetX);
-        var mouseY = Math.round(e.clientY - offsetY);
-        var wasCursorSeResize = isCursorSeResize;
-        _this.ctx.rect(_this.resizeCanvas.width - 10, _this.resizeCanvas.height - 10, 9, 9);
-        isCursorSeResize = _this.ctx.isPointInPath(mouseX, mouseY);
-        if (wasCursorSeResize !== isCursorSeResize) {
-          this.style.cursor = isCursorSeResize ? 'se-resize' : 'default';
-        }
-      }).on('keydown', function (e) {
-        if (!_this.isActive()) {
-          return;
-        }
-        var x = e.keyCode;
-        if (x === 27) {
-          // ESC
-          _this.pressEscape(_this);
-        } else if (x === 8 || x === 46) {
-          // BACKSPACE or DELETE
-          _this.pressBackspaceOrDelete(_this);
-        }
-      }).on('focus', preventDefault).on('blur', function () {
-        _this.reset();
-        // save changes
-        if (trumbowyg !== null) {
-          trumbowyg.syncCode();
-          // notify changes
-          trumbowyg.$c.trigger('tbwchange');
-        }
-      });
-      this.resizeCanvas.focus();
-      return true;
-    };
-
-    // update the canvas after the resizing
-    this.refresh = function () {
-      if (!this.resizeCanvas.getContext) {
-        return;
-      }
-      this.resizeCanvas.width = this.resizeCanvas.clientWidth;
-      this.resizeCanvas.height = this.resizeCanvas.clientHeight;
-      updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height);
-    };
+    symbolList: [
+    // currencies
+    '0024', '20AC', '00A3', '00A2', '00A5', '00A4', '2030', null,
+    // legal signs
+    '00A9', '00AE', '2122', null,
+    // textual sign
+    '00A7', '00B6', '00C6', '00E6', '0152', '0153', null, '2022', '25CF', '2023', '25B6', '2B29', '25C6', null,
+    //maths
+    '00B1', '00D7', '00F7', '21D2', '21D4', '220F', '2211', '2243', '2264', '2265']
   };
   $.extend(true, $.trumbowyg, {
+    langs: {
+      en: {
+        specialChars: 'Special characters'
+      },
+      az: {
+        specialChars: 'Xüsusi simvollar'
+      },
+      by: {
+        specialChars: 'Спецыяльныя сімвалы'
+      },
+      et: {
+        specialChars: 'Erimärgid'
+      },
+      fr: {
+        specialChars: 'Caractères spéciaux'
+      },
+      hu: {
+        specialChars: 'Speciális karakterek'
+      },
+      ko: {
+        specialChars: '특수문자'
+      },
+      ru: {
+        specialChars: 'Специальные символы'
+      },
+      sl: {
+        specialChars: 'Posebni znaki'
+      },
+      tr: {
+        specialChars: 'Özel karakterler'
+      }
+    },
     plugins: {
-      resizimg: {
-        destroyResizable: function destroyResizable() {},
+      specialchars: {
         init: function init(trumbowyg) {
-          var destroyResizable = this.destroyResizable;
-
-          // object to interact with canvas
-          var resizeWithCanvas = new ResizeWithCanvas(trumbowyg);
-          this.destroyResizable = function () {
-            // clean html code
-            trumbowyg.$ed.find('canvas.resizable').resizableSafe('destroy').off('mousedown', preventDefault).removeClass('resizable');
-            resizeWithCanvas.reset();
-            trumbowyg.syncCode();
+          trumbowyg.o.plugins.specialchars = trumbowyg.o.plugins.specialchars || defaultOptions;
+          var specialCharsBtnDef = {
+            dropdown: buildDropdown(trumbowyg)
           };
-          trumbowyg.o.plugins.resizimg = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.resizimg || {}, {
-            resizable: {
-              resizeWidth: false,
-              onDragStart: function onDragStart(ev, $el) {
-                var opt = trumbowyg.o.plugins.resizimg;
-                var x = ev.pageX - $el.offset().left;
-                var y = ev.pageY - $el.offset().top;
-                if (x < $el.width() - opt.minSize || y < $el.height() - opt.minSize) {
-                  return false;
-                }
-              },
-              onDrag: function onDrag(ev, $el, newWidth, newHeight) {
-                var opt = trumbowyg.o.plugins.resizimg;
-                if (newHeight < opt.minSize) {
-                  newHeight = opt.minSize;
-                }
-                newHeight -= newHeight % opt.step;
-                $el.height(newHeight);
-                return false;
-              },
-              onDragEnd: function onDragEnd() {
-                // resize update canvas information
-                resizeWithCanvas.refresh();
-                trumbowyg.syncCode();
-              }
-            }
-          });
-          function initResizable() {
-            trumbowyg.$ed.find('img').off('click').on('click', function (e) {
-              // if I'm already do a resize, reset it
-              if (resizeWithCanvas.isActive()) {
-                resizeWithCanvas.reset();
-              }
-              // initialize resize of image
-              resizeWithCanvas.setup(this, trumbowyg.o.plugins.resizimg.resizable);
-              preventDefault(e);
-            });
-          }
-          trumbowyg.$c.on('tbwinit', function () {
-            initResizable();
-
-            // disable resize when click on other items
-            trumbowyg.$ed.on('click', function (e) {
-              // check if I've clicked out of canvas or image to reset it
-              if ($(e.target).is('img') || e.target.id === resizeWithCanvas.canvasId()) {
-                return;
-              }
-              preventDefault(e);
-              resizeWithCanvas.reset();
-              //sync
-              trumbowyg.syncCode();
-              // notify changes
-              trumbowyg.$c.trigger('tbwchange');
-            });
-            trumbowyg.$ed.on('scroll', function () {
-              resizeWithCanvas.reCalcOffset();
-            });
-          });
-          trumbowyg.$c.on('tbwfocus tbwchange', initResizable);
-          trumbowyg.$c.on('tbwresize', function () {
-            resizeWithCanvas.reCalcOffset();
-          });
-
-          // Destroy
-          trumbowyg.$c.on('tbwblur', function () {
-            // when canvas is created the tbwblur is called
-            // this code avoid to destroy the canvas that allow the image resizing
-            if (resizeWithCanvas.isFocusedNow()) {
-              resizeWithCanvas.blurNow();
-            } else {
-              destroyResizable();
-            }
-          });
-        },
-        destroy: function destroy() {
-          this.destroyResizable();
+          trumbowyg.addBtnDef('specialChars', specialCharsBtnDef);
         }
       }
     }
   });
+  function buildDropdown(trumbowyg) {
+    var dropdown = [];
+    $.each(trumbowyg.o.plugins.specialchars.symbolList, function (i, symbol) {
+      if (symbol === null) {
+        symbol = '&nbsp';
+      } else {
+        symbol = '&#x' + symbol;
+      }
+      var btn = symbol.replace(/:/g, ''),
+        defaultSymbolBtnName = 'symbol-' + btn,
+        defaultSymbolBtnDef = {
+          text: symbol,
+          hasIcon: false,
+          fn: function fn() {
+            var encodedSymbol = String.fromCodePoint(parseInt(symbol.replace('&#', '0')));
+            trumbowyg.execCmd('insertText', encodedSymbol);
+            return true;
+          }
+        };
+      trumbowyg.addBtnDef(defaultSymbolBtnName, defaultSymbolBtnDef);
+      dropdown.push(defaultSymbolBtnName);
+    });
+    return dropdown;
+  }
 })(jQuery);
-!function (e) {
+/* ===========================================================
+ * trumbowyg.specialchars.js v0.99
+ * Unicode characters picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Renaud Hoyoux (geektortoise)
+*/
+!function (a) {
   "use strict";
 
-  var i = {
-    minSize: 32,
-    step: 4
+  var s = {
+    symbolList: ["0024", "20AC", "00A3", "00A2", "00A5", "00A4", "2030", null, "00A9", "00AE", "2122", null, "00A7", "00B6", "00C6", "00E6", "0152", "0153", null, "2022", "25CF", "2023", "25B6", "2B29", "25C6", null, "00B1", "00D7", "00F7", "21D2", "21D4", "220F", "2211", "2243", "2264", "2265"]
   };
-  function t(e) {
-    e.stopPropagation(), e.preventDefault();
-  }
-  var s = function s(i) {
-    this.resizeCanvas = document.createElement("canvas"), this.resizeCanvas.setAttribute("tabindex", "0"), this.resizeCanvas.id = "trumbowyg-resizimg-" + +new Date(), this.ctx = null, this.resizeImg = null, this.pressEscape = function (e) {
-      e.reset();
-    }, this.pressBackspaceOrDelete = function (t) {
-      e(t.resizeCanvas).remove(), t.resizeImg = null, null !== i && (i.syncCode(), i.$c.trigger("tbwchange"));
-    };
-    var s,
-      n,
-      r = !1,
-      a = !1,
-      o = function o(e) {
-        var i = e.getBoundingClientRect();
-        s = i.left, n = i.top;
-      },
-      h = function h(e, i, t, s, n) {
-        return i.translate(.5, .5), i.lineWidth = 1, i.drawImage(t, 5, 5, s - 10, n - 10), i.beginPath(), i.rect(5, 5, s - 10, n - 10), i.stroke(), i.beginPath(), i.fillStyle = "rgb(255, 255, 255)", i.rect(s - 10, n - 10, 9, 9), i.fill(), i.stroke(), o(e), i;
-      };
-    // necessary to correctly print cursor over square. Called once for instance. Useless with trumbowyg.
-    this.init = function () {
-      var i = this;
-      e(window).on("scroll resize", function () {
-        i.reCalcOffset();
-      });
-    }, this.reCalcOffset = function () {
-      o(this.resizeCanvas);
-    }, this.canvasId = function () {
-      return this.resizeCanvas.id;
-    }, this.isActive = function () {
-      return null !== this.resizeImg;
-    }, this.isFocusedNow = function () {
-      return r;
-    }, this.blurNow = function () {
-      r = !1;
-    }, this.reset = function () {
-      null !== this.resizeImg && (this.resizeImg.setAttribute("style", "width: 100%; max-width: " + (this.resizeCanvas.clientWidth - 10) + "px; height: auto; max-height: " + (this.resizeCanvas.clientHeight - 10) + "px;"), e(this.resizeCanvas).replaceWith(e(this.resizeImg)), this.resizeCanvas.removeAttribute("style"), this.resizeImg = null);
-    }, this.setup = function (o, c) {
-      if (this.resizeImg = o, !this.resizeCanvas.getContext) return !1;
-      r = !0, this.resizeCanvas.width = e(this.resizeImg).width() + 10, this.resizeCanvas.height = e(this.resizeImg).height() + 10, this.resizeCanvas.style.margin = "-5px", this.ctx = this.resizeCanvas.getContext("2d"), e(this.resizeImg).replaceWith(e(this.resizeCanvas)), h(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height), e(this.resizeCanvas).resizableSafe(c).on("mousedown", t);
-      var u = this;
-      return e(this.resizeCanvas).on("mousemove", function (e) {
-        var i = Math.round(e.clientX - s),
-          t = Math.round(e.clientY - n),
-          r = a;
-        u.ctx.rect(u.resizeCanvas.width - 10, u.resizeCanvas.height - 10, 9, 9), r !== (a = u.ctx.isPointInPath(i, t)) && (this.style.cursor = a ? "se-resize" : "default");
-      }).on("keydown", function (e) {
-        if (u.isActive()) {
-          var i = e.keyCode;
-          27 === i ? u.pressEscape(u) : 8 !== i && 46 !== i || u.pressBackspaceOrDelete(u);
-        }
-      }).on("focus", t).on("blur", function () {
-        u.reset(), null !== i && (i.syncCode(), i.$c.trigger("tbwchange"));
-      }), this.resizeCanvas.focus(), !0;
-    }, this.refresh = function () {
-      this.resizeCanvas.getContext && (this.resizeCanvas.width = this.resizeCanvas.clientWidth, this.resizeCanvas.height = this.resizeCanvas.clientHeight, h(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height));
-    };
-  };
-  e.extend(!0, e.trumbowyg, {
-    plugins: {
-      resizimg: {
-        destroyResizable: function destroyResizable() {},
-        init: function init(n) {
-          var r = this.destroyResizable,
-            a = new s(n);
-          function o() {
-            n.$ed.find("img").off("click").on("click", function (e) {
-              a.isActive() && a.reset(), a.setup(this, n.o.plugins.resizimg.resizable), t(e);
-            });
+  function r(s) {
+    var r = [];
+    return a.each(s.o.plugins.specialchars.symbolList, function (a, e) {
+      var i = "symbol-" + (e = null === e ? "&nbsp" : "&#x" + e).replace(/:/g, ""),
+        l = {
+          text: e,
+          hasIcon: !1,
+          fn: function fn() {
+            var a = String.fromCodePoint(parseInt(e.replace("&#", "0")));
+            return s.execCmd("insertText", a), !0;
           }
-          this.destroyResizable = function () {
-            n.$ed.find("canvas.resizable").resizableSafe("destroy").off("mousedown", t).removeClass("resizable"), a.reset(), n.syncCode();
-          }, n.o.plugins.resizimg = e.extend(!0, {}, i, n.o.plugins.resizimg || {}, {
-            resizable: {
-              resizeWidth: !1,
-              onDragStart: function onDragStart(e, i) {
-                var t = n.o.plugins.resizimg,
-                  s = e.pageX - i.offset().left,
-                  r = e.pageY - i.offset().top;
-                if (s < i.width() - t.minSize || r < i.height() - t.minSize) return !1;
-              },
-              onDrag: function onDrag(e, i, t, s) {
-                var r = n.o.plugins.resizimg;
-                return s < r.minSize && (s = r.minSize), s -= s % r.step, i.height(s), !1;
-              },
-              onDragEnd: function onDragEnd() {
-                a.refresh(), n.syncCode();
-              }
-            }
-          }), n.$c.on("tbwinit", function () {
-            o(), n.$ed.on("click", function (i) {
-              e(i.target).is("img") || i.target.id === a.canvasId() || (t(i), a.reset(), n.syncCode(), n.$c.trigger("tbwchange"));
-            }), n.$ed.on("scroll", function () {
-              a.reCalcOffset();
-            });
-          }), n.$c.on("tbwfocus tbwchange", o), n.$c.on("tbwresize", function () {
-            a.reCalcOffset();
-          }), n.$c.on("tbwblur", function () {
-            a.isFocusedNow() ? a.blurNow() : r();
-          });
-        },
-        destroy: function destroy() {
-          this.destroyResizable();
+        };
+      s.addBtnDef(i, l), r.push(i);
+    }), r;
+  }
+  a.extend(!0, a.trumbowyg, {
+    langs: {
+      en: {
+        specialChars: "Special characters"
+      },
+      az: {
+        specialChars: "Xüsusi simvollar"
+      },
+      by: {
+        specialChars: "Спецыяльныя сімвалы"
+      },
+      et: {
+        specialChars: "Erimärgid"
+      },
+      fr: {
+        specialChars: "Caractères spéciaux"
+      },
+      hu: {
+        specialChars: "Speciális karakterek"
+      },
+      ko: {
+        specialChars: "특수문자"
+      },
+      ru: {
+        specialChars: "Специальные символы"
+      },
+      sl: {
+        specialChars: "Posebni znaki"
+      },
+      tr: {
+        specialChars: "Özel karakterler"
+      }
+    },
+    plugins: {
+      specialchars: {
+        init: function init(a) {
+          a.o.plugins.specialchars = a.o.plugins.specialchars || s;
+          var e = {
+            dropdown: r(a)
+          };
+          a.addBtnDef("specialChars", e);
         }
       }
     }

@@ -672,3 +672,62 @@
   left: 0;
   background-image: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, #ffffff 80%, #ffffff 100%);
 }
+
+[dir] .trumbowyg-symbol-\&nbsp-dropdown-button + button {
+  clear: both;
+}
+
+.trumbowyg-dropdown-specialChars {
+  width: 248px;
+}
+
+[dir] .trumbowyg-dropdown-specialChars {
+  padding: 5px 3px 3px;
+}
+
+.trumbowyg-dropdown-specialChars button {
+  display: block;
+  position: relative;
+  height: 26px;
+  width: 26px;
+  line-height: 24px;
+}
+
+[dir] .trumbowyg-dropdown-specialChars button {
+  padding: 0;
+  margin: 2px;
+  text-align: center;
+}
+
+[dir=ltr] .trumbowyg-dropdown-specialChars button {
+  float: left;
+}
+
+[dir=rtl] .trumbowyg-dropdown-specialChars button {
+  float: right;
+}
+.trumbowyg-dropdown-specialChars button:hover::after, .trumbowyg-dropdown-specialChars button:focus::after {
+  display: block;
+  position: absolute;
+  top: -5px;
+  height: 27px;
+  width: 27px;
+  z-index: 10;
+}
+[dir] .trumbowyg-dropdown-specialChars button:hover::after, [dir] .trumbowyg-dropdown-specialChars button:focus::after {
+  background: inherit;
+  box-shadow: #000 0 0 2px;
+  background-color: transparent;
+}
+[dir=ltr] .trumbowyg-dropdown-specialChars button:hover::after, [dir=ltr] .trumbowyg-dropdown-specialChars button:focus::after {
+  left: -5px;
+}
+[dir=rtl] .trumbowyg-dropdown-specialChars button:hover::after, [dir=rtl] .trumbowyg-dropdown-specialChars button:focus::after {
+  right: -5px;
+}
+
+.trumbowyg .specialChars {
+  width: 22px;
+  height: 22px;
+  display: inline-block;
+}

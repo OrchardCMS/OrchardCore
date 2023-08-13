@@ -101,8 +101,7 @@ function initVueMultiselect(element) {
                     this.searchBoxContainer.css("display", multiple ? "block" : "none");
                 },
                 view: function(item) {
-                    url = viewUrl.replace('contentItemId', item.id);
-                    window.open(url, '_blank').focus();
+                    return viewUrl.replace('contentItemId', item.id);
                 },
                 remove: function (item) {
                     this.arrayOfItems.splice(this.arrayOfItems.indexOf(item), 1);

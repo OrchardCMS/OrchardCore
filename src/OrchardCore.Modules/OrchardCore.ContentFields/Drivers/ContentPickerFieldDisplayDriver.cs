@@ -29,7 +29,6 @@ namespace OrchardCore.ContentFields.Drivers
         private readonly IContentManager _contentManager;
         private readonly ILiquidTemplateManager _templateManager;
         protected readonly IStringLocalizer S;
-        private readonly IStringLocalizer S;
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -94,7 +93,7 @@ namespace OrchardCore.ContentFields.Drivers
                             IsViewable = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext!.User, CommonPermissions.EditContent, contentItem)
                         });
                     }
-                        
+
                 }
             });
         }

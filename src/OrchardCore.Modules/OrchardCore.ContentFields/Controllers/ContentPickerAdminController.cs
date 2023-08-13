@@ -97,7 +97,7 @@ namespace OrchardCore.ContentFields.Controllers
                     Id = contentItem.ContentItemId,
                     DisplayText = contentItem.ToString(),
                     HasPublished = contentItem.IsPublished(),
-                    IsViewable = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext!.User,
+                    IsViewable = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User,
                                      CommonPermissions.EditContent, contentItem)
                 });
             }
