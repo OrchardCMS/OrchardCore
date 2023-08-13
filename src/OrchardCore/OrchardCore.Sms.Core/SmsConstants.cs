@@ -1,6 +1,6 @@
 namespace OrchardCore.Sms;
 
-public class SmsConstancts
+public class SmsConstants
 {
     public const string TwilioServiceName = "Twilio";
 

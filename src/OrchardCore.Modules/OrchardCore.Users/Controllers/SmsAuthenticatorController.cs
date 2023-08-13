@@ -223,7 +223,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
 
         var message = new SmsMessage()
         {
-            To = await UserManager.GetEmailAsync(user),
+            To = await UserManager.GetPhoneNumberAsync(user),
             Body = await GetBodyAsync(settings, user, code),
         };
 

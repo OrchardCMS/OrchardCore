@@ -2,10 +2,13 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
+using OrchardCore.Sms;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
 
@@ -15,15 +18,21 @@ namespace OrchardCore.Users.Drivers
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IPhoneFormatValidator _phoneFormatValidator;
         private readonly ISiteService _siteService;
+        protected readonly IStringLocalizer S;
 
         public UserInformationDisplayDriver(
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
+            IPhoneFormatValidator phoneFormatValidator,
+            IStringLocalizer<UserInformationDisplayDriver> stringLocalizer,
             ISiteService siteService)
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
+            _phoneFormatValidator = phoneFormatValidator;
+            S = stringLocalizer;
             _siteService = siteService;
         }
 
@@ -59,7 +68,7 @@ namespace OrchardCore.Users.Drivers
                     model.PhoneNumber = user.PhoneNumber;
                     model.PhoneNumberConfirmed = user.PhoneNumberConfirmed;
 
-                    model.AllowEditing = context.IsNew || await CanEditUserInfoAsync(user);
+                    model.AllowEditing = context.IsNew || (settings.AllowChangingPhoneNumber && await CanEditUserInfoAsync(user));
 
                 }).Location("Content:1.3")
             );
@@ -97,7 +106,14 @@ namespace OrchardCore.Users.Drivers
 
                 if (await context.Updater.TryUpdateModelAsync(phoneNumberModel, Prefix))
                 {
-                    user.PhoneNumber = phoneNumberModel.PhoneNumber;
+                    if (!_phoneFormatValidator.IsValid(phoneNumberModel.PhoneNumber))
+                    {
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(phoneNumberModel.PhoneNumber), S["Please provide a valid phone number."]);
+                    }
+                    else
+                    {
+                        user.PhoneNumber = phoneNumberModel.PhoneNumber;
+                    }
                 }
             }
             else
@@ -115,9 +131,16 @@ namespace OrchardCore.Users.Drivers
                     user.Email = emailModel.Email;
                 }
 
-                if (await CanEditUserInfoAsync(user) && await context.Updater.TryUpdateModelAsync(phoneNumberModel, Prefix))
+                if (settings.AllowChangingPhoneNumber && await CanEditUserInfoAsync(user) && await context.Updater.TryUpdateModelAsync(phoneNumberModel, Prefix))
                 {
-                    user.PhoneNumber = phoneNumberModel.PhoneNumber;
+                    if (!_phoneFormatValidator.IsValid(phoneNumberModel.PhoneNumber))
+                    {
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(phoneNumberModel.PhoneNumber), S["Please provide a valid phone number."]);
+                    }
+                    else
+                    {
+                        user.PhoneNumber = phoneNumberModel.PhoneNumber;
+                    }
                 }
             }
 

@@ -16,7 +16,11 @@ public class Startup : StartupBase
     {
         services.AddSmsServices();
         services.AddPhoneFormatValidator();
-        services.AddTwilioProvider();
+
+        // Add Twilio services.
+        services.AddTwilioProvider()
+            .AddScoped<IDisplayDriver<ISite>, TwilioSettingsDisplayDriver>();
+
         services.AddConsoleProvider();
         services.AddScoped<IPermissionProvider, SmsPermissionProvider>();
         services.AddScoped<INavigationProvider, AdminMenu>();

@@ -18,7 +18,7 @@
         <input class="form-control" type="text" asp-for="PhoneNumber" asp-is-disabled="!Model.AllowChangePhoneNumber">
         @if (Model.AllowChangePhoneNumber)
         {
-            <span>@T["Phone number must include country code. For example, +1 for United States"]</span>
+            <span>@T["Phone number must include a country code. For example, +1 for United States."]</span>
         }
     </div>
     <button type="submit" class="btn btn-primary">@T["Request Code"]</button>

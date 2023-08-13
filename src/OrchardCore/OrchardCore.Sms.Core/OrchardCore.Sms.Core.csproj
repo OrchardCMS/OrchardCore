@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="libphonenumber-csharp" Version="8.13.18" />
+    <PackageReference Include="Twilio" Version="6.11.0" />
   </ItemGroup>
 
   <ItemGroup>

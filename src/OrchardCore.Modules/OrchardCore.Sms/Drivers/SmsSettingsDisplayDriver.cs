@@ -47,7 +47,8 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
             model.Providers = _smsProviderOptions.Providers.Keys
             .Select(provider => new SelectListItem(provider, provider))
             .ToArray();
-        }).Location("Content:3").OnGroup(GroupId);
+        }).Location("Content:1")
+        .OnGroup(GroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(SmsSettings settings, BuildEditorContext context)

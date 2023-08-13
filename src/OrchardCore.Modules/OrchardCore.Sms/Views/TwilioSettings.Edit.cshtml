@@ -1,0 +1,51 @@
+@using OrchardCore.Sms.ViewModels
+@using OrchardCore.Sms
+
+@model TwilioSettingsViewModel
+
+<div class="sms-settings-container d-none" id="SmsSettingsContainer@(SmsConstants.TwilioServiceName)">
+    <h4>@T["Twilio Account Info"]</h4>
+    <div class="mb-3" asp-validation-class-for="PhoneNumber">
+        <label asp-for="PhoneNumber">@T["Phone Number"]</label>
+        <input asp-for="PhoneNumber" class="form-control" />
+        <span asp-validation-for="PhoneNumber"></span>
+        <span>@T["Phone number must include country code. For example, +1 for United States"]</span>
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="AccountSID">
+        <label asp-for="AccountSID">@T["Account SID"]</label>
+        <input asp-for="AccountSID" class="form-control" />
+        <span asp-validation-for="PhoneNumber"></span>
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="AuthToken">
+        <label asp-for="AuthToken">@T["Auth Token"]</label>
+        <input asp-for="AuthToken" class="form-control" />
+        <span asp-validation-for="AuthToken"></span>
+        @if (Model.HasAuthToken)
+        {
+            <span>@T["Auth token was securly saved. Enter a new value if you wish to replace the existing secret."]</span>
+        }
+    </div>
+</div>
+
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', () => {
+
+        let menu = document.getElementById('@Html.IdFor(m => m.DefaultProvider)');
+        let settingContainers = document.getElementsByClassName('sms-settings-container');
+
+        menu.addEventListener('change', (e) => {
+
+            for (let i = 0; i < settingContainers.length; i++) {
+                settingContainers[i].classList.add('d-none');
+            }
+
+            let wrapper = document.getElementById('SmsSettingsContainer' + e.target.value);
+
+            if (wrapper) {
+                wrapper.classList.remove('d-none');
+            }
+        });
+    });
+</script>

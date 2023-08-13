@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Sms.Services;
 
 namespace OrchardCore.Sms;
@@ -15,7 +16,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddPhoneFormatValidator(this IServiceCollection services)
     {
-        services.AddScoped<IPhoneFormatValidator, DefaultPhoneFormatValidator>();
+        services.TryAddScoped<IPhoneFormatValidator, DefaultPhoneFormatValidator>();
 
         return services;
     }
@@ -34,11 +35,11 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddTwilioProvider(this IServiceCollection services)
     {
-        return services.AddSmsProvider<TwilioSmsProvider>(SmsConstancts.TwilioServiceName);
+        return services.AddSmsProvider<TwilioSmsProvider>(SmsConstants.TwilioServiceName);
     }
 
     public static IServiceCollection AddConsoleProvider(this IServiceCollection services)
     {
-        return services.AddSmsProvider<ConsoleSmsProvider>(SmsConstancts.ConsoleServiceName);
+        return services.AddSmsProvider<ConsoleSmsProvider>(SmsConstants.ConsoleServiceName);
     }
 }
