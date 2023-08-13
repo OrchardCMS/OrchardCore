@@ -47,11 +47,11 @@
             <div class="@Orchard.GetWrapperCssClasses()">
                 <div class="@Orchard.GetEndCssClasses(true)">
                     <div class="form-check">
-                        <input type="checkbox" class="form-check-input" asp-for="PipelineWarmup" checked="@Model.PipelineWarmup" />
-                        <label class="form-check-label" asp-for="PipelineWarmup">@T["Pipeline Warmup"]</label>
-                        <span class="hint dashed">@T["Wether or not the shell pipeline needs to be built if not yet done."]</span>
-                        <span class="hint">@T["This to configure endpoints and then allow to generate routed urls."]</span>
+                        <input type="checkbox" class="form-check-input" asp-for="UsePipeline" checked="@Model.UsePipeline" />
+                        <label class="form-check-label" asp-for="UsePipeline">@T["Use Tenant Pipeline"]</label>
                     </div>
+                    <span class="hint">@T["Wether or not the tenant pipeline should be built and then executed."]</span>
+                    <span class="hint">@T["This to configure endpoints and then to allow route urls generation."]</span>
                 </div>
             </div>
 

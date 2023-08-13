@@ -2,8 +2,11 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -16,7 +19,6 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Settings;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace OrchardCore.Modules
 {
@@ -34,7 +36,10 @@ namespace OrchardCore.Modules
         private readonly ILogger _logger;
         private readonly IClock _clock;
 
+        private IServerAddressesFeature _addressesFeature;
+
         public ModularBackgroundService(
+            IServer server,
             IShellHost shellHost,
             IHttpContextAccessor httpContextAccessor,
             IOptions<BackgroundServiceOptions> options,
@@ -46,6 +51,8 @@ namespace OrchardCore.Modules
             _options = options.Value;
             _logger = logger;
             _clock = clock;
+
+            _addressesFeature = server.Features.Get<IServerAddressesFeature>();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -112,8 +119,8 @@ namespace OrchardCore.Modules
             {
                 var tenant = shell.Settings.Name;
 
-                // Initialize a new 'HttpContext' to be used in the background.
-                _httpContextAccessor.HttpContext = shell.CreateHttpContext();
+                // Create a new 'HttpContext' to be used in the background.
+                _httpContextAccessor.HttpContext = shell.CreateHttpContext(_addressesFeature);
 
                 var schedulers = GetSchedulersToRun(tenant);
                 foreach (var scheduler in schedulers)
@@ -156,7 +163,7 @@ namespace OrchardCore.Modules
                         {
                             try
                             {
-                                // Use the base url, if defined, to set the 'Scheme', 'Host' and 'PathBase'.
+                                // Use the base url, if defined, to override the 'Scheme', 'Host' and 'PathBase'.
                                 _httpContextAccessor.HttpContext.SetBaseUrl((await siteService.GetSiteSettingsAsync()).BaseUrl);
                             }
                             catch (Exception ex) when (!ex.IsFatal())
@@ -167,16 +174,19 @@ namespace OrchardCore.Modules
 
                         try
                         {
-                            if (scheduler.Settings.PipelineWarmup && !scope.ShellContext.HasPipeline())
+                            if (scheduler.Settings.UsePipeline)
                             {
-                                // Build the shell pipeline to configure endpoint data sources.
-                                await ModularTenantRouterMiddleware.InitializePipelineAsync(scope.ShellContext);
-                            }
+                                if (!scope.ShellContext.HasPipeline())
+                                {
+                                    // Build the shell pipeline to configure endpoint data sources.
+                                    await ModularTenantRouterMiddleware.InitializePipelineAsync(scope.ShellContext);
+                                }
 
-                            if (scope.ShellContext.HasPipeline())
-                            {
-                                // Run the pipeline to make the 'HttpContext' aware of endpoints.
-                                await shell.Pipeline.Invoke(_httpContextAccessor.HttpContext);
+                                if (scope.ShellContext.HasPipeline())
+                                {
+                                    // Run the pipeline to make the 'HttpContext' aware of endpoints.
+                                    await scope.ShellContext.Pipeline.Invoke(_httpContextAccessor.HttpContext);
+                                }
                             }
                         }
                         catch (Exception ex) when (!ex.IsFatal())
@@ -228,8 +238,8 @@ namespace OrchardCore.Modules
                     return;
                 }
 
-                // Initialize a new 'HttpContext' to be used in the background.
-                _httpContextAccessor.HttpContext = shell.CreateHttpContext();
+                // Create a new 'HttpContext' to be used in the background.
+                _httpContextAccessor.HttpContext = shell.CreateHttpContext(_addressesFeature);
 
                 var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
                 if (!_options.ShellWarmup && !shellScope.ShellContext.HasPipeline())

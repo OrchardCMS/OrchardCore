@@ -13,9 +13,9 @@ namespace OrchardCore.BackgroundTasks
         public int LockExpiration { get; set; }
 
         /// <summary>
-        /// Wether or not the shell pipeline needs to be built if not yet done.
-        /// This to configure endpoints and then allow to generate routed urls.
+        /// Wether or not the tenant pipeline should be built and then executed.
+        /// This to configure endpoints and then to allow route urls generation.
         /// </summary>
-        public bool PipelineWarmup { get; set; }
+        public bool UsePipeline { get; set; }
     }
 }

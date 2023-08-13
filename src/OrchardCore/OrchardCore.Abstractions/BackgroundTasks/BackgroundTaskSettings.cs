@@ -18,7 +18,7 @@ namespace OrchardCore.BackgroundTasks
 
         public int LockExpiration { get; set; }
 
-        public bool PipelineWarmup { get; set; }
+        public bool UsePipeline { get; set; }
 
         public bool IsAtomic => LockTimeout > 0 && LockExpiration > 0;
     }
