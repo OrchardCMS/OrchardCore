@@ -90,7 +90,8 @@ namespace OrchardCore.ContentFields.Drivers
                             DisplayText = await _templateManager.RenderStringAsync(settings.TitlePattern, NullEncoder.Default, contentItem,
                                 new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(contentItem) }),
                             HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem),
-                            IsViewable = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext!.User, CommonPermissions.EditContent, contentItem)
+                            IsEditable = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext!.User, CommonPermissions.EditContent, contentItem),
+                            IsViewable = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext!.User, CommonPermissions.ViewContent, contentItem)
                         });
                     }
 

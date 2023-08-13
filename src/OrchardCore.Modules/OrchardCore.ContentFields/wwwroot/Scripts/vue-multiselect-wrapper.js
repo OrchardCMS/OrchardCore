@@ -24,6 +24,7 @@ function initVueMultiselect(element) {
   if (element) {
     var elementId = element.id;
     var selectedItems = JSON.parse(element.dataset.selectedItems || "[]");
+    var editUrl = element.dataset.editUrl;
     var viewUrl = element.dataset.viewUrl;
     var searchUrl = element.dataset.searchUrl;
     var multiple = JSON.parse(element.dataset.multiple);
@@ -108,8 +109,9 @@ function initVueMultiselect(element) {
           // a single content item and we've just selected that one item.
           this.searchBoxContainer.css("display", multiple ? "block" : "none");
         },
-        view: function view(item) {
-          return viewUrl.replace('contentItemId', item.id);
+        url: function url(item) {
+          var url = item.isEditable ? editUrl : viewUrl;
+          return url.replace('contentItemId', item.id);
         },
         remove: function remove(item) {
           this.arrayOfItems.splice(this.arrayOfItems.indexOf(item), 1);
