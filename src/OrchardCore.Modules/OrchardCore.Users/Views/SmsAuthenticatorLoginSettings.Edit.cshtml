@@ -4,15 +4,6 @@
 <fieldset>
     <legend>@T["SMS Authenticator Settings"]</legend>
 
-    <div class="mb-3" asp-validation-class-for="AllowChangePhoneNumber">
-        <div class="form-check">
-            <input type="checkbox" class="form-check-input" asp-for="AllowChangePhoneNumber" />
-            <span asp-validation-for="AllowChangePhoneNumber"></span>
-            <label class="form-check-label" asp-for="AllowChangePhoneNumber">@T["Allow users to change their phone number"]</label>
-            <span class="hint dashed">@T["When selected, users will be able to change their phone number."]</span>
-        </div>
-    </div>
-
     <div class="mb-3" asp-validation-class-for="Body">
         <span asp-validation-for="Body"></span>
         <label class="form-check-label" asp-for="Body">@T["Message Body"]</label>

@@ -64,5 +64,7 @@
     <PackageManagement Include="YesSql.Filters.Abstractions" Version="3.3.0" />
     <PackageManagement Include="YesSql.Filters.Query" Version="3.3.0" />
     <PackageManagement Include="ZString" Version="2.5.0" />
+    <PackageManagement Include="libphonenumber-csharp" Version="8.13.18" />
+    <PackageManagement Include="Twilio" Version="6.11.0" />
   </ItemGroup>
 </Project>

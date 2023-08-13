@@ -15,8 +15,8 @@
 <form method="post">
     <div class="mb-3">
         <label asp-for="PhoneNumber">@T["Phone Number"]</label>
-        <input class="form-control" type="text" asp-for="PhoneNumber" asp-is-disabled="!Model.AllowChangePhoneNumber">
-        @if (Model.AllowChangePhoneNumber)
+        <input class="form-control" type="text" asp-for="PhoneNumber" asp-is-disabled="!Model.AllowChangingPhoneNumber">
+        @if (Model.AllowChangingPhoneNumber)
         {
             <span>@T["Phone number must include a country code. For example, +1 for United States."]</span>
         }

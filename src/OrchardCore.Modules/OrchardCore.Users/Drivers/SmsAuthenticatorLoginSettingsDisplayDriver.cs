@@ -36,7 +36,6 @@ public class SmsAuthenticatorLoginSettingsDisplayDriver : SectionDisplayDriver<I
             model.Body = String.IsNullOrWhiteSpace(settings.Body)
             ? EmailAuthenticatorLoginSettings.DefaultBody
             : settings.Body;
-            model.AllowChangePhoneNumber = settings.AllowChangePhoneNumber;
         }).Location("Content:15#Two-Factor Authentication")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
         .OnGroup(LoginSettingsDisplayDriver.GroupId);

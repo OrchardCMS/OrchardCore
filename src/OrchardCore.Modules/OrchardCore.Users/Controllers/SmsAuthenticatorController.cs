@@ -77,14 +77,14 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
             return UserNotFound();
         }
 
-        var settings = (await SiteService.GetSiteSettingsAsync()).As<SmsAuthenticatorLoginSettings>();
+        var settings = (await SiteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
         var currentPhoneNumber = await UserManager.GetPhoneNumberAsync(user);
 
         var model = new RequestCodeSmsAuthenticatorViewModel()
         {
             PhoneNumber = currentPhoneNumber,
-            AllowChangePhoneNumber = settings.AllowChangePhoneNumber
+            AllowChangingPhoneNumber = settings.AllowChangingPhoneNumber
             || String.IsNullOrEmpty(currentPhoneNumber)
             || !_phoneFormatValidator.IsValid(currentPhoneNumber),
         };
@@ -101,15 +101,15 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
             return UserNotFound();
         }
 
-        var settings = (await SiteService.GetSiteSettingsAsync()).As<SmsAuthenticatorLoginSettings>();
+        var settings = (await SiteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
         var currentPhoneNumber = await UserManager.GetPhoneNumberAsync(user);
 
-        var canSetNewPhone = settings.AllowChangePhoneNumber
+        var canSetNewPhone = settings.AllowChangingPhoneNumber
             || String.IsNullOrEmpty(currentPhoneNumber)
             || !_phoneFormatValidator.IsValid(currentPhoneNumber);
 
-        model.AllowChangePhoneNumber = canSetNewPhone;
+        model.AllowChangingPhoneNumber = canSetNewPhone;
 
         if (canSetNewPhone && !_phoneFormatValidator.IsValid(model.PhoneNumber))
         {
@@ -121,11 +121,12 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         var phoneNumber = canSetNewPhone ? model.PhoneNumber : currentPhoneNumber;
 
         var code = await UserManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumber);
+        var smsSettings = (await SiteService.GetSiteSettingsAsync()).As<SmsAuthenticatorLoginSettings>();
 
         var message = new SmsMessage()
         {
             To = phoneNumber,
-            Body = await GetBodyAsync(settings, user, code),
+            Body = await GetBodyAsync(smsSettings, user, code),
         };
 
         var smsService = await _smsServiceFactory.CreateAsync();
