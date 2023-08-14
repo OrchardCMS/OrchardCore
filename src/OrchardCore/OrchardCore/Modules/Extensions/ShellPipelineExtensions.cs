@@ -46,8 +46,8 @@ public static class ShellPipelineExtensions
     internal static IShellPipeline BuildPipeline(this ShellContext context)
     {
         var features = context.ServiceProvider.GetService<IServer>()?.Features;
-        var appBuilder = new ApplicationBuilder(context.ServiceProvider, features ?? new FeatureCollection());
-        var startupFilters = appBuilder.ApplicationServices.GetService<IEnumerable<IStartupFilter>>();
+        var builder = new ApplicationBuilder(context.ServiceProvider, features ?? new FeatureCollection());
+        var startupFilters = builder.ApplicationServices.GetService<IEnumerable<IStartupFilter>>();
         var shellPipeline = new ShellRequestPipeline();
 
         Action<IApplicationBuilder> configure = builder =>
@@ -60,9 +60,9 @@ public static class ShellPipelineExtensions
             configure = filter.Configure(configure);
         }
 
-        configure(appBuilder);
+        configure(builder);
 
-        shellPipeline.Next = appBuilder.Build();
+        shellPipeline.Next = builder.Build();
 
         return shellPipeline;
     }
@@ -72,13 +72,13 @@ public static class ShellPipelineExtensions
     /// </summary>
     internal static void ConfigureShellPipeline(this IApplicationBuilder builder)
     {
-        var startups = appBuilder.ApplicationServices.GetServices<IStartup>();
+        var startups = builder.ApplicationServices.GetServices<IStartup>();
 
         // 'IStartup' instances are ordered by module dependencies with a 'ConfigureOrder' of 0 by default.
         // 'OrderBy' performs a stable sort, so the order is preserved among equal 'ConfigureOrder' values.
 
         startups = startups.OrderBy(s => s.ConfigureOrder);
-        appBuilder.UseRouting().UseEndpoints(routes =>
+        builder.UseRouting().UseEndpoints(routes =>
         {
             foreach (var startup in startups)
             {
