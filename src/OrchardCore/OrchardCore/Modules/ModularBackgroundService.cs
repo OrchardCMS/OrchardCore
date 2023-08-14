@@ -2,7 +2,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting.Server;
@@ -32,11 +31,10 @@ namespace OrchardCore.Modules
 
         private readonly IShellHost _shellHost;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IServerAddressesFeature _addressesFeature;
         private readonly BackgroundServiceOptions _options;
         private readonly ILogger _logger;
         private readonly IClock _clock;
-
-        private IServerAddressesFeature _addressesFeature;
 
         public ModularBackgroundService(
             IServer server,
@@ -48,11 +46,10 @@ namespace OrchardCore.Modules
         {
             _shellHost = shellHost;
             _httpContextAccessor = httpContextAccessor;
+            _addressesFeature = server.Features.Get<IServerAddressesFeature>();
             _options = options.Value;
             _logger = logger;
             _clock = clock;
-
-            _addressesFeature = server.Features.Get<IServerAddressesFeature>();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -88,28 +85,23 @@ namespace OrchardCore.Modules
             }
 
             var previousShells = Array.Empty<ShellContext>();
-
             while (!stoppingToken.IsCancellationRequested)
             {
-                var pollingDelay = Task.CompletedTask;
+                // Init the delay first to be also waited on exception.
+                var pollingDelay = Task.Delay(_pollingTime, stoppingToken);
                 try
                 {
                     var runningShells = GetRunningShells();
                     await UpdateAsync(previousShells, runningShells, stoppingToken);
-                    previousShells = runningShells;
-
-                    pollingDelay = Task.Delay(_pollingTime, stoppingToken);
-
                     await RunAsync(runningShells, stoppingToken);
-                    await WaitAsync(pollingDelay, stoppingToken);
+                    previousShells = runningShells;
                 }
                 catch (Exception ex) when (!ex.IsFatal())
                 {
                     _logger.LogError(ex, "Error while executing '{ServiceName}'.", nameof(ModularBackgroundService));
-
-                    // On exception, still wait before retrying.
-                    await WaitAsync(pollingDelay, stoppingToken);
                 }
+
+                await WaitAsync(pollingDelay, stoppingToken);
             }
         }
 

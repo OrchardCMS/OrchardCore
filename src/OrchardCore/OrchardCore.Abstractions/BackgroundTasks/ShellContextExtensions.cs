@@ -28,6 +28,8 @@ public static class ShellContextExtensions
                     address = bindingAddress;
                     break;
                 }
+
+                address ??= bindingAddress;
             }
         }
 
@@ -46,7 +48,7 @@ public static class ShellContextExtensions
     {
         var context = new DefaultHttpContext().UseShellScopeServices();
 
-        context.Request.Scheme = "https";
+        context.Request.Scheme = address?.Scheme ?? "https";
 
         if (!String.IsNullOrWhiteSpace(address?.Host))
         {
