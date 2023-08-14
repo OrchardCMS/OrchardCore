@@ -12,8 +12,6 @@ namespace OrchardCore.BackgroundTasks;
 
 public static class ShellContextExtensions
 {
-    private const string _localhost = "localhost";
-
     public static HttpContext CreateHttpContext(this ShellContext shell, IServerAddressesFeature feature = null)
     {
         BindingAddress address = null;
@@ -64,7 +62,7 @@ public static class ShellContextExtensions
         else
         {
             var urlHost = settings.RequestUrlHosts.FirstOrDefault();
-            context.Request.Host = new HostString(urlHost ?? _localhost);
+            context.Request.Host = new HostString(urlHost ?? "localhost");
         }
 
         var pathBase = new PathString("/");
