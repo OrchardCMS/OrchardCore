@@ -16,8 +16,9 @@ public class DefaultPhoneFormatValidator : IPhoneFormatValidator
 
             return _phoneNumberUtil.IsValidNumber(phone);
         }
-        catch { }
-
-        return false;
+        catch
+        {
+            return false;
+        }
     }
 }

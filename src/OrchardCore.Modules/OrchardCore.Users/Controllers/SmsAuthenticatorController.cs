@@ -290,6 +290,6 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         return null;
     }
 
-    protected static string GetPhoneChangeCacheKey(string username)
+    private static string GetPhoneChangeCacheKey(string username)
         => $"TwoFactorAuthenticationPhoneNumberChange_{username}";
 }

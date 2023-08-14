@@ -2,9 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Sms;
 
-namespace OrchardCore.Facebook;
+namespace OrchardCore.Sms;
 
 public class SmsPermissionProvider : IPermissionProvider
 {
