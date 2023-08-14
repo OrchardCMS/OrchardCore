@@ -1,10 +1,13 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
 using OrchardCore.Media.Settings;
 using OrchardCore.Recipes;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Seo.Indexes;
+using YesSql.Sql;
 
 namespace OrchardCore.Seo
 {
@@ -19,7 +22,7 @@ namespace OrchardCore.Seo
             _recipeMigrator = recipeMigrator;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
             _contentDefinitionManager.AlterPartDefinition("SeoMetaPart", builder => builder
                 .Attachable()
@@ -38,7 +41,9 @@ namespace OrchardCore.Seo
                     .WithSettings(new MediaFieldSettings { Multiple = false }))
             );
 
-            return 1;
+            await _recipeMigrator.ExecuteAsync("socialmetasettings.recipe.json", this);
+
+            return 2;
         }
 
         public async Task<int> UpdateFrom1Async()
