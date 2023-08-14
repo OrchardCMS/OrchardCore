@@ -44,7 +44,7 @@
     <PackageManagement Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageManagement Include="NEST" Version="7.17.5" />
     <PackageManagement Include="NJsonSchema" Version="10.9.0" />
-    <PackageManagement Include="NLog.Web.AspNetCore" Version="5.3.2" />
+    <PackageManagement Include="NLog.Web.AspNetCore" Version="5.3.3" />
     <PackageManagement Include="NodaTime" Version="3.1.9" />
     <PackageManagement Include="OpenIddict.AspNetCore" Version="4.7.0" />
     <PackageManagement Include="OpenIddict.Core" Version="4.7.0" />
