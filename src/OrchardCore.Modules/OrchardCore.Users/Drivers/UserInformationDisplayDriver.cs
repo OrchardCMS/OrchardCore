@@ -67,7 +67,7 @@ namespace OrchardCore.Users.Drivers
                 {
                     model.PhoneNumber = user.PhoneNumber;
                     model.PhoneNumberConfirmed = user.PhoneNumberConfirmed;
-                    
+
                     model.AllowEditing = context.IsNew || (settings.AllowChangingPhoneNumber && canEditUserInfo);
 
                 }).Location("Content:1.3")
