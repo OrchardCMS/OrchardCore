@@ -4,10 +4,12 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Notifications;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Sms.Activities;
 using OrchardCore.Sms.Drivers;
+using OrchardCore.Sms.Services;
 using OrchardCore.Workflows.Helpers;
 
 namespace OrchardCore.Sms;
@@ -48,5 +50,14 @@ public class WorkflowsStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddActivity<SmsTask, SmsTaskDisplayDriver>();
+    }
+}
+
+[Feature("OrchardCore.Notifications.Sms")]
+public class NotificationsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<INotificationMethodProvider, SmsNotificationProvider>();
     }
 }

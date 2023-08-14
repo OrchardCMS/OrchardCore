@@ -26,6 +26,10 @@ The `OrchardCore.Sms` module provides you with the capability to integrate addit
 
 When the `SMS` feature is enabled along with `Workflows`, a new "Send SMS" workflow task will be added to allow you to send SMS message using workflows.
 
+## SMS Notification (`OrchardCore.Notifications.Sms`)
+
+This feature provides you a way to send user notifications using SMS based on user preferences. [Click here](../Notifications/README.md) to read more about notifications.
+
 ## Credits
 
 ### Twilio
