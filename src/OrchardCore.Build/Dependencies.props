@@ -26,6 +26,7 @@
     <PackageManagement Include="GraphQL.SystemTextJson" Version="4.8.0" />
     <PackageManagement Include="Jint" Version="3.0.0-beta-2049" />
     <PackageManagement Include="HtmlSanitizer" Version="8.0.692" />
+    <PackageManagement Include="libphonenumber-csharp" Version="8.13.18" />
     <PackageManagement Include="Lorem.Universal.NET" Version="4.0.80" />
     <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00016" />
     <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00016" />
@@ -55,6 +56,7 @@
     <PackageManagement Include="SixLabors.ImageSharp.Web" Version="3.0.1" />
     <PackageManagement Include="StackExchange.Redis" Version="2.6.122" />
     <PackageManagement Include="System.Linq.Async" Version="6.0.1" />
+    <PackageManagement Include="Twilio" Version="6.11.0" />
     <PackageManagement Include="xunit" Version="2.5.0" />
     <PackageManagement Include="xunit.analyzers" Version="1.2.0" />
     <PackageManagement Include="xunit.runner.visualstudio" Version="2.5.0" />
@@ -64,7 +66,5 @@
     <PackageManagement Include="YesSql.Filters.Abstractions" Version="3.3.0" />
     <PackageManagement Include="YesSql.Filters.Query" Version="3.3.0" />
     <PackageManagement Include="ZString" Version="2.5.0" />
-    <PackageManagement Include="libphonenumber-csharp" Version="8.13.18" />
-    <PackageManagement Include="Twilio" Version="6.11.0" />
   </ItemGroup>
 </Project>
