@@ -171,14 +171,11 @@ namespace OrchardCore.Modules
                                 if (!scope.ShellContext.HasPipeline())
                                 {
                                     // Build the shell pipeline to configure endpoint data sources.
-                                    await ModularTenantRouterMiddleware.InitializePipelineAsync(scope.ShellContext);
+                                    await scope.ShellContext.BuildPipelineAsync();
                                 }
 
-                                if (scope.ShellContext.HasPipeline())
-                                {
-                                    // Run the pipeline to make the 'HttpContext' aware of endpoints.
-                                    await scope.ShellContext.Pipeline.Invoke(_httpContextAccessor.HttpContext);
-                                }
+                                // Run the pipeline to make the 'HttpContext' aware of endpoints.
+                                await scope.ShellContext.Pipeline.Invoke(_httpContextAccessor.HttpContext);
                             }
                         }
                         catch (Exception ex) when (!ex.IsFatal())

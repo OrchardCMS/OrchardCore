@@ -1,18 +1,8 @@
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Modules
@@ -23,8 +13,6 @@ namespace OrchardCore.Modules
     /// </summary>
     public class ModularTenantRouterMiddleware
     {
-        private static readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new();
-
         private readonly ILogger _logger;
 
         public ModularTenantRouterMiddleware(RequestDelegate _, ILogger<ModularTenantRouterMiddleware> logger)
@@ -53,74 +41,10 @@ namespace OrchardCore.Modules
             // Do we need to rebuild the pipeline?
             if (!shellContext.HasPipeline())
             {
-                await InitializePipelineAsync(shellContext);
+                await shellContext.BuildPipelineAsync();
             }
 
             await shellContext.Pipeline.Invoke(httpContext);
-        }
-
-        public static async Task InitializePipelineAsync(ShellContext shellContext)
-        {
-            var semaphore = _semaphores.GetOrAdd(shellContext.Settings.Name, _ => new SemaphoreSlim(1));
-
-            // Building a pipeline for a given shell can't be done by two requests.
-            await semaphore.WaitAsync();
-            try
-            {
-                if (!shellContext.HasPipeline())
-                {
-                    shellContext.Pipeline = BuildTenantPipeline(shellContext.ServiceProvider);
-                }
-            }
-            finally
-            {
-                semaphore.Release();
-            }
-        }
-
-        // Build the middleware pipeline for the current tenant.
-        private static IShellPipeline BuildTenantPipeline(IServiceProvider shellServices)
-        {
-            var features = shellServices.GetService<IServer>()?.Features;
-            var appBuilder = new ApplicationBuilder(shellServices, features ?? new FeatureCollection());
-
-            // Create a nested pipeline to configure the tenant middleware pipeline.
-            var startupFilters = appBuilder.ApplicationServices.GetService<IEnumerable<IStartupFilter>>();
-
-            var shellPipeline = new ShellRequestPipeline();
-
-            Action<IApplicationBuilder> configure = builder =>
-            {
-                ConfigureTenantPipeline(builder);
-            };
-
-            foreach (var filter in startupFilters.Reverse())
-            {
-                configure = filter.Configure(configure);
-            }
-
-            configure(appBuilder);
-
-            shellPipeline.Next = appBuilder.Build();
-
-            return shellPipeline;
-        }
-
-        private static void ConfigureTenantPipeline(IApplicationBuilder appBuilder)
-        {
-            var startups = appBuilder.ApplicationServices.GetServices<IStartup>();
-
-            // IStartup instances are ordered by module dependency with an 'ConfigureOrder' of 0 by default.
-            // 'OrderBy' performs a stable sort so order is preserved among equal 'ConfigureOrder' values.
-            startups = startups.OrderBy(s => s.ConfigureOrder);
-
-            appBuilder.UseRouting().UseEndpoints(routes =>
-            {
-                foreach (var startup in startups)
-                {
-                    startup.Configure(appBuilder, routes, ShellScope.Services);
-                }
-            });
         }
     }
 }
