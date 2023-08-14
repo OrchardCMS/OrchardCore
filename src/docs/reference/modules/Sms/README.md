@@ -22,6 +22,10 @@ The `OrchardCore.Sms` module provides you with the capability to integrate addit
     services.AddSmsProvider<YourCustomImplemenation>("Name for your implementation")
 ```
 
+## Workflows
+
+When the `SMS` feature is enabled along with `Workflows`, a new "Send SMS" workflow task will be added to allow you to send SMS message using workflows.
+
 ## Credits
 
 ### Twilio
