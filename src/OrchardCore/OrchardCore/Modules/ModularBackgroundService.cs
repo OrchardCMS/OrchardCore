@@ -107,6 +107,7 @@ namespace OrchardCore.Modules
             {
                 var tenant = shell.Settings.Name;
 
+                // Create a new 'HttpContext' to be used in the background.
                 _httpContextAccessor.HttpContext = shell.CreateHttpContext();
 
                 var schedulers = GetSchedulersToRun(tenant);
@@ -183,6 +184,9 @@ namespace OrchardCore.Modules
                         await handlers.InvokeAsync((handler, context, token) => handler.ExecutedAsync(context, token), context, stoppingToken, _logger);
                     });
                 }
+
+                // Clear the 'HttpContext' for this async flow.
+                _httpContextAccessor.HttpContext = null;
             });
         }
 
@@ -199,6 +203,7 @@ namespace OrchardCore.Modules
                     return;
                 }
 
+                // Create a new 'HttpContext' to be used in the background.
                 _httpContextAccessor.HttpContext = shell.CreateHttpContext();
 
                 var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
@@ -274,6 +279,9 @@ namespace OrchardCore.Modules
                         scheduler.Updated = true;
                     }
                 });
+
+                // Clear the 'HttpContext' for this async flow.
+                _httpContextAccessor.HttpContext = null;
             });
         }
 
