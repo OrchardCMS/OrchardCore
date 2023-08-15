@@ -14,61 +14,69 @@ public static class ShellContextExtensions
 {
     public static HttpContext CreateHttpContext(this ShellContext shell, IServerAddressesFeature feature = null)
     {
-        BindingAddress address = null;
-        feature ??= shell.ServiceProvider?.GetService<IServer>().Features.Get<IServerAddressesFeature>();
+        feature ??= shell.ServiceProvider
+            ?.GetService<IServer>()
+            ?.Features.Get<IServerAddressesFeature>();
+
+        BindingAddress serverAddress = null;
         if (feature is not null)
         {
-            foreach (var addressString in feature.Addresses)
+            foreach (var address in feature.Addresses)
             {
-                var bindingAddress = BindingAddress.Parse(addressString);
+                var bindingAddress = BindingAddress.Parse(address);
                 if (bindingAddress.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase))
                 {
-                    address = bindingAddress;
+                    serverAddress = bindingAddress;
                     break;
                 }
 
-                address ??= bindingAddress;
+                serverAddress ??= bindingAddress;
             }
         }
 
-        var context = CreateHttpContext(shell.Settings, address);
+        var context = CreateHttpContext(shell.Settings, serverAddress);
         context.Features.Set(new ShellContextFeature
         {
             ShellContext = shell,
-            OriginalPathBase = address?.PathBase ?? PathString.Empty,
+            OriginalPathBase = serverAddress?.PathBase ?? PathString.Empty,
             OriginalPath = "/"
         });
 
         return context;
     }
 
-    private static HttpContext CreateHttpContext(ShellSettings settings, BindingAddress address)
+    private static HttpContext CreateHttpContext(ShellSettings settings, BindingAddress serverAddress)
     {
         var context = new DefaultHttpContext().UseShellScopeServices();
 
-        context.Request.Scheme = address?.Scheme ?? "https";
-
-        if (!String.IsNullOrWhiteSpace(address?.Host))
+        var urlHost = settings.RequestUrlHosts.FirstOrDefault();
+        if (!String.IsNullOrWhiteSpace(urlHost))
         {
-            if (address.Port > 0)
+            // Prioritize the host from the shell settings.
+            context.Request.Host = new HostString(urlHost);
+        }
+        else if (!String.IsNullOrWhiteSpace(serverAddress?.Host))
+        {
+            if (serverAddress.Port > 0)
             {
-                context.Request.Host = new HostString(address.Host, address.Port);
+                // Then the host from the server address.
+                context.Request.Host = new HostString(serverAddress.Host, serverAddress.Port);
             }
             else
             {
-                context.Request.Host = new HostString(address.Host);
+                context.Request.Host = new HostString(serverAddress.Host);
             }
         }
         else
         {
-            var urlHost = settings.RequestUrlHosts.FirstOrDefault();
-            context.Request.Host = new HostString(urlHost ?? "localhost");
+            context.Request.Host = new HostString("localhost");
         }
 
         var pathBase = new PathString("/");
-        if (!String.IsNullOrWhiteSpace(address?.PathBase))
+        if (!String.IsNullOrWhiteSpace(serverAddress?.PathBase))
         {
-            pathBase = pathBase.Add(address.PathBase);
+            // The server address may include a virtual folder.
+            pathBase = pathBase.Add(serverAddress.PathBase);
         }
 
         if (!String.IsNullOrWhiteSpace(settings.RequestUrlPrefix))
@@ -76,9 +84,11 @@ public static class ShellContextExtensions
             pathBase = pathBase.Add($"/{settings.RequestUrlPrefix}");
         }
 
-        context.Items["IsBackground"] = true;
+        context.Request.Scheme = "https";
         context.Request.PathBase = pathBase;
         context.Request.Path = "/";
+
+        context.Items["IsBackground"] = true;
 
         return context;
     }

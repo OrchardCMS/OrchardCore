@@ -37,16 +37,20 @@ namespace OrchardCore.Modules
         private readonly IClock _clock;
 
         public ModularBackgroundService(
-            IServer server,
             IShellHost shellHost,
+            IServiceProvider services,
             IHttpContextAccessor httpContextAccessor,
             IOptions<BackgroundServiceOptions> options,
             ILogger<ModularBackgroundService> logger,
             IClock clock)
         {
             _shellHost = shellHost;
+
+            _addressesFeature = services
+                .GetService<IServer>()
+                ?.Features.Get<IServerAddressesFeature>();
+
             _httpContextAccessor = httpContextAccessor;
-            _addressesFeature = server.Features.Get<IServerAddressesFeature>();
             _options = options.Value;
             _logger = logger;
             _clock = clock;
