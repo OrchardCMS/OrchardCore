@@ -80,24 +80,23 @@ namespace OrchardCore.Modules
             }
 
             var previousShells = Array.Empty<ShellContext>();
-
             while (!stoppingToken.IsCancellationRequested)
             {
+                // Init the delay first to be also waited on exception.
+                var pollingDelay = Task.Delay(_pollingTime, stoppingToken);
                 try
                 {
                     var runningShells = GetRunningShells();
                     await UpdateAsync(previousShells, runningShells, stoppingToken);
-                    previousShells = runningShells;
-
-                    var pollingDelay = Task.Delay(_pollingTime, stoppingToken);
-
                     await RunAsync(runningShells, stoppingToken);
-                    await WaitAsync(pollingDelay, stoppingToken);
+                    previousShells = runningShells;
                 }
                 catch (Exception ex) when (!ex.IsFatal())
                 {
                     _logger.LogError(ex, "Error while executing '{ServiceName}'.", nameof(ModularBackgroundService));
                 }
+
+                await WaitAsync(pollingDelay, stoppingToken);
             }
         }
 
