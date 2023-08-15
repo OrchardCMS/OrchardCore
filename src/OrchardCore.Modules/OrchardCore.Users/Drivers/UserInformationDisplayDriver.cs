@@ -36,35 +36,34 @@ namespace OrchardCore.Users.Drivers
 
             var site = await _siteService.GetSiteSettingsAsync();
             var settings = site.As<LoginSettings>();
-
+            var canEditUserInfo = await CanEditUserInfoAsync(user);
             return Combine(
-                Initialize<EditUserNameViewModel>("UserName_Edit", async model =>
+                Initialize<EditUserNameViewModel>("UserName_Edit", model =>
                 {
                     model.UserName = user.UserName;
 
-                    model.AllowEditing = context.IsNew || (settings.AllowChangingUsername && await CanEditUserInfoAsync(user));
+                    model.AllowEditing = context.IsNew || (settings.AllowChangingUsername && canEditUserInfo);
 
                 }).Location("Content:1"),
 
-                Initialize<EditUserEmailViewModel>("UserEmail_Edit", async model =>
+                Initialize<EditUserEmailViewModel>("UserEmail_Edit", model =>
                 {
                     model.Email = user.Email;
 
-                    model.AllowEditing = context.IsNew || (settings.AllowChangingEmail && await CanEditUserInfoAsync(user));
+                    model.AllowEditing = context.IsNew || (settings.AllowChangingEmail && canEditUserInfo);
 
                 }).Location("Content:1.3"),
 
-                Initialize<EditUserPhoneNumberViewModel>("UserPhoneNumber_Edit", async model =>
+                Initialize<EditUserPhoneNumberViewModel>("UserPhoneNumber_Edit", model =>
                 {
                     model.PhoneNumber = user.PhoneNumber;
                     model.PhoneNumberConfirmed = user.PhoneNumberConfirmed;
 
-                    model.AllowEditing = context.IsNew || await CanEditUserInfoAsync(user);
+                    model.AllowEditing = context.IsNew || canEditUserInfo;
 
                 }).Location("Content:1.3")
             );
         }
-
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
         {
@@ -104,20 +103,22 @@ namespace OrchardCore.Users.Drivers
             {
                 var site = await _siteService.GetSiteSettingsAsync();
                 var settings = site.As<LoginSettings>();
-
-                if (settings.AllowChangingUsername && await CanEditUserInfoAsync(user) && await context.Updater.TryUpdateModelAsync(userNameModel, Prefix))
+                if (await CanEditUserInfoAsync(user))
                 {
-                    user.UserName = userNameModel.UserName;
-                }
+                    if (settings.AllowChangingUsername && await context.Updater.TryUpdateModelAsync(userNameModel, Prefix))
+                    {
+                        user.UserName = userNameModel.UserName;
+                    }
 
-                if (settings.AllowChangingEmail && await CanEditUserInfoAsync(user) && await context.Updater.TryUpdateModelAsync(emailModel, Prefix))
-                {
-                    user.Email = emailModel.Email;
-                }
+                    if (settings.AllowChangingEmail && await context.Updater.TryUpdateModelAsync(emailModel, Prefix))
+                    {
+                        user.Email = emailModel.Email;
+                    }
 
-                if (await CanEditUserInfoAsync(user) && await context.Updater.TryUpdateModelAsync(phoneNumberModel, Prefix))
-                {
-                    user.PhoneNumber = phoneNumberModel.PhoneNumber;
+                    if (await context.Updater.TryUpdateModelAsync(phoneNumberModel, Prefix))
+                    {
+                        user.PhoneNumber = phoneNumberModel.PhoneNumber;
+                    }
                 }
             }
 

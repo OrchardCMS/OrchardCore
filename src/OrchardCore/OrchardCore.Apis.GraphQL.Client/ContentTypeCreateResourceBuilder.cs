@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -55,7 +56,7 @@ namespace OrchardCore.Apis.GraphQL.Client
 
             for (var i = 0; i < _contentPartBuilders.Count; i++)
             {
-                sbo.Append(_contentPartBuilders[i].Build()).AppendLine((i == (_contentPartBuilders.Count - 1)) ? "" : ",");
+                sbo.Append(_contentPartBuilders[i].Build()).AppendLine((i == (_contentPartBuilders.Count - 1)) ? String.Empty : ",");
             }
 
             sbo.Append('}').AppendLine();
