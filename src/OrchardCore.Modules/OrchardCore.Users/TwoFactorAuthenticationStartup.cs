@@ -1,6 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -34,7 +35,7 @@ public class TwoFactorAuthenticationStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddMvc(options =>
+        services.Configure<MvcOptions>(options =>
         {
             options.Filters.Add<TwoFactorAuthenticationAuthorizationFilter>();
             options.Filters.Add<LoginMenuFilter>();
