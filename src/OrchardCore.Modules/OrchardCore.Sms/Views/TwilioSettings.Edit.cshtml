@@ -9,7 +9,7 @@
         <label asp-for="PhoneNumber">@T["Phone Number"]</label>
         <input asp-for="PhoneNumber" class="form-control" />
         <span asp-validation-for="PhoneNumber"></span>
-        <span>@T["Phone number must include a country code. For example, +1 for United States."]</span>
+        <span class="hint">@T["Phone number must include a country code. For example, +1 for United States."]</span>
     </div>
 
     <div class="mb-3" asp-validation-class-for="AccountSID">
