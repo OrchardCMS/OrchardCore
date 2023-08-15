@@ -30,7 +30,7 @@ namespace OrchardCore.Settings.Drivers
 
         public override Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
         {
-            context.Shape.Metadata.Wrappers.Add("GeneralSettingsWrapper");
+            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__General");
 
             var result = Combine(
                 Initialize<SiteSettingsViewModel>("Settings_Edit__Site", model => PopulateProperties(site, model))
