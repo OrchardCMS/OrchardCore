@@ -72,7 +72,7 @@ public static class ShellContextExtensions
             context.Request.Host = new HostString("localhost");
         }
 
-        var pathBase = new PathString("/");
+        var pathBase = PathString.Empty;
         if (!String.IsNullOrWhiteSpace(serverAddress?.PathBase))
         {
             // The server address may include a virtual folder.
