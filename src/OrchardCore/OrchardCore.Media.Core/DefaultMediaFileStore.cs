@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -190,21 +191,25 @@ namespace OrchardCore.Media.Core
                 var httpContext = ShellScope.Services?.GetRequiredService<IHttpContextAccessor>().HttpContext;
                 if (httpContext is not null && !httpContext.Items.ContainsKey("IsBackground"))
                 {
-                    var originalPathBase = httpContext.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? PathString.Empty;
-                    if (originalPathBase.HasValue)
-                    {
-                        var requestBasePath = _requestBasePath;
-                        if (!requestBasePath.StartsWith(originalPathBase.Value, StringComparison.OrdinalIgnoreCase))
-                        {
-                            _requestBasePath = _fileStore.Combine(originalPathBase.Value, requestBasePath);
-                        }
-                    }
-
+                    ValidateRequestBasePath(httpContext);
                     _requestBasePathValidated = true;
                 }
             }
 
             return _cdnBaseUrl + _requestBasePath + "/" + _fileStore.NormalizePath(path);
+        }
+
+        private void ValidateRequestBasePath(HttpContext httpContext)
+        {
+            var originalPathBase = httpContext.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? PathString.Empty;
+            if (originalPathBase.HasValue)
+            {
+                var requestBasePath = _requestBasePath;
+                if (!requestBasePath.StartsWith(originalPathBase.Value, StringComparison.OrdinalIgnoreCase))
+                {
+                    _requestBasePath = _fileStore.Combine(originalPathBase.Value, requestBasePath);
+                }
+            }
         }
     }
 }
