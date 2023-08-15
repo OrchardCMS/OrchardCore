@@ -24,7 +24,7 @@
         <span asp-validation-for="AuthToken"></span>
         @if (Model.HasAuthToken)
         {
-            <span>@T["Auth token was securly saved. Enter a new value if you wish to replace the existing secret."]</span>
+            <span class="hint">@T["Auth token was securly saved. Enter a new value if you wish to replace the existing secret."]</span>
         }
     </div>
 </div>
