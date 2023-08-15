@@ -30,16 +30,16 @@ namespace OrchardCore.Settings.Drivers
 
         public override Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
         {
-            context.Shape.Metadata.Wrappers.Add("GeneralSettingsWrapper");
+            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__General");
 
             var result = Combine(
-                Initialize<SiteSettingsViewModel>("Settings_Edit", model => PopulateProperties(site, model))
+                Initialize<SiteSettingsViewModel>("Settings_Edit__Site", model => PopulateProperties(site, model))
                     .Location("Content:1#Site;10")
                     .OnGroup(GroupId),
-                Initialize<SiteSettingsViewModel>("SettingsResources_Edit", model => PopulateProperties(site, model))
+                Initialize<SiteSettingsViewModel>("Settings_Edit__Resources", model => PopulateProperties(site, model))
                     .Location("Content:1#Resources;20")
                     .OnGroup(GroupId),
-                Initialize<SiteSettingsViewModel>("SettingsCache_Edit", model => PopulateProperties(site, model))
+                Initialize<SiteSettingsViewModel>("Settings_Edit__Cache", model => PopulateProperties(site, model))
                     .Location("Content:1#Cache;30")
                     .OnGroup(GroupId)
             );
