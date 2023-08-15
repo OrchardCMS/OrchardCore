@@ -40,26 +40,34 @@
                     }
                 </div>
                 <div class="d-flex align-items-center">
-                    @await RenderSectionAsync("NavbarTop", required: false)
-                    @if (adminSettings.DisplayDarkMode)
-                    {
-                        <a id="btn-darkmode" class="me-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
-                            @if (darkMode)
-                            {
-                                <i class="fa-solid fa-sun" aria-hidden="true"></i>
-                                <span class="d-none">@T["Light mode"]</span>
-                            }
-                            else
-                            {
-                                <i class="fa-solid fa-moon" aria-hidden="true"></i>
-                                <span class="d-none">@T["Dark mode"]</span>
-                            }
-                        </a>
-                    }
-                    <a href="@Url.Content("~/")" class="me-3" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@T["Visit Site"]" role="button">
-                        <i class="fa-solid fa-fw fa-external-link" aria-hidden="true"></i>
-                    </a>
-                    @await DisplayAsync(await New.UserMenu())
+                    <ul class="nav navbar py-0">
+                        @await RenderSectionAsync("NavbarTop", required: false)
+                        @if (adminSettings.DisplayDarkMode)
+                        {
+                            <li class="nav-item">
+                                <a id="btn-darkmode" class="nav-link" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
+                                    @if (darkMode)
+                                    {
+                                        <i class="fa-solid fa-sun" aria-hidden="true"></i>
+                                        <span class="d-none">@T["Light mode"]</span>
+                                    }
+                                    else
+                                    {
+                                        <i class="fa-solid fa-moon" aria-hidden="true"></i>
+                                        <span class="d-none">@T["Dark mode"]</span>
+                                    }
+                                </a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a href="@Url.Content("~/")" class="nav-link" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@T["Visit Site"]" role="button">
+                                <i class="fa-solid fa-fw fa-external-link" aria-hidden="true"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            @await DisplayAsync(await New.UserMenu())
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>

@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
+using OrchardCore.Settings.Drivers;
 
 namespace OrchardCore.Settings
 {
@@ -28,7 +29,7 @@ namespace OrchardCore.Settings
                     .Add(S["Settings"], "1", settings => settings
                     .Add(S["General"], "1", entry => entry
                     .AddClass("general").Id("general")
-                        .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" })
+                        .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = DefaultSiteSettingsDisplayDriver.GroupId })
                         .Permission(Permissions.ManageGroupSettings)
                         .LocalNav()
                     ),
