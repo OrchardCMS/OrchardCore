@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -31,25 +29,18 @@ namespace OrchardCore.Modules
 
         private readonly IShellHost _shellHost;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IServerAddressesFeature _addressesFeature;
         private readonly BackgroundServiceOptions _options;
         private readonly ILogger _logger;
         private readonly IClock _clock;
 
         public ModularBackgroundService(
             IShellHost shellHost,
-            IServiceProvider services,
             IHttpContextAccessor httpContextAccessor,
             IOptions<BackgroundServiceOptions> options,
             ILogger<ModularBackgroundService> logger,
             IClock clock)
         {
             _shellHost = shellHost;
-
-            _addressesFeature = services
-                .GetService<IServer>()
-                ?.Features.Get<IServerAddressesFeature>();
-
             _httpContextAccessor = httpContextAccessor;
             _options = options.Value;
             _logger = logger;
@@ -116,7 +107,7 @@ namespace OrchardCore.Modules
                 var tenant = shell.Settings.Name;
 
                 // Create a new 'HttpContext' to be used in the background.
-                _httpContextAccessor.HttpContext = shell.CreateHttpContext(_addressesFeature);
+                _httpContextAccessor.HttpContext = shell.CreateHttpContext();
 
                 var schedulers = GetSchedulersToRun(tenant);
                 foreach (var scheduler in schedulers)
@@ -232,7 +223,7 @@ namespace OrchardCore.Modules
                 }
 
                 // Create a new 'HttpContext' to be used in the background.
-                _httpContextAccessor.HttpContext = shell.CreateHttpContext(_addressesFeature);
+                _httpContextAccessor.HttpContext = shell.CreateHttpContext();
 
                 var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
                 if (!_options.ShellWarmup && !shellScope.ShellContext.HasPipeline())
