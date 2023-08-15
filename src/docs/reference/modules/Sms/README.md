@@ -4,11 +4,11 @@ This module provides the infrastructure necessary to send messages using `SMS` s
 
 ## SMS Settings
 
-Enabling the `OrchardCore.Sms` will add a new settings under `Configurations` >> `Settings` >> `SMS`. You can utilize these settings to set up the default SMS provider configuration. The following are the providers that are readily accessible.
+Enabling the `OrchardCore.Sms` feature will add a new settings page under `Configurations` >> `Settings` >> `SMS`. You can utilize these settings to set up the default SMS provider configuration. The following are the providers that are readily accessible.
 
 | Provider | Description |
 | --- | --- |
-| `Console` | This particular provider is exclusively meant for debugging purposes and should never be employed in a production environment. It permits the message to be displayed on the debug console. |
+| `Console` | This particular provider is exclusively meant for debugging purposes and should never be used in a production environment. It permits the message to be displayed on the debug console. |
 | `Twilio` | Opting for this provider enables the utilization of Twilio service for sending SMS messages. By choosing this provider, you will need to input your Twilio account settings. |
 
 !!! note
@@ -35,3 +35,7 @@ This feature provides you a way to send user notifications using SMS based on us
 ### Twilio
 
 <https://github.com/twilio/twilio-csharp>
+
+### Google's libphonenumber library.
+
+<https://github.com/twcclegg/libphonenumber-csharp>
