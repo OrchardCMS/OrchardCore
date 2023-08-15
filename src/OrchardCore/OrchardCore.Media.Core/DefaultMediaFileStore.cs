@@ -190,18 +190,14 @@ namespace OrchardCore.Media.Core
                 var httpContext = ShellScope.Services?.GetRequiredService<IHttpContextAccessor>().HttpContext;
                 if (httpContext is not null && !httpContext.Items.ContainsKey("IsBackground"))
                 {
-                    var originalPathBase = httpContext
-                        ?.Features.Get<ShellContextFeature>()
-                        ?.OriginalPathBase
-                        ?? PathString.Empty;
-
-                    var requestBasePath = _requestBasePath;
-                    if (originalPathBase.HasValue &&
-                        !requestBasePath.StartsWith(originalPathBase.Value, StringComparison.OrdinalIgnoreCase))
+                    var originalPathBase = httpContext.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? PathString.Empty;
+                    if (originalPathBase.HasValue)
                     {
-                        requestBasePath = _fileStore.Combine(originalPathBase.Value, requestBasePath);
-
-                        _requestBasePath = requestBasePath;
+                        var requestBasePath = _requestBasePath;
+                        if (!requestBasePath.StartsWith(originalPathBase.Value, StringComparison.OrdinalIgnoreCase))
+                        {
+                            _requestBasePath = _fileStore.Combine(originalPathBase.Value, requestBasePath);
+                        }
                     }
 
                     _requestBasePathValidated = true;
