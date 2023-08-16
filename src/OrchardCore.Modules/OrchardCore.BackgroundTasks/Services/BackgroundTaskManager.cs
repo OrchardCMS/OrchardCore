@@ -1,16 +1,19 @@
 using System.Threading.Tasks;
 using OrchardCore.BackgroundTasks.Models;
 using OrchardCore.Documents;
+using OrchardCore.Environment.Cache;
 
 namespace OrchardCore.BackgroundTasks.Services
 {
     public class BackgroundTaskManager
     {
         private readonly IDocumentManager<BackgroundTaskDocument> _documentManager;
+        private readonly ISignal _signal;
 
-        public BackgroundTaskManager(IDocumentManager<BackgroundTaskDocument> documentManager)
+        public BackgroundTaskManager(IDocumentManager<BackgroundTaskDocument> documentManager, ISignal signal)
         {
             _documentManager = documentManager;
+            _signal = signal;
         }
 
         /// <summary>
@@ -28,6 +31,7 @@ namespace OrchardCore.BackgroundTasks.Services
             var document = await LoadDocumentAsync();
             document.Settings.Remove(name);
             await _documentManager.UpdateAsync(document);
+            _signal.DeferredSignalToken(nameof(BackgroundTaskSettings));
         }
 
         public async Task UpdateAsync(string name, BackgroundTaskSettings settings)
@@ -35,6 +39,7 @@ namespace OrchardCore.BackgroundTasks.Services
             var document = await LoadDocumentAsync();
             document.Settings[name] = settings;
             await _documentManager.UpdateAsync(document);
+            _signal.DeferredSignalToken(nameof(BackgroundTaskSettings));
         }
     }
 }
