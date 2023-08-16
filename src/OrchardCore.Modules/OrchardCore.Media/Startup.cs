@@ -168,6 +168,12 @@ namespace OrchardCore.Media
             services.AddDataMigration<Migrations>();
             services.AddScoped<IContentFieldIndexHandler, MediaFieldIndexHandler>();
             services.AddMediaFileTextProvider<PdfMediaFileTextProvider>(".pdf");
+            services.AddMediaFileTextProvider<TxtMediaFileTextProvider>(".txt");
+            services.AddMediaFileTextProvider<AutoDocumentMediaFileTextProvider>(".doc");
+            services.AddMediaFileTextProvider<AutoDocumentMediaFileTextProvider>(".docx");
+            services.AddMediaFileTextProvider<AutoDocumentMediaFileTextProvider>(".ppt");
+            services.AddMediaFileTextProvider<AutoDocumentMediaFileTextProvider>(".pptx");
+            services.AddMediaFileTextProvider<AutoDocumentMediaFileTextProvider>(".rtf");
 
             services.AddRecipeExecutionStep<MediaStep>();
 
