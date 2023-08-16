@@ -43,16 +43,15 @@ public static class ShellPipelineExtensions
     /// <summary>
     /// Builds the tenant pipeline.
     /// </summary>
-    internal static IShellPipeline BuildPipeline(this ShellContext context)
+    private static IShellPipeline BuildPipeline(this ShellContext context)
     {
         var features = context.ServiceProvider.GetService<IServer>()?.Features;
         var builder = new ApplicationBuilder(context.ServiceProvider, features ?? new FeatureCollection());
         var startupFilters = builder.ApplicationServices.GetService<IEnumerable<IStartupFilter>>();
-        var shellPipeline = new ShellRequestPipeline();
 
         Action<IApplicationBuilder> configure = builder =>
         {
-            builder.ConfigureShellPipeline();
+            ConfigurePipeline(builder);
         };
 
         foreach (var filter in startupFilters.Reverse())
@@ -62,7 +61,10 @@ public static class ShellPipelineExtensions
 
         configure(builder);
 
-        shellPipeline.Next = builder.Build();
+        var shellPipeline = new ShellRequestPipeline
+        {
+            Next = builder.Build()
+        };
 
         return shellPipeline;
     }
@@ -70,7 +72,7 @@ public static class ShellPipelineExtensions
     /// <summary>
     /// Configures the tenant pipeline.
     /// </summary>
-    internal static void ConfigureShellPipeline(this IApplicationBuilder builder)
+    private static void ConfigurePipeline(IApplicationBuilder builder)
     {
         var startups = builder.ApplicationServices.GetServices<IStartup>();
 
