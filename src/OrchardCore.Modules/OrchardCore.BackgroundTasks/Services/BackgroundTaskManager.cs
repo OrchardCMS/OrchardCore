@@ -30,6 +30,7 @@ namespace OrchardCore.BackgroundTasks.Services
         {
             var document = await LoadDocumentAsync();
             document.Settings.Remove(name);
+
             await _documentManager.UpdateAsync(document);
             _signal.DeferredSignalToken(nameof(BackgroundTaskSettings));
         }
@@ -38,6 +39,7 @@ namespace OrchardCore.BackgroundTasks.Services
         {
             var document = await LoadDocumentAsync();
             document.Settings[name] = settings;
+
             await _documentManager.UpdateAsync(document);
             _signal.DeferredSignalToken(nameof(BackgroundTaskSettings));
         }
