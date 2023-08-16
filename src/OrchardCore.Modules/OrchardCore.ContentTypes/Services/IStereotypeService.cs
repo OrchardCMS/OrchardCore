@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
-namespace OrchardCore.ContentTypes.Services
+namespace OrchardCore.ContentTypes.Services;
+
+public interface IStereotypeService
 {
-    public interface IStereotypeService
-    {
-        IEnumerable<StereotypeDescription> GetStereotypes();
-    }
+    IEnumerable<StereotypeDescription> GetStereotypes();
 }
