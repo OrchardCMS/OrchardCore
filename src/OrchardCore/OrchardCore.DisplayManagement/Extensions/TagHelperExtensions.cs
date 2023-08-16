@@ -3,7 +3,7 @@ using OrchardCore.DisplayManagement.TagHelpers;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class TagHelperExtensions
     {
         /// <summary>
         /// Adds tag helper services.
