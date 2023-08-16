@@ -1,9 +1,8 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 
-namespace OrchardCore.Rules
+namespace OrchardCore.Rules;
+
+public interface IConditionEvaluator
 {
-    public interface IConditionEvaluator
-    {
-        ValueTask<bool> EvaluateAsync(Condition condition);
-    }
+    ValueTask<bool> EvaluateAsync(Condition condition);
 }

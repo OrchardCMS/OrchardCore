@@ -1,7 +1,6 @@
-﻿namespace OrchardCore.DisplayManagement.Zones
+namespace OrchardCore.DisplayManagement.Zones;
+
+public interface IZoneHolding : IShape
 {
-    public interface IZoneHolding : IShape
-    {
-        Zones Zones { get; }
-    }
+    Zones Zones { get; }
 }

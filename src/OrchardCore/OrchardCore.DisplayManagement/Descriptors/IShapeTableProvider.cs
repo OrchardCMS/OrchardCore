@@ -1,7 +1,6 @@
-﻿namespace OrchardCore.DisplayManagement.Descriptors
+namespace OrchardCore.DisplayManagement.Descriptors;
+
+public interface IShapeTableProvider
 {
-    public interface IShapeTableProvider
-    {
-        void Discover(ShapeTableBuilder builder);
-    }
+    void Discover(ShapeTableBuilder builder);
 }

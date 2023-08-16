@@ -1,6 +1,5 @@
-﻿using OrchardCore.Environment.Extensions;
+using OrchardCore.Environment.Extensions;
 
-namespace OrchardCore.DisplayManagement.Extensions
-{
-    public interface IThemeExtensionInfo : IExtensionInfo { }
-}
+namespace OrchardCore.DisplayManagement.Extensions;
+
+public interface IThemeExtensionInfo : IExtensionInfo { }

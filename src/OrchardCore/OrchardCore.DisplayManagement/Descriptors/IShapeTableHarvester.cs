@@ -1,6 +1,5 @@
-﻿namespace OrchardCore.DisplayManagement.Descriptors
+namespace OrchardCore.DisplayManagement.Descriptors;
+
+public interface IShapeTableHarvester : IShapeTableProvider
 {
-    public interface IShapeTableHarvester : IShapeTableProvider
-    {
-    }
 }

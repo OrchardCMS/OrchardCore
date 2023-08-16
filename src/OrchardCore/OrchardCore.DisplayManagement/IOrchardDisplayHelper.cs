@@ -1,7 +1,6 @@
-﻿namespace OrchardCore.DisplayManagement.Razor
+namespace OrchardCore.DisplayManagement.Razor;
+
+public interface IOrchardDisplayHelper : IOrchardHelper
 {
-    public interface IOrchardDisplayHelper : IOrchardHelper
-    {
-        IDisplayHelper DisplayHelper { get; }
-    }
+    IDisplayHelper DisplayHelper { get; }
 }

@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 
-namespace OrchardCore.Documents.Options
+namespace OrchardCore.Documents.Options;
+
+public interface IDocumentSharedOptions
 {
-    public interface IDocumentSharedOptions
-    {
-        TimeSpan? FailoverRetryLatency { get; set; }
-    }
+    TimeSpan? FailoverRetryLatency { get; set; }
 }

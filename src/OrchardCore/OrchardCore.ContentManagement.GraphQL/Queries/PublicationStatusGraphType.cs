@@ -1,17 +1,16 @@
-﻿using GraphQL.Types;
+using GraphQL.Types;
 
-namespace OrchardCore.ContentManagement.GraphQL.Queries
+namespace OrchardCore.ContentManagement.GraphQL.Queries;
+
+public class PublicationStatusGraphType : EnumerationGraphType
 {
-    public class PublicationStatusGraphType : EnumerationGraphType
+    public PublicationStatusGraphType()
     {
-        public PublicationStatusGraphType()
-        {
-            Name = "Status";
-            Description = "publication status";
-            AddValue("PUBLISHED", "published content item version", PublicationStatusEnum.Published);
-            AddValue("DRAFT", "draft content item version", PublicationStatusEnum.Draft);
-            AddValue("LATEST", "the latest version, either published or draft", PublicationStatusEnum.Latest);
-            AddValue("ALL", "all historical versions", PublicationStatusEnum.All);
-        }
+        Name = "Status";
+        Description = "publication status";
+        AddValue("PUBLISHED", "published content item version", PublicationStatusEnum.Published);
+        AddValue("DRAFT", "draft content item version", PublicationStatusEnum.Draft);
+        AddValue("LATEST", "the latest version, either published or draft", PublicationStatusEnum.Latest);
+        AddValue("ALL", "all historical versions", PublicationStatusEnum.All);
     }
 }

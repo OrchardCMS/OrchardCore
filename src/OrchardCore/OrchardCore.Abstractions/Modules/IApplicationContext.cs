@@ -1,7 +1,6 @@
-﻿namespace OrchardCore.Modules
+namespace OrchardCore.Modules;
+
+public interface IApplicationContext
 {
-    public interface IApplicationContext
-    {
-        Application Application { get; }
-    }
+    Application Application { get; }
 }

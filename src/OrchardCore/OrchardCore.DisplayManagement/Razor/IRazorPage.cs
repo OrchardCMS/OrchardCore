@@ -1,7 +1,6 @@
-﻿namespace OrchardCore.DisplayManagement.Razor
+namespace OrchardCore.DisplayManagement.Razor;
+
+public interface IRazorPage
 {
-    public interface IRazorPage
-    {
-        string ViewLayout { get; set; }
-    }
+    string ViewLayout { get; set; }
 }

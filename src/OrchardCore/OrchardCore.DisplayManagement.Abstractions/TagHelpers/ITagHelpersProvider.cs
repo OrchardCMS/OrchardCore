@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
-namespace OrchardCore.DisplayManagement.TagHelpers
+namespace OrchardCore.DisplayManagement.TagHelpers;
+
+public interface ITagHelpersProvider
 {
-    public interface ITagHelpersProvider
-    {
-        IEnumerable<Type> GetTypes();
-    }
+    IEnumerable<Type> GetTypes();
 }

@@ -1,8 +1,7 @@
-﻿namespace OrchardCore.Documents.Options
+namespace OrchardCore.Documents.Options;
+
+public interface IDocumentNamedOptions
 {
-    public interface IDocumentNamedOptions
-    {
-        string CacheKey { get; set; }
-        string CacheIdKey { get; set; }
-    }
+    string CacheKey { get; set; }
+    string CacheIdKey { get; set; }
 }
