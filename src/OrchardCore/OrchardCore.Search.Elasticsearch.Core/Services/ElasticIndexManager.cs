@@ -521,8 +521,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
             foreach (var entry in documentIndex.Entries)
             {
-                if (entries.ContainsKey(entry.Name)
-                    || Array.Exists(_ignoredFields, x => entry.Name.Contains(x)))
+                if (Array.Exists(_ignoredFields, x => entry.Name.Contains(x)))
                 {
                     continue;
                 }
@@ -532,7 +531,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     case DocumentIndex.Types.Boolean:
 
                         // Store "true"/"false" for booleans.
-                        entries.Add(entry.Name, (bool)(entry.Value));
+                        entries.TryAdd(entry.Name, (bool)entry.Value);
                         break;
 
                     case DocumentIndex.Types.DateTime:
@@ -540,11 +539,11 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                         {
                             if (entry.Value is DateTimeOffset)
                             {
-                                entries.Add(entry.Name, ((DateTimeOffset)(entry.Value)).UtcDateTime);
+                                entries.TryAdd(entry.Name, ((DateTimeOffset)entry.Value).UtcDateTime);
                             }
                             else
                             {
-                                entries.Add(entry.Name, ((DateTime)(entry.Value)).ToUniversalTime());
+                                entries.TryAdd(entry.Name, ((DateTime)entry.Value).ToUniversalTime());
                             }
                         }
                         break;
@@ -552,7 +551,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     case DocumentIndex.Types.Integer:
                         if (entry.Value != null && Int64.TryParse(entry.Value.ToString(), out var value))
                         {
-                            entries.Add(entry.Name, value);
+                            entries.TryAdd(entry.Name, value);
                         }
 
                         break;
@@ -560,14 +559,25 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     case DocumentIndex.Types.Number:
                         if (entry.Value != null)
                         {
-                            entries.Add(entry.Name, Convert.ToDouble(entry.Value));
+                            entries.TryAdd(entry.Name, Convert.ToDouble(entry.Value));
                         }
                         break;
 
                     case DocumentIndex.Types.Text:
-                        if (entry.Value != null && !String.IsNullOrEmpty(Convert.ToString(entry.Value)))
+                        if (entry.Value != null)
                         {
-                            entries.Add(entry.Name, Convert.ToString(entry.Value));
+                            var textValue = Convert.ToString(entry.Value);
+
+                            if (!String.IsNullOrEmpty(textValue))
+                            {
+                                if (!entries.TryAdd(entry.Name, textValue))
+                                {
+                                    // When same entry name appears more than once in the entries collection,
+                                    // concatenate the values to ensure all values are searchable.
+
+                                    entries[entry.Name] = Convert.ToString(entries[entry.Name]) + ' ' + textValue;
+                                }
+                            }
                         }
                         break;
                 }
