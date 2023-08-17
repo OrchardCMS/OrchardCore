@@ -74,7 +74,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
                         Title = defaultSettings.Title,
                         Description = settings.Description,
                         Enable = settings.Enable,
-                        UsePipeline = settings.UsePipeline,
                     };
                 }
 
@@ -84,7 +83,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
                     Title = defaultSettings.Title,
                     Description = defaultSettings.Description,
                     Enable = defaultSettings.Enable,
-                    UsePipeline = defaultSettings.UsePipeline,
                 };
             });
 
