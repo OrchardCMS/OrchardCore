@@ -34,60 +34,62 @@ namespace OrchardCore.Media.Indexing
             var options = context.Settings.ToOptions();
             var settings = context.ContentPartFieldDefinition.GetSettings<MediaFieldSettings>();
 
-            if (field.Paths?.Length > 0)
-            {
-                if (settings.AllowMediaText)
-                {
-                    foreach (var key in context.Keys)
-                    {
-                        if (field.MediaTexts != null)
-                        {
-                            context.DocumentIndex.Set(key + MediaTextKeySuffix, String.Join(' ', field.MediaTexts), options);
-                        }
-                        else
-                        {
-                            context.DocumentIndex.Set(key + MediaTextKeySuffix, "NULL", options);
-                        }
-                    }
-                }
-
-                var stringBuilder = new StringBuilder();
-
-                foreach (var path in field.Paths)
-                {
-                    var providerType = _mediaFileIndexingOptions.GetRegisteredMediaFileTextProvider(Path.GetExtension(path));
-
-                    if (providerType == null)
-                    {
-                        continue;
-                    }
-
-                    using var fileStream = await _mediaFileStore.GetFileStreamAsync(path);
-
-                    if (fileStream != null)
-                    {
-                        var fileText = await _serviceProvider
-                            .CreateInstance<IMediaFileTextProvider>(providerType)
-                            .GetTextAsync(path, fileStream);
-
-                        stringBuilder.Append(fileText);
-                    }
-                }
-
-                var searchableContent = stringBuilder.ToString();
-
-                foreach (var key in context.Keys)
-                {
-                    context.DocumentIndex.Set(key + FileTextKeySuffix, searchableContent, options);
-                }
-            }
-            else
+            if (field.Paths?.Length == 0)
             {
                 foreach (var key in context.Keys)
                 {
                     context.DocumentIndex.Set(key + MediaTextKeySuffix, "NULL", options);
                     context.DocumentIndex.Set(key + FileTextKeySuffix, "NULL", options);
                 }
+
+                return;
+            }
+
+            if (settings.AllowMediaText)
+            {
+                var searchableMediaText = String.Join(' ', field.MediaTexts ?? Array.Empty<string>());
+
+                foreach (var key in context.Keys)
+                {
+                    if (field.MediaTexts != null)
+                    {
+                        context.DocumentIndex.Set(key + MediaTextKeySuffix, searchableMediaText, options);
+                    }
+                    else
+                    {
+                        context.DocumentIndex.Set(key + MediaTextKeySuffix, "NULL", options);
+                    }
+                }
+            }
+
+            var stringBuilder = new StringBuilder();
+
+            foreach (var path in field.Paths)
+            {
+                var providerType = _mediaFileIndexingOptions.GetRegisteredMediaFileTextProvider(Path.GetExtension(path));
+
+                if (providerType == null)
+                {
+                    continue;
+                }
+
+                using var fileStream = await _mediaFileStore.GetFileStreamAsync(path);
+
+                if (fileStream != null)
+                {
+                    var fileText = await _serviceProvider
+                        .CreateInstance<IMediaFileTextProvider>(providerType)
+                        .GetTextAsync(path, fileStream);
+
+                    stringBuilder.AppendLine(fileText);
+                }
+            }
+
+            var searchableContent = stringBuilder.ToString();
+
+            foreach (var key in context.Keys)
+            {
+                context.DocumentIndex.Set(key + FileTextKeySuffix, searchableContent, options);
             }
         }
     }
