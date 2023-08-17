@@ -30,8 +30,8 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="$(TargetFramework) == 'net6.0'">
-    <AspNetCorePackagesVersion>6.0.20</AspNetCorePackagesVersion>
-    <MicrosoftExtensionsPackagesVersion>6.0.20</MicrosoftExtensionsPackagesVersion>
+    <AspNetCorePackagesVersion>6.0.21</AspNetCorePackagesVersion>
+    <MicrosoftExtensionsPackagesVersion>6.0.21</MicrosoftExtensionsPackagesVersion>
   </PropertyGroup>
 
   <!-- 'Microsoft.AspNetCore' packages that are not included in the ASP.NET Core shared framework -->

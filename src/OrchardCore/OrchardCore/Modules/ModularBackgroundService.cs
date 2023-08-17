@@ -80,24 +80,23 @@ namespace OrchardCore.Modules
             }
 
             var previousShells = Array.Empty<ShellContext>();
-
             while (!stoppingToken.IsCancellationRequested)
             {
+                // Init the delay first to be also waited on exception.
+                var pollingDelay = Task.Delay(_pollingTime, stoppingToken);
                 try
                 {
                     var runningShells = GetRunningShells();
                     await UpdateAsync(previousShells, runningShells, stoppingToken);
-                    previousShells = runningShells;
-
-                    var pollingDelay = Task.Delay(_pollingTime, stoppingToken);
-
                     await RunAsync(runningShells, stoppingToken);
-                    await WaitAsync(pollingDelay, stoppingToken);
+                    previousShells = runningShells;
                 }
                 catch (Exception ex) when (!ex.IsFatal())
                 {
                     _logger.LogError(ex, "Error while executing '{ServiceName}'.", nameof(ModularBackgroundService));
                 }
+
+                await WaitAsync(pollingDelay, stoppingToken);
             }
         }
 
@@ -107,6 +106,7 @@ namespace OrchardCore.Modules
             {
                 var tenant = shell.Settings.Name;
 
+                // Create a new 'HttpContext' to be used in the background.
                 _httpContextAccessor.HttpContext = shell.CreateHttpContext();
 
                 var schedulers = GetSchedulersToRun(tenant);
@@ -183,6 +183,9 @@ namespace OrchardCore.Modules
                         await handlers.InvokeAsync((handler, context, token) => handler.ExecutedAsync(context, token), context, stoppingToken, _logger);
                     });
                 }
+
+                // Clear the 'HttpContext' for this async flow.
+                _httpContextAccessor.HttpContext = null;
             });
         }
 
@@ -199,6 +202,7 @@ namespace OrchardCore.Modules
                     return;
                 }
 
+                // Create a new 'HttpContext' to be used in the background.
                 _httpContextAccessor.HttpContext = shell.CreateHttpContext();
 
                 var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
@@ -274,6 +278,9 @@ namespace OrchardCore.Modules
                         scheduler.Updated = true;
                     }
                 });
+
+                // Clear the 'HttpContext' for this async flow.
+                _httpContextAccessor.HttpContext = null;
             });
         }
 

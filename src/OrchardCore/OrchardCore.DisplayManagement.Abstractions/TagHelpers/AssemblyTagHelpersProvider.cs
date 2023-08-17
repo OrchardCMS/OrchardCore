@@ -6,11 +6,6 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.DisplayManagement.TagHelpers
 {
-    public interface ITagHelpersProvider
-    {
-        IEnumerable<Type> GetTypes();
-    }
-
     public class AssemblyTagHelpersProvider : ITagHelpersProvider
     {
         private readonly Assembly _assembly;

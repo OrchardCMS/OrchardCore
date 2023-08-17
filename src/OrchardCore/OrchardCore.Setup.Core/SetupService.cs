@@ -77,7 +77,7 @@ namespace OrchardCore.Setup.Services
         /// <inheritdoc />
         public async Task<IEnumerable<RecipeDescriptor>> GetSetupRecipesAsync()
         {
-            if (_recipes == null)
+            if (_recipes is null)
             {
                 var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
                 _recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).ToArray();
@@ -195,9 +195,9 @@ namespace OrchardCore.Setup.Services
                 Features = context.EnabledFeatures.Select(id => new ShellFeature { Id = id }).ToList()
             };
 
-            using (var shellContext = await _shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor))
+            await using (var shellContext = await _shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor))
             {
-                await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
+                await (await shellContext.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
                 {
                     try
                     {
