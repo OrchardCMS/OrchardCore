@@ -14,8 +14,8 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 using OrchardCore.Secrets.ViewModels;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Secrets.Controllers
 {
@@ -146,7 +146,7 @@ namespace OrchardCore.Secrets.Controllers
                         {
                             await _secretCoordinator.RemoveSecretAsync(binding.Key, binding.Value.Store);
                         }
-                        _notifier.Success(H["Secrets successfully removed."]);
+                        await _notifier.SuccessAsync(H["Secrets successfully removed."]);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -233,7 +233,7 @@ namespace OrchardCore.Secrets.Controllers
 
                 await _secretCoordinator.UpdateSecretAsync(model.Name, secretBinding, secret);
 
-                _notifier.Success(H["Secret added successfully"]);
+                await _notifier.SuccessAsync(H["Secret added successfully"]);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -272,7 +272,7 @@ namespace OrchardCore.Secrets.Controllers
                 Type = secret.GetType().Name,
                 Secret = secret,
                 StoreEntries = _secretCoordinator.ToArray(),
-                Editor = await _displayManager.BuildEditorAsync(secret, updater: _updateModelAccessor.ModelUpdater, isNew: false)
+                Editor = await _displayManager.BuildEditorAsync(secret, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "")
             };
 
             model.Editor.Secret = secret;
@@ -319,7 +319,7 @@ namespace OrchardCore.Secrets.Controllers
             var secret = _factories.FirstOrDefault(x => x.Name == secretBinding.Type)?.Create();
             secret = await _secretCoordinator.GetSecretAsync(sourceName, secret.GetType());
 
-            var editor = await _displayManager.UpdateEditorAsync(secret, updater: _updateModelAccessor.ModelUpdater, isNew: false);
+            var editor = await _displayManager.UpdateEditorAsync(secret, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
             model.Editor = editor;
 
             if (ModelState.IsValid)
@@ -357,7 +357,7 @@ namespace OrchardCore.Secrets.Controllers
 
             await _secretCoordinator.RemoveSecretAsync(name, secretBinding.Store);
 
-            _notifier.Success(H["Secret deleted successfully"]);
+            await _notifier.SuccessAsync(H["Secret deleted successfully"]);
 
             return RedirectToAction(nameof(Index));
         }
