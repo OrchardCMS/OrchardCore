@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.BackgroundTasks;
@@ -24,9 +25,9 @@ public static class HttpBackgroundJob
             return Task.CompletedTask;
         }
 
-        // Can't be executed outside the context of a real http request scope.
+        // Can't be executed outside of an http context.
         var httpContextAccessor = scope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-        if (httpContextAccessor.HttpContext == null || httpContextAccessor.HttpContext.Items.TryGetValue("IsBackground", out _))
+        if (httpContextAccessor.HttpContext == null)
         {
             return Task.CompletedTask;
         }
@@ -56,7 +57,18 @@ public static class HttpBackgroundJob
                 return;
             }
 
+            // Create a new 'HttpContext' to be used in the background.
             httpContextAccessor.HttpContext = shellContext.CreateHttpContext();
+
+            // Here the 'IActionContextAccessor.ActionContext' need to be cleared, this 'AsyncLocal'
+            // field is not cleared by 'AspnetCore' and still references the previous 'HttpContext'.
+            var actionContextAccessor = scope.ServiceProvider.GetService<IActionContextAccessor>();
+            if (actionContextAccessor is not null)
+            {
+                // Clear the stale 'ActionContext' that may be used e.g.
+                // by 'ILiquidTemplateManager.RenderStringAsync()'.
+                actionContextAccessor.ActionContext = null;
+            }
 
             // Use a new scope as the shell context may have been reloaded.
             await ShellScope.UsingChildScopeAsync(async scope =>
@@ -75,6 +87,9 @@ public static class HttpBackgroundJob
                         scope.ShellContext.Settings.Name);
                 }
             });
+
+            // Clear the 'HttpContext' for this async flow.
+            httpContextAccessor.HttpContext = null;
         });
 
         return Task.CompletedTask;

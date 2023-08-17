@@ -181,7 +181,7 @@ namespace OrchardCore.Workflows.Controllers
         [HttpPost]
         [ActionName(nameof(Index))]
         [FormValueRequired("submit.BulkAction")]
-        public async Task<IActionResult> BulkEdit(WorkflowTypeIndexOptions options, IEnumerable<int> itemIds)
+        public async Task<IActionResult> BulkEdit(WorkflowTypeIndexOptions options, IEnumerable<long> itemIds)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -217,7 +217,7 @@ namespace OrchardCore.Workflows.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> EditProperties(int? id, string returnUrl = null)
+        public async Task<IActionResult> EditProperties(long? id, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -251,7 +251,7 @@ namespace OrchardCore.Workflows.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditProperties(WorkflowTypePropertiesViewModel viewModel, int? id)
+        public async Task<IActionResult> EditProperties(WorkflowTypePropertiesViewModel viewModel, long? id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -300,7 +300,7 @@ namespace OrchardCore.Workflows.Controllers
                     : RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Duplicate(int id, string returnUrl = null)
+        public async Task<IActionResult> Duplicate(long id, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -327,7 +327,7 @@ namespace OrchardCore.Workflows.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Duplicate(WorkflowTypePropertiesViewModel viewModel, int id)
+        public async Task<IActionResult> Duplicate(WorkflowTypePropertiesViewModel viewModel, long id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -360,7 +360,7 @@ namespace OrchardCore.Workflows.Controllers
             });
         }
 
-        public async Task<IActionResult> Edit(int id, string localId)
+        public async Task<IActionResult> Edit(long id, string localId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -497,7 +497,7 @@ namespace OrchardCore.Workflows.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(long id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -517,7 +517,7 @@ namespace OrchardCore.Workflows.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private async Task<dynamic> BuildActivityDisplay(IActivity activity, int index, int workflowTypeId,
+        private async Task<dynamic> BuildActivityDisplay(IActivity activity, int index, long workflowTypeId,
             string localId, string displayType)
         {
             dynamic activityShape =
@@ -536,7 +536,7 @@ namespace OrchardCore.Workflows.Controllers
             return activityShape;
         }
 
-        private async Task<dynamic> BuildActivityDisplay(ActivityContext activityContext, int index, int workflowTypeId,
+        private async Task<dynamic> BuildActivityDisplay(ActivityContext activityContext, int index, long workflowTypeId,
             string localId, string displayType)
         {
             dynamic activityShape = await _activityDisplayManager.BuildDisplayAsync(activityContext.Activity,

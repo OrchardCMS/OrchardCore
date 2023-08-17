@@ -40,7 +40,7 @@ namespace OrchardCore.OpenId.Services.Managers
         /// </returns>
         public virtual ValueTask<TApplication> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrEmpty(identifier))
+            if (String.IsNullOrEmpty(identifier))
             {
                 throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
             }
@@ -86,7 +86,7 @@ namespace OrchardCore.OpenId.Services.Managers
             else
             {
                 var properties = await Store.GetPropertiesAsync(application, cancellationToken);
-                if (properties.TryGetValue(OpenIdConstants.Properties.Roles, out JsonElement value))
+                if (properties.TryGetValue(OpenIdConstants.Properties.Roles, out var value))
                 {
                     var builder = ImmutableArray.CreateBuilder<string>();
 
@@ -105,7 +105,7 @@ namespace OrchardCore.OpenId.Services.Managers
         public virtual IAsyncEnumerable<TApplication> ListInRoleAsync(
             string role, CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrEmpty(role))
+            if (String.IsNullOrEmpty(role))
             {
                 throw new ArgumentException("The role name cannot be null or empty.", nameof(role));
             }
@@ -141,7 +141,7 @@ namespace OrchardCore.OpenId.Services.Managers
                 throw new ArgumentNullException(nameof(application));
             }
 
-            if (roles.Any(role => string.IsNullOrEmpty(role)))
+            if (roles.Any(role => String.IsNullOrEmpty(role)))
             {
                 throw new ArgumentException("Role names cannot be null or empty.", nameof(roles));
             }
@@ -244,7 +244,7 @@ namespace OrchardCore.OpenId.Services.Managers
 
                 foreach (var role in await GetRolesAsync(application, cancellationToken))
                 {
-                    if (string.IsNullOrEmpty(role))
+                    if (String.IsNullOrEmpty(role))
                     {
                         yield return new ValidationResult("Roles cannot be null or empty.");
 

@@ -12,14 +12,15 @@
     var externalAuthenticationSchemes = await SignInManager.GetExternalAuthenticationSchemesAsync();
 }
 
-@await RenderSectionAsync("NavbarTop", required: false)
-
 <ul class="navbar-nav">
+
+    @await RenderSectionAsync("NavbarTop", required: false)
+
     @if (User.Identity.IsAuthenticated)
     {
         <li class="nav-item dropdown">
             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa-solid fa-user fa-fw" aria-hidden="true"></i> @User.Identity.Name<b class="caret"></b></a>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu dropdown-menu-end">
                 @if (User.HasClaim("Permission", "AccessAdminPanel"))
                 {
                     <li><a class="dropdown-item" asp-route-area="OrchardCore.Admin" asp-controller="Admin" asp-action="Index"><i class="fa-solid fa-desktop fa-fw" aria-hidden="true"></i> @T["Dashboard"]</a></li>
