@@ -26,7 +26,7 @@ namespace OrchardCore.Secrets.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep deploymentStep, DeploymentPlanResult result)
         {
-            if (!(deploymentStep is AllSecretsRsaDeploymentStep allSecretsDeploymentStep))
+            if (deploymentStep is not AllSecretsRsaDeploymentStep allSecretsDeploymentStep)
             {
                 return;
             }

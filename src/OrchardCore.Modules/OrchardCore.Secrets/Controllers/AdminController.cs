@@ -29,9 +29,9 @@ namespace OrchardCore.Secrets.Controllers
         private readonly IEnumerable<ISecretFactory> _factories;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-        private readonly dynamic New;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
+        protected readonly dynamic New;
 
         public AdminController(
             IAuthorizationService authorizationService,
@@ -68,7 +68,7 @@ namespace OrchardCore.Secrets.Controllers
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
             var secretBindings = (await _secretCoordinator.GetSecretBindingsAsync()).ToList();
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
                 secretBindings = secretBindings.Where(x => x.Key.Contains(options.Search)).ToList();
             }
@@ -149,7 +149,7 @@ namespace OrchardCore.Secrets.Controllers
                         await _notifier.SuccessAsync(H["Secrets successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
 
@@ -178,7 +178,7 @@ namespace OrchardCore.Secrets.Controllers
                 Secret = secret,
                 Type = type,
                 StoreEntries = _secretCoordinator.ToArray(),
-                Editor = await _displayManager.BuildEditorAsync(secret, updater: _updateModelAccessor.ModelUpdater, isNew: true)
+                Editor = await _displayManager.BuildEditorAsync(secret, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "")
             };
 
             model.Editor.Secret = secret;
@@ -221,7 +221,7 @@ namespace OrchardCore.Secrets.Controllers
                 }
             }
 
-            dynamic editor = await _displayManager.UpdateEditorAsync(secret, updater: _updateModelAccessor.ModelUpdater, isNew: true);
+            dynamic editor = await _displayManager.UpdateEditorAsync(secret, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
             editor.Secret = secret;
 
             if (ModelState.IsValid)
