@@ -41,6 +41,8 @@ namespace OrchardCore.Media.Indexing
                     context.DocumentIndex.Set(key + _mediaTextKeySuffix, "NULL", options);
                     context.DocumentIndex.Set(key + _fileTextKeySuffix, "NULL", options);
                 }
+
+                return;
             }
 
             if (settings.AllowMediaText)
