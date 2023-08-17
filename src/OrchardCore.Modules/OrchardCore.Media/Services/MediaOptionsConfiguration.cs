@@ -62,6 +62,7 @@ namespace OrchardCore.Media.Services
         private const string DefaultContentSecurityPolicy = "default-src 'self'; style-src 'unsafe-inline'";
 
         private const int DefaultMaxUploadChunkSize = 104_857_600; // 100MB
+
         private static readonly TimeSpan DefaultTemporaryFileLifeTime = TimeSpan.FromHours(1);
 
         private readonly IShellConfiguration _shellConfiguration;
