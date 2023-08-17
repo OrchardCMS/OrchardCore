@@ -499,7 +499,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Notifications.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Notifications", "src\OrchardCore.Modules\OrchardCore.Notifications\OrchardCore.Notifications.csproj", "{19594A96-A033-4820-820B-C6186D00D507}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Seo.Abstractions", "src\OrchardCore\OrchardCore.Seo.Abstractions\OrchardCore.Seo.Abstractions.csproj", "{C61CC748-39BD-4900-9FEE-A2483259573D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Seo.Abstractions", "src\OrchardCore\OrchardCore.Seo.Abstractions\OrchardCore.Seo.Abstractions.csproj", "{C61CC748-39BD-4900-9FEE-A2483259573D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Secrets.Abstractions", "src\OrchardCore\OrchardCore.Secrets.Abstractions\OrchardCore.Secrets.Abstractions.csproj", "{388F1ED2-0D4A-4ECC-B084-51DE5CFB0E92}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Secrets", "src\OrchardCore.Modules\OrchardCore.Secrets\OrchardCore.Secrets.csproj", "{FE49358A-C710-4206-B573-E7E9D24201BD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Secrets.KeyVault", "src\OrchardCore.Modules\OrchardCore.Secrets.KeyVault\OrchardCore.Secrets.KeyVault.csproj", "{BB692F5A-4DC4-45BA-851D-1349620A3FD8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1317,6 +1323,18 @@ Global
 		{C61CC748-39BD-4900-9FEE-A2483259573D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C61CC748-39BD-4900-9FEE-A2483259573D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C61CC748-39BD-4900-9FEE-A2483259573D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{388F1ED2-0D4A-4ECC-B084-51DE5CFB0E92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{388F1ED2-0D4A-4ECC-B084-51DE5CFB0E92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{388F1ED2-0D4A-4ECC-B084-51DE5CFB0E92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{388F1ED2-0D4A-4ECC-B084-51DE5CFB0E92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE49358A-C710-4206-B573-E7E9D24201BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE49358A-C710-4206-B573-E7E9D24201BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE49358A-C710-4206-B573-E7E9D24201BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE49358A-C710-4206-B573-E7E9D24201BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB692F5A-4DC4-45BA-851D-1349620A3FD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB692F5A-4DC4-45BA-851D-1349620A3FD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB692F5A-4DC4-45BA-851D-1349620A3FD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB692F5A-4DC4-45BA-851D-1349620A3FD8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1545,6 +1563,9 @@ Global
 		{2A6E7DF9-E417-42F8-94F7-0060E252E4D6} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{19594A96-A033-4820-820B-C6186D00D507} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{C61CC748-39BD-4900-9FEE-A2483259573D} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{388F1ED2-0D4A-4ECC-B084-51DE5CFB0E92} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{FE49358A-C710-4206-B573-E7E9D24201BD} = {90030E85-0C4F-456F-B879-443E8A3F220D}
+		{BB692F5A-4DC4-45BA-851D-1349620A3FD8} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}
