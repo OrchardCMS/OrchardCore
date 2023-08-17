@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Builders;
@@ -41,10 +42,7 @@ namespace OrchardCore.Media.Indexing
                     {
                         if (field.MediaTexts != null)
                         {
-                            foreach (var mediaText in field.MediaTexts)
-                            {
-                                context.DocumentIndex.Set(key + MediaTextKeySuffix, mediaText, options);
-                            }
+                            context.DocumentIndex.Set(key + MediaTextKeySuffix, String.Join(' ', field.MediaTexts), options);
                         }
                         else
                         {
@@ -53,26 +51,34 @@ namespace OrchardCore.Media.Indexing
                     }
                 }
 
+                var stringBuilder = new StringBuilder();
+
                 foreach (var path in field.Paths)
                 {
                     var providerType = _mediaFileIndexingOptions.GetRegisteredMediaFileTextProvider(Path.GetExtension(path));
 
-                    if (providerType != null)
+                    if (providerType == null)
                     {
-                        using var fileStream = await _mediaFileStore.GetFileStreamAsync(path);
-
-                        if (fileStream != null)
-                        {
-                            var fileText = await _serviceProvider
-                                .CreateInstance<IMediaFileTextProvider>(providerType)
-                                .GetTextAsync(path, fileStream);
-
-                            foreach (var key in context.Keys)
-                            {
-                                context.DocumentIndex.Set(key + FileTextKeySuffix, fileText, options);
-                            }
-                        }
+                        continue;
                     }
+
+                    using var fileStream = await _mediaFileStore.GetFileStreamAsync(path);
+
+                    if (fileStream != null)
+                    {
+                        var fileText = await _serviceProvider
+                            .CreateInstance<IMediaFileTextProvider>(providerType)
+                            .GetTextAsync(path, fileStream);
+
+                        stringBuilder.Append(fileText);
+                    }
+                }
+
+                var searchableContent = stringBuilder.ToString();
+
+                foreach (var key in context.Keys)
+                {
+                    context.DocumentIndex.Set(key + FileTextKeySuffix, searchableContent, options);
                 }
             }
             else
