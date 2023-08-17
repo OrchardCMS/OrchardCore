@@ -104,7 +104,6 @@ namespace OrchardCore.Workflows.Controllers
 
             query = model.Options.OrderBy switch
             {
-                WorkflowOrder.CreatedDesc => query.OrderByDescending(x => x.CreatedUtc),
                 WorkflowOrder.Created => query.OrderBy(x => x.CreatedUtc),
                 _ => query.OrderByDescending(x => x.CreatedUtc),
             };
@@ -118,8 +117,19 @@ namespace OrchardCore.Workflows.Controllers
             var pageOfItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
 
             var workflowIds = pageOfItems.Select(item => item.WorkflowId);
-            var workflows = await _session.Query<Workflow, WorkflowIndex>(item => item.WorkflowId.IsIn(workflowIds))
-                .ListAsync();
+            var workflowsQuery = _session.Query<Workflow, WorkflowIndex>(item => item.WorkflowId.IsIn(workflowIds));
+
+            switch (model.Options.OrderBy)
+            {
+                case WorkflowOrder.Created:
+                    workflowsQuery.OrderBy(i => i.CreatedUtc);
+                    break;
+                default:
+                    workflowsQuery.OrderByDescending(i => i.CreatedUtc);
+                    break;
+            }
+
+            var workflows = await workflowsQuery.ListAsync();
 
             var viewModel = new WorkflowIndexViewModel
             {
