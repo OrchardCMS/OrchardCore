@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace OrchardCore.ResourceManagement
 {
@@ -18,5 +19,7 @@ namespace OrchardCore.ResourceManagement
         /// The prefix path that is used when a url starts with "~/".
         /// </summary>
         public string ContentBasePath { get; set; } = String.Empty;
+
+        public HashSet<ResourceManifest> ResourceManifests { get; } = new HashSet<ResourceManifest>();
     }
 }

@@ -43,14 +43,14 @@ namespace OrchardCore.Shells.Database.Configuration
         {
             JObject configurations = null;
 
-            using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-            await context.CreateScope().UsingServiceScopeAsync(async scope =>
+            await using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
+            await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
                 var document = await session.Query<DatabaseShellConfigurations>().FirstOrDefaultAsync();
 
-                if (document != null)
+                if (document is not null)
                 {
                     configurations = document.ShellConfigurations;
                 }
@@ -74,7 +74,7 @@ namespace OrchardCore.Shells.Database.Configuration
             });
 
             var configuration = configurations.GetValue(tenant) as JObject;
-            if (configuration != null)
+            if (configuration is not null)
             {
                 builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(configuration.ToString(Formatting.None))));
             }
@@ -82,15 +82,15 @@ namespace OrchardCore.Shells.Database.Configuration
 
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)
         {
-            using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-            await context.CreateScope().UsingServiceScopeAsync(async scope =>
+            await using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
+            await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
                 var document = await session.Query<DatabaseShellConfigurations>().FirstOrDefaultAsync();
 
                 JObject configurations;
-                if (document != null)
+                if (document is not null)
                 {
                     configurations = document.ShellConfigurations;
                 }
@@ -104,7 +104,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 foreach (var key in data.Keys)
                 {
-                    if (data[key] != null)
+                    if (data[key] is not null)
                     {
                         config[key] = data[key];
                     }
@@ -122,6 +122,22 @@ namespace OrchardCore.Shells.Database.Configuration
             });
         }
 
+        public async Task RemoveAsync(string tenant)
+        {
+            await using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
+            await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
+            {
+                var session = scope.ServiceProvider.GetRequiredService<ISession>();
+
+                var document = await session.Query<DatabaseShellConfigurations>().FirstOrDefaultAsync();
+                if (document is not null)
+                {
+                    document.ShellConfigurations.Remove(tenant);
+                    session.Save(document, checkConcurrency: true);
+                }
+            });
+        }
+
         private async Task<bool> TryMigrateFromFileAsync(string tenant, JObject configurations)
         {
             var tenantFolder = Path.Combine(_container, tenant);
@@ -132,14 +148,12 @@ namespace OrchardCore.Shells.Database.Configuration
                 return false;
             }
 
-            using (var file = File.OpenText(appsettings))
-            {
-                var configuration = await file.ReadToEndAsync();
+            using var file = File.OpenText(appsettings);
+            var configuration = await file.ReadToEndAsync();
 
-                if (configuration != null)
-                {
-                    configurations[tenant] = JObject.Parse(configuration);
-                }
+            if (configuration is not null)
+            {
+                configurations[tenant] = JObject.Parse(configuration);
             }
 
             return true;

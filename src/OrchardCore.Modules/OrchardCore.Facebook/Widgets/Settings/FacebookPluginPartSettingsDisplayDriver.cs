@@ -10,10 +10,10 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.Facebook.Widgets.Settings
 {
-    public class FacebookPluginPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    public class FacebookPluginPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<FacebookPluginPart>
     {
-        private readonly ILiquidTemplateManager _templateManager;
-        private readonly IStringLocalizer S;
+        protected readonly ILiquidTemplateManager _templateManager;
+        protected readonly IStringLocalizer S;
 
         public FacebookPluginPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<FacebookPluginPartSettingsDisplayDriver> localizer)
         {
@@ -23,11 +23,6 @@ namespace OrchardCore.Facebook.Widgets.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(FacebookPluginPart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             return Initialize<FacebookPluginPartSettingsViewModel>("FacebookPluginPartSettings_Edit", model =>
             {
                 model.FacebookPluginPartSettings = contentTypePartDefinition.GetSettings<FacebookPluginPartSettings>();
@@ -37,19 +32,14 @@ namespace OrchardCore.Facebook.Widgets.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(FacebookPluginPart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             var model = new FacebookPluginPartSettingsViewModel();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix,
                 m => m.Liquid);
 
-            if (!string.IsNullOrEmpty(model.Liquid) && !_templateManager.Validate(model.Liquid, out var errors))
+            if (!String.IsNullOrEmpty(model.Liquid) && !_templateManager.Validate(model.Liquid, out var errors))
             {
-                context.Updater.ModelState.AddModelError(nameof(model.Liquid), S["The Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                context.Updater.ModelState.AddModelError(nameof(model.Liquid), S["The Body doesn't contain a valid Liquid expression. Details: {0}", String.Join(" ", errors)]);
             }
             else
             {

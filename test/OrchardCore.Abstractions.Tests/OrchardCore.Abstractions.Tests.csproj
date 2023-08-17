@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\src\OrchardCore.Build\Dependencies.props" />
+
+  <PropertyGroup>
+    <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <RootNamespace>OrchardCore</RootNamespace>
+  </PropertyGroup>
+
+  <!--<ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>-->
+
+  <ItemGroup>
+    <None Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\OrchardCore.Cms.Web\NLog.config" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\OrchardCore.Cms.Web\*.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\OrchardCore.Cms.Web\wwwroot\**\*" Link="wwwroot\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AngleSharp" />
+    <PackageReference Include="Lorem.Universal.NET" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="System.Linq.Async" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.analyzers" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <DotNetCliToolReference Include="dotnet-xunit" Version="$(DotNetXunitVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
+    <ProjectReference Include="..\OrchardCore.Tests.Features\Examples.Features.AssyAttrib\Examples.Features.AssyAttrib.csproj" />
+    <ProjectReference Include="..\OrchardCore.Tests.Modules\Examples.Modules.AssyAttrib.Alpha\Examples.Modules.AssyAttrib.Alpha.csproj" />
+    <ProjectReference Include="..\OrchardCore.Tests.Modules\Examples.Modules.AssyAttrib.Bravo\Examples.Modules.AssyAttrib.Bravo.csproj" />
+    <ProjectReference Include="..\OrchardCore.Tests.Modules\Examples.Modules.AssyAttrib.Charlie\Examples.Modules.AssyAttrib.Charlie.csproj" />
+    <ProjectReference Include="..\OrchardCore.Tests.Modules\Examples.OrchardCoreModules.Alpha\Examples.OrchardCoreModules.Alpha.csproj" />
+    <ProjectReference Include="..\OrchardCore.Tests.Themes\Examples.Themes.AssyAttrib.Alpha\Examples.Themes.AssyAttrib.Alpha.csproj" />
+    <ProjectReference Include="..\OrchardCore.Tests.Themes\Examples.Themes.AssyAttrib.Bravo\Examples.Themes.AssyAttrib.Bravo.csproj" />
+    <ProjectReference Include="..\OrchardCore.Tests.Themes\Examples.Themes.AssyAttrib.Charlie\Examples.Themes.AssyAttrib.Charlie.csproj" />
+    <ProjectReference Include="..\OrchardCore.Tests.Themes\Examples.OrchardCoreThemes.Alpha\Examples.OrchardCoreThemes.Alpha.csproj" />
+  </ItemGroup>
+
+  <Import Project="..\..\src\OrchardCore.Build\OrchardCore.Commons.targets" />
+
+</Project>

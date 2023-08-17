@@ -1,0 +1,9 @@
+@model AllTemplatesDeploymentStepViewModel
+
+<h5>@T["All Templates"]</h5>
+
+<div class="form-check">
+    <input type="checkbox" class="form-check-input" asp-for="ExportAsFiles" />
+    <label class="form-checkl-label" asp-for="ExportAsFiles">@T["Export templates as files"]</label>
+    <span class="hint dashed">@T["Check if the templates should be exported as files instead of inline."]</span>
+</div>

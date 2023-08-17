@@ -1,0 +1,11 @@
+@model AuditTrailPartViewModel
+@using OrchardCore.Contents.AuditTrail.ViewModels
+@using OrchardCore
+
+<div class="@Orchard.GetWrapperCssClasses()">
+    <label asp-for="Comment" class="@Orchard.GetLabelCssClasses()">@T["Comment"]</label>
+    <div class="@Orchard.GetEndCssClasses()">
+        <textarea asp-for="Comment" rows="5" class="form-control"></textarea>
+        <span class="hint">@T["Optionally provide a comment about this change for the audit trail."]</span>
+    </div>
+</div>

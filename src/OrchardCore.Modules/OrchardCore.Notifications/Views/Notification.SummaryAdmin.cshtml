@@ -1,0 +1,106 @@
+@using OrchardCore.ContentManagement
+@using Microsoft.AspNetCore.Html
+@using OrchardCore.Notifications.Models
+@using OrchardCore.Entities
+@{
+    Notification notification = Model.Notification;
+
+    if (notification == null)
+    {
+        return;
+    }
+
+    var readInfo = notification.As<NotificationReadInfo>();
+    var bodyInfo = notification.As<NotificationBodyInfo>();
+}
+
+<div class="list-group-item notification-container-item p-3@(readInfo.IsRead ? " notification-is-read": " notification-is-unread")">
+    <div class="row">
+        <div class="col-lg col-12 title d-flex">
+
+            <div class="selectors-container d-flex">
+                @if (Model.Selectors != null)
+                {
+                    <div class="selectors cursor-pointer">
+                        @await DisplayAsync(Model.Selectors)
+                    </div>
+                }
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" value="@notification.NotificationId" name="itemIds" id="itemIds-@notification.NotificationId">
+                    <label class="form-check-label" for="itemIds-@notification.NotificationId"></label>
+                </div>
+            </div>
+
+            <div class="summary d-flex flex-column flex-md-row">
+                <div class="contentitem me-2 mark-notification-as-read" data-message-id="@notification.NotificationId" data-is-read="@readInfo.IsRead.ToString().ToLowerInvariant()">
+
+                    <h5 class="mb-0">@notification.Summary</h5>
+
+                    @if (!String.IsNullOrWhiteSpace(bodyInfo.TextBody))
+                    {
+                        <p class="mb-0 mt-2">
+                            @bodyInfo.TextBody
+                        </p>
+                    }
+
+                </div>
+                @if (Model.Header != null)
+                {
+                    <div class="header me-1">
+                        @await DisplayAsync(Model.Header)
+                    </div>
+                }
+                @if (Model.Tags != null)
+                {
+                    <div class="tags me-1">
+                        @await DisplayAsync(Model.Tags)
+                    </div>
+                }
+                @if (Model.Meta != null)
+                {
+                    <div class="metadata me-1">
+                        @await DisplayAsync(Model.Meta)
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-lg-auto col-12 d-flex justify-content-end">
+            <div class="actions text-start">
+                @if (Model.Actions != null)
+                {
+                    @await DisplayAsync(Model.Actions)
+                }
+
+                @if (Model.ActionsMenu != null && Model.ActionsMenu.HasItems)
+                {
+                    <div class="btn-group" title="@T["Actions"]">
+                        <button type="button" class="btn btn-sm btn-secondary dropdown-toggle actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span>@T["Actions"]</span>
+                        </button>
+                        <div class="actions-menu dropdown-menu dropdown-menu-end">
+                            @await DisplayAsync(Model.ActionsMenu)
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.Content != null)
+{
+    <div class="row">
+        <div class="col primary">
+            @await DisplayAsync(Model.Content)
+        </div>
+    </div>
+}
+
+<style at="Head">
+    .notification-container .notification-is-unread {
+        color: #664d03 !important;
+        background-color: #fff3cd !important;
+    }
+</style>
+
+<script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>

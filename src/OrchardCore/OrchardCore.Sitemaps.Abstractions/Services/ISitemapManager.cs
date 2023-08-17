@@ -7,6 +7,11 @@ namespace OrchardCore.Sitemaps.Services
     public interface ISitemapManager
     {
         /// <summary>
+        /// Gets an unique identifier that is updated when any <see cref="SitemapType"/> has changed.
+        /// </summary>
+        Task<string> GetIdentifierAsync();
+
+        /// <summary>
         /// Loads all stored <see cref="SitemapType"/> for updating.
         /// </summary>
         Task<IEnumerable<SitemapType>> LoadSitemapsAsync();

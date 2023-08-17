@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
@@ -7,7 +8,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 {
     public class Composite : DynamicObject
     {
-        protected readonly Dictionary<string, object> _properties = new Dictionary<string, object>();
+        protected readonly Dictionary<string, object> _properties = new();
 
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
@@ -43,7 +44,7 @@ namespace OrchardCore.DisplayManagement.Shapes
                 return TryGetMemberImpl(binder.Name, out result);
             }
 
-            // method call with one argument will assign the property
+            // Method call with one argument will assign the property.
             if (args.Length == 1)
             {
                 result = this;
@@ -54,7 +55,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             {
                 if (binder.Name == "ToString")
                 {
-                    result = string.Empty;
+                    result = String.Empty;
                     return true;
                 }
 
@@ -64,22 +65,26 @@ namespace OrchardCore.DisplayManagement.Shapes
             return true;
         }
 
+        public virtual bool TryGetIndexImpl(string name, out object result)
+        {
+            if (name != null && TryGetMemberImpl(name, out result))
+            {
+                return true;
+            }
+            else
+            {
+                result = null;
+                return false;
+            }
+        }
+
         public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
         {
             if (indexes.Length == 1)
             {
                 var stringIndex = indexes[0] as string;
 
-                if (stringIndex != null && TryGetMemberImpl(stringIndex, out result))
-                {
-                    return true;
-                }
-                else
-                {
-                    // Returning false results in a RuntimeBinderException if the index supplied is not an existing string property name.
-                    result = null;
-                    return false;
-                }
+                return TryGetIndexImpl(stringIndex, out result);
             }
             // Returning false results in a RuntimeBinderException if the index supplied is not an existing string property name.
             result = null;
@@ -112,7 +117,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             get { return _properties; }
         }
 
-        public static bool operator ==(Composite a, Nil b)
+        public static bool operator ==(Composite a, Nil _)
         {
             return null == a;
         }
@@ -129,18 +134,21 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
+            if (obj is null)
             {
                 return false;
             }
+
             if (ReferenceEquals(this, obj))
             {
                 return true;
             }
-            if (obj.GetType() != this.GetType())
+
+            if (obj.GetType() != GetType())
             {
                 return false;
             }
+
             return Equals((Composite)obj);
         }
 
@@ -152,8 +160,8 @@ namespace OrchardCore.DisplayManagement.Shapes
 
     public class Nil : DynamicObject
     {
-        private static readonly Nil Singleton = new Nil();
-        public static Nil Instance { get { return Singleton; } }
+        private static readonly Nil _singleton = new();
+        public static Nil Instance { get { return _singleton; } }
 
         private Nil()
         {
@@ -182,29 +190,29 @@ namespace OrchardCore.DisplayManagement.Shapes
             switch (binder.Operation)
             {
                 case ExpressionType.Equal:
-                    result = ReferenceEquals(arg, Nil.Instance) || (object)arg == null;
+                    result = ReferenceEquals(arg, Nil.Instance) || arg == null;
                     return true;
                 case ExpressionType.NotEqual:
-                    result = !ReferenceEquals(arg, Nil.Instance) && (object)arg != null;
+                    result = !ReferenceEquals(arg, Nil.Instance) && arg != null;
                     return true;
             }
 
             return base.TryBinaryOperation(binder, arg, out result);
         }
 
-        public static bool operator ==(Nil a, Nil b)
+        public static bool operator ==(Nil _1, Nil _2)
         {
             return true;
         }
 
-        public static bool operator !=(Nil a, Nil b)
+        public static bool operator !=(Nil _1, Nil _2)
         {
             return false;
         }
 
         public static bool operator ==(Nil a, object b)
         {
-            return ReferenceEquals(a, b) || (object)b == null;
+            return ReferenceEquals(a, b) || b == null;
         }
 
         public static bool operator !=(Nil a, object b)
@@ -235,7 +243,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public override string ToString()
         {
-            return string.Empty;
+            return String.Empty;
         }
     }
 }

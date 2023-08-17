@@ -19,7 +19,6 @@ using OpenIddict.Validation.DataProtection;
 using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -175,17 +174,11 @@ namespace OrchardCore.OpenId
             {
                 ServiceDescriptor.Scoped<IRoleRemovedEventHandler, OpenIdApplicationRoleRemovedEventHandler>(),
                 ServiceDescriptor.Scoped<IDisplayDriver<OpenIdServerSettings>, OpenIdServerSettingsDisplayDriver>(),
-                ServiceDescriptor.Scoped<IDisplayManager<OpenIdServerSettings>, DisplayManager<OpenIdServerSettings>>(),
                 ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdServerSettingsStep>(),
                 ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdApplicationStep>(),
                 ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdScopeStep>(),
 
-                ServiceDescriptor.Singleton<IBackgroundTask, OpenIdBackgroundTask>(),
-
-                // Deployment
-                ServiceDescriptor.Scoped<IDisplayDriver<DeploymentStep>, OpenIdServerDeploymentStepDriver>(),
-                ServiceDescriptor.Transient<IDeploymentSource, OpenIdServerDeploymentSource>(),
-                ServiceDescriptor.Singleton<IDeploymentStepFactory, DeploymentStepFactory<OpenIdServerDeploymentStep>>(),
+                ServiceDescriptor.Singleton<IBackgroundTask, OpenIdBackgroundTask>()
             });
 
             // Note: the OpenIddict ASP.NET host adds an authentication options initializer that takes care of
@@ -278,6 +271,17 @@ namespace OrchardCore.OpenId
         }
     }
 
+    [RequireFeatures("OrchardCore.Deployment", OpenIdConstants.Features.Server)]
+    public class ServerDeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IDisplayDriver<DeploymentStep>, OpenIdServerDeploymentStepDriver>();
+            services.AddTransient<IDeploymentSource, OpenIdServerDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<OpenIdServerDeploymentStep>>();
+        }
+    }
+
     [Feature(OpenIdConstants.Features.Validation)]
     public class ValidationStartup : StartupBase
     {
@@ -297,7 +301,6 @@ namespace OrchardCore.OpenId
             services.TryAddEnumerable(new[]
             {
                 ServiceDescriptor.Scoped<IDisplayDriver<OpenIdValidationSettings>, OpenIdValidationSettingsDisplayDriver>(),
-                ServiceDescriptor.Scoped<IDisplayManager<OpenIdValidationSettings>, DisplayManager<OpenIdValidationSettings>>(),
                 ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdValidationSettingsStep>()
             });
 
@@ -327,6 +330,17 @@ namespace OrchardCore.OpenId
                 pattern: options.AdminUrlPrefix + "/OpenId/ValidationConfiguration",
                 defaults: new { controller = typeof(ValidationConfigurationController).ControllerName(), action = nameof(ValidationConfigurationController.Index) }
             );
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment", OpenIdConstants.Features.Validation)]
+    public class ValidationDeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IDisplayDriver<DeploymentStep>, OpenIdValidationDeploymentStepDriver>();
+            services.AddTransient<IDeploymentSource, OpenIdValidationDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<OpenIdValidationDeploymentStep>>();
         }
     }
 

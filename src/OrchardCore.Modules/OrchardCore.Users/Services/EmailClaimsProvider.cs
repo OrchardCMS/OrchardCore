@@ -13,7 +13,7 @@ namespace OrchardCore.Users.Services
         {
             _userManager = userManager;
         }
-        
+
         public async Task GenerateAsync(IUser user, ClaimsIdentity claims)
         {
             if (user == null)

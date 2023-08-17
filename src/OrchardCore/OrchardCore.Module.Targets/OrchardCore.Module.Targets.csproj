@@ -1,11 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <!-- NuGet properties-->
     <Title>Target for OrchardCore Module</Title>
     <Description>$(OCFrameworkDescription)
-    
+
     Converts project/library into an OrchardCore Module that can be referenced in OrchardCore modular application.</Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
   </PropertyGroup>
@@ -14,16 +13,29 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
-  <!-- Add the OrchardCore.Module.props file in the package -->
+  <!--
+    Add the necessary '.props' and '.targets' files under the 'build\' folder of this package,
+    so that a referencing project is built / packed and considered as an 'OrchardCore' module.
+
+    If a referencing project targets multiple TFMs the scripts under 'build\' may not be used,
+    so we pack other scripts under 'buildMultiTargeting\' just to import those under `build\`.
+  -->
+
   <ItemGroup>
     <None Include="OrchardCore.Module.Targets.props" Pack="true">
-      <PackagePath>build\$(TargetFramework)\OrchardCore.Module.Targets.props</PackagePath>
+      <PackagePath>build\OrchardCore.Module.Targets.props</PackagePath>
+    </None>
+    <None Include="buildMultiTargeting\OrchardCore.Module.Targets.props" Pack="true">
+      <PackagePath>buildMultiTargeting\OrchardCore.Module.Targets.props</PackagePath>
     </None>
     <None Include="OrchardCore.Module.Targets.targets" Pack="true">
-      <PackagePath>build\$(TargetFramework)\OrchardCore.Module.Targets.targets</PackagePath>
+      <PackagePath>build\OrchardCore.Module.Targets.targets</PackagePath>
+    </None>
+    <None Include="buildMultiTargeting\OrchardCore.Module.Targets.targets" Pack="true">
+      <PackagePath>buildMultiTargeting\OrchardCore.Module.Targets.targets</PackagePath>
     </None>
     <None Include="Package.Build.props" Pack="true">
-      <PackagePath>build\$(TargetFramework)\Package.Build.props</PackagePath>
+      <PackagePath>build\Package.Build.props</PackagePath>
     </None>
   </ItemGroup>
   <ItemGroup>

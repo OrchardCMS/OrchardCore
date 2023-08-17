@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Setup.Events
@@ -9,16 +10,8 @@ namespace OrchardCore.Setup.Events
     public interface ISetupEventHandler
     {
         Task Setup(
-            string siteName,
-            string userName,
-            string userId,
-            string email,
-            string password,
-            string dbProvider,
-            string dbConnectionString,
-            string dbTablePrefix,
-            string siteTimeZone,
+            IDictionary<string, object> properties,
             Action<string, string> reportError
-            );
+        );
     }
 }

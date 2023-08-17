@@ -50,7 +50,7 @@ namespace OrchardCore.AdminMenu.Models
         {
             if (menuItemToInsert == null)
             {
-                throw new ArgumentNullException("menuItemToInsert");
+                throw new ArgumentNullException(nameof(menuItemToInsert));
             }
 
             // insert the node at the destination node

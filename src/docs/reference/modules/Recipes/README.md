@@ -34,6 +34,12 @@ A recipe file should look like this:
 !!! note
     if `issetuprecipe` is equal to true, the recipe will be available in the Recipes list during the setup.
 
+!!! note
+    Recipes, despite being JSON files, may contain comments:
+    ```json
+    // This is a comment.
+    ```
+
 ## Recipe steps
 
 A recipe can execute multiple steps.
@@ -142,6 +148,55 @@ You can also set the default Lucene Settings.
     }
 ```
 
+### Reset Lucene Search Index Step
+
+This Reset Lucene Index Step resets a lucene index.
+Restarts the indexing process from the beginning in order to update current content items.
+It doesn't delete existing entries from the index.
+
+The `includeAll` property indicates whether to include all available Lucene indices. When set to `true`, the `Indices` property can be omitted.
+
+```json
+    {
+      "name": "lucene-index-reset",
+      "includeAll": false,
+      "Indices": [
+        "IndexName1", "IndexName2"
+      ]
+    }
+```
+
+```json
+    {
+      "name": "lucene-index-reset",
+      "includeAll": true
+    }
+```
+
+### Rebuild Lucene Search Index Step
+
+This Rebuild Lucene Index Step rebuilds a lucene index.
+Deletes and recreates the full index content.
+
+The `includeAll` property indicates whether to include all available Lucene indices. When set to `true`, the `Indices` property can be omitted.
+
+```json
+    {
+      "name": "lucene-index-rebuild",
+      "includeAll": false,
+      "Indices": [
+        "IndexName1", "IndexName2"
+      ]
+    }
+```
+
+```json
+    {
+      "name": "lucene-index-rebuild",
+      "includeAll": true
+    }
+```
+
 ### Content Step
 
 The Content step allows you to create content items.
@@ -158,6 +213,9 @@ The Content step allows you to create content items.
       ]
     }
 ```
+
+!!! note
+    There is also `QueryBasedContentDeploymentStep` which produces exactly the same output as the Content Step, but based on a provided Query.
 
 ### Media Step
 
@@ -261,6 +319,9 @@ The Roles step allows you to set permissions to specific roles.
     }
 ```
 
+!!! warning
+    As of version 1.6, the default roles are no longer auto created. Setup recipe must define the default roles to be used. The `Roles` feature will automatically map all known permissions to the defined roles each time a feature is enabled.
+
 ### Template and AdminTemplate Step
 
 The Template and AdminTemplate steps allow you to create Liquid Templates.
@@ -296,7 +357,7 @@ The WorkflowType step allows you to create a Workflow.
 
 ### Deployment Step
 
-The Deployment step allows you to create a deployment plan with deployment steps.
+The Deployment step allows you to create a deployment plan with deployment steps. Also see [Deployment](../Deployment/README.md).
 
 ```json
     {
@@ -352,6 +413,28 @@ The CustomSettings step allows you to populate your custom settings with initial
       }
     }
 ```
+
+### Recipes Step
+
+The Recipes step allows you to execute other recipes from the current recipe. You can use this to modularize your recipes. E.g. instead of having a single large setup recipe you can put content into multiple smaller ones and execute them from the setup recipe.
+
+```json
+    {
+      "name": "recipes",
+      "Values": [
+        {
+          "executionid": "MyApp",
+          "name": "MyApp.Pages"
+        },
+        {
+          "executionid": "MyApp",
+          "name": "MyApp.Blog"
+        }
+      ]
+    }
+```
+
+As `executionid` use a custom identifier to distinguish these recipe executions from others. As `name` use the `name` field from the given recipe's head (this is left blank when you export to recipes).
 
 ### Other settings Step
 
@@ -472,3 +555,11 @@ And here are the migration recipes referenced in the code above:
     ]
 }
 ```
+
+## Videos
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/uJobH9izfLI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/qPCBgHQYz1g" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/A13Li0CblK8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -22,5 +22,9 @@ namespace OrchardCore.ContentLocalization.Services
         /// </summary>
         /// <returns>List of Localization for the url or null if not found</returns>
         Task<IEnumerable<LocalizationEntry>> GetLocalizationsFromRouteAsync(PathString url);
+        /// <summary>
+        /// Sets the culture cookie to the target culture
+        /// </summary>
+        void SetContentCulturePickerCookie(string targetCulture);
     }
 }

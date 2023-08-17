@@ -1,0 +1,62 @@
+// 
+// Posts
+// 
+
+.section-heading {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin-top: 3.75rem;
+}
+
+.caption {
+    font-size: $font-size-sm;
+    font-style: italic;
+    display: block;
+    margin: 0;
+    padding: 0.625rem;
+    text-align: center;
+}
+
+// Styling for post previews on the blog homepage
+
+.post-preview {
+    >a {
+        color: $gray-900;
+
+        &:focus,
+        &:hover {
+            text-decoration: none;
+            color: $primary;
+        }
+
+        >.post-title {
+            font-size: 1.875rem;
+            margin-top: 1.875rem;
+            margin-bottom: 0.625rem;
+        }
+
+        >.post-subtitle {
+            font-weight: 300;
+            margin-bottom: 0.625rem;
+        }
+    }
+
+    >.post-meta {
+        font-size: 1.125rem;
+        font-style: italic;
+        margin-top: 0;
+        color: $gray-600;
+
+        >a {
+            text-decoration: none;
+        }
+    }
+
+    @include media-breakpoint-up(lg) {
+        >a {
+            >.post-title {
+                font-size: 2.25rem;
+            }
+        }
+    }
+}

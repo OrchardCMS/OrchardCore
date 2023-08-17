@@ -91,7 +91,7 @@ $(function () {
     var workflowTypeId = $('[data-workflow-type-id]').data('workflow-type-id');
     var activityId = $('[data-activity-id]').data('activity-id');
     var tokenLifeSpan = $('#token-lifespan').val();
-    var generateUrl = $('[data-generate-url]').data('generate-url') + ("?workflowTypeId=" + workflowTypeId + "&activityId=" + activityId + "&tokenLifeSpan=" + tokenLifeSpan);
+    var generateUrl = $('[data-generate-url]').data('generate-url') + "?workflowTypeId=".concat(workflowTypeId, "&activityId=").concat(activityId, "&tokenLifeSpan=").concat(tokenLifeSpan);
     var antiforgeryHeaderName = $('[data-antiforgery-header-name]').data('antiforgery-header-name');
     var antiforgeryToken = $('[data-antiforgery-token]').data('antiforgery-token');
     var headers = {};
@@ -103,11 +103,9 @@ $(function () {
       $('#workflow-url-text').val(url);
     });
   };
-
   $('#generate-url-button').on('click', function (e) {
     generateWorkflowUrl();
   });
-
   if ($('#workflow-url-text').val() == '') {
     generateWorkflowUrl();
   }

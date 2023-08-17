@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Extensions.Manifests;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Extensions
 {
@@ -9,19 +10,16 @@ namespace OrchardCore.Environment.Extensions
     {
         public NotFoundExtensionInfo(string extensionId)
         {
-            Features = Enumerable.Empty<IFeatureInfo>();
             Id = extensionId;
+            SubPath = Application.ModulesRoot + extensionId;
             Manifest = new NotFoundManifestInfo();
+            Features = Enumerable.Empty<IFeatureInfo>();
         }
 
-        public bool Exists => false;
-
-        public IEnumerable<IFeatureInfo> Features { get; }
-
         public string Id { get; }
-
+        public string SubPath { get; }
         public IManifestInfo Manifest { get; }
-
-        public string SubPath => Id;
+        public IEnumerable<IFeatureInfo> Features { get; }
+        public bool Exists => false;
     }
 }

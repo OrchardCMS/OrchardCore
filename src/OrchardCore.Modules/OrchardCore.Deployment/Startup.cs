@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment.Controllers;
 using OrchardCore.Deployment.Core;
@@ -12,7 +13,6 @@ using OrchardCore.Deployment.Drivers;
 using OrchardCore.Deployment.Indexes;
 using OrchardCore.Deployment.Recipes;
 using OrchardCore.Deployment.Steps;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -40,7 +40,6 @@ namespace OrchardCore.Deployment
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
 
-            services.AddScoped<IDisplayManager<DeploymentStep>, DisplayManager<DeploymentStep>>();
             services.AddSingleton<IDeploymentTargetProvider, FileDownloadDeploymentTargetProvider>();
             services.AddScoped<IDisplayDriver<ISite>, FileDownloadDeploymentTargetSettingsDisplayDriver>();
 
@@ -53,8 +52,8 @@ namespace OrchardCore.Deployment
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<RecipeFileDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, RecipeFileDeploymentStepDriver>();
 
-            services.AddSingleton<IIndexProvider, DeploymentPlanIndexProvider>();
-            services.AddTransient<IDataMigration, Migrations>();
+            services.AddIndexProvider<DeploymentPlanIndexProvider>();
+            services.AddDataMigration<Migrations>();
 
             services.AddScoped<IDeploymentPlanService, DeploymentPlanService>();
 
@@ -64,6 +63,9 @@ namespace OrchardCore.Deployment
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<DeploymentPlanDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, DeploymentPlanDeploymentStepDriver>();
 
+            services.AddTransient<IDeploymentSource, JsonRecipeDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<JsonRecipeDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, JsonRecipeDeploymentStepDriver>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

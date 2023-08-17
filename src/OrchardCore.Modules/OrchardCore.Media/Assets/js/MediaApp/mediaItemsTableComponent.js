@@ -37,14 +37,14 @@ Vue.component('media-items-table', {
                              <td class="thumbnail-column">
                                 <div class="img-wrapper">
                                     <img v-if="media.mime.startsWith('image')" draggable="false" :src="buildMediaUrl(media.url, thumbSize)" />
-                                    <i v-else class="fa fa-file-o fa-lg" :data-mime="media.mime"></i>
+                                    <i v-else class="fa-solid fa-file-o fa-lg" :data-mime="media.mime"></i>
                                 </div>
                             </td>
                             <td>
                                 <div class="media-name-cell">
                                    <span class="break-word"> {{ media.name }} </span>
                                     <div class="buttons-container">
-                                        <a href="javascript:;" class="btn btn-link btn-sm mr-1 edit-button" v-on:click.stop="renameMedia(media)"> {{ T.editButton }} </a >
+                                        <a href="javascript:;" class="btn btn-link btn-sm me-1 edit-button" v-on:click.stop="renameMedia(media)"> {{ T.editButton }} </a >
                                         <a href="javascript:;" class="btn btn-link btn-sm delete-button" v-on:click.stop="deleteMedia(media)"> {{ T.deleteButton }} </a>
                                         <a :href="media.url" target="_blank" class="btn btn-link btn-sm view-button"> {{ T.viewButton }} </a>
                                     </div>

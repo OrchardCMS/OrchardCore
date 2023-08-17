@@ -16,7 +16,10 @@ namespace OrchardCore
                 var hs = BitConverter.ToInt64(guid, 0);
                 var ls = BitConverter.ToInt64(guid, 8);
 
-                char[] encode32Chars = _encode32Chars;
+                // Using a local copy prevents additional bound checks by the JIT.
+                var encode32Chars = _encode32Chars;
+
+                // A char array allows a long as the indexer, so without any cast.
                 buffer[0] = encode32Chars[(hs >> 60) & 31];
                 buffer[1] = encode32Chars[(hs >> 55) & 31];
                 buffer[2] = encode32Chars[(hs >> 50) & 31];

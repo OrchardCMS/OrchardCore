@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Server;
 using OpenIddict.Server.AspNetCore;
 using OpenIddict.Server.DataProtection;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
@@ -23,15 +24,18 @@ namespace OrchardCore.OpenId.Configuration
         IConfigureOptions<OpenIddictServerDataProtectionOptions>,
         IConfigureNamedOptions<OpenIddictServerAspNetCoreOptions>
     {
-        private readonly ILogger _logger;
         private readonly IOpenIdServerService _serverService;
+        private readonly ShellSettings _shellSettings;
+        private readonly ILogger _logger;
 
         public OpenIdServerConfiguration(
-            ILogger<OpenIdServerConfiguration> logger,
-            IOpenIdServerService serverService)
+            IOpenIdServerService serverService,
+            ShellSettings shellSettings,
+            ILogger<OpenIdServerConfiguration> logger)
         {
-            _logger = logger;
             _serverService = serverService;
+            _shellSettings = shellSettings;
+            _logger = logger;
         }
 
         public void Configure(AuthenticationOptions options)
@@ -70,27 +74,53 @@ namespace OrchardCore.OpenId.Configuration
                 options.SigningCredentials.Add(new SigningCredentials(key, SecurityAlgorithms.RsaSha256));
             }
 
+            // Note: while endpoint paths in OrchardCore are stored as PathString instances,
+            // OpenIddict uses System.Uri. To ensure the System.Uri instances created from
+            // a PathString don't represent root-relative URIs (which would break path-based
+            // multi-tenancy support), the leading '/' that is always present in PathString
+            // instances is manually removed from the endpoint path before URIs are created.
+
             if (settings.AuthorizationEndpointPath.HasValue)
             {
-                options.AuthorizationEndpointUris.Add(new Uri(settings.AuthorizationEndpointPath.Value, UriKind.Relative));
+                options.AuthorizationEndpointUris.Add(new Uri(
+                    settings.AuthorizationEndpointPath.ToUriComponent()[1..], UriKind.Relative));
             }
+
             if (settings.LogoutEndpointPath.HasValue)
             {
-                options.LogoutEndpointUris.Add(new Uri(settings.LogoutEndpointPath.Value, UriKind.Relative));
+                options.LogoutEndpointUris.Add(new Uri(
+                    settings.LogoutEndpointPath.ToUriComponent()[1..], UriKind.Relative));
             }
+
             if (settings.TokenEndpointPath.HasValue)
             {
-                options.TokenEndpointUris.Add(new Uri(settings.TokenEndpointPath.Value, UriKind.Relative));
+                options.TokenEndpointUris.Add(new Uri(
+                    settings.TokenEndpointPath.ToUriComponent()[1..], UriKind.Relative));
             }
+
             if (settings.UserinfoEndpointPath.HasValue)
             {
-                options.UserinfoEndpointUris.Add(new Uri(settings.UserinfoEndpointPath.Value, UriKind.Relative));
+                options.UserinfoEndpointUris.Add(new Uri(
+                    settings.UserinfoEndpointPath.ToUriComponent()[1..], UriKind.Relative));
+            }
+
+            if (settings.IntrospectionEndpointPath.HasValue)
+            {
+                options.IntrospectionEndpointUris.Add(new Uri(
+                    settings.IntrospectionEndpointPath.ToUriComponent()[1..], UriKind.Relative));
+            }
+
+            if (settings.RevocationEndpointPath.HasValue)
+            {
+                options.RevocationEndpointUris.Add(new Uri(
+                    settings.RevocationEndpointPath.ToUriComponent()[1..], UriKind.Relative));
             }
 
             // For now, response types and response modes are not directly
             // configurable and are inferred from the selected flows.
             if (settings.AllowAuthorizationCodeFlow)
             {
+                options.CodeChallengeMethods.Add(CodeChallengeMethods.Plain);
                 options.CodeChallengeMethods.Add(CodeChallengeMethods.Sha256);
 
                 options.GrantTypes.Add(GrantTypes.AuthorizationCode);
@@ -101,12 +131,15 @@ namespace OrchardCore.OpenId.Configuration
 
                 options.ResponseTypes.Add(ResponseTypes.Code);
             }
+
             if (settings.AllowClientCredentialsFlow)
             {
                 options.GrantTypes.Add(GrantTypes.ClientCredentials);
             }
+
             if (settings.AllowHybridFlow)
             {
+                options.CodeChallengeMethods.Add(CodeChallengeMethods.Plain);
                 options.CodeChallengeMethods.Add(CodeChallengeMethods.Sha256);
 
                 options.GrantTypes.Add(GrantTypes.AuthorizationCode);
@@ -119,6 +152,7 @@ namespace OrchardCore.OpenId.Configuration
                 options.ResponseTypes.Add(ResponseTypes.Code + ' ' + ResponseTypes.IdToken + ' ' + ResponseTypes.Token);
                 options.ResponseTypes.Add(ResponseTypes.Code + ' ' + ResponseTypes.Token);
             }
+
             if (settings.AllowImplicitFlow)
             {
                 options.GrantTypes.Add(GrantTypes.Implicit);
@@ -130,16 +164,20 @@ namespace OrchardCore.OpenId.Configuration
                 options.ResponseTypes.Add(ResponseTypes.IdToken + ' ' + ResponseTypes.Token);
                 options.ResponseTypes.Add(ResponseTypes.Token);
             }
+
             if (settings.AllowPasswordFlow)
             {
                 options.GrantTypes.Add(GrantTypes.Password);
             }
+
             if (settings.AllowRefreshTokenFlow)
             {
                 options.GrantTypes.Add(GrantTypes.RefreshToken);
 
                 options.Scopes.Add(Scopes.OfflineAccess);
             }
+
+            options.RequireProofKeyForCodeExchange = settings.RequireProofKeyForCodeExchange;
 
             options.Scopes.Add(Scopes.Email);
             options.Scopes.Add(Scopes.Phone);
@@ -194,7 +232,10 @@ namespace OrchardCore.OpenId.Configuration
             var settings = await _serverService.GetSettingsAsync();
             if ((await _serverService.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
             {
-                _logger.LogWarning("The OpenID Connect module is not correctly configured.");
+                if (_shellSettings.IsRunning())
+                {
+                    _logger.LogWarning("The OpenID Connect module is not correctly configured.");
+                }
 
                 return null;
             }

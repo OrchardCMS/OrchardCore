@@ -14,7 +14,7 @@ namespace OrchardCore.Title
 {
     public class Migrations : DataMigration
     {
-        private IContentDefinitionManager _contentDefinitionManager;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
         private readonly ILogger _logger;
 
@@ -46,7 +46,7 @@ namespace OrchardCore.Title
             // We are patching all content item versions by moving the Title to DisplayText
             // This step doesn't need to be executed for a brand new site
 
-            var lastDocumentId = 0;
+            var lastDocumentId = 0L;
 
             for (; ; )
             {
@@ -70,10 +70,10 @@ namespace OrchardCore.Title
                     lastDocumentId = contentItemVersion.Id;
                 }
 
-                await _session.CommitAsync();
+                await _session.SaveChangesAsync();
             }
 
-            bool UpdateTitle(JToken content)
+            static bool UpdateTitle(JToken content)
             {
                 var changed = false;
 

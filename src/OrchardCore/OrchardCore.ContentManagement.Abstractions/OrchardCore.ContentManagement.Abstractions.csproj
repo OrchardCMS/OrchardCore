@@ -1,12 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.ContentManagement</RootNamespace>
     <!-- NuGet properties-->
     <Title>OrchardCore ContentManagement Abstractions</Title>
     <Description>$(OCCMSDescription)
-    
+
     Abstractions for ContentManagement</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS ContentManagement Abstractions</PackageTags>
   </PropertyGroup>
@@ -20,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Data.YesSql.Abstractions\OrchardCore.Data.YesSql.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

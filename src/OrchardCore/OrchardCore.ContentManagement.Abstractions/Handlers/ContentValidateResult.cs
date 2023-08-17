@@ -1,12 +1,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
 namespace OrchardCore.ContentManagement.Handlers
 {
     public class ContentValidateResult
     {
-        private readonly List<ValidationResult> _errors = new List<ValidationResult>();
+        private readonly List<ValidationResult> _errors = new();
 
         public IReadOnlyList<ValidationResult> Errors => _errors;
 

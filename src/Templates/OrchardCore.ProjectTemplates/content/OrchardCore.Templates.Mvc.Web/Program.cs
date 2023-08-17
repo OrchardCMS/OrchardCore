@@ -1,18 +1,30 @@
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+var builder = WebApplication.CreateBuilder(args);
 
-namespace OrchardCore.Templates.Mvc.Web
+builder.Services
+    .AddOrchardCore()
+    .AddMvc()
+    // // Orchard Specific Pipeline
+    // .ConfigureServices( services => {
+
+    // })
+    // .Configure( (app, routes, services) => {
+
+    // })
+;
+
+var app = builder.Build();
+
+if (!app.Environment.IsDevelopment())
 {
-    public class Program
-    {
-        public static Task Main(string[] args)
-            => BuildHost(args).RunAsync();
-
-        public static IHost BuildHost(string[] args)
-            => Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                    webBuilder.UseStartup<Startup>())
-                .Build();
-    }
+    app.UseExceptionHandler("/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
 }
+
+app.UseHttpsRedirection();
+
+app.UseStaticFiles();
+
+app.UseOrchardCore();
+
+app.Run();

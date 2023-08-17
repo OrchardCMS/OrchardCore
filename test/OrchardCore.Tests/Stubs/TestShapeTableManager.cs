@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Extensions;
@@ -22,7 +21,7 @@ namespace OrchardCore.Tests.Stubs
 
     public class MockThemeManager : IThemeManager
     {
-        private IExtensionInfo _dec;
+        private readonly IExtensionInfo _dec;
         public MockThemeManager(IExtensionInfo des)
         {
             _dec = des;

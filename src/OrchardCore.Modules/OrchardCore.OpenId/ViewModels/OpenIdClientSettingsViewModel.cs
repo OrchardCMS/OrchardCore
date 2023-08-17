@@ -35,5 +35,6 @@ namespace OrchardCore.OpenId.ViewModels
         public bool UseCodeTokenFlow { get; set; }
         public bool UseIdTokenFlow { get; set; }
         public bool UseIdTokenTokenFlow { get; set; }
+        public string Parameters { get; set; }
     }
 }

@@ -1,0 +1,37 @@
+{
+  "name": "dashboard-widgets-samples",
+  "displayName": "Admin Dashboard Widget Sample",
+  "description": "Provides a sample Admin Dashboard Widget.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
+  "issetuprecipe": false,
+  "categories": [ "default" ],
+  "tags": [],
+  "steps": [
+    {
+      "name": "content",
+      "data": [
+        {
+          "ContentItemId": "[js: uuid()]",
+          "ContentType": "HtmlDashboardWidget",
+          "DisplayText": "Orchard Core",
+          "Latest": true,
+          "Published": true,
+          "HtmlDashboardWidget": {},
+          "DashboardPart": {
+            "Position": 0.0,
+            "Width": 1.0,
+            "Height": 2.0
+          },
+          "HtmlBodyPart": {
+            "Html": "<ul class=\"list-group list-group-flush\">\n\t<li class=\"list-group-item\"><a href=\"https://orchardcore.net\" target=\"_blank\">Orchard Core site</a></li>\n\t<li class=\"list-group-item\"><a href=\"https://docs.orchardcore.net\" target=\"_blank\">Orchard Core docs</a></li>\n\t<li class=\"list-group-item\"><a href=\"https://github.com/OrchardCMS/OrchardCore\" target=\"_blank\">Orchard Core repo</a></li>\n\t<li class=\"list-group-item\"><a href=\"https://gitter.im/OrchardCMS/OrchardCore\" target=\"_blank\">Orchard Core chat</a></li>\n</ul>"
+          },
+          "TitlePart": {
+            "Title": "Orchard Core"
+          }
+        }
+      ]
+    }
+  ]
+}

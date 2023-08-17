@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
+using Fluid.Values;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
@@ -47,11 +49,11 @@ namespace OrchardCore.ContentPreview.Handlers
                     var model = new PreviewPartViewModel()
                     {
                         PreviewPart = part,
-                        ContentItem = part.ContentItem
+                        ContentItem = part.ContentItem,
                     };
 
-                    previewAspect.PreviewUrl = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
-                        scope => scope.SetValue("ContentItem", model.ContentItem));
+                    previewAspect.PreviewUrl = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
+                        new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
 
                     previewAspect.PreviewUrl = previewAspect.PreviewUrl.Replace("\r", String.Empty).Replace("\n", String.Empty);
                 });

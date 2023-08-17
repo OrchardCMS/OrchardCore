@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -63,6 +64,13 @@ namespace OrchardCore.ContentManagement
         Task<ContentValidateResult> ValidateAsync(ContentItem contentItem);
 
         /// <summary>
+        /// Restores a content item
+        /// </summary>
+        /// <param name="contentItem"></param>
+        /// <returns>The validation <see cref="ContentValidateResult"/> result.</returns>
+        Task<ContentValidateResult> RestoreAsync(ContentItem contentItem);
+
+        /// <summary>
         /// Gets the published content item with the specified id
         /// </summary>
         /// <param name="id">The content item id to load</param>
@@ -85,6 +93,17 @@ namespace OrchardCore.ContentManagement
         /// This means that it should be used only to get a list of content items that have not been loaded.
         /// </remarks>
         Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, bool latest = false);
+
+        /// <summary>
+        /// Gets the published content items with the specified ids
+        /// </summary>
+        /// <param name="contentItemIds">The content item ids to load</param>
+        /// <param name="options">The version option</param>
+        /// <remarks>
+        /// This method will always issue a database query.
+        /// This means that it should be used only to get a list of content items that have not been loaded.
+        /// </remarks>
+        Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, VersionOptions options);
 
         /// <summary>
         /// Gets the content item with the specified version id
@@ -137,7 +156,6 @@ namespace OrchardCore.ContentManagement
         /// </summary>
         /// <param name="contentManager">The <see cref="IContentManager"/> instance.</param>
         /// <param name="contentItem">The content instance filled with all necessary data</param>
-
         public static Task CreateAsync(this IContentManager contentManager, ContentItem contentItem)
         {
             return contentManager.CreateAsync(contentItem, VersionOptions.Published);
@@ -173,6 +191,14 @@ namespace OrchardCore.ContentManagement
             }
 
             return results;
+        }
+
+        public static async IAsyncEnumerable<ContentItem> LoadAsync(this IContentManager contentManager, IAsyncEnumerable<ContentItem> contentItems)
+        {
+            await foreach (var contentItem in contentItems)
+            {
+                yield return await contentManager.LoadAsync(contentItem);
+            }
         }
 
         public static async Task<ContentValidateResult> UpdateValidateAndCreateAsync(this IContentManager contentManager, ContentItem contentItem, VersionOptions options)
@@ -211,7 +237,7 @@ namespace OrchardCore.ContentManagement
             var contentItem = await contentManager.GetAsync(id, options);
 
             // It represents a contained content item
-            if (!string.IsNullOrEmpty(jsonPath))
+            if (!String.IsNullOrEmpty(jsonPath))
             {
                 var root = contentItem.Content as JObject;
                 contentItem = root.SelectToken(jsonPath)?.ToObject<ContentItem>();

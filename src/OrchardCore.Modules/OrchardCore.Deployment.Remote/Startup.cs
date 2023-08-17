@@ -10,6 +10,7 @@ using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Deployment
 {
@@ -28,6 +29,7 @@ namespace OrchardCore.Deployment
             services.AddScoped<RemoteInstanceService>();
             services.AddScoped<RemoteClientService>();
             services.AddScoped<IDeploymentTargetProvider, RemoteInstanceDeploymentTargetProvider>();
+            services.AddScoped<IPermissionProvider, Permissions>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

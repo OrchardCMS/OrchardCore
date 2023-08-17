@@ -10,7 +10,7 @@ namespace OrchardCore.CustomSettings
 {
     public class Permissions : IPermissionProvider
     {
-        private static readonly Permission ManageCustomSettings = new Permission("ManageCustomSettings_{0}", "Manage Custom Settings - {0}", new[] { new Permission("ManageResourceSettings") });
+        private static readonly Permission _manageCustomSettings = new("ManageCustomSettings_{0}", "Manage Custom Settings - {0}", new[] { new Permission("ManageResourceSettings") });
 
         private readonly CustomSettingsService _customSettingsService;
 
@@ -33,15 +33,15 @@ namespace OrchardCore.CustomSettings
 
         public static string CreatePermissionName(string name)
         {
-            return String.Format(ManageCustomSettings.Name, name);
+            return String.Format(_manageCustomSettings.Name, name);
         }
 
         public static Permission CreatePermissionForType(ContentTypeDefinition type)
         {
             return new Permission(
                     CreatePermissionName(type.Name),
-                    String.Format(ManageCustomSettings.Description, type.DisplayName),
-                    ManageCustomSettings.ImpliedBy
+                    String.Format(_manageCustomSettings.Description, type.DisplayName),
+                    _manageCustomSettings.ImpliedBy
                 );
         }
 

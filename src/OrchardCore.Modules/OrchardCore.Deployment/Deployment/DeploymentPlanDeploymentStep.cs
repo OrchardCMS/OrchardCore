@@ -1,7 +1,7 @@
 namespace OrchardCore.Deployment.Deployment
 {
     /// <summary>
-    /// Adds layers to a <see cref="DeploymentPlanResult"/>.
+    /// Adds deployment plans to a <see cref="DeploymentPlanResult"/>.
     /// </summary>
     public class DeploymentPlanDeploymentStep : DeploymentStep
     {

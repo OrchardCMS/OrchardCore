@@ -34,27 +34,27 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         {
             var linkEntry = new LinkEntry();
 
-            if (!string.IsNullOrEmpty(Src))
+            if (!String.IsNullOrEmpty(Src))
             {
                 linkEntry.Href = Src;
             }
 
-            if (!string.IsNullOrEmpty(Rel))
+            if (!String.IsNullOrEmpty(Rel))
             {
                 linkEntry.Rel = Rel;
             }
 
-            if (!string.IsNullOrEmpty(Condition))
+            if (!String.IsNullOrEmpty(Condition))
             {
                 linkEntry.Condition = Condition;
             }
 
-            if (!string.IsNullOrEmpty(Title))
+            if (!String.IsNullOrEmpty(Title))
             {
                 linkEntry.Title = Title;
             }
 
-            if (!string.IsNullOrEmpty(Type))
+            if (!String.IsNullOrEmpty(Type))
             {
                 linkEntry.Type = Type;
             }

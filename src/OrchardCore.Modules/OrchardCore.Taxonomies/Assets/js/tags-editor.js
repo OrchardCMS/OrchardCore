@@ -46,7 +46,14 @@ function initializeTagsEditor(element) {
                     return false;
                 },
                 selectedTagTermsIds: function() {
-                    return this.selectedTagTerms.map(function (tagTerm) { return tagTerm.contentItemId });
+                    if (!this.selectedTagTerms) {
+                        return [];
+                    }
+                    if (Array.isArray(this.selectedTagTerms)) {
+                        return this.selectedTagTerms.map(function (tagTerm) { return tagTerm.contentItemId });
+                    } else {
+                        return this.selectedTagTerms.contentItemId;
+                    }
                 }
             },
             methods: {

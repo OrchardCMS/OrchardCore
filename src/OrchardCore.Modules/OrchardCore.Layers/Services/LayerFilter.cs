@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,30 +7,28 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
-using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Documents;
-using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Layers.Handlers;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.ViewModels;
 using OrchardCore.Mvc.Utilities;
-using OrchardCore.Scripting;
+using OrchardCore.Rules;
 
 namespace OrchardCore.Layers.Services
 {
     public class LayerFilter : IAsyncResultFilter
     {
         private const string WidgetsKey = "OrchardCore.Layers.LayerFilter:AllWidgets";
-
+        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILayoutAccessor _layoutAccessor;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IUpdateModelAccessor _modelUpdaterAccessor;
-        private readonly IScriptingManager _scriptingManager;
+        private readonly IRuleService _ruleService;
         private readonly IMemoryCache _memoryCache;
         private readonly IThemeManager _themeManager;
         private readonly IAdminThemeService _adminThemeService;
@@ -39,21 +36,23 @@ namespace OrchardCore.Layers.Services
         private readonly IVolatileDocumentManager<LayerState> _layerStateManager;
 
         public LayerFilter(
+            IContentDefinitionManager contentDefinitionManager,
             ILayerService layerService,
             ILayoutAccessor layoutAccessor,
             IContentItemDisplayManager contentItemDisplayManager,
             IUpdateModelAccessor modelUpdaterAccessor,
-            IScriptingManager scriptingManager,
+            IRuleService ruleService,
             IMemoryCache memoryCache,
             IThemeManager themeManager,
             IAdminThemeService adminThemeService,
             IVolatileDocumentManager<LayerState> layerStateManager)
         {
+            _contentDefinitionManager = contentDefinitionManager;
             _layerService = layerService;
             _layoutAccessor = layoutAccessor;
             _contentItemDisplayManager = contentItemDisplayManager;
             _modelUpdaterAccessor = modelUpdaterAccessor;
-            _scriptingManager = scriptingManager;
+            _ruleService = ruleService;
             _memoryCache = memoryCache;
             _themeManager = themeManager;
             _adminThemeService = adminThemeService;
@@ -93,17 +92,15 @@ namespace OrchardCore.Layers.Services
 
                 var layers = (await _layerService.GetLayersAsync()).Layers.ToDictionary(x => x.Name);
 
-                dynamic layout = await _layoutAccessor.GetLayoutAsync();
+                var layout = await _layoutAccessor.GetLayoutAsync();
                 var updater = _modelUpdaterAccessor.ModelUpdater;
 
-                var engine = _scriptingManager.GetScriptingEngine("js");
-                var scope = engine.CreateScope(_scriptingManager.GlobalMethodProviders.SelectMany(x => x.GetMethods()), ShellScope.Services, null, null);
-
                 var layersCache = new Dictionary<string, bool>();
+                var contentDefinitions = _contentDefinitionManager.ListTypeDefinitions();
 
                 foreach (var widget in widgets)
                 {
-                    var layer = layers[widget.Layer];
+                    var layer = widget.Layer != null && layers.TryGetValue(widget.Layer, out var widgetLayer) ? widgetLayer : null;
 
                     if (layer == null)
                     {
@@ -113,14 +110,7 @@ namespace OrchardCore.Layers.Services
                     bool display;
                     if (!layersCache.TryGetValue(layer.Name, out display))
                     {
-                        if (String.IsNullOrEmpty(layer.Rule))
-                        {
-                            display = false;
-                        }
-                        else
-                        {
-                            display = Convert.ToBoolean(engine.Evaluate(scope, layer.Rule));
-                        }
+                        display = await _ruleService.EvaluateAsync(layer.LayerRule);
 
                         layersCache[layer.Name] = display;
                     }
@@ -130,29 +120,25 @@ namespace OrchardCore.Layers.Services
                         continue;
                     }
 
-                    var widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, updater);
-
-                    widgetContent.Classes.Add("widget");
-                    widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
-
-                    var wrapper = new WidgetWrapper
+                    if (contentDefinitions.Any(c => c.Name == widget.ContentItem.ContentType))
                     {
-                        Widget = widget.ContentItem,
-                        Content = widgetContent
-                    };
+                        var widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, updater);
 
-                    wrapper.Metadata.Alternates.Add("Widget_Wrapper__" + widget.ContentItem.ContentType);
-                    wrapper.Metadata.Alternates.Add("Widget_Wrapper__Zone__" + widget.Zone);
+                        widgetContent.Classes.Add("widget");
+                        widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
 
-                    var contentZone = layout.Zones[widget.Zone];
+                        var wrapper = new WidgetWrapper
+                        {
+                            Widget = widget.ContentItem,
+                            Content = widgetContent
+                        };
 
-                    if (contentZone is ZoneOnDemand zoneOnDemand)
-                    {
-                        await zoneOnDemand.AddAsync(wrapper);
-                    }
-                    else if (contentZone is Shape shape)
-                    {
-                        shape.Add(wrapper);
+                        wrapper.Metadata.Alternates.Add("Widget_Wrapper__" + widget.ContentItem.ContentType);
+                        wrapper.Metadata.Alternates.Add("Widget_Wrapper__Zone__" + widget.Zone);
+
+                        var contentZone = layout.Zones[widget.Zone];
+
+                        await contentZone.AddAsync(wrapper, "");
                     }
                 }
             }

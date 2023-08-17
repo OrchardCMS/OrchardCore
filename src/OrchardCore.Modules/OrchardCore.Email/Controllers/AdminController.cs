@@ -14,7 +14,7 @@ namespace OrchardCore.Email.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
         private readonly ISmtpService _smtpService;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
 
         public AdminController(
             IHtmlLocalizer<AdminController> h,
@@ -62,7 +62,7 @@ namespace OrchardCore.Email.Controllers
                 }
                 else
                 {
-                    _notifier.Success(H["Message sent successfully."]);
+                    await _notifier.SuccessAsync(H["Message sent successfully."]);
 
                     return Redirect(Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmtpSettingsDisplayDriver.GroupId }));
                 }
@@ -71,7 +71,7 @@ namespace OrchardCore.Email.Controllers
             return View(model);
         }
 
-        private MailMessage CreateMessageFromViewModel(SmtpSettingsViewModel testSettings)
+        private static MailMessage CreateMessageFromViewModel(SmtpSettingsViewModel testSettings)
         {
             var message = new MailMessage
             {

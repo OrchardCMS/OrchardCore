@@ -24,7 +24,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
         private readonly ISession _session;
         private readonly IEnumerable<IDeploymentStepFactory> _factories;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
 
         public AddToDeploymentPlanController(
             IAuthorizationService authorizationService,
@@ -44,7 +44,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddContentItem(int deploymentPlanId, string returnUrl, string contentItemId)
+        public async Task<IActionResult> AddContentItem(long deploymentPlanId, string returnUrl, string contentItemId)
         {
             if (!(await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan) &&
                 await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.Export)
@@ -74,24 +74,32 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
                 return Forbid();
             }
 
-            var step = (ContentItemDeploymentStep)_factories.FirstOrDefault(x => x.Name == nameof(ContentItemDeploymentStep)).Create();
+            var stepFactory = _factories.FirstOrDefault(x => x.Name == nameof(ContentItemDeploymentStep));
+
+            if (stepFactory == null)
+            {
+                return BadRequest();
+            }
+
+            var step = (ContentItemDeploymentStep)stepFactory.Create();
+
             step.ContentItemId = contentItem.ContentItemId;
 
             deploymentPlan.DeploymentSteps.Add(step);
 
-            _notifier.Success(H["Content added successfully to the deployment plan."]);
+            await _notifier.SuccessAsync(H["Content added successfully to the deployment plan."]);
 
             _session.Save(deploymentPlan);
 
-            return LocalRedirect(returnUrl);
+            return this.LocalRedirect(returnUrl, true);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddContentItems(int deploymentPlanId, string returnUrl, IEnumerable<int> itemIds)
+        public async Task<IActionResult> AddContentItems(long deploymentPlanId, string returnUrl, IEnumerable<long> itemIds)
         {
             if (itemIds?.Count() == 0)
             {
-                return LocalRedirect(returnUrl);
+                return this.LocalRedirect(returnUrl, true);
             }
 
             if (!(await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan) &&
@@ -116,7 +124,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
                 // Requesting EditContent would allow custom permissions to deny access to this content item.
                 if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, item))
                 {
-                    _notifier.Warning(H["Couldn't add selected content to deployment plan."]);
+                    await _notifier.WarningAsync(H["Couldn't add selected content to deployment plan."]);
 
                     return Forbid();
                 }
@@ -126,11 +134,11 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
                 deploymentPlan.DeploymentSteps.Add(step);
             }
 
-            _notifier.Success(H["Content added successfully to the deployment plan."]);
+            await _notifier.SuccessAsync(H["Content added successfully to the deployment plan."]);
 
             _session.Save(deploymentPlan);
 
-            return LocalRedirect(returnUrl);
+            return this.LocalRedirect(returnUrl, true);
         }
     }
 }

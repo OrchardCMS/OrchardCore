@@ -1,0 +1,2 @@
+{% assign link = Model.ContentItem.Content.HtmlMenuItemPart %}
+<a class="nav-link" href="{{ link.Url | href }}">{{ link.Html | raw }}</a>

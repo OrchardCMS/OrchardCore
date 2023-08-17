@@ -13,7 +13,7 @@ namespace OrchardCore.Workflows.Http.Activities
         public static string EventName => nameof(HttpRequestEvent);
 
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public HttpRequestEvent(
             IStringLocalizer<HttpRequestEvent> localizer,

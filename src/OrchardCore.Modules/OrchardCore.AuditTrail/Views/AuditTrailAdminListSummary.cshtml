@@ -1,0 +1,8 @@
+@model AuditTrailIndexOptions
+
+<div class="text-nowrap">
+    <label class="my-1" id="items" for="select-all">
+        @T.Plural(Model.EventsCount, "1 item", "{0} items")
+        <span class="text-muted" title="@T["Items {0} to {1}", Model.StartIndex, Model.EndIndex]">@T.Plural(Model.TotalItemCount, " / {0} item in total", " / {0} items in total")</span>
+    </label>
+</div>

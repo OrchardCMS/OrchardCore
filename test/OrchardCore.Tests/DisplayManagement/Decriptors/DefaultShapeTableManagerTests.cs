@@ -1,48 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Memory;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Hosting;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Manifest;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
-using OrchardCore.Environment.Extensions.Loaders;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Tests.Stubs;
-using Xunit;
 
 namespace OrchardCore.Tests.DisplayManagement.Decriptors
 {
     public class DefaultShapeTableManagerTests : IDisposable
     {
-        private IServiceProvider _serviceProvider;
-
-        private class TestFeatureInfo : IFeatureInfo
-        {
-            public string[] Dependencies { get; set; } = Array.Empty<string>();
-            public IExtensionInfo Extension { get; set; }
-            public string Id { get; set; }
-            public string Name { get; set; }
-            public int Priority { get; set; }
-            public string Category { get; set; }
-            public string Description { get; set; }
-            public bool DefaultTenantOnly { get; set; }
-            public bool IsAlwaysEnabled { get; set; }
-
-            public bool DependencyOn(IFeatureInfo feature)
-            {
-                return false;
-            }
-        }
+        private readonly IServiceProvider _serviceProvider;
 
         private class TestModuleExtensionInfo : IExtensionInfo
         {
@@ -64,7 +35,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, Array.Empty<string>(), false, false) }
+                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, Array.Empty<string>(), false, false, false) }
                     };
 
                 Features = features;
@@ -98,7 +69,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, Array.Empty<string>(), false, false) }
+                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, Array.Empty<string>(), false, false, false) }
                     };
 
                 Features = features;
@@ -125,7 +96,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 Features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, new string[] { baseTheme.Id }, false, false) }
+                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, new string[] { baseTheme.Id }, false, false, false) }
                     };
 
                 Id = name;
@@ -164,30 +135,26 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
 
             serviceCollection.AddSingleton<IExtensionManager>(new TestExtensionManager(features));
 
-            TestShapeProvider.FeatureShapes = new Dictionary<IFeatureInfo, IEnumerable<string>> {
+            TestShapeProvider.InitFeatureShapes(new Dictionary<IFeatureInfo, IEnumerable<string>>
+            {
                 { TestFeature(), new [] {"Hello"} },
                 { features[1], new [] {"Theme1Shape"} },
                 { features[2], new [] {"DerivedShape", "OverriddenShape"} },
-                { features[3], new [] {"BaseShape", "OverriddenShape"} }
-            };
+                { features[3], new [] {"BaseShape", "OverriddenShape"} },
+            });
 
             serviceCollection.AddScoped<IShapeTableProvider, TestShapeProvider>();
-            serviceCollection.AddScoped<TestShapeProvider>((x => (TestShapeProvider)x.GetService<IShapeTableProvider>()));
+            serviceCollection.AddScoped(sp => (TestShapeProvider)sp.GetService<IShapeTableProvider>());
 
             _serviceProvider = serviceCollection.BuildServiceProvider();
 
             var typeFeatureProvider = _serviceProvider.GetService<ITypeFeatureProvider>();
-            typeFeatureProvider.TryAdd(typeof(TestShapeProvider), new InternalFeatureInfo("Core", new InternalExtensionInfo("Core")));
+            typeFeatureProvider.TryAdd(typeof(TestShapeProvider), TestFeature());
         }
 
         private static IFeatureInfo TestFeature()
         {
-            return new TestFeatureInfo
-            {
-                Id = "Testing",
-                Dependencies = Array.Empty<string>(),
-                Extension = new TestModuleExtensionInfo("Testing")
-            };
+            return new FeatureInfo("Testing", new TestModuleExtensionInfo("Testing"));
         }
 
         public class TestShellFeaturesManager : IShellFeaturesManager
@@ -223,11 +190,21 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             {
                 return Task.FromResult(_extensionManager.GetExtensions());
             }
+
+            public Task<IEnumerable<IFeatureInfo>> GetAvailableFeaturesAsync()
+            {
+                return Task.FromResult(_extensionManager.GetFeatures());
+            }
+
+            public Task<IEnumerable<IExtensionInfo>> GetAvailableExtensionsAsync()
+            {
+                return Task.FromResult(_extensionManager.GetExtensions());
+            }
         }
 
         public class TestExtensionManager : IExtensionManager
         {
-            private IEnumerable<IFeatureInfo> _features;
+            private readonly IEnumerable<IFeatureInfo> _features;
             public TestExtensionManager(IEnumerable<IFeatureInfo> features)
             {
                 _features = features;
@@ -260,15 +237,17 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 throw new NotImplementedException();
             }
 
+#pragma warning disable CA1822 // Mark members as static
             public Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)
             {
-                return Task.FromResult((FeatureEntry)new NonCompiledFeatureEntry(feature));
+                return Task.FromResult(new FeatureEntry(feature));
             }
 
             public Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(IEnumerable<IFeatureInfo> features)
             {
-                return Task.FromResult(features.Select(x => new NonCompiledFeatureEntry(x)).AsEnumerable<FeatureEntry>());
+                return Task.FromResult(features.Select(x => new FeatureEntry(x)));
             }
+#pragma warning restore CA1822 // Mark members as static
 
             public IEnumerable<IFeatureInfo> GetFeatures()
             {
@@ -298,9 +277,14 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
 
         public class TestShapeProvider : IShapeTableProvider
         {
-            public static IDictionary<IFeatureInfo, IEnumerable<string>> FeatureShapes;
+            private static IDictionary<IFeatureInfo, IEnumerable<string>> _featureShapes;
+
+            public static IDictionary<IFeatureInfo, IEnumerable<string>> FeatureShapes => _featureShapes;
 
             public Action<ShapeTableBuilder> Discover = x => { };
+
+            public static void InitFeatureShapes(IDictionary<IFeatureInfo, IEnumerable<string>> featureShapes)
+                => _featureShapes = featureShapes;
 
             void IShapeTableProvider.Discover(ShapeTableBuilder builder)
             {
@@ -328,7 +312,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
         {
             var manager = _serviceProvider.GetService<IShapeTableManager>();
             var shapeTable1 = manager.GetShapeTable(null);
-            var shapeTable2 = manager.GetShapeTable(string.Empty);
+            var shapeTable2 = manager.GetShapeTable(String.Empty);
             Assert.NotNull(shapeTable1.Descriptors["Hello"]);
             Assert.NotNull(shapeTable2.Descriptors["Hello"]);
         }
@@ -500,11 +484,13 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             _serviceProvider.GetService<TestShapeProvider>();
             var manager = _serviceProvider.GetService<IShapeTableManager>();
             var table = manager.GetShapeTable("DerivedTheme");
-            Assert.True(table.Bindings.TryGetValue("OverriddenShape", out var shapeBinding));
+            Assert.True(table.Bindings.TryGetValue("OverriddenShape", out _));
             Assert.Equal("DerivedTheme", table.Descriptors["OverriddenShape"].BindingSource);
         }
 
+#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
         public void Dispose()
+#pragma warning restore CA1816 // Dispose methods should call SuppressFinalize
         {
             (_serviceProvider as IDisposable)?.Dispose();
         }

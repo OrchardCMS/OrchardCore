@@ -208,7 +208,7 @@ There are four tags that allow you to alter the current cache scope. It's safe t
 Displaying content items from a query:
 
 ```liquid
-{% cache "recent-blog-posts"}
+{% cache "recent-blog-posts" %}
     {% assign recentBlogPosts = Queries.RecentBlogPosts | query %}
     {% for item in recentBlogPosts %}
         {{ item | display_text }}

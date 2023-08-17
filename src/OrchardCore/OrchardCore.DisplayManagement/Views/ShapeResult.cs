@@ -53,16 +53,16 @@ namespace OrchardCore.DisplayManagement.Views
 
         private async Task ApplyImplementationAsync(BuildShapeContext context, string displayType)
         {
-            // If no location is set from the driver, use the one from the context
+            // If no location is set from the driver, use the one from the context.
             if (String.IsNullOrEmpty(_defaultLocation))
             {
                 _defaultLocation = context.DefaultZone;
             }
 
-            // Look into specific implementations of placements (like placement.json files and IShapePlacementProviders)
+            // Look into specific implementations of placements (like placement.json files and IShapePlacementProviders).
             var placement = context.FindPlacement(_shapeType, _differentiator, displayType, context);
 
-            // Look for mapped display type locations
+            // Look for mapped display type locations.
             if (_otherLocations != null)
             {
                 string displayTypePlacement;
@@ -72,25 +72,16 @@ namespace OrchardCore.DisplayManagement.Views
                 }
             }
 
-            // If no placement is found, use the default location
-            if (placement == null)
-            {
-                placement = new PlacementInfo() { Location = _defaultLocation };
-            }
+            // If no placement is found, use the default location.
+            placement ??= new PlacementInfo() { Location = _defaultLocation };
 
-            if (placement.Location == null)
-            {
-                // If a placement was found without actual location, use the default.
-                // It can happen when just setting alternates or wrappers for instance.
-                placement.Location = _defaultLocation;
-            }
+            // If a placement was found without actual location, use the default.
+            // It can happen when just setting alternates or wrappers for instance.
+            placement.Location ??= _defaultLocation;
 
-            if (placement.DefaultPosition == null)
-            {
-                placement.DefaultPosition = context.DefaultPosition;
-            }
+            placement.DefaultPosition ??= context.DefaultPosition;
 
-            // If there are no placement or it's explicitly noop then stop rendering execution
+            // If there are no placement or it's explicitly noop then stop rendering execution.
             if (String.IsNullOrEmpty(placement.Location) || placement.Location == "-")
             {
                 return;
@@ -99,7 +90,7 @@ namespace OrchardCore.DisplayManagement.Views
             // Parse group placement.
             _groupId = placement.GetGroup() ?? _groupId;
 
-            // If the shape's group doesn't match the currently rendered one, return
+            // If the shape's group doesn't match the currently rendered one, return.
             if (!String.Equals(context.GroupId ?? "", _groupId ?? "", StringComparison.OrdinalIgnoreCase))
             {
                 return;
@@ -136,7 +127,7 @@ namespace OrchardCore.DisplayManagement.Views
             }
 
             // The _processing callback is used to delay execution of costly initialization
-            // that can be prevented by caching
+            // that can be prevented by caching.
             if (_processing != null)
             {
                 newShapeMetadata.OnProcessing(_processing);
@@ -169,7 +160,7 @@ namespace OrchardCore.DisplayManagement.Views
                 }
             }
 
-            dynamic parentShape = context.Shape;
+            var parentShape = context.Shape;
 
             if (placement.IsLayoutZone())
             {
@@ -186,28 +177,23 @@ namespace OrchardCore.DisplayManagement.Views
                     break;
                 }
 
-                var zoneProperty = parentShape.Zones;
-                if (zoneProperty != null)
+                if (parentShape is IZoneHolding layout)
                 {
-                    // parentShape is a ZoneHolding
-                    parentShape = zoneProperty[zone];
+                    // parentShape is a ZoneHolding.
+                    parentShape = layout.Zones[zone];
                 }
                 else
                 {
-                    // try to access it as a member
-                    parentShape = parentShape[zone];
+                    // try to access it as a member.
+                    parentShape = parentShape.GetProperty<IShape>(zone);
                 }
             }
 
             position = !String.IsNullOrEmpty(position) ? position : null;
 
-            if (parentShape is ZoneOnDemand zoneOnDemand)
+            if (parentShape is Shape shape)
             {
-                await zoneOnDemand.AddAsync(newShape, position);
-            }
-            else if (parentShape is Shape shape)
-            {
-                shape.Add(newShape, position);
+                await shape.AddAsync(newShape, position);
             }
         }
 
@@ -237,11 +223,7 @@ namespace OrchardCore.DisplayManagement.Views
         /// </summary>
         public ShapeResult Location(string displayType, string location)
         {
-            if (_otherLocations == null)
-            {
-                _otherLocations = new Dictionary<string, string>(2);
-            }
-
+            _otherLocations ??= new Dictionary<string, string>(2);
             _otherLocations[displayType] = location;
             return this;
         }

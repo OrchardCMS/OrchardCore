@@ -9,15 +9,13 @@ namespace OrchardCore.Environment.Shell
 {
     public class RunningShellTable : IRunningShellTable
     {
-        private static readonly char[] HostSeparators = new[] { ',', ' ' };
-
         private ImmutableDictionary<string, ShellSettings> _shellsByHostAndPrefix = ImmutableDictionary<string, ShellSettings>.Empty.WithComparers(StringComparer.OrdinalIgnoreCase);
         private ShellSettings _default;
         private bool _hasStarMapping = false;
 
         public void Add(ShellSettings settings)
         {
-            if (ShellHelper.DefaultShellName == settings.Name)
+            if (settings.IsDefaultShell())
             {
                 _default = settings;
             }
@@ -145,7 +143,7 @@ namespace OrchardCore.Environment.Shell
             return false;
         }
 
-        private string GetHostAndPrefix(StringSegment host, StringSegment path)
+        private static string GetHostAndPrefix(StringSegment host, StringSegment path)
         {
             // The request path starts with a leading '/'
             var firstSegmentIndex = path.Length > 0 ? path.IndexOf('/', 1) : -1;
@@ -159,25 +157,24 @@ namespace OrchardCore.Environment.Shell
             }
         }
 
-        private string[] GetAllHostsAndPrefix(ShellSettings shellSettings)
+        private static string[] GetAllHostsAndPrefix(ShellSettings shellSettings)
         {
             // For each host entry return HOST/PREFIX
 
-            if (string.IsNullOrWhiteSpace(shellSettings.RequestUrlHost))
+            if (String.IsNullOrWhiteSpace(shellSettings.RequestUrlHost))
             {
                 return new string[] { "/" + shellSettings.RequestUrlPrefix };
             }
 
             return shellSettings
-                .RequestUrlHost
-                .Split(HostSeparators, StringSplitOptions.RemoveEmptyEntries)
+                .RequestUrlHosts
                 .Select(ruh => ruh + "/" + shellSettings.RequestUrlPrefix)
                 .ToArray();
         }
 
         private bool DefaultIsCatchAll()
         {
-            return _default != null && string.IsNullOrEmpty(_default.RequestUrlHost) && string.IsNullOrEmpty(_default.RequestUrlPrefix);
+            return _default != null && String.IsNullOrEmpty(_default.RequestUrlHost) && String.IsNullOrEmpty(_default.RequestUrlPrefix);
         }
     }
 }

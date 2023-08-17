@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Navigation
@@ -14,8 +15,8 @@ namespace OrchardCore.Navigation
             builder.Describe("Navigation")
                 .OnDisplaying(displaying =>
                 {
-                    dynamic menu = displaying.Shape;
-                    string menuName = menu.MenuName;
+                    var menu = displaying.Shape;
+                    var menuName = menu.GetProperty<string>("MenuName");
 
                     menu.Classes.Add("menu-" + menuName.HtmlClassify());
                     menu.Classes.Add("menu");
@@ -23,57 +24,60 @@ namespace OrchardCore.Navigation
                 })
                 .OnProcessing(async context =>
                 {
-                    dynamic menu = context.Shape;
-                    string menuName = menu.MenuName;
+                    var menu = context.Shape;
+                    var menuName = menu.GetProperty<string>("MenuName");
 
                     // Menu population is executed when processing the shape so that its value
                     // can be cached. IShapeDisplayEvents is called before the ShapeDescriptor
                     // events and thus this code can be cached.
 
-                    if ((bool)menu.HasItems)
+                    if (menu is Shape shape && shape.HasItems)
                     {
                         return;
                     }
 
                     var viewContextAccessor = context.ServiceProvider.GetRequiredService<ViewContextAccessor>();
                     var viewContext = viewContextAccessor.ViewContext;
-
-                    var navigationManager = context.ServiceProvider.GetRequiredService<INavigationManager>();
+                    var navigationManagers = context.ServiceProvider.GetServices<INavigationManager>();
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
                     var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-                    var menuItems = await navigationManager.BuildMenuAsync(menuName, viewContext);
-                    var httpContext = httpContextAccessor.HttpContext;
 
-                    if (httpContext != null)
+                    foreach (var navigationManager in navigationManagers)
                     {
-                        // adding query string parameters
-                        var route = menu.RouteData;
-                        var routeData = new RouteValueDictionary(route.Values);
-                        var query = httpContext.Request.Query;
+                        var menuItems = await navigationManager.BuildMenuAsync(menuName, viewContext);
+                        var httpContext = httpContextAccessor.HttpContext;
 
-                        if (query != null)
+                        if (httpContext != null)
                         {
-                            foreach (var pair in query)
+                            // adding query string parameters
+                            var route = menu.GetProperty<RouteData>("RouteData");
+                            var routeData = new RouteValueDictionary(route.Values);
+                            var query = httpContext.Request.Query;
+
+                            if (query != null)
                             {
-                                if (pair.Key != null && !routeData.ContainsKey(pair.Key))
+                                foreach (var pair in query)
                                 {
-                                    routeData[pair.Key] = pair.Value;
+                                    if (pair.Key != null && !routeData.ContainsKey(pair.Key))
+                                    {
+                                        routeData[pair.Key] = pair.Value;
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    // TODO: Flag Selected menu item
-                    await NavigationHelper.PopulateMenuAsync(shapeFactory, menu, menu, menuItems, viewContext);
+                        // TODO: Flag Selected menu item
+                        await NavigationHelper.PopulateMenuAsync(shapeFactory, menu, menu, menuItems, viewContext);
+                    }
                 });
 
             builder.Describe("NavigationItem")
                 .OnDisplaying(displaying =>
                 {
-                    dynamic menuItem = displaying.Shape;
-                    var menu = menuItem.Menu;
-                    string menuName = menu.MenuName;
-                    int level = menuItem.Level;
+                    var menuItem = displaying.Shape;
+                    var menu = menuItem.GetProperty<IShape>("Menu");
+                    var menuName = menu.GetProperty<string>("MenuName");
+                    var level = menuItem.GetProperty<int>("Level");
 
                     menuItem.Metadata.Alternates.Add("NavigationItem__level__" + level);
                     menuItem.Metadata.Alternates.Add("NavigationItem__" + EncodeAlternateElement(menuName));
@@ -83,9 +87,9 @@ namespace OrchardCore.Navigation
             builder.Describe("NavigationItemLink")
                 .OnDisplaying(displaying =>
                 {
-                    dynamic menuItem = displaying.Shape;
-                    string menuName = menuItem.Menu.MenuName;
-                    int level = menuItem.Level;
+                    var menuItem = displaying.Shape;
+                    var menuName = menuItem.GetProperty<IShape>("Menu").GetProperty<string>("MenuName");
+                    var level = menuItem.GetProperty<int>("Level");
 
                     menuItem.Metadata.Alternates.Add("NavigationItemLink__level__" + level);
 
@@ -101,7 +105,7 @@ namespace OrchardCore.Navigation
         /// </summary>
         /// <param name="alternateElement"></param>
         /// <returns></returns>
-        private string EncodeAlternateElement(string alternateElement)
+        private static string EncodeAlternateElement(string alternateElement)
         {
             return alternateElement.Replace("-", "__").Replace('.', '_');
         }

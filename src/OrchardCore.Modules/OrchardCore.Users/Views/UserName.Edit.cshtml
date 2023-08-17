@@ -1,0 +1,10 @@
+@model OrchardCore.Users.ViewModels.EditUserNameViewModel
+
+<div class="mb-3">
+    <label asp-for="UserName">@T["User name"]</label>
+    <div class="input-group col-md-4">
+        <span class="input-group-text"><i class="fa-solid fa-user" aria-hidden="true"></i></span>
+        <input asp-for="UserName" class="form-control" autofocus asp-is-disabled="@(!Model.AllowEditing)" />
+        <span asp-validation-for="UserName" class="text-danger"></span>
+    </div>
+</div>

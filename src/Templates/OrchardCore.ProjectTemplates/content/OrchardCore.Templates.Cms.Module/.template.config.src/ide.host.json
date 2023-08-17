@@ -3,6 +3,10 @@
   "icon": "icon.png",
   "symbolInfo": [
     {
+      "id": "Framework",
+      "isVisible": "true"
+    },
+    {
       "id": "AddPart",
       "name": {
         "text": "Add all files required for a part"
@@ -19,7 +23,7 @@
     {
       "id": "OrchardVersion",
       "name": {
-        "text": "Orchard Version"
+        "text": "Orchard Core Version"
       },
       "isVisible": "true"
     }

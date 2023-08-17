@@ -8,13 +8,13 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
 using OrchardCore.Sitemaps.ViewModels;
@@ -28,19 +28,19 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly ISitemapIdGenerator _sitemapIdGenerator;
         private readonly ISitemapManager _sitemapManager;
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly INotifier _notifier;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-        private readonly dynamic New;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
+        protected readonly dynamic New;
 
         public SitemapIndexController(
             ISitemapHelperService sitemapService,
             IAuthorizationService authorizationService,
             ISitemapIdGenerator sitemapIdGenerator,
             ISitemapManager sitemapManager,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             IUpdateModelAccessor updateModelAccessor,
             IShapeFactory shapeFactory,
             IStringLocalizer<SitemapIndexController> stringLocalizer,
@@ -51,7 +51,7 @@ namespace OrchardCore.Sitemaps.Controllers
             _authorizationService = authorizationService;
             _sitemapIdGenerator = sitemapIdGenerator;
             _sitemapManager = sitemapManager;
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
             _updateModelAccessor = updateModelAccessor;
             _notifier = notifier;
             New = shapeFactory;
@@ -66,13 +66,12 @@ namespace OrchardCore.Sitemaps.Controllers
                 return Forbid();
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var sitemaps = (await _sitemapManager.GetSitemapsAsync())
                 .OfType<SitemapIndex>();
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
                 sitemaps = sitemaps.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase));
             }
@@ -108,7 +107,7 @@ namespace OrchardCore.Sitemaps.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult ListFilterPOST(ListSitemapIndexViewModel model)
         {
-            return RedirectToAction("List", new RouteValueDictionary {
+            return RedirectToAction(nameof(List), new RouteValueDictionary {
                 { "Options.Search", model.Options.Search }
             });
         }
@@ -181,7 +180,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
                 await _sitemapManager.UpdateSitemapAsync(sitemap);
 
-                _notifier.Success(H["Sitemap index created successfully"]);
+                await _notifier.SuccessAsync(H["Sitemap index created successfully"]);
 
                 return RedirectToAction(nameof(List));
             }
@@ -270,7 +269,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
                 await _sitemapManager.UpdateSitemapAsync(sitemap);
 
-                _notifier.Success(H["Sitemap index updated successfully"]);
+                await _notifier.SuccessAsync(H["Sitemap index updated successfully"]);
 
                 return RedirectToAction(nameof(List));
             }
@@ -296,7 +295,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             await _sitemapManager.DeleteSitemapAsync(sitemapId);
 
-            _notifier.Success(H["Sitemap index deleted successfully."]);
+            await _notifier.SuccessAsync(H["Sitemap index deleted successfully."]);
 
             return RedirectToAction(nameof(List));
         }
@@ -320,7 +319,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             await _sitemapManager.UpdateSitemapAsync(sitemap);
 
-            _notifier.Success(H["Sitemap index menu toggled successfully."]);
+            await _notifier.SuccessAsync(H["Sitemap index menu toggled successfully."]);
 
             return RedirectToAction(nameof(List));
         }
@@ -347,14 +346,14 @@ namespace OrchardCore.Sitemaps.Controllers
                         {
                             await _sitemapManager.DeleteSitemapAsync(item.SitemapId);
                         }
-                        _notifier.Success(H["Sitemap indices successfully removed."]);
+                        await _notifier.SuccessAsync(H["Sitemap indices successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
 
-            return RedirectToAction("List");
+            return RedirectToAction(nameof(List));
         }
     }
 }

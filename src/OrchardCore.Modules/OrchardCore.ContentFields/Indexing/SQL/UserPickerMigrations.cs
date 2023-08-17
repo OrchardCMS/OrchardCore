@@ -1,9 +1,11 @@
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
+using OrchardCore.Modules;
 using YesSql.Sql;
 
 namespace OrchardCore.ContentFields.Indexing.SQL
 {
+    [Feature("OrchardCore.ContentFields.Indexing.SQL.UserPicker")]
     public class UserPickerMigrations : DataMigration
     {
         public int Create()

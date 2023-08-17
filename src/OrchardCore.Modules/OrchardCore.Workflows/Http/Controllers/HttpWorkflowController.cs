@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Secrets;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Http.Activities;
 using OrchardCore.Workflows.Http.Models;
 using OrchardCore.Workflows.Services;
@@ -26,6 +28,7 @@ namespace OrchardCore.Workflows.Http.Controllers
         private readonly ISecretService<HttpRequestEventSecret> _secretService;
         private readonly IEnumerable<ISecretFactory> _secretFactories;
         private readonly IAntiforgery _antiforgery;
+        private readonly IDistributedLock _distributedLock;
         private readonly ILogger _logger;
         public const int NoExpiryTokenLifespan = 36500;
 
@@ -40,6 +43,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             ISecretService<HttpRequestEventSecret> secretService,
             IEnumerable<ISecretFactory> secretFactories,
             IAntiforgery antiforgery,
+            IDistributedLock distributedLock,
             ILogger<HttpWorkflowController> logger
         )
         {
@@ -53,12 +57,13 @@ namespace OrchardCore.Workflows.Http.Controllers
             _secretService = secretService;
             _secretFactories = secretFactories;
             _antiforgery = antiforgery;
+            _distributedLock = distributedLock;
             _logger = logger;
         }
 
         [HttpPost]
         [Admin]
-        public async Task<IActionResult> GenerateUrl(int workflowTypeId, string activityId, int tokenLifeSpan)
+        public async Task<IActionResult> GenerateUrl(long workflowTypeId, string activityId, int tokenLifeSpan)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -73,7 +78,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             }
 
             var token = _securityTokenService.CreateToken(new WorkflowPayload(workflowType.WorkflowTypeId, activityId), TimeSpan.FromDays(tokenLifeSpan == 0 ? NoExpiryTokenLifespan : tokenLifeSpan));
-            var url = Url.Action("Invoke", "HttpWorkflow", new { token = token });
+            var url = Url.Action("Invoke", "HttpWorkflow", new { token });
 
             return Ok(url);
         }
@@ -94,6 +99,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             {
                 return NotFound();
             }
+
             secret.WorkflowTypeId = workflowTypeId;
             secret.ActivityId = activityId;
             secret.TokenLifeSpan = tokenLifeSpan;
@@ -211,15 +217,22 @@ namespace OrchardCore.Workflows.Http.Controllers
             // If the activity is a start activity, start a new workflow.
             if (startActivity.IsStart)
             {
-                // If this is not a singleton workflow or there is not already an halted instance, start a new workflow.
-                if (!workflowType.IsSingleton || !await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
+                // If a singleton, try to acquire a lock per workflow type.
+                (var locker, var locked) = await _distributedLock.TryAcquireWorkflowTypeLockAsync(workflowType);
+                if (locked)
                 {
-                    if (_logger.IsEnabled(LogLevel.Debug))
-                    {
-                        _logger.LogDebug("Invoking new workflow of type '{WorkflowTypeId}' with start activity '{ActivityId}'", workflowType.WorkflowTypeId, startActivity.ActivityId);
-                    }
+                    await using var acquiredLock = locker;
 
-                    await _workflowManager.StartWorkflowAsync(workflowType, startActivity);
+                    // Check if this is not a workflow singleton or there's not already an halted instance on any activity.
+                    if (!workflowType.IsSingleton || !await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
+                    {
+                        if (_logger.IsEnabled(LogLevel.Debug))
+                        {
+                            _logger.LogDebug("Invoking new workflow of type '{WorkflowTypeId}' with start activity '{ActivityId}'", workflowType.WorkflowTypeId, startActivity.ActivityId);
+                        }
+
+                        await _workflowManager.StartWorkflowAsync(workflowType, startActivity);
+                    }
                 }
             }
             else
@@ -248,7 +261,28 @@ namespace OrchardCore.Workflows.Http.Controllers
                             _logger.LogDebug("Resuming workflow with ID '{WorkflowId}' on activity '{ActivityId}'", workflow.WorkflowId, blockingActivity.ActivityId);
                         }
 
-                        await _workflowManager.ResumeWorkflowAsync(workflow, blockingActivity);
+                        // If atomic, try to acquire a lock per workflow instance.
+                        (var locker, var locked) = await _distributedLock.TryAcquireWorkflowLockAsync(workflow);
+                        if (!locked)
+                        {
+                            continue;
+                        }
+
+                        await using var acquiredLock = locker;
+
+                        // If atomic, check if the workflow still exists.
+                        var haltedWorkflow = workflow.IsAtomic ? await _workflowStore.GetAsync(workflow.WorkflowId) : workflow;
+                        if (haltedWorkflow == null)
+                        {
+                            continue;
+                        }
+
+                        // And if it is still halted on this activity.
+                        blockingActivity = haltedWorkflow.BlockingActivities.FirstOrDefault(x => x.ActivityId == startActivity.ActivityId);
+                        if (blockingActivity != null)
+                        {
+                            await _workflowManager.ResumeWorkflowAsync(haltedWorkflow, blockingActivity);
+                        }
                     }
                 }
             }
@@ -278,11 +312,24 @@ namespace OrchardCore.Workflows.Http.Controllers
                     return NotFound();
                 }
 
-                // The workflow could be blocking on multiple Signal activities, but only the activity with the provided signal name
-                // will be executed as SignalEvent checks for the provided "Signal" input.
-                foreach (var signalActivity in signalActivities)
+                // If atomic, try to acquire a lock per workflow instance.
+                (var locker, var locked) = await _distributedLock.TryAcquireWorkflowLockAsync(workflow);
+                if (locked)
                 {
-                    await _workflowManager.ResumeWorkflowAsync(workflow, signalActivity, input);
+                    await using var acquiredLock = locker;
+
+                    // Check if the workflow still exists (without checking if it is correlated).
+                    workflow = workflow.IsAtomic ? await _workflowStore.GetAsync(workflow.WorkflowId) : workflow;
+                    if (workflow != null)
+                    {
+                        // The workflow could be blocking on multiple Signal activities, but only the activity with the provided signal name
+                        // will be executed as SignalEvent checks for the provided "Signal" input.
+                        signalActivities = workflow.BlockingActivities.Where(x => x.Name == SignalEvent.EventName).ToList();
+                        foreach (var signalActivity in signalActivities)
+                        {
+                            await _workflowManager.ResumeWorkflowAsync(workflow, signalActivity, input);
+                        }
+                    }
                 }
             }
             else

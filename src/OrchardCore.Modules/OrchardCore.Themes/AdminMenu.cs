@@ -7,7 +7,7 @@ namespace OrchardCore.Themes
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
@@ -24,7 +24,7 @@ namespace OrchardCore.Themes
             builder
                 .Add(S["Design"], NavigationConstants.AdminMenuDesignPosition, design => design
                     .AddClass("themes").Id("themes")
-                    .Add(S["Themes"], "Themes", installed => installed
+                    .Add(S["Themes"], S["Themes"].PrefixPosition(), installed => installed
                         .Action("Index", "Admin", new { area = "OrchardCore.Themes" })
                         .Permission(Permissions.ApplyTheme)
                         .LocalNav()

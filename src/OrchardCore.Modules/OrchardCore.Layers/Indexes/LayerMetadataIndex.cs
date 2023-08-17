@@ -18,15 +18,15 @@ namespace OrchardCore.Layers.Indexes
                 .Map(contentItem =>
                 {
                     var layerMetadata = contentItem.As<LayerMetadata>();
-                    if (layerMetadata != null)
+                    if (layerMetadata == null)
                     {
-                        return new LayerMetadataIndex
-                        {
-                            Zone = layerMetadata.Zone,
-                        };
+                        return null;
                     }
 
-                    return null;
+                    return new LayerMetadataIndex
+                    {
+                        Zone = layerMetadata.Zone,
+                    };
                 });
         }
     }

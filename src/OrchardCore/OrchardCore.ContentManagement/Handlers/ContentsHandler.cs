@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using OrchardCore.Modules;
 
 namespace OrchardCore.ContentManagement.Handlers
@@ -81,7 +80,6 @@ namespace OrchardCore.ContentManagement.Handlers
 
         public override Task UnpublishedAsync(PublishContentContext context)
         {
-            var utcNow = _clock.UtcNow;
             context.ContentItem.PublishedUtc = null;
             return Task.CompletedTask;
         }

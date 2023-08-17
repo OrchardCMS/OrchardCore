@@ -1,12 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
 
     <!-- NuGet properties-->
     <Title>OrchardCore Deployment Core</Title>
     <Description>$(OCCMSDescription)
-    
+
     Core Implementation for Deployment module.</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
 

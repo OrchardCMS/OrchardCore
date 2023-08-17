@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 
@@ -33,34 +34,34 @@ namespace OrchardCore.Environment.Shell.Builders
                 _logger.LogInformation("Creating shell context for tenant '{TenantName}'", settings.Name);
             }
 
-            var describedContext = await CreateDescribedContextAsync(settings, MinimumShellDescriptor());
+            var describedContext = await CreateDescribedContextAsync(settings, new ShellDescriptor());
 
             ShellDescriptor currentDescriptor = null;
-            await describedContext.CreateScope().UsingServiceScopeAsync(async scope =>
+            await (await describedContext.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
             {
                 var shellDescriptorManager = scope.ServiceProvider.GetService<IShellDescriptorManager>();
                 currentDescriptor = await shellDescriptorManager.GetShellDescriptorAsync();
             });
 
-            if (currentDescriptor != null)
+            if (currentDescriptor is not null)
             {
-                describedContext.Dispose();
+                await describedContext.DisposeAsync();
                 return await CreateDescribedContextAsync(settings, currentDescriptor);
             }
 
             return describedContext;
         }
 
-        // TODO: This should be provided by a ISetupService that returns a set of ShellFeature instances.
-        async Task<ShellContext> IShellContextFactory.CreateSetupContextAsync(ShellSettings settings)
+        Task<ShellContext> IShellContextFactory.CreateSetupContextAsync(ShellSettings settings)
         {
             if (_logger.IsEnabled(LogLevel.Debug))
             {
                 _logger.LogDebug("No shell settings available. Creating shell context for setup");
             }
+
             var descriptor = MinimumShellDescriptor();
 
-            return await CreateDescribedContextAsync(settings, descriptor);
+            return CreateDescribedContextAsync(settings, descriptor);
         }
 
         public async Task<ShellContext> CreateDescribedContextAsync(ShellSettings settings, ShellDescriptor shellDescriptor)
@@ -73,7 +74,13 @@ namespace OrchardCore.Environment.Shell.Builders
             await settings.EnsureConfigurationAsync();
 
             var blueprint = await _compositionStrategy.ComposeAsync(settings, shellDescriptor);
-            var provider = _shellContainerFactory.CreateContainer(settings, blueprint);
+            var provider = await _shellContainerFactory.CreateContainerAsync(settings, blueprint);
+
+            var options = provider.GetService<IOptions<ShellContainerOptions>>().Value;
+            foreach (var initializeAsync in options.Initializers)
+            {
+                await initializeAsync(provider);
+            }
 
             return new ShellContext
             {
@@ -96,8 +103,7 @@ namespace OrchardCore.Environment.Shell.Builders
             return new ShellDescriptor
             {
                 SerialNumber = -1,
-                Features = new List<ShellFeature>(_shellFeatures),
-                Parameters = new List<ShellParameter>()
+                Features = new List<ShellFeature>(_shellFeatures)
             };
         }
     }

@@ -1,0 +1,97 @@
+@media (min-width: 576px) and (max-width: 767.98px) {
+  :root {
+    --dashboard-columns: 1;
+    --dashboard-columns-default: 1;
+  }
+}
+@media (min-width: 768px) and (max-width: 991.98px) {
+  :root {
+    --dashboard-columns: 2;
+    --dashboard-columns-default: 2;
+  }
+}
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  :root {
+    --dashboard-columns: 3;
+    --dashboard-columns-default: 3;
+  }
+}
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+  :root {
+    --dashboard-columns: 4;
+    --dashboard-columns-default: 4;
+  }
+}
+@media (min-width: 1400px) {
+  :root {
+    --dashboard-columns: 6;
+    --dashboard-columns-default: 6;
+  }
+}
+.dashboard-container {
+  display: grid;
+  grid-template-columns: repeat(var(--dashboard-columns), 1fr);
+  grid-template-rows: repeat(6, 240px);
+  grid-gap: 1rem;
+}
+.dashboard-container .dashboard-wrapper {
+  grid-column: span var(--dashboard-width);
+  overflow-x: hidden;
+  grid-row: span var(--dashboard-height);
+  overflow-y: auto;
+}
+.dashboard-container .dashboard-wrapper .card .card-header {
+  border-bottom: none !important;
+}
+.dashboard-container .dashboard-wrapper .card .card-footer {
+  border-top: none !important;
+}
+.dashboard-container .dashboard-wrapper.ui-resizable {
+  overflow-y: hidden;
+}
+
+.dashboard-meta {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+.dashboard-meta:first-child {
+  padding-top: 12px;
+}
+
+:root[data-theme=default] .dashboard-wrapper .card .card-header {
+  background-color: #fff !important;
+}
+:root[data-theme=default] .dashboard-wrapper .card .card-footer {
+  background-color: #fff !important;
+}
+
+:root[data-theme=darkmode] .dashboard-wrapper .card .card-header {
+  background-color: rgb(24, 26, 27) !important;
+}
+:root[data-theme=darkmode] .dashboard-wrapper .card .card-footer {
+  background-color: rgb(24, 26, 27) !important;
+}
+
+.dashboard-handle {
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+.dashboard-handle:hover {
+  cursor: move;
+}
+
+.dashboard-dragdrop-placeholder {
+  margin-top: 6px;
+  margin-bottom: 6px;
+  min-height: 6px;
+  display: inline-block;
+  border: 1px dashed orange;
+  grid-column: span var(--dashboard-width);
+  overflow-x: hidden;
+  grid-row: span var(--dashboard-height);
+  overflow-y: hidden;
+}
+
+.ui-resizable-helper {
+  border: 1px dashed orange;
+}

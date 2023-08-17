@@ -6,5 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
     Category = "Deployment",
+    Description = "Provides a way to import and export recipes",
     Dependencies = new string[] { "OrchardCore.Secrets" }
 )]

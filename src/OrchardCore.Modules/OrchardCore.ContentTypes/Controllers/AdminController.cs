@@ -9,13 +9,13 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Utilities;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.Services;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Mvc.Utilities;
 using OrchardCore.Routing;
 
 namespace OrchardCore.ContentTypes.Controllers
@@ -27,8 +27,8 @@ namespace OrchardCore.ContentTypes.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IDocumentStore _documentStore;
         private readonly IContentDefinitionDisplayManager _contentDefinitionDisplayManager;
-        private readonly IHtmlLocalizer H;
-        private readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
@@ -94,7 +94,7 @@ namespace OrchardCore.ContentTypes.Controllers
             }
 
             viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? String.Empty;
-            viewModel.Name = viewModel.Name ?? String.Empty;
+            viewModel.Name ??= String.Empty;
 
             if (String.IsNullOrWhiteSpace(viewModel.DisplayName))
             {
@@ -121,6 +121,11 @@ namespace OrchardCore.ContentTypes.Controllers
                 ModelState.AddModelError("Name", S["The Technical Name contains invalid characters."]);
             }
 
+            if (viewModel.Name.IsReservedContentName())
+            {
+                ModelState.AddModelError("Name", S["The Technical Name is reserved for internal use."]);
+            }
+
             if (_contentDefinitionService.LoadTypes().Any(t => String.Equals(t.Name.Trim(), viewModel.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError("Name", S["A type with the same Technical Name already exists."]);
@@ -128,7 +133,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (!ModelState.IsValid)
             {
-                _documentStore.Cancel();
+                await _documentStore.CancelAsync();
                 return View(viewModel);
             }
 
@@ -136,7 +141,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var typeViewModel = new EditTypeViewModel(contentTypeDefinition);
 
-            _notifier.Success(H["The \"{0}\" content type has been created.", typeViewModel.DisplayName]);
+            await _notifier.SuccessAsync(H["The \"{0}\" content type has been created.", typeViewModel.DisplayName]);
 
             return RedirectToAction("AddPartsTo", new { id = typeViewModel.Name });
         }
@@ -183,7 +188,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (!ModelState.IsValid)
             {
-                _documentStore.Cancel();
+                await _documentStore.CancelAsync();
 
                 return View(viewModel);
             }
@@ -195,10 +200,10 @@ namespace OrchardCore.ContentTypes.Controllers
                     _contentDefinitionService.AlterPartFieldsOrder(ownedPartDefinition, viewModel.OrderedFieldNames);
                 }
                 _contentDefinitionService.AlterTypePartsOrder(contentTypeDefinition, viewModel.OrderedPartNames);
-                _notifier.Success(H["\"{0}\" settings have been saved.", contentTypeDefinition.Name]);
+                await _notifier.SuccessAsync(H["\"{0}\" settings have been saved.", contentTypeDefinition.Name]);
             }
 
-            return RedirectToAction("Edit", new { id });
+            return RedirectToAction(nameof(Edit), new { id });
         }
 
         [HttpPost, ActionName("Edit")]
@@ -219,9 +224,9 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _contentDefinitionService.RemoveType(id, true);
 
-            _notifier.Success(H["\"{0}\" has been removed.", typeViewModel.DisplayName]);
+            await _notifier.SuccessAsync(H["\"{0}\" has been removed.", typeViewModel.DisplayName]);
 
-            return RedirectToAction("List");
+            return RedirectToAction(nameof(List));
         }
 
         public async Task<ActionResult> AddPartsTo(string id)
@@ -244,7 +249,7 @@ namespace OrchardCore.ContentTypes.Controllers
             {
                 Type = typeViewModel,
                 PartSelections = _contentDefinitionService.GetParts(metadataPartsOnly: false)
-                    .Where(cpd => !typePartNames.Contains(cpd.Name) && cpd.PartDefinition != null ? cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable : false)
+                    .Where(cpd => !typePartNames.Contains(cpd.Name, StringComparer.OrdinalIgnoreCase) && cpd.PartDefinition != null && cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable)
                     .Select(cpd => new PartSelectionViewModel { PartName = cpd.Name, PartDisplayName = cpd.DisplayName, PartDescription = cpd.Description })
                     .ToList()
             };
@@ -267,9 +272,9 @@ namespace OrchardCore.ContentTypes.Controllers
             }
 
             var reusableParts = _contentDefinitionService.GetParts(metadataPartsOnly: false)
-                    .Where(cpd => cpd.PartDefinition != null ?
-                        (cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable &&
-                        cpd.PartDefinition.GetSettings<ContentPartSettings>().Reusable) : false);
+                    .Where(cpd => cpd.PartDefinition != null &&
+                        cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable &&
+                        cpd.PartDefinition.GetSettings<ContentPartSettings>().Reusable);
 
             var viewModel = new AddReusablePartViewModel
             {
@@ -308,16 +313,16 @@ namespace OrchardCore.ContentTypes.Controllers
             foreach (var partToAdd in partsToAdd)
             {
                 _contentDefinitionService.AddPartToType(partToAdd, typeViewModel.Name);
-                _notifier.Success(H["The \"{0}\" part has been added.", partToAdd]);
+                await _notifier.SuccessAsync(H["The \"{0}\" part has been added.", partToAdd]);
             }
 
             if (!ModelState.IsValid)
             {
-                _documentStore.Cancel();
+                await _documentStore.CancelAsync();
                 return await AddPartsTo(id);
             }
 
-            return RedirectToAction("Edit", new { id });
+            return RedirectToAction(nameof(Edit), new { id });
         }
 
         [HttpPost, ActionName("AddReusablePartTo")]
@@ -342,7 +347,7 @@ namespace OrchardCore.ContentTypes.Controllers
             }
 
             viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? String.Empty;
-            viewModel.Name = viewModel.Name ?? String.Empty;
+            viewModel.Name ??= String.Empty;
 
             if (String.IsNullOrWhiteSpace(viewModel.DisplayName))
             {
@@ -364,6 +369,11 @@ namespace OrchardCore.ContentTypes.Controllers
                 ModelState.AddModelError("Name", S["The Technical Name contains invalid characters."]);
             }
 
+            if (viewModel.Name.IsReservedContentName())
+            {
+                ModelState.AddModelError("Name", S["The Technical Name is reserved for internal use."]);
+            }
+
             if (String.IsNullOrWhiteSpace(viewModel.Name))
             {
                 ModelState.AddModelError("Name", S["The Technical Name can't be empty."]);
@@ -376,7 +386,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (!ModelState.IsValid)
             {
-                _documentStore.Cancel();
+                await _documentStore.CancelAsync();
                 return await AddReusablePartTo(id);
             }
 
@@ -384,9 +394,9 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _contentDefinitionService.AddReusablePartToType(viewModel.Name, viewModel.DisplayName, viewModel.Description, partToAdd, typeViewModel.Name);
 
-            _notifier.Success(H["The \"{0}\" part has been added.", partToAdd]);
+            await _notifier.SuccessAsync(H["The \"{0}\" part has been added.", partToAdd]);
 
-            return RedirectToAction("Edit", new { id });
+            return RedirectToAction(nameof(Edit), new { id });
         }
 
         [HttpPost, ActionName("RemovePart")]
@@ -399,16 +409,16 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var typeViewModel = _contentDefinitionService.LoadType(id);
 
-            if (typeViewModel == null || !typeViewModel.TypeDefinition.Parts.Any(p => p.Name == name))
+            if (typeViewModel == null || !typeViewModel.TypeDefinition.Parts.Any(p => String.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase)))
             {
                 return NotFound();
             }
 
             _contentDefinitionService.RemovePartFromType(name, id);
 
-            _notifier.Success(H["The \"{0}\" part has been removed.", name]);
+            await _notifier.SuccessAsync(H["The \"{0}\" part has been removed.", name]);
 
-            return RedirectToAction("Edit", new { id });
+            return RedirectToAction(nameof(Edit), new { id });
         }
 
         #endregion Types
@@ -447,7 +457,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return Forbid();
             }
 
-            viewModel.Name = viewModel.Name ?? String.Empty;
+            viewModel.Name ??= String.Empty;
 
             if (String.IsNullOrWhiteSpace(viewModel.Name))
             {
@@ -469,6 +479,11 @@ namespace OrchardCore.ContentTypes.Controllers
                 ModelState.AddModelError("Name", S["The Technical Name contains invalid characters."]);
             }
 
+            if (viewModel.Name.IsReservedContentName())
+            {
+                ModelState.AddModelError("Name", S["The Technical Name is reserved for internal use."]);
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(viewModel);
@@ -478,13 +493,13 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (partViewModel == null)
             {
-                _notifier.Information(H["The content part could not be created."]);
+                await _notifier.InformationAsync(H["The content part could not be created."]);
                 return View(viewModel);
             }
 
-            _notifier.Success(H["The \"{0}\" content part has been created.", partViewModel.Name]);
+            await _notifier.SuccessAsync(H["The \"{0}\" content part has been created.", partViewModel.Name]);
 
-            return RedirectToAction("EditPart", new { id = partViewModel.Name });
+            return RedirectToAction(nameof(EditPart), new { id = partViewModel.Name });
         }
 
         public async Task<ActionResult> EditPart(string id)
@@ -501,8 +516,10 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var viewModel = new EditPartViewModel(contentPartDefinition);
-            viewModel.Editor = await _contentDefinitionDisplayManager.BuildPartEditorAsync(contentPartDefinition, _updateModelAccessor.ModelUpdater);
+            var viewModel = new EditPartViewModel(contentPartDefinition)
+            {
+                Editor = await _contentDefinitionDisplayManager.BuildPartEditorAsync(contentPartDefinition, _updateModelAccessor.ModelUpdater),
+            };
 
             return View(viewModel);
         }
@@ -523,21 +540,23 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var viewModel = new EditPartViewModel(contentPartDefinition);
-            viewModel.Editor = await _contentDefinitionDisplayManager.UpdatePartEditorAsync(contentPartDefinition, _updateModelAccessor.ModelUpdater);
+            var viewModel = new EditPartViewModel(contentPartDefinition)
+            {
+                Editor = await _contentDefinitionDisplayManager.UpdatePartEditorAsync(contentPartDefinition, _updateModelAccessor.ModelUpdater),
+            };
 
             if (!ModelState.IsValid)
             {
-                _documentStore.Cancel();
+                await _documentStore.CancelAsync();
                 return View(viewModel);
             }
             else
             {
                 _contentDefinitionService.AlterPartFieldsOrder(contentPartDefinition, orderedFieldNames);
-                _notifier.Success(H["The settings of \"{0}\" have been saved.", contentPartDefinition.Name]);
+                await _notifier.SuccessAsync(H["The settings of \"{0}\" have been saved.", contentPartDefinition.Name]);
             }
 
-            return RedirectToAction("EditPart", new { id });
+            return RedirectToAction(nameof(EditPart), new { id });
         }
 
         [HttpPost, ActionName("EditPart")]
@@ -558,9 +577,9 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _contentDefinitionService.RemovePart(id);
 
-            _notifier.Information(H["\"{0}\" has been removed.", partViewModel.DisplayName]);
+            await _notifier.InformationAsync(H["\"{0}\" has been removed.", partViewModel.DisplayName]);
 
-            return RedirectToAction("ListParts");
+            return RedirectToAction(nameof(ListParts));
         }
 
         public async Task<ActionResult> AddFieldTo(string id, string returnUrl = null)
@@ -568,6 +587,15 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
                 return Forbid();
+            }
+
+            var fields = _contentDefinitionService.GetFields().ToList();
+
+            if (!fields.Any())
+            {
+                await _notifier.WarningAsync(H["There are no fields."]);
+
+                return RedirectToAction(nameof(List));
             }
 
             var partViewModel = _contentDefinitionService.LoadPart(id);
@@ -580,7 +608,7 @@ namespace OrchardCore.ContentTypes.Controllers
             var viewModel = new AddFieldViewModel
             {
                 Part = partViewModel.PartDefinition,
-                Fields = _contentDefinitionService.GetFields().Select(x => x.Name).OrderBy(x => x).ToList()
+                Fields = fields.Select(field => field.Name).OrderBy(name => name).ToList()
             };
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -602,10 +630,17 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
+            var fields = _contentDefinitionService.GetFields().ToList();
+
+            if (!fields.Any(field => String.Equals(field.Name, viewModel.FieldTypeName, StringComparison.OrdinalIgnoreCase)))
+            {
+                return NotFound();
+            }
+
             var partDefinition = partViewModel.PartDefinition;
 
             viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? String.Empty;
-            viewModel.Name = viewModel.Name ?? String.Empty;
+            viewModel.Name ??= String.Empty;
 
             if (String.IsNullOrWhiteSpace(viewModel.DisplayName))
             {
@@ -642,7 +677,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 viewModel.Part = partDefinition;
                 viewModel.Fields = _contentDefinitionService.GetFields().Select(x => x.Name).OrderBy(x => x).ToList();
 
-                _documentStore.Cancel();
+                await _documentStore.CancelAsync();
 
                 ViewData["ReturnUrl"] = returnUrl;
                 return View(viewModel);
@@ -650,15 +685,15 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _contentDefinitionService.AddFieldToPart(viewModel.Name, viewModel.DisplayName, viewModel.FieldTypeName, partDefinition.Name);
 
-            _notifier.Success(H["The field \"{0}\" has been added.", viewModel.DisplayName]);
+            await _notifier.SuccessAsync(H["The field \"{0}\" has been added.", viewModel.DisplayName]);
 
             if (!String.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
-                return Redirect(returnUrl);
+                return this.Redirect(returnUrl, true);
             }
             else
             {
-                return RedirectToAction("EditField", new { id, viewModel.Name });
+                return RedirectToAction(nameof(EditField), new { id, viewModel.Name });
             }
         }
 
@@ -676,9 +711,10 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var partFieldDefinition = partViewModel.PartDefinition.Fields.FirstOrDefault(x => x.Name == name);
+            var partFieldDefinition = partViewModel.PartDefinition.Fields.FirstOrDefault(x => String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
-            if (partFieldDefinition == null)
+            if (partFieldDefinition?.FieldDefinition?.Name == null
+                || !_contentDefinitionService.GetFields().Any(field => String.Equals(field.Name, partFieldDefinition.FieldDefinition.Name, StringComparison.OrdinalIgnoreCase)))
             {
                 return NotFound();
             }
@@ -718,7 +754,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var field = _contentDefinitionManager.LoadPartDefinition(id).Fields.FirstOrDefault(x => x.Name == viewModel.Name);
+            var field = _contentDefinitionManager.LoadPartDefinition(id).Fields.FirstOrDefault(x => String.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase));
 
             if (field == null)
             {
@@ -746,37 +782,37 @@ namespace OrchardCore.ContentTypes.Controllers
                 {
                     // Calls update to build editor shape with the display name validation failures, and other validation errors.
                     viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, _updateModelAccessor.ModelUpdater);
-                    _documentStore.Cancel();
+                    await _documentStore.CancelAsync();
 
                     ViewData["ReturnUrl"] = returnUrl;
                     return View(viewModel);
                 }
 
-                _notifier.Information(H["Display name changed to {0}.", viewModel.DisplayName]);
+                await _notifier.InformationAsync(H["Display name changed to {0}.", viewModel.DisplayName]);
             }
 
             _contentDefinitionService.AlterField(partViewModel, viewModel);
 
             // Refresh the local field variable in case it has been altered
-            field = _contentDefinitionManager.LoadPartDefinition(id).Fields.FirstOrDefault(x => x.Name == viewModel.Name);
+            field = _contentDefinitionManager.LoadPartDefinition(id).Fields.FirstOrDefault(x => String.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase));
 
             viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, _updateModelAccessor.ModelUpdater);
 
             if (!ModelState.IsValid)
             {
-                _documentStore.Cancel();
+                await _documentStore.CancelAsync();
 
                 ViewData["ReturnUrl"] = returnUrl;
                 return View(viewModel);
             }
             else
             {
-                _notifier.Success(H["The \"{0}\" field settings have been saved.", field.DisplayName()]);
+                await _notifier.SuccessAsync(H["The \"{0}\" field settings have been saved.", field.DisplayName()]);
             }
 
             if (!String.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
-                return Redirect(returnUrl);
+                return this.Redirect(returnUrl, true);
             }
             else
             {
@@ -784,10 +820,10 @@ namespace OrchardCore.ContentTypes.Controllers
                 var typeViewModel = _contentDefinitionService.LoadType(id);
                 if (typeViewModel != null)
                 {
-                    return RedirectToAction("Edit", new { id });
+                    return RedirectToAction(nameof(Edit), new { id });
                 }
 
-                return RedirectToAction("EditPart", new { id });
+                return RedirectToAction(nameof(EditPart), new { id });
             }
         }
 
@@ -806,7 +842,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var field = partViewModel.PartDefinition.Fields.FirstOrDefault(x => x.Name == name);
+            var field = partViewModel.PartDefinition.Fields.FirstOrDefault(x => String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
             if (field == null)
             {
@@ -815,14 +851,14 @@ namespace OrchardCore.ContentTypes.Controllers
 
             _contentDefinitionService.RemoveFieldFromPart(name, partViewModel.Name);
 
-            _notifier.Success(H["The \"{0}\" field has been removed.", field.DisplayName()]);
+            await _notifier.SuccessAsync(H["The \"{0}\" field has been removed.", field.DisplayName()]);
 
             if (_contentDefinitionService.LoadType(id) != null)
             {
-                return RedirectToAction("Edit", new { id });
+                return RedirectToAction(nameof(Edit), new { id });
             }
 
-            return RedirectToAction("EditPart", new { id });
+            return RedirectToAction(nameof(EditPart), new { id });
         }
 
         #endregion Parts
@@ -843,7 +879,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var typePartDefinition = typeDefinition.Parts.FirstOrDefault(x => x.Name == name);
+            var typePartDefinition = typeDefinition.Parts.FirstOrDefault(x => String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
             if (typePartDefinition == null)
             {
@@ -885,7 +921,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var part = typeDefinition.Parts.FirstOrDefault(x => x.Name == viewModel.Name);
+            var part = typeDefinition.Parts.FirstOrDefault(x => String.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase));
 
             if (part == null)
             {
@@ -914,7 +950,7 @@ namespace OrchardCore.ContentTypes.Controllers
                     if (!ModelState.IsValid)
                     {
                         viewModel.Shape = await _contentDefinitionDisplayManager.UpdateTypePartEditorAsync(part, _updateModelAccessor.ModelUpdater);
-                        _documentStore.Cancel();
+                        await _documentStore.CancelAsync();
                         return View(viewModel);
                     }
                 }
@@ -923,21 +959,21 @@ namespace OrchardCore.ContentTypes.Controllers
             _contentDefinitionService.AlterTypePart(viewModel);
 
             // Refresh the local part variable in case it has been altered
-            part = _contentDefinitionManager.LoadTypeDefinition(id).Parts.FirstOrDefault(x => x.Name == viewModel.Name);
+            part = _contentDefinitionManager.LoadTypeDefinition(id).Parts.FirstOrDefault(x => String.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase));
 
             viewModel.Shape = await _contentDefinitionDisplayManager.UpdateTypePartEditorAsync(part, _updateModelAccessor.ModelUpdater);
 
             if (!ModelState.IsValid)
             {
-                _documentStore.Cancel();
+                await _documentStore.CancelAsync();
                 return View(viewModel);
             }
             else
             {
-                _notifier.Success(H["The \"{0}\" part settings have been saved.", part.DisplayName()]);
+                await _notifier.SuccessAsync(H["The \"{0}\" part settings have been saved.", part.DisplayName()]);
             }
 
-            return RedirectToAction("Edit", new { id });
+            return RedirectToAction(nameof(Edit), new { id });
         }
 
         #endregion Type Parts

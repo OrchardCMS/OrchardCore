@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Abstractions.Pooling;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Implementation;
 
@@ -27,7 +28,7 @@ namespace OrchardCore.DisplayManagement.Razor
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ViewContextAccessor _viewContextAccessor;
         private readonly ITempDataProvider _tempDataProvider;
-        private readonly List<string> _templateFileExtensions = new List<string>(new[] { RazorViewEngine.ViewExtension });
+        private readonly List<string> _templateFileExtensions = new(new[] { RazorViewEngine.ViewExtension });
 
         public RazorShapeTemplateViewEngine(
             IOptions<MvcViewOptions> options,
@@ -78,7 +79,7 @@ namespace OrchardCore.DisplayManagement.Razor
 
             if (viewEngines.Count == 0)
             {
-                throw new InvalidOperationException(string.Format("'{0}.{1}' must not be empty. At least one '{2}' is required to locate a view for rendering.",
+                throw new InvalidOperationException(String.Format("'{0}.{1}' must not be empty. At least one '{2}' is required to locate a view for rendering.",
                     typeof(MvcViewOptions).FullName,
                     nameof(MvcViewOptions.ViewEngines),
                     typeof(IViewEngine).FullName));
@@ -96,34 +97,28 @@ namespace OrchardCore.DisplayManagement.Razor
             var actionContext = await GetActionContextAsync();
             var view = FindView(actionContext, viewName, viewEngine);
 
-            using (var sb = StringBuilderPool.GetInstance())
-            {
-                using (var output = new StringWriter(sb.Builder))
+            using var output = new ZStringWriter();
+            var viewContext = new ViewContext(
+                actionContext,
+                view,
+                new ViewDataDictionary(
+                    metadataProvider: new EmptyModelMetadataProvider(),
+                    modelState: new ModelStateDictionary())
                 {
-                    var viewContext = new ViewContext(
-                        actionContext,
-                        view,
-                        new ViewDataDictionary(
-                            metadataProvider: new EmptyModelMetadataProvider(),
-                            modelState: new ModelStateDictionary())
-                        {
-                            Model = model
-                        },
-                        new TempDataDictionary(
-                            actionContext.HttpContext,
-                            _tempDataProvider),
-                        output,
-                        new HtmlHelperOptions());
+                    Model = model
+                },
+                new TempDataDictionary(
+                    actionContext.HttpContext,
+                    _tempDataProvider),
+                output,
+                new HtmlHelperOptions());
 
-                    await view.RenderAsync(viewContext);
-                    await output.FlushAsync();
-                }
+            await view.RenderAsync(viewContext);
 
-                return sb.Builder.ToString();
-            }
+            return output.ToString();
         }
 
-        private IView FindView(ActionContext actionContext, string viewName, IViewEngine viewEngine)
+        private static IView FindView(ActionContext actionContext, string viewName, IViewEngine viewEngine)
         {
             var getViewResult = viewEngine.GetView(executingFilePath: null, viewPath: viewName, isMainPage: true);
             if (getViewResult.Success)
@@ -138,9 +133,9 @@ namespace OrchardCore.DisplayManagement.Razor
             }
 
             var searchedLocations = getViewResult.SearchedLocations.Concat(findViewResult.SearchedLocations);
-            var errorMessage = string.Join(
+            var errorMessage = String.Join(
                 System.Environment.NewLine,
-                new[] { $"Unable to find view '{viewName}'. The following locations were searched:" }.Concat(searchedLocations)); ;
+                new[] { $"Unable to find view '{viewName}'. The following locations were searched:" }.Concat(searchedLocations));
 
             throw new InvalidOperationException(errorMessage);
         }

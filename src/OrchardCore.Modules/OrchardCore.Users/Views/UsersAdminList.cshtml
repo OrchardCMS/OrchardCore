@@ -1,0 +1,124 @@
+@model UsersIndexViewModel
+
+<script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
+
+<!-- Hidden submit button do not remove -->
+<input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
+<input type="submit" name="submit.BulkAction" class="visually-hidden" />
+
+@Html.HiddenFor(o => o.Options.BulkAction)
+
+<div class="card bg-primary mb-3 position-sticky action-bar">
+    <div class="card-body">
+        <div class="row gx-3">
+            <div class="col">
+                @await DisplayAsync(Model.Header.Search)
+            </div>
+            <div class="col-auto">
+                @await DisplayAsync(Model.Header.Create)
+            </div>
+        </div>
+    </div>
+</div>
+
+<ul class="list-group with-checkbox">
+    <li class="list-group-item bg-primary">
+        <div class="row gx-3">
+            <div class="col">
+                @await DisplayAsync(Model.Header.Summary)
+            </div>
+            <div class="col col-md-auto text-end">
+                @await DisplayAsync(Model.Header.Actions)
+            </div>
+        </div>
+    </li>
+    @if (Model.Users.Count > 0)
+    {
+        @foreach (var entry in Model.Users)
+        {
+            <li class="list-group-item">
+                <div class="form-check float-start">
+                    <input type="checkbox" class="form-check-input" value="@entry.UserId" name="itemIds" id="itemIds-@entry.UserId">
+                    <label class="form-check-label" for="itemIds-@entry.UserId"></label>
+                </div>
+                @await DisplayAsync(entry.Shape)
+            </li>
+        }
+    }
+    else
+    {
+        <li class="list-group-item">
+            <div class="alert alert-info mb-0">
+                @T["No results found."]
+            </div>
+        </li>
+    }
+</ul>
+
+@await DisplayAsync(Model.Pager)
+
+<script at="Foot">
+    $(function() {
+        $('.selectpicker').selectpicker();
+
+        var actions = $("#actions");
+        var items = $("#items");
+        var filters = $(".filter");
+        var selectAllCtrl = $("#select-all");
+        var selectedItems = $("#selected-items");
+        var itemsCheckboxes = $(":checkbox[name='itemIds']");
+
+        $('.selectpicker').on('changed.bs.select', function(e, clickedIndex, isSelected, previousValue) {
+            $("[name='submit.Filter']").click();
+        });
+
+        $(".dropdown-menu .dropdown-item").filter(function () {
+            return $(this).data("action");
+        }).on("click", function() {
+            if ($(":checkbox[name='itemIds']:checked").length > 1) {
+                var $this = $(this);
+                confirmDialog({
+                    ...$this.data(), callback: function (r) {
+                        if (r) {
+                            $("[name='Options.BulkAction']").val($this.data("action"));
+                            $("[name='submit.BulkAction']").click();
+                        }
+                    }
+                });
+            }
+        });
+
+        function displayActionsOrFilters() {
+            if ($(":checkbox[name='itemIds']:checked").length > 1) {
+                actions.show();
+                filters.hide();
+                selectedItems.show();
+                items.hide();
+            }
+            else {
+                actions.hide();
+                filters.show();
+                selectedItems.hide();
+                items.show();
+            }
+        }
+
+        selectAllCtrl.click(function() {
+            itemsCheckboxes.not(this).prop("checked", this.checked);
+            selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
+            displayActionsOrFilters();
+        });
+
+        itemsCheckboxes.on("click", function() {
+            var itemsCount = $(":checkbox[name='itemIds']").length;
+            var selectedItemsCount = $(":checkbox[name='itemIds']:checked").length;
+
+            selectAllCtrl.prop("checked", selectedItemsCount == itemsCount);
+            selectAllCtrl.prop("indeterminate", selectedItemsCount > 0 && selectedItemsCount < itemsCount);
+
+            selectedItems.text(selectedItemsCount + ' @T["selected"]');
+            displayActionsOrFilters();
+        });
+    });
+
+</script>

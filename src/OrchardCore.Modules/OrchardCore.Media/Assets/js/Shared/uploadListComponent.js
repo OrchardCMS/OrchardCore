@@ -8,16 +8,16 @@ Vue.component('uploadList', {
                 <span v-show="errorCount" :class="{ \'text-danger\' : errorCount }"> ( {{ T.errors }}: {{ errorCount }} / <a href="javascript:;" v-on:click.stop="clearErrors" > {{ T.clearErrors }} </a>)</span> \
                     <div class="toggle-button"> \
                     <div v-show="expanded"> \
-                        <i class="fa fa-chevron-down"></i> \
+                        <i class="fa-solid fa-chevron-down" aria-hidden="true"></i> \
                     </div> \
                     <div v-show="!expanded"> \
-                        <i class="fa fa-chevron-up"></i> \
+                        <i class="fa-solid fa-chevron-up" aria-hidden="true"></i> \
                     </div> \
                 </div> \
             </div> \
             <div class="card-body" v-show="expanded"> \
                 <div class="d-flex flex-wrap"> \
-                    <upload v-for="f in files" :key="f.name"  :model="f"></upload> \
+                    <upload :upload-input-id="uploadInputId" v-for="f in files" :key="f.name"  :model="f"></upload> \
                 </div > \
             </div> \
         </div> \
@@ -30,6 +30,9 @@ Vue.component('uploadList', {
             pendingCount: 0,
             errorCount: 0
         }
+    },
+    props: {
+        uploadInputId: String
     },
     created: function () {
         var self = this;
@@ -45,8 +48,8 @@ Vue.component('uploadList', {
     },
     mounted: function () {
         var self = this;
-
-        $('#fileupload').bind('fileuploadadd', function (e, data) {
+        var uploadInput = document.getElementById(self.uploadInputId ?? 'fileupload');
+        $(uploadInput).bind('fileuploadadd', function (e, data) {
             if (!data.files) { 
                 return;
             }

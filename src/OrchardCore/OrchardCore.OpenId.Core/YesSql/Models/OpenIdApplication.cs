@@ -7,6 +7,11 @@ namespace OrchardCore.OpenId.YesSql.Models
     public class OpenIdApplication
     {
         /// <summary>
+        /// The name of the collection that is used for this type.
+        /// </summary>
+        public const string OpenIdCollection = "OpenId";
+
+        /// <summary>
         /// Gets or sets the unique identifier associated with the current application.
         /// </summary>
         public string ApplicationId { get; set; }
@@ -42,7 +47,7 @@ namespace OrchardCore.OpenId.YesSql.Models
         /// <summary>
         /// Gets or sets the physical identifier associated with the current application.
         /// </summary>
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// Gets or sets the permissions associated with the application.

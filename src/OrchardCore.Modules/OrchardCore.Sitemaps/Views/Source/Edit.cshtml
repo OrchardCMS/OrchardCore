@@ -8,14 +8,14 @@
 }
 
 <div asp-validation-summary="ModelOnly"></div>
-<form asp-action="Edit" method="post">
+<form asp-action="Edit" method="post" class="no-multisubmit">
     @await DisplayAsync(Model.Editor.Content)
 
     <input type="hidden" asp-for="SitemapId" />
     <input type="hidden" asp-for="SitemapSourceId" />
 
     <fieldset>
-        <div class="form-group">
+        <div class="mb-3">
             <button class="btn btn-primary save" type="submit">@T["Save"]</button>
 
             <a class="btn btn-danger delete"

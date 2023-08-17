@@ -17,18 +17,7 @@ namespace OrchardCore.DisplayManagement.Shapes
     {
         private IPageTitleBuilder _pageTitleBuilder;
 
-        public IPageTitleBuilder Title
-        {
-            get
-            {
-                if (_pageTitleBuilder == null)
-                {
-                    _pageTitleBuilder = ShellScope.Services.GetRequiredService<IPageTitleBuilder>();
-                }
-
-                return _pageTitleBuilder;
-            }
-        }
+        public IPageTitleBuilder Title => _pageTitleBuilder ??= ShellScope.Services.GetRequiredService<IPageTitleBuilder>();
 
         [Shape]
         public async Task<IHtmlContent> PageTitle()
@@ -45,8 +34,8 @@ namespace OrchardCore.DisplayManagement.Shapes
                 var liquidTemplateManager = ShellScope.Services.GetRequiredService<ILiquidTemplateManager>();
                 var htmlEncoder = ShellScope.Services.GetRequiredService<HtmlEncoder>();
 
-                var result = await liquidTemplateManager.RenderAsync(siteSettings.PageTitleFormat, htmlEncoder);
-                return new HtmlString(result);
+                var result = await liquidTemplateManager.RenderHtmlContentAsync(siteSettings.PageTitleFormat, htmlEncoder);
+                return result;
             }
         }
     }

@@ -1,0 +1,109 @@
+@using OrchardCore.Contents
+@using OrchardCore.Lists.ViewModels
+@using System.Globalization
+@using OrchardCore.Localization
+@using Microsoft.AspNetCore.Authorization
+@model OrchardCore.Lists.ViewModels.ListPartViewModel
+
+@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+@inject OrchardCore.ContentManagement.IContentManager ContentManager
+@inject Microsoft.AspNetCore.Authorization.IAuthorizationService AuthorizationService
+@{
+    var enableOrdering =
+        Model.EnableOrdering &&
+        Model.ContentItems.Count() > 1 &&
+        Model.ListPartFilterViewModel.Status == ContentsStatus.Latest && String.IsNullOrEmpty(Model.ListPartFilterViewModel.DisplayText);
+
+
+    if (enableOrdering)
+    {
+        <script asp-src="~/OrchardCore.Lists/Scripts/ci-list-ordering.min.js" debug-src="~/OrchardCore.Lists/Scripts/ci-list-ordering.js" asp-name="ci-list-ordering" at="Foot" depends-on="sortable, jQuery"></script>
+    }
+
+    var authorizedContentTypeDefinitions = new List<ContentTypeDefinition>();
+
+    foreach (var contentTypeDefinition in Model.ContainedContentTypeDefinitions)
+    {
+        if (await AuthorizationService.AuthorizeAsync(
+            User,
+            CommonPermissions.EditContent,
+            await ContentManager.NewAsync(contentTypeDefinition.Name)))
+        {
+            authorizedContentTypeDefinitions.Add(contentTypeDefinition);
+        }
+    }
+    var dropdownClassList = new List<string>()
+    {
+        "dropdown-menu"
+    };
+
+    if (CultureInfo.CurrentUICulture.IsRightToLeft())
+    {
+        dropdownClassList.Add("dropdown-menu-start");
+    }
+}
+@if (!Model.ContainedContentTypeDefinitions.Any())
+{
+    <div class="alert alert-warning">
+        <a asp-action="EditTypePart" asp-controller="Admin" asp-route-area="OrchardCore.ContentTypes" asp-route-id="@Model.ListPart.ContentItem.ContentType" asp-route-name="ListPart">@T["Please specify at least one contained content type."]</a>
+    </div>
+}
+else
+{
+    <form>
+        <div class="card bg-primary mb-3 position-sticky action-bar">
+            <div class="card-body">
+                <div class="row gx-3">
+                    <div class="col">
+                        <div class="input-group has-filter">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa-solid fa-filter" title="@T["Filters"]" aria-hidden="true"></i>
+                            </button>
+                            <div class="@String.Join(' ', dropdownClassList)" aria-labelledby="filter-dropdown">
+                                @* Latest not surfaced here to be consistent with the main content items list filter. *@
+                                <a class="dropdown-item" href="?Status=Draft">@T["Only draft items"]</a>
+                                <a class="dropdown-item" href="?Status=Published">@T["Only published items"]</a>
+                                <a class="dropdown-item" href="?Status=Owner">@T["Owned by me"]</a>
+                            </div>
+                            <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
+                            <input name="@nameof(ListPartFilterViewModel.Status)" value="@Model.ListPartFilterViewModel.Status" class="form-control" type="hidden" />
+                            <input name="@nameof(ListPartFilterViewModel.DisplayText)" value="@Model.ListPartFilterViewModel.DisplayText" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    @if (Model.ContentItems.Any())
+    {
+        <ul class="list-group" id="ci-sortable">
+            @foreach (var contentItem in Model.ContentItems)
+            {
+                var contentItemSummary = (dynamic)await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "SummaryAdmin", Model.Context.GroupId);
+                if (enableOrdering)
+                {
+                    await contentItemSummary.Selectors.AddAsync(await New.ListPart_Sortable());
+                }
+                <li class="list-group-item">
+                    @await DisplayAsync(contentItemSummary)
+                </li>
+            }
+        </ul>
+
+        @await DisplayAsync(Model.Pager)
+        @if (enableOrdering)
+        {
+            <div id="ordering-url" class="d-none" data-url="@Url.Action("UpdateContentItemOrders", "Order", new { area = "OrchardCore.Lists" })" />
+            <div id="container-id" class="d-none" data-id="@Model.ListPart.ContentItem.ContentItemId" />
+            <div id="pager-before" class="d-none" data-before="@Model.Pager.Before" />
+            <div id="pager-after" class="d-none" data-after="@Model.Pager.After" />
+            <div id="pager-pagesize" class="d-none" data-pagesize="@Model.Pager.PageSize" />
+            <div id="update-order-error-message" class="d-none" data-message="@T["There was an error when updating the order of the items."]" />
+        }
+    }
+    else
+    {
+        <p class="alert alert-warning">@T["The list is empty."]</p>
+    }
+}

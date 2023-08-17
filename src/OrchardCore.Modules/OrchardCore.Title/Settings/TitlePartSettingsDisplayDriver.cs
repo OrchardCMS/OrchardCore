@@ -11,10 +11,10 @@ using OrchardCore.Title.ViewModels;
 
 namespace OrchardCore.Title.Settings
 {
-    public class TitlePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    public class TitlePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<TitlePart>
     {
         private readonly ILiquidTemplateManager _templateManager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public TitlePartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<TitlePartSettingsDisplayDriver> localizer)
         {
@@ -24,11 +24,6 @@ namespace OrchardCore.Title.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(TitlePart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             return Initialize<TitlePartSettingsViewModel>("TitlePartSettings_Edit", model =>
             {
                 var settings = contentTypePartDefinition.GetSettings<TitlePartSettings>();
@@ -42,11 +37,6 @@ namespace OrchardCore.Title.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(TitlePart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             var model = new TitlePartSettingsViewModel();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix,
@@ -54,9 +44,9 @@ namespace OrchardCore.Title.Settings
                 m => m.Options,
                 m => m.RenderTitle);
 
-            if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
+            if (!String.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
             {
-                context.Updater.ModelState.AddModelError(nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                context.Updater.ModelState.AddModelError(nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", String.Join(" ", errors)]);
             }
             else
             {

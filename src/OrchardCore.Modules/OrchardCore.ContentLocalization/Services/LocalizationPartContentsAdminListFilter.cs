@@ -1,8 +1,6 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentLocalization.Models;
-using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
@@ -41,12 +39,6 @@ namespace OrchardCore.ContentLocalization.Services
                         .Select(x => x.Name);
 
                     query.With<ContentItemIndex>(x => x.ContentType.IsIn(localizedTypes));
-                }
-
-                // Show contained elements for the specified culture
-                else if (!String.IsNullOrEmpty(viewModel.SelectedCulture))
-                {
-                    query.With<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.Culture == viewModel.SelectedCulture);
                 }
             }
         }

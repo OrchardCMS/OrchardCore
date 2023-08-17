@@ -3,21 +3,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Documents;
 using OrchardCore.Sitemaps.Models;
-using OrchardCore.Sitemaps.Routing;
 
 namespace OrchardCore.Sitemaps.Services
 {
     public class SitemapManager : ISitemapManager
     {
         private readonly IDocumentManager<SitemapDocument> _documentManager;
-        private readonly SitemapEntries _sitemapEntries;
 
-        public SitemapManager(IDocumentManager<SitemapDocument> documentManager, SitemapEntries sitemapEntries
-            )
+        public SitemapManager(IDocumentManager<SitemapDocument> documentManager)
         {
             _documentManager = documentManager;
-            _sitemapEntries = sitemapEntries;
         }
+
+        public async Task<string> GetIdentifierAsync() => (await GetDocumentAsync()).Identifier;
 
         public async Task<IEnumerable<SitemapType>> LoadSitemapsAsync()
         {
@@ -55,27 +53,21 @@ namespace OrchardCore.Sitemaps.Services
         {
             var existing = await LoadDocumentAsync();
             existing.Sitemaps.Remove(sitemapId);
-
             await _documentManager.UpdateAsync(existing);
-            await _sitemapEntries.BuildEntriesAsync(existing.Sitemaps.Values);
         }
 
         public async Task UpdateSitemapAsync(SitemapType sitemap)
         {
             var existing = await LoadDocumentAsync();
-
             existing.Sitemaps[sitemap.SitemapId] = sitemap;
             sitemap.Identifier = IdGenerator.GenerateId();
-
             await _documentManager.UpdateAsync(existing);
-            await _sitemapEntries.BuildEntriesAsync(existing.Sitemaps.Values);
         }
 
         public async Task UpdateSitemapAsync()
         {
             var existing = await LoadDocumentAsync();
             await _documentManager.UpdateAsync(existing);
-            await _sitemapEntries.BuildEntriesAsync(existing.Sitemaps.Values);
         }
 
         /// <summary>

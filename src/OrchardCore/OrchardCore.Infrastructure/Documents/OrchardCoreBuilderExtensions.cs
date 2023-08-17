@@ -15,15 +15,15 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             return builder.ConfigureServices(services =>
             {
-                services.AddScoped(typeof(IDocumentManager<>), typeof(DocumentManager<>));
-                services.AddScoped(typeof(IVolatileDocumentManager<>), typeof(VolatileDocumentManager<>));
-                services.AddScoped(typeof(IDocumentManager<,>), typeof(DocumentManager<,>));
+                services.AddSingleton(typeof(IDocumentManager<>), typeof(DocumentManager<>));
+                services.AddSingleton(typeof(IVolatileDocumentManager<>), typeof(VolatileDocumentManager<>));
+                services.AddSingleton(typeof(IDocumentManager<,>), typeof(DocumentManager<,>));
 
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<DocumentOptions>, DocumentOptionsSetup>());
 
-                services.AddScoped(typeof(IDocumentEntityManager<>), typeof(DocumentEntityManager<>));
-                services.AddScoped(typeof(IVolatileDocumentEntityManager<>), typeof(VolatileDocumentEntityManager<>));
-                services.AddScoped(typeof(IDocumentEntityManager<,>), typeof(DocumentEntityManager<,>));
+                services.AddSingleton(typeof(IDocumentEntityManager<>), typeof(DocumentEntityManager<>));
+                services.AddSingleton(typeof(IVolatileDocumentEntityManager<>), typeof(VolatileDocumentEntityManager<>));
+                services.AddSingleton(typeof(IDocumentEntityManager<,>), typeof(DocumentEntityManager<,>));
             });
         }
     }

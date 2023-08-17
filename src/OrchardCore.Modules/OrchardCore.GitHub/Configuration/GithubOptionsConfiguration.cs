@@ -1,12 +1,9 @@
-using System.ComponentModel.DataAnnotations;
+using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.GitHub.Services;
 using OrchardCore.GitHub.Settings;
 
 namespace OrchardCore.GitHub.Configuration
@@ -15,29 +12,23 @@ namespace OrchardCore.GitHub.Configuration
         IConfigureOptions<AuthenticationOptions>,
         IConfigureNamedOptions<GitHubOptions>
     {
-        private readonly IGitHubAuthenticationService _githubAuthenticationService;
+        private readonly GitHubAuthenticationSettings _gitHubAuthenticationSettings;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ILogger _logger;
 
         public GitHubOptionsConfiguration(
-            IGitHubAuthenticationService githubAuthenticationService,
+            IOptions<GitHubAuthenticationSettings> gitHubAuthenticationSettings,
             IDataProtectionProvider dataProtectionProvider,
             ILogger<GitHubOptionsConfiguration> logger)
         {
-            _githubAuthenticationService = githubAuthenticationService;
+            _gitHubAuthenticationSettings = gitHubAuthenticationSettings.Value;
             _dataProtectionProvider = dataProtectionProvider;
             _logger = logger;
         }
 
         public void Configure(AuthenticationOptions options)
         {
-            var settings = GetGitHubAuthenticationSettingsAsync().GetAwaiter().GetResult();
-            if (settings == null)
-            {
-                return;
-            }
-
-            if (_githubAuthenticationService.ValidateSettings(settings).Any())
+            if (_gitHubAuthenticationSettings == null)
             {
                 return;
             }
@@ -53,44 +44,35 @@ namespace OrchardCore.GitHub.Configuration
         public void Configure(string name, GitHubOptions options)
         {
             // Ignore OpenID Connect client handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!string.Equals(name, GitHubDefaults.AuthenticationScheme))
+            if (!String.Equals(name, GitHubDefaults.AuthenticationScheme))
             {
                 return;
             }
 
-            var loginSettings = GetGitHubAuthenticationSettingsAsync().GetAwaiter().GetResult();
+            if (_gitHubAuthenticationSettings == null)
+            {
+                return;
+            }
 
-            options.ClientId = loginSettings?.ClientID ?? string.Empty;
+            options.ClientId = _gitHubAuthenticationSettings.ClientID;
 
             try
             {
-                options.ClientSecret = _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GitHubAuthentication).Unprotect(loginSettings.ClientSecret);
+                options.ClientSecret = _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GitHubAuthentication).Unprotect(_gitHubAuthenticationSettings.ClientSecret);
             }
             catch
             {
-                _logger.LogError("The Microsoft Account secret key could not be decrypted. It may have been encrypted using a different key.");
+                _logger.LogError("The GitHub Consumer Secret could not be decrypted. It may have been encrypted using a different key.");
             }
 
-            if (loginSettings.CallbackPath.HasValue)
+            if (_gitHubAuthenticationSettings.CallbackPath.HasValue)
             {
-                options.CallbackPath = loginSettings.CallbackPath;
+                options.CallbackPath = _gitHubAuthenticationSettings.CallbackPath;
             }
 
-            options.SaveTokens = loginSettings.SaveTokens;
+            options.SaveTokens = _gitHubAuthenticationSettings.SaveTokens;
         }
 
         public void Configure(GitHubOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
-
-        private async Task<GitHubAuthenticationSettings> GetGitHubAuthenticationSettingsAsync()
-        {
-            var settings = await _githubAuthenticationService.GetSettingsAsync();
-            if ((_githubAuthenticationService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
-            {
-                _logger.LogWarning("The Microsoft Account Authentication is not correctly configured.");
-
-                return null;
-            }
-            return settings;
-        }
     }
 }

@@ -2,28 +2,40 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Resolvers;
+using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.GraphQL
 {
     public class MediaAssetQuery : ISchemaBuilder
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
+        private readonly GraphQLContentOptions _graphQLContentOptions;
 
-        public MediaAssetQuery(IStringLocalizer<MediaAssetQuery> localizer)
+        public MediaAssetQuery(
+            IStringLocalizer<MediaAssetQuery> localizer,
+            IOptions<GraphQLContentOptions> graphQLContentOptions)
         {
             S = localizer;
+            _graphQLContentOptions = graphQLContentOptions.Value;
         }
 
         public Task<string> GetIdentifierAsync() => Task.FromResult(String.Empty);
 
         public Task BuildAsync(ISchema schema)
         {
+            if (_graphQLContentOptions.IsHiddenByDefault("MediaAssets"))
+            {
+                return Task.CompletedTask;
+            }
+
             var field = new FieldType
             {
                 Name = "MediaAssets",
@@ -49,22 +61,22 @@ namespace OrchardCore.Media.GraphQL
             return Task.CompletedTask;
         }
 
-        private async Task<IEnumerable<IFileStoreEntry>> ResolveAsync(ResolveFieldContext resolveContext)
+        private async Task<IEnumerable<IFileStoreEntry>> ResolveAsync(IResolveFieldContext resolveContext)
         {
-            var mediaFileStore = resolveContext.ResolveServiceProvider().GetService<IMediaFileStore>();
+            var mediaFileStore = resolveContext.RequestServices.GetService<IMediaFileStore>();
 
-            var path = resolveContext.GetArgument("path", string.Empty);
+            var path = resolveContext.GetArgument("path", String.Empty);
             var includeSubDirectories = resolveContext.GetArgument("includeSubDirectories", false);
 
-            var allFiles = await mediaFileStore.GetDirectoryContentAsync(path, includeSubDirectories);
+            var allFiles = mediaFileStore.GetDirectoryContentAsync(path, includeSubDirectories);
 
             if (includeSubDirectories)
             {
-                return allFiles;
+                return await allFiles.ToListAsync();
             }
             else
             {
-                return allFiles.Where(x => !x.IsDirectory);
+                return await allFiles.Where(x => !x.IsDirectory).ToListAsync();
             }
         }
     }

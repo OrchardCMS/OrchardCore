@@ -1,0 +1,30 @@
+@model ShapeViewModel<ShellSettingsEntry>
+
+@using Microsoft.AspNetCore.Http
+@using Microsoft.Extensions.Options
+@using OrchardCore.Environment.Shell
+
+@inject IOptions<TenantsOptions> TenantsOptions
+
+<a asp-action="Edit" asp-route-id="@Model.Value.Name" class="btn btn-primary btn-sm edit">@T["Edit"]</a>
+@if (Model.Value.ShellSettings.IsRunning())
+{
+    <a class="btn btn-info btn-sm view" href="@ViewContext.HttpContext.GetEncodedUrl(Model.Value, appendQuery: false)" target="_blank">@T["View"]</a>
+}
+@if (!Model.Value.ShellSettings.IsDefaultShell() && Model.Value.ShellSettings.IsRunning())
+{
+    <a asp-action="Disable" asp-route-id="@Model.Value.Name" class="btn btn-danger btn-sm disable" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Disable"]" data-message="@T["Are you sure you want to disable this tenant?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Disable"]</a>
+}
+@if (Model.Value.ShellSettings.IsDisabled())
+{
+    <a asp-action="Enable" asp-route-id="@Model.Value.Name" class="btn btn-success btn-sm enable" data-url-af="UnsafeUrl">@T["Enable"]</a>
+}
+@if (Model.Value.ShellSettings.IsUninitialized())
+{
+    <a class="btn btn-info btn-sm setup" id="btn-setup-@Model.Value.Name" href="@ViewContext.HttpContext.GetEncodedUrl(Model.Value)">@T["Setup"]</a>
+}
+@if (TenantsOptions.Value.TenantRemovalAllowed && Model.Value.ShellSettings.IsRemovable())
+{
+    <a asp-action="Remove" asp-route-id="@Model.Value.Name" class="btn btn-danger btn-sm remove" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Remove"]" data-message="@T["Are you sure you want to remove this tenant?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Remove"]</a>
+}
+<a asp-action="Reload" asp-route-id="@Model.Value.Name" class="btn btn-secondary btn-sm reload" data-url-af="UnsafeUrl">@T["Reload"]</a>

@@ -1,0 +1,24 @@
+@using OrchardCore
+@model HtmlMenuItemPartEditViewModel
+
+<div class="@Orchard.GetWrapperCssClasses()">
+    <label asp-for="Name" class="@Orchard.GetLabelCssClasses()">@T["Name"]</label>
+    <div class="@Orchard.GetEndCssClasses()">
+        <input asp-for="Name" class="form-control" autofocus />
+    </div>
+</div>
+
+<div class="@Orchard.GetWrapperCssClasses()">
+    <label asp-for="Url" class="@Orchard.GetLabelCssClasses()">@T["Url"]</label>
+    <div class="@Orchard.GetEndCssClasses()">
+        <input asp-for="Url" class="form-control" />
+    </div>
+</div>
+
+<div class="@Orchard.GetWrapperCssClasses()">
+    <label asp-for="Html" class="@Orchard.GetLabelCssClasses()">@T["Html"]</label>
+    <div class="@Orchard.GetEndCssClasses()">
+        <input asp-for="Html" class="form-control" />
+        <span class="hint">This field will be rendered raw in place of the name; it will be enclosed in the anchor tag.</span>
+    </div>
+</div>

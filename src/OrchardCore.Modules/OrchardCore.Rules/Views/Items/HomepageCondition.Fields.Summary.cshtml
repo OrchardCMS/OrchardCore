@@ -1,0 +1,9 @@
+@model ShapeViewModel<HomepageCondition>
+@if (Model.Value.Value)
+{
+   <span>@T["Is homepage"]</span> 
+}
+else
+{
+   <span>@T["Is not homepage"]</span> 
+}

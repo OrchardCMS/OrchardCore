@@ -33,7 +33,6 @@ namespace OrchardCore.Email
         /// </summary>
         public string Host { get; set; }
 
-
         /// <summary>
         /// Gets or sets the SMTP port number. Defaults to <c>25</c>.
         /// </summary>
@@ -75,6 +74,16 @@ namespace OrchardCore.Email
         /// When a secret key is provided, it overrides the <see cref="Password"/> value.
         /// </summary>
         public string PasswordSecret { get; set; }
+
+        /// <summary>
+        /// Gets or sets the proxy server.
+        /// </summary>
+        public string ProxyHost { get; set; }
+
+        /// <summary>
+        /// Gets or sets the proxy port number.
+        /// </summary>
+        public int ProxyPort { get; set; }
 
         /// <inheritdocs />
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

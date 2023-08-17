@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Remote.ViewModels;
@@ -15,7 +16,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Deployment.Remote.Controllers
 {
@@ -23,17 +23,18 @@ namespace OrchardCore.Deployment.Remote.Controllers
     public class RemoteInstanceController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
         private readonly RemoteInstanceService _service;
-        private readonly dynamic New;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
+
+        protected readonly dynamic New;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public RemoteInstanceController(
             RemoteInstanceService service,
             IAuthorizationService authorizationService,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             IShapeFactory shapeFactory,
             IStringLocalizer<RemoteInstanceController> stringLocalizer,
             IHtmlLocalizer<RemoteInstanceController> htmlLocalizer,
@@ -41,7 +42,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             )
         {
             _authorizationService = authorizationService;
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
             New = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
@@ -56,17 +57,14 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 return Forbid();
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var remoteInstances = (await _service.GetRemoteInstanceListAsync()).RemoteInstances;
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
                 remoteInstances = remoteInstances.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
-
-            var count = remoteInstances.Count();
 
             var startIndex = pager.GetStartIndex();
             var pageSize = pager.PageSize;
@@ -75,7 +73,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             var routeData = new RouteData();
             routeData.Values.Add("Options.Search", options.Search);
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(remoteInstances.Count).RouteData(routeData);
 
             var model = new RemoteInstanceIndexViewModel
             {
@@ -95,7 +93,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(RemoteInstanceIndexViewModel model)
         {
-            return RedirectToAction("Index", new RouteValueDictionary {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary {
                 { "Options.Search", model.Options.Search }
             });
         }
@@ -129,7 +127,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 await _service.CreateRemoteInstanceAsync(model.Name, model.Url, model.ClientName, model.ApiKey, model.ApiKeySecret, model.RsaEncryptionSecret, model.RsaSigningSecret);
 
-                _notifier.Success(H["Remote instance created successfully."]);
+                await _notifier.SuccessAsync(H["Remote instance created successfully."]);
                 return RedirectToAction(nameof(Index));
             }
 
@@ -190,7 +188,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 await _service.UpdateRemoteInstance(model.Id, model.Name, model.Url, model.ClientName, model.ApiKey, model.ApiKeySecret, model.RsaEncryptionSecret, model.RsaSigningSecret);
 
-                _notifier.Success(H["Remote instance updated successfully."]);
+                await _notifier.SuccessAsync(H["Remote instance updated successfully."]);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -216,7 +214,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             await _service.DeleteRemoteInstanceAsync(id);
 
-            _notifier.Success(H["Remote instance deleted successfully."]);
+            await _notifier.SuccessAsync(H["Remote instance deleted successfully."]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -244,14 +242,14 @@ namespace OrchardCore.Deployment.Remote.Controllers
                         {
                             await _service.DeleteRemoteInstanceAsync(item.Id);
                         }
-                        _notifier.Success(H["Remote instances successfully removed."]);
+                        await _notifier.SuccessAsync(H["Remote instances successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         private void ValidateViewModel(EditRemoteInstanceViewModel model)
@@ -277,8 +275,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             }
             else
             {
-                Uri uri;
-                if (!Uri.TryCreate(model.Url, UriKind.Absolute, out uri))
+                if (!Uri.TryCreate(model.Url, UriKind.Absolute, out _))
                 {
                     ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.Url), S["The url is invalid."]);
                 }

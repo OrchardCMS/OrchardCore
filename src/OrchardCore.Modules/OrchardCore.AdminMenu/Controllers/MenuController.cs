@@ -9,14 +9,14 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
-using OrchardCore.AdminMenu.ViewModels;
 using OrchardCore.AdminMenu.Services;
+using OrchardCore.AdminMenu.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 
 namespace OrchardCore.AdminMenu.Controllers
 {
@@ -25,17 +25,17 @@ namespace OrchardCore.AdminMenu.Controllers
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IAdminMenuService _adminMenuService;
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-        private readonly dynamic New;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
+        protected readonly dynamic New;
         private readonly ILogger _logger;
 
         public MenuController(
             IAuthorizationService authorizationService,
             IAdminMenuService adminMenuService,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             IShapeFactory shapeFactory,
             INotifier notifier,
             IStringLocalizer<MenuController> stringLocalizer,
@@ -44,7 +44,7 @@ namespace OrchardCore.AdminMenu.Controllers
         {
             _authorizationService = authorizationService;
             _adminMenuService = adminMenuService;
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
             New = shapeFactory;
             _notifier = notifier;
             S = stringLocalizer;
@@ -59,17 +59,14 @@ namespace OrchardCore.AdminMenu.Controllers
                 return Forbid();
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var adminMenuList = (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu;
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
                 adminMenuList = adminMenuList.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
-
-            var count = adminMenuList.Count();
 
             var startIndex = pager.GetStartIndex();
             var pageSize = pager.PageSize;
@@ -87,24 +84,25 @@ namespace OrchardCore.AdminMenu.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error when retrieving the list of admin menus.");
-                _notifier.Error(H["Error when retrieving the list of admin menus."]);
+                await _notifier.ErrorAsync(H["Error when retrieving the list of admin menus."]);
             }
 
             // Maintain previous route data when generating page links
             var routeData = new RouteData();
             routeData.Values.Add("Options.Search", options.Search);
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(adminMenuList.Count).RouteData(routeData);
 
             var model = new AdminMenuListViewModel
             {
                 AdminMenu = results.Select(x => new AdminMenuEntry { AdminMenu = x }).ToList(),
                 Options = options,
-                Pager = pagerShape
+                Pager = pagerShape,
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
+            model.Options.ContentsBulkAction = new List<SelectListItem>()
+            {
+                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) },
             };
 
             return View(model);
@@ -114,7 +112,7 @@ namespace OrchardCore.AdminMenu.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(AdminMenuListViewModel model)
         {
-            return RedirectToAction("List", new RouteValueDictionary {
+            return RedirectToAction(nameof(List), new RouteValueDictionary {
                 { "Options.Search", model.Options.Search }
             });
         }
@@ -197,7 +195,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
                 await _adminMenuService.SaveAsync(adminMenu);
 
-                _notifier.Success(H["Admin menu updated successfully."]);
+                await _notifier.SuccessAsync(H["Admin menu updated successfully."]);
 
                 return RedirectToAction(nameof(List));
             }
@@ -218,7 +216,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
             if (adminMenu == null)
             {
-                _notifier.Error(H["Can't find the admin menu."]);
+                await _notifier.ErrorAsync(H["Can't find the admin menu."]);
                 return RedirectToAction(nameof(List));
             }
 
@@ -226,11 +224,11 @@ namespace OrchardCore.AdminMenu.Controllers
 
             if (removed == 1)
             {
-                _notifier.Success(H["Admin menu deleted successfully."]);
+                await _notifier.SuccessAsync(H["Admin menu deleted successfully."]);
             }
             else
             {
-                _notifier.Error(H["Can't delete the admin menu."]);
+                await _notifier.ErrorAsync(H["Can't delete the admin menu."]);
             }
 
             return RedirectToAction(nameof(List));
@@ -259,14 +257,14 @@ namespace OrchardCore.AdminMenu.Controllers
                             var adminMenu = adminMenuList.FirstOrDefault(x => String.Equals(x.Id, item.Id, StringComparison.OrdinalIgnoreCase));
                             await _adminMenuService.DeleteAsync(adminMenu);
                         }
-                        _notifier.Success(H["Admin menus successfully removed."]);
+                        await _notifier.SuccessAsync(H["Admin menus successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
 
-            return RedirectToAction("List");
+            return RedirectToAction(nameof(List));
         }
 
         [HttpPost]
@@ -289,7 +287,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
             await _adminMenuService.SaveAsync(adminMenu);
 
-            _notifier.Success(H["Admin menu toggled successfully."]);
+            await _notifier.SuccessAsync(H["Admin menu toggled successfully."]);
 
             return RedirectToAction(nameof(List));
         }

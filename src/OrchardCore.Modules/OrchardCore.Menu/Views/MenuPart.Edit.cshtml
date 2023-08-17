@@ -2,7 +2,6 @@
 @inject IContentManager ContentManager
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 @inject OrchardCore.DisplayManagement.ModelBinding.IUpdateModelAccessor ModelUpdaterAccessor
-@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 @*
     This template is used to render the editor for a Menu content item.
     It render the hierarchy of the menu items.
@@ -12,33 +11,43 @@
 <script asp-src="~/OrchardCore.Menu/Scripts/menu.js" at="Foot" depends-on="admin, jQuery-ui"></script>
 <style asp-src="~/OrchardCore.Menu/Styles/menu.min.css" debug-src="~/OrchardCore.Menu/Styles/menu.css" depends-on="jQuery-ui"></style>
 
-@using OrchardCore.ContentManagement.Metadata.Settings;
+@using OrchardCore
+@using OrchardCore.ContentManagement.Metadata.Settings
 
 @{
     var updater = ModelUpdaterAccessor.ModelUpdater;
-    var menuItemContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "MenuItem");
     var canAddMenuItem = Model.MenuPart.ContentItem.Id != 0;
     var index = 0;
+    var items = Model.MenuPart.ContentItem.As<MenuItemsListPart>().MenuItems;
 }
 
-<div class="card mb-3">
-    <div class="card-body bg-primary p-3">
-        <button type="button" @(canAddMenuItem ? null : "disabled=\"disabled\"") class="btn btn-primary" data-toggle="modal" data-target="#modalMenuItems">
-            @T["Add Menu Item"]
-        </button>
+<div class="@Orchard.GetWrapperCssClasses()">
+    <div class="@Orchard.GetEndCssClasses(true)">
+        <div class="card bg-primary">
+            <div class="card-body p-3">
+                <button type="button" @(canAddMenuItem ? null : "disabled=\"disabled\"") class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalMenuItems">
+                    @T["Add Menu Item"]
+                </button>
+            </div>
+        </div>
+        @if (items.Count > 0)
+        {
+            <ol id="menu" class="list-group mt-3">
+                @foreach (var menuItem in items)
+                {
+                    if (Model.MenuItemContentTypes.Any(c => c.Name == menuItem.ContentType))
+                    {
+                        dynamic menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
+                        menuItemShape.MenuPart = Model.MenuPart;
+                        menuItemShape.Index = index++;
+
+                        @await DisplayAsync(menuItemShape)
+                    }
+                }
+            </ol>
+        }
     </div>
 </div>
-<p>
-    <ol id="menu">
-        @foreach (var menuItem in Model.MenuPart.ContentItem.As<MenuItemsListPart>().MenuItems)
-        {
-            dynamic menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
-            menuItemShape.MenuPart = Model.MenuPart;
-            menuItemShape.Index = index++;
-            @await DisplayAsync(menuItemShape);
-        }
-    </ol>
-</p>
 
 <!-- Modal -->
 <div class="modal fade" id="modalMenuItems" tabindex="-1" role="dialog" aria-labelledby="available-menu-items-title" aria-hidden="true">
@@ -46,27 +55,25 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="available-menu-items-title">@T["Available Menu Items"]</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="row">
-                    @foreach (var type in menuItemContentTypes)
+                <div class="row row-cols-1 row-cols-md-2 g-2">
+                    @foreach (var type in Model.MenuItemContentTypes)
                     {
                         var menuItem = await ContentManager.NewAsync(type.Name);
                         dynamic thumbnail = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Thumbnail");
                         thumbnail.MenuItemType = type.Name;
                         thumbnail.MenuItemTypeDisplayName = type.DisplayName;
                         thumbnail.MenuContentItemId = Model.MenuPart.ContentItem.ContentItemId;
-                        <div class="col-sm-6">
+                        <div class="col">
                             @await DisplayAsync(thumbnail)
                         </div>
                     }
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
             </div>
         </div>
     </div>

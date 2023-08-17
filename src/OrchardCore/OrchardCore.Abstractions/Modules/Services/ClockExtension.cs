@@ -10,19 +10,14 @@ namespace OrchardCore.Modules
         /// </summary>
         public static DateTimeOffset ConvertToTimeZone(this IClock clock, DateTime dateTime, ITimeZone timeZone)
         {
-            DateTime dateTimeUtc;
-            switch (dateTime.Kind)
+            var dateTimeUtc = dateTime.Kind switch
             {
-                case DateTimeKind.Utc:
-                    dateTimeUtc = dateTime;
-                    break;
-                case DateTimeKind.Local:
-                    dateTimeUtc = dateTime.ToUniversalTime();
-                    break;
-                default: //DateTimeKind.Unspecified
-                    dateTimeUtc = DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
-                    break;
-            }
+                DateTimeKind.Utc => dateTime,
+                DateTimeKind.Local => dateTime.ToUniversalTime(),
+
+                // 'DateTimeKind.Unspecified'.
+                _ => DateTime.SpecifyKind(dateTime, DateTimeKind.Utc),
+            };
 
             return clock.ConvertToTimeZone(new DateTimeOffset(dateTimeUtc), timeZone);
         }
@@ -32,19 +27,14 @@ namespace OrchardCore.Modules
         /// </summary>
         public static Task<DateTimeOffset> ConvertToLocalAsync(this ILocalClock localClock, DateTime dateTime)
         {
-            DateTime dateTimeUtc;
-            switch (dateTime.Kind)
+            var dateTimeUtc = dateTime.Kind switch
             {
-                case DateTimeKind.Utc:
-                    dateTimeUtc = dateTime;
-                    break;
-                case DateTimeKind.Local:
-                    dateTimeUtc = dateTime.ToUniversalTime();
-                    break;
-                default: //DateTimeKind.Unspecified
-                    dateTimeUtc = DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
-                    break;
-            }
+                DateTimeKind.Utc => dateTime,
+                DateTimeKind.Local => dateTime.ToUniversalTime(),
+
+                // 'DateTimeKind.Unspecified'.
+                _ => DateTime.SpecifyKind(dateTime, DateTimeKind.Utc),
+            };
 
             return localClock.ConvertToLocalAsync(new DateTimeOffset(dateTimeUtc));
         }

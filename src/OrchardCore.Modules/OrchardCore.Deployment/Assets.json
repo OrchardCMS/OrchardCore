@@ -1,0 +1,8 @@
+[
+    {
+        "inputs": [
+            "Assets/js/steporder.js"
+        ],
+        "output": "wwwroot/Scripts/steporder.js"
+    }
+]

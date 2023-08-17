@@ -1,0 +1,10 @@
+@model dynamic
+
+<div class="card h-100">
+    <div class="card-body">
+        @await DisplayAsync(Model.Content)
+    </div>
+    <div class="card-footer text-muted text-xs-right">
+        <a class="btn btn-primary btn-sm condition-thumbnail" data-target-url="@Model.TargetUrl">@T["Add"]</a>
+    </div>
+</div>

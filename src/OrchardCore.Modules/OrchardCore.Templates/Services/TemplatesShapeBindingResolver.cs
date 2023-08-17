@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Liquid;
 using OrchardCore.Templates.Models;
 
@@ -50,10 +49,7 @@ namespace OrchardCore.Templates.Services
                 }
             }
 
-            if (_templatesDocument == null)
-            {
-                _templatesDocument = await _templatesManager.GetTemplatesDocumentAsync();
-            }
+            _templatesDocument ??= await _templatesManager.GetTemplatesDocumentAsync();
 
             if (_templatesDocument.Templates.TryGetValue(shapeType, out var template))
             {
@@ -73,8 +69,7 @@ namespace OrchardCore.Templates.Services
                 BindingSource = shapeType,
                 BindingAsync = async displayContext =>
                 {
-                    var content = new ViewBufferTextWriterContent();
-                    await _liquidTemplateManager.RenderAsync(template.Content, content, _htmlEncoder, displayContext.Value);
+                    var content = await _liquidTemplateManager.RenderHtmlContentAsync(template.Content, _htmlEncoder, displayContext.Value);
                     return content;
                 }
             };

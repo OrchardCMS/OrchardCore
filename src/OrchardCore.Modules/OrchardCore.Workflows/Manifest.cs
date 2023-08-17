@@ -27,8 +27,16 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Feature(
     Id = "OrchardCore.Workflows.Timers",
-    Name = "Timer Workflow Activities",
+    Name = "Timer Workflows Activities",
     Description = "Provides timer-based services and activities.",
+    Dependencies = new[] { "OrchardCore.Workflows" },
+    Category = "Workflows"
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.Workflows.Session",
+    Name = "Session Workflows Activities",
+    Description = "Provides 'YesSql' Session-related activities.",
     Dependencies = new[] { "OrchardCore.Workflows" },
     Category = "Workflows"
 )]

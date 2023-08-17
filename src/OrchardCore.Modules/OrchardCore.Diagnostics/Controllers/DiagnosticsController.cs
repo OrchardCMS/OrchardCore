@@ -6,28 +6,22 @@ namespace OrchardCore.Diagnostics.Controllers
 {
     public class DiagnosticsController : Controller
     {
+        [IgnoreAntiforgeryToken]
         public IActionResult Error(int? status)
         {
-            // Most commonly used error messages
+            // Most commonly used error messages.
             ViewData["StatusCode"] = status;
             Enum.TryParse((status ?? 500).ToString(), true, out HttpStatusCode httpStatusCode);
 
 
-            switch (httpStatusCode)
+            return httpStatusCode switch
             {
-                case HttpStatusCode.InternalServerError:
-                default:
-                    return View("Error");
-                case HttpStatusCode.Forbidden:
-                    return View("Forbidden");
-                case HttpStatusCode.NotFound:
-                    return View("NotFound");
-                case HttpStatusCode.BadRequest:
-                    return View("BadRequest");
-                case HttpStatusCode.Unauthorized:
-                    return View("Unauthorized");
-
-            }
+                HttpStatusCode.Forbidden => View("Forbidden"),
+                HttpStatusCode.NotFound => View("NotFound"),
+                HttpStatusCode.BadRequest => View("BadRequest"),
+                HttpStatusCode.Unauthorized => View("Unauthorized"),
+                _ => View("Error"),
+            };
         }
     }
 }

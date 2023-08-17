@@ -11,10 +11,10 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.Autoroute.Settings
 {
-    public class AutoroutePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    public class AutoroutePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<AutoroutePart>
     {
         private readonly ILiquidTemplateManager _templateManager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AutoroutePartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<AutoroutePartSettingsDisplayDriver> localizer)
         {
@@ -24,11 +24,6 @@ namespace OrchardCore.Autoroute.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(AutoroutePart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             return Initialize<AutoroutePartSettingsViewModel>("AutoroutePartSettings_Edit", model =>
             {
                 var settings = contentTypePartDefinition.GetSettings<AutoroutePartSettings>();
@@ -47,11 +42,6 @@ namespace OrchardCore.Autoroute.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(AutoroutePart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             var model = new AutoroutePartSettingsViewModel();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix,
@@ -64,9 +54,9 @@ namespace OrchardCore.Autoroute.Settings
                 m => m.ManageContainedItemRoutes,
                 m => m.AllowAbsolutePath);
 
-            if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
+            if (!String.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
             {
-                context.Updater.ModelState.AddModelError(nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                context.Updater.ModelState.AddModelError(nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", String.Join(" ", errors)]);
             }
             else
             {

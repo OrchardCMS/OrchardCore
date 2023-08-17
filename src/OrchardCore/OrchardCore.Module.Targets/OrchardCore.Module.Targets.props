@@ -29,7 +29,7 @@
 
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Package.Build.props" Pack="true">
-      <PackagePath>build\$(TargetFramework)\$(AssemblyName).props</PackagePath>
+      <PackagePath>build\$(AssemblyName).props</PackagePath>
     </None>
   </ItemGroup>
 

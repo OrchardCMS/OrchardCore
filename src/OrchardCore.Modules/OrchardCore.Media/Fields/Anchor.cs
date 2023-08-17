@@ -1,5 +1,3 @@
-using OrchardCore.ContentManagement;
-
 namespace OrchardCore.Media.Fields
 {
     /// <summary>

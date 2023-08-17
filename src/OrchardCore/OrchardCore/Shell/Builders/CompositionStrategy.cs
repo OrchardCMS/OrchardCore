@@ -61,6 +61,7 @@ namespace OrchardCore.Environment.Shell.Builders
             {
                 _logger.LogDebug("Done composing blueprint");
             }
+
             return result;
         }
     }

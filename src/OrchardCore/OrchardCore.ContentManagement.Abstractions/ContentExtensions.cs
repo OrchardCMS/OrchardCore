@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Builders;
 
@@ -12,7 +13,7 @@ namespace OrchardCore.ContentManagement
         /// <summary>
         /// These settings instruct merge to replace current value, even for null values.
         /// </summary>
-        private static readonly JsonMergeSettings JsonMergeSettings = new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace, MergeNullValueHandling = MergeNullValueHandling.Merge };
+        private static readonly JsonMergeSettings _jsonMergeSettings = new() { MergeArrayHandling = MergeArrayHandling.Replace, MergeNullValueHandling = MergeNullValueHandling.Merge };
 
         /// <summary>
         /// Gets a content element by its name.
@@ -23,7 +24,19 @@ namespace OrchardCore.ContentManagement
         /// <returns>The content element instance or <code>null</code> if it doesn't exist.</returns>
         public static TElement Get<TElement>(this ContentElement contentElement, string name) where TElement : ContentElement
         {
-            return (TElement)contentElement.Get(typeof(TElement), name);
+            var result = contentElement.Get(typeof(TElement), name);
+
+            if (result == null)
+            {
+                return null;
+            }
+
+            if (result is TElement te)
+            {
+                return te;
+            }
+
+            throw new InvalidCastException($"Failed casting content to '{typeof(TElement).Name}', check you have registered your content part with AddContentPart?");
         }
 
         /// <summary>
@@ -91,8 +104,11 @@ namespace OrchardCore.ContentManagement
 
             if (existing == null)
             {
-                var newElement = new TElement();
-                newElement.ContentItem = contentElement.ContentItem;
+                var newElement = new TElement
+                {
+                    ContentItem = contentElement.ContentItem,
+                };
+
                 contentElement.Data[name] = newElement.Data;
                 contentElement.Elements[name] = newElement;
                 return newElement;
@@ -112,7 +128,7 @@ namespace OrchardCore.ContentManagement
         {
             if (!contentElement.Data.ContainsKey(name))
             {
-                element.Data = JObject.FromObject(element, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+                element.Data = JObject.FromObject(element);
                 element.ContentItem = contentElement.ContentItem;
 
                 contentElement.Data[name] = element.Data;
@@ -166,11 +182,11 @@ namespace OrchardCore.ContentManagement
 
             if (elementData != null)
             {
-                elementData.Merge(JObject.FromObject(element), JsonMergeSettings);
+                elementData.Merge(JObject.FromObject(element), _jsonMergeSettings);
             }
             else
             {
-                elementData = JObject.FromObject(element, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+                elementData = JObject.FromObject(element);
                 contentElement.Data[name] = elementData;
             }
 
@@ -182,7 +198,7 @@ namespace OrchardCore.ContentManagement
 
             if (element is ContentField)
             {
-                contentElement.ContentItem.Elements.Clear();
+                contentElement.ContentItem?.Elements.Clear();
             }
 
             return contentElement;
@@ -198,7 +214,7 @@ namespace OrchardCore.ContentManagement
         {
             if (contentElement.Data != null)
             {
-                contentElement.Data.Merge(JObject.FromObject(element.Data), JsonMergeSettings);
+                contentElement.Data.Merge(JObject.FromObject(element.Data), _jsonMergeSettings);
             }
             else
             {
@@ -221,6 +237,25 @@ namespace OrchardCore.ContentManagement
         {
             var element = contentElement.GetOrCreate<TElement>(name);
             action(element);
+            contentElement.Apply(name, element);
+
+            return contentElement;
+        }
+
+        /// <summary>
+        /// Modifies a new or existing content element by name.
+        /// </summary>
+        /// <param name="contentElement">The <see cref="ContentElement"/>.</param>
+        /// <param name="name">The name of the content element to update.</param>
+        /// <param name="action">An action to apply on the content element.</param>
+        /// <typeparam name="TElement">The type of the part to be altered.</typeparam>
+        /// <returns>The current <see cref="ContentElement"/> instance.</returns>
+        public static async Task<ContentElement> AlterAsync<TElement>(this ContentElement contentElement, string name, Func<TElement, Task> action) where TElement : ContentElement, new()
+        {
+            var element = contentElement.GetOrCreate<TElement>(name);
+
+            await action(element);
+
             contentElement.Apply(name, element);
 
             return contentElement;

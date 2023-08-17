@@ -1,0 +1,133 @@
+@import '../../node_modules/bootstrap/scss/_functions';
+@import '../../node_modules/bootstrap/scss/_variables';
+@import '../../node_modules/bootstrap/scss/mixins/_breakpoints';
+
+// Small devices (landscape phones, 576px and up)
+@include media-breakpoint-only(sm) {
+    :root {
+        --dashboard-columns: 1;
+        --dashboard-columns-default: 1;
+    }
+}
+
+// Medium devices (tablets, 768px and up)
+@include media-breakpoint-only(md) {
+    :root {
+        --dashboard-columns: 2;
+        --dashboard-columns-default: 2;
+    }
+}
+
+// Large devices (desktops, 992px and up)
+@include media-breakpoint-only(lg) {
+    :root {
+        --dashboard-columns: 3;
+        --dashboard-columns-default: 3;
+    }
+}
+
+// X-Large devices (large desktops, 1200px and up)
+@include media-breakpoint-only(xl) {
+    :root {
+        --dashboard-columns: 4;
+        --dashboard-columns-default: 4;
+    }
+}
+
+// XX-Large devices (larger desktops, 1400px and up)
+@include media-breakpoint-only(xxl) {
+    :root {
+        --dashboard-columns: 6;
+        --dashboard-columns-default: 6;
+    }
+}
+
+.dashboard-container {
+    display: grid;
+    grid-template-columns: repeat( var(--dashboard-columns), 1fr);
+    grid-template-rows: repeat(6, 240px);
+    grid-gap: 1rem;
+
+    .dashboard-wrapper {
+        grid-column: span var(--dashboard-width);
+        overflow-x: hidden;
+        grid-row: span var(--dashboard-height);
+        overflow-y: auto;
+
+        & .card {
+            & .card-header {
+                border-bottom: none !important;
+            }
+
+            & .card-footer {
+                border-top: none !important;
+            }
+        }
+    }
+
+    .dashboard-wrapper.ui-resizable {
+        overflow-y: hidden;
+    }
+}
+
+.dashboard-meta {
+    padding-left: 20px;
+    padding-right: 20px;
+
+    &:first-child {
+        padding-top: 12px;
+    }
+}
+
+:root[data-theme="default"] {
+    & .dashboard-wrapper {
+        & .card {
+            & .card-header {
+                background-color: #fff !important;
+            }
+
+            & .card-footer {
+                background-color: #fff !important;
+            }
+        }
+    }
+}
+
+:root[data-theme="darkmode"] {
+    & .dashboard-wrapper {
+        & .card {
+            & .card-header {
+                background-color: rgb(24, 26, 27) !important;
+            }
+
+            & .card-footer {
+                background-color: rgb(24, 26, 27) !important;
+            }
+        }
+    }
+}
+
+.dashboard-handle {
+    display: inline-block;
+    margin-right: 0.5rem;
+
+    &:hover {
+        cursor: move;
+    }
+}
+
+.dashboard-dragdrop-placeholder {
+    margin-top: 6px;
+    margin-bottom: 6px;
+    min-height: 6px;
+    display: inline-block;
+    border: 1px dashed orange;
+    grid-column: span var(--dashboard-width);
+    overflow-x: hidden;
+    grid-row: span var(--dashboard-height);
+    overflow-y: hidden;
+}
+
+.ui-resizable-helper {
+    border: 1px dashed orange;
+}

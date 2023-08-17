@@ -1,0 +1,17 @@
+@model OrchardCore.Spatial.Settings.GeoPointFieldSettings
+
+<div class="mb-3">
+    <div class="form-check">
+        <input asp-for="Required" type="checkbox" class="form-check-input">
+        <label class="form-check-label" asp-for="Required">@T["Required"]</label>
+        <span class="hint dashed">@T["Whether a value is required."]</span>
+    </div>
+</div>
+
+<div class="mb-3">
+    <div class="w-md-75 w-xl-50 pe-md-3">
+        <label asp-for="Hint">@T["Hint"]</label>
+        <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
+    </div>
+    <span class="hint">@T["The hint text to display for this field on the editor."]</span>
+</div>

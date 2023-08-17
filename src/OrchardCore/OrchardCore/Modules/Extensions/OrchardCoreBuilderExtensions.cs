@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
@@ -93,7 +93,12 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddBackgroundService(this OrchardCoreBuilder builder)
         {
-            builder.ApplicationServices.AddSingleton<IHostedService, ModularBackgroundService>();
+            builder.ApplicationServices.AddHostedService<ModularBackgroundService>();
+
+            builder.ApplicationServices
+                .AddOptions<BackgroundServiceOptions>()
+                .Configure<IConfiguration>((options, config) => config
+                    .Bind("OrchardCore:OrchardCore_BackgroundService", options));
 
             return builder;
         }

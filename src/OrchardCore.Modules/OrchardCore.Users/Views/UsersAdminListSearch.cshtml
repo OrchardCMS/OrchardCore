@@ -1,0 +1,116 @@
+@model UserIndexOptions
+@using OrchardCore.Localization
+@inject IDisplayManager<UserIndexOptions> DisplayManager
+@{
+    var syntaxThumbnail = await DisplayManager.BuildDisplayAsync(Model, null, "Thumbnail");
+    var dropdownClassList = new List<string>()
+    {
+        "dropdown-menu"
+    };
+
+    if (CultureInfo.CurrentUICulture.IsRightToLeft())
+    {
+        dropdownClassList.Add("dropdown-menu-start");
+    }
+}
+
+<div class="input-group has-filter">
+    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fa-solid fa-filter" title="@T["Filters"]" aria-hidden="true"></i>
+    </button>
+    <ul class="@String.Join(' ', dropdownClassList)" aria-labelledby="filter-dropdown">
+        <li><a class="dropdown-item" href="?q=status:Enabled">@T["Only enabled users"]</a></li>
+        <li><a class="dropdown-item" href="?q=status:Disabled">@T["Only disabled users"]</a></li>
+        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalUserIndexOptionsFilterSyntax">@T["Filter syntax"]</a></li>
+    </ul>
+
+    <input asp-for="OriginalSearchText" type="hidden" />
+
+    <label asp-for="SearchText" class="sr-only">@T["Search"]</label>
+    <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
+    <input asp-for="SearchText" class="form-control" placeholder="@T["Search"]" inputmode="search" type="search" autofocus />
+</div>
+
+<zone name="Footer">
+    <div class="modal fade" id="modalUserIndexOptionsFilterSyntax" tabindex="-1" role="dialog"
+         aria-labelledby="user-filters-syntax-title" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="user-filters-syntax-title">@T["Available Filters"]</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12 card-columns">
+                            @await DisplayAsync(syntaxThumbnail)
+                        </div>
+                    </div>
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h4>@T["Filter syntax"]</h4>
+                            <ul class="fa-ul">
+                                <li>
+                                    <span class="fa-li"><i class="fa-solid fa-sm fa-check text-primary" aria-hidden="true"></i></span>
+                                    <span class="hint">@T["Default"]</span>
+                                    <span class="hint dashed">@T["may be entered with or without the term name"]</span>
+                                </li>
+                                <li>
+                                    <span class="fa-li"><i class="fa-solid fa-sm fa-minus text-primary" aria-hidden="true"></i></span>
+                                    <span class="hint">@T["Single"]</span>
+                                    <span class="hint dashed">@T["A single value can be entered"]</span>
+                                </li>
+                                <li>
+                                    <span class="fa-li"><i class="fa-solid fa-sm fa-bars text-primary" aria-hidden="true"></i></span>
+                                    <span class="hint">@T["Multiple"]</span>
+                                    <span class="hint dashed">@T["Logical operators and groups are supported"]</span>
+                                    <ul class="list-unstyled">
+                                        @*NB The operators and examples are not localizable.*@
+                                        <li>
+                                            <span class="hint">OR</span>
+                                            <span class="hint dashed">@T["The default operator when whitespace is found, e.g."]&nbsp text:foo bar -> text:foo OR bar</span>
+                                        </li>
+                                        <li>
+                                            <span class="hint">AND</span>
+                                            <span class="hint dashed">@T["Combines, e.g."]&nbsp text:foo AND bar</span>
+                                        </li>
+                                        <li>
+                                            <span class="hint">NOT</span>
+                                            <span class="hint dashed">@T["Negates, e.g."]&nbsp text:foo NOT bar</span>
+                                        </li>
+                                        <li>
+                                            <span class="hint">( ... )</span>
+                                            <span class="hint">@T["Groups operators, e.g."]&nbsp text:((foo OR bar) NOT baz)</span>
+                                        </li>
+                                        <li>
+                                            <span class="hint">" ... "</span>
+                                            <span class="hint">@T["Escape operators, e.g."]&nbsp text:"foo bar"</span>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <h4>@T["Current filter"]</h4>
+                            @if (!String.IsNullOrEmpty(Model.FilterResult.ToString()))
+                            {
+                                <pre>@Model.FilterResult.ToString()</pre>
+                                <pre class="d-inline">@Model.FilterResult.ToNormalizedString()</pre>
+                                <span class="hint dashed">@T["including all implied groups and operators"]</span>
+                            }
+                            else
+                            {
+                                <p class="alert alert-info mt-3 mb-0">@T["No current filter applied"]</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Close"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</zone>

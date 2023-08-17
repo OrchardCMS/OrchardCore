@@ -6,7 +6,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Workflows.Handlers
 {
-    public class UserEventHandler : IUserEventHandler
+    public class UserEventHandler : UserEventHandlerBase
     {
         private readonly IWorkflowManager _workflowManager;
 
@@ -15,27 +15,27 @@ namespace OrchardCore.Users.Workflows.Handlers
             _workflowManager = workflowManager;
         }
 
-        public Task CreatedAsync(UserContext context)
+        public override Task CreatedAsync(UserCreateContext context)
         {
             return TriggerWorkflowEventAsync(nameof(UserCreatedEvent), (User)context.User);
         }
 
-        public Task DeletedAsync(UserContext context)
+        public override Task DeletedAsync(UserDeleteContext context)
         {
             return TriggerWorkflowEventAsync(nameof(UserDeletedEvent), (User)context.User);
         }
 
-        public Task DisabledAsync(UserContext context)
+        public override Task DisabledAsync(UserContext context)
         {
             return TriggerWorkflowEventAsync(nameof(UserDisabledEvent), (User)context.User);
         }
 
-        public Task EnabledAsync(UserContext context)
+        public override Task EnabledAsync(UserContext context)
         {
             return TriggerWorkflowEventAsync(nameof(UserEnabledEvent), (User)context.User);
         }
 
-        public Task UpdatedAsync(UserContext context)
+        public override Task UpdatedAsync(UserUpdateContext context)
         {
             return TriggerWorkflowEventAsync(nameof(UserUpdatedEvent), (User)context.User);
         }

@@ -43,8 +43,7 @@
                   "Editor": "Wysiwyg"
                 },
                 "GraphQLContentTypePartSettings": {},
-                "HtmlBodyPartSettings": {},
-                "ContentIndexSettings": {}
+                "HtmlBodyPartSettings": {}
               }
             },
             {
@@ -57,28 +56,6 @@
               }
             }
           ]
-        }
-      ]
-    },
-    {
-      "name": "content",
-      "data": [
-        {
-          "ContentItemId": "[js: uuid()]",
-          "ContentType": "HtmlDashboardWidget",
-          "DisplayText": "Orchard Core",
-          "Latest": true,
-          "Published": true,
-          "HtmlDashboardWidget": {},
-          "DashboardPart": {
-            "Position": 0.0
-          },
-          "HtmlBodyPart": {
-            "Html": "<ul class=\"list-group list-group-flush\">\n\t<li class=\"list-group-item\"><a href=\"https://docs.orchardcore.net\" target=\"_blank\">Orchard Core documentation</a></li>\n\t<li class=\"list-group-item\"><a href=\"https://github.com/OrchardCMS/OrchardCore\" target=\"_blank\">Orchard Core GitHub repository</a></li>\n\t<li class=\"list-group-item\"><a href=\"https://gitter.im/OrchardCMS/OrchardCore\" target=\"_blank\">Orchard Core Gitter chat</a></li>\n</ul>"
-          },
-          "TitlePart": {
-            "Title": "Orchard Core"
-          }
         }
       ]
     }

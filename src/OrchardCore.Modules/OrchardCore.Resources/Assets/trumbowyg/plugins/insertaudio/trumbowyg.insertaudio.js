@@ -1,4 +1,4 @@
-﻿/*/* ===========================================================
+/*/* ===========================================================
  * trumbowyg.insertaudio.js v1.0
  * InsertAudio plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -37,8 +37,23 @@
             en: {
                 insertAudio: 'Insert Audio'
             },
+            az: {
+                insertAudio: 'Səs yerləşdir'
+            },
+            by: {
+                insertAudio: 'Уставіць аўдыё'
+            },
+            ca: {
+                insertAudio: 'Inserir Audio'
+            },
             da: {
                 insertAudio: 'Indsæt lyd'
+            },
+            es: {
+                insertAudio: 'Insertar Audio'
+            },
+            et: {
+                insertAudio: 'Lisa helifail'
             },
             fr: {
                 insertAudio: 'Insérer un son'
@@ -57,6 +72,9 @@
             },
             ru: {
                 insertAudio: 'Вставить аудио'
+            },
+            sl: {
+                insertAudio: 'Vstavi zvočno datoteko'
             },
             tr: {
                 insertAudio: 'Ses Ekle'

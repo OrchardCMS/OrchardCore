@@ -14,7 +14,8 @@ using OrchardCore.Modules.Manifest;
     Dependencies = new[]
     {
         "OrchardCore.Widgets",
-        "OrchardCore.Scripting"
+        "OrchardCore.Scripting",
+        "OrchardCore.Rules"
     },
     Category = "Content"
 )]

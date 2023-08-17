@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,14 +8,15 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 using OrchardCore.Shortcodes.Models;
 using OrchardCore.Shortcodes.Services;
 using OrchardCore.Shortcodes.ViewModels;
@@ -30,31 +30,34 @@ namespace OrchardCore.Shortcodes.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly ShortcodeTemplatesManager _shortcodeTemplatesManager;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-        private readonly dynamic New;
+        protected readonly dynamic New;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
+        private readonly IHtmlSanitizerService _htmlSanitizerService;
 
         public AdminController(
             IAuthorizationService authorizationService,
             ShortcodeTemplatesManager shortcodeTemplatesManager,
             ILiquidTemplateManager liquidTemplateManager,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             INotifier notifier,
             IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer
+            IHtmlLocalizer<AdminController> htmlLocalizer,
+            IHtmlSanitizerService htmlSanitizerService
             )
         {
             _authorizationService = authorizationService;
             _shortcodeTemplatesManager = shortcodeTemplatesManager;
             _liquidTemplateManager = liquidTemplateManager;
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
             _notifier = notifier;
             New = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
+            _htmlSanitizerService = htmlSanitizerService;
         }
 
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
@@ -64,8 +67,7 @@ namespace OrchardCore.Shortcodes.Controllers
                 return Forbid();
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
             var shortcodeTemplatesDocument = await _shortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync();
 
             var shortcodeTemplates = shortcodeTemplatesDocument.ShortcodeTemplates.ToList();
@@ -101,12 +103,12 @@ namespace OrchardCore.Shortcodes.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(ShortcodeTemplateIndexViewModel model)
         {
-            return RedirectToAction("Index", new RouteValueDictionary {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary {
                 { "Options.Search", model.Options.Search }
             });
         }
 
-        public async Task<IActionResult> Create(ShortcodeTemplateViewModel model)
+        public async Task<IActionResult> Create()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
             {
@@ -160,7 +162,7 @@ namespace OrchardCore.Shortcodes.Controllers
                 {
                     Content = model.Content,
                     Hint = model.Hint,
-                    Usage = model.Usage,
+                    Usage = _htmlSanitizerService.Sanitize(model.Usage),
                     DefaultValue = model.DefaultValue,
                     Categories = JsonConvert.DeserializeObject<string[]>(model.SelectedCategories)
                 };
@@ -192,7 +194,7 @@ namespace OrchardCore.Shortcodes.Controllers
 
             if (!shortcodeTemplatesDocument.ShortcodeTemplates.ContainsKey(name))
             {
-                return RedirectToAction("Create", new { name });
+                return RedirectToAction(nameof(Create), new { name });
             }
 
             var template = shortcodeTemplatesDocument.ShortcodeTemplates[name];
@@ -257,7 +259,7 @@ namespace OrchardCore.Shortcodes.Controllers
                 {
                     Content = model.Content,
                     Hint = model.Hint,
-                    Usage = model.Usage,
+                    Usage = _htmlSanitizerService.Sanitize(model.Usage),
                     DefaultValue = model.DefaultValue,
                     Categories = JsonConvert.DeserializeObject<string[]>(model.SelectedCategories)
                 };
@@ -297,7 +299,7 @@ namespace OrchardCore.Shortcodes.Controllers
 
             await _shortcodeTemplatesManager.RemoveShortcodeTemplateAsync(name);
 
-            _notifier.Success(H["Shortcode template deleted successfully."]);
+            await _notifier.SuccessAsync(H["Shortcode template deleted successfully."]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -324,22 +326,20 @@ namespace OrchardCore.Shortcodes.Controllers
                         {
                             await _shortcodeTemplatesManager.RemoveShortcodeTemplateAsync(item.Key);
                         }
-                        _notifier.Success(H["Shortcode templates successfully removed."]);
+                        await _notifier.SuccessAsync(H["Shortcode templates successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         private static bool IsValidShortcodeName(string name)
         {
             var scanner = new Scanner(name);
-            var result = new TokenResult();
-            scanner.ReadIdentifier(result);
-            return result.Success && name.Length == result.Length;
+            return scanner.ReadIdentifier(out var result) && name.Length == result.Length;
         }
     }
 }

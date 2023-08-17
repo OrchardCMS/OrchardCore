@@ -1,0 +1,21 @@
+﻿@{
+    ViewLayout = "Layout__Login";
+    var returnUrl = Context.Request.Query["ReturnUrl"];
+}
+
+<h2>@T["Email confirmation sent"]</h2>
+<div>
+    <p>
+        @T["An email has been sent to you. Please click on the link it contains in order to have access on this site."]
+    </p>
+    <p>
+        @if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+        {
+            <a href="@returnUrl">@T["Previous Page"]</a>
+        }
+        else
+        {
+            <a href="@Url.Content("~/")">@T["Home"]</a>
+        }
+    </p>
+</div>

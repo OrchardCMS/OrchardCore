@@ -6,13 +6,12 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Modules;
 
 namespace OrchardCore.ContentManagement.Display
@@ -27,7 +26,6 @@ namespace OrchardCore.ContentManagement.Display
     {
         private readonly IEnumerable<IContentHandler> _contentHandlers;
         private readonly IEnumerable<IContentDisplayHandler> _handlers;
-        private readonly IShapeTableManager _shapeTableManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IShapeFactory _shapeFactory;
         private readonly ILayoutAccessor _layoutAccessor;
@@ -36,7 +34,6 @@ namespace OrchardCore.ContentManagement.Display
         public ContentItemDisplayManager(
             IEnumerable<IContentDisplayHandler> handlers,
             IEnumerable<IContentHandler> contentHandlers,
-            IShapeTableManager shapeTableManager,
             IContentDefinitionManager contentDefinitionManager,
             IShapeFactory shapeFactory,
             IEnumerable<IShapePlacementProvider> placementProviders,
@@ -46,7 +43,6 @@ namespace OrchardCore.ContentManagement.Display
         {
             _handlers = handlers;
             _contentHandlers = contentHandlers;
-            _shapeTableManager = shapeTableManager;
             _contentDefinitionManager = contentDefinitionManager;
             _shapeFactory = shapeFactory;
             _layoutAccessor = layoutAccessor;
@@ -60,26 +56,53 @@ namespace OrchardCore.ContentManagement.Display
                 throw new ArgumentNullException(nameof(contentItem));
             }
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType)
+                ?? throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
 
-            var stereotype = contentTypeDefinition.GetSettings<ContentTypeSettings>().Stereotype;
-            var actualDisplayType = string.IsNullOrEmpty(displayType) ? "Detail" : displayType;
-            var actualShapeType = stereotype ?? "Content";
+            var actualDisplayType = String.IsNullOrEmpty(displayType) ? "Detail" : displayType;
+            var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);
 
-            // _[DisplayType] is only added for the ones different than Detail
+            var actualShapeType = "Content";
+
+            if (hasStereotype)
+            {
+                actualShapeType = contentTypeDefinition.GetStereotype();
+            }
+
+            // [DisplayType] is only added for the ones different than Detail
             if (actualDisplayType != "Detail")
             {
                 actualShapeType = actualShapeType + "_" + actualDisplayType;
             }
 
-            dynamic itemShape = await CreateContentShapeAsync(actualShapeType);
-            itemShape.ContentItem = contentItem;
-            itemShape.Stereotype = stereotype;
+            var itemShape = await CreateContentShapeAsync(actualShapeType);
+            itemShape.Properties["ContentItem"] = contentItem;
+            itemShape.Properties["Stereotype"] = stereotype;
 
-            ShapeMetadata metadata = itemShape.Metadata;
+            var metadata = itemShape.Metadata;
             metadata.DisplayType = actualDisplayType;
 
-            // [Stereotype]_[DisplayType]__[ContentType] e.g. Content-BlogPost.Summary
+            if (hasStereotype)
+            {
+                if (actualDisplayType != "Detail")
+                {
+                    // Add fallback/default alternate Stereotype_[DisplayType] e.g. Content.Summary
+                    metadata.Alternates.Add($"Stereotype_{actualDisplayType}");
+
+                    // [Stereotype]_[DisplayType] e.g. Menu.Summary
+                    metadata.Alternates.Add($"{stereotype}_{actualDisplayType}");
+                }
+                else
+                {
+                    // Add fallback/default alternate i.e. Content 
+                    metadata.Alternates.Add("Stereotype");
+
+                    // Add alternate to make the type [Stereotype] e.g. Menu
+                    metadata.Alternates.Add(stereotype);
+                }
+            }
+
+            // Add alternate for [Stereotype]_[DisplayType]__[ContentType] e.g. Content-BlogPost.Summary
             metadata.Alternates.Add($"{actualShapeType}__{contentItem.ContentType}");
 
             var context = new BuildDisplayContext(
@@ -105,18 +128,32 @@ namespace OrchardCore.ContentManagement.Display
                 throw new ArgumentNullException(nameof(contentItem));
             }
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType)
+                ?? throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
 
-            var stereotype = contentTypeDefinition.GetSettings<ContentTypeSettings>().Stereotype;
+            var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);
+            var actualShapeType = "Content_Edit";
 
-            var actualShapeType = (stereotype ?? "Content") + "_Edit";
+            if (hasStereotype)
+            {
+                actualShapeType = stereotype + "_Edit";
+            }
 
-            dynamic itemShape = await CreateContentShapeAsync(actualShapeType);
-            itemShape.ContentItem = contentItem;
-            itemShape.Stereotype = stereotype;
+            var itemShape = await CreateContentShapeAsync(actualShapeType);
+            itemShape.Properties["ContentItem"] = contentItem;
+            itemShape.Properties["Stereotype"] = stereotype;
 
-            // adding an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
-            ((IShape)itemShape).Metadata.Alternates.Add(actualShapeType + "__" + contentItem.ContentType);
+            if (hasStereotype)
+            {
+                // Add fallback/default alternate for Stereotype_Edit e.g. Stereotype.Edit
+                itemShape.Metadata.Alternates.Add("Stereotype_Edit");
+
+                // add [Stereotype]_Edit e.g. Menu.Edit
+                itemShape.Metadata.Alternates.Add(actualShapeType);
+            }
+
+            // Add an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
+            itemShape.Metadata.Alternates.Add(actualShapeType + "__" + contentItem.ContentType);
 
             var context = new BuildEditorContext(
                 itemShape,
@@ -142,16 +179,32 @@ namespace OrchardCore.ContentManagement.Display
                 throw new ArgumentNullException(nameof(contentItem));
             }
 
-            var contentTypeDefinition = _contentDefinitionManager.LoadTypeDefinition(contentItem.ContentType);
-            var stereotype = contentTypeDefinition.GetSettings<ContentTypeSettings>().Stereotype;
-            var actualShapeType = (stereotype ?? "Content") + "_Edit";
+            var contentTypeDefinition = _contentDefinitionManager.LoadTypeDefinition(contentItem.ContentType)
+                ?? throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
 
-            dynamic itemShape = await CreateContentShapeAsync(actualShapeType);
-            itemShape.ContentItem = contentItem;
-            itemShape.Stereotype = stereotype;
+            var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);
+            var actualShapeType = "Content_Edit";
 
-            // adding an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
-            ((IShape)itemShape).Metadata.Alternates.Add(actualShapeType + "__" + contentItem.ContentType);
+            if (hasStereotype)
+            {
+                actualShapeType = stereotype + "_Edit";
+            }
+
+            var itemShape = await CreateContentShapeAsync(actualShapeType);
+            itemShape.Properties["ContentItem"] = contentItem;
+            itemShape.Properties["Stereotype"] = stereotype;
+
+            if (hasStereotype)
+            {
+                // Add fallback/default alternate for Stereotype_Edit e.g. Stereotype.Edit
+                itemShape.Metadata.Alternates.Add("Stereotype_Edit");
+
+                // add [Stereotype]_Edit e.g. Menu.Edit
+                itemShape.Metadata.Alternates.Add(actualShapeType);
+            }
+
+            // Add an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
+            itemShape.Metadata.Alternates.Add(actualShapeType + "__" + contentItem.ContentType);
 
             var context = new UpdateEditorContext(
                 itemShape,

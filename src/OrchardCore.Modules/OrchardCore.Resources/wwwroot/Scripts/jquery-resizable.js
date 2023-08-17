@@ -3,10 +3,8 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 /// <reference path="../bower_components/jquery/dist/jquery.js" />
-
 /*
 jquery-resizable
 Version 0.35 - 11/18/2019
@@ -27,7 +25,6 @@ Licensed under MIT License
   }
 })(function ($, undefined) {
   if ($.fn.resizableSafe) return;
-
   $.fn.resizableSafe = function fnResizable(options) {
     var defaultOptions = {
       // selector for handle that starts dragging
@@ -56,11 +53,11 @@ Licensed under MIT License
     return this.each(function () {
       var opt = $.extend({}, defaultOptions);
       if (!opt.instanceId) opt.instanceId = "rsz_" + new Date().getTime();
-      var startPos, startTransition; // get the element to resize 
+      var startPos, startTransition;
 
+      // get the element to resize 
       var $el = $(this);
       var $handle;
-
       if (options === 'destroy') {
         opt = $el.data('resizable');
         if (!opt) return;
@@ -70,82 +67,69 @@ Licensed under MIT License
         $el.removeClass("resizable");
         return;
       }
+      $el.data('resizable', opt);
 
-      $el.data('resizable', opt); // get the drag handle
+      // get the drag handle
 
       $handle = getHandle(opt.handleSelector, $el);
       if (opt.touchActionNone) $handle.css("touch-action", "none");
       $el.addClass("resizable");
       $handle.on("mousedown." + opt.instanceId + " touchstart." + opt.instanceId, startDragging);
-
       function noop(e) {
         e.stopPropagation();
         e.preventDefault();
       }
-
       ;
-
       function startDragging(e) {
         // Prevent dragging a ghost image in HTML5 / Firefox and maybe others    
         if (e.preventDefault) {
           e.preventDefault();
         }
-
         startPos = getMousePos(e);
         startPos.width = parseInt($el.width(), 10);
         startPos.height = parseInt($el.height(), 10);
         startTransition = $el.css("transition");
         $el.css("transition", "none");
-
         if (opt.onDragStart) {
           if (opt.onDragStart(e, $el, opt) === false) return;
         }
-
         $(document).on('mousemove.' + opt.instanceId, doDrag);
         $(document).on('mouseup.' + opt.instanceId, stopDragging);
-
         if (window.Touch || navigator.maxTouchPoints) {
           $(document).on('touchmove.' + opt.instanceId, doDrag);
           $(document).on('touchend.' + opt.instanceId, stopDragging);
         }
-
         $(document).on('selectstart.' + opt.instanceId, noop); // disable selection
-
         $("iframe").css("pointer-events", "none");
       }
-
       function doDrag(e) {
         var pos = getMousePos(e),
-            newWidth,
-            newHeight;
+          newWidth,
+          newHeight;
         if (opt.resizeWidthFrom === 'left') newWidth = startPos.width - pos.x + startPos.x;else newWidth = startPos.width + pos.x - startPos.x;
         if (opt.resizeHeightFrom === 'top') newHeight = startPos.height - pos.y + startPos.y;else newHeight = startPos.height + pos.y - startPos.y;
-
         if (!opt.onDrag || opt.onDrag(e, $el, newWidth, newHeight, opt) !== false) {
           if (opt.resizeHeight) $el.height(newHeight);
           if (opt.resizeWidth) $el.width(newWidth);
         }
       }
-
       function stopDragging(e) {
         e.stopPropagation();
         e.preventDefault();
         $(document).off('mousemove.' + opt.instanceId);
         $(document).off('mouseup.' + opt.instanceId);
-
         if (window.Touch || navigator.maxTouchPoints) {
           $(document).off('touchmove.' + opt.instanceId);
           $(document).off('touchend.' + opt.instanceId);
         }
+        $(document).off('selectstart.' + opt.instanceId, noop);
 
-        $(document).off('selectstart.' + opt.instanceId, noop); // reset changed values
-
+        // reset changed values
         $el.css("transition", startTransition);
         $("iframe").css("pointer-events", "auto");
         if (opt.onDragEnd) opt.onDragEnd(e, $el, opt);
         return false;
       }
-
       function getMousePos(e) {
         var pos = {
           x: 0,
@@ -153,7 +137,6 @@ Licensed under MIT License
           width: 0,
           height: 0
         };
-
         if (typeof e.clientX === "number") {
           pos.x = e.clientX;
           pos.y = e.clientY;
@@ -161,23 +144,20 @@ Licensed under MIT License
           pos.x = e.originalEvent.touches[0].clientX;
           pos.y = e.originalEvent.touches[0].clientY;
         } else return null;
-
         return pos;
       }
-
       function getHandle(selector, $el) {
         if (selector && selector.trim()[0] === ">") {
           selector = selector.trim().replace(/^>\s*/, "");
           return $el.find(selector);
-        } // Search for the selector, but only in the parent element to limit the scope
+        }
+
+        // Search for the selector, but only in the parent element to limit the scope
         // This works for multiple objects on a page (using .class syntax most likely)
         // as long as each has a separate parent container. 
-
-
         return selector ? $el.parent().find(selector) : $el;
       }
     });
   };
-
   if (!$.fn.resizable) $.fn.resizable = $.fn.resizableSafe;
 });

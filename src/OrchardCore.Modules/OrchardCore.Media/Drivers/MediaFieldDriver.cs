@@ -21,13 +21,13 @@ namespace OrchardCore.Media.Drivers
 {
     public class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaField>
     {
-        private static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
+        private static readonly JsonSerializerSettings _settings = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
 
         private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly ILogger _logger;
 
         public MediaFieldDisplayDriver(AttachedMediaFieldFileService attachedMediaFieldFileService,
@@ -62,7 +62,7 @@ namespace OrchardCore.Media.Drivers
                 {
                     if (field.MediaTexts != null)
                     {
-                        for(var i = 0; i < itemPaths.Count(); i++)
+                        for (var i = 0; i < itemPaths.Length; i++)
                         {
                             if (i >= 0 && i < field.MediaTexts.Length)
                             {
@@ -77,7 +77,7 @@ namespace OrchardCore.Media.Drivers
                     var anchors = field.GetAnchors();
                     if (anchors != null)
                     {
-                        for(var i = 0; i < itemPaths.Count(); i++)
+                        for (var i = 0; i < itemPaths.Length; i++)
                         {
                             if (i >= 0 && i < anchors.Length)
                             {
@@ -87,7 +87,19 @@ namespace OrchardCore.Media.Drivers
                     }
                 }
 
-                model.Paths = JsonConvert.SerializeObject(itemPaths, Settings);
+                var filenames = field.GetAttachedFileNames();
+                if (filenames != null)
+                {
+                    for (var i = 0; i < itemPaths.Length; i++)
+                    {
+                        if (i >= 0 && i < filenames.Length)
+                        {
+                            itemPaths[i].AttachedFileName = filenames[i];
+                        }
+                    }
+                }
+
+                model.Paths = JsonConvert.SerializeObject(itemPaths, _settings);
                 model.TempUploadFolder = _attachedMediaFieldFileService.MediaFieldsTempSubFolder;
                 model.Field = field;
                 model.Part = context.ContentPart;
@@ -103,15 +115,16 @@ namespace OrchardCore.Media.Drivers
             if (await updater.TryUpdateModelAsync(model, Prefix, f => f.Paths))
             {
                 // Deserializing an empty string doesn't return an array
-                var items = string.IsNullOrWhiteSpace(model.Paths)
+                var items = String.IsNullOrWhiteSpace(model.Paths)
                     ? new List<EditMediaFieldItemInfo>()
-                    : JsonConvert.DeserializeObject<EditMediaFieldItemInfo[]>(model.Paths, Settings).ToList();
+                    : JsonConvert.DeserializeObject<EditMediaFieldItemInfo[]>(model.Paths, _settings).ToList();
 
-                // If it's an attached media field editor the files are automatically handled by _attachedMediaFieldFileService
-                if (string.Equals(context.PartFieldDefinition.Editor(), "Attached", StringComparison.OrdinalIgnoreCase))
+                // If it's an attached media field editor the files are automatically handled by _attachedMediaFieldFileService.
+                if (String.Equals(context.PartFieldDefinition.Editor(), "Attached", StringComparison.OrdinalIgnoreCase))
                 {
                     try
                     {
+                        field.SetAttachedFileNames(items.Where(i => !i.IsRemoved).Select(i => i.AttachedFileName).ToArray());
                         await _attachedMediaFieldFileService.HandleFilesOnFieldUpdateAsync(items, context.ContentPart.ContentItem);
                     }
                     catch (Exception e)
@@ -121,7 +134,7 @@ namespace OrchardCore.Media.Drivers
                     }
                 }
 
-                field.Paths = items.Where(p => !p.IsRemoved).Select(p => p.Path).ToArray() ?? new string[] { };
+                field.Paths = items.Where(p => !p.IsRemoved).Select(p => p.Path).ToArray() ?? Array.Empty<string>();
 
                 var settings = context.PartFieldDefinition.GetSettings<MediaFieldSettings>();
 

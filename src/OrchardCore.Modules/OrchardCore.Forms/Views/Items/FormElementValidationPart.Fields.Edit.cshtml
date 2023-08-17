@@ -1,0 +1,15 @@
+@using OrchardCore
+@using OrchardCore.Forms.ViewModels
+@using OrchardCore.Forms.Models
+@model FormElementValidationPartViewModel
+
+<div class="@Orchard.GetWrapperCssClasses("show-for-input")">
+    <label asp-for="ValidationOption" class="@Orchard.GetLabelCssClasses()">@T["Validation option"]</label>
+    <div class="@Orchard.GetEndCssClasses()">
+        <select asp-for="ValidationOption" class="form-select content-preview-select">
+            <option value="@ValidationOptions.None">@T["None"]</option>
+            <option value="@ValidationOptions.Standard">@T["Standard"]</option>
+        </select>
+        <span class="hint">@T["The type of validation to create for this field."]</span>
+    </div>
+</div>

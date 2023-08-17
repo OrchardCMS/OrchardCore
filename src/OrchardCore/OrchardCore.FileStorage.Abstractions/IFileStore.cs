@@ -45,7 +45,7 @@ namespace OrchardCore.FileStorage
         /// <remarks>
         /// Results are grouped by entry type, where directories are followed by files.
         /// </remarks>
-        Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false);
+        IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false);
 
         /// <summary>
         /// Creates a directory in the file store if it doesn't already exist.
@@ -150,10 +150,12 @@ namespace OrchardCore.FileStorage
         /// Backslash is converted to forward slash and any leading or trailing slashes
         /// are removed.
         /// </remarks>
-        public static string NormalizePath(this IFileStore fileStore, string path)
+        public static string NormalizePath(this IFileStore _, string path)
         {
             if (path == null)
+            {
                 return null;
+            }
 
             return path.Replace('\\', '/').Trim('/', ' ');
         }

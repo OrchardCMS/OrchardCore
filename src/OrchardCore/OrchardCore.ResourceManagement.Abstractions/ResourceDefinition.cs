@@ -48,13 +48,11 @@ namespace OrchardCore.ResourceManagement
         public List<string> Dependencies { get; private set; }
         public AttributeDictionary Attributes { get; private set; }
         public string InnerContent { get; private set; }
+        public ResourcePosition Position { get; private set; }
 
         public ResourceDefinition SetAttribute(string name, string value)
         {
-            if (Attributes == null)
-            {
-                Attributes = new AttributeDictionary();
-            }
+            Attributes ??= new AttributeDictionary();
 
             Attributes[name] = value;
             return this;
@@ -138,7 +136,13 @@ namespace OrchardCore.ResourceManagement
         /// <param name="version">The version to set, in the form of <code>major.minor[.build[.revision]]</code></param>
         public ResourceDefinition SetVersion(string version)
         {
+            if (!System.Version.TryParse(version, out _))
+            {
+                throw new FormatException("The resource version should be in the form of major.minor[.build[.revision]].");
+            }
+
             Version = version;
+
             return this;
         }
 
@@ -160,10 +164,7 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceDefinition SetDependencies(params string[] dependencies)
         {
-            if (Dependencies == null)
-            {
-                Dependencies = new List<string>();
-            }
+            Dependencies ??= new List<string>();
 
             Dependencies.AddRange(dependencies);
 
@@ -176,13 +177,24 @@ namespace OrchardCore.ResourceManagement
 
             return this;
         }
+        /// <summary>
+        /// Position a resource first, last or by dependency.
+        /// </summary>
+        /// <param name="position"></param>
+        public ResourceDefinition SetPosition(ResourcePosition position)
+        {
+            Position = position;
+
+            return this;
+        }
 
         public TagBuilder GetTagBuilder(RequireSettings settings,
             string applicationPath,
             IFileVersionProvider fileVersionProvider)
         {
             string url, filePathAttributeName = null;
-            // Url priority:
+
+            // Url priority.
             if (settings.DebugMode)
             {
                 url = settings.CdnMode
@@ -202,7 +214,7 @@ namespace OrchardCore.ResourceManagement
             }
             if (!String.IsNullOrEmpty(settings.Culture))
             {
-                string nearestCulture = FindNearestCulture(settings.Culture);
+                var nearestCulture = FindNearestCulture(settings.Culture);
                 if (!String.IsNullOrEmpty(nearestCulture))
                 {
                     url = Path.ChangeExtension(url, nearestCulture + Path.GetExtension(url));
@@ -213,15 +225,15 @@ namespace OrchardCore.ResourceManagement
             {
                 if (!String.IsNullOrEmpty(_basePath))
                 {
-                    url = _basePath + url.Substring(1);
+                    url = String.Concat(_basePath, url.AsSpan(1));
                 }
                 else
                 {
-                    url = applicationPath + url.Substring(1);
+                    url = String.Concat(applicationPath, url.AsSpan(1));
                 }
             }
 
-            // If settings has value, it can override resource definition, otherwise use resource definition
+            // If settings has value, it can override resource definition, otherwise use resource definition.
             if (url != null && ((settings.AppendVersion.HasValue && settings.AppendVersion == true) ||
                 (!settings.AppendVersion.HasValue && AppendVersion == true)))
             {
@@ -230,6 +242,7 @@ namespace OrchardCore.ResourceManagement
 
             // Don't prefix cdn if the path includes a protocol, i.e. is an external url, or is in debug mode.
             if (url != null && !settings.DebugMode && !String.IsNullOrEmpty(settings.CdnBaseUrl) &&
+
                 // Don't evaluate with Uri.TryCreate as it produces incorrect results on Linux.
                 !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
                 !url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
@@ -244,12 +257,19 @@ namespace OrchardCore.ResourceManagement
             {
                 case "script":
                     tagBuilder = new TagBuilder("script");
+                    if (settings.Attributes.Count > 0)
+                    {
+                        foreach (var kv in settings.Attributes)
+                        {
+                            tagBuilder.Attributes.Add(kv);
+                        }
+                    }
                     filePathAttributeName = "src";
                     break;
                 case "stylesheet":
                     if (url == null && InnerContent != null)
                     {
-                        // Inline style declaration
+                        // Inline style declaration.
                         tagBuilder = new TagBuilder("style")
                         {
                             Attributes = {
@@ -259,7 +279,7 @@ namespace OrchardCore.ResourceManagement
                     }
                     else
                     {
-                        // Stylesheet resource
+                        // Stylesheet resource.
                         tagBuilder = new TagBuilder("link")
                         {
                             TagRenderMode = TagRenderMode.SelfClosing,
@@ -315,17 +335,17 @@ namespace OrchardCore.ResourceManagement
 
         public string FindNearestCulture(string culture)
         {
-            // go for an exact match
+            // Go for an exact match.
             if (Cultures == null)
             {
                 return null;
             }
-            int selectedIndex = Array.IndexOf(Cultures, culture);
+            var selectedIndex = Array.IndexOf(Cultures, culture);
             if (selectedIndex != -1)
             {
                 return Cultures[selectedIndex];
             }
-            // try parent culture if any
+            // Try parent culture if any.
             var cultureInfo = new CultureInfo(culture);
             if (cultureInfo.Parent.Name != culture)
             {
@@ -346,9 +366,9 @@ namespace OrchardCore.ResourceManagement
             }
 
             var that = (ResourceDefinition)obj;
-            return string.Equals(that.Name, Name) &&
-                string.Equals(that.Type, Type) &&
-                string.Equals(that.Version, Version);
+            return String.Equals(that.Name, Name) &&
+                String.Equals(that.Type, Type) &&
+                String.Equals(that.Version, Version);
         }
 
         public override int GetHashCode()

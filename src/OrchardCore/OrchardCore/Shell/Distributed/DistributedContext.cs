@@ -1,14 +1,15 @@
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell.Builders;
 
 namespace OrchardCore.Environment.Shell.Distributed
 {
-    internal class DistributedContext : IDisposable
+    internal class DistributedContext : IDisposable, IAsyncDisposable
     {
-        private ShellContext _context;
+        private readonly ShellContext _context;
         private volatile int _count;
         private bool _released;
 
@@ -18,20 +19,22 @@ namespace OrchardCore.Environment.Shell.Distributed
             _context = context;
 
             // If the distributed feature is not enabled, the distributed cache is not set.
-            if (context.ServiceProvider.GetService<DistributedShellMarkerService>() == null)
+            if (context.ServiceProvider.GetService<DistributedShellMarkerService>() is null)
             {
                 return;
             }
 
             // If the current cache is an in memory cache, the distributed cache is not set.
             var distributedCache = context.ServiceProvider.GetService<IDistributedCache>();
-            if (distributedCache == null || distributedCache is MemoryDistributedCache)
+            if (distributedCache is null || distributedCache is MemoryDistributedCache)
             {
                 return;
             }
 
             DistributedCache = distributedCache;
         }
+
+        public ShellContext Context => _context;
 
         public IDistributedCache DistributedCache { get; }
 
@@ -61,6 +64,12 @@ namespace OrchardCore.Environment.Shell.Distributed
             Dispose();
         }
 
+        public async Task ReleaseAsync()
+        {
+            _released = true;
+            await DisposeAsync();
+        }
+
         public void Dispose()
         {
             // The last use disposes the shell context.
@@ -68,6 +77,17 @@ namespace OrchardCore.Environment.Shell.Distributed
             {
                 _context.Dispose();
             }
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            // The last use disposes the shell context.
+            if (Interlocked.Decrement(ref _count) == 0)
+            {
+                return _context.DisposeAsync();
+            }
+
+            return ValueTask.CompletedTask;
         }
     }
 }

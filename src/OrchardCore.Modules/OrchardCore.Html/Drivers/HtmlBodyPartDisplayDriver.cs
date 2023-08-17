@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Fluid.Values;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -23,7 +26,7 @@ namespace OrchardCore.Html.Drivers
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IShortcodeService _shortcodeService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public HtmlBodyPartDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
             IHtmlSanitizerService htmlSanitizerService,
@@ -43,7 +46,6 @@ namespace OrchardCore.Html.Drivers
             return Initialize<HtmlBodyPartViewModel>(GetDisplayShapeType(context), m => BuildViewModelAsync(m, HtmlBodyPart, context))
                 .Location("Detail", "Content:5")
                 .Location("Summary", "Content:10")
-                .Location("DetailAdmin", "Content:10") // For dashboard widgets;
                 ;
         }
 
@@ -66,10 +68,10 @@ namespace OrchardCore.Html.Drivers
 
             if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Html))
             {
-                if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
+                if (!String.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
                 {
                     var partName = context.TypePartDefinition.DisplayName();
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
+                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, String.Join(" ", errors)]);
                 }
                 else
                 {
@@ -89,8 +91,8 @@ namespace OrchardCore.Html.Drivers
 
             if (!settings.SanitizeHtml)
             {
-                model.Html = await _liquidTemplateManager.RenderAsync(htmlBodyPart.Html, _htmlEncoder, model,
-                    scope => scope.SetValue("ContentItem", model.ContentItem));
+                model.Html = await _liquidTemplateManager.RenderStringAsync(htmlBodyPart.Html, _htmlEncoder, model,
+                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
             }
 
             model.Html = await _shortcodeService.ProcessAsync(model.Html,

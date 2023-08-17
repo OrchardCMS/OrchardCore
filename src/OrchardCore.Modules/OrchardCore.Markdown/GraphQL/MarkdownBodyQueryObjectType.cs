@@ -1,6 +1,9 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Fluid.Values;
+using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -32,14 +35,14 @@ namespace OrchardCore.Markdown.GraphQL
                 .ResolveLockedAsync(ToHtml);
         }
 
-        private static async Task<object> ToHtml(ResolveFieldContext<MarkdownBodyPart> ctx)
+        private static async Task<object> ToHtml(IResolveFieldContext<MarkdownBodyPart> ctx)
         {
             if (string.IsNullOrEmpty(ctx.Source.Markdown))
             {
                 return ctx.Source.Markdown;
             }
 
-            var serviceProvider = ctx.ResolveServiceProvider();
+            var serviceProvider = ctx.RequestServices;
             var markdownService = serviceProvider.GetRequiredService<IMarkdownService>();
             var shortcodeService = serviceProvider.GetRequiredService<IShortcodeService>();
             var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
@@ -65,8 +68,8 @@ namespace OrchardCore.Markdown.GraphQL
                     ContentItem = ctx.Source.ContentItem
                 };
 
-                html = await liquidTemplateManager.RenderAsync(html, htmlEncoder, model,
-                    scope => scope.SetValue("ContentItem", model.ContentItem));
+                html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model,
+                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
             }
 
             html = await shortcodeService.ProcessAsync(html,

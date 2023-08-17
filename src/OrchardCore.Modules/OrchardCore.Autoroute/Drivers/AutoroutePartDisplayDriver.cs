@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Autoroute.Core.Indexes;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -27,7 +27,7 @@ namespace OrchardCore.Autoroute.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly YesSql.ISession _session;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AutoroutePartDisplayDriver(
             IOptions<AutorouteOptions> options,
@@ -60,12 +60,12 @@ namespace OrchardCore.Autoroute.Drivers
 
                 if (homeRoute != null && homeRoute.TryGetValue(_options.ContainedContentItemIdKey, out var containedContentItemId))
                 {
-                    if (string.Equals(autoroutePart.ContentItem.ContentItemId, containedContentItemId.ToString(), StringComparison.OrdinalIgnoreCase))
+                    if (String.Equals(autoroutePart.ContentItem.ContentItemId, containedContentItemId.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
                         model.IsHomepage = true;
                     }
                 }
-                else if (string.Equals(autoroutePart.ContentItem.ContentItemId, homeRoute?[_options.ContentItemIdKey]?.ToString(), StringComparison.OrdinalIgnoreCase))
+                else if (String.Equals(autoroutePart.ContentItem.ContentItemId, homeRoute?[_options.ContentItemIdKey]?.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
                     model.IsHomepage = true;
                 }
@@ -120,13 +120,9 @@ namespace OrchardCore.Autoroute.Drivers
                     var paths = new string[] { path, "/" + path, path + "/", "/" + path + "/" };
 
                     var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) && o.Path.IsIn(paths)).ListAsync();
-                    if (possibleConflicts.Any())
+                    if (possibleConflicts.Any(x => x.ContentItemId != model.ContentItem.ContentItemId && x.ContainedContentItemId != model.ContentItem.ContentItemId))
                     {
-                        if (possibleConflicts.Any(x => x.ContentItemId != model.ContentItem.ContentItemId) ||
-                            possibleConflicts.Any(x => !String.IsNullOrEmpty(x.ContainedContentItemId) && x.ContainedContentItemId != model.ContentItem.ContentItemId))
-                        {
-                            updater.ModelState.AddModelError(Prefix, nameof(model.Path), S["Your permalink is already in use."]);
-                        }
+                        updater.ModelState.AddModelError(Prefix, nameof(model.Path), S["Your permalink is already in use."]);
                     }
                 }
             }

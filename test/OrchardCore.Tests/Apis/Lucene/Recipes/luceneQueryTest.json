@@ -1,0 +1,141 @@
+{
+  "name": "LuceneQueryTest",
+  "displayName": "Lucene Query Test 1",
+  "description": "",
+  "website": "",
+  "issetuprecipe": true,
+  "categories": [ "test" ],
+  "tags": [],
+  "variables": {
+    "messageContentItemId": "[js:uuid()]",
+    "now": "[js: new Date().toISOString()]"
+  },
+  "steps": [
+    {
+      "name": "feature",
+      "disable": [],
+      "enable": [
+        "OrchardCore.Admin",
+        "OrchardCore.Recipes",
+        "OrchardCore.Roles",
+        "OrchardCore.Users",
+        "OrchardCore.Indexing",
+
+        // Content Management
+        "OrchardCore.Alias",
+        "OrchardCore.ContentFields",
+        "OrchardCore.ContentFields.Indexing.SQL",
+        "OrchardCore.ContentTypes",
+        "OrchardCore.Contents",
+        "OrchardCore.Contents.FileContentDefinition",
+        "OrchardCore.Html",
+        "OrchardCore.Search.Lucene",
+        "OrchardCore.Search.Lucene.ContentPicker"
+      ]
+    },
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "Article",
+          "DisplayName": "Article",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Listable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "HtmlBodyPart",
+              "Name": "HtmlBodyPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "1",
+                  "Editor": "Wysiwyg"
+                },
+                "LuceneContentIndexSettings": {
+                  "Included": true,
+                  "Stored": false,
+                  "Keyword": false
+                }
+              }
+            },
+            {
+              "PartName": "Article",
+              "Name": "Article",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "2"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "lucene-index",
+      "Indices": [
+        {
+          "ArticleIndex": {
+            "AnalyzerName": "standardanalyzer",
+            "IndexLatest": false,
+            "IndexedContentTypes": [
+              "Article"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "content",
+      "data": [
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentType": "Article",
+          "DisplayText": "Orchard",
+          "Latest": true,
+          "Published": true,
+          "Article": {},
+          "HtmlBodyPart": {
+            "Html": "It’s important to note the differences between the framework and the CMS."
+          }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentType": "Article",
+          "DisplayText": "Orchard Core",
+          "Latest": true,
+          "Published": true,
+          "Article": {},
+          "HtmlBodyPart": {
+            "Html": "This is a redevelopment on ASP.NET Core."
+          }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentType": "Article",
+          "DisplayText": "CMS",
+          "Latest": true,
+          "Published": true,
+          "Article": {},
+          "HtmlBodyPart": {
+            "Html": "A Web Content Management System (CMS) built on top of the Orchard Core Framework."
+          }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentType": "Article",
+          "DisplayText": "Core Framework",
+          "Latest": true,
+          "Published": true,
+          "Article": {},
+          "HtmlBodyPart": {
+            "Html": "Orchard is an application framework for building modular, multi-tenant applications on ASP.NET Core."
+          }
+        }
+      ]
+    }
+  ]
+}

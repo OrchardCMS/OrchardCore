@@ -44,11 +44,15 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         {
             if (!Name[0].IsLetter())
             {
-                throw new ArgumentException("Content type name must start with a letter", "name");
+                throw new ArgumentException("Content part name must start with a letter", "name");
             }
             if (!String.Equals(Name, Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
             {
-                throw new ArgumentException("Content type name contains invalid characters", "name");
+                throw new ArgumentException("Content part name contains invalid characters", "name");
+            }
+            if (Name.IsReservedContentName())
+            {
+                throw new ArgumentException("Content part name is reserved for internal use", "name");
             }
 
             return new ContentPartDefinition(Name, _fields, _settings);
@@ -62,7 +66,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentPartDefinitionBuilder RemoveField(string fieldName)
         {
-            var existingField = _fields.SingleOrDefault(x => x.Name == fieldName);
+            var existingField = _fields.SingleOrDefault(x => String.Equals(x.Name, fieldName, StringComparison.OrdinalIgnoreCase));
             if (existingField != null)
             {
                 _fields.Remove(existingField);
@@ -119,7 +123,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentPartDefinitionBuilder WithField(string fieldName, Action<ContentPartFieldDefinitionBuilder> configuration)
         {
-            var existingField = _fields.FirstOrDefault(x => x.Name == fieldName);
+            var existingField = _fields.FirstOrDefault(x => String.Equals(x.Name, fieldName, StringComparison.OrdinalIgnoreCase));
             if (existingField != null)
             {
                 var toRemove = _fields.Where(x => x.Name == fieldName).ToArray();
@@ -140,7 +144,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public async Task<ContentPartDefinitionBuilder> WithFieldAsync(string fieldName, Func<ContentPartFieldDefinitionBuilder, Task> configurationAsync)
         {
-            var existingField = _fields.FirstOrDefault(x => x.Name == fieldName);
+            var existingField = _fields.FirstOrDefault(x => String.Equals(x.Name, fieldName, StringComparison.OrdinalIgnoreCase));
 
             if (existingField != null)
             {

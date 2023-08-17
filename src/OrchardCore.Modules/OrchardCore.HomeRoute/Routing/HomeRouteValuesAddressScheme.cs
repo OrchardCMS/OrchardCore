@@ -57,7 +57,7 @@ namespace OrchardCore.HomeRoute.Routing
             return Enumerable.Empty<Endpoint>();
         }
 
-        private bool Match(RouteValueDictionary routeValues, RouteValueDictionary explicitValues)
+        private static bool Match(RouteValueDictionary routeValues, RouteValueDictionary explicitValues)
         {
             if (routeValues.Count == 0)
             {

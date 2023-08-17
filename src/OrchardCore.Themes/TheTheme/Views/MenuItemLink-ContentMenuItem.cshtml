@@ -8,7 +8,7 @@
 
     TagBuilder tag = Tag(Model, "a");
     tag.Attributes["href"] = linkUrl;
-    tag.InnerHtml.Append(menuItemPart.Name);
+    tag.InnerHtml.Append(contentItem.DisplayText);
 
     if (Model.Level == 0 && Model.HasItems)
     {

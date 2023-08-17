@@ -21,6 +21,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
     public class OpenIdScopeStore<TScope> : IOpenIdScopeStore<TScope>
         where TScope : OpenIdScope, new()
     {
+        private const string OpenIdCollection = OpenIdScope.OpenIdCollection;
         private readonly ISession _session;
 
         public OpenIdScopeStore(ISession session)
@@ -33,7 +34,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.Query<TScope>().CountAsync();
+            return await _session.Query<TScope>(collection: OpenIdCollection).CountAsync();
         }
 
         /// <inheritdoc/>
@@ -50,8 +51,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Save(scope);
-            await _session.CommitAsync();
+            _session.Save(scope, collection: OpenIdCollection);
+            await _session.SaveChangesAsync();
         }
 
         /// <inheritdoc/>
@@ -64,67 +65,67 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Delete(scope);
-            await _session.CommitAsync();
+            _session.Delete(scope, collection: OpenIdCollection);
+            await _session.SaveChangesAsync();
         }
 
         /// <inheritdoc/>
         public virtual async ValueTask<TScope> FindByIdAsync(string identifier, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(identifier))
+            if (String.IsNullOrEmpty(identifier))
             {
                 throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
             }
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.Query<TScope, OpenIdScopeIndex>(index => index.ScopeId == identifier).FirstOrDefaultAsync();
+            return await _session.Query<TScope, OpenIdScopeIndex>(index => index.ScopeId == identifier, collection: OpenIdCollection).FirstOrDefaultAsync();
         }
 
         /// <inheritdoc/>
         public virtual async ValueTask<TScope> FindByNameAsync(string name, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(name))
+            if (String.IsNullOrEmpty(name))
             {
                 throw new ArgumentException("The scope name cannot be null or empty.", nameof(name));
             }
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.Query<TScope, OpenIdScopeIndex>(index => index.Name == name).FirstOrDefaultAsync();
+            return await _session.Query<TScope, OpenIdScopeIndex>(index => index.Name == name, collection: OpenIdCollection).FirstOrDefaultAsync();
         }
 
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TScope> FindByNamesAsync(
             ImmutableArray<string> names, CancellationToken cancellationToken)
         {
-            if (names.Any(name => string.IsNullOrEmpty(name)))
+            if (names.Any(name => String.IsNullOrEmpty(name)))
             {
                 throw new ArgumentException("Scope names cannot be null or empty.", nameof(names));
             }
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.Query<TScope, OpenIdScopeIndex>(index => index.Name.IsIn(names)).ToAsyncEnumerable();
+            return _session.Query<TScope, OpenIdScopeIndex>(index => index.Name.IsIn(names), collection: OpenIdCollection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
         public virtual async ValueTask<TScope> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(identifier))
+            if (String.IsNullOrEmpty(identifier))
             {
                 throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
             }
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.GetAsync<TScope>(int.Parse(identifier, CultureInfo.InvariantCulture));
+            return await _session.GetAsync<TScope>(Int64.Parse(identifier, CultureInfo.InvariantCulture), collection: OpenIdCollection);
         }
 
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TScope> FindByResourceAsync(string resource, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(resource))
+            if (String.IsNullOrEmpty(resource))
             {
                 throw new ArgumentException("The resource cannot be null or empty.", nameof(resource));
             }
@@ -132,7 +133,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             return _session.Query<TScope, OpenIdScopeByResourceIndex>(
-                index => index.Resource == resource).ToAsyncEnumerable();
+                index => index.Resource == resource,
+                collection: OpenIdCollection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
@@ -260,12 +262,12 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
         /// <inheritdoc/>
         public virtual ValueTask<TScope> InstantiateAsync(CancellationToken cancellationToken)
-            => new ValueTask<TScope>(new TScope { ScopeId = Guid.NewGuid().ToString("n") });
+            => new(new TScope { ScopeId = Guid.NewGuid().ToString("n") });
 
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TScope> ListAsync(int? count, int? offset, CancellationToken cancellationToken)
         {
-            var query = _session.Query<TScope>();
+            var query = _session.Query<TScope>(collection: OpenIdCollection);
 
             if (offset.HasValue)
             {
@@ -400,11 +402,11 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Save(scope, checkConcurrency: true);
+            _session.Save(scope, checkConcurrency: true, collection: OpenIdCollection);
 
             try
             {
-                await _session.CommitAsync();
+                await _session.SaveChangesAsync();
             }
             catch (ConcurrencyException exception)
             {

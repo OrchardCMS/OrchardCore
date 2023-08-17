@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Fluid.Values;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -25,7 +28,7 @@ namespace OrchardCore.Markdown.Drivers
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly IShortcodeService _shortcodeService;
         private readonly IMarkdownService _markdownService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public MarkdownFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder,
@@ -60,8 +63,8 @@ namespace OrchardCore.Markdown.Drivers
                 // The liquid rendering is for backwards compatability and can be removed in a future version.
                 if (!settings.SanitizeHtml)
                 {
-                    model.Markdown = await _liquidTemplateManager.RenderAsync(model.Html, _htmlEncoder, model,
-                        scope => scope.SetValue("ContentItem", field.ContentItem));
+                    model.Markdown = await _liquidTemplateManager.RenderStringAsync(model.Html, _htmlEncoder, model,
+                        new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(field.ContentItem) });
                 }
 
                 model.Html = await _shortcodeService.ProcessAsync(model.Html,
@@ -97,10 +100,10 @@ namespace OrchardCore.Markdown.Drivers
 
             if (await updater.TryUpdateModelAsync(viewModel, Prefix, vm => vm.Markdown))
             {
-                if (!string.IsNullOrEmpty(viewModel.Markdown) && !_liquidTemplateManager.Validate(viewModel.Markdown, out var errors))
+                if (!String.IsNullOrEmpty(viewModel.Markdown) && !_liquidTemplateManager.Validate(viewModel.Markdown, out var errors))
                 {
                     var fieldName = context.PartFieldDefinition.DisplayName();
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Markdown), S["{0} field doesn't contain a valid Liquid expression. Details: {1}", fieldName, string.Join(" ", errors)]);
+                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Markdown), S["{0} field doesn't contain a valid Liquid expression. Details: {1}", fieldName, String.Join(" ", errors)]);
                 }
                 else
                 {

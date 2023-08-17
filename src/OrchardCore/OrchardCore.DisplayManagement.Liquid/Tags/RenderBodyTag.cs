@@ -1,29 +1,24 @@
-using System;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using Fluid.Tags;
-using Microsoft.AspNetCore.Html;
+using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.DisplayManagement.Layout;
+using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
-    public class RenderBodyTag : SimpleTag
+    public class RenderBodyTag
     {
-        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public static async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            if (!context.AmbientValues.TryGetValue("ThemeLayout", out dynamic layout))
-            {
-                throw new ArgumentException("ThemeLayout missing while invoking 'render_body'");
-            }
+            var services = ((LiquidTemplateContext)context).Services;
 
-            if (!context.AmbientValues.TryGetValue("DisplayHelper", out var item) || !(item is IDisplayHelper displayHelper))
-            {
-                throw new ArgumentException("DisplayHelper missing while invoking 'render_body'");
-            }
+            var layout = await services.GetRequiredService<ILayoutAccessor>().GetLayoutAsync();
+            var displayHelper = services.GetRequiredService<IDisplayHelper>();
 
-            IHtmlContent htmlContent = await displayHelper.ShapeExecuteAsync(layout.Content);
+            var htmlContent = await displayHelper.ShapeExecuteAsync(layout.Zones["Content"]);
 
             htmlContent.WriteTo(writer, (HtmlEncoder)encoder);
             return Completion.Normal;

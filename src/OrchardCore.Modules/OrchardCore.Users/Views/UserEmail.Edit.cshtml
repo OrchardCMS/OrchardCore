@@ -1,0 +1,10 @@
+@model OrchardCore.Users.ViewModels.EditUserEmailViewModel
+
+<div class="mb-3" asp-validation-class-for="Email">
+    <label asp-for="Email">@T["Email"]</label>
+    <div class="input-group col-md-4">
+        <span class="input-group-text"><i class="fa-solid fa-envelope" aria-hidden="true"></i></span>
+        <input asp-for="Email" class="form-control" type="email" asp-is-disabled="@(!Model.AllowEditing)" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+</div>

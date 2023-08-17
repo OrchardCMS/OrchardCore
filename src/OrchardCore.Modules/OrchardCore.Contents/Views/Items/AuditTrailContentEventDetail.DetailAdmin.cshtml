@@ -1,0 +1,65 @@
+@model AuditTrailContentEventDetailViewModel
+@using OrchardCore.Contents.AuditTrail.Services
+
+@{
+    var contentEvent = Model.ContentEvent;
+    var contentItem = contentEvent.ContentItem;
+    var versionNumber = contentEvent.VersionNumber;
+    var latestVersionId = Model.LatestVersionId;
+    var newTime = await DisplayAsync(await New.Timespan(Utc: Model.AuditTrailEvent.CreatedUtc, Format: "g"));
+    var newText = contentItem.DisplayText;
+    var oldTime = await DisplayAsync(await New.Timespan(Utc: Model.PreviousContentItem?.ModifiedUtc, Format: "g"));
+    var oldText = Model.PreviousContentItem?.DisplayText;
+}
+
+<table class="table table-sm table-hover mb-0">
+    <tbody>
+        <tr>
+            <th class="border-top-0 w-25">@T["Content Item Id"]</th>
+            <td class="border-top-0">@contentItem.ContentItemId</td>
+        </tr>
+        <tr>
+            <th>@T["Content type"]</th>
+            <td>@contentItem.ContentType</td>
+        </tr>
+        <tr>
+            <th>@T["Display text"]</th>
+            @if (Model.AuditTrailEvent.Name == ContentAuditTrailEventConfiguration.Removed)
+            {
+                <td>@contentItem.DisplayText</td>
+            }
+            else
+            {
+                <td><a edit-for="@contentItem">@contentItem.DisplayText</a></td>
+            }
+        </tr>
+        <tr>
+            <th>@T["Version"]</th>
+            @if (contentItem.ContentItemVersionId == latestVersionId)
+            {
+                <td>@T["Version {0}", versionNumber]</td>
+            }
+            else
+            {
+                <td>
+                    <a asp-route-area="OrchardCore.Contents"
+                        asp-action="Display"
+                        asp-controller="AuditTrailContent"
+                        asp-route-auditTrailEventId="@Model.AuditTrailEvent.EventId">
+                        @T["Version {0}", versionNumber]
+                    </a>
+                </td>
+            }
+        </tr>
+        <tr>
+            <th>@T["Comment"]</th>
+            <td>
+                @if (!String.IsNullOrEmpty(Model.Comment))
+                {
+                    @* a pre tag respects whitespace and newlines.*@
+                    <pre class="audittrail-comment">@Model.Comment</pre>
+                }
+            </td>
+        </tr>
+    </tbody>
+</table>

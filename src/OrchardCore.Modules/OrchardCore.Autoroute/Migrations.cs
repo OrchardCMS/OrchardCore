@@ -1,7 +1,7 @@
+using OrchardCore.Autoroute.Core.Indexes;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
 using YesSql.Sql;
 
@@ -9,7 +9,7 @@ namespace OrchardCore.Autoroute
 {
     public class Migrations : DataMigration
     {
-        private IContentDefinitionManager _contentDefinitionManager;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
 
         public Migrations(IContentDefinitionManager contentDefinitionManager)
         {
@@ -31,10 +31,6 @@ namespace OrchardCore.Autoroute
                 .Column<bool>("Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
-                .CreateIndex("IDX_AutoroutePartIndex_DocumentId", "DocumentId")
-            );
-
             // Shortcut other migration steps on new content definition schemas.
             return 5;
         }
@@ -49,7 +45,9 @@ namespace OrchardCore.Autoroute
         }
 
         // This code can be removed in a later version.
+#pragma warning disable CA1822 // Mark members as static
         public int UpdateFrom2()
+#pragma warning restore CA1822 // Mark members as static
         {
             return 3;
         }
@@ -73,12 +71,10 @@ namespace OrchardCore.Autoroute
         }
 
         // This code can be removed in a later version.
+#pragma warning disable CA1822 // Mark members as static
         public int UpdateFrom4()
+#pragma warning restore CA1822 // Mark members as static
         {
-            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
-                .CreateIndex("IDX_AutoroutePartIndex_DocumentId", "DocumentId")
-            );
-
             return 5;
         }
     }

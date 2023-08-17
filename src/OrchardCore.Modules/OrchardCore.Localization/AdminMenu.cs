@@ -11,7 +11,7 @@ namespace OrchardCore.Localization
     /// </summary>
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         /// <summary>
         /// Creates a new instance of the <see cref="AdminMenu"/>.
@@ -22,19 +22,22 @@ namespace OrchardCore.Localization
             S = localizer;
         }
 
-        ///<inheritdocs />
+        /// <inheritdocs />
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 builder
-                    .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, localization => localization
+                    .Add(S["Configuration"], configuration => configuration
                         .Add(S["Settings"], settings => settings
-                            .Add(S["Cultures"], S["Cultures"].PrefixPosition(), entry => entry
-                            .AddClass("cultures").Id("cultures")
-                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LocalizationSettingsDisplayDriver.GroupId })
-                                .Permission(Permissions.ManageCultures)
-                                .LocalNav()
+                            .Add(S["Localization"], localization => localization
+                                .AddClass("localization").Id("localization")
+                                .Add(S["Cultures"], S["Cultures"].PrefixPosition(), entry => entry
+                                    .AddClass("cultures").Id("cultures")
+                                    .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LocalizationSettingsDisplayDriver.GroupId })
+                                    .Permission(Permissions.ManageCultures)
+                                    .LocalNav()
+                                )
                             )
                         )
                     );

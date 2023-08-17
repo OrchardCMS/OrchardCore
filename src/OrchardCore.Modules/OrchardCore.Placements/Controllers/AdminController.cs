@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement;
@@ -18,7 +19,6 @@ using OrchardCore.Navigation;
 using OrchardCore.Placements.Services;
 using OrchardCore.Placements.ViewModels;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Placements.Controllers
 {
@@ -27,11 +27,11 @@ namespace OrchardCore.Placements.Controllers
         private readonly ILogger _logger;
         private readonly IAuthorizationService _authorizationService;
         private readonly PlacementsManager _placementsManager;
-        private readonly IHtmlLocalizer H;
-        private readonly IStringLocalizer S;
         private readonly INotifier _notifier;
-        private readonly ISiteService _siteService;
-        private readonly dynamic New;
+        private readonly PagerOptions _pagerOptions;
+        protected readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
+        protected readonly dynamic New;
 
         public AdminController(
             ILogger<AdminController> logger,
@@ -40,14 +40,14 @@ namespace OrchardCore.Placements.Controllers
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
             INotifier notifier,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             IShapeFactory shapeFactory)
         {
             _logger = logger;
             _authorizationService = authorizationService;
             _placementsManager = placementsManager;
             _notifier = notifier;
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
 
             New = shapeFactory;
             H = htmlLocalizer;
@@ -61,8 +61,7 @@ namespace OrchardCore.Placements.Controllers
                 return Forbid();
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var shapeTypes = await _placementsManager.ListShapePlacementsAsync();
 
@@ -71,12 +70,12 @@ namespace OrchardCore.Placements.Controllers
                 ShapeType = entry.Key
             }).ToList();
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
                 shapeList = shapeList.Where(x => x.ShapeType.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            var count = shapeList.Count();
+            var count = shapeList.Count;
 
             shapeList = shapeList.OrderBy(x => x.ShapeType)
                 .Skip(pager.GetStartIndex())
@@ -102,7 +101,7 @@ namespace OrchardCore.Placements.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(ListShapePlacementsViewModel model)
         {
-            return RedirectToAction("Index", new RouteValueDictionary {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary {
                 { "Options.Search", model.Options.Search }
             });
         }
@@ -143,11 +142,11 @@ namespace OrchardCore.Placements.Controllers
                     DisplayType = displayType,
                     Differentiator = differentiator
                 };
-                if (!string.IsNullOrEmpty(contentType))
+                if (!String.IsNullOrEmpty(contentType))
                 {
                     generatedNode.Filters.Add("contentType", new JArray(contentType));
                 }
-                if (!string.IsNullOrEmpty(contentPart))
+                if (!String.IsNullOrEmpty(contentPart))
                 {
                     generatedNode.Filters.Add("contentPart", new JArray(contentPart));
                 }
@@ -177,46 +176,47 @@ namespace OrchardCore.Placements.Controllers
 
             if (viewModel.Creating && await _placementsManager.GetShapePlacementsAsync(viewModel.ShapeType) != null)
             {
-                // Prevent overriding existing rules on creation
-                _notifier.Warning(H["Placement rules for \"{0}\" already exists. Please edit existing rule.", viewModel.ShapeType]);
+                // Prevent overriding existing rules on creation.
+                await _notifier.WarningAsync(H["Placement rules for \"{0}\" already exists. Please edit existing rule.", viewModel.ShapeType]);
                 return View(viewModel);
             }
 
             try
             {
-                IEnumerable<PlacementNode> placementNodes = JsonConvert.DeserializeObject<PlacementNode[]>(viewModel.Nodes) ?? new PlacementNode[0];
+                var placementNodes = JsonConvert.DeserializeObject<PlacementNode[]>(viewModel.Nodes)
+                    ?? Enumerable.Empty<PlacementNode>();
 
-                // Remove empty nodes
+                // Remove empty nodes.
                 placementNodes = placementNodes.Where(node => !IsEmpty(node));
 
                 if (placementNodes.Any())
                 {
-                    // Save
+                    // Save.
                     await _placementsManager.UpdateShapePlacementsAsync(viewModel.ShapeType, placementNodes);
                     viewModel.Creating = false;
 
-                    _notifier.Success(H["The \"{0}\" placement have been saved.", viewModel.ShapeType]);
+                    await _notifier.SuccessAsync(H["The \"{0}\" placement have been saved.", viewModel.ShapeType]);
                 }
                 else if (viewModel.Creating)
                 {
-                    _notifier.Warning(H["The \"{0}\" placement is empty.", viewModel.ShapeType]);
+                    await _notifier.WarningAsync(H["The \"{0}\" placement is empty.", viewModel.ShapeType]);
                     return View(viewModel);
                 }
                 else
                 {
-                    // Remove if empty
+                    // Remove if empty.
                     await _placementsManager.RemoveShapePlacementsAsync(viewModel.ShapeType);
-                    _notifier.Success(H["The \"{0}\" placement has been deleted.", viewModel.ShapeType]);
+                    await _notifier.SuccessAsync(H["The \"{0}\" placement has been deleted.", viewModel.ShapeType]);
                 }
             }
-            catch(JsonReaderException jsonException)
+            catch (JsonReaderException jsonException)
             {
-                _notifier.Error(H["An error occurred while parsing the placement<br/>{0}", jsonException.Message]);
+                await _notifier.ErrorAsync(H["An error occurred while parsing the placement<br/>{0}", jsonException.Message]);
                 return View(viewModel);
             }
             catch (Exception e)
             {
-                _notifier.Error(H["An error occurred while saving the placement."]);
+                await _notifier.ErrorAsync(H["An error occurred while saving the placement."]);
                 _logger.LogError(e, "An error occurred while saving the placement.");
                 return View(viewModel);
             }
@@ -238,7 +238,7 @@ namespace OrchardCore.Placements.Controllers
             }
 
             await _placementsManager.RemoveShapePlacementsAsync(shapeType);
-            _notifier.Success(H["The \"{0}\" placement has been deleted.", shapeType]);
+            await _notifier.SuccessAsync(H["The \"{0}\" placement has been deleted.", shapeType]);
 
             return RedirectToReturnUrlOrIndex(returnUrl);
         }
@@ -263,21 +263,21 @@ namespace OrchardCore.Placements.Controllers
                         {
                             await _placementsManager.RemoveShapePlacementsAsync(item);
                         }
-                        _notifier.Success(H["Placements successfully removed."]);
+                        await _notifier.SuccessAsync(H["Placements successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         private IActionResult RedirectToReturnUrlOrIndex(string returnUrl)
         {
             if ((String.IsNullOrEmpty(returnUrl) == false) && (Url.IsLocalUrl(returnUrl)))
             {
-                return Redirect(returnUrl);
+                return this.Redirect(returnUrl, true);
             }
             else
             {
@@ -287,24 +287,24 @@ namespace OrchardCore.Placements.Controllers
 
         private static bool ShouldCreateNode(IEnumerable<PlacementNode> nodes, string displayType, string contentType, string contentPart, string differentiator)
         {
-            if (string.IsNullOrEmpty(displayType) && string.IsNullOrEmpty(differentiator))
+            if (String.IsNullOrEmpty(displayType) && String.IsNullOrEmpty(differentiator))
             {
                 return false;
             }
             else
             {
                 return !nodes.Any(node =>
-                    (string.IsNullOrEmpty(displayType) || node.DisplayType == displayType) &&
-                    (string.IsNullOrEmpty(contentType) || (node.Filters.ContainsKey("contentType") && FilterEquals(node.Filters["contentType"], contentType))) &&
-                    (string.IsNullOrEmpty(contentPart) || (node.Filters.ContainsKey("contentPart") && FilterEquals(node.Filters["contentPart"], contentPart))) &&
-                    (string.IsNullOrEmpty(differentiator) || node.Differentiator == differentiator));
+                    (String.IsNullOrEmpty(displayType) || node.DisplayType == displayType) &&
+                    (String.IsNullOrEmpty(contentType) || (node.Filters.ContainsKey("contentType") && FilterEquals(node.Filters["contentType"], contentType))) &&
+                    (String.IsNullOrEmpty(contentPart) || (node.Filters.ContainsKey("contentPart") && FilterEquals(node.Filters["contentPart"], contentPart))) &&
+                    (String.IsNullOrEmpty(differentiator) || node.Differentiator == differentiator));
             }
         }
 
         private static bool IsEmpty(PlacementNode node)
         {
-            return string.IsNullOrEmpty(node.Location)
-                && string.IsNullOrEmpty(node.ShapeType)
+            return String.IsNullOrEmpty(node.Location)
+                && String.IsNullOrEmpty(node.ShapeType)
                 && (node.Alternates == null || node.Alternates.Length == 0)
                 && (node.Wrappers == null || node.Wrappers.Length == 0);
         }

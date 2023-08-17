@@ -1,6 +1,8 @@
+using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
+using OrchardCore.Templates.Models;
 using OrchardCore.Templates.Services;
 
 namespace OrchardCore.Templates.Deployment
@@ -26,9 +28,22 @@ namespace OrchardCore.Templates.Deployment
             var templateObjects = new JObject();
             var templates = await _templatesManager.GetTemplatesDocumentAsync();
 
-            foreach (var template in templates.Templates)
+            if (allTemplatesStep.ExportAsFiles)
             {
-                templateObjects[template.Key] = JObject.FromObject(template.Value);
+                foreach (var template in templates.Templates)
+                {
+                    var fileName = "Templates/" + template.Key.Replace("__", "-").Replace("_", ".") + ".liquid";
+                    var templateValue = new Template { Description = template.Value.Description, Content = $"[file:text('{fileName}')]" };
+                    await result.FileBuilder.SetFileAsync(fileName, Encoding.UTF8.GetBytes(template.Value.Content));
+                    templateObjects[template.Key] = JObject.FromObject(templateValue);
+                }
+            }
+            else
+            {
+                foreach (var template in templates.Templates)
+                {
+                    templateObjects[template.Key] = JObject.FromObject(template.Value);
+                }
             }
 
             result.Steps.Add(new JObject(

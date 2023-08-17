@@ -1,6 +1,5 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Fluid;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
@@ -9,7 +8,9 @@ using OrchardCore.Liquid;
 using OrchardCore.Markdown.Services;
 using OrchardCore.Shortcodes.Services;
 
+#pragma warning disable CA1050 // Declare types in namespaces
 public static class ContentRazorHelperExtensions
+#pragma warning restore CA1050 // Declare types in namespaces
 {
     /// <summary>
     /// Converts Markdown string to HTML.
@@ -32,10 +33,10 @@ public static class ContentRazorHelperExtensions
             var liquidTemplateManager = orchardHelper.HttpContext.RequestServices.GetRequiredService<ILiquidTemplateManager>();
             var htmlEncoder = orchardHelper.HttpContext.RequestServices.GetRequiredService<HtmlEncoder>();
 
-            markdown = await liquidTemplateManager.RenderAsync(markdown, htmlEncoder);
+            markdown = await liquidTemplateManager.RenderStringAsync(markdown, htmlEncoder);
         }
 
-        // TODO provide context argument (optional on this helper as with the liquid helper?)
+        // TODO: provide context argument (optional on this helper as with the liquid helper?).
 
         markdown = await shortcodeService.ProcessAsync(markdown);
 

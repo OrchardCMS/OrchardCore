@@ -2,6 +2,19 @@
 
 This module provides Content Management services.
 
+## CommonPart
+
+Attach this part to your content items to edit the common properties like `CreatedUtc` and `Owner` of a `ContentItem`.
+
+The following properties are available on `CommonPart`:
+
+| Name | Type | Description |
+| -----| ---- |------------ |
+| `CreatedUtc` | `DateTime` | The HTML content in the body. |
+| `Owner` | `string` | The HTML content in the body. |
+| `Content` | | The raw content of the part. |
+| `ContentItem` | | The content item containing this part. |
+
 ## Liquid
 
 You can access content items from liquid views and templates by using the `Content` property.  
@@ -48,11 +61,14 @@ When a list of content item ids is available, the `content_item_id` filter shoul
 {% assign my_content = Content.ContentItemVersionId["49gq8g6zndfc736x0az3zsp4w3"] %}
 ```
 
-### Rendering a content item from an alias
+### Rendering a content item from a handle
 
 ```liquid
-{% contentitem alias:"alias:test" display_type="Detail" %}
+{% contentitem handle:"alias:test", display_type="Summary" %}
 ```
+
+The default display type is "Detail" when none is specified.
+An optional `alternate` argument can be specified.
 
 ### Logging to the browser console
 
@@ -404,3 +420,9 @@ query {
   }
 }
 ```
+
+## Videos
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/j6xuupq9FYY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/wbTEUl_N0Lk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -21,15 +21,17 @@ namespace OrchardCore.GitHub.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!string.Equals(context.Name, nameof(GitHubAuthenticationSettings), StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(context.Name, nameof(GitHubAuthenticationSettings), StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
             var model = context.Step.ToObject<GitHubLoginSettingsStepModel>();
-            var settings = await _githubAuthenticationService.GetSettingsAsync();
+            var settings = await _githubAuthenticationService.LoadSettingsAsync();
+
             settings.ClientID = model.ConsumerKey;
             settings.ClientSecret = model.ConsumerSecret;
             settings.CallbackPath = model.CallbackPath;
+
             await _githubAuthenticationService.UpdateSettingsAsync(settings);
         }
     }

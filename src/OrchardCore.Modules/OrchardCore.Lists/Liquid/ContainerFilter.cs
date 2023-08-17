@@ -17,14 +17,9 @@ namespace OrchardCore.Lists.Liquid
             _contentManager = contentManager;
         }
 
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
-            var contentItem = input.ToObjectValue() as ContentItem;
-
-            if (contentItem == null)
-            {
-                throw new ArgumentException("A Content Item was expected");
-            }
+            var contentItem = input.ToObjectValue() as ContentItem ?? throw new ArgumentException("A Content Item was expected");
 
             var containerId = contentItem.As<ContainedPart>()?.ListContentItemId;
 

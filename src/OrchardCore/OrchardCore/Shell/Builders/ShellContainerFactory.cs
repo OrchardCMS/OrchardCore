@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -32,14 +33,7 @@ namespace OrchardCore.Environment.Shell.Builders
             _serviceProvider = serviceProvider;
         }
 
-        public void AddCoreServices(IServiceCollection services)
-        {
-            services.TryAddScoped<IShellStateUpdater, ShellStateUpdater>();
-            services.TryAddScoped<IShellStateManager, NullShellStateManager>();
-            services.AddScoped<IShellDescriptorManagerEventHandler, ShellStateCoordinator>();
-        }
-
-        public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint)
+        public async Task<IServiceProvider> CreateContainerAsync(ShellSettings settings, ShellBlueprint blueprint)
         {
             var tenantServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
@@ -53,8 +47,6 @@ namespace OrchardCore.Environment.Shell.Builders
 
             tenantServiceCollection.AddSingleton(blueprint.Descriptor);
             tenantServiceCollection.AddSingleton(blueprint);
-
-            AddCoreServices(tenantServiceCollection);
 
             // Execute IStartup registrations
 
@@ -155,7 +147,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 startup.ConfigureServices(featureAwareServiceCollection);
             }
 
-            (moduleServiceProvider as IDisposable).Dispose();
+            await moduleServiceProvider.DisposeAsync();
 
             var shellServiceProvider = tenantServiceCollection.BuildServiceProvider(true);
 
@@ -168,7 +160,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 {
                     var type = serviceDescriptor.GetImplementationType();
 
-                    if (type != null)
+                    if (type is not null)
                     {
                         var feature = featureServiceCollection.Key;
 
@@ -176,7 +168,7 @@ namespace OrchardCore.Environment.Shell.Builders
                         {
                             var attribute = type.GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
 
-                            if (attribute != null)
+                            if (attribute is not null)
                             {
                                 feature = featureServiceCollection.Key.Extension.Features
                                     .FirstOrDefault(f => f.Id == attribute.FeatureName)
@@ -194,15 +186,12 @@ namespace OrchardCore.Environment.Shell.Builders
 
         private void EnsureApplicationFeature()
         {
-            if (_applicationFeature == null)
+            if (_applicationFeature is null)
             {
                 lock (this)
                 {
-                    if (_applicationFeature == null)
-                    {
-                        _applicationFeature = _extensionManager.GetFeatures()
+                    _applicationFeature ??= _extensionManager.GetFeatures()
                             .FirstOrDefault(f => f.Id == _hostingEnvironment.ApplicationName);
-                    }
                 }
             }
         }

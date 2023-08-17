@@ -1,0 +1,79 @@
+name: Preview - CI
+on:
+  push:
+    paths-ignore:
+      - '**/*.md'
+      - 'mkdocs.yml'
+      - 'src/docs/**/*'
+    branches: [ main ]
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    name: Build, Test, Deploy
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: "15"
+    - name: Set build number 
+      if: matrix.os == 'ubuntu-latest'
+      run: echo "BuildNumber=$(( $GITHUB_RUN_NUMBER + 16368 ))" >> $GITHUB_ENV
+    - name: Build
+      run: |
+        dotnet build -c Release -f net7.0
+        dotnet build -c Release -f net6.0
+    - name: Unit Tests
+      run: |
+        dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
+    - name: Functional Tests
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        cd test/OrchardCore.Tests.Functional
+        npm install
+        npm run cms:test
+        npm run mvc:test
+    - uses: actions/upload-artifact@v2
+      if: matrix.os == 'ubuntu-latest' && failure()
+      with:
+        name: Functional Test failure
+        path: |
+          test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
+          src/OrchardCore.Cms.Web/App_Data_Tests/logs
+    - name: Deploy preview nuget packages
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        dotnet pack -c Release --no-build
+        dotnet nuget push './src/**/*.nupkg' -t 600 -k ${{secrets.CLOUDSMITH_API_KEY}} -n -s https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --skip-duplicate
+    - name: Login to DockerHub
+      if: matrix.os == 'ubuntu-latest'
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+    - name: Deploy preview docker image for linux
+      shell: pwsh
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item -Recurse -Confirm:$false
+        Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests -Recurse | Remove-Item -Recurse -Confirm:$false
+        $output = [System.IO.Path]::GetFullPath("./.build/release")
+        dotnet publish -c Release --property:PublishDir=$output --no-build --framework net7.0
+        docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-linux:dev .
+        docker push orchardproject/orchardcore-cms-linux:dev
+    - name: Deploy preview docker image for windows
+      if: matrix.os == 'windows-latest'
+      run: |
+        Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item -Recurse -Confirm:$false
+        Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests -Recurse | Remove-Item -Recurse -Confirm:$false
+        $output = [System.IO.Path]::GetFullPath("./.build/release")
+        dotnet publish -c Release --property:PublishDir=$output --no-build --framework net7.0
+        docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-windows:dev .
+        echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u="${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+        docker push orchardproject/orchardcore-cms-windows:dev

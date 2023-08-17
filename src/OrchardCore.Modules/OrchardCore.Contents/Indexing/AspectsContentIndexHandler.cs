@@ -19,28 +19,30 @@ namespace OrchardCore.Contents.Indexing
         {
             var body = await _contentManager.PopulateAspectAsync(context.ContentItem, new BodyAspect());
 
-            if (body != null)
+            if (body != null && body.Body != null)
             {
                 context.DocumentIndex.Set(
                     IndexingConstants.BodyAspectBodyKey,
                     body.Body,
-                    DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
+                    DocumentIndexOptions.Sanitize);
             }
 
             context.DocumentIndex.Set(
                 IndexingConstants.DisplayTextAnalyzedKey,
                 context.ContentItem.DisplayText,
-                DocumentIndexOptions.Analyze | DocumentIndexOptions.Sanitize);
+                DocumentIndexOptions.Sanitize);
 
+            // We need to store because of ContentPickerResultProvider(s)
             context.DocumentIndex.Set(
-                IndexingConstants.DisplayTextKey,
+                IndexingConstants.DisplayTextKey + IndexingConstants.KeywordKey,
                 context.ContentItem.DisplayText,
-                DocumentIndexOptions.Store);
+                DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
+            // We need to store because of ContentPickerResultProvider(s)
             context.DocumentIndex.Set(
                 IndexingConstants.DisplayTextNormalizedKey,
                 context.ContentItem.DisplayText?.ReplaceDiacritics().ToLower(),
-                DocumentIndexOptions.Store);
+                DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
         }
     }
 }
