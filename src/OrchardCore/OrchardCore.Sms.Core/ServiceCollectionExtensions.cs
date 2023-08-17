@@ -1,5 +1,7 @@
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using OrchardCore.Sms.Services;
 
 namespace OrchardCore.Sms;
@@ -8,8 +10,24 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddSmsServices(this IServiceCollection services)
     {
-        services.AddScoped<DefaultSmsProvider>();
-        services.AddScoped<ISmsProviderFactory, SmsProviderFactory>();
+        services.AddSingleton<DefaultSmsProvider>();
+        services.AddTransient<IPostConfigureOptions<SmsSettings>, SmsSettingsConfigurator>();
+        services.AddSingleton(sp =>
+        {
+            var settings = sp.GetRequiredService<IOptions<SmsSettings>>().Value;
+
+            if (!String.IsNullOrEmpty(settings.DefaultProviderName))
+            {
+                var smsProviderOptions = sp.GetRequiredService<IOptions<SmsProviderOptions>>().Value;
+
+                if (smsProviderOptions.Providers.TryGetValue(settings.DefaultProviderName, out var providerGetter))
+                {
+                    return providerGetter(sp);
+                }
+            }
+
+            return sp.GetRequiredService<DefaultSmsProvider>();
+        });
 
         return services;
     }
@@ -24,7 +42,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddSmsProvider<T>(this IServiceCollection services, string name)
         where T : class, ISmsProvider
     {
-        services.AddScoped<T>();
+        services.AddSingleton<T>();
         services.Configure<SmsProviderOptions>(options =>
         {
             options.Providers.Add(name, (sp) => sp.GetService<T>());

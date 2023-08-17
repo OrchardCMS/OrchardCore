@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 using OrchardCore.Sms.Services;
 using OrchardCore.Sms.ViewModels;
@@ -20,15 +21,21 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
 
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
+    private readonly IShellHost _shellHost;
+    private readonly ShellSettings _shellSettings;
     private readonly SmsProviderOptions _smsProviderOptions;
 
     public SmsSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IOptions<SmsProviderOptions> smsProviderOptions)
+        IOptions<SmsProviderOptions> smsProviderOptions,
+        IShellHost shellHost,
+        ShellSettings shellSettings)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        _shellHost = shellHost;
+        _shellSettings = shellSettings;
         _smsProviderOptions = smsProviderOptions.Value;
     }
 
@@ -63,9 +70,15 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
 
         var model = new SmsSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+        {
+            if (settings.DefaultProviderName != model.DefaultProvider)
+            {
+                settings.DefaultProviderName = model.DefaultProvider;
 
-        settings.DefaultProviderName = model.DefaultProvider;
+                await _shellHost.ReleaseShellContextAsync(_shellSettings);
+            }
+        }
 
         return await EditAsync(settings, context);
     }

@@ -5,6 +5,8 @@
 @model ActivityViewModel<SmsTask>
 
 <header>
-    <h4><i class="fa-solid fa-comment-sms" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Send SMS"])</h4>
+    <h4>
+        <i class="fa-solid fa-comment-sms" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Send SMS"])
+    </h4>
 </header>
 <em>@Model.Activity.Body</em>

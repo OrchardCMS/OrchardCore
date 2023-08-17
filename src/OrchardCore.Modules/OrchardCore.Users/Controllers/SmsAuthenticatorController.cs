@@ -30,7 +30,7 @@ namespace OrchardCore.Users.Controllers;
 public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
 {
     private readonly IUserService _userService;
-    private readonly ISmsProviderFactory _smsServiceFactory;
+    private readonly ISmsProvider _smsProvider;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
     private readonly HtmlEncoder _htmlEncoder;
@@ -45,7 +45,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         INotifier notifier,
         IDistributedCache distributedCache,
         IUserService userService,
-        ISmsProviderFactory smsServiceFactory,
+        ISmsProvider smsProvider,
         ILiquidTemplateManager liquidTemplateManager,
         IPhoneFormatValidator phoneFormatValidator,
         HtmlEncoder htmlEncoder,
@@ -62,7 +62,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
             twoFactorOptions)
     {
         _userService = userService;
-        _smsServiceFactory = smsServiceFactory;
+        _smsProvider = smsProvider;
         _liquidTemplateManager = liquidTemplateManager;
         _phoneFormatValidator = phoneFormatValidator;
         _htmlEncoder = htmlEncoder;
@@ -129,8 +129,8 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
             Body = await GetBodyAsync(smsSettings, user, code),
         };
 
-        var smsService = await _smsServiceFactory.CreateAsync();
-        var result = await smsService.SendAsync(message);
+        var result = await _smsProvider.SendAsync(message);
+
         if (!result.Succeeded)
         {
             await Notifier.ErrorAsync(H["We are unable to send you an SMS message at this time. Please try again later."]);
@@ -228,8 +228,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
             Body = await GetBodyAsync(settings, user, code),
         };
 
-        var smsService = await _smsServiceFactory.CreateAsync();
-        var result = await smsService.SendAsync(message);
+        var result = await _smsProvider.SendAsync(message);
 
         return Ok(new
         {

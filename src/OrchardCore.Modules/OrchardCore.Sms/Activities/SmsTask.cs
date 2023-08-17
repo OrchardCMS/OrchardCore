@@ -11,22 +11,22 @@ namespace OrchardCore.Sms.Activities;
 
 public class SmsTask : TaskActivity
 {
-    private readonly ISmsProviderFactory _smsProviderFactory;
+    private readonly ISmsProvider _smsProvider;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
     private readonly HtmlEncoder _htmlEncoder;
     protected readonly IStringLocalizer S;
 
     public SmsTask(
-        ISmsProviderFactory smsProviderFactory,
+        ISmsProvider smsProvider,
         IWorkflowExpressionEvaluator expressionEvaluator,
-        IStringLocalizer<SmsTask> localizer,
-        HtmlEncoder htmlEncoder
+        HtmlEncoder htmlEncoder,
+        IStringLocalizer<SmsTask> stringLocalizer
     )
     {
-        _smsProviderFactory = smsProviderFactory;
+        _smsProvider = smsProvider;
         _expressionEvaluator = expressionEvaluator;
-        S = localizer;
         _htmlEncoder = htmlEncoder;
+        S = stringLocalizer;
     }
 
     public override string Name => nameof(SmsTask);
@@ -58,8 +58,8 @@ public class SmsTask : TaskActivity
             Body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, null),
         };
 
-        var smsProvider = await _smsProviderFactory.CreateAsync();
-        var result = await smsProvider.SendAsync(message);
+        var result = await _smsProvider.SendAsync(message);
+
         workflowContext.LastResult = result;
 
         if (result.Succeeded)

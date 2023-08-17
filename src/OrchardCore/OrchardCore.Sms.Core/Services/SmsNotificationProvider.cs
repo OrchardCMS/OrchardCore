@@ -8,14 +8,14 @@ namespace OrchardCore.Sms.Services;
 
 public class SmsNotificationProvider : INotificationMethodProvider
 {
-    private readonly ISmsProviderFactory _smsProviderFactory;
+    private readonly ISmsProvider _smsProvider;
     protected readonly IStringLocalizer S;
 
     public SmsNotificationProvider(
-        ISmsProviderFactory smsProviderFactory,
+        ISmsProvider smsProvider,
         IStringLocalizer<SmsNotificationProvider> stringLocalizer)
     {
-        _smsProviderFactory = smsProviderFactory;
+        _smsProvider = smsProvider;
         S = stringLocalizer;
     }
 
@@ -38,9 +38,7 @@ public class SmsNotificationProvider : INotificationMethodProvider
             Body = message.TextBody,
         };
 
-        var smsProvider = await _smsProviderFactory.CreateAsync();
-
-        var result = await smsProvider.SendAsync(mailMessage);
+        var result = await _smsProvider.SendAsync(mailMessage);
 
         return result.Succeeded;
     }
