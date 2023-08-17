@@ -107,10 +107,10 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 app.Use((context, next) =>
                 {
-                    // If running in the background.
+                    // In the background only the endpoints middlewares need to be executed.
                     if (context.Items.ContainsKey("IsBackground"))
                     {
-                        // Shortcut the pipeline.
+                        // Shortcut the tenant pipeline.
                         return Task.CompletedTask;
                     }
 
