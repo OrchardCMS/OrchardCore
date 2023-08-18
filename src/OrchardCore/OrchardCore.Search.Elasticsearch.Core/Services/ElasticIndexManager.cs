@@ -529,13 +529,10 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 switch (entry.Type)
                 {
                     case DocumentIndex.Types.Boolean:
-
-                        // Store "true"/"false" for booleans.
                         if (entry.Value is bool boolValue)
                         {
                             AddValue(entries, entry.Name, boolValue);
                         }
-
                         break;
 
                     case DocumentIndex.Types.DateTime:
@@ -556,7 +553,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                         if (entry.Value != null && Int64.TryParse(entry.Value.ToString(), out var value))
                         {
                             AddValue(entries, entry.Name, value);
-
                         }
 
                         break;
@@ -569,7 +565,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                         break;
 
                     case DocumentIndex.Types.Text:
-
                         if (entry.Value != null)
                         {
                             var stringValue = Convert.ToString(entry.Value);
@@ -596,31 +591,33 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             return GetIndexPrefix() + "_" + indexName;
         }
 
-
         private static void AddValue<T>(Dictionary<string, object> entries, string key, T value)
         {
-            if (!entries.TryAdd(key, value))
+            if (entries.TryAdd(key, value))
             {
-                // At this point, we know that a value already exists.
-                if (entries[key] is List<T> list)
-                {
-                    list.Add(value);
-
-                    entries[key] = list;
-
-                    return;
-                }
-
-                // Convert the existing value to a list to support multiple values.
-                var values = new List<T>()
-                {
-                    (T)entries[key],
-                    value,
-                };
-
-                entries[key] = values;
+                return;
             }
+
+            // At this point, we know that a value already exists.
+            if (entries[key] is List<T> list)
+            {
+                list.Add(value);
+
+                entries[key] = list;
+
+                return;
+            }
+
+            // Convert the existing value to a list of values.
+            var values = new List<T>()
+            {
+                (T)entries[key],
+                value,
+            };
+
+            entries[key] = values;
         }
+
         private string GetIndexPrefix()
         {
             if (_indexPrefix == null)

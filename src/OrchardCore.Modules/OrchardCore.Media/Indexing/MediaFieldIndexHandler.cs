@@ -63,13 +63,13 @@ namespace OrchardCore.Media.Indexing
                 }
             }
 
-            var processedNames = new HashSet<string>();
+            var paths = new HashSet<string>();
 
             foreach (var path in field.Paths)
             {
-                if (!processedNames.Add(path))
+                if (!paths.Add(path))
                 {
-                    // When a file is already processed, skip it.
+                    // When a path is already processed, skip it.
                     continue;
                 }
 
