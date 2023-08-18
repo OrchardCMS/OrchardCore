@@ -15,6 +15,7 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Workflows.Helpers;
@@ -39,6 +40,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly dynamic New;
         protected readonly IHtmlLocalizer H;
         protected readonly IStringLocalizer S;
 
@@ -70,8 +72,6 @@ namespace OrchardCore.Workflows.Controllers
             S = stringLocalizer;
         }
 
-        private dynamic New { get; }
-
         public async Task<IActionResult> Index(long workflowTypeId, WorkflowIndexViewModel model, PagerParameters pagerParameters, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
@@ -81,7 +81,7 @@ namespace OrchardCore.Workflows.Controllers
 
             if (!Url.IsLocalUrl(returnUrl))
             {
-                returnUrl = Url.Action(nameof(Index), "WorkflowType");
+                returnUrl = Url.Action(nameof(Index), typeof(WorkflowTypeController).ControllerName());
             }
 
             var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
@@ -89,18 +89,12 @@ namespace OrchardCore.Workflows.Controllers
             var query = _session.QueryIndex<WorkflowIndex>()
                 .Where(x => x.WorkflowTypeId == workflowType.WorkflowTypeId);
 
-            switch (model.Options.Filter)
+            query = model.Options.Filter switch
             {
-                case WorkflowFilter.Finished:
-                    query = query.Where(x => x.WorkflowStatus == (int)WorkflowStatus.Finished);
-                    break;
-                case WorkflowFilter.Faulted:
-                    query = query.Where(x => x.WorkflowStatus == (int)WorkflowStatus.Faulted);
-                    break;
-                case WorkflowFilter.All:
-                default:
-                    break;
-            }
+                WorkflowFilter.Finished => query.Where(x => x.WorkflowStatus == (int)WorkflowStatus.Finished),
+                WorkflowFilter.Faulted => query.Where(x => x.WorkflowStatus == (int)WorkflowStatus.Faulted),
+                _ => query,
+            };
 
             query = model.Options.OrderBy switch
             {
@@ -119,15 +113,11 @@ namespace OrchardCore.Workflows.Controllers
             var workflowIds = pageOfItems.Select(item => item.WorkflowId);
             var workflowsQuery = _session.Query<Workflow, WorkflowIndex>(item => item.WorkflowId.IsIn(workflowIds));
 
-            switch (model.Options.OrderBy)
+            workflowsQuery = model.Options.OrderBy switch
             {
-                case WorkflowOrder.Created:
-                    workflowsQuery.OrderBy(i => i.CreatedUtc);
-                    break;
-                default:
-                    workflowsQuery.OrderByDescending(i => i.CreatedUtc);
-                    break;
-            }
+                WorkflowOrder.Created => workflowsQuery.OrderBy(i => i.CreatedUtc),
+                _ => workflowsQuery.OrderByDescending(i => i.CreatedUtc),
+            };
 
             var workflows = await workflowsQuery.ListAsync();
 
