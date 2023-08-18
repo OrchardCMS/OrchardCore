@@ -102,22 +102,20 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         {
             To = await UserManager.GetEmailAsync(user),
             Subject = await GetSubjectAsync(setings, user, code),
-            Body = await GetMessageAsync(setings, user, code),
+            Body = await GetBodyAsync(setings, user, code),
             IsHtmlBody = true,
         };
 
         var result = await _smtpService.SendAsync(message);
 
-        if (result.Succeeded)
-        {
-            await Notifier.SuccessAsync(H["We have successfully sent an verification code to your email. Please retrieve the code from your email."]);
-        }
-        else
+        if (!result.Succeeded)
         {
             await Notifier.ErrorAsync(H["We are unable to send you an email at this time. Please try again later."]);
 
             return RedirectToAction(nameof(Index));
         }
+
+        await Notifier.SuccessAsync(H["We have successfully sent an verification code to your email. Please retrieve the code from your email."]);
 
         var model = new EnableEmailAuthenticatorViewModel();
 
@@ -176,7 +174,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         {
             To = await UserManager.GetEmailAsync(user),
             Subject = await GetSubjectAsync(settings, user, code),
-            Body = await GetMessageAsync(settings, user, code),
+            Body = await GetBodyAsync(settings, user, code),
             IsHtmlBody = true,
         };
 
@@ -191,14 +189,22 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
     }
 
     private Task<string> GetSubjectAsync(EmailAuthenticatorLoginSettings settings, IUser user, string code)
-        => String.IsNullOrWhiteSpace(settings.Subject)
-        ? Task.FromResult(EmailAuthenticatorLoginSettings.DefaultSubject)
-        : GetContentAsync(settings.Subject, user, code);
+    {
+        var message = String.IsNullOrWhiteSpace(settings.Subject)
+        ? EmailAuthenticatorLoginSettings.DefaultSubject
+        : settings.Subject;
 
-    private Task<string> GetMessageAsync(EmailAuthenticatorLoginSettings settings, IUser user, string code)
-        => String.IsNullOrWhiteSpace(settings.Body)
-        ? Task.FromResult(EmailAuthenticatorLoginSettings.DefaultBody)
-        : GetContentAsync(settings.Body, user, code);
+        return GetContentAsync(message, user, code);
+    }
+
+    private Task<string> GetBodyAsync(EmailAuthenticatorLoginSettings settings, IUser user, string code)
+    {
+        var message = String.IsNullOrWhiteSpace(settings.Body)
+        ? EmailAuthenticatorLoginSettings.DefaultBody
+        : settings.Body;
+
+        return GetContentAsync(message, user, code);
+    }
 
     private async Task<string> GetContentAsync(string message, IUser user, string code)
     {

@@ -42,6 +42,8 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [Shortcodes](https://github.com/sebastienros/shortcodes) | Shortcodes processor for .NET. | 1.3.3 | [MIT](https://github.com/sebastienros/shortcodes/blob/dev/LICENSE) |
 | [YesSql](https://github.com/sebastienros/yessql) | .NET document database working on any RDBMS. | 3.3.0 | [MIT](https://github.com/sebastienros/yessql/blob/dev/LICENSE) |
 | [ZString](https://github.com/Cysharp/ZString) | Zero Allocation StringBuilder for .NET Core and Unity. | 2.5.0 | [MIT](https://github.com/Cysharp/ZString/blob/master/LICENSE) |
+| [Twilio](https://github.com/twilio/twilio-csharp) | Twilio provides a HTTP-based API for sending and receiving phone calls and text messages. | 6.11.0 | [MIT](https://github.com/twilio/twilio-csharp/blob/main/LICENSE) |
+| [libphonenumber library](https://github.com/twcclegg/libphonenumber-csharp) | C# port of Google's libphonenumber library. | 8.13.18 | [Apache-2.0](https://github.com/twcclegg/libphonenumber-csharp/blob/main/LICENSE) |
 
 The below table lists the different libraries used as Resources:
 
@@ -89,10 +91,10 @@ The below table lists the different Tests libraries:
 
 | Library | Usage | Version | License |
 |--- | --- | --- | --- |
-| [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) | Powerful .NET library for benchmarking. | 0.13.6 | [MIT](https://github.com/dotnet/BenchmarkDotNet/blob/master/LICENSE.md) |
+| [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) | Powerful .NET library for benchmarking. | 0.13.7 | [MIT](https://github.com/dotnet/BenchmarkDotNet/blob/master/LICENSE.md) |
 | [Cypress](https://github.com/cypress-io/cypress) | Fast, easy and reliable testing for anything that runs in a browser. | 9.6.1 | [MIT](https://github.com/cypress-io/cypress/blob/develop/LICENSE) |
 | [Cypress Orchard](https://www.npmjs.com/package/cypress-orchardcore) | A collection of cypress commands for Orchard Core. | 0.4.5 | MIT |
-| [VS Test SDK](https://github.com/microsoft/vstest/) | Visual Studio Test Platform. | 17.6.3 | [MIT](https://github.com/microsoft/vstest/blob/master/LICENSE) |
+| [VS Test SDK](https://github.com/microsoft/vstest/) | Visual Studio Test Platform. | 17.7.1 | [MIT](https://github.com/microsoft/vstest/blob/master/LICENSE) |
 | [xUnit](https://github.com/xunit/xunit) | Free, open source, community-focused unit testing tool for the .NET Framework. | 2.5.0 | [MIT](https://github.com/xunit/xunit/blob/main/LICENSE) |
 | [xUnit Analyzers](https://github.com/xunit/xunit.analyzers) | Roslyn analyzers for xUnit.net. | 1.2.0 | [MIT](https://github.com/xunit/xunit.analyzers/blob/main/LICENSE) |
 | [xUnit VS runner](https://github.com/xunit/visualstudio.xunit) | VSTest runner for xUnit.net. | 2.5.0 | [MIT](https://github.com/xunit/visualstudio.xunit/blob/main/License.txt) |
