@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Authentication;
@@ -63,7 +64,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 .Select(sd => sd.GetImplementationType()))
             .ToArray();
 
-#if NET8_0_OR_GREATER
         /// <summary>
         /// Metrics singletons used to isolate tenants from the host.
         /// </summary>
@@ -72,7 +72,6 @@ namespace Microsoft.Extensions.DependencyInjection
             .Where(sd => sd.Lifetime == ServiceLifetime.Singleton)
             .Select(sd => sd.GetImplementationType())
             .ToArray();
-#endif
 
         /// <summary>
         /// Adds OrchardCore services to the host service collection.
@@ -100,9 +99,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 AddExtensionServices(builder);
                 AddStaticFiles(builder);
 
-#if NET8_0_OR_GREATER
                 AddMetrics(builder);
-#endif
                 AddRouting(builder);
                 IsolateHttpClient(builder);
                 AddEndpointsApiExplorer(builder);
@@ -284,7 +281,6 @@ namespace Microsoft.Extensions.DependencyInjection
             });
         }
 
-#if NET8_0_OR_GREATER
         /// <summary>
         /// Adds isolated tenant level routing services.
         /// </summary>
@@ -313,7 +309,6 @@ namespace Microsoft.Extensions.DependencyInjection
             },
             order: Int32.MinValue + 100);
         }
-#endif
 
         /// <summary>
         /// Adds isolated tenant level routing services.
