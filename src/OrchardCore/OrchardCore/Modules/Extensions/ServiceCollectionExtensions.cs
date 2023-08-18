@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Metrics;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Authentication;
@@ -65,15 +64,6 @@ namespace Microsoft.Extensions.DependencyInjection
             .ToArray();
 
         /// <summary>
-        /// Metrics singletons used to isolate tenants from the host.
-        /// </summary>
-        private static readonly Type[] _metricsTypesToIsolate = new ServiceCollection()
-            .AddMetrics()
-            .Where(sd => sd.Lifetime == ServiceLifetime.Singleton)
-            .Select(sd => sd.GetImplementationType())
-            .ToArray();
-
-        /// <summary>
         /// Adds OrchardCore services to the host service collection.
         /// </summary>
         public static OrchardCoreBuilder AddOrchardCore(this IServiceCollection services)
@@ -99,7 +89,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 AddExtensionServices(builder);
                 AddStaticFiles(builder);
 
-                AddMetrics(builder);
                 AddRouting(builder);
                 IsolateHttpClient(builder);
                 AddEndpointsApiExplorer(builder);
@@ -279,35 +268,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 app.UseStaticFiles(options);
             });
-        }
-
-        /// <summary>
-        /// Adds isolated tenant level routing services.
-        /// </summary>
-        private static void AddMetrics(OrchardCoreBuilder builder)
-        {
-            // 'AddMetrics()' is called by the host.
-
-            builder.ConfigureServices(collection =>
-            {
-                // The 'DefaultMeterFactory' caches 'Meters' in a non thread safe dictionary.
-                // So, we need to register an isolated 'IMeterFactory' singleton per tenant.
-
-                var descriptorsToRemove = collection
-                    .Where(sd =>
-                        sd is ClonedSingletonDescriptor &&
-                        _metricsTypesToIsolate.Contains(sd.GetImplementationType()))
-                    .ToArray();
-
-                // Isolate each tenant from the host.
-                foreach (var descriptor in descriptorsToRemove)
-                {
-                    collection.Remove(descriptor);
-                }
-
-                collection.AddMetrics();
-            },
-            order: Int32.MinValue + 100);
         }
 
         /// <summary>
