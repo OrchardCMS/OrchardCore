@@ -6,6 +6,4 @@ namespace OrchardCore.Secrets.KeyVault.Models
         public string Prefix { get; set; }
 
     }
-
-
 }

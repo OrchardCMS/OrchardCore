@@ -36,13 +36,14 @@ namespace OrchardCore.Secrets.Services
         {
             if (!String.Equals(key, key.ToSafeName(), StringComparison.OrdinalIgnoreCase))
             {
-                throw new InvalidOperationException("The name contains invalid characters");
+                throw new InvalidOperationException("The name contains invalid characters.");
             }
 
             var secretStore = _secretStores.FirstOrDefault(x => String.Equals(x.Name, secretBinding.Store, StringComparison.OrdinalIgnoreCase));
             if (secretStore != null)
             {
                 await _secretBindingsManager.UpdateSecretBindingAsync(key, secretBinding);
+
                 // This is a noop rather than an exception as updating a readonly store is considered a noop.
                 if (!secretStore.IsReadOnly)
                 {
@@ -51,7 +52,7 @@ namespace OrchardCore.Secrets.Services
             }
             else
             {
-                throw new InvalidOperationException("The specified store was not found " + secretBinding.Store);
+                throw new InvalidOperationException($"The specified store '{secretBinding.Store}' was not found.");
             }
         }
 
@@ -61,6 +62,7 @@ namespace OrchardCore.Secrets.Services
             if (secretStore != null)
             {
                 await _secretBindingsManager.RemoveSecretBindingAsync(key);
+
                 // This is a noop rather than an exception as updating a readonly store is considered a noop.
                 if (!secretStore.IsReadOnly)
                 {
@@ -69,7 +71,7 @@ namespace OrchardCore.Secrets.Services
             }
             else
             {
-                throw new InvalidOperationException("The specified store was not found " + store);
+                throw new InvalidOperationException($"The specified store '{store}' was not found.");
             }
         }
 
@@ -77,7 +79,7 @@ namespace OrchardCore.Secrets.Services
         {
             if (!typeof(Secret).IsAssignableFrom(type))
             {
-                throw new ArgumentException("The type must implement " + nameof(Secret));
+                throw new ArgumentException($"The type must implement '{nameof(Secret)}'.");
             }
 
             // TODO this has to find the binding first, to know which store it is in.
@@ -88,8 +90,7 @@ namespace OrchardCore.Secrets.Services
                 return null;
             }
 
-            var secretStore = _secretStores.FirstOrDefault(x => String.Equals(x.Name, binding.Store, StringComparison.OrdinalIgnoreCase));
-
+            var secretStore = _secretStores.FirstOrDefault(store => String.Equals(store.Name, binding.Store, StringComparison.OrdinalIgnoreCase));
             if (secretStore == null)
             {
                 return null;
@@ -102,12 +103,15 @@ namespace OrchardCore.Secrets.Services
 
         public IEnumerator<SecretStoreDescriptor> GetEnumerator()
         {
-            return _secretStores.Select(x => new SecretStoreDescriptor { Name = x.Name, IsReadOnly = x.IsReadOnly, DisplayName = x.DisplayName }).GetEnumerator();
+            return _secretStores.Select(store => new SecretStoreDescriptor
+            {
+                Name = store.Name,
+                IsReadOnly = store.IsReadOnly,
+                DisplayName = store.DisplayName,
+            })
+                .GetEnumerator();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

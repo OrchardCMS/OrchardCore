@@ -8,7 +8,7 @@ namespace OrchardCore.Secrets.KeyVault.Services
     public class KeyVaultSecretStore : ISecretStore
     {
         private readonly KeyVaultClientService _keyVaultClientService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public KeyVaultSecretStore(
             KeyVaultClientService keyVaultClientService,
@@ -23,7 +23,7 @@ namespace OrchardCore.Secrets.KeyVault.Services
         public string DisplayName => S["KeyVault Secrets Store"];
         public bool IsReadOnly => false;
 
-        public async  Task<Secret> GetSecretAsync(string key, Type type)
+        public async Task<Secret> GetSecretAsync(string key, Type type)
         {
             if (!typeof(Secret).IsAssignableFrom(type))
             {
@@ -47,9 +47,6 @@ namespace OrchardCore.Secrets.KeyVault.Services
             return _keyVaultClientService.SetSecretAsync(key, value);
         }
 
-        public Task RemoveSecretAsync(string key)
-        {
-            return _keyVaultClientService.RemoveSecretAsync(key);
-        }
+        public Task RemoveSecretAsync(string key) => _keyVaultClientService.RemoveSecretAsync(key);
     }
 }

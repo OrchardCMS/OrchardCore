@@ -35,8 +35,8 @@ namespace OrchardCore.Secrets.Recipes
             foreach (var kvp in secrets)
             {
                 var secretBinding = kvp.Value["SecretBinding"].ToObject<SecretBinding>();
-
                 var secret = _factories.FirstOrDefault(x => x.Name == secretBinding.Type)?.Create();
+
                 // This will always be plaintext as decrypt has already operated on the secret.
                 var plaintext = kvp.Value["Secret"]?.ToString();
                 if (!String.IsNullOrEmpty(plaintext))

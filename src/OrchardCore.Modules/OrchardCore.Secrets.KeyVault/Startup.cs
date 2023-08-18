@@ -1,11 +1,8 @@
-using System;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
-using OrchardCore.Secrets.KeyVault.Services;
 using OrchardCore.Secrets.KeyVault.Models;
+using OrchardCore.Secrets.KeyVault.Services;
 
 namespace OrchardCore.Secrets.KeyVault
 {

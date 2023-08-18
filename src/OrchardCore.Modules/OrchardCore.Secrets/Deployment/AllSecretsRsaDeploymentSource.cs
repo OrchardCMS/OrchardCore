@@ -32,7 +32,6 @@ namespace OrchardCore.Secrets.Deployment
             }
 
             var secretBindings = await _secretCoordinator.GetSecretBindingsAsync();
-
             if (!secretBindings.Any())
             {
                 return;
@@ -40,7 +39,7 @@ namespace OrchardCore.Secrets.Deployment
 
             if (String.IsNullOrEmpty(result.EncryptionSecretName))
             {
-                throw new InvalidOperationException("You must set an rsa secret for the deployment target before exporting secrets");
+                throw new InvalidOperationException("You must set an rsa secret for the deployment target before exporting secrets.");
             }
 
             var encryptor = await _encryptionProvider.CreateAsync(result.EncryptionSecretName, result.SigningSecretName);
@@ -49,6 +48,7 @@ namespace OrchardCore.Secrets.Deployment
             foreach (var secretBinding in secretBindings)
             {
                 var secretDescriptor = _secretCoordinator.FirstOrDefault(x => String.Equals(x.Name, secretBinding.Value.Store, StringComparison.OrdinalIgnoreCase));
+
                 // When descriptor is readonly we ship a binding without the secret value.
                 var jObject = new JObject(new JProperty("SecretBinding", JObject.FromObject(secretBinding.Value)));
 
@@ -56,10 +56,9 @@ namespace OrchardCore.Secrets.Deployment
                 {
                     var secret = _factories.FirstOrDefault(x => x.Name == secretBinding.Value.Type)?.Create();
                     secret = await _secretCoordinator.GetSecretAsync(secretBinding.Key, secret.GetType());
-                    if (secret != null)
+                    if (secret is not null)
                     {
                         var plaintext = JsonConvert.SerializeObject(secret);
-
                         var encrypted = encryptor.Encrypt(plaintext);
 
                         // [js: decrypt('theaesencryptionkey', 'theencryptedvalue')]

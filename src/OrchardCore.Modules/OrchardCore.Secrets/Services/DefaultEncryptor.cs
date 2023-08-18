@@ -1,7 +1,7 @@
 using System;
 using System.IO;
-using System.Text;
 using System.Security.Cryptography;
+using System.Text;
 using Newtonsoft.Json;
 
 namespace OrchardCore.Secrets.Services
@@ -29,14 +29,12 @@ namespace OrchardCore.Secrets.Services
 
             using (var msEncrypt = new MemoryStream())
             {
-                using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                using var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write);
+                using (var swEncrypt = new StreamWriter(csEncrypt))
                 {
-                    using (var swEncrypt = new StreamWriter(csEncrypt))
-                    {
-                        swEncrypt.Write(plainText);
-                    }
-                    encrypted = msEncrypt.ToArray();
+                    swEncrypt.Write(plainText);
                 }
+                encrypted = msEncrypt.ToArray();
             }
 
             using var rsaEncryptor = RsaHelper.GenerateRsaSecurityKey(2048);
@@ -45,7 +43,7 @@ namespace OrchardCore.Secrets.Services
             using var rsaSigner = RsaHelper.GenerateRsaSecurityKey(2048);
             rsaSigner.ImportRSAPrivateKey(_signingPrivateKey, out _);
 
-            var rsaEncryptedAesKey = rsaEncryptor.Encrypt(aes.Key, RSAEncryptionPadding.Pkcs1);            
+            var rsaEncryptedAesKey = rsaEncryptor.Encrypt(aes.Key, RSAEncryptionPadding.Pkcs1);
             var signature = rsaSigner.SignData(encrypted, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
 
             var descriptor = new HybridKeyDescriptor

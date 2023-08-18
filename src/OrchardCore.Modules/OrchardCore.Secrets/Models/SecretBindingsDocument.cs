@@ -6,6 +6,6 @@ namespace OrchardCore.Secrets.Models
 {
     public class SecretBindingsDocument : Document
     {
-        public IDictionary<string, SecretBinding> SecretBindings { get; } = new Dictionary<string, SecretBinding>(StringComparer.OrdinalIgnoreCase);
+        public Dictionary<string, SecretBinding> SecretBindings { get; } = new(StringComparer.OrdinalIgnoreCase);
     }
 }

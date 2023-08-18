@@ -14,12 +14,9 @@ namespace OrchardCore.Secrets.Drivers
 {
     public class RsaSecretDisplayDriver : DisplayDriver<Secret, RsaSecret>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
-        public RsaSecretDisplayDriver(IStringLocalizer<RsaSecretDisplayDriver> stringLocalizer)
-        {
-            S = stringLocalizer;
-        }
+        public RsaSecretDisplayDriver(IStringLocalizer<RsaSecretDisplayDriver> stringLocalizer) => S = stringLocalizer;
 
         public override IDisplayResult Display(RsaSecret secret)
         {
@@ -35,25 +32,23 @@ namespace OrchardCore.Secrets.Drivers
                 // Generate new keys when creating.
                 if (context.IsNew)
                 {
-                    using (var rsa = RsaHelper.GenerateRsaSecurityKey(2048))
+                    using var rsa = RsaHelper.GenerateRsaSecurityKey(2048);
+                    if (String.IsNullOrEmpty(secret.PublicKey))
                     {
-                        if (String.IsNullOrEmpty(secret.PublicKey))
-                        {
-                            model.PublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey());
-                        }
-                        else
-                        {
-                            // If key validation fails we return the value supplied.
-                            model.PublicKey = secret.PublicKey;
-                        }
-                        if (String.IsNullOrEmpty(secret.PrivateKey))
-                        {
-                            model.PrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey());
-                        }
-                        else
-                        {
-                            model.PrivateKey = secret.PrivateKey;
-                        }
+                        model.PublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey());
+                    }
+                    else
+                    {
+                        // If key validation fails we return the value supplied.
+                        model.PublicKey = secret.PublicKey;
+                    }
+                    if (String.IsNullOrEmpty(secret.PrivateKey))
+                    {
+                        model.PrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey());
+                    }
+                    else
+                    {
+                        model.PrivateKey = secret.PrivateKey;
                     }
                 }
                 else
@@ -61,21 +56,30 @@ namespace OrchardCore.Secrets.Drivers
                     // The private key is never returned to the view when editing.
                     model.PublicKey = secret.PublicKey;
 
-                    using (var rsa = RsaHelper.GenerateRsaSecurityKey(2048))
-                    {
-                        model.NewPublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey());
-                        model.NewPrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey());
-                    }
+                    using var rsa = RsaHelper.GenerateRsaSecurityKey(2048);
+                    model.NewPublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey());
+                    model.NewPrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey());
                 }
 
                 model.KeyType = secret.KeyType;
                 model.KeyTypes = new List<SelectListItem>
                 {
-                    new SelectListItem() { Text = S["Public Key"], Value = ((int)RsaSecretType.Public).ToString(), Selected = model.KeyType == RsaSecretType.Public },
-                    new SelectListItem() { Text = S["Public / Private Key Pair"], Value = ((int)RsaSecretType.PublicPrivatePair).ToString(), Selected = model.KeyType == RsaSecretType.PublicPrivatePair }
+                    new SelectListItem()
+                    {
+                        Text = S["Public Key"],
+                        Value = ((int)RsaSecretType.Public).ToString(),
+                        Selected = model.KeyType == RsaSecretType.Public
+                    },
+                    new SelectListItem()
+                    {
+                        Text = S["Public / Private Key Pair"],
+                        Value = ((int)RsaSecretType.PublicPrivatePair).ToString(),
+                        Selected = model.KeyType == RsaSecretType.PublicPrivatePair
+                    },
                 };
                 model.Context = context;
-            }).Location("Content"));
+            })
+                .Location("Content"));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(RsaSecret secret, UpdateEditorContext context)
@@ -108,10 +112,8 @@ namespace OrchardCore.Secrets.Drivers
                 {
                     try
                     {
-                        using (var rsa = RsaHelper.GenerateRsaSecurityKey(2048))
-                        {
-                            rsa.ImportRSAPrivateKey(secret.PrivateKeyAsBytes(), out _);
-                        }
+                        using var rsa = RsaHelper.GenerateRsaSecurityKey(2048);
+                        rsa.ImportRSAPrivateKey(secret.PrivateKeyAsBytes(), out _);
                     }
                     catch (CryptographicException)
                     {
@@ -128,20 +130,18 @@ namespace OrchardCore.Secrets.Drivers
 
                 try
                 {
-                    using (var rsa = RsaHelper.GenerateRsaSecurityKey(2048))
-                    {
-                        rsa.ImportRSAPublicKey(secret.PublicKeyAsBytes(), out _);
-                    }
+                    using var rsa = RsaHelper.GenerateRsaSecurityKey(2048);
+                    rsa.ImportRSAPublicKey(secret.PublicKeyAsBytes(), out _);
                 }
                 catch (CryptographicException)
                 {
                     if (context.IsNew)
                     {
-                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.PublicKey), S["The public key cannot be decoded"]);
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.PublicKey), S["The public key cannot be decoded."]);
                     }
                     else
                     {
-                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.NewPublicKey), S["The public key cannot be decoded"]);
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.NewPublicKey), S["The public key cannot be decoded."]);
                     }
                 }
             }

@@ -10,7 +10,6 @@ namespace OrchardCore.Secrets.Services
 
         public SecretsDocumentManager(IDocumentManager<SecretsDocument> documentManager) => _documentManager = documentManager;
 
-
         /// <summary>
         /// Returns the document from the database to be updated.
         /// </summary>

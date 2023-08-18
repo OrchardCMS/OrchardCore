@@ -32,7 +32,7 @@ namespace OrchardCore.Secrets.Services
             rsaSigner.ImportRSAPublicKey(_signingPublicKey, out _);
             if (!rsaSigner.VerifyData(protectedBytes, signatureBytes, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1))
             {
-                throw new CryptographicException("Could not verify signature");
+                throw new CryptographicException("Could not verify signature.");
             }
 
             // Decrypt.

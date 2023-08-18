@@ -15,7 +15,7 @@ namespace OrchardCore.Secrets.KeyVault.Services
         private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
-        // Local instance since it can be discarded once the startup is over
+        // Local instance since it can be discarded once the startup is over.
         private readonly FluidParser _fluidParser = new();
 
         public KeyVaultOptionsConfiguration(

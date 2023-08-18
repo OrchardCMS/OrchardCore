@@ -7,6 +7,7 @@ namespace OrchardCore.Secrets.Services
     public class SecretBindingsManager
     {
         private readonly IDocumentManager<SecretBindingsDocument> _documentManager;
+
         public SecretBindingsManager(IDocumentManager<SecretBindingsDocument> documentManager) => _documentManager = documentManager;
 
         /// <summary>

@@ -1,11 +1,7 @@
-using System;
-using System.Threading.Tasks;
-using Moq;
 using OrchardCore.Documents;
 using OrchardCore.Secrets;
 using OrchardCore.Secrets.Models;
 using OrchardCore.Secrets.Services;
-using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
 {

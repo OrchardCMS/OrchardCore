@@ -1,6 +1,6 @@
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Deployment;
 
 namespace OrchardCore.Secrets.Deployment
 {
@@ -15,9 +15,7 @@ namespace OrchardCore.Secrets.Deployment
                 );
         }
 
-        public override IDisplayResult Edit(AllSecretsRsaDeploymentStep step)
-        {
-            return View("AllSecretsRsaDeploymentStep_Fields_Edit", step).Location("Content");
-        }
+        public override IDisplayResult Edit(AllSecretsRsaDeploymentStep step) =>
+            View("AllSecretsRsaDeploymentStep_Fields_Edit", step).Location("Content");
     }
 }

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Secrets;
 using OrchardCore.Scripting;
 
 namespace OrchardCore.Secrets.Scripting

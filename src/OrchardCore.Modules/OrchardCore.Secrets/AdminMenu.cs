@@ -7,12 +7,9 @@ namespace OrchardCore.Secrets
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
-        {
-            S = localizer;
-        }
+        public AdminMenu(IStringLocalizer<AdminMenu> localizer) => S = localizer;
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {

@@ -10,12 +10,9 @@ namespace OrchardCore.Secrets.Drivers
 {
     public class TestSecretDisplayDriver : DisplayDriver<Secret, TextSecret>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
-        public TestSecretDisplayDriver(IStringLocalizer<TestSecretDisplayDriver> stringLocalizer)
-        {
-            S = stringLocalizer;
-        }
+        public TestSecretDisplayDriver(IStringLocalizer<TestSecretDisplayDriver> stringLocalizer) => S = stringLocalizer;
 
         public override IDisplayResult Display(TextSecret secret)
         {
@@ -31,7 +28,8 @@ namespace OrchardCore.Secrets.Drivers
                 // The text value is never returned to the view.
                 model.Text = String.Empty;
                 model.Context = context;
-            }).Location("Content"));
+            })
+                .Location("Content"));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(TextSecret secret, UpdateEditorContext context)
@@ -42,7 +40,7 @@ namespace OrchardCore.Secrets.Drivers
             {
                 if (context.IsNew && String.IsNullOrEmpty(model.Text))
                 {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.Text), S["The text value is required"]);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.Text), S["The text value is required."]);
                 }
 
                 // The text value is only updated when a new value has been provided.

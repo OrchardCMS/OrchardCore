@@ -10,7 +10,7 @@ namespace OrchardCore.Secrets.Services
     {
         private readonly SecretsDocumentManager _manager;
         private readonly DatabaseSecretDataProtector _databaseSecretDataProtector;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public DatabaseSecretStore(
             SecretsDocumentManager manager,

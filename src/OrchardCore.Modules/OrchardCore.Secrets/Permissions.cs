@@ -7,7 +7,7 @@ namespace OrchardCore.Secrets
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageSecrets = new Permission("ManageSecrets", "Manage secrets", true);
+        public static readonly Permission ManageSecrets = new("ManageSecrets", "Manage secrets", true);
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
@@ -21,7 +21,7 @@ namespace OrchardCore.Secrets
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageSecrets }
+                    Permissions = new[] { ManageSecrets },
                 }
             };
         }

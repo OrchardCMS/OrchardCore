@@ -7,7 +7,7 @@ namespace OrchardCore.Secrets
         PublicPrivatePair,
         Public
     }
-    
+
     public class RsaSecret : Secret
     {
         public RsaSecretType KeyType { get; set; }

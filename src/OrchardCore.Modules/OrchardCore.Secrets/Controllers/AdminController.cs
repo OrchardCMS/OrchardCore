@@ -29,9 +29,10 @@ namespace OrchardCore.Secrets.Controllers
         private readonly IEnumerable<ISecretFactory> _factories;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
+
+        protected readonly dynamic New;
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
-        protected readonly dynamic New;
 
         public AdminController(
             IAuthorizationService authorizationService,
@@ -39,20 +40,20 @@ namespace OrchardCore.Secrets.Controllers
             IDisplayManager<Secret> displayManager,
             IUpdateModelAccessor updateModelAccessor,
             IEnumerable<ISecretFactory> factories,
-            IShapeFactory shapeFactory,
             ISiteService siteService,
+            INotifier notifier,
+            IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer,
-            INotifier notifier)
+            IHtmlLocalizer<AdminController> htmlLocalizer)
         {
             _authorizationService = authorizationService;
             _secretCoordinator = secretCoordinator;
             _displayManager = displayManager;
             _updateModelAccessor = updateModelAccessor;
             _factories = factories;
-            New = shapeFactory;
             _siteService = siteService;
             _notifier = notifier;
+            New = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
@@ -95,17 +96,18 @@ namespace OrchardCore.Secrets.Controllers
             {
                 var secret = _factories.FirstOrDefault(x => x.Name == binding.Value.Type)?.Create();
                 secret = await _secretCoordinator.GetSecretAsync(binding.Key, secret.GetType());
-                if (secret == null)
+                if (secret is null)
                 {
                     continue;
                 }
+
                 dynamic summary = await _displayManager.BuildDisplayAsync(secret, _updateModelAccessor.ModelUpdater, "Summary");
                 summary.Secret = secret;
                 bindingEntries.Add(new SecretBindingEntry
                 {
                     Name = binding.Key,
                     SecretBinding = binding.Value,
-                    Summary = summary
+                    Summary = summary,
                 });
             };
 
@@ -114,7 +116,7 @@ namespace OrchardCore.Secrets.Controllers
                 SecretBindings = bindingEntries,
                 Thumbnails = thumbnails,
                 Options = options,
-                Pager = pagerShape
+                Pager = pagerShape,
             };
 
             model.Options.ContentsBulkAction = new List<SelectListItem>() {
@@ -133,7 +135,7 @@ namespace OrchardCore.Secrets.Controllers
                 return Forbid();
             }
 
-            if (itemIds?.Count() > 0)
+            if (itemIds is not null && itemIds.Any())
             {
                 var secretBindings = await _secretCoordinator.GetSecretBindingsAsync();
                 var checkedSecretBindings = secretBindings.Where(x => itemIds.Contains(x.Key));
@@ -164,21 +166,19 @@ namespace OrchardCore.Secrets.Controllers
             }
 
             var secret = _factories.FirstOrDefault(x => x.Name == type)?.Create();
-
-            if (secret == null)
+            if (secret is null)
             {
                 return NotFound();
             }
 
             secret.Id = Guid.NewGuid().ToString("n");
-
             var model = new SecretBindingViewModel
             {
                 SecretId = secret.Id,
                 Secret = secret,
                 Type = type,
                 StoreEntries = _secretCoordinator.ToArray(),
-                Editor = await _displayManager.BuildEditorAsync(secret, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "")
+                Editor = await _displayManager.BuildEditorAsync(secret, _updateModelAccessor.ModelUpdater, isNew: true, "", ""),
             };
 
             model.Editor.Secret = secret;
@@ -195,8 +195,7 @@ namespace OrchardCore.Secrets.Controllers
             }
 
             var secret = _factories.FirstOrDefault(x => x.Name == model.Type)?.Create();
-
-            if (secret == null)
+            if (secret is null)
             {
                 return NotFound();
             }
@@ -232,7 +231,6 @@ namespace OrchardCore.Secrets.Controllers
                 secret.Name = model.Name;
 
                 await _secretCoordinator.UpdateSecretAsync(model.Name, secretBinding, secret);
-
                 await _notifier.SuccessAsync(H["Secret added successfully"]);
 
                 return RedirectToAction(nameof(Index));
@@ -241,7 +239,7 @@ namespace OrchardCore.Secrets.Controllers
             model.Editor = editor;
             model.StoreEntries = _secretCoordinator.ToArray();
 
-            // If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form.
             return View(model);
         }
 
@@ -253,7 +251,6 @@ namespace OrchardCore.Secrets.Controllers
             }
 
             var secretBindings = await _secretCoordinator.GetSecretBindingsAsync();
-
             if (!secretBindings.ContainsKey(name))
             {
                 return RedirectToAction(nameof(Create), new { name });
@@ -272,7 +269,7 @@ namespace OrchardCore.Secrets.Controllers
                 Type = secret.GetType().Name,
                 Secret = secret,
                 StoreEntries = _secretCoordinator.ToArray(),
-                Editor = await _displayManager.BuildEditorAsync(secret, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "")
+                Editor = await _displayManager.BuildEditorAsync(secret, _updateModelAccessor.ModelUpdater, isNew: false, "", ""),
             };
 
             model.Editor.Secret = secret;

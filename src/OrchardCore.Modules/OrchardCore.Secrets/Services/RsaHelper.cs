@@ -1,9 +1,6 @@
 using System;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
-using System.Text;
-using Newtonsoft.Json;
 
 namespace OrchardCore.Secrets.Services
 {
@@ -17,6 +14,7 @@ namespace OrchardCore.Secrets.Services
             // virtual application pool identity or without the profile loading feature enabled (off by default).
             // To ensure a RSA key can be generated flawlessly, it is manually created using the managed CNG APIs.
             // For more information, visit https://github.com/openiddict/openiddict-core/issues/204.
+
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 // Warning: ensure a null key name is specified to ensure the RSA key is not persisted by CNG.
@@ -31,6 +29,6 @@ namespace OrchardCore.Secrets.Services
             }
 
             return RSA.Create(size);
-        }        
+        }
     }
 }
