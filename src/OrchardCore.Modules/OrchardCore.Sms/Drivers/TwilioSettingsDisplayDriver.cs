@@ -52,14 +52,14 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
             model.AccountSID = settings.AccountSID;
             model.HasAuthToken = !String.IsNullOrEmpty(settings.AuthToken);
         }).Location("Content:5")
-        .OnGroup(SmsSettingsDisplayDriver.GroupId);
+        .OnGroup(SmsConstants.SettingsGroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(TwilioSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!context.GroupId.Equals(SmsSettingsDisplayDriver.GroupId, StringComparison.OrdinalIgnoreCase)
+        if (!context.GroupId.Equals(SmsConstants.SettingsGroupId, StringComparison.OrdinalIgnoreCase)
             || !await _authorizationService.AuthorizeAsync(user, SmsPermissions.ManageSmsSettings))
         {
             return null;

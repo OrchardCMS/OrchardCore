@@ -10,7 +10,7 @@
     <span asp-validation-for="DefaultProvider"></span>
 </div>
 
-<script at="Foot">
+<script at="Foot" asp-name="sms-settings-providers">
     document.addEventListener('DOMContentLoaded', () => {
 
         let menu = document.getElementById('@Html.IdFor(m => m.DefaultProvider)');
@@ -19,13 +19,12 @@
         menu.addEventListener('change', (e) => {
 
             for (let i = 0; i < settingContainers.length; i++) {
-                settingContainers[i].classList.add('d-none');
-            }
-
-            let wrapper = document.getElementById('SmsSettingsContainer' + e.target.value);
-
-            if (wrapper) {
-                wrapper.classList.remove('d-none');
+                let container = settingContainers[i];
+                if (container.getAttribute('data-provider-name') == e.target.value) {
+                    container.classList.remove('d-none');
+                } else {
+                    container.classList.add('d-none');
+                }
             }
         });
 

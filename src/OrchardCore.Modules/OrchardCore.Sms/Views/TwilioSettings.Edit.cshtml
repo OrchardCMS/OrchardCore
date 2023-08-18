@@ -3,7 +3,7 @@
 
 @model TwilioSettingsViewModel
 
-<div class="sms-settings-container d-none" id="SmsSettingsContainer@(SmsConstants.TwilioServiceName)">
+<div class="sms-settings-container d-none" data-provider-name="@(SmsConstants.TwilioServiceName)">
     <h4>@T["Twilio Account Info"]</h4>
     <div class="mb-3" asp-validation-class-for="PhoneNumber">
         <label asp-for="PhoneNumber">@T["Phone Number"]</label>
@@ -28,24 +28,3 @@
         }
     </div>
 </div>
-
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', () => {
-
-        let menu = document.getElementById('@Html.IdFor(m => m.DefaultProvider)');
-        let settingContainers = document.getElementsByClassName('sms-settings-container');
-
-        menu.addEventListener('change', (e) => {
-
-            for (let i = 0; i < settingContainers.length; i++) {
-                settingContainers[i].classList.add('d-none');
-            }
-
-            let wrapper = document.getElementById('SmsSettingsContainer' + e.target.value);
-
-            if (wrapper) {
-                wrapper.classList.remove('d-none');
-            }
-        });
-    });
-</script>
