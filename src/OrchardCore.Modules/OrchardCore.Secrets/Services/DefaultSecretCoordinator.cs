@@ -40,7 +40,7 @@ namespace OrchardCore.Secrets.Services
             }
 
             var secretStore = _secretStores.FirstOrDefault(x => String.Equals(x.Name, secretBinding.Store, StringComparison.OrdinalIgnoreCase));
-            if (secretStore != null)
+            if (secretStore is not null)
             {
                 await _secretBindingsManager.UpdateSecretBindingAsync(key, secretBinding);
 

@@ -11,10 +11,7 @@ namespace OrchardCore.Secrets
     {
         private readonly ISecretCoordinator _secretCoordinator;
 
-        public SecretService(ISecretCoordinator secretCoordinator)
-        {
-            _secretCoordinator = secretCoordinator;
-        }
+        public SecretService(ISecretCoordinator secretCoordinator) => _secretCoordinator = secretCoordinator;
 
         public Task<TSecret> GetSecretAsync(string key) => _secretCoordinator.GetSecretAsync<TSecret>(key);
     }
