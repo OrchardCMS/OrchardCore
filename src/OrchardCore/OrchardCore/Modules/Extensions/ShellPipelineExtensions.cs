@@ -74,12 +74,10 @@ public static class ShellPipelineExtensions
     /// </summary>
     private static void ConfigurePipeline(IApplicationBuilder builder)
     {
-        var startups = builder.ApplicationServices.GetServices<IStartup>();
-
         // 'IStartup' instances are ordered by module dependencies with a 'ConfigureOrder' of 0 by default.
         // 'OrderBy' performs a stable sort, so the order is preserved among equal 'ConfigureOrder' values.
+        var startups = builder.ApplicationServices.GetServices<IStartup>().OrderBy(s => s.ConfigureOrder);
 
-        startups = startups.OrderBy(s => s.ConfigureOrder);
         builder.UseRouting().UseEndpoints(routes =>
         {
             foreach (var startup in startups)
