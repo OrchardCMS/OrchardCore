@@ -39,7 +39,7 @@ public class Startup : StartupBase
         }
 
         services.AddScoped<IPermissionProvider, SmsPermissionProvider>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddScoped<INavigationProvider, SmsAdminMenu>();
         services.AddScoped<IDisplayDriver<ISite>, SmsSettingsDisplayDriver>();
     }
 }

@@ -17,8 +17,6 @@ namespace OrchardCore.Sms.Drivers;
 
 public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
 {
-    public const string GroupId = "sms";
-
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IShellHost _shellHost;
@@ -55,14 +53,14 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
             .Select(provider => new SelectListItem(provider, provider))
             .ToArray();
         }).Location("Content:1")
-        .OnGroup(GroupId);
+        .OnGroup(SmsConstants.SettingsGroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(SmsSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase)
+        if (!context.GroupId.Equals(SmsConstants.SettingsGroupId, StringComparison.OrdinalIgnoreCase)
             || !await _authorizationService.AuthorizeAsync(user, SmsPermissions.ManageSmsSettings))
         {
             return null;
