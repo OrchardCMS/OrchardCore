@@ -37,25 +37,23 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<IPhoneFormatValidator, DefaultPhoneFormatValidator>();
     }
 
-    public static void AddSmsProvider<T>(this IServiceCollection services, string name) where T : class, ISmsProvider
+    public static IServiceCollection AddSmsProvider<T>(this IServiceCollection services, string name) where T : class, ISmsProvider
     {
         services.Configure<SmsProviderOptions>(options =>
         {
             options.Providers.TryAdd(name, (sp) => sp.CreateInstance<T>());
         });
+
+        return services;
     }
 
     public static IServiceCollection AddTwilioSmsProvider(this IServiceCollection services)
     {
-        services.AddSmsProvider<TwilioSmsProvider>(TwilioSmsProvider.Name);
-
-        return services;
+        return services.AddSmsProvider<TwilioSmsProvider>(TwilioSmsProvider.Name);
     }
 
     public static IServiceCollection AddConsoleSmsProvider(this IServiceCollection services)
     {
-        services.AddSmsProvider<ConsoleSmsProvider>(ConsoleSmsProvider.Name);
-
-        return services;
+        return services.AddSmsProvider<ConsoleSmsProvider>(ConsoleSmsProvider.Name);
     }
 }
