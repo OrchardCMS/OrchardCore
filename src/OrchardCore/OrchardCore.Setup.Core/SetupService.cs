@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Abstractions.Setup;
+using OrchardCore.BackgroundJobs;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
@@ -120,7 +121,7 @@ namespace OrchardCore.Setup.Services
                 _logger.LogInformation("Running setup for tenant '{TenantName}'.", context.ShellSettings.Name);
             }
 
-            // Features to enable for Setup
+            // Features to enable for Setup.
             string[] hardcoded =
             {
                 _applicationName,
@@ -201,7 +202,7 @@ namespace OrchardCore.Setup.Services
                 {
                     try
                     {
-                        // Create the "minimum shell descriptor"
+                        // Create the "minimum shell descriptor".
                         await scope
                             .ServiceProvider
                             .GetService<IShellDescriptorManager>()
@@ -228,7 +229,7 @@ namespace OrchardCore.Setup.Services
                 await recipeExecutor.ExecuteAsync(executionId, context.Recipe, context.Properties, _applicationLifetime.ApplicationStopping);
             }
 
-            // Reloading the shell context as the recipe has probably updated its features
+            // Reloading the shell context as the recipe has probably updated its features.
             await (await _shellHost.GetScopeAsync(shellSettings)).UsingAsync(async scope =>
             {
                 void reportError(string key, string message)
@@ -236,7 +237,7 @@ namespace OrchardCore.Setup.Services
                     context.Errors[key] = message;
                 }
 
-                // Invoke modules to react to the setup event
+                // Invoke modules to react to the setup event.
                 var setupEventHandlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();
                 var logger = scope.ServiceProvider.GetRequiredService<ILogger<SetupService>>();
 
@@ -244,6 +245,16 @@ namespace OrchardCore.Setup.Services
                     context.Properties,
                     reportError
                 ), context, logger);
+
+                // This job will be executed after the end of the request but only if the tenant is still running.
+                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("setup-success", async (scope) =>
+                {
+                    var handlers = scope.ServiceProvider.GetServices<ISetupSuccessEventHandler>();
+                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<ISetupSuccessEventHandler>>();
+
+                    // The setup was completed successfully, the related handlers can be invoked.
+                    await handlers.InvokeAsync(handler => handler.SuccessAsync(), logger);
+                });
             });
 
             if (context.Errors.Any())
@@ -251,7 +262,7 @@ namespace OrchardCore.Setup.Services
                 return executionId;
             }
 
-            // Update the shell state
+            // Update the shell state.
             await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
 
             return executionId;

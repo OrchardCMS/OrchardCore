@@ -9,9 +9,6 @@ namespace OrchardCore.Setup.Events
     /// </summary>
     public interface ISetupEventHandler
     {
-        Task Setup(
-            IDictionary<string, object> properties,
-            Action<string, string> reportError
-        );
+        Task Setup(IDictionary<string, object> properties, Action<string, string> reportError);
     }
 }
