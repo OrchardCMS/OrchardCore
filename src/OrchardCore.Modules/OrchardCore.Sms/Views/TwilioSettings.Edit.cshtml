@@ -1,9 +1,10 @@
+@using OrchardCore.Sms.Services
 @using OrchardCore.Sms.ViewModels
 @using OrchardCore.Sms
 
 @model TwilioSettingsViewModel
 
-<div class="sms-settings-container d-none" data-provider-name="@(SmsConstants.TwilioServiceName)">
+<div class="sms-settings-container d-none" data-provider-name="@(TwilioSmsProvider.Name)">
     <h4>@T["Twilio Account Info"]</h4>
     <div class="mb-3" asp-validation-class-for="PhoneNumber">
         <label asp-for="PhoneNumber">@T["Phone Number"]</label>
@@ -15,7 +16,7 @@
     <div class="mb-3" asp-validation-class-for="AccountSID">
         <label asp-for="AccountSID">@T["Account SID"]</label>
         <input asp-for="AccountSID" class="form-control" />
-        <span asp-validation-for="PhoneNumber"></span>
+        <span asp-validation-for="AccountSID"></span>
     </div>
 
     <div class="mb-3" asp-validation-class-for="AuthToken">

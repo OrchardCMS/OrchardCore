@@ -2,6 +2,7 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Sms.Services;
 
 namespace OrchardCore.Sms;
@@ -11,7 +12,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddSmsServices(this IServiceCollection services)
     {
         services.AddSingleton<DefaultSmsProvider>();
-        services.AddTransient<IPostConfigureOptions<SmsSettings>, SmsSettingsConfigurator>();
+        services.AddTransient<IPostConfigureOptions<SmsSettings>, SmsSettingsConfiguration>();
         services.AddSingleton(sp =>
         {
             var settings = sp.GetRequiredService<IOptions<SmsSettings>>().Value;
@@ -42,22 +43,21 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddSmsProvider<T>(this IServiceCollection services, string name)
         where T : class, ISmsProvider
     {
-        services.AddSingleton<T>();
         services.Configure<SmsProviderOptions>(options =>
         {
-            options.Providers.Add(name, (sp) => sp.GetService<T>());
+            options.Providers.Add(name, (sp) => sp.CreateInstance<T>());
         });
 
         return services;
     }
 
-    public static IServiceCollection AddTwilioProvider(this IServiceCollection services)
+    public static IServiceCollection AddTwilioSmsProvider(this IServiceCollection services)
     {
-        return services.AddSmsProvider<TwilioSmsProvider>(SmsConstants.TwilioServiceName);
+        return services.AddSmsProvider<TwilioSmsProvider>(TwilioSmsProvider.Name);
     }
 
-    public static IServiceCollection AddConsoleProvider(this IServiceCollection services)
+    public static IServiceCollection AddConsoleSmsProvider(this IServiceCollection services)
     {
-        return services.AddSmsProvider<ConsoleSmsProvider>(SmsConstants.ConsoleServiceName);
+        return services.AddSmsProvider<ConsoleSmsProvider>(ConsoleSmsProvider.Name);
     }
 }

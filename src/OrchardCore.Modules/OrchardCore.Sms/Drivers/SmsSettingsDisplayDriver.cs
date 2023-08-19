@@ -10,7 +10,6 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
-using OrchardCore.Sms.Services;
 using OrchardCore.Sms.ViewModels;
 
 namespace OrchardCore.Sms.Drivers;
@@ -53,14 +52,14 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
             .Select(provider => new SelectListItem(provider, provider))
             .ToArray();
         }).Location("Content:1")
-        .OnGroup(SmsConstants.SettingsGroupId);
+        .OnGroup(SmsSettings.GroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(SmsSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!context.GroupId.Equals(SmsConstants.SettingsGroupId, StringComparison.OrdinalIgnoreCase)
+        if (!context.GroupId.Equals(SmsSettings.GroupId, StringComparison.OrdinalIgnoreCase)
             || !await _authorizationService.AuthorizeAsync(user, SmsPermissions.ManageSmsSettings))
         {
             return null;

@@ -14,6 +14,10 @@ namespace OrchardCore.Sms.Services;
 
 public class TwilioSmsProvider : ISmsProvider
 {
+    public const string Name = "Twilio";
+
+    public const string ProtectorName = "Twilio";
+
     private readonly ISiteService _siteService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ILogger<TwilioSmsProvider> _logger;
@@ -53,7 +57,7 @@ public class TwilioSmsProvider : ISmsProvider
 
         try
         {
-            await EnsureClientIsIsInitializedAsync();
+            await EnsureClientIsInitializedAsync();
 
             var response = await MessageResource.CreateAsync(
                 to: new PhoneNumber(message.To),
@@ -79,14 +83,14 @@ public class TwilioSmsProvider : ISmsProvider
         }
     }
 
-    private async Task EnsureClientIsIsInitializedAsync()
+    private async Task EnsureClientIsInitializedAsync()
     {
         if (_plainAuthToken == null)
         {
             var settings = (await _siteService.GetSiteSettingsAsync()).As<TwilioSettings>();
 
             _phoneNumber = settings.PhoneNumber;
-            var protector = _dataProtectionProvider.CreateProtector(SmsConstants.TwilioServiceName);
+            var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
             _plainAuthToken = protector.Unprotect(settings.AuthToken);
 
             TwilioClient.Init(settings.AccountSID, _plainAuthToken);
