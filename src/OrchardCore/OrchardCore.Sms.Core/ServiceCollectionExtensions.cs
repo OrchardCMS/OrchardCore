@@ -12,51 +12,50 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddSmsServices(this IServiceCollection services)
     {
         services.AddTransient<IPostConfigureOptions<SmsSettings>, SmsSettingsConfiguration>();
-        services.AddSingleton(sp =>
+        services.AddSingleton(serviceProvider =>
         {
-            var settings = sp.GetRequiredService<IOptions<SmsSettings>>().Value;
+            var settings = serviceProvider.GetRequiredService<IOptions<SmsSettings>>().Value;
 
             if (!String.IsNullOrEmpty(settings.DefaultProviderName))
             {
-                var smsProviderOptions = sp.GetRequiredService<IOptions<SmsProviderOptions>>().Value;
+                var smsProviderOptions = serviceProvider.GetRequiredService<IOptions<SmsProviderOptions>>().Value;
 
                 if (smsProviderOptions.Providers.TryGetValue(settings.DefaultProviderName, out var providerGetter))
                 {
-                    return providerGetter(sp);
+                    return providerGetter(serviceProvider);
                 }
             }
 
-            return sp.CreateInstance<DefaultSmsProvider>();
+            return serviceProvider.CreateInstance<DefaultSmsProvider>();
         });
 
         return services;
     }
 
-    public static IServiceCollection AddPhoneFormatValidator(this IServiceCollection services)
+    public static void AddPhoneFormatValidator(this IServiceCollection services)
     {
         services.TryAddScoped<IPhoneFormatValidator, DefaultPhoneFormatValidator>();
-
-        return services;
     }
 
-    public static IServiceCollection AddSmsProvider<T>(this IServiceCollection services, string name)
-        where T : class, ISmsProvider
+    public static void AddSmsProvider<T>(this IServiceCollection services, string name) where T : class, ISmsProvider
     {
         services.Configure<SmsProviderOptions>(options =>
         {
-            options.Providers.Add(name, (sp) => sp.CreateInstance<T>());
+            options.Providers.TryAdd(name, (sp) => sp.CreateInstance<T>());
         });
-
-        return services;
     }
 
     public static IServiceCollection AddTwilioSmsProvider(this IServiceCollection services)
     {
-        return services.AddSmsProvider<TwilioSmsProvider>(TwilioSmsProvider.Name);
+        services.AddSmsProvider<TwilioSmsProvider>(TwilioSmsProvider.Name);
+
+        return services;
     }
 
     public static IServiceCollection AddConsoleSmsProvider(this IServiceCollection services)
     {
-        return services.AddSmsProvider<ConsoleSmsProvider>(ConsoleSmsProvider.Name);
+        services.AddSmsProvider<ConsoleSmsProvider>(ConsoleSmsProvider.Name);
+
+        return services;
     }
 }
