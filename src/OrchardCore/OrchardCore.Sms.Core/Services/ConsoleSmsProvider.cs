@@ -5,7 +5,9 @@ namespace OrchardCore.Sms.Services;
 
 public class ConsoleSmsProvider : ISmsProvider
 {
-    public const string Name = "Console";
+    public const string Key = "Console";
+
+    public string Name => Key;
 
     public Task<SmsResult> SendAsync(SmsMessage message)
     {

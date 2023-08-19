@@ -19,10 +19,11 @@ public static class ServiceCollectionExtensions
             if (!String.IsNullOrEmpty(settings.DefaultProviderName))
             {
                 var smsProviderOptions = serviceProvider.GetRequiredService<IOptions<SmsProviderOptions>>().Value;
+                var providers = smsProviderOptions.Providers;
 
-                if (smsProviderOptions.Providers.TryGetValue(settings.DefaultProviderName, out var providerGetter))
+                if (providers.TryGetValue(settings.DefaultProviderName, out var type))
                 {
-                    return providerGetter(serviceProvider);
+                    return serviceProvider.CreateInstance<ISmsProvider>(type);
                 }
             }
 
@@ -41,7 +42,7 @@ public static class ServiceCollectionExtensions
     {
         services.Configure<SmsProviderOptions>(options =>
         {
-            options.Providers.TryAdd(name, (sp) => sp.CreateInstance<T>());
+            options.TryAddProvider(name, typeof(T));
         });
 
         return services;
@@ -49,11 +50,11 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddTwilioSmsProvider(this IServiceCollection services)
     {
-        return services.AddSmsProvider<TwilioSmsProvider>(TwilioSmsProvider.Name);
+        return services.AddSmsProvider<TwilioSmsProvider>(TwilioSmsProvider.Key);
     }
 
     public static IServiceCollection AddConsoleSmsProvider(this IServiceCollection services)
     {
-        return services.AddSmsProvider<ConsoleSmsProvider>(ConsoleSmsProvider.Name);
+        return services.AddSmsProvider<ConsoleSmsProvider>(ConsoleSmsProvider.Key);
     }
 }

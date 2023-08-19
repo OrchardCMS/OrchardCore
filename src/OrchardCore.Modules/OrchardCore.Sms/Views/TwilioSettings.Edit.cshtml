@@ -4,7 +4,7 @@
 
 @model TwilioSettingsViewModel
 
-<div class="sms-settings-container d-none" data-provider-name="@(TwilioSmsProvider.Name)">
+<div class="sms-settings-container d-none" data-provider-name="@(TwilioSmsProvider.Key)">
     <h4>@T["Twilio Account Info"]</h4>
     <div class="mb-3" asp-validation-class-for="PhoneNumber">
         <label asp-for="PhoneNumber">@T["Phone Number"]</label>

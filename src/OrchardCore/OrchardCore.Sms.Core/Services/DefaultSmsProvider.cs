@@ -12,6 +12,8 @@ public class DefaultSmsProvider : ISmsProvider
         S = stringLocalizer;
     }
 
+    public string Name => "Default";
+
     public Task<SmsResult> SendAsync(SmsMessage message)
     {
         return Task.FromResult(SmsResult.Failed(S["SMS settings must be configured before an SMS message can be sent."]));
