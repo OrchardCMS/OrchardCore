@@ -40,7 +40,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly dynamic New;
+        protected readonly dynamic New;
         protected readonly IHtmlLocalizer H;
         protected readonly IStringLocalizer S;
 
@@ -81,7 +81,7 @@ namespace OrchardCore.Workflows.Controllers
 
             if (!Url.IsLocalUrl(returnUrl))
             {
-                returnUrl = Url.Action(nameof(Index), typeof(WorkflowTypeController).ControllerName());
+                returnUrl = Url.Action(nameof(WorkflowTypeController.Index), typeof(WorkflowTypeController).ControllerName());
             }
 
             var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
@@ -151,7 +151,7 @@ namespace OrchardCore.Workflows.Controllers
             return View(viewModel);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(WorkflowIndexViewModel model)
         {
