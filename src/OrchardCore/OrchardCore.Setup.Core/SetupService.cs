@@ -246,13 +246,10 @@ namespace OrchardCore.Setup.Services
                     reportError
                 ), context, logger);
 
-                // This job will be executed after the end of the request but only if the tenant is still running.
+                // Invoke success handlers if the tenant is running after the current http request.
                 await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("setup-success", async (scope) =>
                 {
-                    var handlers = scope.ServiceProvider.GetServices<ISetupSuccessEventHandler>();
-                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<ISetupSuccessEventHandler>>();
-
-                    // The setup was completed successfully, the related handlers can be invoked.
+                    var handlers = scope.ServiceProvider.GetServices<ISetupSuccessHandler>();
                     await handlers.InvokeAsync(handler => handler.SuccessAsync(), logger);
                 });
             });
