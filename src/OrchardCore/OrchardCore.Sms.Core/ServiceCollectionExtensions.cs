@@ -11,7 +11,6 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddSmsServices(this IServiceCollection services)
     {
-        services.AddSingleton<DefaultSmsProvider>();
         services.AddTransient<IPostConfigureOptions<SmsSettings>, SmsSettingsConfiguration>();
         services.AddSingleton(sp =>
         {
@@ -27,7 +26,7 @@ public static class ServiceCollectionExtensions
                 }
             }
 
-            return sp.GetRequiredService<DefaultSmsProvider>();
+            return sp.CreateInstance<DefaultSmsProvider>();
         });
 
         return services;
