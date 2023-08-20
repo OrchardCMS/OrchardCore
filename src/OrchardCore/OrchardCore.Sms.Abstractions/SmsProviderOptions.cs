@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Collections.Immutable;
 
 namespace OrchardCore.Sms;
 
@@ -8,7 +8,9 @@ public class SmsProviderOptions
 {
     private Dictionary<string, Type> _providers { get; } = new();
 
-    public ReadOnlyDictionary<string, Type> Providers => _providers.AsReadOnly();
+    private IReadOnlyDictionary<string, Type> _readonlyProviders;
+
+    public IReadOnlyDictionary<string, Type> Providers => _readonlyProviders ??= _providers.ToImmutableDictionary(x => x.Key, x => x.Value);
 
     /// <summary>
     /// Adds a provider if one does not exist.

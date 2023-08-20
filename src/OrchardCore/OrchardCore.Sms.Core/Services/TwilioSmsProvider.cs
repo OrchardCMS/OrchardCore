@@ -1,4 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Localization;
@@ -6,9 +11,6 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
 using OrchardCore.Sms.Models;
-using Twilio;
-using Twilio.Rest.Api.V2010.Account;
-using Twilio.Types;
 
 namespace OrchardCore.Sms.Services;
 
@@ -18,11 +20,18 @@ public class TwilioSmsProvider : ISmsProvider
 
     public const string ProtectorName = "Twilio";
 
+    private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
+    {
+        PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance,
+    };
+
     public LocalizedString Name => S["Twilio"];
 
     private readonly ISiteService _siteService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ILogger<TwilioSmsProvider> _logger;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly HashSet<string> _successStatuses = new(StringComparer.OrdinalIgnoreCase) { "sent", "queued" };
     protected readonly IStringLocalizer S;
 
     private TwilioSettings _settings;
@@ -31,11 +40,13 @@ public class TwilioSmsProvider : ISmsProvider
         ISiteService siteService,
         IDataProtectionProvider dataProtectionProvider,
         ILogger<TwilioSmsProvider> logger,
+        IHttpClientFactory httpClientFactory,
         IStringLocalizer<TwilioSmsProvider> stringLocalizer)
     {
         _siteService = siteService;
         _dataProtectionProvider = dataProtectionProvider;
         _logger = logger;
+        _httpClientFactory = httpClientFactory;
         S = stringLocalizer;
     }
 
@@ -59,22 +70,27 @@ public class TwilioSmsProvider : ISmsProvider
         try
         {
             var settings = await GetSettingsAsync();
-
-            TwilioClient.Init(settings.AccountSID, settings.AuthToken);
-
-            var response = await MessageResource.CreateAsync(
-                to: new PhoneNumber(message.To),
-                from: new PhoneNumber(settings.PhoneNumber),
-                body: message.Body
-            );
-
-            if (response.Status == MessageResource.StatusEnum.Sent
-                || response.Status == MessageResource.StatusEnum.Queued)
+            var data = new List<KeyValuePair<string, string>>
             {
-                return SmsResult.Success;
-            }
+                new ("From", settings.PhoneNumber),
+                new ("To", message.To),
+                new ("Body", message.Body),
+            };
 
-            _logger.LogError("Twilio service is unable to send SMS messages. Error: {errorMessage}", response.ErrorMessage);
+            var client = GetClient(settings);
+            var response = await client.PostAsync($"{settings.AccountSID}/Messages.json", new FormUrlEncodedContent(data));
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<TwilioMessageResponse>(_jsonSerializerOptions);
+
+                if (result.Status != null && _successStatuses.Contains(result.Status))
+                {
+                    return SmsResult.Success;
+                }
+
+                _logger.LogError("Twilio service is unable to send SMS messages. Error, code: {errorCode}, message: {errorMessage}", result.ErrorCode, result.ErrorMessage);
+            }
 
             return SmsResult.Failed(S["SMS message was not send."]);
         }
@@ -84,6 +100,17 @@ public class TwilioSmsProvider : ISmsProvider
 
             return SmsResult.Failed(S["SMS message was not send. Error: {0}", ex.Message]);
         }
+    }
+
+    private HttpClient GetClient(TwilioSettings settings)
+    {
+        var client = _httpClientFactory.CreateClient(TechnicalName);
+
+        var token = $"{settings.AccountSID}:{settings.AuthToken}";
+        var base64Token = Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(token));
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64Token);
+
+        return client;
     }
 
     private async Task<TwilioSettings> GetSettingsAsync()
