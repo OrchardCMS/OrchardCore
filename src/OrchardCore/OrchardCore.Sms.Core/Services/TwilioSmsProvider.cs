@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
@@ -33,8 +34,6 @@ public class TwilioSmsProvider : ISmsProvider
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly HashSet<string> _successStatuses = new(StringComparer.OrdinalIgnoreCase) { "sent", "queued" };
     protected readonly IStringLocalizer S;
-
-    private TwilioSettings _settings;
 
     public TwilioSmsProvider(
         ISiteService siteService,
@@ -77,7 +76,7 @@ public class TwilioSmsProvider : ISmsProvider
                 new ("Body", message.Body),
             };
 
-            var client = GetClient(settings);
+            var client = GetHttpClient(settings);
             var response = await client.PostAsync($"{settings.AccountSID}/Messages.json", new FormUrlEncodedContent(data));
 
             if (response.IsSuccessStatusCode)
@@ -102,16 +101,18 @@ public class TwilioSmsProvider : ISmsProvider
         }
     }
 
-    private HttpClient GetClient(TwilioSettings settings)
+    private HttpClient GetHttpClient(TwilioSettings settings)
     {
         var client = _httpClientFactory.CreateClient(TechnicalName);
 
         var token = $"{settings.AccountSID}:{settings.AuthToken}";
-        var base64Token = Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(token));
+        var base64Token = Convert.ToBase64String(Encoding.ASCII.GetBytes(token));
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64Token);
 
         return client;
     }
+
+    private TwilioSettings _settings;
 
     private async Task<TwilioSettings> GetSettingsAsync()
     {

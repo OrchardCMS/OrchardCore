@@ -10,6 +10,11 @@ public class SmsProviderOptions
 
     private IReadOnlyDictionary<string, Type> _readonlyProviders;
 
+    /// <summary>
+    /// This read-only collections contains all registered SMS providers.
+    /// The 'Key' is the technical name of the provider.
+    /// The 'Value' is the type of the SMS provider. The type will awalys be an implementation of <see cref="ISmsProvider"></see> interface.
+    /// </summary>
     public IReadOnlyDictionary<string, Type> Providers => _readonlyProviders ??= _providers.ToImmutableDictionary(x => x.Key, x => x.Value);
 
     /// <summary>
@@ -37,6 +42,7 @@ public class SmsProviderOptions
         }
 
         _providers.Add(name, type);
+        _readonlyProviders = null;
 
         return this;
     }
@@ -54,7 +60,10 @@ public class SmsProviderOptions
             throw new ArgumentException($"'{nameof(name)}' cannot be null or empty.");
         }
 
-        _providers.Remove(name);
+        if (_providers.Remove(name))
+        {
+            _readonlyProviders = null;
+        }
 
         return this;
     }
