@@ -9,6 +9,7 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Settings;
 using OrchardCore.Sms.ViewModels;
 
@@ -19,6 +20,7 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IShellHost _shellHost;
+    private readonly IServiceProvider _serviceProvider;
     private readonly ShellSettings _shellSettings;
     private readonly SmsProviderOptions _smsProviderOptions;
 
@@ -27,11 +29,13 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
         IAuthorizationService authorizationService,
         IOptions<SmsProviderOptions> smsProviderOptions,
         IShellHost shellHost,
+        IServiceProvider serviceProvider,
         ShellSettings shellSettings)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _shellHost = shellHost;
+        _serviceProvider = serviceProvider;
         _shellSettings = shellSettings;
         _smsProviderOptions = smsProviderOptions.Value;
     }
@@ -48,8 +52,8 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
         return Initialize<SmsSettingsViewModel>("SmsSettings_Edit", model =>
         {
             model.DefaultProvider = settings.DefaultProviderName;
-            model.Providers = _smsProviderOptions.Providers.Keys
-            .Select(provider => new SelectListItem(provider, provider))
+            model.Providers = _smsProviderOptions.Providers
+            .Select(provider => new SelectListItem(provider.Key, _serviceProvider.CreateInstance<ISmsProvider>(provider.Value).Name))
             .ToArray();
         }).Location("Content:1")
         .OnGroup(SmsSettings.GroupId);

@@ -50,11 +50,11 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddTwilioSmsProvider(this IServiceCollection services)
     {
-        return services.AddSmsProvider<TwilioSmsProvider>(TwilioSmsProvider.Key);
+        return services.AddSmsProvider<TwilioSmsProvider>(TwilioSmsProvider.TechnicalName);
     }
 
     public static IServiceCollection AddConsoleSmsProvider(this IServiceCollection services)
     {
-        return services.AddSmsProvider<ConsoleSmsProvider>(ConsoleSmsProvider.Key);
+        return services.AddSmsProvider<ConsoleSmsProvider>(ConsoleSmsProvider.TechnicalName);
     }
 }

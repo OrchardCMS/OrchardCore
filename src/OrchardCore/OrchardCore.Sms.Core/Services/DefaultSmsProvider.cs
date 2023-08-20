@@ -12,7 +12,7 @@ public class DefaultSmsProvider : ISmsProvider
         S = stringLocalizer;
     }
 
-    public string Name => "Default";
+    public LocalizedString Name => S["Default"];
 
     public Task<SmsResult> SendAsync(SmsMessage message)
     {

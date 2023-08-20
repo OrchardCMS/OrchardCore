@@ -14,18 +14,17 @@ namespace OrchardCore.Sms.Services;
 
 public class TwilioSmsProvider : ISmsProvider
 {
-    public const string Key = "Twilio";
+    public const string TechnicalName = "Twilio";
 
     public const string ProtectorName = "Twilio";
 
-    private TwilioSettings _twilioSettings;
-
-    public string Name => Key;
+    public LocalizedString Name => S["Twilio"];
 
     private readonly ISiteService _siteService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ILogger<TwilioSmsProvider> _logger;
     protected readonly IStringLocalizer S;
+    private TwilioSettings _settings;
 
     public TwilioSmsProvider(
         ISiteService siteService,
@@ -60,6 +59,8 @@ public class TwilioSmsProvider : ISmsProvider
         {
             var settings = await GetSettingsAsync();
 
+            TwilioClient.Init(settings.AccountSID, settings.AuthToken);
+
             var response = await MessageResource.CreateAsync(
                 to: new PhoneNumber(message.To),
                 from: new PhoneNumber(settings.PhoneNumber),
@@ -86,23 +87,21 @@ public class TwilioSmsProvider : ISmsProvider
 
     private async Task<TwilioSettings> GetSettingsAsync()
     {
-        if (_twilioSettings == null)
+        if (_settings == null)
         {
             var settings = (await _siteService.GetSiteSettingsAsync()).As<TwilioSettings>();
 
             var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
 
-            // It is important here to create a new instance of `TwilioSettings` privetly to hold the plain token value.
-            _twilioSettings = new TwilioSettings()
+            // It is important here to create a new instance of `TwilioSettings` privately to hold the plain token value.
+            _settings = new TwilioSettings()
             {
                 PhoneNumber = settings.PhoneNumber,
                 AccountSID = settings.AccountSID,
                 AuthToken = protector.Unprotect(settings.AuthToken),
             };
-
-            TwilioClient.Init(_twilioSettings.AccountSID, _twilioSettings.AuthToken);
         }
 
-        return _twilioSettings;
+        return _settings;
     }
 }

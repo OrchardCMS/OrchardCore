@@ -1,13 +1,21 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Sms.Services;
 
 public class ConsoleSmsProvider : ISmsProvider
 {
-    public const string Key = "Console";
+    public const string TechnicalName = "Console";
 
-    public string Name => Key;
+    protected readonly IStringLocalizer S;
+
+    public LocalizedString Name => S["Console"];
+
+    public ConsoleSmsProvider(IStringLocalizer<ConsoleSmsProvider> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
 
     public Task<SmsResult> SendAsync(SmsMessage message)
     {
