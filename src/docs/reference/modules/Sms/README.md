@@ -1,10 +1,10 @@
 # SMS (`OrchardCore.Sms`)
 
-This module provides the infrastructure necessary to send messages using `SMS` service.
+This module provides the infrastructure necessary to send messages using an `SMS` service.
 
 ## SMS Settings
 
-Enabling the `OrchardCore.Sms` feature will add a new settings page under `Configurations` >> `Settings` >> `SMS`. You can utilize these settings to set up the default SMS provider configuration. The following are the providers that are readily accessible.
+Enabling the `SMS` feature will add a new settings page under `Configurations` >> `Settings` >> `SMS`. You can utilize these settings to set up the default SMS provider configuration. The following are the providers that are readily accessible.
 
 | Provider | Description |
 | --- | --- |
@@ -19,7 +19,7 @@ Enabling the `OrchardCore.Sms` feature will add a new settings page under `Confi
 The `OrchardCore.Sms` module provides you with the capability to integrate additional providers for dispatching SMS messages. To achieve this, you can easily create an implementation of the `ISmsProvider` interface and then proceed to register it using the following approach.
 
 ```csharp
-    services.AddSmsProvider<YourCustomImplemenation>("Name for your implementation")
+    services.AddSmsProvider<YourCustomImplemenation>("A technical name for your implementation")
 ```
 
 ## Workflows
