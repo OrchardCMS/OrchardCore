@@ -6,15 +6,16 @@ namespace OrchardCore.Sms;
 
 public class SmsProviderOptions
 {
-    public ReadOnlyDictionary<string, Type> Providers => _providers.AsReadOnly();
-
     private Dictionary<string, Type> _providers { get; } = new();
 
+    public ReadOnlyDictionary<string, Type> Providers => _providers.AsReadOnly();
+
     /// <summary>
-    /// Provides a way to add a provider if one does not already exists.
+    /// Adds a provider if one does not exist.
     /// </summary>
-    /// <param name="name">The name of the provider.</param>
+    /// <param name="name">The technical name of the provider.</param>
     /// <param name="type">The type of the provider.</param>
+    /// <returns cref="SmsProviderOptions"></returns>
     /// <exception cref="ArgumentException"></exception>
     public SmsProviderOptions TryAddProvider(string name, Type type)
     {
@@ -38,6 +39,12 @@ public class SmsProviderOptions
         return this;
     }
 
+    /// <summary>
+    /// Removes a provider if one exist.
+    /// </summary>
+    /// <param name="name">The technical name of the provider.</param>
+    /// <returns cref="SmsProviderOptions"></returns>
+    /// <exception cref="ArgumentException"></exception>
     public SmsProviderOptions RemoveProvider(string name)
     {
         if (String.IsNullOrEmpty(name))
@@ -50,6 +57,13 @@ public class SmsProviderOptions
         return this;
     }
 
+    /// <summary>
+    /// Replaces existing or adds a new provider.
+    /// </summary>
+    /// <param name="name">The technical name of the provider.</param>
+    /// <param name="type">The type of the provider.</param>
+    /// <returns cref="SmsProviderOptions"></returns>
+    /// <exception cref="ArgumentException"></exception>
     public SmsProviderOptions ReplaceProvider(string name, Type type)
     {
         _providers.Remove(name);

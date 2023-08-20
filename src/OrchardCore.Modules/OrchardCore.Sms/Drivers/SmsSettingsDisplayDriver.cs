@@ -52,9 +52,7 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
         return Initialize<SmsSettingsViewModel>("SmsSettings_Edit", model =>
         {
             model.DefaultProvider = settings.DefaultProviderName;
-            model.Providers = _smsProviderOptions.Providers
-            .Select(provider => new SelectListItem(provider.Key, _serviceProvider.CreateInstance<ISmsProvider>(provider.Value).Name))
-            .ToArray();
+            model.Providers = GetProvidersList();
         }).Location("Content:1")
         .OnGroup(SmsSettings.GroupId);
     }
@@ -82,5 +80,15 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
         }
 
         return await EditAsync(settings, context);
+    }
+
+    private SelectListItem[] _providers;
+
+    private SelectListItem[] GetProvidersList()
+    {
+        return _providers ??= _smsProviderOptions.Providers
+             .Select(provider => new SelectListItem(_serviceProvider.CreateInstance<ISmsProvider>(provider.Value).Name, provider.Key))
+             .OrderBy(item => item.Text)
+             .ToArray();
     }
 }

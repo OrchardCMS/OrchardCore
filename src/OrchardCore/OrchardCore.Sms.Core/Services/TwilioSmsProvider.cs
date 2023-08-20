@@ -24,6 +24,7 @@ public class TwilioSmsProvider : ISmsProvider
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ILogger<TwilioSmsProvider> _logger;
     protected readonly IStringLocalizer S;
+
     private TwilioSettings _settings;
 
     public TwilioSmsProvider(
@@ -93,8 +94,8 @@ public class TwilioSmsProvider : ISmsProvider
 
             var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
 
-            // It is important here to create a new instance of `TwilioSettings` privately to hold the plain token value.
-            _settings = new TwilioSettings()
+            // It is important to create a new instance of `TwilioSettings` privately to hold the plain auth-token value.
+            _settings = new TwilioSettings
             {
                 PhoneNumber = settings.PhoneNumber,
                 AccountSID = settings.AccountSID,
