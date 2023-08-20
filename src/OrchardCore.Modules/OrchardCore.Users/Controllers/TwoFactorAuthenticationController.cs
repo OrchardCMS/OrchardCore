@@ -324,7 +324,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
 
         var twoFactorSettings = (await SiteService.GetSiteSettingsAsync()).As<TwoFactorLoginSettings>();
         var recoveryCodes = await UserManager.GenerateNewTwoFactorRecoveryCodesAsync(user, twoFactorSettings.NumberOfRecoveryCodesToGenerate);
-        await SetRecoveryCodes(recoveryCodes.ToArray(), await UserManager.GetUserIdAsync(user));
+        await SetRecoveryCodesAsync(recoveryCodes.ToArray(), await UserManager.GetUserIdAsync(user));
 
         await Notifier.SuccessAsync(H["You have generated new recovery codes."]);
 
