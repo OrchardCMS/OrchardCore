@@ -34,9 +34,9 @@ namespace OrchardCore.Secrets
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
-            services.AddScoped<SecretBindingsManager>();
-            services.AddScoped(typeof(ISecretService<>), typeof(SecretService<>));
-            services.AddScoped<ISecretCoordinator, DefaultSecretCoordinator>();
+            services.AddSingleton<SecretBindingsManager>();
+            services.AddSingleton(typeof(ISecretService<>), typeof(SecretService<>));
+            services.AddSingleton<ISecretCoordinator, DefaultSecretCoordinator>();
 
             services.AddScoped<IDisplayManager<Secret>, DisplayManager<Secret>>();
             services.AddScoped<IDisplayDriver<Secret>, TestSecretDisplayDriver>();
@@ -48,15 +48,14 @@ namespace OrchardCore.Secrets
             services.AddTransient<IDecryptionProvider, DefaultDecryptionProvider>();
 
             services.AddRecipeExecutionStep<SecretsRecipeStep>();
-
             services.AddTransient<IDeploymentSource, AllSecretsRsaDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllSecretsRsaDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllSecretsRsaDeploymentStepDriver>();
 
             // TODO we could have a feature to remove this.
             services.AddSingleton<DatabaseSecretDataProtector>();
-            services.AddScoped<ISecretStore, DatabaseSecretStore>();
-            services.AddScoped<SecretsDocumentManager>();
+            services.AddSingleton<ISecretStore, DatabaseSecretStore>();
+            services.AddSingleton<SecretsDocumentManager>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -91,7 +90,7 @@ namespace OrchardCore.Secrets
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<ISecretStore, ConfigurationSecretStore>();
+            services.AddSingleton<ISecretStore, ConfigurationSecretStore>();
         }
     }
 }

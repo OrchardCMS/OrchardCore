@@ -13,22 +13,22 @@ namespace OrchardCore.Email.Services
     public class SmtpSettingsConfiguration : IConfigureOptions<SmtpSettings>
     {
         private readonly ISiteService _site;
-        private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
+        private readonly ISecretService<TextSecret> _textSecretService;
+        private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ILogger _logger;
 
         public SmtpSettingsConfiguration(
             ISiteService site,
-            IDataProtectionProvider dataProtectionProvider,
-            IShellHost shellHost,
             ShellSettings shellSettings,
+            ISecretService<TextSecret> textSecretService,
+            IDataProtectionProvider dataProtectionProvider,
             ILogger<SmtpSettingsConfiguration> logger)
         {
             _site = site;
-            _dataProtectionProvider = dataProtectionProvider;
-            _shellHost = shellHost;
             _shellSettings = shellSettings;
+            _textSecretService = textSecretService;
+            _dataProtectionProvider = dataProtectionProvider;
             _logger = logger;
         }
 
@@ -51,12 +51,7 @@ namespace OrchardCore.Email.Services
 
             if (!String.IsNullOrEmpty(settings.PasswordSecret))
             {
-                var shellScope = _shellHost.GetScopeAsync(_shellSettings).GetAwaiter().GetResult();
-                shellScope.UsingServiceScopeAsync(async scope =>
-                {
-                    var textSecretService = scope.ServiceProvider.GetRequiredService<ISecretService<TextSecret>>();
-                    options.Password = (await textSecretService.GetSecretAsync(settings.PasswordSecret)).Text;
-                }).GetAwaiter().GetResult();
+                options.Password = _textSecretService.GetSecretAsync(settings.PasswordSecret).GetAwaiter().GetResult().Text;
             }
             else if (!String.IsNullOrWhiteSpace(settings.Password))
             {

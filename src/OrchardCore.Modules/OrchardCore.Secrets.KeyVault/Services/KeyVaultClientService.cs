@@ -14,7 +14,7 @@ namespace OrchardCore.Secrets.KeyVault.Services
 
         public KeyVaultClientService(IOptions<SecretsKeyVaultOptions> options)
         {
-            var keyVaultEndpointUri = new Uri("https://" + options.Value.KeyVaultName + ".vault.azure.net");
+            var keyVaultEndpointUri = new Uri($"https://{options.Value.KeyVaultName}.vault.azure.net");
 
             _secretClient = new SecretClient(
                 keyVaultEndpointUri,
