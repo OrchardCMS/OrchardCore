@@ -247,23 +247,20 @@ namespace OrchardCore.Setup.Services
                     context.Errors[key] = message;
                 }
                 await setupEventHandlers.InvokeAsync((handler, ctx) => handler.Setup(ctx.Properties, reportError), context, logger);
-
-                var success = context.Errors.Count > 0;
-
-                if (success)
-                {
-                    // Update the shell state.
-                    await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
-                }
-
-                var completedContext = new CompletedSetupContext()
-                {
-                    Success = success,
-                    Errors = context.Errors,
-                };
-
-                await tenandSetupHandlers.InvokeAsync((handler, ctx) => handler.CompletedAsync(ctx), completedContext, _logger);
             });
+
+            if (context.Errors.Count == 0)
+            {
+                // Update the shell state.
+                await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
+
+                await (await _shellHost.GetScopeAsync(shellSettings)).UsingAsync(async scope =>
+                {
+                    var tenandSetupHandlers = scope.ServiceProvider.GetServices<ITenantSetupHandler>();
+
+                    await tenandSetupHandlers.InvokeAsync((handler) => handler.SuccessAsync(), _logger);
+                });
+            }
 
             return executionId;
         }

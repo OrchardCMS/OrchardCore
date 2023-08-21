@@ -19,7 +19,7 @@ namespace OrchardCore.Users.Services
             _userService = userService;
         }
 
-        public Task CompletedAsync(CompletedSetupContext context)
+        public Task SuccessAsync()
             => Task.CompletedTask;
 
         public Task SettingUpAsync(SetupContext context)

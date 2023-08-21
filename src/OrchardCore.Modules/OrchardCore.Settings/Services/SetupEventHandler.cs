@@ -18,7 +18,7 @@ namespace OrchardCore.Settings.Services
             _siteService = siteService;
         }
 
-        public Task CompletedAsync(CompletedSetupContext context)
+        public Task SuccessAsync()
             => Task.CompletedTask;
 
         public async Task SettingUpAsync(SetupContext context)
