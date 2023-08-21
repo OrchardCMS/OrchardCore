@@ -25,10 +25,6 @@
         }
     }
 
-    .nav-link {
-        font-size: 14px;
-    }
-
     .breadcrumb {
         background-color: transparent;
         margin-top: 1rem;
@@ -69,10 +65,13 @@ body:not(.left-sidebar-compact) {
 
 .ta-navbar-brand {
     @extend .navbar-brand;
-    padding: 5px;
+    padding: 0 5px;
     white-space: nowrap;
-    font-size: 14px;
     transition: width 0.2s ease-in-out;
+
+    span {
+        font-size: 14px;
+    }
 
     span:first-child {
         padding-left: 5px;
@@ -86,6 +85,7 @@ body:not(.left-sidebar-compact) {
 
 .ta-navbar-brand img {
     padding-right: 11px;
+    padding-left: 5px;
     height: 32px;
 }
 
@@ -106,6 +106,11 @@ body:not(.left-sidebar-compact) {
 .action-bar {
     top: 3.3rem;
     z-index: 1050;
+}
+
+.user-top-navbar {
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .user-top-navbar .nav-item .nav-link {
