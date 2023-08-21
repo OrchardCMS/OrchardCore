@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using OrchardCore.Abstractions.Setup;
-using OrchardCore.Setup.Events;
+using OrchardCore.Setup;
 using OrchardCore.Setup.Services;
 using OrchardCore.Users.Models;
 
@@ -10,7 +10,7 @@ namespace OrchardCore.Users.Services
     /// <summary>
     /// During setup, creates the admin user account.
     /// </summary>
-    public class SetupEventHandler : ITenantSetupHandler
+    public class SetupEventHandler : TenantSetupHandlerBase
     {
         private readonly IUserService _userService;
 
@@ -19,10 +19,7 @@ namespace OrchardCore.Users.Services
             _userService = userService;
         }
 
-        public Task SuccessAsync()
-            => Task.CompletedTask;
-
-        public Task SettingUpAsync(SetupContext context)
+        public override Task SettingUpAsync(SetupContext context)
         {
             var user = new User
             {

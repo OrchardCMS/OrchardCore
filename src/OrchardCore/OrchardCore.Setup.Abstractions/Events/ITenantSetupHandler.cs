@@ -17,4 +17,10 @@ public interface ITenantSetupHandler
     /// </summary>
     /// <returns></returns>
     Task SuccessAsync();
+
+    /// <summary>
+    /// Called when a tenant fails to setup.
+    /// </summary>
+    /// <returns></returns>
+    Task FailedAsync(SetupContext context);
 }

@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using OrchardCore.Abstractions.Setup;
-using OrchardCore.Setup.Events;
+using OrchardCore.Setup;
 using OrchardCore.Setup.Services;
 
 namespace OrchardCore.Settings.Services
@@ -9,7 +9,7 @@ namespace OrchardCore.Settings.Services
     /// <summary>
     /// During setup, registers the Super User.
     /// </summary>
-    public class SetupEventHandler : ITenantSetupHandler
+    public class SetupEventHandler : TenantSetupHandlerBase
     {
         private readonly ISiteService _siteService;
 
@@ -18,10 +18,7 @@ namespace OrchardCore.Settings.Services
             _siteService = siteService;
         }
 
-        public Task SuccessAsync()
-            => Task.CompletedTask;
-
-        public async Task SettingUpAsync(SetupContext context)
+        public override async Task SettingUpAsync(SetupContext context)
         {
             // Updating site settings.
             var siteSettings = await _siteService.LoadSiteSettingsAsync();

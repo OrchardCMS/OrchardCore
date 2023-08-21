@@ -228,6 +228,8 @@ namespace OrchardCore.Setup.Services
                 await recipeExecutor.ExecuteAsync(executionId, context.Recipe, context.Properties, _applicationLifetime.ApplicationStopping);
             }
 
+            var succeeded = false;
+
             // Reloading the shell context as the recipe has probably updated its features.
             await (await _shellHost.GetScopeAsync(shellSettings)).UsingAsync(async scope =>
             {
@@ -247,9 +249,16 @@ namespace OrchardCore.Setup.Services
                     context.Errors[key] = message;
                 }
                 await setupEventHandlers.InvokeAsync((handler, ctx) => handler.Setup(ctx.Properties, reportError), context, logger);
+
+                succeeded = context.Errors.Count == 0;
+
+                if (!succeeded)
+                {
+                    await tenandSetupHandlers.InvokeAsync((handler, ctx) => handler.FailedAsync(ctx), context, _logger);
+                }
             });
 
-            if (context.Errors.Count == 0)
+            if (succeeded)
             {
                 // Update the shell state.
                 await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
