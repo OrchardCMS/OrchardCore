@@ -38,8 +38,8 @@ namespace OrchardCore.BackgroundTasks
         public int LockExpiration { get; set; }
 
         /// <summary>
-        /// Whether or not the tenant pipeline should be built and then executed.
-        /// This to configure endpoints and then to allow route urls generation.
+        /// Whether or not the pipeline should be built to configure endpoints
+        /// and then executed to allow route urls generation in the background.
         /// </summary>
         public bool UsePipeline { get; set; }
     }
