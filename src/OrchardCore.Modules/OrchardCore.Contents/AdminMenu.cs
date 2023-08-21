@@ -26,7 +26,7 @@ namespace OrchardCore.Contents
         private readonly LinkGenerator _linkGenerator;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenu(
             IContentDefinitionManager contentDefinitionManager,

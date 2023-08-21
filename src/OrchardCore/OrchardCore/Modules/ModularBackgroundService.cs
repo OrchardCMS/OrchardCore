@@ -14,7 +14,6 @@ using Microsoft.Extensions.Primitives;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Settings;
 
@@ -81,24 +80,23 @@ namespace OrchardCore.Modules
             }
 
             var previousShells = Array.Empty<ShellContext>();
-
             while (!stoppingToken.IsCancellationRequested)
             {
+                // Init the delay first to be also waited on exception.
+                var pollingDelay = Task.Delay(_pollingTime, stoppingToken);
                 try
                 {
                     var runningShells = GetRunningShells();
                     await UpdateAsync(previousShells, runningShells, stoppingToken);
-                    previousShells = runningShells;
-
-                    var pollingDelay = Task.Delay(_pollingTime, stoppingToken);
-
                     await RunAsync(runningShells, stoppingToken);
-                    await WaitAsync(pollingDelay, stoppingToken);
+                    previousShells = runningShells;
                 }
                 catch (Exception ex) when (!ex.IsFatal())
                 {
                     _logger.LogError(ex, "Error while executing '{ServiceName}'.", nameof(ModularBackgroundService));
                 }
+
+                await WaitAsync(pollingDelay, stoppingToken);
             }
         }
 
@@ -108,6 +106,7 @@ namespace OrchardCore.Modules
             {
                 var tenant = shell.Settings.Name;
 
+                // Create a new 'HttpContext' to be used in the background.
                 _httpContextAccessor.HttpContext = shell.CreateHttpContext();
 
                 var schedulers = GetSchedulersToRun(tenant);
@@ -119,7 +118,7 @@ namespace OrchardCore.Modules
                     }
 
                     var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
-                    if (!_options.ShellWarmup && shellScope.ShellContext.Pipeline == null)
+                    if (!_options.ShellWarmup && !shellScope.ShellContext.HasPipeline())
                     {
                         break;
                     }
@@ -141,22 +140,42 @@ namespace OrchardCore.Modules
                         var taskName = scheduler.Name;
 
                         var task = scope.ServiceProvider.GetServices<IBackgroundTask>().GetTaskByName(taskName);
-                        if (task == null)
+                        if (task is null)
                         {
                             return;
                         }
 
                         var siteService = scope.ServiceProvider.GetService<ISiteService>();
-                        if (siteService != null)
+                        if (siteService is not null)
                         {
                             try
                             {
+                                // Use the base url, if defined, to override the 'Scheme', 'Host' and 'PathBase'.
                                 _httpContextAccessor.HttpContext.SetBaseUrl((await siteService.GetSiteSettingsAsync()).BaseUrl);
                             }
                             catch (Exception ex) when (!ex.IsFatal())
                             {
                                 _logger.LogError(ex, "Error while getting the base url from the site settings of the tenant '{TenantName}'.", tenant);
                             }
+                        }
+
+                        try
+                        {
+                            if (scheduler.Settings.UsePipeline)
+                            {
+                                if (!scope.ShellContext.HasPipeline())
+                                {
+                                    // Build the shell pipeline to configure endpoint data sources.
+                                    await scope.ShellContext.BuildPipelineAsync();
+                                }
+
+                                // Run the pipeline to make the 'HttpContext' aware of endpoints.
+                                await scope.ShellContext.Pipeline.Invoke(_httpContextAccessor.HttpContext);
+                            }
+                        }
+                        catch (Exception ex) when (!ex.IsFatal())
+                        {
+                            _logger.LogError(ex, "Error while running in the background the pipeline of tenant '{TenantName}'.", tenant);
                         }
 
                         var context = new BackgroundTaskEventContext(taskName, scope);
@@ -184,6 +203,9 @@ namespace OrchardCore.Modules
                         await handlers.InvokeAsync((handler, context, token) => handler.ExecutedAsync(context, token), context, stoppingToken, _logger);
                     });
                 }
+
+                // Clear the 'HttpContext' for this async flow.
+                _httpContextAccessor.HttpContext = null;
             });
         }
 
@@ -200,10 +222,11 @@ namespace OrchardCore.Modules
                     return;
                 }
 
+                // Create a new 'HttpContext' to be used in the background.
                 _httpContextAccessor.HttpContext = shell.CreateHttpContext();
 
                 var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
-                if (!_options.ShellWarmup && shellScope.ShellContext.Pipeline == null)
+                if (!_options.ShellWarmup && !shellScope.ShellContext.HasPipeline())
                 {
                     return;
                 }
@@ -224,7 +247,7 @@ namespace OrchardCore.Modules
 
                     ITimeZone timeZone = null;
                     var siteService = scope.ServiceProvider.GetService<ISiteService>();
-                    if (siteService != null)
+                    if (siteService is not null)
                     {
                         try
                         {
@@ -252,7 +275,7 @@ namespace OrchardCore.Modules
                         }
 
                         BackgroundTaskSettings settings = null;
-                        if (settingsProvider != null)
+                        if (settingsProvider is not null)
                         {
                             try
                             {
@@ -275,6 +298,9 @@ namespace OrchardCore.Modules
                         scheduler.Updated = true;
                     }
                 });
+
+                // Clear the 'HttpContext' for this async flow.
+                _httpContextAccessor.HttpContext = null;
             });
         }
 
@@ -292,7 +318,7 @@ namespace OrchardCore.Modules
 
         private ShellContext[] GetRunningShells() => _shellHost
             .ListShellContexts()
-            .Where(s => s.Settings.State == TenantState.Running && (_options.ShellWarmup || s.Pipeline != null))
+            .Where(s => s.Settings.IsRunning() && (_options.ShellWarmup || s.HasPipeline()))
             .ToArray();
 
         private ShellContext[] GetShellsToRun(IEnumerable<ShellContext> shells)

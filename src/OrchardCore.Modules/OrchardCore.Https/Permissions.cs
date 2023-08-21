@@ -7,7 +7,7 @@ namespace OrchardCore.Https
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageHttps = new Permission("ManageHttps", "Manage HTTPS");
+        public static readonly Permission ManageHttps = new("ManageHttps", "Manage HTTPS");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
@@ -21,7 +21,7 @@ namespace OrchardCore.Https
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageHttps }
+                    Permissions = new[] { ManageHttps },
                 }
             };
         }

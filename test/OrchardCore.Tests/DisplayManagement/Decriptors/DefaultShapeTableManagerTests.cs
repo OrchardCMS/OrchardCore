@@ -135,12 +135,13 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
 
             serviceCollection.AddSingleton<IExtensionManager>(new TestExtensionManager(features));
 
-            TestShapeProvider.FeatureShapes = new Dictionary<IFeatureInfo, IEnumerable<string>> {
+            TestShapeProvider.InitFeatureShapes(new Dictionary<IFeatureInfo, IEnumerable<string>>
+            {
                 { TestFeature(), new [] {"Hello"} },
                 { features[1], new [] {"Theme1Shape"} },
                 { features[2], new [] {"DerivedShape", "OverriddenShape"} },
-                { features[3], new [] {"BaseShape", "OverriddenShape"} }
-            };
+                { features[3], new [] {"BaseShape", "OverriddenShape"} },
+            });
 
             serviceCollection.AddScoped<IShapeTableProvider, TestShapeProvider>();
             serviceCollection.AddScoped(sp => (TestShapeProvider)sp.GetService<IShapeTableProvider>());
@@ -236,6 +237,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 throw new NotImplementedException();
             }
 
+#pragma warning disable CA1822 // Mark members as static
             public Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)
             {
                 return Task.FromResult(new FeatureEntry(feature));
@@ -245,6 +247,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             {
                 return Task.FromResult(features.Select(x => new FeatureEntry(x)));
             }
+#pragma warning restore CA1822 // Mark members as static
 
             public IEnumerable<IFeatureInfo> GetFeatures()
             {
@@ -274,9 +277,14 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
 
         public class TestShapeProvider : IShapeTableProvider
         {
-            public static IDictionary<IFeatureInfo, IEnumerable<string>> FeatureShapes;
+            private static IDictionary<IFeatureInfo, IEnumerable<string>> _featureShapes;
+
+            public static IDictionary<IFeatureInfo, IEnumerable<string>> FeatureShapes => _featureShapes;
 
             public Action<ShapeTableBuilder> Discover = x => { };
+
+            public static void InitFeatureShapes(IDictionary<IFeatureInfo, IEnumerable<string>> featureShapes)
+                => _featureShapes = featureShapes;
 
             void IShapeTableProvider.Discover(ShapeTableBuilder builder)
             {
@@ -480,7 +488,9 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             Assert.Equal("DerivedTheme", table.Descriptors["OverriddenShape"].BindingSource);
         }
 
+#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
         public void Dispose()
+#pragma warning restore CA1816 // Dispose methods should call SuppressFinalize
         {
             (_serviceProvider as IDisposable)?.Dispose();
         }

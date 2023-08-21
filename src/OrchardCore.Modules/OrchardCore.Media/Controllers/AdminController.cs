@@ -25,9 +25,10 @@ namespace OrchardCore.Media.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentTypeProvider _contentTypeProvider;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly MediaOptions _mediaOptions;
         private readonly IUserAssetFolderNameProvider _userAssetFolderNameProvider;
+        private readonly IChunkFileUploadService _chunkFileUploadService;
 
         public AdminController(
             IMediaFileStore mediaFileStore,
@@ -37,7 +38,8 @@ namespace OrchardCore.Media.Controllers
             IOptions<MediaOptions> options,
             ILogger<AdminController> logger,
             IStringLocalizer<AdminController> stringLocalizer,
-            IUserAssetFolderNameProvider userAssetFolderNameProvider
+            IUserAssetFolderNameProvider userAssetFolderNameProvider,
+            IChunkFileUploadService chunkFileUploadService
             )
         {
             _mediaFileStore = mediaFileStore;
@@ -49,6 +51,7 @@ namespace OrchardCore.Media.Controllers
             _logger = logger;
             S = stringLocalizer;
             _userAssetFolderNameProvider = userAssetFolderNameProvider;
+            _chunkFileUploadService = chunkFileUploadService;
         }
 
         public async Task<IActionResult> Index()
@@ -68,7 +71,7 @@ namespace OrchardCore.Media.Controllers
                 return Forbid();
             }
 
-            if (string.IsNullOrEmpty(path))
+            if (String.IsNullOrEmpty(path))
             {
                 path = "";
             }
@@ -93,7 +96,7 @@ namespace OrchardCore.Media.Controllers
 
         public async Task<ActionResult<IEnumerable<object>>> GetMediaItems(string path)
         {
-            if (string.IsNullOrEmpty(path))
+            if (String.IsNullOrEmpty(path))
             {
                 path = "";
             }
@@ -123,7 +126,7 @@ namespace OrchardCore.Media.Controllers
                 return Forbid();
             }
 
-            if (string.IsNullOrEmpty(path))
+            if (String.IsNullOrEmpty(path))
             {
                 return NotFound();
             }
@@ -140,75 +143,81 @@ namespace OrchardCore.Media.Controllers
 
         [HttpPost]
         [MediaSizeLimit]
-        public async Task<ActionResult<object>> Upload(
-            string path,
-            string contentType,
-            ICollection<IFormFile> files)
+        public async Task<IActionResult> Upload(string path)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
             {
                 return Forbid();
             }
 
-            if (string.IsNullOrEmpty(path))
-            {
-                path = "";
-            }
+            return await _chunkFileUploadService.ProcessRequestAsync(
+                Request,
 
-            var result = new List<object>();
-
-            // Loop through each file in the request
-            foreach (var file in files)
-            {
-                // TODO: support clipboard
-
-                if (!_allowedFileExtensions.Contains(Path.GetExtension(file.FileName), StringComparer.OrdinalIgnoreCase))
+                // We need this empty object because the frontend expects a JSON object in the response.
+                (_, _, _) => Task.FromResult<IActionResult>(Ok(new { })),
+                async (files) =>
                 {
-                    result.Add(new
+                    if (String.IsNullOrEmpty(path))
                     {
-                        name = file.FileName,
-                        size = file.Length,
-                        folder = path,
-                        error = S["This file extension is not allowed: {0}", Path.GetExtension(file.FileName)].ToString()
-                    });
+                        path = "";
+                    }
 
-                    _logger.LogInformation("File extension not allowed: '{File}'", file.FileName);
+                    var result = new List<object>();
 
-                    continue;
-                }
-
-                var fileName = _mediaNameNormalizerService.NormalizeFileName(file.FileName);
-
-                Stream stream = null;
-                try
-                {
-                    var mediaFilePath = _mediaFileStore.Combine(path, fileName);
-                    stream = file.OpenReadStream();
-                    mediaFilePath = await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
-
-                    var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
-
-                    result.Add(CreateFileResult(mediaFile));
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "An error occurred while uploading a media");
-
-                    result.Add(new
+                    // Loop through each file in the request.
+                    foreach (var file in files)
                     {
-                        name = fileName,
-                        size = file.Length,
-                        folder = path,
-                        error = ex.Message
-                    });
-                }
-                finally
-                {
-                    stream?.Dispose();
-                }
-            }
+                        if (!_allowedFileExtensions.Contains(Path.GetExtension(file.FileName), StringComparer.OrdinalIgnoreCase))
+                        {
+                            result.Add(new
+                            {
+                                name = file.FileName,
+                                size = file.Length,
+                                folder = path,
+                                error = S["This file extension is not allowed: {0}", Path.GetExtension(file.FileName)].ToString()
+                            });
 
-            return new { files = result.ToArray() };
+                            if (_logger.IsEnabled(LogLevel.Information))
+                            {
+                                _logger.LogInformation("File extension not allowed: '{File}'", file.FileName);
+                            }
+
+                            continue;
+                        }
+
+                        var fileName = _mediaNameNormalizerService.NormalizeFileName(file.FileName);
+
+                        Stream stream = null;
+                        try
+                        {
+                            var mediaFilePath = _mediaFileStore.Combine(path, fileName);
+                            stream = file.OpenReadStream();
+                            mediaFilePath = await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
+
+                            var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
+
+                            result.Add(CreateFileResult(mediaFile));
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, "An error occurred while uploading a media");
+
+                            result.Add(new
+                            {
+                                name = fileName,
+                                size = file.Length,
+                                folder = path,
+                                error = ex.Message
+                            });
+                        }
+                        finally
+                        {
+                            stream?.Dispose();
+                        }
+                    }
+
+                    return Ok(new { files = result.ToArray() });
+                });
         }
 
         [HttpPost]
@@ -220,7 +229,7 @@ namespace OrchardCore.Media.Controllers
                 return Forbid();
             }
 
-            if (string.IsNullOrEmpty(path))
+            if (String.IsNullOrEmpty(path))
             {
                 return StatusCode(StatusCodes.Status403Forbidden, S["Cannot delete root media folder"]);
             }
@@ -248,7 +257,7 @@ namespace OrchardCore.Media.Controllers
                 return Forbid();
             }
 
-            if (string.IsNullOrEmpty(path))
+            if (String.IsNullOrEmpty(path))
             {
                 return NotFound();
             }
@@ -268,7 +277,7 @@ namespace OrchardCore.Media.Controllers
                 return Forbid();
             }
 
-            if (string.IsNullOrEmpty(oldPath) || string.IsNullOrEmpty(newPath))
+            if (String.IsNullOrEmpty(oldPath) || String.IsNullOrEmpty(newPath))
             {
                 return NotFound();
             }
@@ -336,14 +345,14 @@ namespace OrchardCore.Media.Controllers
             }
 
             if ((mediaNames == null) || (mediaNames.Length < 1)
-                || string.IsNullOrEmpty(sourceFolder)
-                || string.IsNullOrEmpty(targetFolder))
+                || String.IsNullOrEmpty(sourceFolder)
+                || String.IsNullOrEmpty(targetFolder))
             {
                 return NotFound();
             }
 
-            sourceFolder = sourceFolder == "root" ? string.Empty : sourceFolder;
-            targetFolder = targetFolder == "root" ? string.Empty : targetFolder;
+            sourceFolder = sourceFolder == "root" ? String.Empty : sourceFolder;
+            targetFolder = targetFolder == "root" ? String.Empty : targetFolder;
 
             var filesOnError = new List<string>();
 
@@ -363,7 +372,7 @@ namespace OrchardCore.Media.Controllers
 
             if (filesOnError.Count > 0)
             {
-                return BadRequest(S["Error when moving files. Maybe they already exist on the target folder? Files on error: {0}", string.Join(",", filesOnError)].ToString());
+                return BadRequest(S["Error when moving files. Maybe they already exist on the target folder? Files on error: {0}", String.Join(",", filesOnError)].ToString());
             }
             else
             {
@@ -376,7 +385,7 @@ namespace OrchardCore.Media.Controllers
             string path, string name,
             [FromServices] IAuthorizationService authorizationService)
         {
-            if (string.IsNullOrEmpty(path))
+            if (String.IsNullOrEmpty(path))
             {
                 path = "";
             }

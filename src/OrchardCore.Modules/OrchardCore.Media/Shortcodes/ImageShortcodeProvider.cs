@@ -12,9 +12,9 @@ namespace OrchardCore.Media.Shortcodes
 {
     public class ImageShortcodeProvider : IShortcodeProvider
     {
-        private static ValueTask<string> Null => new ValueTask<string>((string)null);
-        private static ValueTask<string> ImageShortcode => new ValueTask<string>("[image]");
-        private static readonly HashSet<string> Shortcodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        private static ValueTask<string> Null => new((string)null);
+        private static ValueTask<string> ImageShortcode => new("[image]");
+        private static readonly HashSet<string> _shortcodes = new(StringComparer.OrdinalIgnoreCase)
         {
             "image",
             "media" // [media] is a deprecated shortcode, and can be removed in a future release.
@@ -39,7 +39,7 @@ namespace OrchardCore.Media.Shortcodes
 
         public ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content, Context context)
         {
-            if (!Shortcodes.Contains(identifier))
+            if (!_shortcodes.Contains(identifier))
             {
                 return Null;
             }
@@ -60,7 +60,7 @@ namespace OrchardCore.Media.Shortcodes
                 // Serve static files from virtual path.
                 if (content.StartsWith("~/", StringComparison.Ordinal))
                 {
-                    content = _httpContextAccessor.HttpContext.Request.PathBase.Add(content.Substring(1)).Value;
+                    content = _httpContextAccessor.HttpContext.Request.PathBase.Add(content[1..]).Value;
                     if (!String.IsNullOrEmpty(_options.CdnBaseUrl))
                     {
                         content = _options.CdnBaseUrl + content;
@@ -71,8 +71,8 @@ namespace OrchardCore.Media.Shortcodes
                     content = _mediaFileStore.MapPathToPublicUrl(content);
                 }
             }
-            var className = string.Empty;
-            var altText = string.Empty;
+            var className = String.Empty;
+            var altText = String.Empty;
             if (arguments.Any())
             {
                 var queryStringParams = new Dictionary<string, string>();

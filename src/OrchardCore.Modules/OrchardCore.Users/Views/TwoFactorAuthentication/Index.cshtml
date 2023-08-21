@@ -1,0 +1,180 @@
+@using Microsoft.AspNetCore.Http.Features
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.Options
+@using OrchardCore.Users.Events;
+@using OrchardCore.Users.Models
+
+@model TwoFactorAuthenticationViewModel
+@inject ITwoFactorAuthenticationHandlerCoordinator TwoFactorAuthenticationHandlerCoordinator
+@{
+    RenderTitleSegments(T["Two-Factor Authentication"]);
+}
+
+@if (Model.AuthenticationMethods.Count == 0)
+{
+    <div class="alert alert-danger text-center">
+        <strong>@T["No authentication methods are available."]</strong>
+        <p>@T["Please enable at least one two-factor authentication method."]</p>
+    </div>
+
+    return;
+}
+
+@{
+    var canTrack = ViewContext.HttpContext.Features.Get<ITrackingConsentFeature>()?.CanTrack ?? true;
+}
+
+@if (User.HasClaim(claim => claim.Type == UserConstants.TwoFactorAuthenticationClaimType))
+{
+    <div class="alert alert-danger text-center py-3">
+        @T["Two-factor authentication must be enabled before proceeding."]
+    </div>
+}
+
+@if (!canTrack)
+{
+    <div class="alert alert-danger text-center">
+        <strong>@T["Privacy and cookie policy have not been accepted."]</strong>
+        <p>@T["You must accept the policy before you can enable two-factor authentication."]</p>
+    </div>
+
+    return;
+}
+
+<div class="card bg-primary">
+
+    <div class="card-header">
+        <div class="d-flex justify-content-between">
+            <div class="d-flex align-items-center">@T["Two-Factor Authentication"]</div>
+
+            @if (Model.IsTwoFaEnabled && Model.CanDisableTwoFactor)
+            {
+                <a asp-action="DisableTwoFactorAuthentication" class="btn btn-sm btn-warning">@T["Disable two-factor authentication"]</a>
+            }
+            else if (Model.IsTwoFaEnabled)
+            {
+                <div class="btn btn-sm btn-success disabled">@T["Enabled"]</div>
+            }
+            else if (!Model.IsTwoFaEnabled && Model.ValidTwoFactorProviders.Count > 0)
+            {
+                <form method="post" asp-action="EnableTwoFactorAuthentication">
+                    <button type="submit" class="btn btn-sm btn-success">@T["Enable"]</button>
+                </form>
+            }
+        </div>
+    </div>
+
+    <div class="card-body">
+
+        @if (!Model.IsTwoFaEnabled && Model.ValidTwoFactorProviders.Count == 0)
+        {
+            <div class="alert alert-warning">
+                <p class="text-center mb-0">@T["Two-factor authentication is not enabled yet. To enable it, please add one of the below two-factor methods."]  </p>
+            </div>
+        }
+        else
+        {
+            if (!Model.IsTwoFaEnabled)
+            {
+                <div class="alert alert-warning mb-0 text-center">
+                    @T["Two-factor authentication is disabled."]
+                </div>
+            }
+            else if (!Model.CanDisableTwoFactor)
+            {
+                <div class="alert alert-info text-center">
+                    @T["Two-factor authentication can't be disabled for your user."]
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-success mb-0 text-center">
+                    @T["Two-factor authentication is enabled."]
+                </div>
+            }
+
+            if (Model.IsMachineRemembered)
+            {
+                <div class="mb-3">
+                    <p class="mb-1">@T["The current device has been saved during the two-factor authentication process."]</p>
+                    <form method="post" asp-action="ForgetTwoFactorClient">
+                        <button type="submit" class="btn btn-sm btn-primary">@T["Forget this device"]</button>
+                    </form>
+                </div>
+            }
+        }
+
+        @if (Model.ValidTwoFactorProviders.Count > 1)
+        {
+            <form method="post">
+                <div class="mb-3">
+                    <label asp-for="PreferredProvider">@T["Preferred Two-Factor Method"]</label>
+                    <select asp-for="PreferredProvider" asp-items="Model.ValidTwoFactorProviders" class="form-select">
+                        @if (String.IsNullOrEmpty(Model.PreferredProvider))
+                        {
+                            <option value="">@T["Select the method"]</option>
+                        }
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-sm btn-primary">@T["Update"]</button>
+            </form>
+        }
+    </div>
+
+    <div class="card-header">
+        @T["Two-factor methods"]
+    </div>
+
+    <div class="card-body p-0">
+        @foreach (var methodShape in Model.AuthenticationMethods)
+        {
+            @await DisplayAsync(methodShape)
+        }
+    </div>
+
+    @if (Model.IsTwoFaEnabled)
+    {
+        <div class="card-header">
+            @T["Recovery options"]
+        </div>
+
+        <div class="card-body p-0">
+            <div class="row mx-0">
+                <div class="col-auto d-flex align-items-center">
+                    <i class="fa-solid fa-key h1"></i>
+                </div>
+
+                <div class="col p-3">
+
+                    <h4>@T["Recovery codes"]</h4>
+                    <p class="mb-0">@T["Recovery codes can be used to access your account in the event you lose access to your device and cannot receive two-factor verification codes."]</p>
+
+                    @if (Model.RecoveryCodesLeft == 0)
+                    {
+                        <div class="alert alert-danger text-center my-3">
+                            <strong>@T["You have no recovery codes left."]</strong>
+                        </div>
+                    }
+                    else if (Model.RecoveryCodesLeft == 1)
+                    {
+                        <div class="alert alert-danger text-center my-3">
+                            <strong>@T["You have 1 recovery code left."]</strong>
+                        </div>
+                    }
+                    else if (Model.RecoveryCodesLeft <= 3)
+                    {
+                        <div class="alert alert-warning text-center my-3">
+                            <strong>@T.Plural(Model.RecoveryCodesLeft, "You have 1 recovery code left.", "You have {0} recovery codes left.", Model.RecoveryCodesLeft)</strong>
+                        </div>
+                    }
+
+                </div>
+
+                <div class="col-auto d-flex align-items-center">
+                    <a asp-action="GenerateRecoveryCodes" class="btn btn-sm btn-warning">@T["Reset codes"]</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

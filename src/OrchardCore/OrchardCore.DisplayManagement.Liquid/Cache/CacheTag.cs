@@ -16,7 +16,7 @@ namespace OrchardCore.DynamicCache.Liquid
 {
     public class CacheTag
     {
-        private static readonly char[] SplitChars = new[] { ',', ' ' };
+        private static readonly char[] _splitChars = new[] { ',', ' ' };
 
         public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> arguments, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
@@ -60,8 +60,8 @@ namespace OrchardCore.DynamicCache.Liquid
             var slidingDurationString = filterArguments["expires_sliding"].ToStringValue();
 
             var cacheContext = new CacheContext(cacheKey)
-                .AddContext(contexts.Split(SplitChars, StringSplitOptions.RemoveEmptyEntries))
-                .AddTag(tags.Split(SplitChars, StringSplitOptions.RemoveEmptyEntries));
+                .AddContext(contexts.Split(_splitChars, StringSplitOptions.RemoveEmptyEntries))
+                .AddTag(tags.Split(_splitChars, StringSplitOptions.RemoveEmptyEntries));
 
             if (TimeSpan.TryParse(durationString, out var duration))
             {

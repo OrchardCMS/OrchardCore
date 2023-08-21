@@ -13,7 +13,6 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -31,7 +30,7 @@ namespace OrchardCore.Setup.Services
         private readonly ISetupUserIdGenerator _setupUserIdGenerator;
         private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly IHostApplicationLifetime _applicationLifetime;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IDbConnectionValidator _dbConnectionValidator;
@@ -78,7 +77,7 @@ namespace OrchardCore.Setup.Services
         /// <inheritdoc />
         public async Task<IEnumerable<RecipeDescriptor>> GetSetupRecipesAsync()
         {
-            if (_recipes == null)
+            if (_recipes is null)
             {
                 var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
                 _recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).ToArray();
@@ -133,7 +132,7 @@ namespace OrchardCore.Setup.Services
             context.EnabledFeatures = hardcoded.Union(context.EnabledFeatures ?? Enumerable.Empty<string>()).Distinct().ToList();
 
             // Set shell state to "Initializing" so that subsequent HTTP requests are responded to with "Service Unavailable" while Orchard is setting up.
-            context.ShellSettings.State = TenantState.Initializing;
+            context.ShellSettings.AsInitializing();
 
             // Due to database collation we normalize the userId to lower invariant.
             // During setup there are no users so we do not need to check unicity.
@@ -196,9 +195,9 @@ namespace OrchardCore.Setup.Services
                 Features = context.EnabledFeatures.Select(id => new ShellFeature { Id = id }).ToList()
             };
 
-            using (var shellContext = await _shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor))
+            await using (var shellContext = await _shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor))
             {
-                await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
+                await (await shellContext.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
                 {
                     try
                     {
@@ -253,8 +252,7 @@ namespace OrchardCore.Setup.Services
             }
 
             // Update the shell state
-            shellSettings.State = TenantState.Running;
-            await _shellHost.UpdateShellSettingsAsync(shellSettings);
+            await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
 
             return executionId;
         }

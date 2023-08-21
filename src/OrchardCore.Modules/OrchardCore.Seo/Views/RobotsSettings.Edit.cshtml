@@ -1,0 +1,25 @@
+@using Microsoft.Extensions.Options
+
+@model OrchardCore.Seo.RobotsSettings
+
+@inject IOptions<OrchardCore.Admin.AdminOptions> AdminOptions
+
+<div class="form-check mb-3" asp-validation-class-for="AllowAllAgents">
+    <input type="checkbox" class="form-check-input" asp-for="AllowAllAgents">
+    <span asp-validation-for="AllowAllAgents"></span>
+    <label class="form-check-label" asp-for="AllowAllAgents">@T["Add a rule to allow all web robots."]</label>
+    <span class="hint dashed">@T["Adds: <code>{0}</code>", "User-agent: *"]</span>
+</div>
+
+<div class="form-check mb-3" asp-validation-class-for="DisallowAdmin">
+    <input type="checkbox" class="form-check-input" asp-for="DisallowAdmin">
+    <span asp-validation-for="DisallowAdmin"></span>
+    <label class="form-check-label" asp-for="DisallowAdmin">@T["Add a rule to disallow web robots to the admin routes."]</label>
+    <span class="hint dashed">@T["Adds: <code>{0}</code>", $"Disallow: /{AdminOptions.Value.AdminUrlPrefix}"]</span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="AdditionalRules">
+    <label asp-for="AdditionalRules">@T["Additional rules"]</label>
+    <textarea asp-for="AdditionalRules" rows="10" class="form-control"></textarea>
+    <div class="hint">@T["Optionally, you can include any additional rules."]</div>
+</div>

@@ -20,14 +20,14 @@ namespace OrchardCore.Rules.Services
         {
             if (condition.Value.StartsWith("~/", StringComparison.Ordinal))
             {
-                condition.Value = condition.Value.Substring(1);
+                condition.Value = condition.Value[1..];
             }
 
             var requestPath = _httpContextAccessor.HttpContext.Request.Path.Value;
 
             // Tenant home page could have an empty string as a request path, where
             // the default tenant does not.
-            if (string.IsNullOrEmpty(requestPath))
+            if (String.IsNullOrEmpty(requestPath))
             {
                 requestPath = "/";
             }

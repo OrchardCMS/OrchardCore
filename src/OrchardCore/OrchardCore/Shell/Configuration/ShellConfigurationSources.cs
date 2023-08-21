@@ -38,13 +38,9 @@ namespace OrchardCore.Environment.Shell.Configuration
             JObject config;
             if (File.Exists(appsettings))
             {
-                using (var file = File.OpenText(appsettings))
-                {
-                    using (var reader = new JsonTextReader(file))
-                    {
-                        config = await JObject.LoadAsync(reader);
-                    }
-                }
+                using var streamReader = File.OpenText(appsettings);
+                using var jsonReader = new JsonTextReader(streamReader);
+                config = await JObject.LoadAsync(jsonReader);
             }
             else
             {
@@ -65,13 +61,9 @@ namespace OrchardCore.Environment.Shell.Configuration
 
             Directory.CreateDirectory(tenantFolder);
 
-            using (var file = File.CreateText(appsettings))
-            {
-                using (var writer = new JsonTextWriter(file) { Formatting = Formatting.Indented })
-                {
-                    await config.WriteToAsync(writer);
-                }
-            }
+            using var streamWriter = File.CreateText(appsettings);
+            using var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented };
+            await config.WriteToAsync(jsonWriter);
         }
 
         public Task RemoveAsync(string tenant)

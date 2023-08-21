@@ -19,7 +19,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Handlers
 {
     public class ElasticIndexingContentHandler : ContentHandlerBase
     {
-        private readonly List<ContentContextBase> _contexts = new List<ContentContextBase>();
+        private readonly List<ContentContextBase> _contexts = new();
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ElasticIndexingContentHandler(IHttpContextAccessor httpContextAccessor)
@@ -68,6 +68,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Handlers
             var elasticIndexManager = services.GetRequiredService<ElasticIndexManager>();
             var elasticIndexSettingsService = services.GetRequiredService<ElasticIndexSettingsService>();
             var logger = services.GetRequiredService<ILogger<ElasticIndexingContentHandler>>();
+
             // Multiple items may have been updated in the same scope, e.g through a recipe.
             var contextsGroupById = contexts.GroupBy(c => c.ContentItem.ContentItemId, c => c);
 
@@ -84,7 +85,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Handlers
                 {
                     var cultureAspect = await contentManager.PopulateAspectAsync<CultureAspect>(context.ContentItem);
                     var culture = cultureAspect.HasCulture ? cultureAspect.Culture.Name : null;
-                    var ignoreIndexedCulture = indexSettings.Culture == "any" ? false : culture != indexSettings.Culture;
+                    var ignoreIndexedCulture = indexSettings.Culture != "any" && culture != indexSettings.Culture;
 
                     if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType) && !ignoreIndexedCulture)
                     {

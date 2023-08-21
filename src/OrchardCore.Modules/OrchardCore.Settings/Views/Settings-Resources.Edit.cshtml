@@ -1,0 +1,38 @@
+@model SiteSettingsViewModel
+
+<h5>@T["Settings for scripts and stylesheets"]</h5>
+
+<div class="mb-3" asp-validation-class-for="AppendVersion">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="@Model.AppendVersion" />
+        <label class="form-check-label" asp-for="@Model.AppendVersion">@T["Use resources cache busting"]</label>
+        <span class="hint dashed">@T["Whether cache busting (append a version) is used for scripts and stylesheets"]</span>
+    </div>
+</div>
+
+<div class="mb-3" asp-validation-class-for="UseCdn">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="@Model.UseCdn" />
+        <label class="form-check-label" asp-for="@Model.UseCdn">@T["Use framework CDN (Content Delivery Network)"]</label>
+        <span class="hint dashed">@T["Whether a framework CDN is used for registered scripts and stylesheets, such as jQuery, or their local version"]</span>
+    </div>
+</div>
+
+<div class="mb-3" asp-validation-class-for="CdnBaseUrl">
+    <label asp-for="CdnBaseUrl">@T["Site CDN (Content Delivery Network) base url"]</label>
+    <input asp-for="CdnBaseUrl" class="form-control" />
+    <span asp-validation-for="CdnBaseUrl"></span>
+    <span class="hint">@T["A base CDN URL prefixed to the local scripts and stylesheets. It is disabled if the value is empty or if the Resource Debug Mode is enabled, e.g. <em>https://cdn.mysite.com</em>"]</span>
+</div>
+
+<div class="mb-3">
+    <div class="col-xl-6" asp-validation-class-for="ResourceDebugMode">
+        <label asp-for="ResourceDebugMode">@T["Resource Debug Mode"]</label>
+        <select asp-for="ResourceDebugMode" class="form-select">
+            <option value="@ResourceDebugMode.FromConfiguration.ToString()">@T["From environment — disabled in <em>Production</em>, enabled otherwise"]</option>
+            <option value="@ResourceDebugMode.Enabled.ToString()">@T["Enabled — use debuggable version of resources"]</option>
+            <option value="@ResourceDebugMode.Disabled.ToString()">@T["Disabled — use minified version of resources"]</option>
+        </select>
+        <span class="hint">@T["Determines whether scripts and stylesheets load in their debuggable or minified form."]</span>
+    </div>
+</div>

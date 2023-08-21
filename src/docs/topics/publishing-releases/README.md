@@ -34,11 +34,12 @@ Update the source so everything looks like on the new version.
 
 Make sure everything works all right.
 
-- [ ] Make sure that [OrchardCore.Samples works](https://github.com/OrchardCMS/OrchardCore.Samples).
+- [ ] Make sure that [`OrchardCore.Samples` works](https://github.com/OrchardCMS/OrchardCore.Samples).
 - [ ] Test the [guides](https://docs.orchardcore.net/en/latest/docs/guides/) with the NuGet packages from the Cloudsmith feed (branches under `release/` are automatically published too). Test at least the following guides:
     - [Creating a modular ASP.NET Core application](https://docs.orchardcore.net/en/latest/docs/guides/create-modular-application-mvc/)
     - [Creating an Orchard Core CMS website](https://docs.orchardcore.net/en/latest/docs/guides/create-cms-application/)
     - [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/docs/guides/decoupled-cms/)
+- [ ] If there's a more recent major version of Red Hat Enterprise Linux (like v10 after v9) that Orchard Core was certified for, then re-certify it. See Orchard's [Red Hat Ecosystem Catalog profile](https://catalog.redhat.com/software/applications/detail/223797) for the version it was certified for, the [Red hat Customer Portal](https://access.redhat.com/articles/3078) for the latest released version, and [https://docs.orchardcore.net/en/latest/docs/topics/red-hat-ecosystem-catalog-certification/](our certification guide) for the steps to renew the certification.
 
 ### Prepare and publish Orchard Core Translations
 

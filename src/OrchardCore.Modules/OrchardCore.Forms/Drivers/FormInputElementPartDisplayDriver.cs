@@ -12,7 +12,7 @@ namespace OrchardCore.Forms.Drivers
 {
     public class FormInputElementPartDisplayDriver : ContentPartDisplayDriver<FormInputElementPart>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public FormInputElementPartDisplayDriver(IStringLocalizer<FormInputElementPartDisplayDriver> stringLocalizer)
         {

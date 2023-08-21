@@ -13,7 +13,7 @@ namespace OrchardCore.Environment.Shell.Builders
     {
         private readonly IServiceCollection _innerServiceCollection;
 
-        private readonly Dictionary<IFeatureInfo, ServiceCollection> _featureServiceCollections = new Dictionary<IFeatureInfo, ServiceCollection>();
+        private readonly Dictionary<IFeatureInfo, ServiceCollection> _featureServiceCollections = new();
         private ServiceCollection _currentFeatureServiceCollection;
 
         public FeatureAwareServiceCollection(IServiceCollection innerServiceCollection)

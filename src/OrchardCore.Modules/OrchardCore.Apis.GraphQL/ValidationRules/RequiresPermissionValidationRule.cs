@@ -14,12 +14,14 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
     {
         public static readonly string ErrorCode = "Unauthorized";
         private readonly IAuthorizationService _authorizationService;
-        private readonly IStringLocalizer<RequiresPermissionValidationRule> S;
+        protected readonly IStringLocalizer S;
 
-        public RequiresPermissionValidationRule(IAuthorizationService authorizationService, IStringLocalizer<RequiresPermissionValidationRule> s)
+        public RequiresPermissionValidationRule(
+            IAuthorizationService authorizationService,
+            IStringLocalizer<RequiresPermissionValidationRule> localizer)
         {
             _authorizationService = authorizationService;
-            S = s;
+            S = localizer;
         }
 
         public async Task<INodeVisitor> ValidateAsync(ValidationContext validationContext)

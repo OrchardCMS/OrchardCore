@@ -13,7 +13,7 @@ namespace OrchardCore.Benchmark
     [MemoryDiagnoser]
     public class ResourceManagerBenchmark
     {
-        private static readonly ShellFileVersionProvider _fileVersionProvider = new ShellFileVersionProvider(
+        private static readonly ShellFileVersionProvider _fileVersionProvider = new(
             Enumerable.Empty<IStaticFileProvider>(),
             new FakeWebHostEnvironment(),
             new MemoryCache(Options.Create(new MemoryCacheOptions())));
@@ -44,7 +44,9 @@ namespace OrchardCore.Benchmark
         }
 
         [Benchmark]
+#pragma warning disable CA1822 // Mark members as static
         public void RenderStylesheet()
+#pragma warning restore CA1822 // Mark members as static
         {
             var manager = new ResourceManager(
                 options: _options,

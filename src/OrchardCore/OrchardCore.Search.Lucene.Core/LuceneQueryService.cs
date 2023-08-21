@@ -20,12 +20,8 @@ namespace OrchardCore.Search.Lucene
 
         public Task<LuceneTopDocs> SearchAsync(LuceneQueryContext context, JObject queryObj)
         {
-            var queryProp = queryObj["query"] as JObject;
-
-            if (queryProp == null)
-            {
-                throw new ArgumentException("Query DSL requires a [query] property");
-            }
+            var queryProp = queryObj["query"] as JObject
+                ?? throw new ArgumentException("Query DSL requires a [query] property");
 
             var query = CreateQueryFragment(context, queryProp);
 

@@ -22,7 +22,7 @@ namespace OrchardCore.OpenId.Services
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public OpenIdValidationService(
             ShellDescriptor shellDescriptor,
@@ -63,7 +63,7 @@ namespace OrchardCore.OpenId.Services
             {
                 return new OpenIdValidationSettings
                 {
-                    Tenant = _shellSettings.Name
+                    Tenant = _shellSettings.Name,
                 };
             }
 
@@ -91,12 +91,12 @@ namespace OrchardCore.OpenId.Services
 
             var results = ImmutableArray.CreateBuilder<ValidationResult>();
 
-            if (!(settings.Authority == null ^ string.IsNullOrEmpty(settings.Tenant)))
+            if (!(settings.Authority == null ^ String.IsNullOrEmpty(settings.Tenant)))
             {
                 results.Add(new ValidationResult(S["Either a tenant or an authority must be registered."], new[]
                 {
                     nameof(settings.Authority),
-                    nameof(settings.Tenant)
+                    nameof(settings.Tenant),
                 }));
             }
 
@@ -110,11 +110,11 @@ namespace OrchardCore.OpenId.Services
                     }));
                 }
 
-                if (!String.IsNullOrEmpty(settings.Authority.Query) || !string.IsNullOrEmpty(settings.Authority.Fragment))
+                if (!String.IsNullOrEmpty(settings.Authority.Query) || !String.IsNullOrEmpty(settings.Authority.Fragment))
                 {
                     results.Add(new ValidationResult(S["The authority cannot contain a query string or a fragment."], new[]
                     {
-                        nameof(settings.Authority)
+                        nameof(settings.Authority),
                     }));
                 }
 
@@ -126,15 +126,15 @@ namespace OrchardCore.OpenId.Services
                 {
                     results.Add(new ValidationResult(S["The specified metadata address is not valid."], new[]
                     {
-                        nameof(settings.MetadataAddress)
+                        nameof(settings.MetadataAddress),
                     }));
                 }
 
-                if (!String.IsNullOrEmpty(settings.MetadataAddress.Query) || !string.IsNullOrEmpty(settings.MetadataAddress.Fragment))
+                if (!String.IsNullOrEmpty(settings.MetadataAddress.Query) || !String.IsNullOrEmpty(settings.MetadataAddress.Fragment))
                 {
                     results.Add(new ValidationResult(S["The metadata address cannot contain a query string or a fragment."], new[]
                     {
-                        nameof(settings.MetadataAddress)
+                        nameof(settings.MetadataAddress),
                     }));
                 }
 
@@ -142,24 +142,24 @@ namespace OrchardCore.OpenId.Services
                 {
                     results.Add(new ValidationResult(S["No metatada address can be set when using another tenant."], new[]
                     {
-                        nameof(settings.MetadataAddress)
+                        nameof(settings.MetadataAddress),
                     }));
                 }
             }
 
-            if (!String.IsNullOrEmpty(settings.Tenant) && !string.IsNullOrEmpty(settings.Audience))
+            if (!String.IsNullOrEmpty(settings.Tenant) && !String.IsNullOrEmpty(settings.Audience))
             {
                 results.Add(new ValidationResult(S["No audience can be set when using another tenant."], new[]
                 {
-                    nameof(settings.Audience)
+                    nameof(settings.Audience),
                 }));
             }
 
-            if (settings.Authority != null && string.IsNullOrEmpty(settings.Audience))
+            if (settings.Authority != null && String.IsNullOrEmpty(settings.Audience))
             {
                 results.Add(new ValidationResult(S["An audience must be set when configuring the authority."], new[]
                 {
-                    nameof(settings.Audience)
+                    nameof(settings.Audience),
                 }));
             }
 
@@ -167,7 +167,7 @@ namespace OrchardCore.OpenId.Services
             {
                 results.Add(new ValidationResult(S["Token type validation can only be disabled for remote servers."], new[]
                 {
-                    nameof(settings.DisableTokenTypeValidation)
+                    nameof(settings.DisableTokenTypeValidation),
                 }));
             }
 
@@ -176,7 +176,7 @@ namespace OrchardCore.OpenId.Services
             {
                 results.Add(new ValidationResult(S["The audience cannot start with the special 'oct:' prefix."], new[]
                 {
-                    nameof(settings.Audience)
+                    nameof(settings.Audience),
                 }));
             }
 
@@ -200,7 +200,7 @@ namespace OrchardCore.OpenId.Services
                         {
                             results.Add(new ValidationResult(S["Selecting a server tenant for which reference access tokens are enabled is currently not supported."], new[]
                             {
-                                nameof(settings.Tenant)
+                                nameof(settings.Tenant),
                             }));
                         }
 
@@ -209,7 +209,7 @@ namespace OrchardCore.OpenId.Services
                         {
                             results.Add(new ValidationResult(S["The specified tenant is not valid."], new[]
                             {
-                                nameof(settings.Tenant)
+                                nameof(settings.Tenant),
                             }));
                         }
                         else
@@ -219,7 +219,7 @@ namespace OrchardCore.OpenId.Services
                             {
                                 results.Add(new ValidationResult(S["No appropriate scope was found."], new[]
                                 {
-                                    nameof(settings.Tenant)
+                                    nameof(settings.Tenant),
                                 }));
                             }
                         }

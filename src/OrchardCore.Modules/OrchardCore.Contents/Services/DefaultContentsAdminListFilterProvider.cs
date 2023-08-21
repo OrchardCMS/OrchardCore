@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -82,23 +83,23 @@ namespace OrchardCore.Contents.Services
                             switch (contentsOrder)
                             {
                                 case ContentsOrder.Modified:
-                                    query.With<ContentItemIndex>().OrderByDescending(x => x.ModifiedUtc);
+                                    query.With<ContentItemIndex>().OrderByDescending(cr => cr.ModifiedUtc).ThenBy(cr => cr.Id);
                                     break;
                                 case ContentsOrder.Published:
-                                    query.With<ContentItemIndex>().OrderByDescending(cr => cr.PublishedUtc);
+                                    query.With<ContentItemIndex>().OrderByDescending(cr => cr.PublishedUtc).ThenBy(cr => cr.Id);
                                     break;
                                 case ContentsOrder.Created:
-                                    query.With<ContentItemIndex>().OrderByDescending(cr => cr.CreatedUtc);
+                                    query.With<ContentItemIndex>().OrderByDescending(cr => cr.CreatedUtc).ThenBy(cr => cr.Id);
                                     break;
                                 case ContentsOrder.Title:
-                                    query.With<ContentItemIndex>().OrderBy(cr => cr.DisplayText);
+                                    query.With<ContentItemIndex>().OrderBy(cr => cr.DisplayText).ThenBy(cr => cr.Id);
                                     break;
                             };
                         }
                         else
                         {
                             // Modified is a default value and applied when there is no filter.
-                            query.With<ContentItemIndex>().OrderByDescending(x => x.ModifiedUtc);
+                            query.With<ContentItemIndex>().OrderByDescending(cr => cr.ModifiedUtc).ThenBy(cr => cr.Id);
                         }
 
                         return query;
@@ -148,7 +149,8 @@ namespace OrchardCore.Contents.Services
 
                                 return query.With<ContentItemIndex>(x => x.ContentType == contentType && x.Owner == userNameIdentifier);
                             }
-                            // At this point the given contentType is invalid. Ignore it.
+
+                            // At this point, the given contentType is invalid. Ignore it.
                         }
 
                         var listAnyContentTypes = new List<string>();
@@ -198,7 +200,56 @@ namespace OrchardCore.Contents.Services
                     })
                     .AlwaysRun()
                 )
-                .WithDefaultTerm("text", builder => builder
+                .WithNamedTerm("stereotype", builder => builder
+                    .OneCondition(async (stereotype, query, ctx) =>
+                    {
+                        var context = (ContentQueryContext)ctx;
+                        var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
+                        var authorizationService = context.ServiceProvider.GetRequiredService<IAuthorizationService>();
+                        var contentDefinitionManager = context.ServiceProvider.GetRequiredService<IContentDefinitionManager>();
+
+                        // Filter for a specific stereotype.
+                        if (!String.IsNullOrEmpty(stereotype))
+                        {
+                            var contentTypeDefinitionNames = contentDefinitionManager.ListTypeDefinitions()
+                                .Where(definition => definition.StereotypeEquals(stereotype, StringComparison.OrdinalIgnoreCase))
+                                .Select(definition => definition.Name)
+                                .ToList();
+
+                            // We display a specific type even if it's not listable so that admin pages
+                            // can reuse the content list page for specific types.
+
+                            if (contentTypeDefinitionNames.Count > 0)
+                            {
+                                var user = httpContextAccessor.HttpContext.User;
+                                var userNameIdentifier = user?.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                                var viewAll = new List<string>();
+                                var viewOwn = new List<string>();
+
+                                foreach (var contentTypeDefinitionName in contentTypeDefinitionNames)
+                                {
+                                    // It is important to pass null to the owner parameter. This will check if the user can view content that belongs to others.
+                                    if (await authorizationService.AuthorizeContentTypeAsync(user, CommonPermissions.ViewContent, contentTypeDefinitionName, owner: null))
+                                    {
+                                        viewAll.Add(contentTypeDefinitionName);
+
+                                        continue;
+                                    }
+
+                                    viewOwn.Add(contentTypeDefinitionName);
+                                }
+
+                                return query.With<ContentItemIndex>(x => x.ContentType.IsIn(viewAll) || (x.ContentType.IsIn(viewOwn) && x.Owner == userNameIdentifier));
+                            }
+
+                            // At this point, the given stereotype is invalid. Ignore it.
+                        }
+
+                        return query;
+                    })
+                )
+                .WithDefaultTerm(ContentsAdminListFilterOptions.DefaultTermName, builder => builder
                     .ManyCondition(
                         (val, query) => query.With<ContentItemIndex>(x => x.DisplayText.Contains(val)),
                         (val, query) => query.With<ContentItemIndex>(x => x.DisplayText.NotContains(val))

@@ -14,7 +14,7 @@ namespace OrchardCore.Rules
         private Dictionary<Type, ConditionOperatorOption> _conditionOperatorOptionByType;
         public IReadOnlyDictionary<Type, ConditionOperatorOption> ConditionOperatorOptionByType => _conditionOperatorOptionByType ??= Operators.ToDictionary(x => x.Operator, x => x);
 
-        public List<ConditionOperatorOption> Operators { get; set; } = new List<ConditionOperatorOption>();
+        public List<ConditionOperatorOption> Operators { get; set; } = new();
     }
 
     public class ConditionOperatorOption<TLocalizer> : ConditionOperatorOption where TLocalizer : class

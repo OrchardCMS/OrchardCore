@@ -8,7 +8,7 @@ namespace OrchardCore.AuditTrail.Navigation
 {
     public class AuditTrailAdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AuditTrailAdminMenu(IStringLocalizer<AuditTrailAdminMenu> stringLocalizer)
         {
