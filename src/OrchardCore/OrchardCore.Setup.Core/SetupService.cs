@@ -231,19 +231,30 @@ namespace OrchardCore.Setup.Services
             // Reloading the shell context as the recipe has probably updated its features
             await (await _shellHost.GetScopeAsync(shellSettings)).UsingAsync(async scope =>
             {
+                var tenandSetupHandlers = scope.ServiceProvider.GetServices<ITenantSetupHandler>();
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger<SetupService>>();
+
+                await tenandSetupHandlers.InvokeAsync((handler, ctx) => handler.SettingUpAsync(ctx), context, _logger);
+
+                // Invoke modules to react to the setup event.
+
+#pragma warning disable CS0618 // Type or member is obsolete
+                var setupEventHandlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();
+#pragma warning restore CS0618 // Type or member is obsolete
+
                 void reportError(string key, string message)
                 {
                     context.Errors[key] = message;
                 }
+                await setupEventHandlers.InvokeAsync((handler, ctx) => handler.Setup(ctx.Properties, reportError), context, logger);
 
-                // Invoke modules to react to the setup event
-                var setupEventHandlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();
-                var logger = scope.ServiceProvider.GetRequiredService<ILogger<SetupService>>();
+                var completedContext = new CompletedSetupContext()
+                {
+                    Success = !context.Errors.Any(),
+                    Errors = context.Errors,
+                };
 
-                await setupEventHandlers.InvokeAsync((handler, context) => handler.Setup(
-                    context.Properties,
-                    reportError
-                ), context, logger);
+                await tenandSetupHandlers.InvokeAsync((handler, ctx) => handler.CompletedAsync(ctx), completedContext, _logger);
             });
 
             if (context.Errors.Any())
