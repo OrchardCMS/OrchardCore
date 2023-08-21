@@ -4,11 +4,11 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Sms.Services;
 
-public class SmsSettingsConfigurator : IPostConfigureOptions<SmsSettings>
+public class SmsSettingsConfiguration : IPostConfigureOptions<SmsSettings>
 {
     private readonly ISiteService _siteService;
 
-    public SmsSettingsConfigurator(ISiteService siteService)
+    public SmsSettingsConfiguration(ISiteService siteService)
     {
         _siteService = siteService;
     }

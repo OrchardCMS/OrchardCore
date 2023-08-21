@@ -18,10 +18,10 @@
 
   <ItemGroup>
     <PackageReference Include="libphonenumber-csharp" />
-    <PackageReference Include="Twilio" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Notifications.Abstractions\OrchardCore.Notifications.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Sms.Abstractions\OrchardCore.Sms.Abstractions.csproj" />

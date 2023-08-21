@@ -1,10 +1,10 @@
 # SMS (`OrchardCore.Sms`)
 
-This module provides the infrastructure necessary to send messages using `SMS` service.
+This module provides the infrastructure necessary to send messages using an `SMS` service.
 
 ## SMS Settings
 
-Enabling the `OrchardCore.Sms` feature will add a new settings page under `Configurations` >> `Settings` >> `SMS`. You can utilize these settings to set up the default SMS provider configuration. The following are the providers that are readily accessible.
+Enabling the `SMS` feature will add a new settings page under `Configurations` >> `Settings` >> `SMS`. You can utilize these settings to set up the default SMS provider configuration. The following are the providers that are readily accessible.
 
 | Provider | Description |
 | --- | --- |
@@ -19,22 +19,18 @@ Enabling the `OrchardCore.Sms` feature will add a new settings page under `Confi
 The `OrchardCore.Sms` module provides you with the capability to integrate additional providers for dispatching SMS messages. To achieve this, you can easily create an implementation of the `ISmsProvider` interface and then proceed to register it using the following approach.
 
 ```csharp
-    services.AddSmsProvider<YourCustomImplemenation>("Name for your implementation")
+    services.AddSmsProvider<YourCustomImplemenation>("A technical name for your implementation")
 ```
 
 ## Workflows
 
-When the `SMS` feature is enabled along with `Workflows`, a new "Send SMS" workflow task will be added to allow you to send SMS message using workflows.
+When both the `SMS` and `Workflows` features are enabled at the same time, a new "Send SMS" workflow task will become available to allow you to send SMS message using workflow.
 
 ## SMS Notification (`OrchardCore.Notifications.Sms`)
 
 This feature provides you a way to send user notifications using SMS based on user preferences. [Click here](../Notifications/README.md) to read more about notifications.
 
 ## Credits
-
-### Twilio
-
-<https://github.com/twilio/twilio-csharp>
 
 ### Google's libphonenumber library.
 

@@ -11,6 +11,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
 using OrchardCore.Sms.Models;
+using OrchardCore.Sms.Services;
 using OrchardCore.Sms.ViewModels;
 
 namespace OrchardCore.Sms.Drivers;
@@ -52,14 +53,14 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
             model.AccountSID = settings.AccountSID;
             model.HasAuthToken = !String.IsNullOrEmpty(settings.AuthToken);
         }).Location("Content:5")
-        .OnGroup(SmsConstants.SettingsGroupId);
+        .OnGroup(SmsSettings.GroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(TwilioSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!context.GroupId.Equals(SmsConstants.SettingsGroupId, StringComparison.OrdinalIgnoreCase)
+        if (!context.GroupId.Equals(SmsSettings.GroupId, StringComparison.OrdinalIgnoreCase)
             || !await _authorizationService.AuthorizeAsync(user, SmsPermissions.ManageSmsSettings))
         {
             return null;
@@ -67,7 +68,7 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
 
         var model = new TwilioSettingsViewModel();
 
-        if (await context.Updater.TryUpdateModelAsync(model, Prefix) && model.DefaultProvider == SmsConstants.TwilioServiceName)
+        if (await context.Updater.TryUpdateModelAsync(model, Prefix) && model.DefaultProvider == TwilioSmsProvider.TechnicalName)
         {
             if (String.IsNullOrWhiteSpace(model.PhoneNumber))
             {
@@ -93,7 +94,7 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
 
             if (!String.IsNullOrWhiteSpace(model.AuthToken))
             {
-                var protector = _dataProtectionProvider.CreateProtector(SmsConstants.TwilioServiceName);
+                var protector = _dataProtectionProvider.CreateProtector(TwilioSmsProvider.ProtectorName);
 
                 settings.AuthToken = protector.Protect(model.AuthToken);
             }
