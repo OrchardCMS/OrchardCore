@@ -78,11 +78,12 @@ public static class ShellPipelineExtensions
         // 'OrderBy' performs a stable sort, so the order is preserved among equal 'ConfigureOrder' values.
         var startups = builder.ApplicationServices.GetServices<IStartup>().OrderBy(s => s.ConfigureOrder);
 
+        var services = ShellScope.Services;
         builder.UseRouting().UseEndpoints(routes =>
         {
             foreach (var startup in startups)
             {
-                startup.Configure(builder, routes, ShellScope.Services);
+                startup.Configure(builder, routes, services);
             }
         });
     }
