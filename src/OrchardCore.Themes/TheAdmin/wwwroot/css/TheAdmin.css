@@ -27691,18 +27691,14 @@ html[data-theme=default] body {
   --bs-body-bg: #fff;
 }
 html[data-theme=default] .ta-navbar-top {
-  z-index: 1030;
+  z-index: calc(1000 + 100);
+  height: 52px;
 }
 html[dir][data-theme=default] .ta-navbar-top {
   border-bottom: 1px solid #dedede;
-  padding: 0.3rem 1rem;
   box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
-}
-html[dir=ltr][data-theme=default] .ta-navbar-top {
-  padding-left: 0;
-}
-html[dir=rtl][data-theme=default] .ta-navbar-top {
-  padding-right: 0;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 html[data-theme=default] .ta-navbar-top h1, html[data-theme=default] .ta-navbar-top .h1 {
   font-size: 24px;
@@ -27751,46 +27747,31 @@ html[data-theme=default] .ta-navbar-top .btn.nav-link, html[data-theme=darkmode]
   }
 }
 html[data-theme=default] .ta-navbar-brand {
-  overflow: hidden;
-  height: 42px;
-  width: 259px;
   white-space: nowrap;
   font-size: 14px;
   transition: width 0.2s ease-in-out;
 }
 html[dir][data-theme=default] .ta-navbar-brand {
-  padding-top: 10px;
-}
-html[dir=ltr][data-theme=default] .ta-navbar-brand {
-  margin-left: 5px;
-}
-html[dir=rtl][data-theme=default] .ta-navbar-brand {
-  margin-right: 5px;
+  padding: 5px;
 }
 html[dir=ltr][data-theme=default] .ta-navbar-brand span:first-child {
-  margin-left: 5px;
+  padding-left: 5px;
 }
 html[dir=rtl][data-theme=default] .ta-navbar-brand span:first-child {
-  margin-right: 5px;
+  padding-right: 5px;
 }
 html[data-theme=default] .ta-navbar-brand span:last-child {
   font-weight: bold;
   color: #fff;
 }
 html[data-theme=default] .ta-navbar-brand img {
-  width: 25px;
+  height: 34px;
 }
 html[dir=ltr][data-theme=default] .ta-navbar-brand img {
-  margin-left: 5px;
-  margin-right: 11px;
+  padding-right: 11px;
 }
 html[dir=rtl][data-theme=default] .ta-navbar-brand img {
-  margin-right: 5px;
-  margin-left: 11px;
-}
-html[data-theme=default] .left-sidebar-compact .ta-navbar-brand {
-  width: 47px;
-  height: 42px;
+  padding-left: 11px;
 }
 html[data-theme=default] .left-sidebar-compact .ta-navbar-brand span {
   display: none;
@@ -27801,15 +27782,17 @@ html[dir=ltr][data-theme=default] .left-sidebar-compact .ta-navbar-top h1, html[
 html[dir=rtl][data-theme=default] .left-sidebar-compact .ta-navbar-top h1, html[dir=rtl][data-theme=default] .left-sidebar-compact .ta-navbar-top .h1 {
   right: 63px;
 }
-html[dir=ltr][data-theme=default] .left-sidebar-compact .ta-navbar-top .nav-item {
-  margin-left: 10px;
-}
-html[dir=rtl][data-theme=default] .left-sidebar-compact .ta-navbar-top .nav-item {
-  margin-right: 10px;
-}
 html[data-theme=default] .action-bar {
   top: 3.3rem;
   z-index: 1050;
+}
+html[dir=ltr][data-theme=default] .user-top-navbar .nav-item .nav-link {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+html[dir=rtl][data-theme=default] .user-top-navbar .nav-item .nav-link {
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
 }
 html[data-theme=default] .ta-navbar-top {
   color: #343a40;
@@ -57121,18 +57104,14 @@ html[data-theme=darkmode] body {
   --bs-body-bg: rgb(24, 26, 27);
 }
 html[data-theme=darkmode] .ta-navbar-top {
-  z-index: 1030;
+  z-index: calc(1000 + 100);
+  height: 52px;
 }
 html[dir][data-theme=darkmode] .ta-navbar-top {
   border-bottom: 1px solid rgb(57, 62, 64);
-  padding: 0.3rem 1rem;
   box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
-}
-html[dir=ltr][data-theme=darkmode] .ta-navbar-top {
-  padding-left: 0;
-}
-html[dir=rtl][data-theme=darkmode] .ta-navbar-top {
-  padding-right: 0;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 html[data-theme=darkmode] .ta-navbar-top h1, html[data-theme=darkmode] .ta-navbar-top .h1 {
   font-size: 24px;
@@ -57181,46 +57160,31 @@ html[data-theme=darkmode] .ta-navbar-top .btn.nav-link, html[data-theme=darkmode
   }
 }
 html[data-theme=darkmode] .ta-navbar-brand {
-  overflow: hidden;
-  height: 42px;
-  width: 259px;
   white-space: nowrap;
   font-size: 14px;
   transition: width 0.2s ease-in-out;
 }
 html[dir][data-theme=darkmode] .ta-navbar-brand {
-  padding-top: 10px;
-}
-html[dir=ltr][data-theme=darkmode] .ta-navbar-brand {
-  margin-left: 5px;
-}
-html[dir=rtl][data-theme=darkmode] .ta-navbar-brand {
-  margin-right: 5px;
+  padding: 5px;
 }
 html[dir=ltr][data-theme=darkmode] .ta-navbar-brand span:first-child {
-  margin-left: 5px;
+  padding-left: 5px;
 }
 html[dir=rtl][data-theme=darkmode] .ta-navbar-brand span:first-child {
-  margin-right: 5px;
+  padding-right: 5px;
 }
 html[data-theme=darkmode] .ta-navbar-brand span:last-child {
   font-weight: bold;
   color: #fff;
 }
 html[data-theme=darkmode] .ta-navbar-brand img {
-  width: 25px;
+  height: 34px;
 }
 html[dir=ltr][data-theme=darkmode] .ta-navbar-brand img {
-  margin-left: 5px;
-  margin-right: 11px;
+  padding-right: 11px;
 }
 html[dir=rtl][data-theme=darkmode] .ta-navbar-brand img {
-  margin-right: 5px;
-  margin-left: 11px;
-}
-html[data-theme=darkmode] .left-sidebar-compact .ta-navbar-brand {
-  width: 47px;
-  height: 42px;
+  padding-left: 11px;
 }
 html[data-theme=darkmode] .left-sidebar-compact .ta-navbar-brand span {
   display: none;
@@ -57231,15 +57195,17 @@ html[dir=ltr][data-theme=darkmode] .left-sidebar-compact .ta-navbar-top h1, html
 html[dir=rtl][data-theme=darkmode] .left-sidebar-compact .ta-navbar-top h1, html[dir=rtl][data-theme=darkmode] .left-sidebar-compact .ta-navbar-top .h1 {
   right: 63px;
 }
-html[dir=ltr][data-theme=darkmode] .left-sidebar-compact .ta-navbar-top .nav-item {
-  margin-left: 10px;
-}
-html[dir=rtl][data-theme=darkmode] .left-sidebar-compact .ta-navbar-top .nav-item {
-  margin-right: 10px;
-}
 html[data-theme=darkmode] .action-bar {
   top: 3.3rem;
   z-index: 1050;
+}
+html[dir=ltr][data-theme=darkmode] .user-top-navbar .nav-item .nav-link {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+html[dir=rtl][data-theme=darkmode] .user-top-navbar .nav-item .nav-link {
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
 }
 html[data-theme=darkmode] .ta-navbar-top {
   color: #dee2e6;

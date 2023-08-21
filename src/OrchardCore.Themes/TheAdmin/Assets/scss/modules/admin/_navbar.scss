@@ -1,10 +1,11 @@
 .ta-navbar-top {
     @extend .navbar, .navbar-expand-md, .fixed-top;
     border-bottom: $border-content;
-    z-index: $zindex-fixed;
-    padding: 0.3rem 1rem;
-    padding-left: 0;
+    z-index: calc(#{$zindex-sticky} + 100); // The left menu z-index is calc(#{$zindex-sticky} + 50). Here we ensure that the navbar top is always visible.
+    height: #{$top-nav-height};
     box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
+    padding-top: 0;
+    padding-bottom: 0;
 
     h1 {
         font-size: 24px;
@@ -68,17 +69,13 @@ body:not(.left-sidebar-compact) {
 
 .ta-navbar-brand {
     @extend .navbar-brand;
-    overflow: hidden;
-    height: 42px;
-    width: 259px;
-    margin-left: 5px;
-    padding-top: 10px;
+    padding: 5px;
     white-space: nowrap;
     font-size: 14px;
     transition: width 0.2s ease-in-out;
 
     span:first-child {
-        margin-left: 5px;
+        padding-left: 5px;
     }
 
     span:last-child {
@@ -88,17 +85,13 @@ body:not(.left-sidebar-compact) {
 }
 
 .ta-navbar-brand img {
-    margin-left: 5px;
-    margin-right: 11px;
-    width: 25px;
+    padding-right: 11px;
+    height: 32px;
 }
 
 // When left-sidebar is compact nav brand is compacted too.
 // It displays logo only, not text.
 .left-sidebar-compact .ta-navbar-brand {
-    width: 47px;
-    height: 42px;
-
     span {
         display: none;
     }
@@ -108,13 +101,14 @@ body:not(.left-sidebar-compact) {
     h1 {
         left: 63px; // $left-navigation-width-when-compact + 15px
     }
-
-    .nav-item {
-        margin-left: 10px;
-    }
 }
 
 .action-bar {
     top: 3.3rem;
     z-index: 1050;
+}
+
+.user-top-navbar .nav-item .nav-link {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
 }
