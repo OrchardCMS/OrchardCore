@@ -59,7 +59,7 @@ namespace OrchardCore.Secrets.Services
         public async Task RemoveSecretAsync(string key, string store)
         {
             var secretStore = _secretStores.FirstOrDefault(x => String.Equals(x.Name, store, StringComparison.OrdinalIgnoreCase));
-            if (secretStore != null)
+            if (secretStore is not null)
             {
                 await _secretBindingsManager.RemoveSecretBindingAsync(key);
 
@@ -85,13 +85,13 @@ namespace OrchardCore.Secrets.Services
             // TODO this has to find the binding first, to know which store it is in.
             var bindings = await GetSecretBindingsAsync();
             var binding = bindings[key];
-            if (binding == null)
+            if (binding is null)
             {
                 return null;
             }
 
             var secretStore = _secretStores.FirstOrDefault(store => String.Equals(store.Name, binding.Store, StringComparison.OrdinalIgnoreCase));
-            if (secretStore == null)
+            if (secretStore is null)
             {
                 return null;
             }
