@@ -525,7 +525,7 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Wether or not a shell is in use in at least one active scope.
+        /// Whether or not a shell is in use in at least one active scope.
         /// </summary>
         private bool IsShellActive(ShellSettings settings) =>
             settings is { Name: not null } &&

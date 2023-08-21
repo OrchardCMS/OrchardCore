@@ -6,42 +6,42 @@ namespace OrchardCore.Environment.Shell;
 public static class ShellSettingsExtensions
 {
     /// <summary>
-    /// Wether the tenant is the 'Default' tenant or not.
+    /// Whether the tenant is the 'Default' tenant or not.
     /// </summary>
     public static bool IsDefaultShell(this ShellSettings settings) => settings is { Name: ShellSettings.DefaultShellName };
 
     /// <summary>
-    /// Wether the tenant is uninitialized or not.
+    /// Whether the tenant is uninitialized or not.
     /// </summary>
     public static bool IsUninitialized(this ShellSettings settings) => settings is { State: TenantState.Uninitialized };
 
     /// <summary>
-    /// Wether the tenant is initializing or not.
+    /// Whether the tenant is initializing or not.
     /// </summary>
     public static bool IsInitializing(this ShellSettings settings) => settings is { State: TenantState.Initializing };
 
     /// <summary>
-    /// Wether the tenant is running or not.
+    /// Whether the tenant is running or not.
     /// </summary>
     public static bool IsRunning(this ShellSettings settings) => settings is { State: TenantState.Running };
 
     /// <summary>
-    /// Wether the tenant is disabled or not.
+    /// Whether the tenant is disabled or not.
     /// </summary>
     public static bool IsDisabled(this ShellSettings settings) => settings is { State: TenantState.Disabled };
 
     /// <summary>
-    /// Wether the tenant is initialized or not.
+    /// Whether the tenant is initialized or not.
     /// </summary>
     public static bool IsInitialized(this ShellSettings settings) => settings.IsRunning() || settings.IsDisabled();
 
     /// <summary>
-    /// Wether the tenant is removable or not.
+    /// Whether the tenant is removable or not.
     /// </summary>
     public static bool IsRemovable(this ShellSettings settings) => settings.IsUninitialized() || settings.IsDisabled();
 
     /// <summary>
-    /// Wether or not the tenant has the provided url prefix.
+    /// Whether or not the tenant has the provided url prefix.
     /// </summary>
     public static bool HasUrlPrefix(this ShellSettings settings, string urlPrefix) =>
         settings is not null &&
@@ -51,7 +51,7 @@ public static class ShellSettingsExtensions
             StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
-    /// Wether or not the tenant has one of the url host(s) defined by the provided string.
+    /// Whether or not the tenant has one of the url host(s) defined by the provided string.
     /// </summary>
     public static bool HasUrlHost(this ShellSettings settings, string urlHost) =>
         settings.HasUrlHost(urlHost
@@ -59,7 +59,7 @@ public static class ShellSettingsExtensions
             ?? Array.Empty<string>());
 
     /// <summary>
-    /// Wether or not the tenant has one of the provided url hosts.
+    /// Whether or not the tenant has one of the provided url hosts.
     /// </summary>
     public static bool HasUrlHost(this ShellSettings settings, string[] urlHosts)
     {

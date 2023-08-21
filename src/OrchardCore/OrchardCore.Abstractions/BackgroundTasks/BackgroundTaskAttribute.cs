@@ -11,7 +11,7 @@ namespace OrchardCore.BackgroundTasks
         public string Title { get; set; }
 
         /// <summary>
-        /// Wether this background task is enabled or not.
+        /// Whether this background task is enabled or not.
         /// </summary>
         public bool Enable { get; set; } = true;
 
@@ -38,7 +38,7 @@ namespace OrchardCore.BackgroundTasks
         public int LockExpiration { get; set; }
 
         /// <summary>
-        /// Wether or not the tenant pipeline should be built and then executed.
+        /// Whether or not the tenant pipeline should be built and then executed.
         /// This to configure endpoints and then to allow route urls generation.
         /// </summary>
         public bool UsePipeline { get; set; }
