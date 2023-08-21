@@ -180,7 +180,7 @@ namespace OrchardCore.Setup.Services
                     break;
             }
 
-            if (context.Errors.Any())
+            if (context.Errors.Count > 0)
             {
                 return null;
             }
@@ -216,7 +216,7 @@ namespace OrchardCore.Setup.Services
                     }
                 });
 
-                if (context.Errors.Any())
+                if (context.Errors.Count > 0)
                 {
                     return null;
                 }
@@ -228,7 +228,7 @@ namespace OrchardCore.Setup.Services
                 await recipeExecutor.ExecuteAsync(executionId, context.Recipe, context.Properties, _applicationLifetime.ApplicationStopping);
             }
 
-            // Reloading the shell context as the recipe has probably updated its features
+            // Reloading the shell context as the recipe has probably updated its features.
             await (await _shellHost.GetScopeAsync(shellSettings)).UsingAsync(async scope =>
             {
                 var tenandSetupHandlers = scope.ServiceProvider.GetServices<ITenantSetupHandler>();
@@ -248,22 +248,22 @@ namespace OrchardCore.Setup.Services
                 }
                 await setupEventHandlers.InvokeAsync((handler, ctx) => handler.Setup(ctx.Properties, reportError), context, logger);
 
+                var success = context.Errors.Count > 0;
+
+                if (success)
+                {
+                    // Update the shell state.
+                    await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
+                }
+
                 var completedContext = new CompletedSetupContext()
                 {
-                    Success = !context.Errors.Any(),
+                    Success = success,
                     Errors = context.Errors,
                 };
 
                 await tenandSetupHandlers.InvokeAsync((handler, ctx) => handler.CompletedAsync(ctx), completedContext, _logger);
             });
-
-            if (context.Errors.Any())
-            {
-                return executionId;
-            }
-
-            // Update the shell state
-            await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
 
             return executionId;
         }
