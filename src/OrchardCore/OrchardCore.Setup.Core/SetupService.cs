@@ -25,6 +25,13 @@ namespace OrchardCore.Setup.Services
     /// </summary>
     public class SetupService : ISetupService
     {
+        private static readonly string[] _coreFeatures = new[]
+        {
+            "OrchardCore.Features",
+            "OrchardCore.Scripting",
+            "OrchardCore.Recipes"
+        };
+
         private readonly IShellHost _shellHost;
         private readonly IShellContextFactory _shellContextFactory;
         private readonly ISetupUserIdGenerator _setupUserIdGenerator;
@@ -89,17 +96,22 @@ namespace OrchardCore.Setup.Services
         /// <inheritdoc />
         public async Task<string> SetupAsync(SetupContext context)
         {
+            ShellSettings shellSettings = null;
             var initialState = context.ShellSettings.State;
             try
             {
-                var executionId = await SetupInternalAsync(context);
+                // Set shell state to 'Initializing' so that subsequent HTTP requests are responded
+                // to with "Service Unavailable" while the tenant is being setup.
+                context.ShellSettings.AsInitializing();
+
+                (var executionId, shellSettings) = await SetupInternalAsync(context);
 
                 if (context.Errors.Count > 0)
                 {
                     context.ShellSettings.State = initialState;
-                    await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false);
+                    await _shellHost.ReloadShellContextAsync(shellSettings, eventSource: false);
 
-                    await (await _shellHost.GetScopeAsync(context.ShellSettings)).UsingAsync(async scope =>
+                    await (await _shellHost.GetScopeAsync(shellSettings)).UsingAsync(async scope =>
                     {
                         var tenandSetupHandlers = scope.ServiceProvider.GetServices<ITenantSetupHandler>();
 
@@ -109,7 +121,11 @@ namespace OrchardCore.Setup.Services
                     return null;
                 }
 
-                await (await _shellHost.GetScopeAsync(context.ShellSettings)).UsingAsync(async scope =>
+                // At this point, we know that the setup was successful.
+                // Set shell state to 'Running' state.
+                await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
+
+                await (await _shellHost.GetScopeAsync(shellSettings)).UsingAsync(async scope =>
                 {
                     var tenandSetupHandlers = scope.ServiceProvider.GetServices<ITenantSetupHandler>();
 
@@ -118,30 +134,31 @@ namespace OrchardCore.Setup.Services
 
                 return executionId;
             }
-            catch
+            catch (Exception e)
             {
-                context.ShellSettings.State = initialState;
-                await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false);
+                _logger.LogError(e, "An error occurred while setting up the tenant.");
+                context.Errors.Add(String.Empty, S["An error occurred while setting up the tenants: {0}", e.Message]);
 
-                await (await _shellHost.GetScopeAsync(context.ShellSettings)).UsingAsync(async scope =>
+                context.ShellSettings.State = initialState;
+                await _shellHost.ReloadShellContextAsync(shellSettings ?? context.ShellSettings, eventSource: false);
+
+                await (await _shellHost.GetScopeAsync(shellSettings ?? context.ShellSettings)).UsingAsync(async scope =>
                 {
                     var tenandSetupHandlers = scope.ServiceProvider.GetServices<ITenantSetupHandler>();
 
                     await tenandSetupHandlers.InvokeAsync((handler) => handler.FailedAsync(context), _logger);
                 });
 
-                throw;
+                return null;
             }
         }
 
-        private async Task<string> SetupInternalAsync(SetupContext context)
+        private async Task<(string, ShellSettings)> SetupInternalAsync(SetupContext context)
         {
-            string executionId = null;
+            _logger.LogInformation("Running setup for tenant '{TenantName}'.", context.ShellSettings?.Name);
 
-            _logger.LogInformation("Running setup for tenant '{TenantName}'.", context.ShellSettings.Name);
-
-            // Features to enable for Setup
-            string[] hardcoded =
+            // Features to enable for Setup.
+            string[] coreFeature =
             {
                 _applicationName,
                 "OrchardCore.Features",
@@ -149,11 +166,7 @@ namespace OrchardCore.Setup.Services
                 "OrchardCore.Recipes"
             };
 
-            context.EnabledFeatures = hardcoded.Union(context.EnabledFeatures ?? Enumerable.Empty<string>()).Distinct().ToList();
-
-            // Set shell state to "Initializing" so that subsequent HTTP requests are responded
-            // to with "Service Unavailable" while Orchard is setting up.
-            context.ShellSettings.AsInitializing();
+            context.EnabledFeatures = coreFeature.Union(context.EnabledFeatures ?? Enumerable.Empty<string>()).Distinct().ToList();
 
             // Due to database collation we normalize the userId to lower invariant.
             // During setup there are no users so we do not need to check unicity.
@@ -203,7 +216,7 @@ namespace OrchardCore.Setup.Services
 
             if (context.Errors.Count > 0)
             {
-                return null;
+                return (null, shellSettings);
             }
 
             // Creating a standalone environment based on a "minimum shell descriptor".
@@ -214,6 +227,8 @@ namespace OrchardCore.Setup.Services
             {
                 Features = context.EnabledFeatures.Select(id => new ShellFeature(id)).ToList()
             };
+
+            string executionId = null;
 
             await using (var shellContext = await _shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor))
             {
@@ -229,8 +244,6 @@ namespace OrchardCore.Setup.Services
                     {
                         _logger.LogError(e, "An error occurred while initializing the datastore.");
                         context.Errors.Add(String.Empty, S["An error occurred while initializing the datastore: {0}", e.Message]);
-
-                        return;
                     }
                 });
 
@@ -246,7 +259,7 @@ namespace OrchardCore.Setup.Services
 
             if (context.Errors.Count > 0)
             {
-                return null;
+                return (null, shellSettings);
             }
 
             // Reloading the shell context as the recipe has probably updated its features.
@@ -272,13 +285,10 @@ namespace OrchardCore.Setup.Services
 
             if (context.Errors.Count > 0)
             {
-                return null;
+                return (null, shellSettings);
             }
 
-            // Update the shell state.
-            await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
-
-            return executionId;
+            return (executionId, shellSettings);
         }
     }
 }
