@@ -18,7 +18,7 @@ namespace OrchardCore.Settings.Services
             _siteService = siteService;
         }
 
-        public override async Task SettingUpAsync(SetupContext context)
+        public override async Task SetupAsync(SetupContext context)
         {
             // Updating site settings.
             var siteSettings = await _siteService.LoadSiteSettingsAsync();

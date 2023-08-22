@@ -10,13 +10,13 @@ public interface ITenantSetupHandler
     /// </summary>
     /// <param name="context"></param>
     /// <returns></returns>
-    Task SettingUpAsync(SetupContext context);
+    Task SetupAsync(SetupContext context);
 
     /// <summary>
     /// Called when a new tenant is successfully setup.
     /// </summary>
     /// <returns></returns>
-    Task SuccessAsync();
+    Task SucceededAsync();
 
     /// <summary>
     /// Called when a tenant fails to setup.

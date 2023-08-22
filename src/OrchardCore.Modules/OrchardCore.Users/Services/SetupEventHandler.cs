@@ -19,7 +19,7 @@ namespace OrchardCore.Users.Services
             _userService = userService;
         }
 
-        public override Task SettingUpAsync(SetupContext context)
+        public override Task SetupAsync(SetupContext context)
         {
             var user = new User
             {

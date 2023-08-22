@@ -9,9 +9,9 @@ public class TenantSetupHandlerBase : ITenantSetupHandler
     public virtual Task FailedAsync(SetupContext context)
         => Task.CompletedTask;
 
-    public virtual Task SettingUpAsync(SetupContext context)
+    public virtual Task SetupAsync(SetupContext context)
         => Task.CompletedTask;
 
-    public virtual Task SuccessAsync()
+    public virtual Task SucceededAsync()
         => Task.CompletedTask;
 }

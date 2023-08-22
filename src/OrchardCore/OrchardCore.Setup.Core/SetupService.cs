@@ -94,11 +94,27 @@ namespace OrchardCore.Setup.Services
             {
                 var executionId = await SetupInternalAsync(context);
 
-                if (context.Errors.Any())
+                if (context.Errors.Count > 0)
                 {
                     context.ShellSettings.State = initialState;
                     await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false);
+
+                    await (await _shellHost.GetScopeAsync(context.ShellSettings)).UsingAsync(async scope =>
+                    {
+                        var tenandSetupHandlers = scope.ServiceProvider.GetServices<ITenantSetupHandler>();
+
+                        await tenandSetupHandlers.InvokeAsync((handler) => handler.FailedAsync(context), _logger);
+                    });
+
+                    return null;
                 }
+
+                await (await _shellHost.GetScopeAsync(context.ShellSettings)).UsingAsync(async scope =>
+                {
+                    var tenandSetupHandlers = scope.ServiceProvider.GetServices<ITenantSetupHandler>();
+
+                    await tenandSetupHandlers.InvokeAsync((handler) => handler.SucceededAsync(), _logger);
+                });
 
                 return executionId;
             }
@@ -107,18 +123,22 @@ namespace OrchardCore.Setup.Services
                 context.ShellSettings.State = initialState;
                 await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false);
 
+                await (await _shellHost.GetScopeAsync(context.ShellSettings)).UsingAsync(async scope =>
+                {
+                    var tenandSetupHandlers = scope.ServiceProvider.GetServices<ITenantSetupHandler>();
+
+                    await tenandSetupHandlers.InvokeAsync((handler) => handler.FailedAsync(context), _logger);
+                });
+
                 throw;
             }
         }
 
         private async Task<string> SetupInternalAsync(SetupContext context)
         {
-            string executionId;
+            string executionId = null;
 
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation("Running setup for tenant '{TenantName}'.", context.ShellSettings.Name);
-            }
+            _logger.LogInformation("Running setup for tenant '{TenantName}'.", context.ShellSettings.Name);
 
             // Features to enable for Setup
             string[] hardcoded =
@@ -131,12 +151,13 @@ namespace OrchardCore.Setup.Services
 
             context.EnabledFeatures = hardcoded.Union(context.EnabledFeatures ?? Enumerable.Empty<string>()).Distinct().ToList();
 
-            // Set shell state to "Initializing" so that subsequent HTTP requests are responded to with "Service Unavailable" while Orchard is setting up.
+            // Set shell state to "Initializing" so that subsequent HTTP requests are responded
+            // to with "Service Unavailable" while Orchard is setting up.
             context.ShellSettings.AsInitializing();
 
             // Due to database collation we normalize the userId to lower invariant.
             // During setup there are no users so we do not need to check unicity.
-            context.Properties[SetupConstants.AdminUserId] = _setupUserIdGenerator.GenerateUniqueId().ToLowerInvariant();
+            context.Properties[SetupConstants.AdminUserId] = _setupUserIdGenerator.GenerateUniqueId();
 
             var recipeEnvironmentFeature = new RecipeEnvironmentFeature();
             if (context.Properties.TryGetValue(SetupConstants.AdminUserId, out var adminUserId))
@@ -189,10 +210,9 @@ namespace OrchardCore.Setup.Services
             // In theory this environment can be used to resolve any normal components by interface, and those
             // components will exist entirely in isolation - no crossover between the safemode container currently in effect
             // It is used to initialize the database before the recipe is run.
-
             var shellDescriptor = new ShellDescriptor
             {
-                Features = context.EnabledFeatures.Select(id => new ShellFeature { Id = id }).ToList()
+                Features = context.EnabledFeatures.Select(id => new ShellFeature(id)).ToList()
             };
 
             await using (var shellContext = await _shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor))
@@ -201,42 +221,41 @@ namespace OrchardCore.Setup.Services
                 {
                     try
                     {
-                        // Create the "minimum shell descriptor"
-                        await scope
-                            .ServiceProvider
-                            .GetService<IShellDescriptorManager>()
-                            .UpdateShellDescriptorAsync(0,
-                                shellContext.Blueprint.Descriptor.Features);
+                        // Create the "minimum" shell descriptor.
+                        await scope.ServiceProvider.GetService<IShellDescriptorManager>()
+                            .UpdateShellDescriptorAsync(0, shellContext.Blueprint.Descriptor.Features);
                     }
                     catch (Exception e)
                     {
                         _logger.LogError(e, "An error occurred while initializing the datastore.");
                         context.Errors.Add(String.Empty, S["An error occurred while initializing the datastore: {0}", e.Message]);
+
                         return;
                     }
                 });
 
-                if (context.Errors.Count > 0)
+                if (context.Errors.Count == 0)
                 {
-                    return null;
+                    executionId = Guid.NewGuid().ToString("n");
+
+                    var recipeExecutor = shellContext.ServiceProvider.GetRequiredService<IRecipeExecutor>();
+
+                    await recipeExecutor.ExecuteAsync(executionId, context.Recipe, context.Properties, _applicationLifetime.ApplicationStopping);
                 }
-
-                executionId = Guid.NewGuid().ToString("n");
-
-                var recipeExecutor = shellContext.ServiceProvider.GetRequiredService<IRecipeExecutor>();
-
-                await recipeExecutor.ExecuteAsync(executionId, context.Recipe, context.Properties, _applicationLifetime.ApplicationStopping);
             }
 
-            var succeeded = false;
+            if (context.Errors.Count > 0)
+            {
+                return null;
+            }
 
             // Reloading the shell context as the recipe has probably updated its features.
             await (await _shellHost.GetScopeAsync(shellSettings)).UsingAsync(async scope =>
             {
-                var tenandSetupHandlers = scope.ServiceProvider.GetServices<ITenantSetupHandler>();
                 var logger = scope.ServiceProvider.GetRequiredService<ILogger<SetupService>>();
+                var tenandSetupHandlers = scope.ServiceProvider.GetServices<ITenantSetupHandler>();
 
-                await tenandSetupHandlers.InvokeAsync((handler, ctx) => handler.SettingUpAsync(ctx), context, _logger);
+                await tenandSetupHandlers.InvokeAsync((handler, ctx) => handler.SetupAsync(ctx), context, _logger);
 
                 // Invoke modules to react to the setup event.
 
@@ -249,27 +268,15 @@ namespace OrchardCore.Setup.Services
                     context.Errors[key] = message;
                 }
                 await setupEventHandlers.InvokeAsync((handler, ctx) => handler.Setup(ctx.Properties, reportError), context, logger);
-
-                succeeded = context.Errors.Count == 0;
-
-                if (!succeeded)
-                {
-                    await tenandSetupHandlers.InvokeAsync((handler, ctx) => handler.FailedAsync(ctx), context, _logger);
-                }
             });
 
-            if (succeeded)
+            if (context.Errors.Count > 0)
             {
-                // Update the shell state.
-                await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
-
-                await (await _shellHost.GetScopeAsync(shellSettings)).UsingAsync(async scope =>
-                {
-                    var tenandSetupHandlers = scope.ServiceProvider.GetServices<ITenantSetupHandler>();
-
-                    await tenandSetupHandlers.InvokeAsync((handler) => handler.SuccessAsync(), _logger);
-                });
+                return null;
             }
+
+            // Update the shell state.
+            await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
 
             return executionId;
         }
