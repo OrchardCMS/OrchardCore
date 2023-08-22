@@ -42,7 +42,6 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [Shortcodes](https://github.com/sebastienros/shortcodes) | Shortcodes processor for .NET. | 1.3.3 | [MIT](https://github.com/sebastienros/shortcodes/blob/dev/LICENSE) |
 | [YesSql](https://github.com/sebastienros/yessql) | .NET document database working on any RDBMS. | 3.3.0 | [MIT](https://github.com/sebastienros/yessql/blob/dev/LICENSE) |
 | [ZString](https://github.com/Cysharp/ZString) | Zero Allocation StringBuilder for .NET Core and Unity. | 2.5.0 | [MIT](https://github.com/Cysharp/ZString/blob/master/LICENSE) |
-| [Twilio](https://github.com/twilio/twilio-csharp) | Twilio provides a HTTP-based API for sending and receiving phone calls and text messages. | 6.11.0 | [MIT](https://github.com/twilio/twilio-csharp/blob/main/LICENSE) |
 | [libphonenumber library](https://github.com/twcclegg/libphonenumber-csharp) | C# port of Google's libphonenumber library. | 8.13.18 | [Apache-2.0](https://github.com/twcclegg/libphonenumber-csharp/blob/main/LICENSE) |
 
 The below table lists the different libraries used as Resources:

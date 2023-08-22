@@ -2,15 +2,14 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
-using OrchardCore.Sms;
 
-namespace OrchardCore.Admin;
+namespace OrchardCore.Sms;
 
-public class SmsAdminMenu : INavigationProvider
+public class AdminMenu : INavigationProvider
 {
     protected readonly IStringLocalizer S;
 
-    public SmsAdminMenu(IStringLocalizer<SmsAdminMenu> stringLocalizer)
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
         S = stringLocalizer;
     }
@@ -28,7 +27,7 @@ public class SmsAdminMenu : INavigationProvider
                     .Add(S["SMS"], S["SMS"].PrefixPosition(), sms => sms
                         .AddClass("sms")
                         .Id("sms")
-                        .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmsConstants.SettingsGroupId })
+                        .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmsSettings.GroupId })
                         .Permission(SmsPermissions.ManageSmsSettings)
                         .LocalNav()
                     )

@@ -1,4 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Localization;
@@ -6,31 +12,40 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
 using OrchardCore.Sms.Models;
-using Twilio;
-using Twilio.Rest.Api.V2010.Account;
-using Twilio.Types;
 
 namespace OrchardCore.Sms.Services;
 
 public class TwilioSmsProvider : ISmsProvider
 {
+    public const string TechnicalName = "Twilio";
+
+    public const string ProtectorName = "Twilio";
+
+    private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
+    {
+        PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance,
+    };
+
+    public LocalizedString Name => S["Twilio"];
+
     private readonly ISiteService _siteService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ILogger<TwilioSmsProvider> _logger;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly HashSet<string> _successStatuses = new(StringComparer.OrdinalIgnoreCase) { "sent", "queued" };
     protected readonly IStringLocalizer S;
-
-    private string _plainAuthToken;
-    private string _phoneNumber;
 
     public TwilioSmsProvider(
         ISiteService siteService,
         IDataProtectionProvider dataProtectionProvider,
         ILogger<TwilioSmsProvider> logger,
+        IHttpClientFactory httpClientFactory,
         IStringLocalizer<TwilioSmsProvider> stringLocalizer)
     {
         _siteService = siteService;
         _dataProtectionProvider = dataProtectionProvider;
         _logger = logger;
+        _httpClientFactory = httpClientFactory;
         S = stringLocalizer;
     }
 
@@ -53,21 +68,28 @@ public class TwilioSmsProvider : ISmsProvider
 
         try
         {
-            await EnsureClientIsIsInitializedAsync();
-
-            var response = await MessageResource.CreateAsync(
-                to: new PhoneNumber(message.To),
-                from: new PhoneNumber(_phoneNumber),
-                body: message.Body
-            );
-
-            if (response.Status == MessageResource.StatusEnum.Sent
-                || response.Status == MessageResource.StatusEnum.Queued)
+            var settings = await GetSettingsAsync();
+            var data = new List<KeyValuePair<string, string>>
             {
-                return SmsResult.Success;
-            }
+                new ("From", settings.PhoneNumber),
+                new ("To", message.To),
+                new ("Body", message.Body),
+            };
 
-            _logger.LogError("Twilio service is unable to send SMS messages. Error: {errorMessage}", response.ErrorMessage);
+            var client = GetHttpClient(settings);
+            var response = await client.PostAsync($"{settings.AccountSID}/Messages.json", new FormUrlEncodedContent(data));
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<TwilioMessageResponse>(_jsonSerializerOptions);
+
+                if (result.Status != null && _successStatuses.Contains(result.Status))
+                {
+                    return SmsResult.Success;
+                }
+
+                _logger.LogError("Twilio service is unable to send SMS messages. Error, code: {errorCode}, message: {errorMessage}", result.ErrorCode, result.ErrorMessage);
+            }
 
             return SmsResult.Failed(S["SMS message was not send."]);
         }
@@ -79,17 +101,36 @@ public class TwilioSmsProvider : ISmsProvider
         }
     }
 
-    private async Task EnsureClientIsIsInitializedAsync()
+    private HttpClient GetHttpClient(TwilioSettings settings)
     {
-        if (_plainAuthToken == null)
+        var client = _httpClientFactory.CreateClient(TechnicalName);
+
+        var token = $"{settings.AccountSID}:{settings.AuthToken}";
+        var base64Token = Convert.ToBase64String(Encoding.ASCII.GetBytes(token));
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64Token);
+
+        return client;
+    }
+
+    private TwilioSettings _settings;
+
+    private async Task<TwilioSettings> GetSettingsAsync()
+    {
+        if (_settings == null)
         {
             var settings = (await _siteService.GetSiteSettingsAsync()).As<TwilioSettings>();
 
-            _phoneNumber = settings.PhoneNumber;
-            var protector = _dataProtectionProvider.CreateProtector(SmsConstants.TwilioServiceName);
-            _plainAuthToken = protector.Unprotect(settings.AuthToken);
+            var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
 
-            TwilioClient.Init(settings.AccountSID, _plainAuthToken);
+            // It is important to create a new instance of `TwilioSettings` privately to hold the plain auth-token value.
+            _settings = new TwilioSettings
+            {
+                PhoneNumber = settings.PhoneNumber,
+                AccountSID = settings.AccountSID,
+                AuthToken = protector.Unprotect(settings.AuthToken),
+            };
         }
+
+        return _settings;
     }
 }

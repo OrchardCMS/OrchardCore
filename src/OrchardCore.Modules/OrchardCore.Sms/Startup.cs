@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -29,17 +28,17 @@ public class Startup : StartupBase
         services.AddPhoneFormatValidator();
 
         // Add Twilio provider.
-        services.AddTwilioProvider()
+        services.AddTwilioSmsProvider()
             .AddScoped<IDisplayDriver<ISite>, TwilioSettingsDisplayDriver>();
 
         if (_hostEnvironment.IsDevelopment())
         {
             // Add Console provider.
-            services.AddConsoleProvider();
+            services.AddConsoleSmsProvider();
         }
 
         services.AddScoped<IPermissionProvider, SmsPermissionProvider>();
-        services.AddScoped<INavigationProvider, SmsAdminMenu>();
+        services.AddScoped<INavigationProvider, AdminMenu>();
         services.AddScoped<IDisplayDriver<ISite>, SmsSettingsDisplayDriver>();
     }
 }
