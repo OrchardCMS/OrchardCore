@@ -148,6 +148,7 @@ namespace OrchardCore.Secrets.Controllers
                         {
                             await _secretCoordinator.RemoveSecretAsync(binding.Key, binding.Value.Store);
                         }
+
                         await _notifier.SuccessAsync(H["Secrets successfully removed."]);
                         break;
                     default:
@@ -231,7 +232,7 @@ namespace OrchardCore.Secrets.Controllers
                 secret.Name = model.Name;
 
                 await _secretCoordinator.UpdateSecretAsync(model.Name, secretBinding, secret);
-                await _notifier.SuccessAsync(H["Secret added successfully"]);
+                await _notifier.SuccessAsync(H["Secret added successfully."]);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -354,7 +355,7 @@ namespace OrchardCore.Secrets.Controllers
 
             await _secretCoordinator.RemoveSecretAsync(name, secretBinding.Store);
 
-            await _notifier.SuccessAsync(H["Secret deleted successfully"]);
+            await _notifier.SuccessAsync(H["Secret deleted successfully."]);
 
             return RedirectToAction(nameof(Index));
         }
