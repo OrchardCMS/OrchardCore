@@ -93,8 +93,8 @@ namespace OrchardCore.Setup.Services
             var initialState = context.ShellSettings.State;
             try
             {
-                // Set shell state to 'Initializing' so that subsequent HTTP requests are responded
-                // to with "Service Unavailable" while the tenant is being setup.
+                // Set the shell state to 'Initializing' to guarantee that any subsequent HTTP requests
+                // will result in a 'Service Unavailable' response while the tenant setup is in progress.
                 context.ShellSettings.AsInitializing();
 
                 (var executionId, shellSettings) = await SetupInternalAsync(context);
@@ -104,7 +104,8 @@ namespace OrchardCore.Setup.Services
                     context.ShellSettings.State = initialState;
                     await _shellHost.ReloadShellContextAsync(shellSettings, eventSource: false);
 
-                    await (await _shellHost.GetScopeAsync(shellSettings)).UsingAsync(async scope =>
+                    var shellScope = await _shellHost.GetScopeAsync(shellSettings);
+                    await shellScope.UsingAsync(async scope =>
                     {
                         var tenandSetupHandlers = scope.ServiceProvider.GetServices<ITenantSetupHandler>();
 
@@ -115,10 +116,11 @@ namespace OrchardCore.Setup.Services
                 }
 
                 // At this point, we know that the setup was successful.
-                // Set shell state to 'Running' state.
+                // Set the shell state to 'Running' state.
                 await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
 
-                await (await _shellHost.GetScopeAsync(shellSettings)).UsingAsync(async scope =>
+                var runningShellScope = await _shellHost.GetScopeAsync(shellSettings);
+                await runningShellScope.UsingAsync(async scope =>
                 {
                     var tenandSetupHandlers = scope.ServiceProvider.GetServices<ITenantSetupHandler>();
 
@@ -135,7 +137,8 @@ namespace OrchardCore.Setup.Services
                 context.ShellSettings.State = initialState;
                 await _shellHost.ReloadShellContextAsync(shellSettings ?? context.ShellSettings, eventSource: false);
 
-                await (await _shellHost.GetScopeAsync(shellSettings ?? context.ShellSettings)).UsingAsync(async scope =>
+                var shellScope = await _shellHost.GetScopeAsync(shellSettings ?? context.ShellSettings);
+                await shellScope.UsingAsync(async scope =>
                 {
                     var tenandSetupHandlers = scope.ServiceProvider.GetServices<ITenantSetupHandler>();
 
