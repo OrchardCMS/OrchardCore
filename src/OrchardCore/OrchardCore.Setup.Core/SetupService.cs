@@ -137,13 +137,12 @@ namespace OrchardCore.Setup.Services
 
             // Due to database collation we normalize the userId to lower invariant.
             // During setup there are no users so we do not need to check unicity.
-            context.Properties[SetupConstants.AdminUserId] = _setupUserIdGenerator.GenerateUniqueId();
+            var adminUserId = _setupUserIdGenerator.GenerateUniqueId();
+            context.Properties[SetupConstants.AdminUserId] = adminUserId;
 
             var recipeEnvironmentFeature = new RecipeEnvironmentFeature();
-            if (context.Properties.TryGetValue(SetupConstants.AdminUserId, out var adminUserId))
-            {
-                recipeEnvironmentFeature.Properties[SetupConstants.AdminUserId] = adminUserId;
-            }
+            recipeEnvironmentFeature.Properties[SetupConstants.AdminUserId] = adminUserId;
+
             if (context.Properties.TryGetValue(SetupConstants.AdminUsername, out var adminUsername))
             {
                 recipeEnvironmentFeature.Properties[SetupConstants.AdminUsername] = adminUsername;
@@ -262,6 +261,7 @@ namespace OrchardCore.Setup.Services
 
             // At this point, we know that the setup was successful.
             // Set the shell state to 'Running' state.
+            // This will persist the 'shellSettings' from the memory which takes precedence over 'context.ShellSettings'. 
             await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
 
             var runningShellScope = await _shellHost.GetScopeAsync(shellSettings);
