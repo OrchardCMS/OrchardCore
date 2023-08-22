@@ -15,7 +15,7 @@ namespace OrchardCore.BackgroundTasks
         public string Title { get; set; }
 
         /// <summary>
-        /// Wether this background task is enabled or not.
+        /// Whether this background task is enabled or not.
         /// </summary>
         public bool Enable { get; set; } = true;
 
@@ -42,14 +42,14 @@ namespace OrchardCore.BackgroundTasks
         public int LockExpiration { get; set; }
 
         /// <summary>
-        /// Wether or not the tenant pipeline should be built and then executed.
-        /// This to configure endpoints and then to allow route urls generation.
+        /// Whether or not the pipeline should be built to configure endpoints
+        /// and then executed to allow route urls generation in the background.
         /// </summary>
         public bool UsePipeline { get; set; }
 
         /// <summary>
-        /// Wether this background task is atomic or not, wether it has or not
-        /// both a lock timeout and a lock expiration time greater than zero.
+        /// Whether this background task is atomic or not, it is atomic if both
+        /// the lock timeout and the lock expiration time are greater than zero.
         /// </summary>
         public bool IsAtomic => LockTimeout > 0 && LockExpiration > 0;
     }
