@@ -89,7 +89,6 @@ namespace OrchardCore.Setup.Services
         /// <inheritdoc />
         public async Task<string> SetupAsync(SetupContext context)
         {
-            ShellSettings shellSettings = null;
             var initialState = context.ShellSettings.State;
             try
             {
@@ -97,35 +96,15 @@ namespace OrchardCore.Setup.Services
                 // will result in a 'Service Unavailable' response while the tenant setup is in progress.
                 context.ShellSettings.AsInitializing();
 
-                (var executionId, shellSettings) = await SetupInternalAsync(context);
+                var executionId = await SetupInternalAsync(context);
 
                 if (context.Errors.Count > 0)
                 {
                     context.ShellSettings.State = initialState;
-                    await _shellHost.ReloadShellContextAsync(shellSettings, eventSource: false);
-
-                    var shellScope = await _shellHost.GetScopeAsync(shellSettings);
-                    await shellScope.UsingAsync(async scope =>
-                    {
-                        var tenandSetupHandlers = scope.ServiceProvider.GetServices<ITenantSetupHandler>();
-
-                        await tenandSetupHandlers.InvokeAsync((handler) => handler.FailedAsync(context), _logger);
-                    });
+                    await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false);
 
                     return null;
                 }
-
-                // At this point, we know that the setup was successful.
-                // Set the shell state to 'Running' state.
-                await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
-
-                var runningShellScope = await _shellHost.GetScopeAsync(shellSettings);
-                await runningShellScope.UsingAsync(async scope =>
-                {
-                    var tenandSetupHandlers = scope.ServiceProvider.GetServices<ITenantSetupHandler>();
-
-                    await tenandSetupHandlers.InvokeAsync((handler) => handler.SucceededAsync(), _logger);
-                });
 
                 return executionId;
             }
@@ -135,21 +114,13 @@ namespace OrchardCore.Setup.Services
                 context.Errors.Add(String.Empty, S["An error occurred while setting up the tenants: {0}", e.Message]);
 
                 context.ShellSettings.State = initialState;
-                await _shellHost.ReloadShellContextAsync(shellSettings ?? context.ShellSettings, eventSource: false);
-
-                var shellScope = await _shellHost.GetScopeAsync(shellSettings ?? context.ShellSettings);
-                await shellScope.UsingAsync(async scope =>
-                {
-                    var tenandSetupHandlers = scope.ServiceProvider.GetServices<ITenantSetupHandler>();
-
-                    await tenandSetupHandlers.InvokeAsync((handler) => handler.FailedAsync(context), _logger);
-                });
+                await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false);
 
                 return null;
             }
         }
 
-        private async Task<(string, ShellSettings)> SetupInternalAsync(SetupContext context)
+        private async Task<string> SetupInternalAsync(SetupContext context)
         {
             _logger.LogInformation("Running setup for tenant '{TenantName}'.", context.ShellSettings?.Name);
 
@@ -212,7 +183,7 @@ namespace OrchardCore.Setup.Services
 
             if (context.Errors.Count > 0)
             {
-                return (null, shellSettings);
+                return null;
             }
 
             // Creating a standalone environment based on a "minimum shell descriptor".
@@ -255,7 +226,7 @@ namespace OrchardCore.Setup.Services
 
             if (context.Errors.Count > 0)
             {
-                return (null, shellSettings);
+                return null;
             }
 
             // Reloading the shell context as the recipe has probably updated its features.
@@ -277,14 +248,31 @@ namespace OrchardCore.Setup.Services
                     context.Errors[key] = message;
                 }
                 await setupEventHandlers.InvokeAsync((handler, ctx) => handler.Setup(ctx.Properties, reportError), context, logger);
+
+                if (context.Errors.Count > 0)
+                {
+                    await tenandSetupHandlers.InvokeAsync((handler) => handler.FailedAsync(context), _logger);
+                }
             });
 
             if (context.Errors.Count > 0)
             {
-                return (null, shellSettings);
+                return null;
             }
 
-            return (executionId, shellSettings);
+            // At this point, we know that the setup was successful.
+            // Set the shell state to 'Running' state.
+            await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
+
+            var runningShellScope = await _shellHost.GetScopeAsync(shellSettings);
+            await runningShellScope.UsingAsync(async scope =>
+            {
+                var tenandSetupHandlers = scope.ServiceProvider.GetServices<ITenantSetupHandler>();
+
+                await tenandSetupHandlers.InvokeAsync((handler) => handler.SucceededAsync(), _logger);
+            });
+
+            return executionId;
         }
     }
 }
