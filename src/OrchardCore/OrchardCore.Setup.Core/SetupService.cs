@@ -25,13 +25,6 @@ namespace OrchardCore.Setup.Services
     /// </summary>
     public class SetupService : ISetupService
     {
-        private static readonly string[] _coreFeatures = new[]
-        {
-            "OrchardCore.Features",
-            "OrchardCore.Scripting",
-            "OrchardCore.Recipes"
-        };
-
         private readonly IShellHost _shellHost;
         private readonly IShellContextFactory _shellContextFactory;
         private readonly ISetupUserIdGenerator _setupUserIdGenerator;
