@@ -102,8 +102,6 @@ namespace OrchardCore.Setup.Services
                 {
                     context.ShellSettings.State = initialState;
                     await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false);
-
-                    return null;
                 }
 
                 return executionId;
