@@ -207,7 +207,7 @@ namespace OrchardCore.Users
             services.AddSingleton<IUserIdGenerator, DefaultUserIdGenerator>();
 
             services.AddScoped<IMembershipService, MembershipService>();
-            services.AddScoped<ITenantSetupHandler, SetupEventHandler>();
+            services.AddScoped<ITenantSetupEventHandler, SetupEventHandler>();
             services.AddScoped<ICommandHandler, UserCommands>();
             services.AddScoped<IExternalLoginEventHandler, ScriptExternalLoginEventHandler>();
 

@@ -9,7 +9,7 @@ namespace OrchardCore.Settings.Services
     /// <summary>
     /// During setup, registers the Super User.
     /// </summary>
-    public class SetupEventHandler : TenantSetupHandlerBase
+    public class SetupEventHandler : TenantSetupEventHandler
     {
         private readonly ISiteService _siteService;
 

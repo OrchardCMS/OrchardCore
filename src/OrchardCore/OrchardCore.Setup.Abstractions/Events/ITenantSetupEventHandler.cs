@@ -3,7 +3,7 @@ using OrchardCore.Setup.Services;
 
 namespace OrchardCore.Setup.Events;
 
-public interface ITenantSetupHandler
+public interface ITenantSetupEventHandler
 {
     /// <summary>
     /// Called during the process of setting up a new tenant.
@@ -13,14 +13,14 @@ public interface ITenantSetupHandler
     Task SetupAsync(SetupContext context);
 
     /// <summary>
-    /// Called when a new tenant is successfully setup.
-    /// </summary>
-    /// <returns></returns>
-    Task SucceededAsync();
-
-    /// <summary>
     /// Called when a tenant fails to setup.
     /// </summary>
     /// <returns></returns>
     Task FailedAsync(SetupContext context);
+
+    /// <summary>
+    /// Called when a new tenant is successfully setup.
+    /// </summary>
+    /// <returns></returns>
+    Task SucceededAsync();
 }
