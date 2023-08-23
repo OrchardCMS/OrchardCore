@@ -8,7 +8,7 @@ Enabling the `SMS` feature will add a new settings page under `Configurations` >
 
 | Provider | Description |
 | --- | --- |
-| `Console` | This particular provider is exclusively meant for debugging purposes and should never be used in a production environment. It permits the message to be displayed on the debug console. |
+| `Log` | This particular provider is exclusively meant for debugging purposes and should never be used in a production environment. It permits the message to be written to the logs. |
 | `Twilio` | Opting for this provider enables the utilization of Twilio service for sending SMS messages. By choosing this provider, you will need to input your Twilio account settings. |
 
 !!! note
