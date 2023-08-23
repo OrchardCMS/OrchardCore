@@ -141,7 +141,7 @@ namespace OrchardCore.Setup.Services
             context.Properties[SetupConstants.AdminUserId] = adminUserId;
 
             var recipeEnvironmentFeature = new RecipeEnvironmentFeature();
-            recipeEnvironmentFeature.Properties[SetupConstants.AdminUserId] = adminUserId;
+            recipeEnvironmentFeature.Properties[SetupConstants.AdminUserId] = adminUserId.ToLowerInvariant();
 
             if (context.Properties.TryGetValue(SetupConstants.AdminUsername, out var adminUsername))
             {
