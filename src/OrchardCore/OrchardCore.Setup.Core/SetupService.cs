@@ -89,6 +89,7 @@ namespace OrchardCore.Setup.Services
         /// <inheritdoc />
         public async Task<string> SetupAsync(SetupContext context)
         {
+            string executionId = null;
             var initialState = context.ShellSettings.State;
             try
             {
@@ -96,15 +97,13 @@ namespace OrchardCore.Setup.Services
                 // will result in a 'Service Unavailable' response while the tenant setup is in progress.
                 context.ShellSettings.AsInitializing();
 
-                var executionId = await SetupInternalAsync(context);
+                executionId = await SetupInternalAsync(context);
 
                 if (context.Errors.Count > 0)
                 {
                     context.ShellSettings.State = initialState;
                     await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false);
                 }
-
-                return executionId;
             }
             catch (Exception e)
             {
@@ -113,9 +112,9 @@ namespace OrchardCore.Setup.Services
 
                 context.ShellSettings.State = initialState;
                 await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false);
-
-                return null;
             }
+
+            return executionId;
         }
 
         private async Task<string> SetupInternalAsync(SetupContext context)
