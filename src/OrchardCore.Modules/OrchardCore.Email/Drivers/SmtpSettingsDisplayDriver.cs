@@ -39,7 +39,6 @@ namespace OrchardCore.Email.Drivers
         public override async Task<IDisplayResult> EditAsync(SmtpSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
             {
                 return null;
@@ -66,7 +65,7 @@ namespace OrchardCore.Email.Drivers
                 }).Location("Content:5").OnGroup(GroupId),
             };
 
-            if (settings?.DefaultSender != null)
+            if (settings.DefaultSender is not null)
             {
                 shapes.Add(Dynamic("SmtpSettings_TestButton").Location("Actions").OnGroup(GroupId));
             }
@@ -77,7 +76,6 @@ namespace OrchardCore.Email.Drivers
         public override async Task<IDisplayResult> UpdateAsync(SmtpSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
             {
                 return null;
@@ -95,7 +93,7 @@ namespace OrchardCore.Email.Drivers
                 }
                 else
                 {
-                    // encrypt the password
+                    // Encrypt the password.
                     var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration));
                     settings.Password = protector.Protect(settings.Password);
                 }

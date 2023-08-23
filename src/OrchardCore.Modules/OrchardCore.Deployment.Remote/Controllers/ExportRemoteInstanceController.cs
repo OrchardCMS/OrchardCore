@@ -97,12 +97,17 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 using (var requestContent = new MultipartFormDataContent())
                 {
                     requestContent.Add(new StreamContent(
-                        new FileStream(archiveFileName,
-                        FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 1, FileOptions.Asynchronous | FileOptions.SequentialScan)
-                    ),
-                        nameof(ImportViewModel.Content), Path.GetFileName(archiveFileName));
-                    requestContent.Add(new StringContent(remoteInstance.ClientName), nameof(ImportViewModel.ClientName));
+                        new FileStream(
+                            archiveFileName,
+                            FileMode.Open,
+                            FileAccess.Read,
+                            FileShare.ReadWrite,
+                            1,
+                            FileOptions.Asynchronous | FileOptions.SequentialScan)),
+                        nameof(ImportViewModel.Content),
+                        Path.GetFileName(archiveFileName));
 
+                    requestContent.Add(new StringContent(remoteInstance.ClientName), nameof(ImportViewModel.ClientName));
                     if (!String.IsNullOrEmpty(remoteInstance.ApiKeySecret))
                     {
                         var secret = await _textSecretService.GetSecretAsync(remoteInstance.ApiKeySecret);

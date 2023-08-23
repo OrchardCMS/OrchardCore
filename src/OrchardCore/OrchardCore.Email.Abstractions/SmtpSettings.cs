@@ -65,7 +65,7 @@ namespace OrchardCore.Email
         public string UserName { get; set; }
 
         /// <summary>
-        /// Gets or sets the user password
+        /// Gets or sets the user password.
         /// </summary>
         public string Password { get; set; }
 
