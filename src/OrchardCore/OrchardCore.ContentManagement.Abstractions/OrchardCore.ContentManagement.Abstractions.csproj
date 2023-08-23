@@ -16,10 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\OrchardCore.Data.YesSql.Abstractions\OrchardCore.Data.YesSql.Abstractions.csproj" />
+    <PackageReference Include="ZString" />
   </ItemGroup>
 
 </Project>
