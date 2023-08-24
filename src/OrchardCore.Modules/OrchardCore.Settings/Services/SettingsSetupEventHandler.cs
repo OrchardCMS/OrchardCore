@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using OrchardCore.Abstractions.Setup;
-using OrchardCore.Setup;
 using OrchardCore.Setup.Services;
 
 namespace OrchardCore.Settings.Services
@@ -9,11 +8,11 @@ namespace OrchardCore.Settings.Services
     /// <summary>
     /// During setup, registers the Super User.
     /// </summary>
-    public class SetupEventHandler : TenantSetupEventHandler
+    public class SettingsSetupEventHandler : Setup.SetupEventHandler
     {
         private readonly ISiteService _siteService;
 
-        public SetupEventHandler(ISiteService siteService)
+        public SettingsSetupEventHandler(ISiteService siteService)
         {
             _siteService = siteService;
         }

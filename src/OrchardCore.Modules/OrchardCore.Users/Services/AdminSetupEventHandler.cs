@@ -10,11 +10,11 @@ namespace OrchardCore.Users.Services
     /// <summary>
     /// During setup, creates the admin user account.
     /// </summary>
-    public class SetupEventHandler : TenantSetupEventHandler
+    public class AdminSetupEventHandler : SetupEventHandler
     {
         private readonly IUserService _userService;
 
-        public SetupEventHandler(IUserService userService)
+        public AdminSetupEventHandler(IUserService userService)
         {
             _userService = userService;
         }

@@ -230,21 +230,18 @@ namespace OrchardCore.Setup.Services
             await (await _shellHost.GetScopeAsync(shellSettings)).UsingAsync(async scope =>
             {
                 var logger = scope.ServiceProvider.GetRequiredService<ILogger<SetupService>>();
-                var handlers = scope.ServiceProvider.GetServices<ITenantSetupEventHandler>();
+                var handlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();
 
                 await handlers.InvokeAsync((handler, ctx) => handler.SetupAsync(ctx), context, _logger);
-
-#pragma warning disable CS0618 // Type or member is obsolete
-                // Invoke modules to react to the setup event.
-                var setupEventHandlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();
-#pragma warning restore CS0618 // Type or member is obsolete
 
                 void reportError(string key, string message)
                 {
                     context.Errors[key] = message;
                 }
 
-                await setupEventHandlers.InvokeAsync((handler, ctx) => handler.Setup(ctx.Properties, reportError), context, logger);
+#pragma warning disable CS0618 // Type or member is obsolete
+                await handlers.InvokeAsync((handler, ctx) => handler.Setup(ctx.Properties, reportError), context, logger);
+#pragma warning restore CS0618 // Type or member is obsolete
 
                 if (context.Errors.Count > 0)
                 {
@@ -262,7 +259,7 @@ namespace OrchardCore.Setup.Services
 
             await (await _shellHost.GetScopeAsync(shellSettings)).UsingAsync(async scope =>
             {
-                var handlers = scope.ServiceProvider.GetServices<ITenantSetupEventHandler>();
+                var handlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();
 
                 await handlers.InvokeAsync((handler) => handler.SucceededAsync(), _logger);
             });
