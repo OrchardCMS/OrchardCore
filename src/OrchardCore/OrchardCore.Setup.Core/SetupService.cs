@@ -121,8 +121,10 @@ namespace OrchardCore.Setup.Services
 
         private async Task<string> SetupInternalAsync(SetupContext context)
         {
-            _logger.LogInformation("Running setup for tenant '{TenantName}'.", context.ShellSettings?.Name);
-
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Running setup for tenant '{TenantName}'.", context.ShellSettings?.Name);
+            }
             // Features to enable for Setup.
             string[] coreFeatures =
             {
