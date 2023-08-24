@@ -8,10 +8,10 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Utilities;
 using OrchardCore.ContentTypes.Events;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.Modules;
-using OrchardCore.ContentManagement.Utilities;
 
 namespace OrchardCore.ContentTypes.Services
 {

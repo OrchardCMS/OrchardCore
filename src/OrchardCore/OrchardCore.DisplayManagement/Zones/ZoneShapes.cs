@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
+using OrchardCore.ContentManagement.Utilities;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.ViewModels;
 using OrchardCore.Modules;
-using OrchardCore.ContentManagement.Utilities;
 
 namespace OrchardCore.DisplayManagement.Zones
 {

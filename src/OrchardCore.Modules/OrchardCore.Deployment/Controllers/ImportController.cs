@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
+using OrchardCore.ContentManagement.Utilities;
 using OrchardCore.Deployment.Services;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.ContentManagement.Utilities;
 
 namespace OrchardCore.Deployment.Controllers
 {

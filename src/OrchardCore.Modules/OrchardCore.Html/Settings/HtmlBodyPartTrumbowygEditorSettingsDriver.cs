@@ -1,12 +1,12 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Utilities;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.ViewModels;
-using OrchardCore.ContentManagement.Utilities;
 
 namespace OrchardCore.Html.Settings
 {

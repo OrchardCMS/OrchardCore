@@ -7,8 +7,8 @@ using Fluid;
 using Fluid.Ast;
 using Fluid.Values;
 using Newtonsoft.Json;
-using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.ContentManagement.Utilities;
+using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {

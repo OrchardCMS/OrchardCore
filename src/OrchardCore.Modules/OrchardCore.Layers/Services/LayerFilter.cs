@@ -8,6 +8,7 @@ using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Utilities;
 using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -16,7 +17,6 @@ using OrchardCore.Documents;
 using OrchardCore.Layers.Handlers;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.ViewModels;
-using OrchardCore.ContentManagement.Utilities;
 using OrchardCore.Rules;
 
 namespace OrchardCore.Layers.Services

@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.ContentManagement.Utilities;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 {

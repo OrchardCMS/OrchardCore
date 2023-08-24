@@ -3,10 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using OrchardCore.ContentManagement.Utilities;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.ViewModels;
 using OrchardCore.Modules;
-using OrchardCore.ContentManagement.Utilities;
 
 namespace OrchardCore.DisplayManagement.Shapes
 {

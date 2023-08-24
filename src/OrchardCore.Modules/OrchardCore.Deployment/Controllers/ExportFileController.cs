@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
+using OrchardCore.ContentManagement.Utilities;
 using OrchardCore.Deployment.Core.Mvc;
 using OrchardCore.Deployment.Core.Services;
 using OrchardCore.Deployment.Services;
 using OrchardCore.Deployment.Steps;
-using OrchardCore.ContentManagement.Utilities;
 using OrchardCore.Recipes.Models;
 using YesSql;
 
