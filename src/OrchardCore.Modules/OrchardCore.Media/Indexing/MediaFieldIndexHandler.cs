@@ -67,6 +67,7 @@ namespace OrchardCore.Media.Indexing
 
             foreach (var path in field.Paths)
             {
+                // The same file could be added several time to the field.
                 if (!paths.Add(path))
                 {
                     // When a path is already processed, skip it.
