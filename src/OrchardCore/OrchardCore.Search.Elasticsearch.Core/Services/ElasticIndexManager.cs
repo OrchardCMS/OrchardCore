@@ -537,17 +537,16 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                         break;
 
                     case DocumentIndex.Types.DateTime:
-                        if (entry.Value != null)
+
+                        if (entry.Value is DateTimeOffset offsetValue)
                         {
-                            if (entry.Value is DateTimeOffset offsetValue)
-                            {
-                                AddValue(entries, entry.Name, offsetValue);
-                            }
-                            else if (entry.Value is DateTime dateTimeValue)
-                            {
-                                AddValue(entries, entry.Name, dateTimeValue.ToUniversalTime());
-                            }
+                            AddValue(entries, entry.Name, offsetValue);
                         }
+                        else if (entry.Value is DateTime dateTimeValue)
+                        {
+                            AddValue(entries, entry.Name, dateTimeValue.ToUniversalTime());
+                        }
+
                         break;
 
                     case DocumentIndex.Types.Integer:
@@ -592,7 +591,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             return GetIndexPrefix() + "_" + indexName;
         }
 
-        private static void AddValue<T>(Dictionary<string, object> entries, string key, T value)
+        private static void AddValue(Dictionary<string, object> entries, string key, object value)
         {
             if (entries.TryAdd(key, value))
             {
@@ -600,7 +599,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             }
 
             // At this point, we know that a value already exists.
-            if (entries[key] is List<T> list)
+            if (entries[key] is List<object> list)
             {
                 list.Add(value);
 
@@ -610,9 +609,9 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             }
 
             // Convert the existing value to a list of values.
-            var values = new List<T>()
+            var values = new List<object>()
             {
-                (T)entries[key],
+                entries[key],
                 value,
             };
 
