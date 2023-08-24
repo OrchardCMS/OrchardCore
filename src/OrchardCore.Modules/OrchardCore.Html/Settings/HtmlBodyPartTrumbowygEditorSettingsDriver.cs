@@ -6,7 +6,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.ViewModels;
-using OrchardCore.Mvc.Utilities;
+using OrchardCore.ContentManagement.Utilities;
 
 namespace OrchardCore.Html.Settings
 {

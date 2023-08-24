@@ -1,5 +1,5 @@
 @model OrchardCore.ContentFields.ViewModels.EditTextFieldViewModel
-@using OrchardCore.Mvc.Utilities
+@using OrchardCore.ContentManagement.Utilities;
 @{
     var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
     var monacoSettings = Model.PartFieldDefinition.GetSettings<TextFieldMonacoEditorSettings>();

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.Mvc.Utilities;
+using OrchardCore.ContentManagement.Utilities;
 
 namespace OrchardCore.ContentTypes.ViewModels
 {

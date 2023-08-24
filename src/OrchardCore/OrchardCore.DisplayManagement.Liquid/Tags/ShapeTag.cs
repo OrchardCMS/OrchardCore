@@ -7,7 +7,7 @@ using Fluid;
 using Fluid.Ast;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Liquid;
-using OrchardCore.Mvc.Utilities;
+using OrchardCore.ContentManagement.Utilities;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {

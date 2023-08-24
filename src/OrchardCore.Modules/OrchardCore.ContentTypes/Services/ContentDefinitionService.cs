@@ -11,7 +11,7 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentTypes.Events;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Utilities;
+using OrchardCore.ContentManagement.Utilities;
 
 namespace OrchardCore.ContentTypes.Services
 {

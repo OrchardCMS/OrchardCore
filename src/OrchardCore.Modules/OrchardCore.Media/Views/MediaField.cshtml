@@ -1,6 +1,6 @@
 @model OrchardCore.Media.ViewModels.DisplayMediaFieldViewModel
 @using OrchardCore.ContentManagement.Metadata.Models
-@using OrchardCore.Mvc.Utilities
+@using OrchardCore.ContentManagement.Utilities;
 @{
     var paths = Model.Paths ?? Array.Empty<string>();
     var mediaTexts = Model.Field?.MediaTexts ?? Array.Empty<string>();

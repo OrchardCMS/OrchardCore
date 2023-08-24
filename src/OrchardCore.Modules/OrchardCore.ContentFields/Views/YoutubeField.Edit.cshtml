@@ -1,5 +1,5 @@
 @model OrchardCore.ContentFields.ViewModels.EditYoutubeFieldViewModel
-@using OrchardCore.Mvc.Utilities
+@using OrchardCore.ContentManagement.Utilities;
 @{
     var settings = Model.PartFieldDefinition.GetSettings<YoutubeFieldSettings>();
     var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";

@@ -12,7 +12,7 @@ using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Remote.ViewModels;
 using OrchardCore.Deployment.Services;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Mvc.Utilities;
+using OrchardCore.ContentManagement.Utilities;
 using OrchardCore.Recipes.Models;
 using YesSql;
 

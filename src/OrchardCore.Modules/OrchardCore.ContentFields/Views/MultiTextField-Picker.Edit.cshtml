@@ -1,6 +1,6 @@
 @model OrchardCore.ContentFields.ViewModels.EditMultiTextFieldViewModel
 @using Newtonsoft.Json
-@using OrchardCore.Mvc.Utilities
+@using OrchardCore.ContentManagement.Utilities;
 @{
     var settings = Model.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
     var selectedValues = new List<object>();

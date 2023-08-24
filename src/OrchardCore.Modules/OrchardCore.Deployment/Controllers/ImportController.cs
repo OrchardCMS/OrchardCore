@@ -11,7 +11,7 @@ using OrchardCore.Admin;
 using OrchardCore.Deployment.Services;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Mvc.Utilities;
+using OrchardCore.ContentManagement.Utilities;
 
 namespace OrchardCore.Deployment.Controllers
 {

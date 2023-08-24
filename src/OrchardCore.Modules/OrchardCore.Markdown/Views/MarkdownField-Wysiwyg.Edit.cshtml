@@ -2,7 +2,7 @@
 @using OrchardCore.ContentLocalization
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.Markdown.Settings
-@using OrchardCore.Mvc.Utilities
+@using OrchardCore.ContentManagement.Utilities;
 @{
     var settings = Model.PartFieldDefinition.GetSettings<MarkdownFieldSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);

@@ -1,5 +1,5 @@
 @model OrchardCore.ContentFields.ViewModels.EditDateFieldViewModel
-@using OrchardCore.Mvc.Utilities
+@using OrchardCore.ContentManagement.Utilities;
 @{
     var settings = Model.PartFieldDefinition.GetSettings<DateFieldSettings>();
     var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";

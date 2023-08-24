@@ -9,7 +9,7 @@ using OrchardCore.Deployment.Core.Mvc;
 using OrchardCore.Deployment.Core.Services;
 using OrchardCore.Deployment.Services;
 using OrchardCore.Deployment.Steps;
-using OrchardCore.Mvc.Utilities;
+using OrchardCore.ContentManagement.Utilities;
 using OrchardCore.Recipes.Models;
 using YesSql;
 
