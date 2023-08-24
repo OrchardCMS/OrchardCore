@@ -144,6 +144,7 @@ namespace OrchardCore.Setup.Services
             {
                 recipeEnvironmentFeature.Properties[SetupConstants.AdminUsername] = adminUsername;
             }
+
             if (context.Properties.TryGetValue(SetupConstants.SiteName, out var siteName))
             {
                 recipeEnvironmentFeature.Properties[SetupConstants.SiteName] = siteName;
@@ -225,19 +226,10 @@ namespace OrchardCore.Setup.Services
             // Reloading the shell context as the recipe has probably updated its features.
             await (await _shellHost.GetScopeAsync(shellSettings)).UsingAsync(async scope =>
             {
-                var logger = scope.ServiceProvider.GetRequiredService<ILogger<SetupService>>();
                 var handlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger<SetupService>>();
 
                 await handlers.InvokeAsync((handler, ctx) => handler.SetupAsync(ctx), context, _logger);
-
-                void reportError(string key, string message)
-                {
-                    context.Errors[key] = message;
-                }
-
-#pragma warning disable CS0618 // Type or member is obsolete
-                await handlers.InvokeAsync((handler, ctx) => handler.Setup(ctx.Properties, reportError), context, logger);
-#pragma warning restore CS0618 // Type or member is obsolete
 
                 if (context.Errors.Count > 0)
                 {
