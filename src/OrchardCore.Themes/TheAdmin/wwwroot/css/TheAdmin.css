@@ -27744,8 +27744,6 @@ html[data-theme=default] .ta-navbar-top .btn.nav-link, html[data-theme=darkmode]
   }
 }
 html[data-theme=default] .ta-navbar-brand {
-  overflow: hidden;
-  max-width: 259px;
   white-space: nowrap;
   transition: width 0.2s ease-in-out;
 }
@@ -57164,8 +57162,6 @@ html[data-theme=darkmode] .ta-navbar-top .btn.nav-link, html[data-theme=darkmode
   }
 }
 html[data-theme=darkmode] .ta-navbar-brand {
-  overflow: hidden;
-  max-width: 259px;
   white-space: nowrap;
   transition: width 0.2s ease-in-out;
 }

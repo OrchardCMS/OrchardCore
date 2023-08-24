@@ -65,8 +65,6 @@ body:not(.left-sidebar-compact) {
 
 .ta-navbar-brand {
     @extend .navbar-brand;
-    overflow: hidden;
-    max-width: 259px;
     padding: 0 5px;
     white-space: nowrap;
     transition: width 0.2s ease-in-out;
