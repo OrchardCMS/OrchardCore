@@ -82,7 +82,7 @@ namespace OrchardCore.Secrets.Services
                 throw new ArgumentException($"The type must implement '{nameof(Secret)}'.");
             }
 
-            // TODO this has to find the binding first, to know which store it is in.
+            // This has to find the binding first, to know which store it is in.
             var bindings = await GetSecretBindingsAsync();
             var binding = bindings[key];
             if (binding is null)

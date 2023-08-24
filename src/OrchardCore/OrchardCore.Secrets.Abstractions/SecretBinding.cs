@@ -1,5 +1,3 @@
-using Newtonsoft.Json;
-
 namespace OrchardCore.Secrets
 {
     public class SecretBinding
