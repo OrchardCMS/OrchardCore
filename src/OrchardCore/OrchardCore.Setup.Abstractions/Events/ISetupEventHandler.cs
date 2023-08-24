@@ -8,7 +8,8 @@ namespace OrchardCore.Setup.Events;
 public interface ISetupEventHandler
 {
     [Obsolete($"This method is obsolete and will be removed in future releases. Please use '{nameof(SetupAsync)}' instead.", false)]
-    Task Setup(IDictionary<string, object> properties, Action<string, string> reportError);
+    Task Setup(IDictionary<string, object> properties, Action<string, string> reportError)
+        => Task.CompletedTask;
 
     /// <summary>
     /// Called during the process of setting up a new tenant.

@@ -92,10 +92,6 @@ namespace OrchardCore.Setup.Services
             var initialState = context.ShellSettings.State;
             try
             {
-                // Set the shell state to 'Initializing' to guarantee that any subsequent HTTP requests
-                // will result in a 'Service Unavailable' response while the tenant setup is in progress.
-                context.ShellSettings.AsInitializing();
-
                 var executionId = await SetupInternalAsync(context);
 
                 if (context.Errors.Count > 0)
@@ -106,11 +102,8 @@ namespace OrchardCore.Setup.Services
 
                 return executionId;
             }
-            catch (Exception e)
+            catch
             {
-                _logger.LogError(e, "An error occurred while setting up the tenant.");
-                context.Errors.Add(String.Empty, S["An error occurred while setting up the tenants: {0}", e.Message]);
-
                 context.ShellSettings.State = initialState;
                 await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false);
 
@@ -135,6 +128,9 @@ namespace OrchardCore.Setup.Services
             };
 
             context.EnabledFeatures = coreFeatures.Union(context.EnabledFeatures ?? Enumerable.Empty<string>()).Distinct().ToList();
+
+            // Set shell state to "Initializing" so that subsequent HTTP requests are responded to with "Service Unavailable" while Orchard is setting up.
+            context.ShellSettings.AsInitializing();
 
             // Due to database collation we normalize the userId to lower invariant.
             // During setup there are no users so we do not need to check unicity.
