@@ -445,8 +445,8 @@ namespace OrchardCore.Tenants.Controllers
 
             var executionId = await _setupService.SetupAsync(setupContext);
 
-            // Check if a component in the Setup failed
-            if (setupContext.Errors.Any())
+            // Check if a component in the Setup failed.
+            if (setupContext.Errors.Count > 0)
             {
                 foreach (var error in setupContext.Errors)
                 {

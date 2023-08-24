@@ -214,8 +214,8 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
             var executionId = await SetupService.SetupAsync(setupContext);
 
-            // Check if a component in the Setup failed
-            if (setupContext.Errors.Any())
+            // Check if a component in the Setup failed.
+            if (setupContext.Errors.Count > 0)
             {
                 var updater = _updateModelAccessor.ModelUpdater;
 

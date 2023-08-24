@@ -176,7 +176,7 @@ namespace OrchardCore.Setup.Controllers
             var executionId = await _setupService.SetupAsync(setupContext);
 
             // Check if any Setup component failed (e.g., database connection validation)
-            if (setupContext.Errors.Any())
+            if (setupContext.Errors.Count > 0)
             {
                 foreach (var error in setupContext.Errors)
                 {
