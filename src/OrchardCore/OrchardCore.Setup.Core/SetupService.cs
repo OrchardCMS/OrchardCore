@@ -104,6 +104,8 @@ namespace OrchardCore.Setup.Services
                     context.ShellSettings.State = initialState;
                     await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false);
                 }
+
+                return executionId;
             }
             catch (Exception e)
             {
@@ -112,9 +114,9 @@ namespace OrchardCore.Setup.Services
 
                 context.ShellSettings.State = initialState;
                 await _shellHost.ReloadShellContextAsync(context.ShellSettings, eventSource: false);
-            }
 
-            return executionId;
+                throw;
+            }
         }
 
         private async Task<string> SetupInternalAsync(SetupContext context)
@@ -134,11 +136,11 @@ namespace OrchardCore.Setup.Services
 
             // Due to database collation we normalize the userId to lower invariant.
             // During setup there are no users so we do not need to check unicity.
-            var adminUserId = _setupUserIdGenerator.GenerateUniqueId();
+            var adminUserId = _setupUserIdGenerator.GenerateUniqueId().ToLowerInvariant();
             context.Properties[SetupConstants.AdminUserId] = adminUserId;
 
             var recipeEnvironmentFeature = new RecipeEnvironmentFeature();
-            recipeEnvironmentFeature.Properties[SetupConstants.AdminUserId] = adminUserId.ToLowerInvariant();
+            recipeEnvironmentFeature.Properties[SetupConstants.AdminUserId] = adminUserId;
 
             if (context.Properties.TryGetValue(SetupConstants.AdminUsername, out var adminUsername))
             {
@@ -222,11 +224,6 @@ namespace OrchardCore.Setup.Services
                 await recipeExecutor.ExecuteAsync(executionId, context.Recipe, context.Properties, _applicationLifetime.ApplicationStopping);
             }
 
-            if (context.Errors.Count > 0)
-            {
-                return executionId;
-            }
-
             // Reloading the shell context as the recipe has probably updated its features.
             await (await _shellHost.GetScopeAsync(shellSettings)).UsingAsync(async scope =>
             {
@@ -253,18 +250,20 @@ namespace OrchardCore.Setup.Services
                 }
             });
 
-            if (context.Errors.Count == 0)
+            if (context.Errors.Count > 0)
             {
-                // Update the shell state.
-                await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
-
-                await (await _shellHost.GetScopeAsync(shellSettings)).UsingAsync(async scope =>
-                {
-                    var handlers = scope.ServiceProvider.GetServices<ITenantSetupEventHandler>();
-
-                    await handlers.InvokeAsync((handler) => handler.SucceededAsync(), _logger);
-                });
+                return executionId;
             }
+
+            // Update the shell state.
+            await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
+
+            await (await _shellHost.GetScopeAsync(shellSettings)).UsingAsync(async scope =>
+            {
+                var handlers = scope.ServiceProvider.GetServices<ITenantSetupEventHandler>();
+
+                await handlers.InvokeAsync((handler) => handler.SucceededAsync(), _logger);
+            });
 
             return executionId;
         }
