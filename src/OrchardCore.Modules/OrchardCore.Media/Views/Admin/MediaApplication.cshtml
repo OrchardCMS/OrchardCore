@@ -1,3 +1,8 @@
+@using Microsoft.Extensions.Options
+@using OrchardCore.Media
+
+@inject IOptions<MediaOptions> MediaOptions
+
 @{
     Layout = null;
 }
@@ -119,6 +124,9 @@
 <input type="hidden" id="deleteMediaListUrl" value="@Url.Action("DeleteMediaList", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="moveMediaListUrl" value="@Url.Action("MoveMediaList", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="uploadFiles" value="@Url.Action("Upload", "Admin", new { area = "OrchardCore.Media" })" />
+
+@* Chunked file upload settings *@
+<input type="hidden" id="maxUploadChunkSize" value="@MediaOptions.Value.MaxUploadChunkSize" />
 
 @*Localizable Strings shared*@
 <input type="hidden" id="deleteFolder" data-title="@T["Delete media folder"]" data-message="@T["Are you sure you want to delete this folder?"]" />

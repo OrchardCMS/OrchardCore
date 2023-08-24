@@ -355,7 +355,13 @@ The following configuration values are used by default and can be customized:
         ],
 
       // The Content Security Policy to apply to assets served from the media library.
-      "ContentSecurityPolicy" : "default-src 'self'; style-src 'unsafe-inline'"
+      "ContentSecurityPolicy" : "default-src 'self'; style-src 'unsafe-inline'",
+
+      // The maximum chunk size when uploading files in bytes. If 0, no chunked upload is used. This is useful to work around request size limitations of a hosting environment.
+      "MaxUploadChunkSize": 104857600,
+
+      // The lifetime of temporary files created during upload. Defaults to 1 hour.
+      "TemporaryFileLifetime": "01:00:00"
     }
 ```
 

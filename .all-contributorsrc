@@ -2744,6 +2744,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "dministro",
+      "name": "József Horváth",
+      "avatar_url": "https://avatars.githubusercontent.com/u/15349881?v=4",
+      "profile": "https://github.com/dministro",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true

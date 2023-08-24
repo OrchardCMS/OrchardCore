@@ -1,4 +1,4 @@
-function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaItemUrl, allowMultiple, allowMediaText, allowAnchors, tempUploadFolder) {
+function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaItemUrl, allowMultiple, allowMediaText, allowAnchors, tempUploadFolder, maxUploadChunkSize) {
 
     var target = $(document.getElementById($(el).data('for')));
     var initialPaths = target.data("init");
@@ -129,68 +129,83 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
 
             var selector = '#' + idOfUploadButton;
             var editorId = mediaFieldEditor.attr('id');
+            var chunkedFileUploadId = crypto.randomUUID();
 
-            $(selector).fileupload({
-                limitConcurrentUploads: 20,
-                dropZone: $('#' + editorId),
-                dataType: 'json',
-                url: uploadAction,
-                add: function (e, data) {
-                    var count = data.files.length;
-                    var i;
-                    for (i = 0; i < count; i++) {
-                        data.files[i].uploadName =
-                            self.getUniqueId() + data.files[i].name;
-                        data.files[i].attachedFileName = data.files[i].name;
-                    }
-                    data.submit();
-                },
-                formData: function () {
-                    var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
-
-                    return [
-                        { name: 'path', value: tempUploadFolder },
-                        { name: '__RequestVerificationToken', value: antiForgeryToken }
-                    ];
-                },
-                done: function (e, data) {
-                    var newMediaItems = [];
-                    var errormsg = "";
-                    
-                    if (data.result.files.length > 0) {
-                        for (var i = 0; i < data.result.files.length; i++) {
-                            data.result.files[i].isNew = true;
-                            //if error is defined probably the file type is not allowed
-                            if (data.result.files[i].error === undefined || data.result.files[i].error === null) {
-                                data.result.files[i].attachedFileName = data.files[i].attachedFileName;
-                                newMediaItems.push(data.result.files[i]);
-                            }
-                            else
-                                errormsg += data.result.files[i].error + "\n";
+            $(selector)
+                .fileupload({
+                    limitConcurrentUploads: 20,
+                    dropZone: $('#' + editorId),
+                    dataType: 'json',
+                    url: uploadAction,
+                    maxChunkSize: maxUploadChunkSize,
+                    add: function (e, data) {
+                        var count = data.files.length;
+                        var i;
+                        for (i = 0; i < count; i++) {
+                            data.files[i].uploadName =
+                                self.getUniqueId() + data.files[i].name;
+                            data.files[i].attachedFileName = data.files[i].name;
                         }
-                    }
+                        data.submit();
+                    },
+                    formData: function () {
+                        var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
+
+                        return [
+                            { name: 'path', value: tempUploadFolder },
+                            { name: '__RequestVerificationToken', value: antiForgeryToken },
+                            { name: '__chunkedFileUploadId', value: chunkedFileUploadId },
+                        ];
+                    },
+                    done: function (e, data) {
+                        var newMediaItems = [];
+                        var errormsg = "";
                     
-                    if (errormsg !== "") {
-                        alert(errormsg);
-                        return;
+                        if (data.result.files.length > 0) {
+                            for (var i = 0; i < data.result.files.length; i++) {
+                                data.result.files[i].isNew = true;
+                                //if error is defined probably the file type is not allowed
+                                if (data.result.files[i].error === undefined || data.result.files[i].error === null) {
+                                    data.result.files[i].attachedFileName = data.files[i].attachedFileName;
+                                    newMediaItems.push(data.result.files[i]);
+                                }
+                                else
+                                    errormsg += data.result.files[i].error + "\n";
+                            }
+                        }
+                    
+                        if (errormsg !== "") {
+                            alert(errormsg);
+                            return;
+                        }
+                        console.log(newMediaItems);
+                        if (newMediaItems.length > 1 && allowMultiple === false) {
+                            alert($('#onlyOneItemMessage').val());
+                            mediaFieldApp.mediaItems.push(newMediaItems[0]);
+                            mediaFieldApp.initialized = true;
+                        } else {
+                            mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(newMediaItems);
+                            mediaFieldApp.initialized = true;
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log('Error on upload.');
+                        console.log(jqXHR);
+                        console.log(textStatus);
+                        console.log(errorThrown);
                     }
-                    console.log(newMediaItems);
-                    if (newMediaItems.length > 1 && allowMultiple === false) {
-                        alert($('#onlyOneItemMessage').val());
-                        mediaFieldApp.mediaItems.push(newMediaItems[0]);
-                        mediaFieldApp.initialized = true;
-                    } else {
-                        mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(newMediaItems);
-                        mediaFieldApp.initialized = true;
-                    }
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log('error on upload!!');
-                    console.log(jqXHR);
-                    console.log(textStatus);
-                    console.log(errorThrown);
-                }
-            });
+                })
+                .on('fileuploadchunkbeforesend', (e, options) => {
+                    let file = options.files[0];
+                    // Here we replace the blob with a File object to ensure the file name and others are preserved for the backend.
+                    options.blob = new File(
+                        [options.blob],
+                        file.name,
+                        {
+                            type: file.type,
+                            lastModified: file.lastModified,
+                        });
+                });
         },
         methods: {
             selectMedia: function (media) {
