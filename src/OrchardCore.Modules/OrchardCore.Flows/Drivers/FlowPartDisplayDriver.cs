@@ -53,7 +53,7 @@ namespace OrchardCore.Flows.Drivers
                 m.FlowPart = flowPart;
                 m.BuildPartDisplayContext = context;
             })
-            .Location("Detail", "Content:5");
+            .Location("Detail", "Content");
         }
 
         public override IDisplayResult Edit(FlowPart flowPart, BuildPartEditorContext context)

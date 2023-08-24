@@ -25,9 +25,9 @@ namespace OrchardCore.Liquid.Drivers
         {
             return Combine(
                 Initialize<LiquidPartViewModel>("LiquidPart", m => BuildViewModel(m, liquidPart))
-                    .Location("Detail", "Content:10"),
+                    .Location("Detail", "Content"),
                 Initialize<LiquidPartViewModel>("LiquidPart_Summary", m => BuildViewModel(m, liquidPart))
-                    .Location("Summary", "Content:10")
+                    .Location("Summary", "Content")
             );
         }
 
