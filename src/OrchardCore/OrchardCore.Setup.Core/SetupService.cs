@@ -89,7 +89,6 @@ namespace OrchardCore.Setup.Services
         /// <inheritdoc />
         public async Task<string> SetupAsync(SetupContext context)
         {
-            string executionId = null;
             var initialState = context.ShellSettings.State;
             try
             {
@@ -97,7 +96,7 @@ namespace OrchardCore.Setup.Services
                 // will result in a 'Service Unavailable' response while the tenant setup is in progress.
                 context.ShellSettings.AsInitializing();
 
-                executionId = await SetupInternalAsync(context);
+                var executionId = await SetupInternalAsync(context);
 
                 if (context.Errors.Count > 0)
                 {
@@ -125,6 +124,7 @@ namespace OrchardCore.Setup.Services
             {
                 _logger.LogInformation("Running setup for tenant '{TenantName}'.", context.ShellSettings?.Name);
             }
+
             // Features to enable for Setup.
             string[] coreFeatures =
             {

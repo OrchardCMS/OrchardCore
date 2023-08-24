@@ -74,7 +74,7 @@ namespace OrchardCore.Settings
                 });
             });
 
-            services.AddScoped<ISetupEventHandler, SettingsSetupEventHandler>();
+            services.AddScoped<ISetupEventHandler, GeneralSetupEventHandler>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IAuthorizationHandler, SuperUserHandler>();
 
