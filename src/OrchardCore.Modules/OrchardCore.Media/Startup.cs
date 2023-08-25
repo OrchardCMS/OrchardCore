@@ -168,13 +168,6 @@ namespace OrchardCore.Media
             services.AddDataMigration<Migrations>();
             services.AddScoped<IContentFieldIndexHandler, MediaFieldIndexHandler>();
             services.AddMediaFileTextProvider<PdfMediaFileTextProvider>(".pdf");
-            services.AddMediaFileTextProvider<TxtMediaFileTextProvider>(".txt");
-            services.AddMediaFileTextProvider<AutoDocumentMediaFileTextProvider>(".doc");
-            services.AddMediaFileTextProvider<AutoDocumentMediaFileTextProvider>(".docx");
-            services.AddMediaFileTextProvider<AutoDocumentMediaFileTextProvider>(".ppt");
-            services.AddMediaFileTextProvider<AutoDocumentMediaFileTextProvider>(".pptx");
-            services.AddMediaFileTextProvider<AutoDocumentMediaFileTextProvider>(".rtf");
-
             services.AddRecipeExecutionStep<MediaStep>();
 
             // MIME types
@@ -394,6 +387,20 @@ namespace OrchardCore.Media
             services.AddTransient<IDeploymentSource, AllMediaProfilesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllMediaProfilesDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllMediaProfilesDeploymentStepDriver>();
+        }
+    }
+
+    [Feature("OrchardCore.Media.Indexer")]
+    public class MediaIndexerStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddMediaFileTextProvider<TxtMediaFileTextProvider>(".txt");
+            services.AddMediaFileTextProvider<AutoDocumentMediaFileTextProvider>(".doc");
+            services.AddMediaFileTextProvider<AutoDocumentMediaFileTextProvider>(".docx");
+            services.AddMediaFileTextProvider<AutoDocumentMediaFileTextProvider>(".rtf");
+            services.AddMediaFileTextProvider<AutoDocumentMediaFileTextProvider>(".ppt");
+            services.AddMediaFileTextProvider<AutoDocumentMediaFileTextProvider>(".pptx");
         }
     }
 
