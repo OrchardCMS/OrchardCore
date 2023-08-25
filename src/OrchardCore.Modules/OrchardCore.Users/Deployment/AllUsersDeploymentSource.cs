@@ -26,37 +26,30 @@ namespace OrchardCore.Users.Deployment
                 return;
             }
 
-            // todo: Get all users
+            // Get all users
             var allUsers = await _session.Query<User>().ListAsync(); ;
             var users = new JArray();
             var tasks = new List<Task>();
 
             foreach (var user in allUsers)
             {
-                /*
-                var currentRole = (Role)await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(role.RoleName));
-
-                if (currentRole != null)
-                {
-                */
-                    users.Add(JObject.FromObject(
-                        new UsersStepUserModel
-                        {
-                            UserName = user.UserName,
-                            UserId = user.UserId,
-                            Email = user.Email,
-                            Id = user.Id,
-                            EmailConfirmed = user.EmailConfirmed,
-                            PasswordHash = user.PasswordHash,
-                            IsEnabled = user.IsEnabled,
-                            NormalizedEmail = user.NormalizedEmail,
-                            NormalizedUserName = user.NormalizedUserName,
-                            SecurityStamp = user.SecurityStamp,
-                            ResetToken = user.ResetToken
-                            //Permissions = currentRole.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue).ToArray()
-                        }));
-
-                //}
+                // TODO: check if user has permission to export users
+                users.Add(JObject.FromObject(
+                    new UsersStepUserModel
+                    {
+                        UserName = user.UserName,
+                        UserId = user.UserId,
+                        Email = user.Email,
+                        Id = user.Id,
+                        EmailConfirmed = user.EmailConfirmed,
+                        PasswordHash = user.PasswordHash,
+                        IsEnabled = user.IsEnabled,
+                        NormalizedEmail = user.NormalizedEmail,
+                        NormalizedUserName = user.NormalizedUserName,
+                        SecurityStamp = user.SecurityStamp,
+                        ResetToken = user.ResetToken
+                        //Permissions = currentRole.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue).ToArray()
+                    }));
             }
 
             result.Steps.Add(new JObject(
