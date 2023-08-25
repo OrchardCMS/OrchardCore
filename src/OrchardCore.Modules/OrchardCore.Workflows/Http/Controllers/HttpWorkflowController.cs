@@ -72,7 +72,7 @@ namespace OrchardCore.Workflows.Http.Controllers
 
             var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
 
-            if (workflowType == null)
+            if (workflowType is null)
             {
                 return NotFound();
             }
@@ -95,7 +95,7 @@ namespace OrchardCore.Workflows.Http.Controllers
 
             var secretBinding = secretBindings[secretName];
             var secret = await _secretService.GetSecretAsync(secretName);
-            if (secret == null)
+            if (secret is null)
             {
                 return NotFound();
             }
@@ -107,7 +107,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             await _secretCoordinator.RemoveSecretAsync(secretName, secretBinding.Store);
             await _secretCoordinator.UpdateSecretAsync(secretName, secretBinding, secret);
 
-            return Json(new { workflowTypeId = workflowTypeId, activityId = activityId });
+            return Json(new { workflowTypeId, activityId });
         }
 
         [HttpPost]
@@ -121,6 +121,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             }
 
             var secret = _secretFactories.FirstOrDefault(x => x.Name == typeof(HttpRequestEventSecret).Name)?.Create() as HttpRequestEventSecret;
+
             secret.Id = Guid.NewGuid().ToString("n");
             secret.Name = secretName;
             secret.WorkflowTypeId = workflowTypeId;
@@ -130,7 +131,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             // When creating the first writeable store is used.
             var store = _secretCoordinator.FirstOrDefault(x => !x.IsReadOnly);
 
-            if (store == null)
+            if (store is null)
             {
                 return BadRequest();
             }
@@ -139,7 +140,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             {
                  Store = store.Name,
                  Description = secretName,
-                 Type = typeof(HttpRequestEventSecret).Name
+                 Type = typeof(HttpRequestEventSecret).Name,
             };
 
             await _secretCoordinator.RemoveSecretAsync(secretName, secretBinding.Store);
@@ -161,7 +162,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             // Get the workflow type.
             var workflowType = await _workflowTypeStore.GetAsync(payload.WorkflowId);
 
-            if (workflowType == null)
+            if (workflowType is null)
             {
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
@@ -184,7 +185,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             // Get the activity record using the activity ID provided by the token.
             var startActivity = workflowType.Activities.FirstOrDefault(x => x.ActivityId == payload.ActivityId);
 
-            if (startActivity == null)
+            if (startActivity is null)
             {
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
@@ -197,7 +198,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             // Instantiate and bind an actual HttpRequestEvent object to check its settings.
             var httpRequestActivity = _activityLibrary.InstantiateActivity<HttpRequestEvent>(startActivity);
 
-            if (httpRequestActivity == null)
+            if (httpRequestActivity is null)
             {
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
@@ -254,7 +255,7 @@ namespace OrchardCore.Workflows.Http.Controllers
                 {
                     var blockingActivity = workflow.BlockingActivities.FirstOrDefault(x => x.ActivityId == startActivity.ActivityId);
 
-                    if (blockingActivity != null)
+                    if (blockingActivity is not null)
                     {
                         if (_logger.IsEnabled(LogLevel.Debug))
                         {
@@ -307,7 +308,7 @@ namespace OrchardCore.Workflows.Http.Controllers
                 var workflow = await _workflowStore.GetAsync(payload.WorkflowId);
                 var signalActivities = workflow?.BlockingActivities.Where(x => x.Name == SignalEvent.EventName).ToList();
 
-                if (signalActivities == null)
+                if (signalActivities is null)
                 {
                     return NotFound();
                 }
@@ -322,8 +323,8 @@ namespace OrchardCore.Workflows.Http.Controllers
                     workflow = workflow.IsAtomic ? await _workflowStore.GetAsync(workflow.WorkflowId) : workflow;
                     if (workflow != null)
                     {
-                        // The workflow could be blocking on multiple Signal activities, but only the activity with the provided signal name
-                        // will be executed as SignalEvent checks for the provided "Signal" input.
+                        // The workflow could be blocking on multiple Signal activities, but only the activity with the
+                        // provided signal name will be executed as SignalEvent checks for the provided "Signal" input.
                         signalActivities = workflow.BlockingActivities.Where(x => x.Name == SignalEvent.EventName).ToList();
                         foreach (var signalActivity in signalActivities)
                         {

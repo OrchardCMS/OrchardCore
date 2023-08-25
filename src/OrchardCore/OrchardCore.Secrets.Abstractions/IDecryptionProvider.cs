@@ -1,9 +1,8 @@
 using System.Threading.Tasks;
 
-namespace OrchardCore.Secrets
+namespace OrchardCore.Secrets;
+
+public interface IDecryptionProvider
 {
-    public interface IDecryptionProvider
-    {
-        Task<IDecryptor> CreateAsync(string encryptionKey);
-    }
+    Task<IDecryptor> CreateAsync(string encryptionKey);
 }

@@ -1,7 +1,6 @@
-namespace OrchardCore.Secrets
+namespace OrchardCore.Secrets;
+
+public interface IDecryptor
 {
-    public interface IDecryptor
-    {
-        string Decrypt(string protectedData);
-    }
+    string Decrypt(string protectedData);
 }

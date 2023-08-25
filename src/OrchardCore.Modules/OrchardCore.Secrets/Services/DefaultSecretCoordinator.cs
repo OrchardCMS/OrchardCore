@@ -20,6 +20,35 @@ namespace OrchardCore.Secrets.Services
             _secretStores = secretStores;
         }
 
+        public async Task<Secret> GetSecretAsync(string key, Type type)
+        {
+            if (!typeof(Secret).IsAssignableFrom(type))
+            {
+                throw new ArgumentException($"The type must implement '{nameof(Secret)}'.");
+            }
+
+            // This has to find the binding first, to know which store it is in.
+            var bindings = await GetSecretBindingsAsync();
+            var binding = bindings[key];
+            if (binding is null)
+            {
+                return null;
+            }
+
+            var secretStore = _secretStores.FirstOrDefault(s => String.Equals(s.Name, binding.Store, StringComparison.OrdinalIgnoreCase));
+            if (secretStore is null)
+            {
+                return null;
+            }
+
+            var secret = await secretStore.GetSecretAsync(key, type);
+
+            return secret;
+        }
+
+        public async Task<TSecret> GetSecretAsync<TSecret>(string key) where TSecret : Secret, new()
+            => await (GetSecretAsync(key, typeof(TSecret))) as TSecret;
+
         public async Task<IDictionary<string, SecretBinding>> GetSecretBindingsAsync()
         {
             var secretsDocument = await _secretBindingsManager.GetSecretBindingsDocumentAsync();
@@ -39,7 +68,7 @@ namespace OrchardCore.Secrets.Services
                 throw new InvalidOperationException("The name contains invalid characters.");
             }
 
-            var secretStore = _secretStores.FirstOrDefault(x => String.Equals(x.Name, secretBinding.Store, StringComparison.OrdinalIgnoreCase));
+            var secretStore = _secretStores.FirstOrDefault(s => String.Equals(s.Name, secretBinding.Store, StringComparison.OrdinalIgnoreCase));
             if (secretStore is not null)
             {
                 await _secretBindingsManager.UpdateSecretBindingAsync(key, secretBinding);
@@ -58,7 +87,7 @@ namespace OrchardCore.Secrets.Services
 
         public async Task RemoveSecretAsync(string key, string store)
         {
-            var secretStore = _secretStores.FirstOrDefault(x => String.Equals(x.Name, store, StringComparison.OrdinalIgnoreCase));
+            var secretStore = _secretStores.FirstOrDefault(s => String.Equals(s.Name, store, StringComparison.OrdinalIgnoreCase));
             if (secretStore is not null)
             {
                 await _secretBindingsManager.RemoveSecretBindingAsync(key);
@@ -73,32 +102,6 @@ namespace OrchardCore.Secrets.Services
             {
                 throw new InvalidOperationException($"The specified store '{store}' was not found.");
             }
-        }
-
-        public async Task<Secret> GetSecretAsync(string key, Type type)
-        {
-            if (!typeof(Secret).IsAssignableFrom(type))
-            {
-                throw new ArgumentException($"The type must implement '{nameof(Secret)}'.");
-            }
-
-            // This has to find the binding first, to know which store it is in.
-            var bindings = await GetSecretBindingsAsync();
-            var binding = bindings[key];
-            if (binding is null)
-            {
-                return null;
-            }
-
-            var secretStore = _secretStores.FirstOrDefault(store => String.Equals(store.Name, binding.Store, StringComparison.OrdinalIgnoreCase));
-            if (secretStore is null)
-            {
-                return null;
-            }
-
-            var secret = await secretStore.GetSecretAsync(key, type);
-
-            return secret;
         }
 
         public IEnumerator<SecretStoreDescriptor> GetEnumerator()

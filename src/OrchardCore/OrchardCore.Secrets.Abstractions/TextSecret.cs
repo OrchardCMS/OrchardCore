@@ -1,7 +1,6 @@
-namespace OrchardCore.Secrets
+namespace OrchardCore.Secrets;
+
+public class TextSecret : Secret
 {
-    public class TextSecret : Secret
-    {
-        public string Text { get; set; }
-    }
+    public string Text { get; set; }
 }
