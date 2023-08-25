@@ -150,12 +150,32 @@ namespace OrchardCore.Modules
                         {
                             try
                             {
+                                // Use the base url, if defined, to override the 'Scheme', 'Host' and 'PathBase'.
                                 _httpContextAccessor.HttpContext.SetBaseUrl((await siteService.GetSiteSettingsAsync()).BaseUrl);
                             }
                             catch (Exception ex) when (!ex.IsFatal())
                             {
                                 _logger.LogError(ex, "Error while getting the base url from the site settings of the tenant '{TenantName}'.", tenant);
                             }
+                        }
+
+                        try
+                        {
+                            if (scheduler.Settings.UsePipeline)
+                            {
+                                if (!scope.ShellContext.HasPipeline())
+                                {
+                                    // Build the shell pipeline to configure endpoint data sources.
+                                    await scope.ShellContext.BuildPipelineAsync();
+                                }
+
+                                // Run the pipeline to make the 'HttpContext' aware of endpoints.
+                                await scope.ShellContext.Pipeline.Invoke(_httpContextAccessor.HttpContext);
+                            }
+                        }
+                        catch (Exception ex) when (!ex.IsFatal())
+                        {
+                            _logger.LogError(ex, "Error while running in the background the pipeline of tenant '{TenantName}'.", tenant);
                         }
 
                         var context = new BackgroundTaskEventContext(taskName, scope);

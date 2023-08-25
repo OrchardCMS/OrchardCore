@@ -1,0 +1,35 @@
+@using OrchardCore.Sms.ViewModels
+
+@model SmsTaskViewModel
+
+<div class="mb-3" asp-validation-class-for="PhoneNumber">
+    <label asp-for="PhoneNumber">@T["Phone Number"]</label>
+    <input type="text" asp-for="PhoneNumber" class="form-control" />
+    <span asp-validation-for="PhoneNumber"></span>
+    <span class="hint">@T["Phone number must include a country code. For example, +1 for United States."]</span>
+</div>
+
+<div class="mb-3" id="body">
+    <label asp-for="Body">@T["Body"]</label>
+    <textarea asp-for="Body" rows="5" class="form-control"></textarea>
+    <span class="hint">@T["The body of the SMS message. With Liquid support."]</span>
+</div>
+
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+<script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
+
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', () => {
+        var bodyEditor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Body)'), {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+    });
+</script>

@@ -32,9 +32,10 @@ public static class ShellContextExtensions
         var urlHost = settings.RequestUrlHosts.FirstOrDefault();
         context.Request.Host = new HostString(urlHost ?? _localhost);
 
+        context.Request.PathBase = PathString.Empty;
         if (!String.IsNullOrWhiteSpace(settings.RequestUrlPrefix))
         {
-            context.Request.PathBase = "/" + settings.RequestUrlPrefix;
+            context.Request.PathBase = $"/{settings.RequestUrlPrefix}";
         }
 
         context.Request.Path = "/";
