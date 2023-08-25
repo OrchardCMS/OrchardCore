@@ -48,9 +48,8 @@ namespace OrchardCore.Markdown.Drivers
         public override IDisplayResult Display(MarkdownBodyPart markdownBodyPart, BuildPartDisplayContext context)
         {
             return Initialize<MarkdownBodyPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, markdownBodyPart, context))
-                .Location("Detail", "Content:10")
-                .Location("Summary", "Content:10")
-                ;
+                .Location("Detail", "Content")
+                .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(MarkdownBodyPart markdownBodyPart, BuildPartEditorContext context)
