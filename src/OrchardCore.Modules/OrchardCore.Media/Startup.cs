@@ -58,7 +58,7 @@ namespace OrchardCore.Media
 {
     public class Startup : StartupBase
     {
-        private const string _imageSharpCacheFolder = "is-cache";
+        private const string ImageSharpCacheFolder = "is-cache";
 
         private readonly AdminOptions _adminOptions;
         private readonly ShellSettings _shellSettings;
@@ -146,7 +146,7 @@ namespace OrchardCore.Media
                 .SetCacheKey<BackwardsCompatibleCacheKey>()
                 .Configure<PhysicalFileSystemCacheOptions>(options =>
                 {
-                    options.CacheFolder = $"{_shellSettings.Name}/{_imageSharpCacheFolder}";
+                    options.CacheFolder = $"{_shellSettings.Name}/{ImageSharpCacheFolder}";
                     options.CacheFolderDepth = 12;
                 })
                 .AddProvider<MediaResizingFileProvider>()
