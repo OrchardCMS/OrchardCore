@@ -3,29 +3,28 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace OrchardCore.Secrets.Services
+namespace OrchardCore.Secrets.Services;
+
+public class DefaultDecryptionProvider : IDecryptionProvider
 {
-    public class DefaultDecryptionProvider : IDecryptionProvider
+    private readonly ISecretService<RsaSecret> _rsaSecretService;
+
+    public DefaultDecryptionProvider(ISecretService<RsaSecret> rsaSecretService) =>
+        _rsaSecretService = rsaSecretService;
+
+    public async Task<IDecryptor> CreateAsync(string protectedData)
     {
-        private readonly ISecretService<RsaSecret> _rsaSecretService;
+        var bytes = Convert.FromBase64String(protectedData);
+        var decoded = Encoding.UTF8.GetString(bytes);
 
-        public DefaultDecryptionProvider(ISecretService<RsaSecret> rsaSecretService) =>
-            _rsaSecretService = rsaSecretService;
+        var descriptor = JsonConvert.DeserializeObject<HybridKeyDescriptor>(decoded);
 
-        public async Task<IDecryptor> CreateAsync(string protectedData)
-        {
-            var bytes = Convert.FromBase64String(protectedData);
-            var decoded = Encoding.UTF8.GetString(bytes);
+        var encryptionSecret = await _rsaSecretService.GetSecretAsync(descriptor.EncryptionSecretName)
+            ?? throw new InvalidOperationException($"{descriptor.EncryptionSecretName} secret not found");
 
-            var descriptor = JsonConvert.DeserializeObject<HybridKeyDescriptor>(decoded);
+        var signingSecret = await _rsaSecretService.GetSecretAsync(descriptor.SigningSecretName)
+            ?? throw new InvalidOperationException("Secret not found " + descriptor.SigningSecretName);
 
-            var encryptionSecret = await _rsaSecretService.GetSecretAsync(descriptor.EncryptionSecretName)
-                ?? throw new InvalidOperationException($"{descriptor.EncryptionSecretName} secret not found");
-
-            var signingSecret = await _rsaSecretService.GetSecretAsync(descriptor.SigningSecretName)
-                ?? throw new InvalidOperationException("Secret not found " + descriptor.SigningSecretName);
-
-            return new DefaultDecryptor(encryptionSecret.PrivateKeyAsBytes(), signingSecret.PublicKeyAsBytes());
-        }
+        return new DefaultDecryptor(encryptionSecret.PrivateKeyAsBytes(), signingSecret.PublicKeyAsBytes());
     }
 }

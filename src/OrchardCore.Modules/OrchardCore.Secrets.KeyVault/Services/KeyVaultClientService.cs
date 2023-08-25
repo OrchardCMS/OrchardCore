@@ -5,56 +5,55 @@ using Azure.Security.KeyVault.Secrets;
 using Microsoft.Extensions.Options;
 using OrchardCore.Secrets.KeyVault.Models;
 
-namespace OrchardCore.Secrets.KeyVault.Services
+namespace OrchardCore.Secrets.KeyVault.Services;
+
+public class KeyVaultClientService
 {
-    public class KeyVaultClientService
+    private readonly SecretClient _secretClient;
+    private readonly string _prefix;
+
+    public KeyVaultClientService(IOptions<SecretsKeyVaultOptions> options)
     {
-        private readonly SecretClient _secretClient;
-        private readonly string _prefix;
+        var keyVaultEndpointUri = new Uri($"https://{options.Value.KeyVaultName}.vault.azure.net");
 
-        public KeyVaultClientService(IOptions<SecretsKeyVaultOptions> options)
+        _secretClient = new SecretClient(
+            keyVaultEndpointUri,
+            new DefaultAzureCredential(new DefaultAzureCredentialOptions { ExcludeVisualStudioCodeCredential = true }));
+
+        _prefix = options.Value.Prefix;
+    }
+
+    public async Task<string> GetSecretAsync(string secretName)
+    {
+        if (!String.IsNullOrEmpty(_prefix))
         {
-            var keyVaultEndpointUri = new Uri($"https://{options.Value.KeyVaultName}.vault.azure.net");
-
-            _secretClient = new SecretClient(
-                keyVaultEndpointUri,
-                new DefaultAzureCredential(new DefaultAzureCredentialOptions { ExcludeVisualStudioCodeCredential = true }));
-
-            _prefix = options.Value.Prefix;
+            secretName = _prefix + secretName;
         }
 
-        public async Task<string> GetSecretAsync(string secretName)
+        var secret = await _secretClient.GetSecretAsync(secretName);
+
+        return secret.Value.Value;
+
+    }
+
+    public async Task SetSecretAsync(string secretName, string secretValue)
+    {
+        if (!String.IsNullOrEmpty(_prefix))
         {
-            if (!String.IsNullOrEmpty(_prefix))
-            {
-                secretName = _prefix + secretName;
-            }
-
-            var secret = await _secretClient.GetSecretAsync(secretName);
-
-            return secret.Value.Value;
-
+            secretName = _prefix + secretName;
         }
 
-        public async Task SetSecretAsync(string secretName, string secretValue)
-        {
-            if (!String.IsNullOrEmpty(_prefix))
-            {
-                secretName = _prefix + secretName;
-            }
+        await _secretClient.SetSecretAsync(secretName, secretValue);
+    }
 
-            await _secretClient.SetSecretAsync(secretName, secretValue);
-        }
+    public async Task RemoveSecretAsync(string secretName)
+    {
+        var operation = await _secretClient.StartDeleteSecretAsync(secretName);
 
-        public async Task RemoveSecretAsync(string secretName)
-        {
-            var operation = await _secretClient.StartDeleteSecretAsync(secretName);
+        // TODO test this. I think we delete secrets on set, so we would need to wait for delete to complete,
+        // before updating it again, perhaps not, we can check this.
 
-            // TODO test this. I think we delete secrets on set, so we would need to wait for delete to complete,
-            // before updating it again, perhaps not, we can check this.
-
-            // You only need to wait for completion if you want to purge or recover the secret.
-            await operation.WaitForCompletionAsync();
-        }
+        // You only need to wait for completion if you want to purge or recover the secret.
+        await operation.WaitForCompletionAsync();
     }
 }

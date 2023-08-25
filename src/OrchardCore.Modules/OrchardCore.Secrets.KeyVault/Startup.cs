@@ -4,15 +4,14 @@ using OrchardCore.Modules;
 using OrchardCore.Secrets.KeyVault.Models;
 using OrchardCore.Secrets.KeyVault.Services;
 
-namespace OrchardCore.Secrets.KeyVault
+namespace OrchardCore.Secrets.KeyVault;
+
+public class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSingleton<KeyVaultClientService>();
-            services.AddSingleton<ISecretStore, KeyVaultSecretStore>();
-            services.AddTransient<IConfigureOptions<SecretsKeyVaultOptions>, KeyVaultOptionsConfiguration>();
-        }
+        services.AddSingleton<KeyVaultClientService>();
+        services.AddSingleton<ISecretStore, KeyVaultSecretStore>();
+        services.AddTransient<IConfigureOptions<SecretsKeyVaultOptions>, KeyVaultOptionsConfiguration>();
     }
 }

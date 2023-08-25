@@ -1,12 +1,11 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Secrets.Deployment
+namespace OrchardCore.Secrets.Deployment;
+
+public class AllSecretsRsaDeploymentStep : DeploymentStep
 {
-    public class AllSecretsRsaDeploymentStep : DeploymentStep
+    public AllSecretsRsaDeploymentStep()
     {
-        public AllSecretsRsaDeploymentStep()
-        {
-            Name = "AllSecretsRsaDeploymentStep";
-        }
+        Name = "AllSecretsRsaDeploymentStep";
     }
 }
