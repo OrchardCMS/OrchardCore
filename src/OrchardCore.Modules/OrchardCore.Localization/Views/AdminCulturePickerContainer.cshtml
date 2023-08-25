@@ -8,17 +8,18 @@
     var cookiePath = AdminCookieCultureProvider.MakeCookiePath(Context);
     var selectedCultureName = Model.CurrentCulture.Name;
 }
+<li class="nav-item">
+    <select id="oc-admin-culture-picker" class="form-select me-3"
+            data-cookie-name="@cookieName"
+            data-cookie-path="@cookiePath"
+            data-selected-culture="@selectedCultureName">
 
-<select id="oc-admin-culture-picker" class="form-select me-3"
-        data-cookie-name="@cookieName"
-        data-cookie-path="@cookiePath"
-        data-selected-culture="@selectedCultureName">
-
-    @foreach (var culture in Model.SupportedCultures)
-    {
-        <option selected="@(culture.Name == selectedCultureName ? "selected" : null)" value="@culture.Name">@culture.NativeName</option>
-    }
-</select>
+        @foreach (var culture in Model.SupportedCultures)
+        {
+            <option selected="@(culture.Name == selectedCultureName ? "selected" : null)" value="@culture.Name">@culture.NativeName</option>
+        }
+    </select>
+</li>
 
 <script at="Foot" depends-on="jquery">
     $(function () {
