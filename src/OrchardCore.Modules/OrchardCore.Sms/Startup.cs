@@ -33,8 +33,8 @@ public class Startup : StartupBase
 
         if (_hostEnvironment.IsDevelopment())
         {
-            // Add Console provider.
-            services.AddConsoleSmsProvider();
+            // Add Log provider.
+            services.AddLogSmsProvider();
         }
 
         services.AddScoped<IPermissionProvider, SmsPermissionProvider>();

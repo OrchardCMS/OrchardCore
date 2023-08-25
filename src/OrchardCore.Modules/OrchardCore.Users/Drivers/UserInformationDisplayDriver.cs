@@ -1,3 +1,4 @@
+using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -105,7 +106,7 @@ namespace OrchardCore.Users.Drivers
 
                 if (await context.Updater.TryUpdateModelAsync(phoneNumberModel, Prefix))
                 {
-                    if (!_phoneFormatValidator.IsValid(phoneNumberModel.PhoneNumber))
+                    if (!String.IsNullOrEmpty(phoneNumberModel.PhoneNumber) && !_phoneFormatValidator.IsValid(phoneNumberModel.PhoneNumber))
                     {
                         context.Updater.ModelState.AddModelError(Prefix, nameof(phoneNumberModel.PhoneNumber), S["Please provide a valid phone number."]);
                     }
@@ -134,7 +135,7 @@ namespace OrchardCore.Users.Drivers
 
                     if (settings.AllowChangingPhoneNumber && await context.Updater.TryUpdateModelAsync(phoneNumberModel, Prefix))
                     {
-                        if (!_phoneFormatValidator.IsValid(phoneNumberModel.PhoneNumber))
+                        if (!String.IsNullOrEmpty(phoneNumberModel.PhoneNumber) && !_phoneFormatValidator.IsValid(phoneNumberModel.PhoneNumber))
                         {
                             context.Updater.ModelState.AddModelError(Prefix, nameof(phoneNumberModel.PhoneNumber), S["Please provide a valid phone number."]);
                         }
