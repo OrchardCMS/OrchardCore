@@ -250,6 +250,9 @@ namespace OrchardCore.Users
             services.AddTransient<IConfigureOptions<ResourceManagementOptions>, UserOptionsConfiguration>();
 
             services.AddRecipeExecutionStep<UsersStep>();
+
+            services.AddScoped<CustomUserSettingsService>();
+            services.AddRecipeExecutionStep<CustomUserSettingsStep>();
         }
     }
 
@@ -497,6 +500,10 @@ namespace OrchardCore.Users
         {
             services.AddScoped<IDisplayDriver<User>, CustomUserSettingsDisplayDriver>();
             services.AddScoped<IPermissionProvider, CustomUserSettingsPermissions>();
+
+            services.AddTransient<IDeploymentSource, CustomUserSettingsDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<CustomUserSettingsDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, CustomUserSettingsDeploymentStepDriver>();
         }
     }
 
