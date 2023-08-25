@@ -1,10 +1,8 @@
-using System;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Workflows.Http.Services
+namespace OrchardCore.Workflows.Http.Services;
+
+public interface IHttpRequestEventSecretService
 {
-    public interface IHttpRequestEventSecretService
-    {
-        Task<string> GetUrlAsync(string httpRequestEventSecretName);
-    }
+    Task<string> GetUrlAsync(string httpRequestEventSecretName);
 }

@@ -12,12 +12,22 @@ namespace OrchardCore.Secrets.Services
         private readonly SecretBindingsManager _secretBindingsManager;
         private readonly IEnumerable<ISecretStore> _secretStores;
 
+        private readonly IReadOnlyCollection<SecretStoreDescriptor> _secretStoreDescriptors;
+
         public DefaultSecretCoordinator(
             SecretBindingsManager secretBindingsManager,
             IEnumerable<ISecretStore> secretStores)
         {
             _secretBindingsManager = secretBindingsManager;
             _secretStores = secretStores;
+
+            _secretStoreDescriptors = _secretStores.Select(store => new SecretStoreDescriptor
+            {
+                Name = store.Name,
+                IsReadOnly = store.IsReadOnly,
+                DisplayName = store.DisplayName,
+            })
+                .ToArray();
         }
 
         public async Task<Secret> GetSecretAsync(string key, Type type)
@@ -61,6 +71,8 @@ namespace OrchardCore.Secrets.Services
             return secretsDocument.SecretBindings;
         }
 
+        public IReadOnlyCollection<SecretStoreDescriptor> GetSecretStoreDescriptors() => _secretStoreDescriptors;
+
         public async Task UpdateSecretAsync(string key, SecretBinding secretBinding, Secret secret)
         {
             if (!String.Equals(key, key.ToSafeName(), StringComparison.OrdinalIgnoreCase))
@@ -103,18 +115,5 @@ namespace OrchardCore.Secrets.Services
                 throw new InvalidOperationException($"The specified store '{store}' was not found.");
             }
         }
-
-        public IEnumerator<SecretStoreDescriptor> GetEnumerator()
-        {
-            return _secretStores.Select(store => new SecretStoreDescriptor
-            {
-                Name = store.Name,
-                IsReadOnly = store.IsReadOnly,
-                DisplayName = store.DisplayName,
-            })
-                .GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

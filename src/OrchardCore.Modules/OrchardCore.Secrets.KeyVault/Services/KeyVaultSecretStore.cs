@@ -31,7 +31,6 @@ namespace OrchardCore.Secrets.KeyVault.Services
             }
 
             var value = await _keyVaultClientService.GetSecretAsync(key);
-
             if (!String.IsNullOrEmpty(value))
             {
                 return JsonConvert.DeserializeObject(value, type) as Secret;

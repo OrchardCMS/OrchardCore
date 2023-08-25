@@ -120,7 +120,7 @@ namespace OrchardCore.Workflows.Http.Controllers
                 return BadRequest();
             }
 
-            var secret = _secretFactories.FirstOrDefault(x => x.Name == typeof(HttpRequestEventSecret).Name)?.Create() as HttpRequestEventSecret;
+            var secret = _secretFactories.FirstOrDefault(factory => factory.Name == typeof(HttpRequestEventSecret).Name)?.Create() as HttpRequestEventSecret;
 
             secret.Id = Guid.NewGuid().ToString("n");
             secret.Name = secretName;
@@ -129,8 +129,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             secret.TokenLifeSpan = tokenLifeSpan;
 
             // When creating the first writeable store is used.
-            var store = _secretCoordinator.FirstOrDefault(x => !x.IsReadOnly);
-
+            var store = _secretCoordinator.GetSecretStoreDescriptors().FirstOrDefault(store => !store.IsReadOnly);
             if (store is null)
             {
                 return BadRequest();

@@ -11,8 +11,7 @@ namespace OrchardCore.Secrets.KeyVault
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<KeyVaultClientService>();
-            services.AddScoped<ISecretStore, KeyVaultSecretStore>();
-
+            services.AddSingleton<ISecretStore, KeyVaultSecretStore>();
             services.AddTransient<IConfigureOptions<SecretsKeyVaultOptions>, KeyVaultOptionsConfiguration>();
         }
     }

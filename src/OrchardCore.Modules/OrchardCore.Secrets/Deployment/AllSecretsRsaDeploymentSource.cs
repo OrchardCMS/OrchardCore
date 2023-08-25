@@ -47,7 +47,8 @@ namespace OrchardCore.Secrets.Deployment
             var secrets = new Dictionary<string, JObject>();
             foreach (var secretBinding in secretBindings)
             {
-                var secretDescriptor = _secretCoordinator.FirstOrDefault(x => String.Equals(x.Name, secretBinding.Value.Store, StringComparison.OrdinalIgnoreCase));
+                var secretDescriptor = _secretCoordinator.GetSecretStoreDescriptors().FirstOrDefault(store =>
+                    String.Equals(store.Name, secretBinding.Value.Store, StringComparison.OrdinalIgnoreCase));
 
                 // When descriptor is readonly we ship a binding without the secret value.
                 var jObject = new JObject(new JProperty("SecretBinding", JObject.FromObject(secretBinding.Value)));

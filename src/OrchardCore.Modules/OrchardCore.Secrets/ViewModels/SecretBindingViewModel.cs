@@ -13,7 +13,7 @@ namespace OrchardCore.Secrets.ViewModels
         public dynamic Editor { get; set; }
 
         [BindNever]
-        public IEnumerable<SecretStoreDescriptor> StoreEntries { get; set; }
+        public IReadOnlyCollection<SecretStoreDescriptor> StoreEntries { get; set; }
 
         [BindNever]
         public Secret Secret { get; set; }

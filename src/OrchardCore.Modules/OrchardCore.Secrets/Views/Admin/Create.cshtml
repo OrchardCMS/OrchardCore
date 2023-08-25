@@ -20,7 +20,7 @@
         <span class="hint">@T["The description of the secret."]</span>
     </div>
 
-    @if (Model.StoreEntries.Any())
+    @if (Model.StoreEntries.Count > 0)
     {
         <div class="mb-3 w-md-50" asp-validation-class-for="SelectedStore">
             <label asp-for="SelectedStore">@T["Store"]</label>

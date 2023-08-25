@@ -17,347 +17,346 @@ using OrchardCore.Routing;
 using OrchardCore.Secrets.ViewModels;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Secrets.Controllers
+namespace OrchardCore.Secrets.Controllers;
+
+[Admin]
+public class AdminController : Controller
 {
-    [Admin]
-    public class AdminController : Controller
+    private readonly IAuthorizationService _authorizationService;
+    private readonly ISecretCoordinator _secretCoordinator;
+    private readonly IDisplayManager<Secret> _displayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly IEnumerable<ISecretFactory> _factories;
+    private readonly ISiteService _siteService;
+    private readonly INotifier _notifier;
+
+    protected readonly dynamic New;
+    protected readonly IStringLocalizer S;
+    protected readonly IHtmlLocalizer H;
+
+    public AdminController(
+        IAuthorizationService authorizationService,
+        ISecretCoordinator secretCoordinator,
+        IDisplayManager<Secret> displayManager,
+        IUpdateModelAccessor updateModelAccessor,
+        IEnumerable<ISecretFactory> factories,
+        ISiteService siteService,
+        INotifier notifier,
+        IShapeFactory shapeFactory,
+        IStringLocalizer<AdminController> stringLocalizer,
+        IHtmlLocalizer<AdminController> htmlLocalizer)
     {
-        private readonly IAuthorizationService _authorizationService;
-        private readonly ISecretCoordinator _secretCoordinator;
-        private readonly IDisplayManager<Secret> _displayManager;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IEnumerable<ISecretFactory> _factories;
-        private readonly ISiteService _siteService;
-        private readonly INotifier _notifier;
+        _authorizationService = authorizationService;
+        _secretCoordinator = secretCoordinator;
+        _displayManager = displayManager;
+        _updateModelAccessor = updateModelAccessor;
+        _factories = factories;
+        _siteService = siteService;
+        _notifier = notifier;
+        New = shapeFactory;
+        S = stringLocalizer;
+        H = htmlLocalizer;
+    }
 
-        protected readonly dynamic New;
-        protected readonly IStringLocalizer S;
-        protected readonly IHtmlLocalizer H;
-
-        public AdminController(
-            IAuthorizationService authorizationService,
-            ISecretCoordinator secretCoordinator,
-            IDisplayManager<Secret> displayManager,
-            IUpdateModelAccessor updateModelAccessor,
-            IEnumerable<ISecretFactory> factories,
-            ISiteService siteService,
-            INotifier notifier,
-            IShapeFactory shapeFactory,
-            IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer)
+    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSecrets))
         {
-            _authorizationService = authorizationService;
-            _secretCoordinator = secretCoordinator;
-            _displayManager = displayManager;
-            _updateModelAccessor = updateModelAccessor;
-            _factories = factories;
-            _siteService = siteService;
-            _notifier = notifier;
-            New = shapeFactory;
-            S = stringLocalizer;
-            H = htmlLocalizer;
+            return Forbid();
         }
 
-        public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+        var siteSettings = await _siteService.GetSiteSettingsAsync();
+        var pager = new Pager(pagerParameters, siteSettings.PageSize);
+        var secretBindings = (await _secretCoordinator.GetSecretBindingsAsync()).ToList();
+
+        if (!String.IsNullOrWhiteSpace(options.Search))
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSecrets))
-            {
-                return Forbid();
-            }
-
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
-            var secretBindings = (await _secretCoordinator.GetSecretBindingsAsync()).ToList();
-
-            if (!String.IsNullOrWhiteSpace(options.Search))
-            {
-                secretBindings = secretBindings.Where(x => x.Key.Contains(options.Search)).ToList();
-            }
-
-            var count = secretBindings.Count;
-
-            secretBindings = secretBindings.OrderBy(x => x.Key)
-                .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize).ToList();
-
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
-
-            var thumbnails = new Dictionary<string, dynamic>();
-            foreach (var factory in _factories)
-            {
-                var secret = factory.Create();
-                dynamic thumbnail = await _displayManager.BuildDisplayAsync(secret, _updateModelAccessor.ModelUpdater, "Thumbnail");
-                thumbnail.Secret = secret;
-                thumbnails.Add(factory.Name, thumbnail);
-            }
-
-            var bindingEntries = new List<SecretBindingEntry>();
-            foreach (var binding in secretBindings)
-            {
-                var secret = _factories.FirstOrDefault(x => x.Name == binding.Value.Type)?.Create();
-                secret = await _secretCoordinator.GetSecretAsync(binding.Key, secret.GetType());
-                if (secret is null)
-                {
-                    continue;
-                }
-
-                dynamic summary = await _displayManager.BuildDisplayAsync(secret, _updateModelAccessor.ModelUpdater, "Summary");
-                summary.Secret = secret;
-                bindingEntries.Add(new SecretBindingEntry
-                {
-                    Name = binding.Key,
-                    SecretBinding = binding.Value,
-                    Summary = summary,
-                });
-            };
-
-            var model = new SecretBindingIndexViewModel
-            {
-                SecretBindings = bindingEntries,
-                Thumbnails = thumbnails,
-                Options = options,
-                Pager = pagerShape,
-            };
-
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
-            };
-
-            return View("Index", model);
+            secretBindings = secretBindings.Where(kv => kv.Key.Contains(options.Search)).ToList();
         }
 
-        [HttpPost, ActionName("Index")]
-        [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
+        var count = secretBindings.Count;
+
+        secretBindings = secretBindings.OrderBy(kv => kv.Key)
+            .Skip(pager.GetStartIndex())
+            .Take(pager.PageSize).ToList();
+
+        var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
+
+        var thumbnails = new Dictionary<string, dynamic>();
+        foreach (var factory in _factories)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSecrets))
-            {
-                return Forbid();
-            }
-
-            if (itemIds is not null && itemIds.Any())
-            {
-                var secretBindings = await _secretCoordinator.GetSecretBindingsAsync();
-                var checkedSecretBindings = secretBindings.Where(x => itemIds.Contains(x.Key));
-                switch (options.BulkAction)
-                {
-                    case ContentsBulkAction.None:
-                        break;
-                    case ContentsBulkAction.Remove:
-                        foreach (var binding in checkedSecretBindings)
-                        {
-                            await _secretCoordinator.RemoveSecretAsync(binding.Key, binding.Value.Store);
-                        }
-
-                        await _notifier.SuccessAsync(H["Secrets successfully removed."]);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
-                }
-            }
-
-            return RedirectToAction("Index");
+            var secret = factory.Create();
+            dynamic thumbnail = await _displayManager.BuildDisplayAsync(secret, _updateModelAccessor.ModelUpdater, "Thumbnail");
+            thumbnail.Secret = secret;
+            thumbnails.Add(factory.Name, thumbnail);
         }
 
-        public async Task<IActionResult> Create(string type)
+        var bindingEntries = new List<SecretBindingEntry>();
+        foreach (var binding in secretBindings)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSecrets))
-            {
-                return Forbid();
-            }
-
-            var secret = _factories.FirstOrDefault(x => x.Name == type)?.Create();
+            var secret = _factories.FirstOrDefault(factory => factory.Name == binding.Value.Type)?.Create();
+            secret = await _secretCoordinator.GetSecretAsync(binding.Key, secret.GetType());
             if (secret is null)
             {
-                return NotFound();
+                continue;
             }
 
-            secret.Id = Guid.NewGuid().ToString("n");
-            var model = new SecretBindingViewModel
+            dynamic summary = await _displayManager.BuildDisplayAsync(secret, _updateModelAccessor.ModelUpdater, "Summary");
+            summary.Secret = secret;
+            bindingEntries.Add(new SecretBindingEntry
             {
-                SecretId = secret.Id,
-                Secret = secret,
-                Type = type,
-                StoreEntries = _secretCoordinator.ToArray(),
-                Editor = await _displayManager.BuildEditorAsync(secret, _updateModelAccessor.ModelUpdater, isNew: true, "", ""),
-            };
+                Name = binding.Key,
+                SecretBinding = binding.Value,
+                Summary = summary,
+            });
+        };
 
-            model.Editor.Secret = secret;
+        var model = new SecretBindingIndexViewModel
+        {
+            SecretBindings = bindingEntries,
+            Thumbnails = thumbnails,
+            Options = options,
+            Pager = pagerShape,
+        };
 
-            return View(model);
+        model.Options.ContentsBulkAction = new List<SelectListItem>() {
+            new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
+        };
+
+        return View("Index", model);
+    }
+
+    [HttpPost, ActionName("Index")]
+    [FormValueRequired("submit.BulkAction")]
+    public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSecrets))
+        {
+            return Forbid();
         }
 
-        [HttpPost, ActionName("Create")]
-        public async Task<IActionResult> CreatePost(SecretBindingViewModel model)
+        if (itemIds is not null && itemIds.Any())
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSecrets))
+            var secretBindings = await _secretCoordinator.GetSecretBindingsAsync();
+            var checkedSecretBindings = secretBindings.Where(kv => itemIds.Contains(kv.Key));
+            switch (options.BulkAction)
             {
-                return Forbid();
+                case ContentsBulkAction.None:
+                    break;
+                case ContentsBulkAction.Remove:
+                    foreach (var binding in checkedSecretBindings)
+                    {
+                        await _secretCoordinator.RemoveSecretAsync(binding.Key, binding.Value.Store);
+                    }
+
+                    await _notifier.SuccessAsync(H["Secrets successfully removed."]);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
+            }
+        }
+
+        return RedirectToAction("Index");
+    }
+
+    public async Task<IActionResult> Create(string type)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSecrets))
+        {
+            return Forbid();
+        }
+
+        var secret = _factories.FirstOrDefault(factory => factory.Name == type)?.Create();
+        if (secret is null)
+        {
+            return NotFound();
+        }
+
+        secret.Id = Guid.NewGuid().ToString("n");
+        var model = new SecretBindingViewModel
+        {
+            SecretId = secret.Id,
+            Secret = secret,
+            Type = type,
+            StoreEntries = _secretCoordinator.GetSecretStoreDescriptors(),
+            Editor = await _displayManager.BuildEditorAsync(secret, _updateModelAccessor.ModelUpdater, isNew: true, "", ""),
+        };
+
+        model.Editor.Secret = secret;
+
+        return View(model);
+    }
+
+    [HttpPost, ActionName("Create")]
+    public async Task<IActionResult> CreatePost(SecretBindingViewModel model)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSecrets))
+        {
+            return Forbid();
+        }
+
+        var secret = _factories.FirstOrDefault(factory => factory.Name == model.Type)?.Create();
+        if (secret is null)
+        {
+            return NotFound();
+        }
+
+        if (ModelState.IsValid)
+        {
+            if (String.IsNullOrWhiteSpace(model.Name))
+            {
+                ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["The name is mandatory."]);
+            }
+            if (!String.Equals(model.Name, model.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+            {
+                ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["The name contains invalid characters."]);
             }
 
-            var secret = _factories.FirstOrDefault(x => x.Name == model.Type)?.Create();
-            if (secret is null)
-            {
-                return NotFound();
-            }
+            var secretBindings = await _secretCoordinator.LoadSecretBindingsAsync();
 
-            if (ModelState.IsValid)
+            // Do not check the stores as a readonly store would already have the key value.
+            if (secretBindings.ContainsKey(model.Name))
             {
-                if (String.IsNullOrWhiteSpace(model.Name))
-                {
-                    ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["The name is mandatory."]);
-                }
+                ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["A secret with the same name already exists."]);
+            }
+        }
+
+        dynamic editor = await _displayManager.UpdateEditorAsync(secret, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
+        editor.Secret = secret;
+
+        if (ModelState.IsValid)
+        {
+            var secretBinding = new SecretBinding { Store = model.SelectedStore, Description = model.Description, Type = model.Type };
+
+            secret.Id = model.SecretId;
+            secret.Name = model.Name;
+
+            await _secretCoordinator.UpdateSecretAsync(model.Name, secretBinding, secret);
+            await _notifier.SuccessAsync(H["Secret added successfully."]);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        model.Editor = editor;
+        model.StoreEntries = _secretCoordinator.GetSecretStoreDescriptors();
+
+        // If we got this far, something failed, redisplay form.
+        return View(model);
+    }
+
+    public async Task<IActionResult> Edit(string name)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSecrets))
+        {
+            return Forbid();
+        }
+
+        var secretBindings = await _secretCoordinator.GetSecretBindingsAsync();
+        if (!secretBindings.ContainsKey(name))
+        {
+            return RedirectToAction(nameof(Create), new { name });
+        }
+
+        var secretBinding = secretBindings[name];
+
+        var secret = _factories.FirstOrDefault(factory => factory.Name == secretBinding.Type)?.Create();
+        secret = await _secretCoordinator.GetSecretAsync(name, secret.GetType());
+
+        var model = new SecretBindingViewModel
+        {
+            Name = name,
+            SelectedStore = secretBinding.Store,
+            Description = secretBinding.Description,
+            Type = secret.GetType().Name,
+            Secret = secret,
+            StoreEntries = _secretCoordinator.GetSecretStoreDescriptors(),
+            Editor = await _displayManager.BuildEditorAsync(secret, _updateModelAccessor.ModelUpdater, isNew: false, "", ""),
+        };
+
+        model.Editor.Secret = secret;
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Edit(string sourceName, SecretBindingViewModel model)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSecrets))
+        {
+            return Forbid();
+        }
+
+        var secretBindings = await _secretCoordinator.LoadSecretBindingsAsync();
+
+        if (ModelState.IsValid)
+        {
+            if (String.IsNullOrWhiteSpace(model.Name))
+            {
+                ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["The name is mandatory."]);
+            }
+            if (!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase))
+            {
                 if (!String.Equals(model.Name, model.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
                 {
                     ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["The name contains invalid characters."]);
                 }
-
-                var secretBindings = await _secretCoordinator.LoadSecretBindingsAsync();
-
-                // Do not check the stores as a readonly store would already have the key value.
                 if (secretBindings.ContainsKey(model.Name))
                 {
                     ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["A secret with the same name already exists."]);
                 }
             }
-
-            dynamic editor = await _displayManager.UpdateEditorAsync(secret, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
-            editor.Secret = secret;
-
-            if (ModelState.IsValid)
-            {
-                var secretBinding = new SecretBinding { Store = model.SelectedStore, Description = model.Description, Type = model.Type };
-
-                secret.Id = model.SecretId;
-                secret.Name = model.Name;
-
-                await _secretCoordinator.UpdateSecretAsync(model.Name, secretBinding, secret);
-                await _notifier.SuccessAsync(H["Secret added successfully."]);
-
-                return RedirectToAction(nameof(Index));
-            }
-
-            model.Editor = editor;
-            model.StoreEntries = _secretCoordinator.ToArray();
-
-            // If we got this far, something failed, redisplay form.
-            return View(model);
         }
 
-        public async Task<IActionResult> Edit(string name)
+        if (!secretBindings.ContainsKey(sourceName))
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSecrets))
-            {
-                return Forbid();
-            }
-
-            var secretBindings = await _secretCoordinator.GetSecretBindingsAsync();
-            if (!secretBindings.ContainsKey(name))
-            {
-                return RedirectToAction(nameof(Create), new { name });
-            }
-
-            var secretBinding = secretBindings[name];
-
-            var secret = _factories.FirstOrDefault(x => x.Name == secretBinding.Type)?.Create();
-            secret = await _secretCoordinator.GetSecretAsync(name, secret.GetType());
-
-            var model = new SecretBindingViewModel
-            {
-                Name = name,
-                SelectedStore = secretBinding.Store,
-                Description = secretBinding.Description,
-                Type = secret.GetType().Name,
-                Secret = secret,
-                StoreEntries = _secretCoordinator.ToArray(),
-                Editor = await _displayManager.BuildEditorAsync(secret, _updateModelAccessor.ModelUpdater, isNew: false, "", ""),
-            };
-
-            model.Editor.Secret = secret;
-
-            return View(model);
+            return NotFound();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Edit(string sourceName, SecretBindingViewModel model)
+        var secretBinding = secretBindings[sourceName];
+
+        var secret = _factories.FirstOrDefault(factory => factory.Name == secretBinding.Type)?.Create();
+        secret = await _secretCoordinator.GetSecretAsync(sourceName, secret.GetType());
+
+        var editor = await _displayManager.UpdateEditorAsync(secret, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
+        model.Editor = editor;
+
+        if (ModelState.IsValid)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSecrets))
-            {
-                return Forbid();
-            }
-
-            var secretBindings = await _secretCoordinator.LoadSecretBindingsAsync();
-
-            if (ModelState.IsValid)
-            {
-                if (String.IsNullOrWhiteSpace(model.Name))
-                {
-                    ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["The name is mandatory."]);
-                }
-                if (!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase))
-                {
-                    if (!String.Equals(model.Name, model.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
-                    {
-                        ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["The name contains invalid characters."]);
-                    }
-                    if (secretBindings.ContainsKey(model.Name))
-                    {
-                        ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["A secret with the same name already exists."]);
-                    }
-                }
-            }
-
-            if (!secretBindings.ContainsKey(sourceName))
-            {
-                return NotFound();
-            }
-
-            var secretBinding = secretBindings[sourceName];
-
-            var secret = _factories.FirstOrDefault(x => x.Name == secretBinding.Type)?.Create();
-            secret = await _secretCoordinator.GetSecretAsync(sourceName, secret.GetType());
-
-            var editor = await _displayManager.UpdateEditorAsync(secret, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
-            model.Editor = editor;
-
-            if (ModelState.IsValid)
-            {
-                // Remove this before updating the binding value.
-                await _secretCoordinator.RemoveSecretAsync(sourceName, secretBinding.Store);
-                secretBinding.Store = model.SelectedStore;
-                secretBinding.Description = model.Description;
-                secret.Name = model.Name;
-                await _secretCoordinator.UpdateSecretAsync(model.Name, secretBinding, secret);
-
-                return RedirectToAction(nameof(Index));
-            }
-
-            // If we got this far, something failed, redisplay form
-            return View(model);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Delete(string name)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSecrets))
-            {
-                return Forbid();
-            }
-
-            var secretBindings = await _secretCoordinator.GetSecretBindingsAsync();
-
-            if (!secretBindings.ContainsKey(name))
-            {
-                return NotFound();
-            }
-
-            var secretBinding = secretBindings[name];
-
-            await _secretCoordinator.RemoveSecretAsync(name, secretBinding.Store);
-
-            await _notifier.SuccessAsync(H["Secret deleted successfully."]);
+            // Remove this before updating the binding value.
+            await _secretCoordinator.RemoveSecretAsync(sourceName, secretBinding.Store);
+            secretBinding.Store = model.SelectedStore;
+            secretBinding.Description = model.Description;
+            secret.Name = model.Name;
+            await _secretCoordinator.UpdateSecretAsync(model.Name, secretBinding, secret);
 
             return RedirectToAction(nameof(Index));
         }
+
+        // If we got this far, something failed, redisplay form
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Delete(string name)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSecrets))
+        {
+            return Forbid();
+        }
+
+        var secretBindings = await _secretCoordinator.GetSecretBindingsAsync();
+
+        if (!secretBindings.ContainsKey(name))
+        {
+            return NotFound();
+        }
+
+        var secretBinding = secretBindings[name];
+
+        await _secretCoordinator.RemoveSecretAsync(name, secretBinding.Store);
+
+        await _notifier.SuccessAsync(H["Secret deleted successfully."]);
+
+        return RedirectToAction(nameof(Index));
     }
 }
