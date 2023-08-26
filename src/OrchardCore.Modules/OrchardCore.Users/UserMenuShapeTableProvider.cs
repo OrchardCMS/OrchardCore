@@ -5,11 +5,11 @@ namespace OrchardCore.Users;
 
 public class UserMenuShapeTableProvider : IShapeTableProvider
 {
-    private const string _shapePrefix = "UserMenuItems__";
+    private const string _shapePrefix = "UserMenuItems";
 
     public void Discover(ShapeTableBuilder builder)
     {
-        builder.Describe(_shapePrefix + "*")
+        builder.Describe(_shapePrefix + "__*")
             .OnDisplaying(context =>
             {
                 if (String.IsNullOrEmpty(context.Shape.Metadata.DisplayType) || context.Shape.Metadata.DisplayType == "Detail")
@@ -17,16 +17,13 @@ public class UserMenuShapeTableProvider : IShapeTableProvider
                     return;
                 }
 
-                context.Shape.Metadata.Alternates.Add("UserMenuItems_" + context.Shape.Metadata.DisplayType);
+                context.Shape.Metadata.Alternates.Add(_shapePrefix + "_" + context.Shape.Metadata.DisplayType);
 
-                // Part is the value after 'UserMenuItems__'.
-                var part = context.Shape.Metadata.Type[(_shapePrefix.Length + 1)..];
-
-                // UserMenu is 'UserMenuItems_'.
-                var userMenu = _shapePrefix[..^1];
+                // SubType is the value after 'UserMenuItems__'.
+                var subType = context.Shape.Metadata.Type[(_shapePrefix.Length + 2)..];
 
                 // UserMenuItems_{displaType}__{part}.
-                context.Shape.Metadata.Alternates.Add(userMenu + context.Shape.Metadata.DisplayType + "__" + part);
+                context.Shape.Metadata.Alternates.Add(_shapePrefix + "_" + context.Shape.Metadata.DisplayType + "__" + subType);
             });
     }
 }
