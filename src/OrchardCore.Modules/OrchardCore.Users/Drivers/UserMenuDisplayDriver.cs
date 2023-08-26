@@ -24,8 +24,6 @@ public class UserMenuDisplayDriver : DisplayDriver<UserMenu>
 
     public override async Task<IDisplayResult> DisplayAsync(UserMenu model, BuildDisplayContext context)
     {
-        var externalAuthenticationSchemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
-
         var results = new List<IDisplayResult>
         {
             View("UserMenuItems__Profile", model)
@@ -43,19 +41,17 @@ public class UserMenuDisplayDriver : DisplayDriver<UserMenu>
             View("UserMenuItems__SignedUser", model)
             .Location("Detail", "Content:before")
             .Location("DetailAdmin", "Content:before"),
+
+            View("UserMenuItems__ExternalLogins", model)
+            .RenderWhen(async () => (await _signInManager.GetExternalAuthenticationSchemesAsync()).Any())
+            .Location("Detail", "Content:10")
+            .Location("DetailAdmin", "Content:10"),
         };
 
         if (_httpContextAccessor.HttpContext.User.HasClaim("Permission", "AccessAdminPanel"))
         {
             results.Add(View("UserMenuItems__Dashboard", model)
                 .Location("Detail", "Content:1"));
-        }
-
-        if (externalAuthenticationSchemes.Any())
-        {
-            results.Add(View("UserMenuItems__ExternalLogins", model)
-                .Location("Detail", "Content:10")
-                .Location("DetailAdmin", "Content:10"));
         }
 
         return Combine(results);
