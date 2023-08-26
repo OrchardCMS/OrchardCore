@@ -30,7 +30,6 @@ public class UserMenuDisplayDriver : DisplayDriver<UserMenu>
             .Location("DetailAdmin", "Header:5"),
 
             View("UserMenuItems__SignedUser", model)
-            .Location("Detail", "Content:1")
             .Location("DetailAdmin", "Content:1"),
 
             View("UserMenuItems__Profile", model)

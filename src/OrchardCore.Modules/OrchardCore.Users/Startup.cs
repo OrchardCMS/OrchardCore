@@ -16,6 +16,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Commands;
@@ -245,6 +246,7 @@ namespace OrchardCore.Users
             services.AddTransient<IUsersAdminListFilterProvider, DefaultUsersAdminListFilterProvider>();
             services.AddTransient<IConfigureOptions<ResourceManagementOptions>, UserOptionsConfiguration>();
             services.TryAddScoped<IDisplayDriver<UserMenu>, UserMenuDisplayDriver>();
+            services.AddScoped<IShapeTableProvider, UserMenuShapeTableProvider>();
         }
     }
 
