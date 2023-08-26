@@ -19,10 +19,10 @@ public class UserMenuShapeTableProvider : IShapeTableProvider
 
                 context.Shape.Metadata.Alternates.Add(_shapePrefix + "_" + context.Shape.Metadata.DisplayType);
 
-                // SubType is the value after 'UserMenuItems__'.
+                // The value of 'subType' is the string that comes after 'UserMenuItems__'.
                 var subType = context.Shape.Metadata.Type[(_shapePrefix.Length + 2)..];
 
-                // UserMenuItems_{displaType}__{part}.
+                // UserMenuItems_{displaType}__{subType} > UserMenuItems-{subType}.{displayType}.cshtml.
                 context.Shape.Metadata.Alternates.Add(_shapePrefix + "_" + context.Shape.Metadata.DisplayType + "__" + subType);
             });
     }
