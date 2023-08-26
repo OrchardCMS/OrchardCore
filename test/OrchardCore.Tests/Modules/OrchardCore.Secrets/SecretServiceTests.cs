@@ -11,6 +11,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
         public async Task ShouldGetTextSecret()
         {
             var store = Mock.Of<ISecretStore>();
+            var factory = Mock.Of<ISecretFactory>();
 
             var textSecret = new TextSecret()
             {
@@ -18,6 +19,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
             };
 
             Mock.Get(store).Setup(s => s.GetSecretAsync("email", typeof(TextSecret))).ReturnsAsync(textSecret);
+            Mock.Get(factory).Setup(f => f.Create()).Returns(new TextSecret());
 
             var documentManager = Mock.Of<IDocumentManager<SecretBindingsDocument>>();
 
@@ -29,7 +31,10 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
                     return document;
                 });
 
-            var coordinator = new DefaultSecretCoordinator(new SecretBindingsManager(documentManager), new[] { store });
+            var coordinator = new DefaultSecretCoordinator(
+                new SecretBindingsManager(documentManager),
+                new[] { factory },
+                new[] { store });
 
             var service = new SecretService<TextSecret>(coordinator);
             var secret = await service.GetSecretAsync("email");
