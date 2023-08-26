@@ -174,12 +174,7 @@ namespace OrchardCore.ContentManagement
             }
 
             return content.ContentItem.IsPublished() || (await contentManager.GetAsync(content.ContentItem.ContentItemId, VersionOptions.Published) != null);
-        }
-
-        public static Task<ContentItemMetadata> GetContentItemMetadataAsync(this IContentManager contentManager, IContent content)
-        {
-            return contentManager.PopulateAspectAsync<ContentItemMetadata>(content);
-        }
+        }       
 
         public static async Task<IEnumerable<ContentItem>> LoadAsync(this IContentManager contentManager, IEnumerable<ContentItem> contentItems)
         {
