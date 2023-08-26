@@ -76,7 +76,8 @@ public class AdminController : Controller
 
         var count = secretBindings.Count;
 
-        secretBindings = secretBindings.OrderBy(kv => kv.Key)
+        secretBindings = secretBindings
+            .OrderBy(kv => kv.Key)
             .Skip(pager.GetStartIndex())
             .Take(pager.PageSize).ToList();
 
@@ -94,8 +95,7 @@ public class AdminController : Controller
         var bindingEntries = new List<SecretBindingEntry>();
         foreach (var binding in secretBindings)
         {
-            var secret = _factories.FirstOrDefault(factory => factory.Name == binding.Value.Type)?.Create();
-            secret = await _secretCoordinator.GetSecretAsync(binding.Key, secret.GetType());
+            var secret = await _secretCoordinator.GetSecretAsync(binding.Key, binding.Value);
             if (secret is null)
             {
                 continue;
@@ -119,8 +119,9 @@ public class AdminController : Controller
             Pager = pagerShape,
         };
 
-        model.Options.ContentsBulkAction = new List<SelectListItem>() {
-            new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
+        model.Options.ContentsBulkAction = new List<SelectListItem>()
+        {
+            new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) },
         };
 
         return View("Index", model);
@@ -207,6 +208,7 @@ public class AdminController : Controller
             {
                 ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["The name is mandatory."]);
             }
+
             if (!String.Equals(model.Name, model.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["The name contains invalid characters."]);
@@ -259,8 +261,14 @@ public class AdminController : Controller
 
         var secretBinding = secretBindings[name];
 
-        var secret = _factories.FirstOrDefault(factory => factory.Name == secretBinding.Type)?.Create();
-        secret = await _secretCoordinator.GetSecretAsync(name, secret.GetType());
+        var secret1 = _factories.FirstOrDefault(factory => factory.Name == secretBinding.Type)?.Create();
+        var secret = await _secretCoordinator.GetSecretAsync(name, secret1.GetType());
+        if (secret is null)
+        {
+            secret = secret1;
+            secret.Name = name;
+            secret.IsNotStored = true;
+        }
 
         var model = new SecretBindingViewModel
         {
@@ -314,8 +322,14 @@ public class AdminController : Controller
 
         var secretBinding = secretBindings[sourceName];
 
-        var secret = _factories.FirstOrDefault(factory => factory.Name == secretBinding.Type)?.Create();
-        secret = await _secretCoordinator.GetSecretAsync(sourceName, secret.GetType());
+        var secret1 = _factories.FirstOrDefault(factory => factory.Name == secretBinding.Type)?.Create();
+        var secret = await _secretCoordinator.GetSecretAsync(sourceName, secret1.GetType());
+        if (secret is null)
+        {
+            secret = secret1;
+            secret.Name = sourceName;
+            secret.IsNotStored = true;
+        }
 
         var editor = await _displayManager.UpdateEditorAsync(secret, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
         model.Editor = editor;
@@ -324,15 +338,18 @@ public class AdminController : Controller
         {
             // Remove this before updating the binding value.
             await _secretCoordinator.RemoveSecretAsync(sourceName, secretBinding.Store);
+
             secretBinding.Store = model.SelectedStore;
             secretBinding.Description = model.Description;
             secret.Name = model.Name;
+
             await _secretCoordinator.UpdateSecretAsync(model.Name, secretBinding, secret);
 
             return RedirectToAction(nameof(Index));
         }
 
         // If we got this far, something failed, redisplay form
+        model.StoreEntries = _secretCoordinator.GetSecretStoreDescriptors();
         return View(model);
     }
 

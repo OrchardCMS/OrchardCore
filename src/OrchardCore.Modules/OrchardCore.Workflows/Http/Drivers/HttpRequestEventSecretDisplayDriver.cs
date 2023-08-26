@@ -42,7 +42,7 @@ namespace OrchardCore.Workflows.Http.Drivers
                 model.TokenLifeSpan = secret.TokenLifeSpan;
 
                 model.WorkflowTypes = (await _workflowTypeStore.GetByStartActivityAsync(nameof(HttpRequestEvent)))
-                    .Select(s => new SelectListItem() { Text = s.Name, Value = s.WorkflowTypeId }).ToList();
+                    .Select(wft => new SelectListItem() { Text = wft.Name, Value = wft.WorkflowTypeId }).ToList();
 
                 model.Context = context;
             }).Location("Content"));

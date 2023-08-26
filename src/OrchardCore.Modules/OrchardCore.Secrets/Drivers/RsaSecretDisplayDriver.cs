@@ -30,7 +30,7 @@ public class RsaSecretDisplayDriver : DisplayDriver<Secret, RsaSecret>
         return Task.FromResult<IDisplayResult>(Initialize<RsaSecretViewModel>("RsaSecret_Fields_Edit", model =>
         {
             // Generate new keys when creating.
-            if (context.IsNew)
+            if (context.IsNew || secret.IsNotStored)
             {
                 using var rsa = RsaHelper.GenerateRsaSecurityKey(2048);
                 if (String.IsNullOrEmpty(secret.PublicKey))
@@ -39,9 +39,9 @@ public class RsaSecretDisplayDriver : DisplayDriver<Secret, RsaSecret>
                 }
                 else
                 {
-                    // If key validation fails we return the value supplied.
                     model.PublicKey = secret.PublicKey;
                 }
+
                 if (String.IsNullOrEmpty(secret.PrivateKey))
                 {
                     model.PrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey());
@@ -51,10 +51,14 @@ public class RsaSecretDisplayDriver : DisplayDriver<Secret, RsaSecret>
                     model.PrivateKey = secret.PrivateKey;
                 }
             }
-            else
+
+            if (!context.IsNew || secret.IsNotStored)
             {
                 // The private key is never returned to the view when editing.
-                model.PublicKey = secret.PublicKey;
+                if (!String.IsNullOrEmpty(secret.PublicKey))
+                {
+                    model.PublicKey = secret.PublicKey;
+                }
 
                 using var rsa = RsaHelper.GenerateRsaSecurityKey(2048);
                 model.NewPublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey());
@@ -91,7 +95,7 @@ public class RsaSecretDisplayDriver : DisplayDriver<Secret, RsaSecret>
             secret.KeyType = model.KeyType;
 
             // The view will contain the private key when creating.
-            if (context.IsNew)
+            if (context.IsNew || secret.IsNotStored)
             {
                 secret.PublicKey = model.PublicKey;
                 secret.PrivateKey = model.PrivateKey;

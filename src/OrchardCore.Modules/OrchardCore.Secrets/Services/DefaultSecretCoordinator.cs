@@ -9,24 +9,54 @@ namespace OrchardCore.Secrets.Services;
 public class DefaultSecretCoordinator : ISecretCoordinator
 {
     private readonly SecretBindingsManager _secretBindingsManager;
-    private readonly IEnumerable<ISecretStore> _secretStores;
-
     private readonly IReadOnlyCollection<SecretStoreDescriptor> _secretStoreDescriptors;
+    private readonly IEnumerable<ISecretFactory> _secretFactories;
+    private readonly IEnumerable<ISecretStore> _secretStores;
 
     public DefaultSecretCoordinator(
         SecretBindingsManager secretBindingsManager,
+        IEnumerable<ISecretFactory> secretFactories,
         IEnumerable<ISecretStore> secretStores)
     {
         _secretBindingsManager = secretBindingsManager;
-        _secretStores = secretStores;
+        _secretFactories = secretFactories;
 
-        _secretStoreDescriptors = _secretStores.Select(store => new SecretStoreDescriptor
+        _secretStoreDescriptors = secretStores.Select(store => new SecretStoreDescriptor
         {
             Name = store.Name,
             IsReadOnly = store.IsReadOnly,
             DisplayName = store.DisplayName,
         })
             .ToArray();
+
+        _secretStores = secretStores;
+    }
+
+    public async Task<Secret> GetSecretAsync(string key, SecretBinding binding)
+    {
+        var factory = _secretFactories.FirstOrDefault(factory => factory.Name == binding.Type);
+        if (factory is null)
+        {
+            return null;
+        }
+
+        var secret1 = factory.Create();
+
+        var secretStore = _secretStores.FirstOrDefault(store => String.Equals(store.Name, binding.Store, StringComparison.OrdinalIgnoreCase));
+        if (secretStore is null)
+        {
+            return null;
+        }
+
+        var secret = await secretStore.GetSecretAsync(key, secret1.GetType());
+        if (secret is null)
+        {
+            secret = secret1;
+            secret.Name = key;
+            secret.IsNotStored = true;
+        }
+
+        return secret;
     }
 
     public async Task<Secret> GetSecretAsync(string key, Type type)
@@ -44,7 +74,7 @@ public class DefaultSecretCoordinator : ISecretCoordinator
             return null;
         }
 
-        var secretStore = _secretStores.FirstOrDefault(s => String.Equals(s.Name, binding.Store, StringComparison.OrdinalIgnoreCase));
+        var secretStore = _secretStores.FirstOrDefault(store => String.Equals(store.Name, binding.Store, StringComparison.OrdinalIgnoreCase));
         if (secretStore is null)
         {
             return null;
@@ -56,7 +86,7 @@ public class DefaultSecretCoordinator : ISecretCoordinator
     }
 
     public async Task<TSecret> GetSecretAsync<TSecret>(string key) where TSecret : Secret, new()
-        => await (GetSecretAsync(key, typeof(TSecret))) as TSecret;
+        => (await GetSecretAsync(key, typeof(TSecret))) as TSecret;
 
     public async Task<IDictionary<string, SecretBinding>> GetSecretBindingsAsync()
     {
@@ -79,7 +109,7 @@ public class DefaultSecretCoordinator : ISecretCoordinator
             throw new InvalidOperationException("The name contains invalid characters.");
         }
 
-        var secretStore = _secretStores.FirstOrDefault(s => String.Equals(s.Name, secretBinding.Store, StringComparison.OrdinalIgnoreCase));
+        var secretStore = _secretStores.FirstOrDefault(store => String.Equals(store.Name, secretBinding.Store, StringComparison.OrdinalIgnoreCase));
         if (secretStore is not null)
         {
             await _secretBindingsManager.UpdateSecretBindingAsync(key, secretBinding);
@@ -96,9 +126,9 @@ public class DefaultSecretCoordinator : ISecretCoordinator
         }
     }
 
-    public async Task RemoveSecretAsync(string key, string store)
+    public async Task RemoveSecretAsync(string key, string storeName)
     {
-        var secretStore = _secretStores.FirstOrDefault(s => String.Equals(s.Name, store, StringComparison.OrdinalIgnoreCase));
+        var secretStore = _secretStores.FirstOrDefault(store => String.Equals(store.Name, storeName, StringComparison.OrdinalIgnoreCase));
         if (secretStore is not null)
         {
             await _secretBindingsManager.RemoveSecretBindingAsync(key);
@@ -111,7 +141,7 @@ public class DefaultSecretCoordinator : ISecretCoordinator
         }
         else
         {
-            throw new InvalidOperationException($"The specified store '{store}' was not found.");
+            throw new InvalidOperationException($"The specified store '{storeName}' was not found.");
         }
     }
 }

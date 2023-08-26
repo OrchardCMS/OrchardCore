@@ -13,7 +13,7 @@ public class ConfigurationSecretStore : ISecretStore
 
     public ConfigurationSecretStore(
         IShellConfiguration shellConfiguration,
-        IStringLocalizer<DatabaseSecretStore> stringLocalizer)
+        IStringLocalizer<ConfigurationSecretStore> stringLocalizer)
     {
         _shellConfiguration = shellConfiguration;
         S = stringLocalizer;

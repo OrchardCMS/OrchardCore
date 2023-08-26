@@ -49,7 +49,7 @@ public class DatabaseSecretStore : ISecretStore
     {
         var documentSecret = new DocumentSecret
         {
-            Value = _databaseSecretDataProtector.Protect(JsonConvert.SerializeObject(secret))
+            Value = _databaseSecretDataProtector.Protect(JsonConvert.SerializeObject(secret)),
         };
 
         return _manager.UpdateSecretAsync(key, documentSecret);

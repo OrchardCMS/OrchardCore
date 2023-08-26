@@ -52,7 +52,7 @@ namespace OrchardCore.Secrets
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllSecretsRsaDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllSecretsRsaDeploymentStepDriver>();
 
-            // TODO we could have a feature to remove this.
+            // TODO: we could have a feature to remove this.
             services.AddSingleton<DatabaseSecretDataProtector>();
             services.AddSingleton<ISecretStore, DatabaseSecretStore>();
             services.AddSingleton<SecretsDocumentManager>();
