@@ -399,11 +399,8 @@ namespace OrchardCore.Media
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddMediaFileTextProvider<TxtMediaFileTextProvider>(".txt");
-            services.AddMediaFileTextProvider<AutoDocumentMediaFileTextProvider>(".doc");
-            services.AddMediaFileTextProvider<AutoDocumentMediaFileTextProvider>(".docx");
-            services.AddMediaFileTextProvider<AutoDocumentMediaFileTextProvider>(".rtf");
-            services.AddMediaFileTextProvider<AutoDocumentMediaFileTextProvider>(".ppt");
-            services.AddMediaFileTextProvider<AutoDocumentMediaFileTextProvider>(".pptx");
+            services.AddMediaFileTextProvider<WordDocumentMediaFileTextProvider>(".docx");
+            services.AddMediaFileTextProvider<PresentationDocumentMediaFileTextProvider>(".pptx");
         }
     }
 
