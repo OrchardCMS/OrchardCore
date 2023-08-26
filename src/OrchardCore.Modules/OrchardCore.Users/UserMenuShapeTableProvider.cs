@@ -17,6 +17,7 @@ public class UserMenuShapeTableProvider : IShapeTableProvider
                     return;
                 }
 
+                // UserMenuItems_{displayType} > UserMenuItems.{displayType}.cshtml.
                 context.Shape.Metadata.Alternates.Add(_shapePrefix + "_" + context.Shape.Metadata.DisplayType);
 
                 // The value of 'subType' is the string that comes after 'UserMenuItems__'.
