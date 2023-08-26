@@ -1,1 +1,6 @@
-<i class="fa-solid fa-fw fa-user" aria-hidden="true" data-bs-toggle="tooltip" data-bs-original-title="@User.Identity.Name"></i>
+@{
+    Model.Metadata.DisplayType = "Detail";
+    Model.Metadata.Alternates.Clear();
+}
+
+@await DisplayAsync(Model)

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Handlers;
@@ -41,7 +40,7 @@ public class TwoFactorAuthenticationStartup : StartupBase
             options.Filters.Add<TwoFactorAuthenticationAuthorizationFilter>();
         });
 
-        services.TryAddScoped<IDisplayDriver<UserMenu>, TwoFactorUserMenuDisplayDriver>();
+        services.AddScoped<IDisplayDriver<UserMenu>, TwoFactorUserMenuDisplayDriver>();
         services.AddScoped<IDisplayDriver<ISite>, TwoFactorLoginSettingsDisplayDriver>();
         services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodDisplayDriver>();
     }

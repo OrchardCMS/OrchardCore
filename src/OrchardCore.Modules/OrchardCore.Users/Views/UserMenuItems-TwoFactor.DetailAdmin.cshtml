@@ -1,5 +1,6 @@
-<li>
-    <a class="dropdown-item" asp-route-area="OrchardCore.Users" asp-controller="TwoFactorAuthentication" asp-action="Index">
-        <i class="fa-solid fa-shield-halved fa-fw" aria-hidden="true"></i> @T["Security"]
-    </a>
-</li>
+@{
+    Model.Metadata.DisplayType = "Detail";
+    Model.Metadata.Alternates.Clear();
+}
+
+@await DisplayAsync(Model)
