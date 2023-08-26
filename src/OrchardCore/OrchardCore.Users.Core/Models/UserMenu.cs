@@ -1,5 +1,7 @@
+using OrchardCore.Entities;
+
 namespace OrchardCore.Users.Models;
 
-public class UserMenu
+public class UserMenu : Entity
 {
 }
