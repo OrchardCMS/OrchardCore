@@ -244,6 +244,7 @@ namespace OrchardCore.Users
 
             services.AddTransient<IUsersAdminListFilterProvider, DefaultUsersAdminListFilterProvider>();
             services.AddTransient<IConfigureOptions<ResourceManagementOptions>, UserOptionsConfiguration>();
+            services.AddScoped<IDisplayDriver<UserMenu>, UserMenuDisplayDriver>();
         }
     }
 
@@ -330,7 +331,6 @@ namespace OrchardCore.Users
         private const string _changeEmailConfirmationPath = "ChangeEmailConfirmation";
         private const string _changeEmailControllerName = "ChangeEmail";
 
-
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaControllerRoute(
@@ -357,6 +357,7 @@ namespace OrchardCore.Users
 
             services.AddScoped<INavigationProvider, ChangeEmailAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, ChangeEmailSettingsDisplayDriver>();
+            services.AddScoped<IDisplayDriver<UserMenu>, ChangeEmailUserMenuDisplayDriver>();
         }
     }
 

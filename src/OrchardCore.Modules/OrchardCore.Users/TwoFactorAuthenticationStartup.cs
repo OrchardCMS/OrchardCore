@@ -38,9 +38,9 @@ public class TwoFactorAuthenticationStartup : StartupBase
         services.Configure<MvcOptions>(options =>
         {
             options.Filters.Add<TwoFactorAuthenticationAuthorizationFilter>();
-            options.Filters.Add<LoginMenuFilter>();
         });
 
+        services.AddScoped<IDisplayDriver<UserMenu>, UserMenuDisplayDriver>();
         services.AddScoped<IDisplayDriver<ISite>, TwoFactorLoginSettingsDisplayDriver>();
         services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodDisplayDriver>();
     }
