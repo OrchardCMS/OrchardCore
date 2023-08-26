@@ -357,7 +357,7 @@ namespace OrchardCore.Users
 
             services.AddScoped<INavigationProvider, ChangeEmailAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, ChangeEmailSettingsDisplayDriver>();
-            services.AddScoped<IDisplayDriver<UserMenu>, ChangeEmailUserMenuDisplayDriver>();
+            services.TryAddScoped<IDisplayDriver<UserMenu>, ChangeEmailUserMenuDisplayDriver>();
         }
     }
 
