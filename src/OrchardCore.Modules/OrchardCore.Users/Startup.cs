@@ -244,7 +244,7 @@ namespace OrchardCore.Users
 
             services.AddTransient<IUsersAdminListFilterProvider, DefaultUsersAdminListFilterProvider>();
             services.AddTransient<IConfigureOptions<ResourceManagementOptions>, UserOptionsConfiguration>();
-            services.AddScoped<IDisplayDriver<UserMenu>, UserMenuDisplayDriver>();
+            services.TryAddScoped<IDisplayDriver<UserMenu>, UserMenuDisplayDriver>();
         }
     }
 
