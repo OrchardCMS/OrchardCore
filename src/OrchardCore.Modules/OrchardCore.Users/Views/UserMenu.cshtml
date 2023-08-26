@@ -1,26 +1,26 @@
-@if (User.Identity.IsAuthenticated)
-{
-    <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-            @if (Model.Header != null)
-            {
-                @await DisplayAsync(Model.Header)
-            }
-        </a>
-
-        @if (Model.Content != null)
-        {
-            <ul class="dropdown-menu dropdown-menu-end">
-                @await DisplayAsync(Model.Content)
-            </ul>
-        }
-    </li>
-}
-else
+@if (!User.Identity.IsAuthenticated)
 {
     <li class="nav-item">
         <a class="nav-link" asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="Login">
             <i class="fa-solid fa-sign-in-alt fa-fw" aria-hidden="true"></i> @T["Log in"]
         </a>
     </li>
+
+    return;
 }
+
+<li class="nav-item dropdown">
+    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+        @if (Model.Header != null)
+        {
+            @await DisplayAsync(Model.Header)
+        }
+    </a>
+
+    @if (Model.Content != null)
+    {
+        <ul class="dropdown-menu dropdown-menu-end">
+            @await DisplayAsync(Model.Content)
+        </ul>
+    }
+</li>
