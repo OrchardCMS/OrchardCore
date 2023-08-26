@@ -66,5 +66,7 @@
     <PackageManagement Include="YesSql.Filters.Abstractions" Version="3.3.0" />
     <PackageManagement Include="YesSql.Filters.Query" Version="3.3.0" />
     <PackageManagement Include="ZString" Version="2.5.0" />
+    <PackageManagement Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+    <PackageManagement Include="Microsoft.Extensions.Localization" Version="7.0.10" />
   </ItemGroup>
 </Project>
