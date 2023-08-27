@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -26,7 +27,7 @@ public class AdminController : Controller
     private readonly ISecretCoordinator _secretCoordinator;
     private readonly IDisplayManager<Secret> _displayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-    private readonly IEnumerable<ISecretFactory> _factories;
+    private readonly SecretsOptions _secretsOptions;
     private readonly ISiteService _siteService;
     private readonly INotifier _notifier;
 
@@ -39,7 +40,7 @@ public class AdminController : Controller
         ISecretCoordinator secretCoordinator,
         IDisplayManager<Secret> displayManager,
         IUpdateModelAccessor updateModelAccessor,
-        IEnumerable<ISecretFactory> factories,
+        IOptions<SecretsOptions> secretsOptions,
         ISiteService siteService,
         INotifier notifier,
         IShapeFactory shapeFactory,
@@ -50,7 +51,7 @@ public class AdminController : Controller
         _secretCoordinator = secretCoordinator;
         _displayManager = displayManager;
         _updateModelAccessor = updateModelAccessor;
-        _factories = factories;
+        _secretsOptions = secretsOptions.Value;
         _siteService = siteService;
         _notifier = notifier;
         New = shapeFactory;
@@ -84,18 +85,18 @@ public class AdminController : Controller
         var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
 
         var thumbnails = new Dictionary<string, dynamic>();
-        foreach (var factory in _factories)
+        foreach (var type in _secretsOptions.SecretTypes)
         {
-            var secret = factory.Create();
+            var secret = _secretCoordinator.CreateSecret(type.Name);
             dynamic thumbnail = await _displayManager.BuildDisplayAsync(secret, _updateModelAccessor.ModelUpdater, "Thumbnail");
             thumbnail.Secret = secret;
-            thumbnails.Add(factory.Name, thumbnail);
+            thumbnails.Add(type.Name, thumbnail);
         }
 
         var bindingEntries = new List<SecretBindingEntry>();
         foreach (var binding in secretBindings)
         {
-            var secret = await _secretCoordinator.GetSecretAsync(binding.Key, binding.Value);
+            var secret = await _secretCoordinator.GetSecretAsync(binding.Value);
             if (secret is null)
             {
                 continue;
@@ -167,7 +168,7 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        var secret = _factories.FirstOrDefault(factory => factory.Name == type)?.Create();
+        var secret = _secretCoordinator.CreateSecret(type);
         if (secret is null)
         {
             return NotFound();
@@ -177,10 +178,10 @@ public class AdminController : Controller
         var model = new SecretBindingViewModel
         {
             SecretId = secret.Id,
-            Secret = secret,
             Type = type,
-            StoreEntries = _secretCoordinator.GetSecretStoreDescriptors(),
             Editor = await _displayManager.BuildEditorAsync(secret, _updateModelAccessor.ModelUpdater, isNew: true, "", ""),
+            StoreEntries = _secretCoordinator.GetSecretStoreDescriptors(),
+            Secret = secret,
         };
 
         model.Editor.Secret = secret;
@@ -196,7 +197,7 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        var secret = _factories.FirstOrDefault(factory => factory.Name == model.Type)?.Create();
+        var secret = _secretCoordinator.CreateSecret(model.Type);
         if (secret is null)
         {
             return NotFound();
@@ -228,7 +229,13 @@ public class AdminController : Controller
 
         if (ModelState.IsValid)
         {
-            var secretBinding = new SecretBinding { Store = model.SelectedStore, Description = model.Description, Type = model.Type };
+            var secretBinding = new SecretBinding
+            {
+                Name = model.Name,
+                Store = model.SelectedStore,
+                Description = model.Description,
+                Type = model.Type,
+            };
 
             secret.Id = model.SecretId;
             secret.Name = model.Name;
@@ -254,31 +261,22 @@ public class AdminController : Controller
         }
 
         var secretBindings = await _secretCoordinator.GetSecretBindingsAsync();
-        if (!secretBindings.ContainsKey(name))
+        if (!secretBindings.TryGetValue(name, out var secretBinding))
         {
             return RedirectToAction(nameof(Create), new { name });
         }
 
-        var secretBinding = secretBindings[name];
-
-        var secret1 = _factories.FirstOrDefault(factory => factory.Name == secretBinding.Type)?.Create();
-        var secret = await _secretCoordinator.GetSecretAsync(name, secret1.GetType());
-        if (secret is null)
-        {
-            secret = secret1;
-            secret.Name = name;
-            secret.IsNotStored = true;
-        }
+        var secret = await _secretCoordinator.GetSecretAsync(secretBinding);
 
         var model = new SecretBindingViewModel
         {
             Name = name,
             SelectedStore = secretBinding.Store,
             Description = secretBinding.Description,
-            Type = secret.GetType().Name,
-            Secret = secret,
-            StoreEntries = _secretCoordinator.GetSecretStoreDescriptors(),
+            Type = secretBinding.Type,
             Editor = await _displayManager.BuildEditorAsync(secret, _updateModelAccessor.ModelUpdater, isNew: false, "", ""),
+            StoreEntries = _secretCoordinator.GetSecretStoreDescriptors(),
+            Secret = secret,
         };
 
         model.Editor.Secret = secret;
@@ -315,21 +313,12 @@ public class AdminController : Controller
             }
         }
 
-        if (!secretBindings.ContainsKey(sourceName))
+        if (!secretBindings.TryGetValue(sourceName, out var secretBinding))
         {
             return NotFound();
         }
 
-        var secretBinding = secretBindings[sourceName];
-
-        var secret1 = _factories.FirstOrDefault(factory => factory.Name == secretBinding.Type)?.Create();
-        var secret = await _secretCoordinator.GetSecretAsync(sourceName, secret1.GetType());
-        if (secret is null)
-        {
-            secret = secret1;
-            secret.Name = sourceName;
-            secret.IsNotStored = true;
-        }
+        var secret = await _secretCoordinator.GetSecretAsync(secretBinding);
 
         var editor = await _displayManager.UpdateEditorAsync(secret, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
         model.Editor = editor;
@@ -339,6 +328,7 @@ public class AdminController : Controller
             // Remove this before updating the binding value.
             await _secretCoordinator.RemoveSecretAsync(sourceName, secretBinding.Store);
 
+            secretBinding.Name = model.Name;
             secretBinding.Store = model.SelectedStore;
             secretBinding.Description = model.Description;
             secret.Name = model.Name;

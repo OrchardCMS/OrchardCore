@@ -52,7 +52,6 @@ namespace OrchardCore.Workflows.Http
 
             services.AddSingleton<IGlobalMethodProvider, TokenMethodProvider>();
             services.AddScoped<IDisplayDriver<Secret>, HttpRequestEventSecretDisplayDriver>();
-            services.AddSingleton<ISecretFactory>(new SecretFactory<HttpRequestEventSecret>());
             services.AddScoped<IHttpRequestEventSecretService, HttpRequestEventSecretService>();
         }
 

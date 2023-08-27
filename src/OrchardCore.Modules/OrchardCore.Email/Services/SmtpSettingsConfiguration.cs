@@ -13,20 +13,20 @@ namespace OrchardCore.Email.Services
     {
         private readonly ISiteService _site;
         private readonly ShellSettings _shellSettings;
-        private readonly ISecretService<TextSecret> _textSecretService;
+        private readonly ISecretCoordinator _secretCoordinator;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ILogger _logger;
 
         public SmtpSettingsConfiguration(
             ISiteService site,
             ShellSettings shellSettings,
-            ISecretService<TextSecret> textSecretService,
+            ISecretCoordinator secretCoordinator,
             IDataProtectionProvider dataProtectionProvider,
             ILogger<SmtpSettingsConfiguration> logger)
         {
             _site = site;
             _shellSettings = shellSettings;
-            _textSecretService = textSecretService;
+            _secretCoordinator = secretCoordinator;
             _dataProtectionProvider = dataProtectionProvider;
             _logger = logger;
         }
@@ -50,7 +50,7 @@ namespace OrchardCore.Email.Services
 
             if (!String.IsNullOrEmpty(settings.PasswordSecret))
             {
-                options.Password = _textSecretService.GetSecretAsync(settings.PasswordSecret).GetAwaiter().GetResult().Text;
+                options.Password = _secretCoordinator.GetSecretAsync<TextSecret>(settings.PasswordSecret).GetAwaiter().GetResult().Text;
             }
             else if (!String.IsNullOrWhiteSpace(settings.Password))
             {

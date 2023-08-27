@@ -8,7 +8,6 @@
 @model HttpRequestEventViewModel
 @inject IAntiforgery Antiforgery
 @inject ISecretCoordinator SecretCoordinator
-@inject ISecretService<HttpRequestEventSecret> SecretService
 
 @{
     var secretBindings = await SecretCoordinator.GetSecretBindingsAsync();
@@ -20,7 +19,7 @@
     };
     foreach (var httpRequestEventSecretBinding in httpRequestEventSecretBindings)
     {
-        httpRequestEventSecrets.Add(await SecretService.GetSecretAsync(httpRequestEventSecretBinding.Key));
+        httpRequestEventSecrets.Add(await SecretCoordinator.GetSecretAsync<HttpRequestEventSecret>(httpRequestEventSecretBinding.Key));
     }
 
     HttpRequestEventSecret selectedHttpRequestEventSecret = null;

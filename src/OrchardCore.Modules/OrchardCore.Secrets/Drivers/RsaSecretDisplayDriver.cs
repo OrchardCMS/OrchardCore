@@ -30,7 +30,7 @@ public class RsaSecretDisplayDriver : DisplayDriver<Secret, RsaSecret>
         return Task.FromResult<IDisplayResult>(Initialize<RsaSecretViewModel>("RsaSecret_Fields_Edit", model =>
         {
             // Generate new keys when creating.
-            if (context.IsNew || secret.IsNotStored)
+            if (context.IsNew)
             {
                 using var rsa = RsaHelper.GenerateRsaSecurityKey(2048);
                 if (String.IsNullOrEmpty(secret.PublicKey))
@@ -51,14 +51,10 @@ public class RsaSecretDisplayDriver : DisplayDriver<Secret, RsaSecret>
                     model.PrivateKey = secret.PrivateKey;
                 }
             }
-
-            if (!context.IsNew || secret.IsNotStored)
+            else
             {
                 // The private key is never returned to the view when editing.
-                if (!String.IsNullOrEmpty(secret.PublicKey))
-                {
-                    model.PublicKey = secret.PublicKey;
-                }
+                model.PublicKey = secret.PublicKey;
 
                 using var rsa = RsaHelper.GenerateRsaSecurityKey(2048);
                 model.NewPublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey());
@@ -95,7 +91,7 @@ public class RsaSecretDisplayDriver : DisplayDriver<Secret, RsaSecret>
             secret.KeyType = model.KeyType;
 
             // The view will contain the private key when creating.
-            if (context.IsNew || secret.IsNotStored)
+            if (context.IsNew)
             {
                 secret.PublicKey = model.PublicKey;
                 secret.PrivateKey = model.PrivateKey;

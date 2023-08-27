@@ -3,43 +3,44 @@ using OrchardCore.Secrets;
 using OrchardCore.Secrets.Models;
 using OrchardCore.Secrets.Services;
 
-namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
+namespace OrchardCore.Tests.Modules.OrchardCore.Secrets;
+
+public class SecretServiceTests
 {
-    public class SecretServiceTests
+    [Fact]
+    public async Task ShouldGetTextSecret()
     {
-        [Fact]
-        public async Task ShouldGetTextSecret()
+        var store = Mock.Of<ISecretStore>();
+
+        var textSecret = new TextSecret()
         {
-            var store = Mock.Of<ISecretStore>();
-            var factory = Mock.Of<ISecretFactory>();
+            Text = "myemailpassword"
+        };
 
-            var textSecret = new TextSecret()
+        Mock.Get(store).Setup(s => s.GetSecretAsync("email", typeof(TextSecret))).ReturnsAsync(textSecret);
+
+        var documentManager = Mock.Of<IDocumentManager<SecretBindingsDocument>>();
+
+        Mock.Get(documentManager).Setup(m => m.GetOrCreateImmutableAsync(It.IsAny<Func<Task<SecretBindingsDocument>>>()))
+            .ReturnsAsync(() =>
             {
-                Text = "myemailpassword"
-            };
+                var document = new SecretBindingsDocument();
+                document.SecretBindings["email"] = new SecretBinding() { Name = "email" };
+                return document;
+            });
 
-            Mock.Get(store).Setup(s => s.GetSecretAsync("email", typeof(TextSecret))).ReturnsAsync(textSecret);
-            Mock.Get(factory).Setup(f => f.Create()).Returns(new TextSecret());
+        var options = new SecretsOptions();
+        options.SecretTypes.Add(typeof(TextSecret));
+        var secretsOptions = Options.Create(options);
 
-            var documentManager = Mock.Of<IDocumentManager<SecretBindingsDocument>>();
+        var coordinator = new DefaultSecretCoordinator(
+            new SecretBindingsManager(documentManager),
+            new[] { store },
+            secretsOptions);
 
-            Mock.Get(documentManager).Setup(m => m.GetOrCreateImmutableAsync(It.IsAny<Func<Task<SecretBindingsDocument>>>()))
-                .ReturnsAsync(() =>
-                {
-                    var document = new SecretBindingsDocument();
-                    document.SecretBindings["email"] = new SecretBinding();
-                    return document;
-                });
+        var service = new SecretService<TextSecret>(coordinator);
+        var secret = await service.GetSecretAsync("email");
 
-            var coordinator = new DefaultSecretCoordinator(
-                new SecretBindingsManager(documentManager),
-                new[] { factory },
-                new[] { store });
-
-            var service = new SecretService<TextSecret>(coordinator);
-            var secret = await service.GetSecretAsync("email");
-
-            Assert.Equal(secret, textSecret);
-        }
+        Assert.Equal(secret, textSecret);
     }
 }

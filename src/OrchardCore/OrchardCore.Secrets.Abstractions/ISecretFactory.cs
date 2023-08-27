@@ -1,7 +1,9 @@
+using System;
+
 namespace OrchardCore.Secrets;
 
 public interface ISecretFactory
 {
-    string Name { get; }
+    Type Type { get; }
     Secret Create();
 }

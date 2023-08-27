@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -12,15 +10,8 @@ namespace OrchardCore.Secrets.Recipes;
 public class SecretsRecipeStep : IRecipeStepHandler
 {
     private readonly ISecretCoordinator _secretCoordinator;
-    private readonly IEnumerable<ISecretFactory> _factories;
 
-    public SecretsRecipeStep(
-        ISecretCoordinator secretCoordinator,
-        IEnumerable<ISecretFactory> factories)
-    {
-        _secretCoordinator = secretCoordinator;
-        _factories = factories;
-    }
+    public SecretsRecipeStep(ISecretCoordinator secretCoordinator) => _secretCoordinator = secretCoordinator;
 
     public async Task ExecuteAsync(RecipeExecutionContext context)
     {
@@ -29,13 +20,11 @@ public class SecretsRecipeStep : IRecipeStepHandler
             return;
         }
 
-        var model = context.Step;
-
-        var secrets = ((JObject)context.Step["Secrets"]);
+        var secrets = (JObject)context.Step["Secrets"];
         foreach (var kvp in secrets)
         {
             var secretBinding = kvp.Value["SecretBinding"].ToObject<SecretBinding>();
-            var secret = _factories.FirstOrDefault(x => x.Name == secretBinding.Type)?.Create();
+            var secret = _secretCoordinator.CreateSecret(secretBinding.Type);
 
             // This will always be plaintext as decrypt has already operated on the secret.
             var plaintext = kvp.Value["Secret"]?.ToString();

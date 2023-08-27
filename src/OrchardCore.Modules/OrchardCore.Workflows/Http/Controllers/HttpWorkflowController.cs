@@ -25,8 +25,6 @@ namespace OrchardCore.Workflows.Http.Controllers
         private readonly IActivityLibrary _activityLibrary;
         private readonly ISecurityTokenService _securityTokenService;
         private readonly ISecretCoordinator _secretCoordinator;
-        private readonly ISecretService<HttpRequestEventSecret> _secretService;
-        private readonly IEnumerable<ISecretFactory> _secretFactories;
         private readonly IAntiforgery _antiforgery;
         private readonly IDistributedLock _distributedLock;
         private readonly ILogger _logger;
@@ -40,8 +38,6 @@ namespace OrchardCore.Workflows.Http.Controllers
             IActivityLibrary activityLibrary,
             ISecurityTokenService securityTokenService,
             ISecretCoordinator secretCoordinator,
-            ISecretService<HttpRequestEventSecret> secretService,
-            IEnumerable<ISecretFactory> secretFactories,
             IAntiforgery antiforgery,
             IDistributedLock distributedLock,
             ILogger<HttpWorkflowController> logger
@@ -54,8 +50,6 @@ namespace OrchardCore.Workflows.Http.Controllers
             _activityLibrary = activityLibrary;
             _securityTokenService = securityTokenService;
             _secretCoordinator = secretCoordinator;
-            _secretService = secretService;
-            _secretFactories = secretFactories;
             _antiforgery = antiforgery;
             _distributedLock = distributedLock;
             _logger = logger;
@@ -88,13 +82,12 @@ namespace OrchardCore.Workflows.Http.Controllers
         public async Task<IActionResult> LinkSecret(string secretName, string workflowTypeId, string activityId, int tokenLifeSpan)
         {
             var secretBindings = await _secretCoordinator.LoadSecretBindingsAsync();
-            if (!secretBindings.ContainsKey(secretName))
+            if (!secretBindings.TryGetValue(secretName, out var secretBinding))
             {
                 return NotFound();
             }
 
-            var secretBinding = secretBindings[secretName];
-            var secret = await _secretService.GetSecretAsync(secretName);
+            var secret = await _secretCoordinator.GetSecretAsync<HttpRequestEventSecret>(secretName);
             if (secret is null)
             {
                 return NotFound();
@@ -115,12 +108,12 @@ namespace OrchardCore.Workflows.Http.Controllers
         public async Task<IActionResult> CreateSecret(string secretName, string workflowTypeId, string activityId, int tokenLifeSpan)
         {
             var secretBindings = await _secretCoordinator.LoadSecretBindingsAsync();
-            if (secretBindings.ContainsKey(secretName))
+            if (!secretBindings.ContainsKey(secretName))
             {
                 return BadRequest();
             }
 
-            var secret = _secretFactories.FirstOrDefault(factory => factory.Name == typeof(HttpRequestEventSecret).Name)?.Create() as HttpRequestEventSecret;
+            var secret = _secretCoordinator.CreateSecret<HttpRequestEventSecret>();
 
             secret.Id = Guid.NewGuid().ToString("n");
             secret.Name = secretName;
@@ -137,9 +130,10 @@ namespace OrchardCore.Workflows.Http.Controllers
 
             var secretBinding = new SecretBinding
             {
-                 Store = store.Name,
-                 Description = secretName,
-                 Type = typeof(HttpRequestEventSecret).Name,
+                Name = secretName,
+                Store = store.Name,
+                Description = secretName,
+                Type = typeof(HttpRequestEventSecret).Name,
             };
 
             await _secretCoordinator.RemoveSecretAsync(secretName, secretBinding.Store);

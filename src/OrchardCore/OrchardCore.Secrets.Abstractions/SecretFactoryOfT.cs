@@ -1,10 +1,10 @@
+using System;
+
 namespace OrchardCore.Secrets;
 
 public class SecretFactory<TSecret> : ISecretFactory where TSecret : Secret, new()
 {
-    private static readonly string _typeName = typeof(TSecret).Name;
-
-    public string Name => _typeName;
+    public Type Type => typeof(TSecret);
 
     public Secret Create() => new TSecret();
 }

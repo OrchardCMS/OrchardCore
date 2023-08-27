@@ -15,20 +15,20 @@ public class HttpRequestEventSecretService : IHttpRequestEventSecretService
 {
     private const string TokenCacheKeyPrefix = "HttpRequestEventToken:";
     private readonly IMemoryCache _memoryCache;
-    private readonly ISecretService<HttpRequestEventSecret> _secretService;
+    private readonly ISecretCoordinator _secretCoordinator;
     private readonly ISecurityTokenService _securityTokenService;
     private readonly ViewContextAccessor _viewContextAccessor;
     private readonly IUrlHelperFactory _urlHelperFactory;
 
     public HttpRequestEventSecretService(
         IMemoryCache memoryCache,
-        ISecretService<HttpRequestEventSecret> secretService,
+        ISecretCoordinator secretCoordinator,
         ISecurityTokenService securityTokenService,
         ViewContextAccessor viewContextAccessor,
         IUrlHelperFactory urlHelperFactory)
     {
         _memoryCache = memoryCache;
-        _secretService = secretService;
+        _secretCoordinator = secretCoordinator;
         _securityTokenService = securityTokenService;
         _viewContextAccessor = viewContextAccessor;
         _urlHelperFactory = urlHelperFactory;
@@ -36,7 +36,7 @@ public class HttpRequestEventSecretService : IHttpRequestEventSecretService
 
     public async Task<string> GetUrlAsync(string httpRequestEventSecretName)
     {
-        var secret = await _secretService.GetSecretAsync(httpRequestEventSecretName);
+        var secret = await _secretCoordinator.GetSecretAsync<HttpRequestEventSecret>(httpRequestEventSecretName);
         if (secret == null)
         {
             return null;

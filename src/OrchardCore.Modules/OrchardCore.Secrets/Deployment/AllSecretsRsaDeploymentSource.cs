@@ -10,18 +10,15 @@ namespace OrchardCore.Secrets.Deployment;
 
 public class AllSecretsRsaDeploymentSource : IDeploymentSource
 {
-    private readonly IEncryptionProvider _encryptionProvider;
     private readonly ISecretCoordinator _secretCoordinator;
-    private readonly IEnumerable<ISecretFactory> _factories;
+    private readonly IEncryptionProvider _encryptionProvider;
 
     public AllSecretsRsaDeploymentSource(
-        IEncryptionProvider encryptionProvider,
         ISecretCoordinator secretCoordinator,
-        IEnumerable<ISecretFactory> factories)
+        IEncryptionProvider encryptionProvider)
     {
-        _encryptionProvider = encryptionProvider;
         _secretCoordinator = secretCoordinator;
-        _factories = factories;
+        _encryptionProvider = encryptionProvider;
     }
 
     public async Task ProcessDeploymentStepAsync(DeploymentStep deploymentStep, DeploymentPlanResult result)
@@ -32,7 +29,7 @@ public class AllSecretsRsaDeploymentSource : IDeploymentSource
         }
 
         var secretBindings = await _secretCoordinator.GetSecretBindingsAsync();
-        if (!secretBindings.Any())
+        if (secretBindings.Count == 0)
         {
             return;
         }
@@ -55,8 +52,7 @@ public class AllSecretsRsaDeploymentSource : IDeploymentSource
 
             if (!secretDescriptor.IsReadOnly)
             {
-                var secret = _factories.FirstOrDefault(x => x.Name == secretBinding.Value.Type)?.Create();
-                secret = await _secretCoordinator.GetSecretAsync(secretBinding.Key, secret.GetType());
+                var secret = await _secretCoordinator.GetSecretAsync(secretBinding.Value);
                 if (secret is not null)
                 {
                     var plaintext = JsonConvert.SerializeObject(secret);
