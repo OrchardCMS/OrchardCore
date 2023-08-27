@@ -1,8 +1,8 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Cysharp.Text;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 
@@ -22,7 +22,7 @@ public class WordDocumentMediaFileTextProvider : IMediaFileTextProvider
                 return Task.FromResult(String.Empty);
             }
 
-            var stringBuilder = new StringBuilder();
+            using var stringBuilder = ZString.CreateStringBuilder();
 
             foreach (var paragraph in paragraphs)
             {

@@ -1,8 +1,8 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Cysharp.Text;
 using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
@@ -23,7 +23,7 @@ public class PresentationDocumentMediaFileTextProvider : IMediaFileTextProvider
                 return Task.FromResult(String.Empty);
             }
 
-            var stringBuilder = new StringBuilder();
+            using var stringBuilder = ZString.CreateStringBuilder();
 
             foreach (var slideId in slideIds)
             {
@@ -34,7 +34,7 @@ public class PresentationDocumentMediaFileTextProvider : IMediaFileTextProvider
                     continue;
                 }
 
-                var slideText = GetAllText(slidePart);
+                var slideText = GetText(slidePart);
 
                 stringBuilder.AppendLine(slideText);
             }
@@ -47,14 +47,14 @@ public class PresentationDocumentMediaFileTextProvider : IMediaFileTextProvider
         }
     }
 
-    private static string GetAllText(SlidePart slidePart)
+    private static string GetText(SlidePart slidePart)
     {
         if (slidePart.Slide == null)
         {
             return String.Empty;
         }
 
-        var stringBuilder = new StringBuilder();
+        using var stringBuilder = ZString.CreateStringBuilder();
 
         foreach (var paragraph in slidePart.Slide.Descendants<Paragraph>())
         {
