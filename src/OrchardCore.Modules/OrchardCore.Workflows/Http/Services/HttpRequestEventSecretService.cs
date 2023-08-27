@@ -46,7 +46,7 @@ public class HttpRequestEventSecretService : IHttpRequestEventSecretService
 
         // The cache key is a representation of the secrets values.
         // If the secrets value changes the cache key will no longer be valid, and expire automatically.
-        var cacheKey = $"{TokenCacheKeyPrefix}{secret.WorkflowTypeId}{secret.ActivityId}{tokenLifeSpan.ToString()}";
+        var cacheKey = $"{TokenCacheKeyPrefix}{secret.WorkflowTypeId}{secret.ActivityId}{tokenLifeSpan}";
 
         var url = _memoryCache.GetOrCreate(cacheKey, entry =>
         {

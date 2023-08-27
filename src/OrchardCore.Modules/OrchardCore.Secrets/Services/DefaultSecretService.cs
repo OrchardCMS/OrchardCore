@@ -13,7 +13,7 @@ public class DefaultSecretService : ISecretService
     private readonly IReadOnlyCollection<SecretStoreDescriptor> _secretStoreDescriptors;
     private readonly IEnumerable<ISecretStore> _stores;
 
-    private readonly Dictionary<string, ISecretFactory> _factories = new();
+    private readonly Dictionary<string, SecretActivator> _activators = new();
 
     public DefaultSecretService(
         SecretBindingsManager secretBindingsManager,
@@ -34,15 +34,15 @@ public class DefaultSecretService : ISecretService
 
         foreach (var type in secretOptions.Value.SecretTypes)
         {
-            var factoryType = typeof(SecretFactory<>).MakeGenericType(type);
-            var factory = (ISecretFactory)Activator.CreateInstance(factoryType);
-            _factories[type.Name] = factory;
+            var activatorType = typeof(SecretActivator<>).MakeGenericType(type);
+            var activator = (SecretActivator)Activator.CreateInstance(activatorType);
+            _activators[type.Name] = activator;
         }
     }
 
     public Secret CreateSecret(string typeName)
     {
-        if (!_factories.TryGetValue(typeName, out var factory) || !typeof(Secret).IsAssignableFrom(factory.Type))
+        if (!_activators.TryGetValue(typeName, out var factory) || !typeof(Secret).IsAssignableFrom(factory.Type))
         {
             throw new ArgumentException($"The type should be configured and implement '{nameof(Secret)}'.", nameof(typeName));
         }
@@ -52,7 +52,7 @@ public class DefaultSecretService : ISecretService
 
     public async Task<Secret> GetSecretAsync(SecretBinding binding)
     {
-        if (!_factories.TryGetValue(binding.Type, out var factory) ||
+        if (!_activators.TryGetValue(binding.Type, out var factory) ||
             !typeof(Secret).IsAssignableFrom(factory.Type))
         {
             return null;
@@ -76,7 +76,7 @@ public class DefaultSecretService : ISecretService
 
     public async Task<Secret> GetSecretAsync(string key, Type type)
     {
-        if (!_factories.TryGetValue(type.Name, out var factory) || !typeof(Secret).IsAssignableFrom(factory.Type))
+        if (!_activators.TryGetValue(type.Name, out var factory) || !typeof(Secret).IsAssignableFrom(factory.Type))
         {
             throw new ArgumentException($"The type should be configured and implement '{nameof(Secret)}'.", nameof(type));
         }
@@ -87,20 +87,7 @@ public class DefaultSecretService : ISecretService
             return null;
         }
 
-        var secretStore = _stores.FirstOrDefault(store => String.Equals(store.Name, binding.Store, StringComparison.OrdinalIgnoreCase));
-        if (secretStore is null)
-        {
-            return null;
-        }
-
-        var secret = await secretStore.GetSecretAsync(binding.Name, factory.Type);
-        if (secret is null)
-        {
-            secret = factory.Create();
-            secret.Name = binding.Name;
-        }
-
-        return secret;
+        return await GetSecretAsync(binding);
     }
 
     public async Task<IDictionary<string, SecretBinding>> GetSecretBindingsAsync()

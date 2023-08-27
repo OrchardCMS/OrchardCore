@@ -338,7 +338,7 @@ public class AdminController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        // If we got this far, something failed, redisplay form
+        // If we got this far, something failed, redisplay form.
         model.StoreEntries = _secretService.GetSecretStoreDescriptors();
         return View(model);
     }

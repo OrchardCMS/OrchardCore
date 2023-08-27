@@ -25,7 +25,7 @@ public class SecretServiceTests
             .ReturnsAsync(() =>
             {
                 var document = new SecretBindingsDocument();
-                document.SecretBindings["email"] = new SecretBinding() { Name = "email" };
+                document.SecretBindings["email"] = new SecretBinding() { Name = "email", Type = typeof(TextSecret).Name };
                 return document;
             });
 
