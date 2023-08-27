@@ -24,9 +24,6 @@ namespace OrchardCore.Secrets
     {
         private readonly AdminOptions _adminOptions;
 
-        // Registered first so it provides the first store.
-        public override int Order => -10;
-
         public Startup(IOptions<AdminOptions> adminOptions) => _adminOptions = adminOptions.Value;
 
         public override void ConfigureServices(IServiceCollection services)
@@ -34,12 +31,12 @@ namespace OrchardCore.Secrets
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
-            services.AddSingleton<SecretBindingsManager>();
-            services.AddSingleton<ISecretService, DefaultSecretService>();
-
             services.AddScoped<IDisplayManager<Secret>, DisplayManager<Secret>>();
             services.AddScoped<IDisplayDriver<Secret>, TestSecretDisplayDriver>();
             services.AddScoped<IDisplayDriver<Secret>, RsaSecretDisplayDriver>();
+
+            services.AddSingleton<SecretBindingsManager>();
+            services.AddSingleton<ISecretService, DefaultSecretService>();
 
             services.Configure<SecretOptions>(options =>
             {
@@ -55,7 +52,6 @@ namespace OrchardCore.Secrets
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllSecretsRsaDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllSecretsRsaDeploymentStepDriver>();
 
-            // TODO: we could have a feature to remove this.
             services.AddSingleton<DatabaseSecretDataProtector>();
             services.AddSingleton<ISecretStore, DatabaseSecretStore>();
             services.AddSingleton<SecretsDocumentManager>();

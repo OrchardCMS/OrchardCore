@@ -18,7 +18,7 @@ public class DefaultSecretService : ISecretService
     public DefaultSecretService(
         SecretBindingsManager secretBindingsManager,
         IEnumerable<ISecretStore> secretStores,
-        IOptions<SecretOptions> secretsOptions)
+        IOptions<SecretOptions> secretOptions)
     {
         _secretBindingsManager = secretBindingsManager;
 
@@ -32,7 +32,7 @@ public class DefaultSecretService : ISecretService
 
         _stores = secretStores;
 
-        foreach (var type in secretsOptions.Value.SecretTypes)
+        foreach (var type in secretOptions.Value.SecretTypes)
         {
             var factoryType = typeof(SecretFactory<>).MakeGenericType(type);
             var factory = (ISecretFactory)Activator.CreateInstance(factoryType);
@@ -102,12 +102,6 @@ public class DefaultSecretService : ISecretService
 
         return secret;
     }
-
-    public TSecret CreateSecret<TSecret>() where TSecret : Secret, new()
-        => CreateSecret(typeof(TSecret).Name) as TSecret;
-
-    public async Task<TSecret> GetSecretAsync<TSecret>(string key) where TSecret : Secret, new()
-        => (await GetSecretAsync(key, typeof(TSecret))) as TSecret;
 
     public async Task<IDictionary<string, SecretBinding>> GetSecretBindingsAsync()
     {

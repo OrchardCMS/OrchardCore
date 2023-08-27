@@ -31,12 +31,12 @@ public class SecretServiceTests
 
         var options = new SecretOptions();
         options.SecretTypes.Add(typeof(TextSecret));
-        var secretsOptions = Options.Create(options);
+        var secretOptions = Options.Create(options);
 
         var secretService = new DefaultSecretService(
             new SecretBindingsManager(documentManager),
             new[] { store },
-            secretsOptions);
+            secretOptions);
 
         var secret = await secretService.GetSecretAsync<TextSecret>("email");
 
