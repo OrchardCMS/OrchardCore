@@ -29,17 +29,16 @@ public class SecretServiceTests
                 return document;
             });
 
-        var options = new SecretsOptions();
+        var options = new SecretOptions();
         options.SecretTypes.Add(typeof(TextSecret));
         var secretsOptions = Options.Create(options);
 
-        var coordinator = new DefaultSecretCoordinator(
+        var secretService = new DefaultSecretService(
             new SecretBindingsManager(documentManager),
             new[] { store },
             secretsOptions);
 
-        var service = new SecretService<TextSecret>(coordinator);
-        var secret = await service.GetSecretAsync("email");
+        var secret = await secretService.GetSecretAsync<TextSecret>("email");
 
         Assert.Equal(secret, textSecret);
     }

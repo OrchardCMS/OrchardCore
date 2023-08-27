@@ -7,7 +7,7 @@
 @using Newtonsoft.Json.Serialization
 @model HttpRequestEventViewModel
 @inject IAntiforgery Antiforgery
-@inject ISecretCoordinator SecretCoordinator
+@inject ISecretService SecretCoordinator
 
 @{
     var secretBindings = await SecretCoordinator.GetSecretBindingsAsync();

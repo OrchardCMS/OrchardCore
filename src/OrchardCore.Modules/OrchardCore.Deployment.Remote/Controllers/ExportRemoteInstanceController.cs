@@ -28,7 +28,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
         private readonly RemoteInstanceService _service;
-        private readonly ISecretCoordinator _secretCoordinator;
+        private readonly ISecretService _secretCoordinator;
         private readonly INotifier _notifier;
         protected readonly IHtmlLocalizer H;
 
@@ -37,7 +37,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             ISession session,
             RemoteInstanceService service,
             IDeploymentManager deploymentManager,
-            ISecretCoordinator secretCoordinator,
+            ISecretService secretCoordinator,
             INotifier notifier,
             IHtmlLocalizer<ExportRemoteInstanceController> localizer)
         {

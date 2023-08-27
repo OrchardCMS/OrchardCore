@@ -9,9 +9,9 @@ namespace OrchardCore.Secrets.Recipes;
 
 public class SecretsRecipeStep : IRecipeStepHandler
 {
-    private readonly ISecretCoordinator _secretCoordinator;
+    private readonly ISecretService _secretCoordinator;
 
-    public SecretsRecipeStep(ISecretCoordinator secretCoordinator) => _secretCoordinator = secretCoordinator;
+    public SecretsRecipeStep(ISecretService secretCoordinator) => _secretCoordinator = secretCoordinator;
 
     public async Task ExecuteAsync(RecipeExecutionContext context)
     {

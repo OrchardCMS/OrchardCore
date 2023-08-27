@@ -4,9 +4,9 @@ using System.Collections.Generic;
 namespace OrchardCore.Secrets;
 
 /// <summary>
-/// Configuration options for <see cref="ISecretCoordinator"/>.
+/// Configuration options for <see cref="ISecretService"/>.
 /// </summary>
-public class SecretsOptions
+public class SecretOptions
 {
     /// <summary>
     /// The list of <see cref="Secret"/> types.

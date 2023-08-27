@@ -7,9 +7,9 @@ namespace OrchardCore.Secrets.Services;
 
 public class DefaultDecryptionProvider : IDecryptionProvider
 {
-    private readonly ISecretCoordinator _secretCoordinator;
+    private readonly ISecretService _secretCoordinator;
 
-    public DefaultDecryptionProvider(ISecretCoordinator secretCoordinator) => _secretCoordinator = secretCoordinator;
+    public DefaultDecryptionProvider(ISecretService secretCoordinator) => _secretCoordinator = secretCoordinator;
 
     public async Task<IDecryptor> CreateAsync(string protectedData)
     {

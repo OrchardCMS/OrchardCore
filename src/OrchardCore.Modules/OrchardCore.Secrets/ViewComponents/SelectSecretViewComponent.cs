@@ -10,10 +10,10 @@ namespace OrchardCore.Secrets.ViewComponents;
 
 public class SelectSecretViewComponent : ViewComponent
 {
-    private readonly ISecretCoordinator _secretCoordinator;
+    private readonly ISecretService _secretCoordinator;
     protected readonly IStringLocalizer S;
 
-    public SelectSecretViewComponent(ISecretCoordinator secretCoordinator, IStringLocalizer<SelectSecretViewComponent> stringLocalizer)
+    public SelectSecretViewComponent(ISecretService secretCoordinator, IStringLocalizer<SelectSecretViewComponent> stringLocalizer)
     {
         _secretCoordinator = secretCoordinator;
         S = stringLocalizer;

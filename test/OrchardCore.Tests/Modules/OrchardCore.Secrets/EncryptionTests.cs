@@ -10,7 +10,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
 {
     public class EncryptionTests
     {
-        private static ISecretCoordinator GetSecretServiceMock()
+        private static ISecretService GetSecretServiceMock()
         {
             using var rsaEncryptor = RsaHelper.GenerateRsaSecurityKey(2048);
 
@@ -27,7 +27,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
                 PrivateKey = Convert.ToBase64String(rsaSigning.ExportRSAPrivateKey())
             };
 
-            var secretCoordinator = Mock.Of<ISecretCoordinator>();
+            var secretCoordinator = Mock.Of<ISecretService>();
             Mock.Get(secretCoordinator).Setup(s => s.GetSecretAsync<RsaSecret>("rsaencryptor")).ReturnsAsync(rsaEncryptionSecret);
             Mock.Get(secretCoordinator).Setup(s => s.GetSecretAsync<RsaSecret>("rsasigning")).ReturnsAsync(rsaSigningSecret);
 

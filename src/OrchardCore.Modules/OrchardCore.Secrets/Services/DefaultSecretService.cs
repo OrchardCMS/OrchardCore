@@ -7,7 +7,7 @@ using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Secrets.Services;
 
-public class DefaultSecretCoordinator : ISecretCoordinator
+public class DefaultSecretService : ISecretService
 {
     private readonly SecretBindingsManager _secretBindingsManager;
     private readonly IReadOnlyCollection<SecretStoreDescriptor> _secretStoreDescriptors;
@@ -15,10 +15,10 @@ public class DefaultSecretCoordinator : ISecretCoordinator
 
     private readonly Dictionary<string, ISecretFactory> _factories = new();
 
-    public DefaultSecretCoordinator(
+    public DefaultSecretService(
         SecretBindingsManager secretBindingsManager,
         IEnumerable<ISecretStore> secretStores,
-        IOptions<SecretsOptions> secretsOptions)
+        IOptions<SecretOptions> secretsOptions)
     {
         _secretBindingsManager = secretBindingsManager;
 

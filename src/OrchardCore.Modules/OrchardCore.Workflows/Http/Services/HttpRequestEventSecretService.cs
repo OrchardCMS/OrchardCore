@@ -15,14 +15,14 @@ public class HttpRequestEventSecretService : IHttpRequestEventSecretService
 {
     private const string TokenCacheKeyPrefix = "HttpRequestEventToken:";
     private readonly IMemoryCache _memoryCache;
-    private readonly ISecretCoordinator _secretCoordinator;
+    private readonly ISecretService _secretCoordinator;
     private readonly ISecurityTokenService _securityTokenService;
     private readonly ViewContextAccessor _viewContextAccessor;
     private readonly IUrlHelperFactory _urlHelperFactory;
 
     public HttpRequestEventSecretService(
         IMemoryCache memoryCache,
-        ISecretCoordinator secretCoordinator,
+        ISecretService secretCoordinator,
         ISecurityTokenService securityTokenService,
         ViewContextAccessor viewContextAccessor,
         IUrlHelperFactory urlHelperFactory)

@@ -5,9 +5,9 @@ namespace OrchardCore.Secrets.Services;
 
 public class DefaultEncryptionProvider : IEncryptionProvider
 {
-    private readonly ISecretCoordinator _secretCoordinator;
+    private readonly ISecretService _secretCoordinator;
 
-    public DefaultEncryptionProvider(ISecretCoordinator secretCoordinator) => _secretCoordinator = secretCoordinator;
+    public DefaultEncryptionProvider(ISecretService secretCoordinator) => _secretCoordinator = secretCoordinator;
 
     public async Task<IEncryptor> CreateAsync(string encryptionSecretName, string signingSecretName)
     {

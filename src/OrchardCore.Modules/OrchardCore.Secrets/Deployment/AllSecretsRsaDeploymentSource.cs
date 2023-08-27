@@ -10,11 +10,11 @@ namespace OrchardCore.Secrets.Deployment;
 
 public class AllSecretsRsaDeploymentSource : IDeploymentSource
 {
-    private readonly ISecretCoordinator _secretCoordinator;
+    private readonly ISecretService _secretCoordinator;
     private readonly IEncryptionProvider _encryptionProvider;
 
     public AllSecretsRsaDeploymentSource(
-        ISecretCoordinator secretCoordinator,
+        ISecretService secretCoordinator,
         IEncryptionProvider encryptionProvider)
     {
         _secretCoordinator = secretCoordinator;

@@ -13,14 +13,14 @@ namespace OrchardCore.Email.Services
     {
         private readonly ISiteService _site;
         private readonly ShellSettings _shellSettings;
-        private readonly ISecretCoordinator _secretCoordinator;
+        private readonly ISecretService _secretCoordinator;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ILogger _logger;
 
         public SmtpSettingsConfiguration(
             ISiteService site,
             ShellSettings shellSettings,
-            ISecretCoordinator secretCoordinator,
+            ISecretService secretCoordinator,
             IDataProtectionProvider dataProtectionProvider,
             ILogger<SmtpSettingsConfiguration> logger)
         {

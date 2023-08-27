@@ -24,7 +24,7 @@ namespace OrchardCore.Workflows.Http.Controllers
         private readonly IWorkflowStore _workflowStore;
         private readonly IActivityLibrary _activityLibrary;
         private readonly ISecurityTokenService _securityTokenService;
-        private readonly ISecretCoordinator _secretCoordinator;
+        private readonly ISecretService _secretCoordinator;
         private readonly IAntiforgery _antiforgery;
         private readonly IDistributedLock _distributedLock;
         private readonly ILogger _logger;
@@ -37,7 +37,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             IWorkflowStore workflowStore,
             IActivityLibrary activityLibrary,
             ISecurityTokenService securityTokenService,
-            ISecretCoordinator secretCoordinator,
+            ISecretService secretCoordinator,
             IAntiforgery antiforgery,
             IDistributedLock distributedLock,
             ILogger<HttpWorkflowController> logger

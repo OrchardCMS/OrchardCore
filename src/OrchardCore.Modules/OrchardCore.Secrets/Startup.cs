@@ -35,13 +35,13 @@ namespace OrchardCore.Secrets
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddSingleton<SecretBindingsManager>();
-            services.AddSingleton<ISecretCoordinator, DefaultSecretCoordinator>();
+            services.AddSingleton<ISecretService, DefaultSecretService>();
 
             services.AddScoped<IDisplayManager<Secret>, DisplayManager<Secret>>();
             services.AddScoped<IDisplayDriver<Secret>, TestSecretDisplayDriver>();
             services.AddScoped<IDisplayDriver<Secret>, RsaSecretDisplayDriver>();
 
-            services.Configure<SecretsOptions>(options =>
+            services.Configure<SecretOptions>(options =>
             {
                 options.SecretTypes.Add(typeof(TextSecret));
                 options.SecretTypes.Add(typeof(RsaSecret));

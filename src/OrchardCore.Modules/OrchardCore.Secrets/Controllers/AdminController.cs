@@ -24,10 +24,10 @@ namespace OrchardCore.Secrets.Controllers;
 public class AdminController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
-    private readonly ISecretCoordinator _secretCoordinator;
+    private readonly ISecretService _secretCoordinator;
     private readonly IDisplayManager<Secret> _displayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-    private readonly SecretsOptions _secretsOptions;
+    private readonly SecretOptions _secretsOptions;
     private readonly ISiteService _siteService;
     private readonly INotifier _notifier;
 
@@ -37,10 +37,10 @@ public class AdminController : Controller
 
     public AdminController(
         IAuthorizationService authorizationService,
-        ISecretCoordinator secretCoordinator,
+        ISecretService secretCoordinator,
         IDisplayManager<Secret> displayManager,
         IUpdateModelAccessor updateModelAccessor,
-        IOptions<SecretsOptions> secretsOptions,
+        IOptions<SecretOptions> secretsOptions,
         ISiteService siteService,
         INotifier notifier,
         IShapeFactory shapeFactory,

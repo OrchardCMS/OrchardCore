@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Secrets;
 
-public interface ISecretCoordinator
+public interface ISecretService
 {
     public Secret CreateSecret(string typeName);
     Task<Secret> GetSecretAsync(string key, Type type);
