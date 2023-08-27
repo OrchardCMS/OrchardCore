@@ -174,10 +174,8 @@ public class AdminController : Controller
             return NotFound();
         }
 
-        secret.Id = Guid.NewGuid().ToString("n");
         var model = new SecretBindingViewModel
         {
-            SecretId = secret.Id,
             Type = type,
             Editor = await _displayManager.BuildEditorAsync(secret, _updateModelAccessor.ModelUpdater, isNew: true, "", ""),
             StoreEntries = _secretService.GetSecretStoreDescriptors(),
@@ -237,7 +235,6 @@ public class AdminController : Controller
                 Type = model.Type,
             };
 
-            secret.Id = model.SecretId;
             secret.Name = model.Name;
 
             await _secretService.UpdateSecretAsync(model.Name, secretBinding, secret);

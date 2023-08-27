@@ -8,16 +8,3 @@ public class SecretActivator<TSecret> : SecretActivator where TSecret : Secret, 
 
     public override Secret Create() => new TSecret();
 }
-
-public class SecretActivator
-{
-    public virtual Type Type => typeof(Secret);
-
-    public virtual Secret Create() => new();
-}
-
-public interface ISecretActivator
-{
-    Type Type { get; }
-    Secret Create();
-}

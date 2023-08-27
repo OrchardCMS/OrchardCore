@@ -115,7 +115,6 @@ namespace OrchardCore.Workflows.Http.Controllers
 
             var secret = _secretService.CreateSecret<HttpRequestEventSecret>();
 
-            secret.Id = Guid.NewGuid().ToString("n");
             secret.Name = secretName;
             secret.WorkflowTypeId = workflowTypeId;
             secret.ActivityId = activityId;
