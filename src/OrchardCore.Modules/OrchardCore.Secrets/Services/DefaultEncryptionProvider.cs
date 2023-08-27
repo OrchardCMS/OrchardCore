@@ -5,16 +5,16 @@ namespace OrchardCore.Secrets.Services;
 
 public class DefaultEncryptionProvider : IEncryptionProvider
 {
-    private readonly ISecretService _secretCoordinator;
+    private readonly ISecretService _secretService;
 
-    public DefaultEncryptionProvider(ISecretService secretCoordinator) => _secretCoordinator = secretCoordinator;
+    public DefaultEncryptionProvider(ISecretService secretService) => _secretService = secretService;
 
     public async Task<IEncryptor> CreateAsync(string encryptionSecretName, string signingSecretName)
     {
-        var encryptionSecret = await _secretCoordinator.GetSecretAsync<RsaSecret>(encryptionSecretName)
+        var encryptionSecret = await _secretService.GetSecretAsync<RsaSecret>(encryptionSecretName)
             ?? throw new InvalidOperationException($"Secret '{encryptionSecretName}' not found.");
 
-        var signingSecret = await _secretCoordinator.GetSecretAsync<RsaSecret>(signingSecretName)
+        var signingSecret = await _secretService.GetSecretAsync<RsaSecret>(signingSecretName)
             ?? throw new InvalidOperationException($"Secret '{signingSecretName}' not found.");
 
         // This becomes irrelevent as we now need the private key for the signature.

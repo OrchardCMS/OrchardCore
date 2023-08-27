@@ -28,7 +28,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
         private readonly RemoteInstanceService _service;
-        private readonly ISecretService _secretCoordinator;
+        private readonly ISecretService _secretService;
         private readonly INotifier _notifier;
         protected readonly IHtmlLocalizer H;
 
@@ -37,7 +37,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             ISession session,
             RemoteInstanceService service,
             IDeploymentManager deploymentManager,
-            ISecretService secretCoordinator,
+            ISecretService secretService,
             INotifier notifier,
             IHtmlLocalizer<ExportRemoteInstanceController> localizer)
         {
@@ -45,7 +45,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             _deploymentManager = deploymentManager;
             _session = session;
             _service = service;
-            _secretCoordinator = secretCoordinator;
+            _secretService = secretService;
             _notifier = notifier;
             H = localizer;
         }
@@ -110,7 +110,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                     requestContent.Add(new StringContent(remoteInstance.ClientName), nameof(ImportViewModel.ClientName));
                     if (!String.IsNullOrEmpty(remoteInstance.ApiKeySecret))
                     {
-                        var secret = await _secretCoordinator.GetSecretAsync<TextSecret>(remoteInstance.ApiKeySecret);
+                        var secret = await _secretService.GetSecretAsync<TextSecret>(remoteInstance.ApiKeySecret);
                         requestContent.Add(new StringContent(secret.Text), nameof(ImportViewModel.ApiKey));
                     }
                     else

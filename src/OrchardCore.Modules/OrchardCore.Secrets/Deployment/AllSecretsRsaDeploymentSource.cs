@@ -10,14 +10,14 @@ namespace OrchardCore.Secrets.Deployment;
 
 public class AllSecretsRsaDeploymentSource : IDeploymentSource
 {
-    private readonly ISecretService _secretCoordinator;
+    private readonly ISecretService _secretService;
     private readonly IEncryptionProvider _encryptionProvider;
 
     public AllSecretsRsaDeploymentSource(
-        ISecretService secretCoordinator,
+        ISecretService secretService,
         IEncryptionProvider encryptionProvider)
     {
-        _secretCoordinator = secretCoordinator;
+        _secretService = secretService;
         _encryptionProvider = encryptionProvider;
     }
 
@@ -28,7 +28,7 @@ public class AllSecretsRsaDeploymentSource : IDeploymentSource
             return;
         }
 
-        var secretBindings = await _secretCoordinator.GetSecretBindingsAsync();
+        var secretBindings = await _secretService.GetSecretBindingsAsync();
         if (secretBindings.Count == 0)
         {
             return;
@@ -44,7 +44,7 @@ public class AllSecretsRsaDeploymentSource : IDeploymentSource
         var secrets = new Dictionary<string, JObject>();
         foreach (var secretBinding in secretBindings)
         {
-            var secretDescriptor = _secretCoordinator.GetSecretStoreDescriptors().FirstOrDefault(store =>
+            var secretDescriptor = _secretService.GetSecretStoreDescriptors().FirstOrDefault(store =>
                 String.Equals(store.Name, secretBinding.Value.Store, StringComparison.OrdinalIgnoreCase));
 
             // When descriptor is readonly we ship a binding without the secret value.
@@ -52,7 +52,7 @@ public class AllSecretsRsaDeploymentSource : IDeploymentSource
 
             if (!secretDescriptor.IsReadOnly)
             {
-                var secret = await _secretCoordinator.GetSecretAsync(secretBinding.Value);
+                var secret = await _secretService.GetSecretAsync(secretBinding.Value);
                 if (secret is not null)
                 {
                     var plaintext = JsonConvert.SerializeObject(secret);

@@ -13,10 +13,12 @@
     var secretBindings = await SecretCoordinator.GetSecretBindingsAsync();
     var httpRequestEventSecretBindings = secretBindings.Where(x => String.Equals(nameof(HttpRequestEventSecret), x.Value.Type, StringComparison.OrdinalIgnoreCase));
     var defaultHtttpRequestEventSecret = new HttpRequestEventSecret { Name = "None", WorkflowTypeId = String.Empty };
+
     var httpRequestEventSecrets = new List<HttpRequestEventSecret>()
     {
         defaultHtttpRequestEventSecret
     };
+
     foreach (var httpRequestEventSecretBinding in httpRequestEventSecretBindings)
     {
         httpRequestEventSecrets.Add(await SecretCoordinator.GetSecretAsync<HttpRequestEventSecret>(httpRequestEventSecretBinding.Key));
@@ -31,6 +33,7 @@
             selectedHttpRequestEventSecret = existing;
         }
     }
+
     if (selectedHttpRequestEventSecret == null)
     {
         selectedHttpRequestEventSecret = defaultHtttpRequestEventSecret;

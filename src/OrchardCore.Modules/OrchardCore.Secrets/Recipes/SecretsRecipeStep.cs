@@ -9,9 +9,9 @@ namespace OrchardCore.Secrets.Recipes;
 
 public class SecretsRecipeStep : IRecipeStepHandler
 {
-    private readonly ISecretService _secretCoordinator;
+    private readonly ISecretService _secretService;
 
-    public SecretsRecipeStep(ISecretService secretCoordinator) => _secretCoordinator = secretCoordinator;
+    public SecretsRecipeStep(ISecretService secretService) => _secretService = secretService;
 
     public async Task ExecuteAsync(RecipeExecutionContext context)
     {
@@ -24,7 +24,7 @@ public class SecretsRecipeStep : IRecipeStepHandler
         foreach (var kvp in secrets)
         {
             var secretBinding = kvp.Value["SecretBinding"].ToObject<SecretBinding>();
-            var secret = _secretCoordinator.CreateSecret(secretBinding.Type);
+            var secret = _secretService.CreateSecret(secretBinding.Type);
 
             // This will always be plaintext as decrypt has already operated on the secret.
             var plaintext = kvp.Value["Secret"]?.ToString();
@@ -34,8 +34,8 @@ public class SecretsRecipeStep : IRecipeStepHandler
                 secret = JsonConvert.DeserializeObject(plaintext, secret.GetType()) as Secret;
             }
 
-            await _secretCoordinator.RemoveSecretAsync(kvp.Key, secretBinding.Store);
-            await _secretCoordinator.UpdateSecretAsync(kvp.Key, secretBinding, secret);
+            await _secretService.RemoveSecretAsync(kvp.Key, secretBinding.Store);
+            await _secretService.UpdateSecretAsync(kvp.Key, secretBinding, secret);
         }
     }
 }

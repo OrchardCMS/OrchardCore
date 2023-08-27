@@ -7,9 +7,9 @@ namespace OrchardCore.Secrets.Services;
 
 public class DefaultDecryptionProvider : IDecryptionProvider
 {
-    private readonly ISecretService _secretCoordinator;
+    private readonly ISecretService _secretService;
 
-    public DefaultDecryptionProvider(ISecretService secretCoordinator) => _secretCoordinator = secretCoordinator;
+    public DefaultDecryptionProvider(ISecretService secretService) => _secretService = secretService;
 
     public async Task<IDecryptor> CreateAsync(string protectedData)
     {
@@ -18,10 +18,10 @@ public class DefaultDecryptionProvider : IDecryptionProvider
 
         var descriptor = JsonConvert.DeserializeObject<HybridKeyDescriptor>(decoded);
 
-        var encryptionSecret = await _secretCoordinator.GetSecretAsync<RsaSecret>(descriptor.EncryptionSecretName)
+        var encryptionSecret = await _secretService.GetSecretAsync<RsaSecret>(descriptor.EncryptionSecretName)
             ?? throw new InvalidOperationException($"{descriptor.EncryptionSecretName} secret not found");
 
-        var signingSecret = await _secretCoordinator.GetSecretAsync<RsaSecret>(descriptor.SigningSecretName)
+        var signingSecret = await _secretService.GetSecretAsync<RsaSecret>(descriptor.SigningSecretName)
             ?? throw new InvalidOperationException($"Secret not found {descriptor.SigningSecretName}");
 
         return new DefaultDecryptor(encryptionSecret.PrivateKeyAsBytes(), signingSecret.PublicKeyAsBytes());
