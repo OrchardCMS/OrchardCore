@@ -49,12 +49,7 @@ public class PresentationDocumentMediaFileTextProvider : IMediaFileTextProvider
 
     private static string GetText(SlidePart slidePart)
     {
-        if (slidePart.Slide == null)
-        {
-            return String.Empty;
-        }
-
-        using var stringBuilder = ZString.CreateStringBuilder();
+        var stringBuilder = new StringBuilder();
 
         foreach (var paragraph in slidePart.Slide.Descendants<Paragraph>())
         {
