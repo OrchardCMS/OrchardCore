@@ -40,7 +40,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Media.Indexer",
     Name = "Media Indexer",
-    Description = "Providers a way to index media with common extensions in Lucene or Elasticsearch.",
+    Description = "Providers a way to index media file with common formats in Lucene and Elasticsearch.",
     Dependencies = new[]
     {
         "OrchardCore.Media"
