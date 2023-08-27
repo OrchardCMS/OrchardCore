@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Media.Indexing;
 
-public class TxtMediaFileTextProvider : IMediaFileTextProvider
+public class TextMediaFileTextProvider : IMediaFileTextProvider
 {
     public async Task<string> GetTextAsync(string path, Stream fileStream)
     {
