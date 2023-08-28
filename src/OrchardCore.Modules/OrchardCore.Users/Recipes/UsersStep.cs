@@ -59,6 +59,12 @@ public class UsersStep : IRecipeStepHandler
             user.NormalizedUserName = importedUser.NormalizedUserName;
             user.SecurityStamp = importedUser.SecurityStamp;
             user.ResetToken = importedUser.ResetToken;
+            user.AccessFailedCount = importedUser.AccessFailedCount;
+            user.IsLockoutEnabled = importedUser.IsLockoutEnabled;
+            user.TwoFactorEnabled = importedUser.TwoFactorEnabled;
+            user.PhoneNumber = importedUser.PhoneNumber;
+            user.PhoneNumberConfirmed = importedUser.PhoneNumberConfirmed;
+            user.RoleNames = importedUser.RoleNames;
 
             _session.Save(user);
         }
