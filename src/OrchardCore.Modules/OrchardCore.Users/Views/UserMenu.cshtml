@@ -1,6 +1,6 @@
 @if (!User.Identity.IsAuthenticated)
 {
-    <li class="nav-item">
+    <li class="nav-item text-end">
         <a class="nav-link" asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="Login">
             <i class="fa-solid fa-sign-in-alt fa-fw" aria-hidden="true"></i> @T["Log in"]
         </a>
@@ -9,7 +9,7 @@
     return;
 }
 
-<li class="nav-item dropdown">
+<li class="nav-item dropdown text-end">
     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
         @if (Model.Header != null)
         {
