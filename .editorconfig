@@ -75,6 +75,11 @@ dotnet_naming_symbols.private_const_fields.applicable_kinds = field
 dotnet_naming_symbols.private_const_fields.applicable_accessibilities = private
 dotnet_naming_symbols.private_const_fields.required_modifiers = const
 
+# Define the 'private_const_fields_ignore_camel_case_leading_underscore' naming rule.
+dotnet_naming_rule.private_const_fields_ignore_camel_case_leading_underscore.severity = none
+dotnet_naming_rule.private_const_fields_ignore_camel_case_leading_underscore.symbols = private_const_fields
+dotnet_naming_rule.private_const_fields_ignore_camel_case_leading_underscore.style = camel_case_leading_underscore
+
 # StyleCop
 # Rules are listed at https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/StyleCop.Analyzers/StyleCop.Analyzers.CodeFixes/rulesets/StyleCopAnalyzersDefault.ruleset
 
