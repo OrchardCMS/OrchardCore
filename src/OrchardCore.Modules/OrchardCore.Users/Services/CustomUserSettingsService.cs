@@ -8,11 +8,11 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 using YesSql;
 
 namespace OrchardCore.Users.Services;
+
 public class CustomUserSettingsService
 {
     private readonly IContentManager _contentManager;
@@ -23,7 +23,6 @@ public class CustomUserSettingsService
     private readonly YesSql.ISession _session;
 
     public CustomUserSettingsService(
-        ISiteService siteService,
         IContentManager contentManager,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
@@ -56,9 +55,8 @@ public class CustomUserSettingsService
     {
         foreach (var settingsTypeName in settingsTypeNames)
         {
-            if (_settingsTypes.Value.TryGetValue(settingsTypeName, out ContentTypeDefinition  settingsType))
+            if (_settingsTypes.Value.TryGetValue(settingsTypeName, out ContentTypeDefinition settingsType))
                 yield return settingsType;
-            }
         }
     }
 
@@ -94,7 +92,8 @@ public class CustomUserSettingsService
         // foreach user get settings
         var users = await _session.Query<User>().ListAsync();
         var contentItems = new Dictionary<string, ContentItem>();
-        foreach (var user in users){
+        foreach (var user in users)
+        {
             var item = await GetSettingsAsync(user, settingsType, isNew);
             if (item != null)
             {
