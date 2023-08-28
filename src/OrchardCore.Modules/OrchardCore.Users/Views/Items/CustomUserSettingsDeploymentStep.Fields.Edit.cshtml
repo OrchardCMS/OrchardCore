@@ -49,14 +49,17 @@
 </div>
 
 <script at="Foot">
-    $(function () {
-        $("[data-reversetoggle]").on("click", function () {
+    window.addEventListener('DOMContentLoaded', function() {
+    var toggles = document.querySelectorAll('[data-reversetoggle]');
+    for (var i = 0; i < toggles.length; i++) {
+        toggles[i].addEventListener('click', function() {
             var state = this.checked;
             if (state) {
-                $($(this).attr("data-reversetoggle")).collapse('hide');
+                document.querySelector(this.getAttribute('data-reversetoggle')).classList.remove('show');
             } else {
-                $($(this).attr("data-reversetoggle")).collapse('show');
+                document.querySelector(this.getAttribute('data-reversetoggle')).classList.add('show');
             }
         });
-    });
+    }
+});
 </script>
