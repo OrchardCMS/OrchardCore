@@ -47,12 +47,12 @@ public class DatabaseSecretStore : ISecretStore
 
     public Task UpdateSecretAsync(string key, Secret secret)
     {
-        var documentSecret = new DocumentSecret
+        var secretDocument = new SecretDocument
         {
             Value = _databaseSecretDataProtector.Protect(JsonConvert.SerializeObject(secret)),
         };
 
-        return _manager.UpdateSecretAsync(key, documentSecret);
+        return _manager.UpdateSecretAsync(key, secretDocument);
     }
 
     public Task RemoveSecretAsync(string key) => _manager.RemoveSecretAsync(key);

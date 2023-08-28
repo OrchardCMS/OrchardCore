@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
+using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Secrets.KeyVault.Services;
 

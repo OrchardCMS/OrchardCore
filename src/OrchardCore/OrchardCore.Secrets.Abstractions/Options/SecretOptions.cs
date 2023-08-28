@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using OrchardCore.Secrets.Models;
 
-namespace OrchardCore.Secrets;
+namespace OrchardCore.Secrets.Options;
 
 /// <summary>
 /// Configuration options for <see cref="ISecretService"/>.

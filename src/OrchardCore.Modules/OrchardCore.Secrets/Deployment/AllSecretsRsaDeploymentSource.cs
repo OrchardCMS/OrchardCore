@@ -28,15 +28,24 @@ public class AllSecretsRsaDeploymentSource : IDeploymentSource
             return;
         }
 
-        var secretBindings = await _secretService.GetSecretBindingsAsync();
-        if (secretBindings.Count == 0)
-        {
-            return;
-        }
-
         if (String.IsNullOrEmpty(result.EncryptionSecretName))
         {
-            throw new InvalidOperationException("You must set an rsa secret for the deployment target before exporting secrets.");
+            throw new InvalidOperationException("You must set an encryption rsa secret for the deployment target before exporting secrets.");
+        }
+
+        if (String.IsNullOrEmpty(result.SigningSecretName))
+        {
+            throw new InvalidOperationException("You must set a signin rsa secret for the deployment target before exporting secrets.");
+        }
+
+        // Deployment secrets should already exist and not with a private key in both sides.
+        var secretBindings = (await _secretService.GetSecretBindingsAsync()).Where(binding =>
+            !String.Equals(binding.Value.Name, result.EncryptionSecretName, StringComparison.OrdinalIgnoreCase) &&
+            !String.Equals(binding.Value.Name, result.SigningSecretName, StringComparison.OrdinalIgnoreCase));
+
+        if (!secretBindings.Any())
+        {
+            return;
         }
 
         var encryptor = await _encryptionProvider.CreateAsync(result.EncryptionSecretName, result.SigningSecretName);
@@ -44,13 +53,13 @@ public class AllSecretsRsaDeploymentSource : IDeploymentSource
         var secrets = new Dictionary<string, JObject>();
         foreach (var secretBinding in secretBindings)
         {
-            var secretDescriptor = _secretService.GetSecretStoreDescriptors().FirstOrDefault(store =>
+            var storeDescriptor = _secretService.GetSecretStoreDescriptors().FirstOrDefault(store =>
                 String.Equals(store.Name, secretBinding.Value.Store, StringComparison.OrdinalIgnoreCase));
 
             // When descriptor is readonly we ship a binding without the secret value.
             var jObject = new JObject(new JProperty("SecretBinding", JObject.FromObject(secretBinding.Value)));
 
-            if (!secretDescriptor.IsReadOnly)
+            if (!storeDescriptor.IsReadOnly)
             {
                 var secret = await _secretService.GetSecretAsync(secretBinding.Value);
                 if (secret is not null)
@@ -62,6 +71,7 @@ public class AllSecretsRsaDeploymentSource : IDeploymentSource
                     jObject.Add("Secret", $"[js: decrypt('{encrypted}')]");
                 }
             }
+
             secrets.Add(secretBinding.Key, jObject);
         }
 

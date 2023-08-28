@@ -27,7 +27,7 @@ public class SecretsDocumentManager
         await _documentManager.UpdateAsync(document);
     }
 
-    public async Task UpdateSecretAsync(string name, DocumentSecret secret)
+    public async Task UpdateSecretAsync(string name, SecretDocument secret)
     {
         var document = await LoadSecretsDocumentAsync();
         document.Secrets[name] = secret;

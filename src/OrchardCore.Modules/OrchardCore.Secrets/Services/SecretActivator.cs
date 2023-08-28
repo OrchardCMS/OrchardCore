@@ -1,4 +1,5 @@
 using System;
+using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Secrets.Services;
 

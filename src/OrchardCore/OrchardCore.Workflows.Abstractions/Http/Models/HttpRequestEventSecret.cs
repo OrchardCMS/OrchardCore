@@ -1,4 +1,4 @@
-using OrchardCore.Secrets;
+using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Workflows.Http.Models;
 

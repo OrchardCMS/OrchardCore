@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.Mvc.Utilities;
+using OrchardCore.Secrets.Models;
+using OrchardCore.Secrets.Options;
 
 namespace OrchardCore.Secrets.Services;
 

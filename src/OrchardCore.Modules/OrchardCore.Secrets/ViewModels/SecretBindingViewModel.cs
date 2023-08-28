@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Secrets.ViewModels;
 

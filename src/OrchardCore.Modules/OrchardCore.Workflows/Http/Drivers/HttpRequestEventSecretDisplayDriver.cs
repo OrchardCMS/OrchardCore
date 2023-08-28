@@ -6,11 +6,11 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
-using OrchardCore.Secrets;
 using OrchardCore.Workflows.Http.ViewModels;
 using OrchardCore.Workflows.Http.Models;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.Http.Activities;
+using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Workflows.Http.Drivers
 {

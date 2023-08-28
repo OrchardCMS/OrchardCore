@@ -4,6 +4,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Secrets.Models;
 using OrchardCore.Secrets.ViewModels;
 
 namespace OrchardCore.Secrets.Drivers;

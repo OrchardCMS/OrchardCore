@@ -15,6 +15,7 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Secrets;
+using OrchardCore.Secrets.Models;
 using YesSql;
 
 namespace OrchardCore.Deployment.Remote.Controllers

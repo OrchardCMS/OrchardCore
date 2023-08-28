@@ -1,4 +1,4 @@
-namespace OrchardCore.Secrets;
+namespace OrchardCore.Secrets.Models;
 
 public class Secret
 {

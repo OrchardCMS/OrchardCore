@@ -14,6 +14,8 @@ using OrchardCore.Recipes;
 using OrchardCore.Secrets.Controllers;
 using OrchardCore.Secrets.Deployment;
 using OrchardCore.Secrets.Drivers;
+using OrchardCore.Secrets.Models;
+using OrchardCore.Secrets.Options;
 using OrchardCore.Secrets.Recipes;
 using OrchardCore.Secrets.Services;
 using OrchardCore.Security.Permissions;

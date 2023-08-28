@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Secrets;
+using OrchardCore.Secrets.Models;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Services

@@ -1,3 +1,5 @@
+using OrchardCore.Secrets.Models;
+
 namespace OrchardCore.Secrets.ViewModels;
 
 public class SecretBindingEntry

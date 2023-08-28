@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Secrets;
+using OrchardCore.Secrets.Models;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Http.Activities;
 using OrchardCore.Workflows.Http.Models;

@@ -7,7 +7,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Scripting;
-using OrchardCore.Secrets;
+using OrchardCore.Secrets.Models;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Http.Activities;
 using OrchardCore.Workflows.Http.Drivers;

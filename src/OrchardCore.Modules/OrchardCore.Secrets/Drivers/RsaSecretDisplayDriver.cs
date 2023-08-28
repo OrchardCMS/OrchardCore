@@ -7,6 +7,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Secrets.Models;
 using OrchardCore.Secrets.Services;
 using OrchardCore.Secrets.ViewModels;
 
@@ -67,13 +68,13 @@ public class RsaSecretDisplayDriver : DisplayDriver<Secret, RsaSecret>
                 new SelectListItem()
                 {
                     Text = S["Public Key"],
-                    Value = ((int)RsaSecretType.Public).ToString(),
+                    Value = RsaSecretType.Public.ToString(),
                     Selected = model.KeyType == RsaSecretType.Public
                 },
                 new SelectListItem()
                 {
                     Text = S["Public / Private Key Pair"],
-                    Value = ((int)RsaSecretType.PublicPrivatePair).ToString(),
+                    Value = RsaSecretType.PublicPrivatePair.ToString(),
                     Selected = model.KeyType == RsaSecretType.PublicPrivatePair
                 },
             };
@@ -100,6 +101,7 @@ public class RsaSecretDisplayDriver : DisplayDriver<Secret, RsaSecret>
             if (model.KeyType == RsaSecretType.Public)
             {
                 secret.PublicKey = model.PublicKey;
+                secret.PrivateKey = null;
             }
 
             if (model.CycleKey && model.KeyType == RsaSecretType.PublicPrivatePair)

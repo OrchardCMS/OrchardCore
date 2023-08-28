@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Moq;
 using OrchardCore.Secrets;
+using OrchardCore.Secrets.Models;
 using OrchardCore.Secrets.Services;
 using Xunit;
 

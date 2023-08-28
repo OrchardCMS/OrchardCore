@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Secrets.Services;
 

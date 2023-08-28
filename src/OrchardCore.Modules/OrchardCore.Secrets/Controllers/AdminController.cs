@@ -15,6 +15,8 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
+using OrchardCore.Secrets.Models;
+using OrchardCore.Secrets.Options;
 using OrchardCore.Secrets.ViewModels;
 using OrchardCore.Settings;
 
@@ -337,6 +339,10 @@ public class AdminController : Controller
 
         // If we got this far, something failed, redisplay form.
         model.StoreEntries = _secretService.GetSecretStoreDescriptors();
+
+        // Prevent a page not found on the next post.
+        model.Name = sourceName;
+
         return View(model);
     }
 

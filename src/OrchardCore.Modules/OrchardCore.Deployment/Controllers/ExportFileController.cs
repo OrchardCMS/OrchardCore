@@ -63,7 +63,8 @@ namespace OrchardCore.Deployment.Controllers
 
                 var recipeDescriptor = new RecipeDescriptor();
 
-                var recipeFileDeploymentStep = deploymentPlan.DeploymentSteps.FirstOrDefault(ds => ds.Name == nameof(RecipeFileDeploymentStep)) as RecipeFileDeploymentStep;
+                var recipeFileDeploymentStep = deploymentPlan.DeploymentSteps.FirstOrDefault(
+                    ds => ds.Name == nameof(RecipeFileDeploymentStep)) as RecipeFileDeploymentStep;
 
                 if (recipeFileDeploymentStep != null)
                 {
@@ -81,7 +82,12 @@ namespace OrchardCore.Deployment.Controllers
                 var siteSettings = await _siteService.GetSiteSettingsAsync();
                 var fileDownloadDeploymentTargetSettings = siteSettings.As<FileDownloadDeploymentTargetSettings>();
 
-                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor, fileDownloadDeploymentTargetSettings.RsaEncryptionSecret, fileDownloadDeploymentTargetSettings.RsaSigningSecret );
+                var deploymentPlanResult = new DeploymentPlanResult(
+                    fileBuilder,
+                    recipeDescriptor,
+                    fileDownloadDeploymentTargetSettings.RsaEncryptionSecret,
+                    fileDownloadDeploymentTargetSettings.RsaSigningSecret);
+
                 await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
                 ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
             }

@@ -1,6 +1,6 @@
 using System;
 
-namespace OrchardCore.Secrets;
+namespace OrchardCore.Secrets.Models;
 
 public class RsaSecret : Secret
 {

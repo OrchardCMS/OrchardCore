@@ -1,6 +1,7 @@
 using OrchardCore.Documents;
 using OrchardCore.Secrets;
 using OrchardCore.Secrets.Models;
+using OrchardCore.Secrets.Options;
 using OrchardCore.Secrets.Services;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Secrets;

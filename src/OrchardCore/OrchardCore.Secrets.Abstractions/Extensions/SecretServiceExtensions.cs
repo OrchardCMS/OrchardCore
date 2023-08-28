@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Secrets;
 
