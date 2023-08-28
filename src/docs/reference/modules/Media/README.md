@@ -481,7 +481,7 @@ When the query string is signed with a token any width, height value may be used
     Tokens are only available from the [Preview Feed](../../../getting-started/preview-package-source)
     Prior to this the width or height values are limited to `16`, `32`, `50`, `100`, `160`, `240`, `480`, `600`, `1024`, `2048`.
 
-## Media Indexing
+## Media Content Search
 
 Media can be optionally indexed for search as well if files are referenced via Media Fields. The following data can be indexed for each file referenced from a Media Field:
 
@@ -502,6 +502,11 @@ To set up indexing for Media do the following:
 4. Try searching for content only available in the Media Text of selected media files, or referenced PDF files. You should see corresponding results.
 
 ## Videos
+
+## Media Indexing
+
+The `Media Indexing` feature extends the media indexing capability to also encompass searching within files with the following extensions `.txt`, `.md`, `.docx`, and `.pptx`.
+
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/BQHUlvPFRR4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 

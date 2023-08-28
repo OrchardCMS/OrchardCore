@@ -393,8 +393,8 @@ namespace OrchardCore.Media
         }
     }
 
-    [Feature("OrchardCore.Media.Indexer")]
-    public class MediaIndexerStartup : StartupBase
+    [Feature("OrchardCore.Media.Indexing")]
+    public class MediaIndexingStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
