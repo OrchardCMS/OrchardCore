@@ -1,15 +1,13 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Users.Deployment
+namespace OrchardCore.Users.Deployment;
+/// <summary>
+/// Adds users to a <see cref="DeploymentPlanResult"/>.
+/// </summary>
+public class AllUsersDeploymentStep : DeploymentStep
 {
-    /// <summary>
-    /// Adds users to a <see cref="DeploymentPlanResult"/>.
-    /// </summary>
-    public class AllUsersDeploymentStep : DeploymentStep
+    public AllUsersDeploymentStep()
     {
-        public AllUsersDeploymentStep()
-        {
-            Name = "AllUsers";
-        }
+        Name = "AllUsers";
     }
 }

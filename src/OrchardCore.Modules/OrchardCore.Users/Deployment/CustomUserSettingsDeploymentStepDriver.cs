@@ -47,7 +47,6 @@ namespace OrchardCore.Users.Deployment
                                               x => x.SettingsTypeNames,
                                               x => x.IncludeAll);
 
-            // don't have the selected option if include all
             if (step.IncludeAll)
             {
                 step.SettingsTypeNames = Array.Empty<string>();
