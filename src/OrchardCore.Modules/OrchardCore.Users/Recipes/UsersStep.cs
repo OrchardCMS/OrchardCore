@@ -21,7 +21,7 @@ public class UsersStep : IRecipeStepHandler
         _userManager = userManager;
         _session = session;
     }
-    
+
     public async Task ExecuteAsync(RecipeExecutionContext context)
     {
         if (!String.Equals(context.Name, "Users", StringComparison.OrdinalIgnoreCase))
@@ -61,7 +61,7 @@ public class UsersStep : IRecipeStepHandler
         }
     }
 
-    public class UsersStepModel 
+    public class UsersStepModel
     {
         public UsersStepUserModel[] Users { get; set; }
     }

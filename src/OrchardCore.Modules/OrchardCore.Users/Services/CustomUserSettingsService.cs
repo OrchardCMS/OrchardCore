@@ -56,9 +56,7 @@ public class CustomUserSettingsService
     {
         foreach (var settingsTypeName in settingsTypeNames)
         {
-            ContentTypeDefinition settingsType;
-            if (_settingsTypes.Value.TryGetValue(settingsTypeName, out settingsType))
-            {
+            if (_settingsTypes.Value.TryGetValue(settingsTypeName, out ContentTypeDefinition  settingsType))
                 yield return settingsType;
             }
         }
@@ -66,7 +64,6 @@ public class CustomUserSettingsService
 
     public ContentTypeDefinition GetSettingsType(string settingsTypeName)
     {
-        ContentTypeDefinition settingsType;
         _settingsTypes.Value.TryGetValue(settingsTypeName, out ContentTypeDefinition settingsType);
         return settingsType;
     }
