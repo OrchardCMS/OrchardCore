@@ -66,6 +66,7 @@ The below table lists the different libraries used as Resources:
 | [Trumbowyg](https://github.com/Alex-D/Trumbowyg) | A lightweight and amazing WYSIWYG JavaScript editor. | 2.27.3 | [MIT](https://github.com/Alex-D/Trumbowyg/blob/develop/LICENSE) |
 | [vue-multiselect](https://github.com/shentao/vue-multiselect) | Universal select/multiselect/tagging component for Vue.js. | 2.1.6 | [MIT](https://github.com/shentao/vue-multiselect/blob/master/LICENSE) |
 | [Vue.Draggable](https://github.com/SortableJS/Vue.Draggable) | Vue drag-and-drop component based on Sortable.js. | 2.24.3 | [MIT](https://github.com/SortableJS/Vue.Draggable/blob/master/LICENSE) |
+| [Open-XML-SDK ](https://github.com/dotnet/Open-XML-SDK) | The Open XML SDK provides tools for working with Office Word, Excel, and PowerPoint documents | 2.20.0 | [MIT](https://github.com/dotnet/Open-XML-SDK/blob/main/LICENSE) |
 
 The below table lists the different Client side libraries:
 
