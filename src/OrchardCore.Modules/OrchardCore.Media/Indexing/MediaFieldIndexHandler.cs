@@ -76,21 +76,24 @@ namespace OrchardCore.Media.Indexing
 
                 var providerType = _mediaFileIndexingOptions.GetRegisteredMediaFileTextProvider(Path.GetExtension(path));
 
-                if (providerType != null)
+                if (providerType == null)
                 {
-                    using var fileStream = await _mediaFileStore.GetFileStreamAsync(path);
+                    continue;
+                }
 
-                    if (fileStream != null)
-                    {
-                        var fileText = await _serviceProvider
-                            .CreateInstance<IMediaFileTextProvider>(providerType)
-                            .GetTextAsync(path, fileStream);
+                using var fileStream = await _mediaFileStore.GetFileStreamAsync(path);
 
-                        foreach (var key in context.Keys)
-                        {
-                            context.DocumentIndex.Set(key + FileTextKeySuffix, fileText, options);
-                        }
-                    }
+                if (fileStream == null)
+                {
+                    continue;
+                }
+
+                var fileText = await _serviceProvider.CreateInstance<IMediaFileTextProvider>(providerType)
+                    .GetTextAsync(path, fileStream);
+
+                foreach (var key in context.Keys)
+                {
+                    context.DocumentIndex.Set(key + FileTextKeySuffix, fileText, options);
                 }
             }
         }
