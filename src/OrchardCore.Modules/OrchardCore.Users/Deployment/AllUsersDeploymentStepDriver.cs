@@ -8,11 +8,9 @@ public class AllUsersDeploymentStepDriver : DisplayDriver<DeploymentStep, AllUse
 {
     public override IDisplayResult Display(AllUsersDeploymentStep step)
     {
-        return
-            Combine(
+        return Combine(
                 View("AllUsersDeploymentStep_Summary", step).Location("Summary", "Content"),
-                View("AllUsersDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
-            );
+                View("AllUsersDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content"));
     }
 
     public override IDisplayResult Edit(AllUsersDeploymentStep step)

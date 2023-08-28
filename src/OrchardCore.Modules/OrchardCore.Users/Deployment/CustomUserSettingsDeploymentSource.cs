@@ -38,7 +38,7 @@ public class CustomUserSettingsDeploymentSource : IDeploymentSource
                 return;
             }
         }
-        
+
         var bigArray = new JArray();
 
         var allUsers = await _session.Query<User>().ListAsync();
@@ -54,8 +54,7 @@ public class CustomUserSettingsDeploymentSource : IDeploymentSource
 
             bigArray.Add(new JObject(
                 new JProperty("userId", user.UserId),
-                new JProperty("user-custom-user-settings", myArray)
-                ));
+                new JProperty("user-custom-user-settings", myArray)));
         }
 
         // Adding custom user settings

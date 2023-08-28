@@ -24,39 +24,46 @@ namespace OrchardCore.Users.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "custom-user-settings", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "custom-user-settings", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
 
             var model = context.Step;
 
-            var customUserSettingsList = (JArray)(from property in model.Properties()
-                                      where property.Name != "name"
-                                      select property).FirstOrDefault().Value;
+            var customUserSettingsList = (JArray)model
+                                        .Properties()
+                                        .Where(p => p.Name != "name")
+                                        .FirstOrDefault()
+                                        ?.Value;
 
-            var allUsers = (await _session.Query<User>().ListAsync());
+            var allUsers = await _session.Query<User>().ListAsync();
 
-            foreach (JObject userCustomUserSettings in customUserSettingsList)
+            foreach (JObject userCustomUserSettings in customUserSettingsList.Cast<JObject>())
             {
-                var userId = userCustomUserSettings.Properties().FirstOrDefault(p => p.Name == "userId").Value.ToString();
-                
+                var userId = userCustomUserSettings
+                    .Properties()
+                    .FirstOrDefault(p => p.Name == "userId")?
+                    .Value
+                    ?.ToString();
+
                 var iUser = allUsers.FirstOrDefault(u => u.UserId == userId);
-                if (iUser == null)
+                if (iUser is not User user)
                 {
                     continue;
                 }
 
-                var user = iUser as User;
-                var userSettings = (JArray)userCustomUserSettings.Properties().FirstOrDefault(p => p.Name == "user-custom-user-settings").Value;
+                var userSettings = (JArray)userCustomUserSettings
+                .Properties()
+                .FirstOrDefault(p => p.Name == "user-custom-user-settings")
+                ?.Value;
 
-                foreach (JObject userSetting in userSettings)
+                foreach (JObject userSetting in userSettings.Cast<JObject>())
                 {
-                    var ci = userSetting.ToObject<ContentItem>();
-                    user.Properties[ci.ContentType] = userSetting;
-                    
+                    var contentItem = userSetting.ToObject<ContentItem>();
+                    user.Properties[contentItem.ContentType] = userSetting;
                 }
-                
+
                 _session.Save(user);
             }
         }

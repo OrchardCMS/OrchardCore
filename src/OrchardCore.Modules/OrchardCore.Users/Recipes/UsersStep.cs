@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Sms;
 using OrchardCore.Users.Models;
 using YesSql;
 
@@ -24,7 +25,7 @@ public class UsersStep : IRecipeStepHandler
 
     public async Task ExecuteAsync(RecipeExecutionContext context)
     {
-        if (!String.Equals(context.Name, "Users", StringComparison.OrdinalIgnoreCase))
+        if (!string.Equals(context.Name, "Users", StringComparison.OrdinalIgnoreCase))
         {
             return;
         }
@@ -33,8 +34,10 @@ public class UsersStep : IRecipeStepHandler
 
         foreach (var importedUser in model.Users)
         {
-            if (String.IsNullOrWhiteSpace(importedUser.UserName))
+            if (string.IsNullOrWhiteSpace(importedUser.UserName))
+            {
                 continue;
+            }
 
             var iUser = await _userManager.FindByIdAsync(importedUser.UserId);
 
@@ -80,10 +83,10 @@ public class UsersStepUserModel
     public string NormalizedUserName { get; set; }
     public string SecurityStamp { get; set; }
     public string ResetToken { get; set; }
-    public string PhoneNumber { get; internal set; }
-    public bool PhoneNumberConfirmed { get; internal set; }
-    public bool TwoFactorEnabled { get; internal set; }
-    public bool IsLockoutEnabled { get; internal set; }
-    public int AccessFailedCount { get; internal set; }
-    public IList<string> RoleNames { get; internal set; }
+    public string PhoneNumber { get; set; }
+    public bool PhoneNumberConfirmed { get; set; }
+    public bool TwoFactorEnabled { get; set; }
+    public bool IsLockoutEnabled { get; set; }
+    public int AccessFailedCount { get; set; }
+    public IList<string> RoleNames { get; set; }
 }

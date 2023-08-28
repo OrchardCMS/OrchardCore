@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
@@ -28,7 +27,6 @@ public class AllUsersDeploymentSource : IDeploymentSource
 
         var allUsers = await _session.Query<User>().ListAsync();
         var users = new JArray();
-        var tasks = new List<Task>();
 
         foreach (var user in allUsers)
         {
@@ -57,7 +55,6 @@ public class AllUsersDeploymentSource : IDeploymentSource
 
         result.Steps.Add(new JObject(
             new JProperty("name", "Users"),
-            new JProperty("Users", users)
-        ));
+            new JProperty("Users", users)));
     }
 }
