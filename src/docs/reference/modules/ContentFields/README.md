@@ -208,7 +208,7 @@ When adding the field to a content type, use the settings to specify whether to
 
     ``` html
     @model OrchardCore.ContentFields.ViewModels.DisplayUserPickerFieldViewModel
-    @using OrchardCore.Mvc.Utilities
+    @using OrchardCore.ContentManagement.Utilities;
 
     @{
         var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();

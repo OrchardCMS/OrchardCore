@@ -11,7 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <FrameworkReference Include="Microsoft.NetCore.App" />
+    <PackageReference Include="Microsoft.Extensions.Localization" />
   </ItemGroup>
 
 </Project>

@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using Cysharp.Text;
 using Microsoft.Extensions.Localization;
+using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.ContentManagement.Utilities
 {
@@ -13,7 +15,7 @@ namespace OrchardCore.ContentManagement.Utilities
     {
         public static string CamelFriendly(this string camel)
         {
-            // optimize common cases
+            // Optimize common cases.
             if (String.IsNullOrWhiteSpace(camel))
             {
                 return "";
@@ -41,25 +43,27 @@ namespace OrchardCore.ContentManagement.Utilities
         public static string Ellipsize(this string text, int characterCount, string ellipsis, bool wordBoundary = false)
         {
             if (String.IsNullOrWhiteSpace(text))
+            {
                 return "";
+            }
 
             if (characterCount < 0 || text.Length <= characterCount)
                 return text;
 
-            // search beginning of word
+            // Search beginning of word.
             var backup = characterCount;
             while (characterCount > 0 && text[characterCount - 1].IsLetter())
             {
                 characterCount--;
             }
 
-            // search previous word
+            // Search previous word.
             while (characterCount > 0 && text[characterCount - 1].IsSpace())
             {
                 characterCount--;
             }
 
-            // if it was the last word, recover it, unless boundary is requested
+            // If it was the last word, recover it, unless boundary is requested.
             if (characterCount == 0 && !wordBoundary)
             {
                 characterCount = backup;
@@ -67,6 +71,41 @@ namespace OrchardCore.ContentManagement.Utilities
 
             var trimmed = text[..characterCount];
             return trimmed + ellipsis;
+        }
+
+        public static string HtmlClassify(this string text)
+        {
+            if (String.IsNullOrWhiteSpace(text))
+            {
+                return "";
+            }
+
+            var friendlier = text.CamelFriendly();
+
+            var result = new char[friendlier.Length];
+
+            var cursor = 0;
+            var previousIsNotLetter = false;
+            for (var i = 0; i < friendlier.Length; i++)
+            {
+                var current = friendlier[i];
+                if (IsLetter(current) || (Char.IsDigit(current) && cursor > 0))
+                {
+                    if (previousIsNotLetter && i != 0 && cursor > 0)
+                    {
+                        result[cursor++] = '-';
+                    }
+
+                    result[cursor++] = Char.ToLowerInvariant(current);
+                    previousIsNotLetter = false;
+                }
+                else
+                {
+                    previousIsNotLetter = true;
+                }
+            }
+
+            return new string(result, 0, cursor);
         }
 
         public static LocalizedString OrDefault(this string text, LocalizedString defaultValue)
@@ -117,7 +156,7 @@ namespace OrchardCore.ContentManagement.Utilities
             return stringResult;
         }
 
-        // not accounting for only \r (e.g. Apple OS 9 carriage return only new lines)
+        // Not accounting for only \r (e.g. Apple OS 9 carriage return only new lines).
         public static string ReplaceNewLinesWith(this string text, string replacement)
         {
             return String.IsNullOrWhiteSpace(text)
@@ -131,8 +170,8 @@ namespace OrchardCore.ContentManagement.Utilities
         private static readonly char[] _validSegmentChars = "/?#[]@\"^{}|`<>\t\r\n\f ".ToCharArray();
         public static bool IsValidUrlSegment(this string segment)
         {
-            // valid isegment from rfc3987 - http://tools.ietf.org/html/rfc3987#page-8
-            // the relevant bits:
+            // Valid isegment from rfc3987 - http://tools.ietf.org/html/rfc3987#page-8
+            // The relevant bits:
             // isegment    = *ipchar
             // ipchar      = iunreserved / pct-encoded / sub-delims / ":" / "@"
             // iunreserved = ALPHA / DIGIT / "-" / "." / "_" / "~" / ucschar
@@ -166,7 +205,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
             name = name.Trim();
 
-            // don't allow non A-Z chars as first letter, as they are not allowed in prefixes
+            // Don't allow non A-Z chars as first letter, as they are not allowed in prefixes.
             while (name.Length > 0 && !IsLetter(name[0]))
             {
                 name = name[1..];
@@ -207,7 +246,7 @@ namespace OrchardCore.ContentManagement.Utilities
         }
 
         /// <summary>
-        /// Whether the char is a letter between A and Z or not
+        /// Whether the char is a letter between A and Z or not.
         /// </summary>
         public static bool IsLetter(this char c)
         {
@@ -234,6 +273,28 @@ namespace OrchardCore.ContentManagement.Utilities
             }
 
             return (sb.ToString().Normalize(NormalizationForm.FormC));
+        }
+
+        /// <summary>
+        /// Transforms the culture of a letter to its equivalent representation in the 0-127 ascii table, such as the letter 'é' is substituted by an 'e'.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static string ReplaceDiacritics(this string s)
+        {
+            var stringBuilder = new StringBuilder();
+            var normalizedString = s.Normalize(NormalizationForm.FormD);
+
+            for (var i = 0; i <= normalizedString.Length - 1; i++)
+            {
+                var c = normalizedString[i];
+                if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                {
+                    stringBuilder.Append(c);
+                }
+            }
+
+            return stringBuilder.ToString();
         }
 
         public static string Strip(this string subject, params char[] stripped)
@@ -373,7 +434,9 @@ namespace OrchardCore.ContentManagement.Utilities
         public static string TrimEnd(this string rough, string trim = "")
         {
             if (rough == null)
+            {
                 return null;
+            }
 
             return rough.EndsWith(trim, StringComparison.Ordinal)
                        ? rough[..^trim.Length]
@@ -384,6 +447,103 @@ namespace OrchardCore.ContentManagement.Utilities
         {
             var place = source.LastIndexOf(find, StringComparison.Ordinal);
             return source.Remove(place, find.Length).Insert(place, replace);
+        }
+
+        private static ImmutableDictionary<string, string> _underscorePascalCaseIndex = ImmutableDictionary<string, string>.Empty;
+        private static ImmutableDictionary<string, string> _dashPascalCaseIndex = ImmutableDictionary<string, string>.Empty;
+
+        /// <summary>
+        /// Converts a liquid attribute to pascal case
+        /// </summary>
+        public static string ToPascalCaseUnderscore(this string attribute)
+        {
+            if (!_underscorePascalCaseIndex.TryGetValue(attribute, out var result))
+            {
+                result = ToPascalCase(attribute, '_');
+                _underscorePascalCaseIndex = _underscorePascalCaseIndex.SetItem(attribute, result);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Converts an html attribute to pascal case.
+        /// </summary>
+        public static string ToPascalCaseDash(this string attribute)
+        {
+            if (!_dashPascalCaseIndex.TryGetValue(attribute, out var result))
+            {
+                result = ToPascalCase(attribute, '-');
+                _dashPascalCaseIndex = _dashPascalCaseIndex.SetItem(attribute, result);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Converts a string to pascal case.
+        /// </summary>
+        public static string ToPascalCase(this string attribute, char upperAfterDelimiter)
+        {
+            attribute = attribute.Trim();
+
+            var delimitersCount = 0;
+
+            for (var i = 0; i < attribute.Length; i++)
+            {
+                if (attribute[i] == upperAfterDelimiter)
+                {
+                    delimitersCount++;
+                }
+            }
+
+            var result = String.Create(attribute.Length - delimitersCount, new { attribute, upperAfterDelimiter }, (buffer, state) =>
+            {
+                var nextIsUpper = true;
+                var k = 0;
+
+                for (var i = 0; i < state.attribute.Length; i++)
+                {
+                    var c = state.attribute[i];
+
+                    if (c == state.upperAfterDelimiter)
+                    {
+                        nextIsUpper = true;
+                        continue;
+                    }
+
+                    if (nextIsUpper)
+                    {
+                        buffer[k] = Char.ToUpperInvariant(c);
+                    }
+                    else
+                    {
+                        buffer[k] = c;
+                    }
+
+                    nextIsUpper = false;
+
+                    k++;
+                }
+            });
+
+            return result;
+        }
+
+        /// <summary>
+        /// Tests if a string is valid json.
+        /// </summary>
+        public static bool IsJson(this string json)
+        {
+            try
+            {
+                JToken.Parse(json);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

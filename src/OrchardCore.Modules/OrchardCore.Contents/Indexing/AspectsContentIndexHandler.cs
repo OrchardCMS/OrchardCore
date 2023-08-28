@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Models;
+using OrchardCore.ContentManagement.Utilities;
 using OrchardCore.Indexing;
-using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Contents.Indexing
 {

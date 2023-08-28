@@ -1,5 +1,5 @@
 @model OrchardCore.ContentFields.ViewModels.EditLinkFieldViewModel
-@using OrchardCore.Mvc.Utilities
+@using OrchardCore.ContentManagement.Utilities;
 @{
     var settings = Model.PartFieldDefinition.GetSettings<LinkFieldSettings>();
     var isRequired = settings.Required && String.IsNullOrWhiteSpace(settings.DefaultUrl);
