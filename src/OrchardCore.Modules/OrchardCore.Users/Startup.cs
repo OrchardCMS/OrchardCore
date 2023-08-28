@@ -502,15 +502,17 @@ namespace OrchardCore.Users
             services.AddScoped<IPermissionProvider, CustomUserSettingsPermissions>();
 
             services.AddTransient<IDeploymentSource, CustomUserSettingsDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<CustomUserSettingsDeploymentStep>());
+            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<CustomUserSettingsDeploymentStep>>();
             services.AddScoped<IDisplayDriver<DeploymentStep>, CustomUserSettingsDeploymentStepDriver>();
         }
     }
 
-    public class UserDeploymentStartup : StartupBase {
-        public override void ConfigureServices(IServiceCollection services) {
+    public class UserDeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
             services.AddTransient<IDeploymentSource, AllUsersDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllUsersDeploymentStep>());
+            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<AllUsersDeploymentStep>>();
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllUsersDeploymentStepDriver>();
         }
     }
