@@ -481,7 +481,7 @@ When the query string is signed with a token any width, height value may be used
     Tokens are only available from the [Preview Feed](../../../getting-started/preview-package-source)
     Prior to this the width or height values are limited to `16`, `32`, `50`, `100`, `160`, `240`, `480`, `600`, `1024`, `2048`.
 
-## Media Indexing
+## Media Content Search
 
 Media can be optionally indexed for search as well if files are referenced via Media Fields. The following data can be indexed for each file referenced from a Media Field:
 
@@ -503,6 +503,10 @@ To set up indexing for Media do the following:
 
 ## Videos
 
+## Media Indexing
+
+The `Media Indexing` feature extends the media indexing capability to also encompass searching within files with the following extensions `.txt`, `.md`, `.docx`, and `.pptx`.
+
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/BQHUlvPFRR4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/K0_i4vj00yM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -514,4 +518,4 @@ To set up indexing for Media do the following:
 ## Credits
 
 To index PDF files the [PdfPig library](https://github.com/UglyToad/PdfPig/) is used.
-
+To index Microsoft Office files (i.e., .docx, .ppts) the [Open-XML-SDK ](https://github.com/dotnet/Open-XML-SDK) is used.

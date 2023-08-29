@@ -169,7 +169,6 @@ namespace OrchardCore.Media
             services.AddDataMigration<Migrations>();
             services.AddScoped<IContentFieldIndexHandler, MediaFieldIndexHandler>();
             services.AddMediaFileTextProvider<PdfMediaFileTextProvider>(".pdf");
-
             services.AddRecipeExecutionStep<MediaStep>();
 
             // MIME types
@@ -391,6 +390,18 @@ namespace OrchardCore.Media
             services.AddTransient<IDeploymentSource, AllMediaProfilesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllMediaProfilesDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllMediaProfilesDeploymentStepDriver>();
+        }
+    }
+
+    [Feature("OrchardCore.Media.Indexing")]
+    public class MediaIndexingStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddMediaFileTextProvider<TextMediaFileTextProvider>(".txt");
+            services.AddMediaFileTextProvider<TextMediaFileTextProvider>(".md");
+            services.AddMediaFileTextProvider<WordDocumentMediaFileTextProvider>(".docx");
+            services.AddMediaFileTextProvider<PresentationDocumentMediaFileTextProvider>(".pptx");
         }
     }
 
