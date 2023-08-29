@@ -18,7 +18,7 @@ namespace OrchardCore.Environment.Shell
     /// all <see cref="ShellSettings"/> that we also need to register in the <see cref="IRunningShellTable"/> to serve incoming requests.
     /// For each <see cref="ShellContext"/> a service container and then a request pipeline are only built on the first matching request.
     /// </summary>
-    public sealed class ShellHost : IShellHost, IDisposable
+    public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
     {
         private const int _reloadShellMaxRetriesCount = 9;
 
@@ -85,7 +85,6 @@ namespace OrchardCore.Environment.Shell
         public async Task<ShellContext> GetOrCreateShellContextAsync(ShellSettings settings)
         {
             ShellContext shell = null;
-
             while (shell is null)
             {
                 if (!_shellContexts.TryGetValue(settings.Name, out shell))
@@ -126,7 +125,6 @@ namespace OrchardCore.Environment.Shell
         public async Task<ShellScope> GetScopeAsync(ShellSettings settings)
         {
             ShellScope scope = null;
-
             while (scope is null)
             {
                 if (!_shellContexts.TryGetValue(settings.Name, out var shellContext))
@@ -135,7 +133,7 @@ namespace OrchardCore.Environment.Shell
                 }
 
                 // We create a scope before checking if the shell has been released.
-                scope = shellContext.CreateScope();
+                scope = await shellContext.CreateScopeAsync();
 
                 // If 'CreateScope()' returned null, the shell is released. We then remove it and
                 // retry with the hope to get one that won't be released before we create a scope.
@@ -181,8 +179,7 @@ namespace OrchardCore.Environment.Shell
         /// built for subsequent requests, while existing requests get flushed.
         /// </summary>
         /// <param name="settings">The <see cref="ShellSettings"/> to reload.</param>
-        /// <param name="eventSource">Whether the related <see cref="ShellEvent"/> is invoked.
-        /// </param>
+        /// <param name="eventSource">Whether the related <see cref="ShellEvent"/> is invoked.</param>
         public async Task ReloadShellContextAsync(ShellSettings settings, bool eventSource = true)
         {
             if (ReloadingAsync is not null && eventSource && !settings.IsInitializing())
@@ -211,7 +208,7 @@ namespace OrchardCore.Environment.Shell
                 if (_shellContexts.TryRemove(settings.Name, out var context))
                 {
                     _runningShellTable.Remove(settings);
-                    context.Release();
+                    await context.ReleaseAsync();
                 }
 
                 // Add a 'PlaceHolder' allowing to retrieve the settings until the shell will be rebuilt.
@@ -272,7 +269,7 @@ namespace OrchardCore.Environment.Shell
 
             if (_shellContexts.TryRemove(settings.Name, out var context))
             {
-                context.Release();
+                await context.ReleaseAsync();
             }
 
             // Add a 'PlaceHolder' allowing to retrieve the settings until the shell will be rebuilt.
@@ -302,12 +299,17 @@ namespace OrchardCore.Environment.Shell
 
             if (_shellContexts.TryRemove(settings.Name, out var context))
             {
-                context.Release();
+                await context.ReleaseAsync();
             }
 
             _shellSettings.TryRemove(settings.Name, out _);
         }
 
+        /// <summary>
+        /// Lists all available <see cref="ShellContext"/> instances.
+        /// A shell might have been released or not yet built, if so 'shell.Released' is true and
+        /// 'shell.CreateScopeAsync()' return null, but you can still use 'GetScopeAsync(shell.Settings)'.
+        /// </summary>
         public IEnumerable<ShellContext> ListShellContexts() => _shellContexts.Values.ToArray();
 
         /// <summary>
@@ -523,7 +525,7 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Wether or not a shell is in use in at least one active scope.
+        /// Whether or not a shell is in use in at least one active scope.
         /// </summary>
         private bool IsShellActive(ShellSettings settings) =>
             settings is { Name: not null } &&
@@ -535,6 +537,14 @@ namespace OrchardCore.Environment.Shell
             foreach (var shell in ListShellContexts())
             {
                 shell.Dispose();
+            }
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            foreach (var shell in ListShellContexts())
+            {
+                await shell.DisposeAsync();
             }
         }
     }

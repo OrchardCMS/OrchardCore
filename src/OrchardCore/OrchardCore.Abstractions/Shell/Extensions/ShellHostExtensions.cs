@@ -52,7 +52,7 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Wether or not a given tenant is in use in at least one active scope.
+        /// Whether or not a given tenant is in use in at least one active scope.
         /// </summary>
         public static bool IsShellActive(this IShellHost shellHost, ShellSettings settings) =>
             settings is { Name: not null } &&

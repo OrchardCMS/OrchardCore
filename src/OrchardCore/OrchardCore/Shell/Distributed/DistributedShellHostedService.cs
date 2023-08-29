@@ -293,7 +293,12 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
 
             _terminated = true;
-            _context?.Release();
+
+            if (_context is not null)
+            {
+                await _context.ReleaseAsync();
+            }
+
             _defaultContext = null;
             _context = null;
         }
@@ -382,7 +387,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
 
             // Acquire the distributed context or create a new one if not yet built.
-            using var context = await AcquireOrCreateDistributedContextAsync(defaultContext);
+            await using var context = await AcquireOrCreateDistributedContextAsync(defaultContext);
 
             // If the required distributed features are not enabled, nothing to do.
             var distributedCache = context?.DistributedCache;
@@ -433,7 +438,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
 
             // Acquire the distributed context or create a new one if not yet built.
-            using var context = await AcquireOrCreateDistributedContextAsync(defaultContext);
+            await using var context = await AcquireOrCreateDistributedContextAsync(defaultContext);
 
             // If the required distributed features are not enabled, nothing to do.
             var distributedCache = context?.DistributedCache;
@@ -492,7 +497,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
 
             // Acquire the distributed context or create a new one if not yet built.
-            using var context = await AcquireOrCreateDistributedContextAsync(defaultContext);
+            await using var context = await AcquireOrCreateDistributedContextAsync(defaultContext);
 
             // If the required distributed features are not enabled, nothing to do.
             var distributedCache = context?.DistributedCache;
@@ -619,10 +624,10 @@ namespace OrchardCore.Environment.Shell.Distributed
                 _defaultContext = defaultContext;
 
                 // If the context is not reused.
-                if (_context != previousContext)
+                if (_context != previousContext && previousContext is not null)
                 {
                     // Release the previous one.
-                    previousContext?.Release();
+                    await previousContext.ReleaseAsync();
                 }
             }
 

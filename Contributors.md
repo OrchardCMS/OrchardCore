@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-295-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-296-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -405,6 +405,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/BinderDyn"><img src="https://avatars.githubusercontent.com/u/43495737?v=4?s=100" width="100px;" alt="Marvin"/><br /><sub><b>Marvin</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=BinderDyn" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/dministro"><img src="https://avatars.githubusercontent.com/u/15349881?v=4?s=100" width="100px;" alt="József Horváth"/><br /><sub><b>József Horváth</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=dministro" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

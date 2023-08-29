@@ -210,7 +210,7 @@ namespace OrchardCore.OpenId.Configuration
                     // relies on a data protection provider whose lifetime is managed by the other tenant.
                     // To make sure the other tenant is not disposed before all the pending requests are
                     // processed by the current tenant, a tenant dependency is manually added.
-                    scope.ShellContext.AddDependentShell(await _shellHost.GetOrCreateShellContextAsync(_shellSettings));
+                    await scope.ShellContext.AddDependentShellAsync(await _shellHost.GetOrCreateShellContextAsync(_shellSettings));
 
                     // Note: the data protection provider is always registered as a singleton and thus will
                     // survive the current scope, which is mainly used to prevent the other tenant from being

@@ -12,11 +12,6 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.DisplayManagement.Razor
 {
-    public interface IRazorPage
-    {
-        string ViewLayout { get; set; }
-    }
-
     public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPage<TModel>, IRazorPage
     {
         private IDisplayHelper _displayHelper;

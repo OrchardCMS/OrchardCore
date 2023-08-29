@@ -117,7 +117,22 @@ using OrchardCore.Users;
     {
         UserConstants.Features.Users,
         UserConstants.Features.TwoFactorAuthentication,
+        "OrchardCore.Liquid",
         "OrchardCore.Email",
+    },
+    Category = "Security"
+)]
+
+[assembly: Feature(
+    Id = UserConstants.Features.SmsAuthenticator,
+    Name = "Two-Factor SMS Method",
+    Description = "Provides users a two-factor authentication method through an SMS service.",
+    Dependencies = new[]
+    {
+        UserConstants.Features.Users,
+        UserConstants.Features.TwoFactorAuthentication,
+        "OrchardCore.Liquid",
+        "OrchardCore.Sms",
     },
     Category = "Security"
 )]
