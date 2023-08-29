@@ -52,9 +52,8 @@
     window.addEventListener('DOMContentLoaded', function() {
     var toggles = document.querySelectorAll('[data-reversetoggle]');
     for (var i = 0; i < toggles.length; i++) {
-        toggles[i].addEventListener('click', function() {
-            var state = this.checked;
-            if (state) {
+        toggles[i].addEventListener('click', (e) => {
+            if (e.target.checked) {
                 document.querySelector(this.getAttribute('data-reversetoggle')).classList.remove('show');
             } else {
                 document.querySelector(this.getAttribute('data-reversetoggle')).classList.add('show');
