@@ -1,7 +1,5 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
 
@@ -22,7 +20,7 @@ public class LoginMenuFilter : IAsyncResultFilter
 
     public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
     {
-        if (context.Result is ViewResult || context.Result is PageResult)
+        if (context.IsViewOrPageResult())
         {
             var layout = await _layoutAccessor.GetLayoutAsync();
 
