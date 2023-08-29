@@ -269,7 +269,7 @@ namespace OrchardCore.Users
                     var quotedContentColumnName = dialect.QuoteForColumnName("Content");
                     var quotedTypeColumnName = dialect.QuoteForColumnName("Type");
 
-                    var updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, 'OrchardCore.Users.Models.LoginSettings, OrchardCore.Users', 'OrchardCore.Users.Models.LoginSettings, OrchardCore.Users.Core') WHERE {quotedTypeColumnName} = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions' ";
+                    var updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, 'OrchardCore.Users.Models.LoginSettings, OrchardCore.Users', 'OrchardCore.Users.Models.LoginSettings, OrchardCore.Users.Core') WHERE {quotedTypeColumnName} = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
 
                     await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
 
