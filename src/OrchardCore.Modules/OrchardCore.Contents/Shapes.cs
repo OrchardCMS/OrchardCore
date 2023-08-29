@@ -28,14 +28,16 @@ namespace OrchardCore.Contents
                         // Content__[DisplayType] e.g. Content-Summary
                         displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType.EncodeAlternateElement());
 
+                        var encodedContentType = contentItem.ContentType.EncodeAlternateElement();
+
                         // Content__[ContentType] e.g. Content-BlogPost,
-                        displaying.Shape.Metadata.Alternates.Add("Content__" + contentItem.ContentType.EncodeAlternateElement());
+                        displaying.Shape.Metadata.Alternates.Add("Content__" + encodedContentType);
 
                         // Content__[Id] e.g. Content-42,
                         displaying.Shape.Metadata.Alternates.Add("Content__" + contentItem.Id);
 
                         // Content_[DisplayType]__[ContentType] e.g. Content-BlogPost.Summary
-                        displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType + "__" + contentItem.ContentType.EncodeAlternateElement());
+                        displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType + "__" + encodedContentType);
 
                         // Content_[DisplayType]__[Id] e.g. Content-42.Summary
                         displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType + "__" + contentItem.Id);
