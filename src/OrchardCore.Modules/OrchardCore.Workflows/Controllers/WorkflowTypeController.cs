@@ -147,7 +147,7 @@ namespace OrchardCore.Workflows.Controllers
                     {
                         WorkflowType = x,
                         Id = x.Id,
-                        HasInstances = workflowTypeIdsWithInstances?.Contains(x.WorkflowTypeId) ?? false,
+                        HasInstances = workflowTypeIdsWithInstances.Contains(x.WorkflowTypeId),
                         Name = x.Name,
                     })
                     .ToList(),
