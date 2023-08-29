@@ -68,14 +68,14 @@ public class RsaSecretDisplayDriver : DisplayDriver<Secret, RsaSecret>
                 new SelectListItem()
                 {
                     Text = S["Public Key"],
-                    Value = RsaSecretType.Public.ToString(),
-                    Selected = model.KeyType == RsaSecretType.Public
+                    Value = RsaKeyType.Public.ToString(),
+                    Selected = model.KeyType == RsaKeyType.Public
                 },
                 new SelectListItem()
                 {
                     Text = S["Public / Private Key Pair"],
-                    Value = RsaSecretType.PublicPrivatePair.ToString(),
-                    Selected = model.KeyType == RsaSecretType.PublicPrivatePair
+                    Value = RsaKeyType.PublicPrivatePair.ToString(),
+                    Selected = model.KeyType == RsaKeyType.PublicPrivatePair
                 },
             };
             model.Context = context;
@@ -98,19 +98,19 @@ public class RsaSecretDisplayDriver : DisplayDriver<Secret, RsaSecret>
                 secret.PrivateKey = model.PrivateKey;
             }
 
-            if (model.KeyType == RsaSecretType.Public)
+            if (model.KeyType == RsaKeyType.Public)
             {
                 secret.PublicKey = model.PublicKey;
                 secret.PrivateKey = null;
             }
 
-            if (model.CycleKey && model.KeyType == RsaSecretType.PublicPrivatePair)
+            if (model.CycleKey && model.KeyType == RsaKeyType.PublicPrivatePair)
             {
                 secret.PublicKey = model.NewPublicKey;
                 secret.PrivateKey = model.NewPrivateKey;
             }
 
-            if (model.KeyType == RsaSecretType.PublicPrivatePair)
+            if (model.KeyType == RsaKeyType.PublicPrivatePair)
             {
                 try
                 {

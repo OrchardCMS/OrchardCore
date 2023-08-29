@@ -31,8 +31,13 @@ public class ConfigurationSecretStore : ISecretStore
             throw new ArgumentException("The type must implement " + nameof(Secret));
         }
 
-        return Task.FromResult(
-            _shellConfiguration.GetSection($"OrchardCore_Secrets_ConfigurationSecretStore:{key}").Get(type) as Secret);
+        var secret = _shellConfiguration.GetSection($"OrchardCore_Secrets_ConfigurationSecretStore:{key}").Get(type) as Secret;
+        if (secret is not null)
+        {
+            secret.Name = key;
+        }
+
+        return Task.FromResult(secret);
     }
 
     public Task UpdateSecretAsync(string key, Secret secret) =>

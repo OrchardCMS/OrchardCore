@@ -4,13 +4,15 @@ namespace OrchardCore.Secrets.Models;
 
 public class RsaSecret : Secret
 {
-    public RsaSecretType KeyType { get; set; }
+    public RsaKeyType KeyType { get; set; }
     public string PublicKey { get; set; }
     public string PrivateKey { get; set; }
 
-    public byte[] PublicKeyAsBytes() =>
-        !String.IsNullOrEmpty(PublicKey) ? Convert.FromBase64String(PublicKey) : Array.Empty<byte>();
+    public byte[] PublicKeyAsBytes() => KeyAsBytes(PublicKey);
+    public byte[] PrivateKeyAsBytes() => KeyAsBytes(PrivateKey);
 
-    public byte[] PrivateKeyAsBytes() =>
-        !String.IsNullOrEmpty(PrivateKey) ? Convert.FromBase64String(PrivateKey) : Array.Empty<byte>();
+    public static byte[] KeyAsBytes(string key) =>
+        !String.IsNullOrEmpty(key)
+        ? Convert.FromBase64String(key)
+        : Array.Empty<byte>();
 }

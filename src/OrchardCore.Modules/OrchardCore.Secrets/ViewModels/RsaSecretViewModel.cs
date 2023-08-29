@@ -11,7 +11,7 @@ public class RsaSecretViewModel
 {
     public string PublicKey { get; set; }
     public string PrivateKey { get; set; }
-    public RsaSecretType KeyType { get; set; }
+    public RsaKeyType KeyType { get; set; }
     public bool CycleKey { get; set; }
     public string NewPublicKey  { get; set; }
     public string NewPrivateKey { get; set; }

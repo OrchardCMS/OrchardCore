@@ -30,9 +30,11 @@ public class DefaultEncryptor : IEncryptor
         using (var msEncrypt = new MemoryStream())
         {
             using var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write);
-            using var swEncrypt = new StreamWriter(csEncrypt);
+            using (var swEncrypt = new StreamWriter(csEncrypt))
+            {
+                swEncrypt.Write(plainText);
+            }
 
-            swEncrypt.Write(plainText);
             encrypted = msEncrypt.ToArray();
         }
 

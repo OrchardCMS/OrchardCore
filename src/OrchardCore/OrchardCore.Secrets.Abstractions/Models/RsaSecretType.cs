@@ -1,7 +1,7 @@
 namespace OrchardCore.Secrets.Models;
 
-public enum RsaSecretType
+public enum RsaKeyType
 {
     PublicPrivatePair,
-    Public
+    Public,
 }

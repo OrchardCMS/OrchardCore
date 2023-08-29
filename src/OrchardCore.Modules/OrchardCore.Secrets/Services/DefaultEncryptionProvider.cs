@@ -19,7 +19,7 @@ public class DefaultEncryptionProvider : IEncryptionProvider
             ?? throw new InvalidOperationException($"Secret '{signingSecretName}' not found.");
 
         // This becomes irrelevent as we now need the private key for the signature.
-        if (signingSecret.KeyType != RsaSecretType.PublicPrivatePair)
+        if (signingSecret.KeyType != RsaKeyType.PublicPrivatePair)
         {
             throw new InvalidOperationException("Secret cannot be used for signing.");
         }
