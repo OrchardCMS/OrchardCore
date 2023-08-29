@@ -31,16 +31,8 @@ public class CustomUserSettingsDeploymentSource : IDeploymentSource
             ? _customUserSettingsService.GetAllSettingsTypes().ToArray()
             : _customUserSettingsService.GetSettingsTypes(customUserSettingsStep.SettingsTypeNames).ToArray();
 
-        foreach (var settingsType in settingsTypes)
-        {
-            if (!await _customUserSettingsService.CanUserCreateSettingsAsync(settingsType))
-            {
-                return;
-            }
-        }
-
+        // Todo: check permissions for each settings type
         var bigArray = new JArray();
-
         var allUsers = await _session.Query<User>().ListAsync();
 
         foreach (var user in allUsers)

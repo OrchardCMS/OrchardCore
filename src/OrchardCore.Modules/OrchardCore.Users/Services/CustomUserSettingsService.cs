@@ -68,16 +68,6 @@ public class CustomUserSettingsService
         return settingsType;
     }
 
-    public async Task<bool> CanUserCreateSettingsAsync(ContentTypeDefinition settingsType)
-    {
-        var user = _httpContextAccessor.HttpContext?.User;
-
-        // todo:
-        // return _authorizationService.AuthorizeAsync(user, Permissions.CreatePermissionForType(settingsType));
-        await Task.Delay(0);
-        return true;
-    }
-
     public Task<Dictionary<string, ContentItem>> GetSettingsAsync(string settingsTypeName, Action isNew = null)
     {
         var settingsType = GetSettingsType(settingsTypeName);
