@@ -43,9 +43,7 @@ namespace OrchardCore.Users.Deployment
 
             await updater.TryUpdateModelAsync(
                                             step,
-                                            Prefix,
-                                            x => x.SettingsTypeNames,
-                                            x => x.IncludeAll);
+                                            Prefix);
 
             if (step.IncludeAll)
             {

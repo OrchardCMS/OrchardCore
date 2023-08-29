@@ -43,10 +43,6 @@ public class UsersStep : IRecipeStepHandler
             {
                 user = new User { UserId = importedUser.UserId };
             }
-            else
-            {
-                user = iUser as User;
-            }
 
             user.Email = importedUser.Email;
             user.UserName = importedUser.UserName;

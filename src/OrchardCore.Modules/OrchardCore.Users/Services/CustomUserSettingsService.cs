@@ -68,7 +68,7 @@ public class CustomUserSettingsService
         return settingsType;
     }
 
-    public Task<Dictionary<string, ContentItem>> GetSettingsAsync(string settingsTypeName, Action isNew = null)
+    public Task<Dictionary<string, ContentItem>> GetSettingsAsync(string settingsTypeName, Func<Task> factoryAsync = null)
     {
         var settingsType = GetSettingsType(settingsTypeName);
         if (settingsType == null)
@@ -76,17 +76,17 @@ public class CustomUserSettingsService
             return Task.FromResult<Dictionary<string, ContentItem>>(null);
         }
 
-        return GetSettingsAsync(settingsType, isNew);
+        return GetSettingsAsync(settingsType, factoryAsync);
     }
 
-    public async Task<Dictionary<string, ContentItem>> GetSettingsAsync(ContentTypeDefinition settingsType, Action isNew = null)
+    public async Task<Dictionary<string, ContentItem>> GetSettingsAsync(ContentTypeDefinition settingsType, Func<Task> factoryAsync = null)
     {
         // foreach user get settings
         var users = await _session.Query<User>().ListAsync();
         var contentItems = new Dictionary<string, ContentItem>();
         foreach (var user in users)
         {
-            var item = await GetSettingsAsync(user, settingsType, isNew);
+            var item = await GetSettingsAsync(user, settingsType, factoryAsync);
             if (item != null)
             {
                 contentItems.Add(user.UserId, item);
@@ -96,24 +96,23 @@ public class CustomUserSettingsService
         return contentItems;
     }
 
-    public async Task<ContentItem> GetSettingsAsync(User user, ContentTypeDefinition settingsType, Action isNew = null)
+    public async Task<ContentItem> GetSettingsAsync(User user, ContentTypeDefinition settingsType, Func<Task> factoryAsync = null)
     {
-        JToken property;
         ContentItem contentItem;
 
-        if (user.Properties.TryGetValue(settingsType.Name, out property))
+        if (user.Properties.TryGetValue(settingsType.Name, out JToken property))
         {
             var existing = property.ToObject<ContentItem>();
 
             // Create a new item to take into account the current type definition.
             contentItem = await _contentManager.NewAsync(existing.ContentType);
             contentItem.Merge(existing);
+
+            return contentItem;
         }
-        else
-        {
-            contentItem = await _contentManager.NewAsync(settingsType.Name);
-            isNew?.Invoke();
-        }
+
+        contentItem = await _contentManager.NewAsync(settingsType.Name);
+        await factoryAsync?.Invoke();
 
         return contentItem;
     }
