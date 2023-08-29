@@ -6,9 +6,9 @@ namespace OrchardCore.Users;
 
 public class UserMenuShapeTableProvider : IShapeTableProvider
 {
-    public const string ShapeTypePrefix = $"{ShapePrefix}__";
-
     private const string ShapePrefix = "UserMenuItems";
+
+    private const string ShapeTypePrefix = $"{ShapePrefix}__";
 
     private const string ShapeAlternatePrefix = $"{ShapePrefix}_";
 
