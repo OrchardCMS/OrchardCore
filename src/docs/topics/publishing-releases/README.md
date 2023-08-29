@@ -24,7 +24,7 @@ Do some housekeeping on GitHub in the [main repo](https://github.com/OrchardCMS/
 
 Update the source so everything looks like on the new version.
 
-- [ ] Create a `release/<version name>` branch out of `main`, e.g. `release/1.3.1`.
+- [ ] Create a `release/<version name>` branch out of `main`, e.g. `release/1.8`.
 - [ ] Update the `OrchardCore.Commons.props` file with `<VersionSuffix></VersionSuffix>` such that preview build numbers are not injected in packages. Verify the `VersionPrefix` tag matches the released version.
 - [ ] Update module versions in `src/OrchardCore/OrchardCore.Abstractions/Modules/Manifest/ManifestConstants.cs`.
 - [ ] Update the version in the command lines in from all documentation files.
@@ -83,10 +83,5 @@ Let the whole world know about our shiny new release. Savor this part! These ste
 - [ ] Ask to publish a blog post on [DevBlogs](https://devblogs.microsoft.com/).
 - [ ] Ask to publish a blog post on [.NET Foundation News](https://dotnetfoundation.org/news).
 - [ ] Tweet
-
-### After the release is done
-
-- [ ] Create a new milestone with the next release number.
-- [ ] Update the `OrchardCore.Commons.props` file with the next release number, and `<VersionSuffix>preview</VersionSuffix>` such that preview builds use the new one.
 
 ```
