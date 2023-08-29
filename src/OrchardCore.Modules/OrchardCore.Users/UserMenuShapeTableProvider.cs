@@ -15,7 +15,7 @@ public class UserMenuShapeTableProvider : IShapeTableProvider
     public void Discover(ShapeTableBuilder builder)
     {
         // Describe any shape-type that starts with 'UserMenuItems__'.
-        builder.Describe(ShapeTypePrefix + "*")
+        builder.Describe($"{ShapeTypePrefix}*")
             .OnDisplaying(context =>
             {
                 if (String.IsNullOrEmpty(context.Shape.Metadata.DisplayType) || context.Shape.Metadata.DisplayType == "Detail")
