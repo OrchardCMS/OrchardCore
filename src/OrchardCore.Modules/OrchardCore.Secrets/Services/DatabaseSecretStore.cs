@@ -34,9 +34,9 @@ public class DatabaseSecretStore : ISecretStore
         }
 
         var secretsDocument = await _manager.GetSecretsDocumentAsync();
-        if (secretsDocument.Secrets.TryGetValue(key, out var documentSecret))
+        if (secretsDocument.Secrets.TryGetValue(key, out var secretDocument))
         {
-            var value = _databaseSecretDataProtector.Unprotect(documentSecret.Value);
+            var value = _databaseSecretDataProtector.Unprotect(secretDocument.Value);
             var secret = JsonConvert.DeserializeObject(value, type) as Secret;
 
             return secret;

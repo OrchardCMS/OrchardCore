@@ -30,6 +30,7 @@ public class DefaultDecryptor : IDecryptor
         // Check signature first.
         using var rsaSigner = RsaHelper.GenerateRsaSecurityKey(2048);
         rsaSigner.ImportRSAPublicKey(_signingPublicKey, out _);
+
         if (!rsaSigner.VerifyData(protectedBytes, signatureBytes, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1))
         {
             throw new CryptographicException("Could not verify signature.");
@@ -46,6 +47,7 @@ public class DefaultDecryptor : IDecryptor
         using var msDecrypt = new MemoryStream(protectedBytes);
         using var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read);
         using var srDecrypt = new StreamReader(csDecrypt);
+
         var plaintext = srDecrypt.ReadToEnd();
 
         return plaintext;

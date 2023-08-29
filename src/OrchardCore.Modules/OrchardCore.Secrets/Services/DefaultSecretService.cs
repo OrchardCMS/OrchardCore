@@ -46,7 +46,7 @@ public class DefaultSecretService : ISecretService
     {
         if (!_activators.TryGetValue(typeName, out var factory) || !typeof(Secret).IsAssignableFrom(factory.Type))
         {
-            throw new ArgumentException($"The type should be configured and implement '{nameof(Secret)}'.", nameof(typeName));
+            throw new ArgumentException($"The type should be configured and should implement '{nameof(Secret)}'.", nameof(typeName));
         }
 
         return factory.Create();
@@ -80,7 +80,7 @@ public class DefaultSecretService : ISecretService
     {
         if (!_activators.TryGetValue(type.Name, out var factory) || !typeof(Secret).IsAssignableFrom(factory.Type))
         {
-            throw new ArgumentException($"The type should be configured and implement '{nameof(Secret)}'.", nameof(type));
+            throw new ArgumentException($"The type should be configured and should implement '{nameof(Secret)}'.", nameof(type));
         }
 
         var bindings = await GetSecretBindingsAsync();

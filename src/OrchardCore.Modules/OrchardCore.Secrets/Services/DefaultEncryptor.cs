@@ -25,15 +25,14 @@ public class DefaultEncryptor : IEncryptor
     {
         byte[] encrypted;
         using var aes = Aes.Create();
-        var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 
+        var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
         using (var msEncrypt = new MemoryStream())
         {
             using var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write);
-            using (var swEncrypt = new StreamWriter(csEncrypt))
-            {
-                swEncrypt.Write(plainText);
-            }
+            using var swEncrypt = new StreamWriter(csEncrypt);
+
+            swEncrypt.Write(plainText);
             encrypted = msEncrypt.ToArray();
         }
 
@@ -53,7 +52,7 @@ public class DefaultEncryptor : IEncryptor
             Iv = Convert.ToBase64String(aes.IV),
             ProtectedData = Convert.ToBase64String(encrypted),
             Signature = Convert.ToBase64String(signature),
-            SigningSecretName = _signingSecretName
+            SigningSecretName = _signingSecretName,
         };
 
         var serialized = JsonConvert.SerializeObject(descriptor);
