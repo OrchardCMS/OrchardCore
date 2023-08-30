@@ -44,7 +44,6 @@ namespace OrchardCore.Media.Settings
                 model.AllowAllDefaultMediaTypes = settings.AllowedExtensions?.Length == 0;
 
                 var items = new List<MediaTypeViewModel>();
-
                 foreach (var extension in _mediaOptions.AllowedFileExtensions)
                 {
                     if (_contentTypeProvider.TryGetContentType(extension, out var contentType))
@@ -57,7 +56,6 @@ namespace OrchardCore.Media.Settings
                         });
                     }
                 }
-
                 model.MediaTypes = items.OrderBy(vm => vm.ContentType).ToArray();
             }).Location("Content");
         }

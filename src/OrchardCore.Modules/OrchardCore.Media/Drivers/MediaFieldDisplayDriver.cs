@@ -101,7 +101,7 @@ namespace OrchardCore.Media.Drivers
                 // Deserializing an empty string doesn't return an array
                 var items = String.IsNullOrWhiteSpace(model.Paths)
                     ? new List<EditMediaFieldItemInfo>()
-                    : JsonSerializer.Deserialize<EditMediaFieldItemInfo[]>(model.Paths, _settings).ToList();
+                    : JsonSerializer.Deserialize<List<EditMediaFieldItemInfo>>(model.Paths, _settings);
 
                 // If it's an attached media field editor the files are automatically handled by _attachedMediaFieldFileService.
                 if (String.Equals(context.PartFieldDefinition.Editor(), "Attached", StringComparison.OrdinalIgnoreCase))
@@ -130,7 +130,7 @@ namespace OrchardCore.Media.Drivers
 
                         if (!settings.AllowedExtensions.Contains(extension))
                         {
-                            updater.ModelState.AddModelError(Prefix, $"{nameof(model.Paths)}[{i}]", S["Media extension is not allowed. Only media with '{0}' extensions are allowed.", String.Join(", ", settings.AllowedExtensions)]);
+                            updater.ModelState.AddModelError(Prefix, nameof(model.Paths), S["Media extension is not allowed. Only media with '{0}' extensions are allowed.", String.Join(", ", settings.AllowedExtensions)]);
                         }
                     }
                 }
@@ -162,7 +162,6 @@ namespace OrchardCore.Media.Drivers
                 {
                     field.Content.Remove("Anchors");
                 }
-
             }
 
             return Edit(field, context);
