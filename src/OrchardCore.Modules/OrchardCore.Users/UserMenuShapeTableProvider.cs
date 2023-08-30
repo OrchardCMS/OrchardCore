@@ -23,13 +23,13 @@ public class UserMenuShapeTableProvider : IShapeTableProvider
                     return;
                 }
 
-                // UserMenuItems_{displayType} > UserMenuItems.{displayType}.cshtml.
+                // 'UserMenuItems_{displayType}' e.g. 'UserMenuItems.DetailAdmin.cshtml'.
                 context.Shape.Metadata.Alternates.Add($"{ShapeAlternatePrefix}{context.Shape.Metadata.DisplayType}");
 
-                // The value of 'subType' is the string that comes after 'UserMenuItems__'.
+                // The value of 'subType' is the encoded string that comes after 'UserMenuItems__'.
                 var subType = context.Shape.Metadata.Type[ShapeTypePrefix.Length..].EncodeAlternateElement();
 
-                // UserMenuItems_{displaType}__{subType} > UserMenuItems-{subType}.{displayType}.cshtml.
+                // 'UserMenuItems_{displaType}__{subType}' e.g. 'UserMenuItems-Dashboard.DetailAdmin.cshtml'.
                 context.Shape.Metadata.Alternates.Add($"{ShapeAlternatePrefix}{context.Shape.Metadata.DisplayType}__{subType}");
             });
     }
