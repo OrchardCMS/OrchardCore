@@ -264,7 +264,7 @@ namespace OrchardCore.Media.Controllers
             // If we got this far, something failed, redisplay form
             BuildViewModel(model);
 
-            // If the name was changed or removed, prevent a 404 or from failing on the next post.
+            // If the name was changed or removed, prevent a 404 or a failure on the next post.
             model.Name = sourceName;
 
             return View(model);
