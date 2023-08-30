@@ -1,11 +1,7 @@
-using System;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
-using Moq;
 using OrchardCore.Secrets;
 using OrchardCore.Secrets.Models;
 using OrchardCore.Secrets.Services;
-using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
 {
@@ -18,14 +14,14 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
             var rsaEncryptionSecret = new RsaSecret()
             {
                 PublicKey = Convert.ToBase64String(rsaEncryptor.ExportRSAPublicKey()),
-                PrivateKey = Convert.ToBase64String(rsaEncryptor.ExportRSAPrivateKey())
+                PrivateKey = Convert.ToBase64String(rsaEncryptor.ExportRSAPrivateKey()),
             };
 
             using var rsaSigning = RsaHelper.GenerateRsaSecurityKey(2048);
             var rsaSigningSecret = new RsaSecret()
             {
                 PublicKey = Convert.ToBase64String(rsaSigning.ExportRSAPublicKey()),
-                PrivateKey = Convert.ToBase64String(rsaSigning.ExportRSAPrivateKey())
+                PrivateKey = Convert.ToBase64String(rsaSigning.ExportRSAPrivateKey()),
             };
 
             var secretService = Mock.Of<ISecretService>();

@@ -15,7 +15,7 @@ public class SecretServiceTests
 
         var textSecret = new TextSecret()
         {
-            Text = "myemailpassword"
+            Text = "myemailpassword",
         };
 
         Mock.Get(store).Setup(s => s.GetSecretAsync("email", typeof(TextSecret))).ReturnsAsync(textSecret);

@@ -23,22 +23,21 @@ public class DatabaseSecretStore : ISecretStore
     }
 
     public string Name => nameof(DatabaseSecretStore);
-    public string DisplayName => S["Database Secret Store"];
+    public string DisplayName => S["Database Secret Store."];
     public bool IsReadOnly => false;
 
     public async Task<Secret> GetSecretAsync(string key, Type type)
     {
         if (!typeof(Secret).IsAssignableFrom(type))
         {
-            throw new ArgumentException("The type must implement " + nameof(Secret));
+            throw new ArgumentException($"The type must implement '{nameof(Secret)}'.");
         }
 
         var secretsDocument = await _manager.GetSecretsDocumentAsync();
-        if (secretsDocument.Secrets.TryGetValue(key, out var secretDocument))
+        if (secretsDocument.Secrets.TryGetValue(key, out var protectedSecret))
         {
-            var value = _databaseSecretDataProtector.Unprotect(secretDocument.Value);
+            var value = _databaseSecretDataProtector.Unprotect(protectedSecret);
             var secret = JsonConvert.DeserializeObject(value, type) as Secret;
-
             return secret;
         }
 
@@ -47,12 +46,8 @@ public class DatabaseSecretStore : ISecretStore
 
     public Task UpdateSecretAsync(string key, Secret secret)
     {
-        var secretDocument = new SecretDocument
-        {
-            Value = _databaseSecretDataProtector.Protect(JsonConvert.SerializeObject(secret)),
-        };
-
-        return _manager.UpdateSecretAsync(key, secretDocument);
+        var protectedSecret = _databaseSecretDataProtector.Protect(JsonConvert.SerializeObject(secret));
+        return _manager.UpdateSecretAsync(key, protectedSecret);
     }
 
     public Task RemoveSecretAsync(string key) => _manager.RemoveSecretAsync(key);
