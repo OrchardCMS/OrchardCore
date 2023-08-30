@@ -1,4 +1,4 @@
-@model OrchardCore.Media.Settings.MediaFieldSettings
+@model OrchardCore.Media.ViewModels.MediaFieldSettingsViewModel
 
 <div class="mb-3">
     <div class="form-check">
@@ -35,3 +35,88 @@
     </div>
     <span class="hint">@T["The hint text to display on the editor."]</span>
 </div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="AllowAllDefaultMediaTypes" checked="@Model.AllowAllDefaultMediaTypes" data-bs-toggle="collapse" data-bs-target="#MediaExtensionWrapper" role="button" aria-expanded="@((!Model.AllowAllDefaultMediaTypes).ToString().ToLowerInvariant())" aria-controls="MediaExtensionWrapper">
+        <label class="form-check-label" asp-for="AllowAllDefaultMediaTypes">@T["Allow all default media types"]</label>
+        <span class="hint dashed">@T["This will allow the user to attach any accessible file from the media library."]</span>
+    </div>
+</div>
+
+<div class="collapse@(Model.AllowAllDefaultMediaTypes ? String.Empty : " show")" id="MediaExtensionWrapper">
+    <div class="mb-3">
+        @{
+            var contentTypeMaps = new Dictionary<string, HashSet<string>>();
+
+            foreach (var mediaType in Model.MediaTypes)
+            {
+                var index = mediaType.ContentType.IndexOf('/');
+
+                if (index <= 0)
+                {
+                    continue;
+                }
+
+                var type = mediaType.ContentType.Substring(0, index);
+
+                if (!contentTypeMaps.ContainsKey(type))
+                {
+                    contentTypeMaps.Add(type, new HashSet<string>());
+                }
+
+                contentTypeMaps[type].Add(mediaType.ContentType);
+            }
+
+            var sortedContentTypeMaps = contentTypeMaps.OrderBy(m => m.Key).ToArray();
+        }
+
+        <div class="mb-3">
+            @for (var i = 0; i < sortedContentTypeMaps.Length; i++)
+            {
+                var allSelected = !Model.MediaTypes.Where(x => sortedContentTypeMaps[i].Value.Contains(x.ContentType)).Any(x => !x.IsSelected);
+
+                var htmlId = $"MediaExtensionTypeId_{i}";
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input media-extensions-selector" id="@htmlId" value="@String.Join(';', sortedContentTypeMaps[i].Value)">
+                    <label class="form-check-label cursor-pointer" checked="@allSelected" for="@htmlId">@T["{0} types", sortedContentTypeMaps[i].Key]</label>
+                    <span class="hint dashed">@T["Select all extensions with the '{0}' type.", sortedContentTypeMaps[i].Key]</span>
+                </div>
+            }
+        </div>
+
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 row-cols-xl-7 row-cols-xxl-8">
+            @for (int i = 0; i < Model.MediaTypes.Length; i++)
+            {
+                var type = Model.MediaTypes[i];
+
+                <div class="col">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input media-extension" asp-for="MediaTypes[i].IsSelected" data-media-content-type="@type.ContentType">
+                        <input type="hidden" asp-for="MediaTypes[i].Extension" />
+                        <label class="form-check-label cursor-pointer" asp-for="MediaTypes[i].IsSelected">@type.Extension</label>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script at="Foot" asp-name="media-field-settings">
+    document.addEventListener('DOMContentLoaded', () => {
+        var buttons = document.getElementsByClassName('media-extensions-selector');
+        var mediaExtensionCheckboxes = document.getElementsByClassName('media-extension');
+
+        for (let i = 0; i < buttons.length; i++) {
+            var button = buttons[i];
+            button.addEventListener('click', (e) => {
+                var contentTypes = e.target.value.split(';');
+                for (let x = 0; x < mediaExtensionCheckboxes.length; x++) {
+                    if (contentTypes.includes(mediaExtensionCheckboxes[x].getAttribute('data-media-content-type'))) {
+                        mediaExtensionCheckboxes[x].checked = e.target.checked;
+                    }
+                }
+            })
+        }
+    });
+</script>

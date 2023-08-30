@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage;
 using OrchardCore.Media.Services;
+using OrchardCore.Media.ViewModels;
 
 namespace OrchardCore.Media.Controllers
 {
@@ -73,7 +74,7 @@ namespace OrchardCore.Media.Controllers
 
             if (String.IsNullOrEmpty(path))
             {
-                path = "";
+                path = String.Empty;
             }
 
             if (await _mediaFileStore.GetDirectoryInfoAsync(path) == null)
@@ -94,11 +95,11 @@ namespace OrchardCore.Media.Controllers
             return Ok(await allowed.ToListAsync());
         }
 
-        public async Task<ActionResult<IEnumerable<object>>> GetMediaItems(string path)
+        public async Task<ActionResult<IEnumerable<object>>> GetMediaItems(string path, string extensions)
         {
             if (String.IsNullOrEmpty(path))
             {
-                path = "";
+                path = String.Empty;
             }
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
@@ -112,8 +113,10 @@ namespace OrchardCore.Media.Controllers
                 return NotFound();
             }
 
+            var allowedExtensions = GetRequestedExtensions(extensions);
+
             var allowed = _mediaFileStore.GetDirectoryContentAsync(path)
-                .WhereAwait(async e => !e.IsDirectory && await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)e.Path))
+                .WhereAwait(async e => !e.IsDirectory && (allowedExtensions.Count == 0 || allowedExtensions.Contains(Path.GetExtension(e.Path))) && await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)e.Path))
                 .Select(e => CreateFileResult(e));
 
             return Ok(await allowed.ToListAsync());
@@ -131,23 +134,30 @@ namespace OrchardCore.Media.Controllers
                 return NotFound();
             }
 
-            var f = await _mediaFileStore.GetFileInfoAsync(path);
+            var fileEntry = await _mediaFileStore.GetFileInfoAsync(path);
 
-            if (f == null)
+            if (fileEntry == null)
             {
                 return NotFound();
             }
 
-            return CreateFileResult(f);
+            return CreateFileResult(fileEntry);
         }
 
         [HttpPost]
         [MediaSizeLimit]
-        public async Task<IActionResult> Upload(string path)
+        public async Task<IActionResult> Upload(string path, string extensions)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
             {
                 return Forbid();
+            }
+
+            var allowedExtensions = GetRequestedExtensions(extensions);
+
+            if (allowedExtensions.Count > 0)
+            {
+                allowedExtensions = _allowedFileExtensions.Intersect(allowedExtensions).ToHashSet(StringComparer.OrdinalIgnoreCase);
             }
 
             return await _chunkFileUploadService.ProcessRequestAsync(
@@ -159,7 +169,7 @@ namespace OrchardCore.Media.Controllers
                 {
                     if (String.IsNullOrEmpty(path))
                     {
-                        path = "";
+                        path = String.Empty;
                     }
 
                     var result = new List<object>();
@@ -167,14 +177,16 @@ namespace OrchardCore.Media.Controllers
                     // Loop through each file in the request.
                     foreach (var file in files)
                     {
-                        if (!_allowedFileExtensions.Contains(Path.GetExtension(file.FileName), StringComparer.OrdinalIgnoreCase))
+                        var extension = Path.GetExtension(file.FileName);
+
+                        if (!allowedExtensions.Contains(extension))
                         {
                             result.Add(new
                             {
                                 name = file.FileName,
                                 size = file.Length,
                                 folder = path,
-                                error = S["This file extension is not allowed: {0}", Path.GetExtension(file.FileName)].ToString()
+                                error = S["This file extension is not allowed: {0}", extension].ToString()
                             });
 
                             if (_logger.IsEnabled(LogLevel.Information))
@@ -262,8 +274,10 @@ namespace OrchardCore.Media.Controllers
                 return NotFound();
             }
 
-            if (await _mediaFileStore.TryDeleteFileAsync(path) == false)
+            if (!await _mediaFileStore.TryDeleteFileAsync(path))
+            {
                 return NotFound();
+            }
 
             return Ok();
         }
@@ -323,9 +337,9 @@ namespace OrchardCore.Media.Controllers
                 }
             }
 
-            foreach (var p in paths)
+            foreach (var path in paths)
             {
-                if (await _mediaFileStore.TryDeleteFileAsync(p) == false)
+                if (!await _mediaFileStore.TryDeleteFileAsync(path))
                 {
                     return NotFound();
                 }
@@ -374,10 +388,8 @@ namespace OrchardCore.Media.Controllers
             {
                 return BadRequest(S["Error when moving files. Maybe they already exist on the target folder? Files on error: {0}", String.Join(",", filesOnError)].ToString());
             }
-            else
-            {
-                return Ok();
-            }
+
+            return Ok();
         }
 
         [HttpPost]
@@ -387,7 +399,7 @@ namespace OrchardCore.Media.Controllers
         {
             if (String.IsNullOrEmpty(path))
             {
-                path = "";
+                path = String.Empty;
             }
 
             name = _mediaNameNormalizerService.NormalizeFolderName(name);
@@ -443,9 +455,9 @@ namespace OrchardCore.Media.Controllers
             };
         }
 
-        public IActionResult MediaApplication()
+        public IActionResult MediaApplication(MediaApplicationViewModel model)
         {
-            return View();
+            return View(model);
         }
 
         public async Task<IActionResult> Options()
@@ -456,6 +468,17 @@ namespace OrchardCore.Media.Controllers
             }
 
             return View(_mediaOptions);
+        }
+
+        private static HashSet<string> GetRequestedExtensions(string extensions)
+        {
+            if (!String.IsNullOrWhiteSpace(extensions))
+            {
+                return extensions.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            }
+
+            return new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
     }
 }
