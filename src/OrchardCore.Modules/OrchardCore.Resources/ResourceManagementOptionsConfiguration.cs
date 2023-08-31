@@ -438,6 +438,13 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("vuejs")
+                .SetUrl("~/OrchardCore.Resources/Scripts/vue-2.7.14/vue.min.js", "~/OrchardCore.Resources/Scripts/vue-2.7.14/vue.js")
+                .SetCdn("https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.min.js", "https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js")
+                .SetCdnIntegrity("sha256-1gHyKSR7Jh0YGBmI9zN7P2UhZRh/PCKhCYIaUOqWoPk=", "sha256-ogKWlwEM30Qu6hELJMlzX9rPqSGYYK1u2IizINEC5gk=")
+                .SetVersion("2.7.14");
+
+            manifest
+                .DefineScript("vuejs")
                 .SetUrl("~/OrchardCore.Resources/Scripts/vue.global.prod.js", "~/OrchardCore.Resources/Scripts/vue.global.js")
                 .SetCdn("https://cdn.jsdelivr.net/npm/vue@3.2.41/dist/vue.global.prod.js", "https://cdn.jsdelivr.net/npm/vue@3.2.41/dist/vue.global.js")
                 .SetCdnIntegrity("sha256-kgmHr8X3NCK+tP7+Mlnaxylp5JoAt1tcOAfa6WvELRg=", "sha256-tRcd5zw5e/MGCiQHuT+fetPWHpfYIMuhpQ/Qn7zvJJM=")

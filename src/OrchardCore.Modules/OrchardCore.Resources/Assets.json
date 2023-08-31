@@ -215,6 +215,13 @@
   {
     "copy": true,
     "inputs": [
+      "Assets/Vendor/vue-2.7.14/dist/vue.*"
+    ],
+    "output": "wwwroot/Scripts/vue-2.7.14/@"
+  },
+  {
+    "copy": true,
+    "inputs": [
       "node_modules/vue/dist/vue.global.*"
     ],
     "output": "wwwroot/Scripts/@"
