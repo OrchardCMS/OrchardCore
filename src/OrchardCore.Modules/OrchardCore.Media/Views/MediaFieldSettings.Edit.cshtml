@@ -45,7 +45,8 @@
 <div class="collapse@(Model.AllowAllDefaultMediaTypes ? String.Empty : " show")" id="MediaExtensionWrapper">
     <div class="mb-3">
         @{
-            var groups = Model.MediaTypes.GroupBy(t => t.Type)
+            var groups = Model.MediaTypes
+            .GroupBy(t => t.Type)
             .OrderBy(t => t.Key)
             .ToDictionary(t => t.Key, t => t.Select(m => m).ToHashSet());
         }

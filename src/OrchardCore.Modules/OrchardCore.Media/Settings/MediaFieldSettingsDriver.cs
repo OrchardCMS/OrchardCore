@@ -65,7 +65,10 @@ namespace OrchardCore.Media.Settings
                         items.Add(item);
                     }
                 }
-                model.MediaTypes = items.OrderBy(vm => vm.ContentType).ToArray();
+                model.MediaTypes = items
+                .OrderBy(vm => vm.ContentType)
+                .ToArray();
+
             }).Location("Content");
         }
 
