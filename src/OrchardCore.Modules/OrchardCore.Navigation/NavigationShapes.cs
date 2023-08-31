@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Utilities;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Navigation
@@ -20,7 +21,7 @@ namespace OrchardCore.Navigation
 
                     menu.Classes.Add("menu-" + menuName.HtmlClassify());
                     menu.Classes.Add("menu");
-                    menu.Metadata.Alternates.Add("Navigation__" + EncodeAlternateElement(menuName));
+                    menu.Metadata.Alternates.Add("Navigation__" + menuName.EncodeAlternateElement());
                 })
                 .OnProcessing(async context =>
                 {
@@ -79,9 +80,11 @@ namespace OrchardCore.Navigation
                     var menuName = menu.GetProperty<string>("MenuName");
                     var level = menuItem.GetProperty<int>("Level");
 
+                    var encodedMenuName = menuName.EncodeAlternateElement();
+
                     menuItem.Metadata.Alternates.Add("NavigationItem__level__" + level);
-                    menuItem.Metadata.Alternates.Add("NavigationItem__" + EncodeAlternateElement(menuName));
-                    menuItem.Metadata.Alternates.Add("NavigationItem__" + EncodeAlternateElement(menuName) + "__level__" + level);
+                    menuItem.Metadata.Alternates.Add("NavigationItem__" + encodedMenuName);
+                    menuItem.Metadata.Alternates.Add("NavigationItem__" + encodedMenuName + "__level__" + level);
                 });
 
             builder.Describe("NavigationItemLink")
@@ -93,21 +96,13 @@ namespace OrchardCore.Navigation
 
                     menuItem.Metadata.Alternates.Add("NavigationItemLink__level__" + level);
 
+                    var encodedMenuName = menuName.EncodeAlternateElement();
+
                     // NavigationItemLink__[MenuName] e.g. NavigationItemLink-Main-Menu
                     // NavigationItemLink__[MenuName]__level__[level] e.g. NavigationItemLink-Main-Menu-level-2
-                    menuItem.Metadata.Alternates.Add("NavigationItemLink__" + EncodeAlternateElement(menuName));
-                    menuItem.Metadata.Alternates.Add("NavigationItemLink__" + EncodeAlternateElement(menuName) + "__level__" + level);
+                    menuItem.Metadata.Alternates.Add("NavigationItemLink__" + encodedMenuName);
+                    menuItem.Metadata.Alternates.Add("NavigationItemLink__" + encodedMenuName + "__level__" + level);
                 });
-        }
-
-        /// <summary>
-        /// Encodes dashed and dots so that they don't conflict in filenames
-        /// </summary>
-        /// <param name="alternateElement"></param>
-        /// <returns></returns>
-        private static string EncodeAlternateElement(string alternateElement)
-        {
-            return alternateElement.Replace("-", "__").Replace('.', '_');
         }
     }
 }
