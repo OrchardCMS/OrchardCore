@@ -215,7 +215,7 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineStyle("nouislider")
-                .SetUrl("~/OrchardCore.Resources/Styles/nouislider.min.css", "~/OrchardCore.Resources/Styles/nouislider.css")
+                .SetUrl("~/OrchardCore.Resources/Scripts/nouislider/nouislider.min.css", "~/OrchardCore.Resources/Scripts/nouislider/nouislider.css")
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css", "https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.css")
                 .SetCdnIntegrity("sha384-PSZaVsyG9jDu8hFaSJev5s/9poIJlX7cuxSGdqCgXRHpo2DzIaZAyCd2rG/DJJmV", "sha384-SW0/EWtnMakMnwC9RHA27DeNtNCLsJ0l+oZrXlFbb2123lhLdZIbiDiwRPogNY8T")
                 .SetVersion("15.7.0");
