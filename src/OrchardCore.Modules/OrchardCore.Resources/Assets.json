@@ -208,30 +208,16 @@
   {
     "copy": true,
     "inputs": [
-      "node_modules/vue/dist/vue.global.js"
+      "node_modules/vue/dist/vue.global.*"
     ],
-    "output": "wwwroot/Scripts/vue.global.js"
+    "output": "wwwroot/Scripts/@"
   },
   {
     "copy": true,
     "inputs": [
-      "node_modules/vue/dist/vue.global.prod.js"
+      "node_modules/vue-multiselect/dist/vue-multiselect.umd.*"
     ],
-    "output": "wwwroot/Scripts/vue.global.prod.js"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/vue-multiselect/dist/vue-multiselect.umd.js"
-    ],
-    "output": "wwwroot/Scripts/vue-multiselect.umd.js"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/vue-multiselect/dist/vue-multiselect.umd.min.js"
-    ],
-    "output": "wwwroot/Scripts/vue-multiselect.umd.min.js"
+    "output": "wwwroot/Scripts/@"
   },
   {
     "copy": true,
@@ -243,21 +229,14 @@
   {
     "copy": true,
     "inputs": [
-      "node_modules/sortablejs/Sortable.min.js"
+      "node_modules/sortablejs/Sortable.*"
     ],
-    "output": "wwwroot/Scripts/Sortable.min.js"
+    "output": "wwwroot/Scripts/@"
   },
   {
     "copy": true,
     "inputs": [
-      "node_modules/sortablejs/Sortable.js"
-    ],
-    "output": "wwwroot/Scripts/Sortable.js"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/vue-draggable-next/dist/vue-draggable-next.global.*"
+      "node_modules/vuedraggable/dist/vuedraggable.*"
     ],
     "output": "wwwroot/Scripts/@"
   },
