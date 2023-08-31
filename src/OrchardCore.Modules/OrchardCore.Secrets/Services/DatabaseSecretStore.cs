@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
-using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Secrets.Services;
 
@@ -31,7 +30,7 @@ public class DatabaseSecretStore : ISecretStore
     {
         if (!typeof(Models.Secret).IsAssignableFrom(type))
         {
-            throw new ArgumentException($"The type must implement '{nameof(Secret)}'.");
+            throw new ArgumentException($"The type must implement '{nameof(Models.Secret)}'.");
         }
 
         var secretsDocument = await _manager.GetSecretsDocumentAsync();
