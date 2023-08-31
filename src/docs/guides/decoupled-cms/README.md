@@ -59,7 +59,7 @@ The newly created website should be able to run, and look like this:
 
 ```xml
 <PropertyGroup>
-  <TargetFramework>net6.0</TargetFramework>
+  <TargetFramework>net6.0;net7.0</TargetFramework>
 </PropertyGroup>
 ```
 
@@ -81,18 +81,27 @@ builder.Services.AddOrchardCms();
 ```
 
 !!! warning "Razor Pages"
-    `AddRazorPages` must not be called directly as `services.AddOrchardCms()` already invokes it internally.
+    `builder.Services.AddRazorPages()` must not be called directly as `builder.Services.AddOrchardCms()` already invokes it internally.
 
 - Edit the `Program.cs` file
-- Remove everything after `app.UseStaticFiles();` and replace it by `app.UseOrchardCore();` like this:
+- Add `app.UseOrchardCore();` 
+- Remove andy of the following lines if exists in your `Program.cs` file:
 
 ```csharp
-   ...
-   
-   app.UseHttpsRedirection();
-   app.UseStaticFiles();
-   
-   app.UseOrchardCore();
+  builder.Services.AddRazorPages();
+
+  if (!app.Environment.IsDevelopment())
+  {
+      app.UseExceptionHandler("/Error");
+      app.UseHsts();
+  }
+  
+  app.UseHttpsRedirection();
+  app.UseRouting();
+  
+  app.UseAuthorization();
+  
+  app.MapRazorPages();
 }
 ```
 
