@@ -262,6 +262,13 @@
     "output": "wwwroot/Vendor/fontawesome-free/webfonts/@"
   },
   {
+    "copy": true,
+    "inputs": [
+      "Assets/Vendor/**"
+    ],
+    "output": "wwwroot/Vendor/@"
+  },
+  {
     "generateSourceMaps": false,
     "inputs": [
       "node_modules/js-cookie/dist/js.cookie.js"
