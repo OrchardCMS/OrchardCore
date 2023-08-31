@@ -6,7 +6,7 @@ using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Services;
 
-[RequireFeatures("OrchardCore.Tenants", "OrchardCore.Features")]
+[RequireFeatures("OrchardCore.Features")]
 public class TenantFeatureShapeTableProvider : IShapeTableProvider
 {
     public void Discover(ShapeTableBuilder builder)
