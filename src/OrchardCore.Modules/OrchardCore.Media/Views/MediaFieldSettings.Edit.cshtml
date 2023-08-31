@@ -35,7 +35,6 @@
     </div>
     <span class="hint">@T["The hint text to display on the editor."]</span>
 </div>
-
 <div class="mb-3">
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="AllowAllDefaultMediaTypes" checked="@Model.AllowAllDefaultMediaTypes" data-bs-toggle="collapse" data-bs-target="#MediaExtensionWrapper" role="button" aria-expanded="@((!Model.AllowAllDefaultMediaTypes).ToString().ToLowerInvariant())" aria-controls="MediaExtensionWrapper">
@@ -43,44 +42,24 @@
         <span class="hint dashed">@T["This will allow the user to attach any accessible file from the media library."]</span>
     </div>
 </div>
-
 <div class="collapse@(Model.AllowAllDefaultMediaTypes ? String.Empty : " show")" id="MediaExtensionWrapper">
     <div class="mb-3">
         @{
-            var contentTypeMaps = new Dictionary<string, HashSet<string>>();
-
-            foreach (var mediaType in Model.MediaTypes)
-            {
-                var index = mediaType.ContentType.IndexOf('/');
-
-                if (index <= 0)
-                {
-                    continue;
-                }
-
-                var type = mediaType.ContentType.Substring(0, index);
-
-                if (!contentTypeMaps.ContainsKey(type))
-                {
-                    contentTypeMaps.Add(type, new HashSet<string>());
-                }
-
-                contentTypeMaps[type].Add(mediaType.ContentType);
-            }
-
-            var sortedContentTypeMaps = contentTypeMaps.OrderBy(m => m.Key).ToArray();
+            var sortedContentTypeMaps = Model.MediaTypes.GroupBy(t => t.Type)
+            .OrderBy(t => t.Key)
+            .ToDictionary(t => t.Key, t => t.Select(m => m).ToHashSet());
         }
 
         <div class="mb-3">
-            @for (var i = 0; i < sortedContentTypeMaps.Length; i++)
+            @foreach (var map in sortedContentTypeMaps)
             {
-                var allSelected = !Model.MediaTypes.Where(x => sortedContentTypeMaps[i].Value.Contains(x.ContentType)).Any(x => !x.IsSelected);
+                var allSelected = !map.Value.Any(x => !x.IsSelected);
+                var htmlId = $"MediaExtensionTypeId_{map.Key}";
 
-                var htmlId = $"MediaExtensionTypeId_{i}";
                 <div class="form-check">
-                    <input type="checkbox" class="form-check-input media-extensions-selector" id="@htmlId" value="@String.Join(';', sortedContentTypeMaps[i].Value)">
-                    <label class="form-check-label cursor-pointer" checked="@allSelected" for="@htmlId">@T["{0} types", sortedContentTypeMaps[i].Key]</label>
-                    <span class="hint dashed">@T["Select all extensions with the '{0}' type.", sortedContentTypeMaps[i].Key]</span>
+                    <input type="checkbox" class="form-check-input media-extensions-selector" checked="@allSelected" id="@htmlId" value="@String.Join(';', map.Value.Select(m => m.ContentType))">
+                    <label class="form-check-label cursor-pointer" for="@htmlId">@T["{0} types", map.Key]</label>
+                    <span class="hint dashed">@T["Select all extensions with the '{0}' type.", map.Key]</span>
                 </div>
             }
         </div>

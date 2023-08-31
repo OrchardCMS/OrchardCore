@@ -48,12 +48,21 @@ namespace OrchardCore.Media.Settings
                 {
                     if (_contentTypeProvider.TryGetContentType(extension, out var contentType))
                     {
-                        items.Add(new MediaTypeViewModel()
+                        var item = new MediaTypeViewModel()
                         {
                             Extension = extension,
                             ContentType = contentType,
                             IsSelected = settings.AllowedExtensions != null && settings.AllowedExtensions.Contains(extension)
-                        });
+                        };
+
+                        var index = contentType.IndexOf('/');
+
+                        if (index > -1)
+                        {
+                            item.Type = contentType[..index];
+                        }
+
+                        items.Add(item);
                     }
                 }
                 model.MediaTypes = items.OrderBy(vm => vm.ContentType).ToArray();

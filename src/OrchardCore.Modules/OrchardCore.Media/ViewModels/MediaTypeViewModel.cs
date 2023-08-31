@@ -6,5 +6,7 @@ public class MediaTypeViewModel
 
     public string ContentType { get; set; }
 
+    public string Type { get; set; }
+
     public bool IsSelected { get; set; }
 }
