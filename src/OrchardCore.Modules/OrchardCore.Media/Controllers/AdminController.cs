@@ -20,7 +20,6 @@ namespace OrchardCore.Media.Controllers
     {
         private static readonly char[] _invalidFolderNameCharacters = new char[] { '\\', '/' };
 
-        private readonly HashSet<string> _allowedFileExtensions;
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IMediaNameNormalizerService _mediaNameNormalizerService;
         private readonly IAuthorizationService _authorizationService;
@@ -48,7 +47,6 @@ namespace OrchardCore.Media.Controllers
             _authorizationService = authorizationService;
             _contentTypeProvider = contentTypeProvider;
             _mediaOptions = options.Value;
-            _allowedFileExtensions = _mediaOptions.AllowedFileExtensions;
             _logger = logger;
             S = stringLocalizer;
             _userAssetFolderNameProvider = userAssetFolderNameProvider;
@@ -113,7 +111,7 @@ namespace OrchardCore.Media.Controllers
                 return NotFound();
             }
 
-            var allowedExtensions = GetRequestedExtensions(extensions);
+            var allowedExtensions = GetRequestedExtensions(extensions, false);
 
             var allowed = _mediaFileStore.GetDirectoryContentAsync(path)
                 .WhereAwait(async e => !e.IsDirectory && (allowedExtensions.Count == 0 || allowedExtensions.Contains(Path.GetExtension(e.Path))) && await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)e.Path))
@@ -153,16 +151,7 @@ namespace OrchardCore.Media.Controllers
                 return Forbid();
             }
 
-            var allowedExtensions = GetRequestedExtensions(extensions);
-
-            if (allowedExtensions.Count > 0)
-            {
-                allowedExtensions = _allowedFileExtensions.Intersect(allowedExtensions).ToHashSet(StringComparer.OrdinalIgnoreCase);
-            } 
-            else
-            {
-                allowedExtensions = _allowedFileExtensions;
-            }
+            var allowedExtensions = GetRequestedExtensions(extensions, true);
 
             return await _chunkFileUploadService.ProcessRequestAsync(
                 Request,
@@ -305,9 +294,11 @@ namespace OrchardCore.Media.Controllers
                 return NotFound();
             }
 
-            if (!_allowedFileExtensions.Contains(Path.GetExtension(newPath), StringComparer.OrdinalIgnoreCase))
+            var newExtension = Path.GetExtension(newPath);
+
+            if (!_mediaOptions.AllowedFileExtensions.Contains(newExtension, StringComparer.OrdinalIgnoreCase))
             {
-                return BadRequest(S["This file extension is not allowed: {0}", Path.GetExtension(newPath)]);
+                return BadRequest(S["This file extension is not allowed: {0}", newExtension]);
             }
 
             if (await _mediaFileStore.GetFileInfoAsync(newPath) != null)
@@ -474,15 +465,29 @@ namespace OrchardCore.Media.Controllers
             return View(_mediaOptions);
         }
 
-        private static HashSet<string> GetRequestedExtensions(string extensions)
+        private HashSet<string> GetRequestedExtensions(string exts, bool fallback)
         {
-            if (!String.IsNullOrWhiteSpace(extensions))
+            if (!String.IsNullOrWhiteSpace(exts))
             {
-                return extensions.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                var extensions = exts.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+                var validExtensions = _mediaOptions.AllowedFileExtensions
+                    .Intersect(extensions)
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                if (validExtensions.Count > 0)
+                {
+                    return validExtensions;
+                }
+            }
+
+            if (fallback)
+            {
+                return _mediaOptions.AllowedFileExtensions
                     .ToHashSet(StringComparer.OrdinalIgnoreCase);
             }
 
-            return new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            return new HashSet<string>();
         }
     }
 }
