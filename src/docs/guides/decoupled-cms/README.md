@@ -105,6 +105,28 @@ builder.Services.AddOrchardCms();
 }
 ```
 
+Here is a sample of a bare minimum `Program.cs` file
+
+```csharp
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
+
+        // Add services to the container.
+        builder.Services.AddOrchardCms();
+
+        var app = builder.Build();
+
+        app.UseStaticFiles();
+        app.UseOrchardCore();
+        
+        app.Run();
+    }
+}
+```
+
 Start the application, the Setup screen shows up:
 
 ![Setup](images/setup.jpg)
