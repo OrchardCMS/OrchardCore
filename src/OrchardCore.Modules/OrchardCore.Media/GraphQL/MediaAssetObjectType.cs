@@ -1,6 +1,5 @@
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Apis.GraphQL;
 using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.GraphQL

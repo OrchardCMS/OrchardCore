@@ -1,0 +1,40 @@
+@using OrchardCore.Localization
+@using OrchardCore.Environment.Shell
+
+@inject ShellSettings ShellSettings
+
+@{
+    var cookieName = AdminCookieCultureProvider.MakeCookieName(ShellSettings);
+    var cookiePath = AdminCookieCultureProvider.MakeCookiePath(Context);
+    var selectedCultureName = Model.CurrentCulture.Name;
+}
+
+<li class="nav-item">
+    <select id="oc-admin-culture-picker" class="form-select me-3"
+            data-cookie-name="@cookieName"
+            data-cookie-path="@cookiePath"
+            data-selected-culture="@selectedCultureName">
+
+        @foreach (var culture in Model.SupportedCultures)
+        {
+            <option selected="@(culture.Name == selectedCultureName ? "selected" : null)" value="@culture.Name">@culture.NativeName</option>
+        }
+    </select>
+</li>
+
+<script at="Foot" depends-on="jquery">
+    $(function () {
+        $('#oc-admin-culture-picker').change(function () {
+            var $this = $(this);
+            var culture = $this.val();
+            var selectedCulture = $this.data('selected-culture');
+            if (culture != selectedCulture) {
+                var cookieName = $this.data('cookie-name');
+                var cookiePath = $this.data('cookie-path');
+                var cookieValue = `${cookieName}=c=${culture}|uic=${culture};path=${cookiePath}`;
+                document.cookie = cookieValue;
+                window.location = window.location.href;
+            }
+        });
+    });
+</script>

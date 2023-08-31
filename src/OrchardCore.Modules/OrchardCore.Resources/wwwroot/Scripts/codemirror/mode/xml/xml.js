@@ -3,14 +3,17 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/5/LICENSE
+
 (function (mod) {
-  if ((typeof exports === "undefined" ? "undefined" : _typeof(exports)) == "object" && (typeof module === "undefined" ? "undefined" : _typeof(module)) == "object") // CommonJS
-    mod(require("../../lib/codemirror"));else if (typeof define == "function" && define.amd) // AMD
-    define(["../../lib/codemirror"], mod);else // Plain browser env
+  if ((typeof exports === "undefined" ? "undefined" : _typeof(exports)) == "object" && (typeof module === "undefined" ? "undefined" : _typeof(module)) == "object")
+    // CommonJS
+    mod(require("../../lib/codemirror"));else if (typeof define == "function" && define.amd)
+    // AMD
+    define(["../../lib/codemirror"], mod);else
+    // Plain browser env
     mod(CodeMirror);
 })(function (CodeMirror) {
   "use strict";
@@ -150,26 +153,17 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     var indentUnit = editorConf.indentUnit;
     var config = {};
     var defaults = config_.htmlMode ? htmlConfig : xmlConfig;
+    for (var prop in defaults) config[prop] = defaults[prop];
+    for (var prop in config_) config[prop] = config_[prop];
 
-    for (var prop in defaults) {
-      config[prop] = defaults[prop];
-    }
-
-    for (var prop in config_) {
-      config[prop] = config_[prop];
-    } // Return variables for tokenizers
-
-
+    // Return variables for tokenizers
     var type, setStyle;
-
     function inText(stream, state) {
       function chain(parser) {
         state.tokenize = parser;
         return parser(stream, state);
       }
-
       var ch = stream.next();
-
       if (ch == "<") {
         if (stream.eat("!")) {
           if (stream.eat("[")) {
@@ -193,7 +187,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         }
       } else if (ch == "&") {
         var ok;
-
         if (stream.eat("#")) {
           if (stream.eat("x")) {
             ok = stream.eatWhile(/[a-fA-F\d]/) && stream.eat(";");
@@ -203,19 +196,15 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         } else {
           ok = stream.eatWhile(/[\w\.\-:]/) && stream.eat(";");
         }
-
         return ok ? "atom" : "error";
       } else {
         stream.eatWhile(/[^&<]/);
         return null;
       }
     }
-
     inText.isInText = true;
-
     function inTag(stream, state) {
       var ch = stream.next();
-
       if (ch == ">" || ch == "/" && stream.eat(">")) {
         state.tokenize = inText;
         type = ch == ">" ? "endTag" : "selfcloseTag";
@@ -238,7 +227,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         return "word";
       }
     }
-
     function inAttribute(quote) {
       var closure = function closure(stream, state) {
         while (!stream.eol()) {
@@ -247,14 +235,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             break;
           }
         }
-
         return "string";
       };
-
       closure.isInAttribute = true;
       return closure;
     }
-
     function inBlock(style, terminator) {
       return function (stream, state) {
         while (!stream.eol()) {
@@ -262,18 +247,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             state.tokenize = inText;
             break;
           }
-
           stream.next();
         }
-
         return style;
       };
     }
-
     function doctype(depth) {
       return function (stream, state) {
         var ch;
-
         while ((ch = stream.next()) != null) {
           if (ch == "<") {
             state.tokenize = doctype(depth + 1);
@@ -288,15 +269,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             }
           }
         }
-
         return "meta";
       };
     }
-
     function lower(tagName) {
       return tagName && tagName.toLowerCase();
     }
-
     function Context(state, tagName, startOfLine) {
       this.prev = state.context;
       this.tagName = tagName || "";
@@ -304,29 +282,22 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       this.startOfLine = startOfLine;
       if (config.doNotIndent.hasOwnProperty(tagName) || state.context && state.context.noIndent) this.noIndent = true;
     }
-
     function popContext(state) {
       if (state.context) state.context = state.context.prev;
     }
-
     function maybePopContext(state, nextTagName) {
       var parentTagName;
-
       while (true) {
         if (!state.context) {
           return;
         }
-
         parentTagName = state.context.tagName;
-
         if (!config.contextGrabbers.hasOwnProperty(lower(parentTagName)) || !config.contextGrabbers[lower(parentTagName)].hasOwnProperty(lower(nextTagName))) {
           return;
         }
-
         popContext(state);
       }
     }
-
     function baseState(type, stream, state) {
       if (type == "openTag") {
         state.tagStart = stream.column();
@@ -337,7 +308,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         return baseState;
       }
     }
-
     function tagNameState(type, stream, state) {
       if (type == "word") {
         state.tagName = stream.current();
@@ -351,12 +321,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         return tagNameState;
       }
     }
-
     function closeTagNameState(type, stream, state) {
       if (type == "word") {
         var tagName = stream.current();
         if (state.context && state.context.tagName != tagName && config.implicitlyClosed.hasOwnProperty(lower(state.context.tagName))) popContext(state);
-
         if (state.context && state.context.tagName == tagName || config.matchClosing === false) {
           setStyle = "tag";
           return closeState;
@@ -372,68 +340,55 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         return closeStateErr;
       }
     }
-
     function closeState(type, _stream, state) {
       if (type != "endTag") {
         setStyle = "error";
         return closeState;
       }
-
       popContext(state);
       return baseState;
     }
-
     function closeStateErr(type, stream, state) {
       setStyle = "error";
       return closeState(type, stream, state);
     }
-
     function attrState(type, _stream, state) {
       if (type == "word") {
         setStyle = "attribute";
         return attrEqState;
       } else if (type == "endTag" || type == "selfcloseTag") {
         var tagName = state.tagName,
-            tagStart = state.tagStart;
+          tagStart = state.tagStart;
         state.tagName = state.tagStart = null;
-
         if (type == "selfcloseTag" || config.autoSelfClosers.hasOwnProperty(lower(tagName))) {
           maybePopContext(state, tagName);
         } else {
           maybePopContext(state, tagName);
           state.context = new Context(state, tagName, tagStart == state.indented);
         }
-
         return baseState;
       }
-
       setStyle = "error";
       return attrState;
     }
-
     function attrEqState(type, stream, state) {
       if (type == "equals") return attrValueState;
       if (!config.allowMissing) setStyle = "error";
       return attrState(type, stream, state);
     }
-
     function attrValueState(type, stream, state) {
       if (type == "string") return attrContinuedState;
-
       if (type == "word" && config.allowUnquoted) {
         setStyle = "string";
         return attrState;
       }
-
       setStyle = "error";
       return attrState(type, stream, state);
     }
-
     function attrContinuedState(type, stream, state) {
       if (type == "string") return attrContinuedState;
       return attrState(type, stream, state);
     }
-
     return {
       startState: function startState(baseIndent) {
         var state = {
@@ -452,32 +407,27 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         if (stream.eatSpace()) return null;
         type = null;
         var style = state.tokenize(stream, state);
-
         if ((style || type) && style != "comment") {
           setStyle = null;
           state.state = state.state(type || style, stream, state);
           if (setStyle) style = setStyle == "error" ? style + " error" : setStyle;
         }
-
         return style;
       },
       indent: function indent(state, textAfter, fullLine) {
-        var context = state.context; // Indent multi-line strings (e.g. css).
-
+        var context = state.context;
+        // Indent multi-line strings (e.g. css).
         if (state.tokenize.isInAttribute) {
           if (state.tagStart == state.indented) return state.stringStartCol + 1;else return state.indented + indentUnit;
         }
-
         if (context && context.noIndent) return CodeMirror.Pass;
-        if (state.tokenize != inTag && state.tokenize != inText) return fullLine ? fullLine.match(/^(\s*)/)[0].length : 0; // Indent the starts of attribute names.
-
+        if (state.tokenize != inTag && state.tokenize != inText) return fullLine ? fullLine.match(/^(\s*)/)[0].length : 0;
+        // Indent the starts of attribute names.
         if (state.tagName) {
           if (config.multilineTagIndentPastTag !== false) return state.tagStart + state.tagName.length + 2;else return state.tagStart + indentUnit * (config.multilineTagIndentFactor || 1);
         }
-
         if (config.alignCDATA && /<!\[CDATA\[/.test(textAfter)) return 0;
         var tagAfter = textAfter && /^<(\/)?([\w_:\.-]*)/.exec(textAfter);
-
         if (tagAfter && tagAfter[1]) {
           // Closing tag spotted
           while (context) {
@@ -497,11 +447,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             if (grabbers && grabbers.hasOwnProperty(lower(tagAfter[2]))) context = context.prev;else break;
           }
         }
-
-        while (context && context.prev && !context.startOfLine) {
-          context = context.prev;
-        }
-
+        while (context && context.prev && !context.startOfLine) context = context.prev;
         if (context) return context.indent + indentUnit;else return state.baseIndent || 0;
       },
       electricInput: /<\/[\s\w:]+>$/,
@@ -520,11 +466,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       },
       xmlCurrentContext: function xmlCurrentContext(state) {
         var context = [];
-
-        for (var cx = state.context; cx; cx = cx.prev) {
-          context.push(cx.tagName);
-        }
-
+        for (var cx = state.context; cx; cx = cx.prev) context.push(cx.tagName);
         return context.reverse();
       }
     };

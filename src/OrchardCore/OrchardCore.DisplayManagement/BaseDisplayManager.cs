@@ -45,7 +45,7 @@ namespace OrchardCore.DisplayManagement
 
             if (delimiterIndex > 0)
             {
-                shapeType = shapeType.Substring(0, delimiterIndex);
+                shapeType = shapeType[..delimiterIndex];
             }
 
             var placementContext = new ShapePlacementContext(

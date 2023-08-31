@@ -43,15 +43,12 @@ namespace OrchardCore.Users.Services
                     })
                     .MapFrom<UserIndexOptions>((model) =>
                     {
-                        switch (model.Filter)
+                        return model.Filter switch
                         {
-                            case UsersFilter.Enabled:
-                                return (true, model.Filter.ToString());
-                            case UsersFilter.Disabled:
-                                return (true, model.Filter.ToString());
-                        }
-
-                        return (false, String.Empty);
+                            UsersFilter.Enabled => (true, model.Filter.ToString()),
+                            UsersFilter.Disabled => (true, model.Filter.ToString()),
+                            _ => (false, String.Empty)
+                        };
                     })
                 )
                 .WithNamedTerm("sort", builder => builder
@@ -107,7 +104,7 @@ namespace OrchardCore.Users.Services
                     .MapTo<UserIndexOptions>((val, model) => model.SelectedRole = val)
                     .MapFrom<UserIndexOptions>((model) => (!String.IsNullOrEmpty(model.SelectedRole), model.SelectedRole))
                 )
-                .WithDefaultTerm("name", builder => builder
+                .WithDefaultTerm(UsersAdminListFilterOptions.DefaultTermName, builder => builder
                     .ManyCondition(
                         (val, query, ctx) =>
                         {

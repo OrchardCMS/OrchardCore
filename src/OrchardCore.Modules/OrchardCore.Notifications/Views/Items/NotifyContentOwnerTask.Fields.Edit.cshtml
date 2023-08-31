@@ -1,0 +1,28 @@
+@model NotifyUserTaskActivityViewModel
+
+<div class="mb-3" asp-validation-class-for="Subject">
+    <label asp-for="Subject">@T["Subject"]</label>
+    <input type="text" asp-for="Subject" class="form-control" />
+    <span asp-validation-for="Subject"></span>
+    <span class="hint">@T["You may use Liquid syntax."]</span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="TextBody">
+    <label asp-for="TextBody">@T["Text Body"]</label>
+    <textarea asp-for="TextBody" rows="10" class="form-control"></textarea>
+    <span class="hint">@T["This optional text body does not support HTML. You may use Liquid syntax."]</span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="HtmlBody">
+    <label asp-for="HtmlBody">@T["HTML Body"]</label>
+    <textarea asp-for="HtmlBody" rows="10" class="form-control"></textarea>
+    <span class="hint">@T["HTML message will only be sent if the notification provider supports it. You may use Liquid syntax."]</span>
+</div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input asp-for="IsHtmlPreferred" type="checkbox" class="form-check-input" />
+        <label class="form-check-label" asp-for="IsHtmlPreferred">@T["Use HTML Body when possible"]</label>
+    </div>
+    <span class="hint">@T["When checked, the notification provider will use the HTML body if it supports HTML."]</span>
+</div>

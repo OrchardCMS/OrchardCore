@@ -1,0 +1,21 @@
+@model SummaryAdminUserViewModel
+
+<h4>@T["User Info"]</h4>
+
+<dl>
+    <dt>@T["Username"]</dt>
+    <dd>@Model.User.UserName</dd>
+
+    <dt>@T["Email"]</dt>
+    <dd>@Model.User.Email</dd>
+
+    @if (!String.IsNullOrWhiteSpace(Model.User.PhoneNumber))
+    {
+        <dt>@T["Phone Number"]</dt>
+        <dd>@Model.User.PhoneNumber</dd>
+    }
+
+    <dt>@T["Status"]</dt>
+    <dd>@(Model.User.IsEnabled ? T["Enabled"] : T["Disabled"])</dd>
+
+</dl>

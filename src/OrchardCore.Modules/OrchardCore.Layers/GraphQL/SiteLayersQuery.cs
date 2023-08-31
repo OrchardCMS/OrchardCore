@@ -16,7 +16,7 @@ namespace OrchardCore.Layers.GraphQL
 {
     public class SiteLayersQuery : ISchemaBuilder
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly GraphQLContentOptions _graphQLContentOptions;
 
         public SiteLayersQuery(
@@ -31,7 +31,7 @@ namespace OrchardCore.Layers.GraphQL
 
         public Task BuildAsync(ISchema schema)
         {
-            if (_graphQLContentOptions.ShouldSkipContentType("SiteLayers"))
+            if (_graphQLContentOptions.IsHiddenByDefault("SiteLayers"))
             {
                 return Task.CompletedTask;
             }

@@ -9,7 +9,7 @@ namespace OrchardCore.Templates.Settings
 {
     public class TemplateContentPartDefinitionDriver : ContentPartDefinitionDisplayDriver
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public TemplateContentPartDefinitionDriver(IStringLocalizer<TemplateContentPartDefinitionDriver> localizer)
         {

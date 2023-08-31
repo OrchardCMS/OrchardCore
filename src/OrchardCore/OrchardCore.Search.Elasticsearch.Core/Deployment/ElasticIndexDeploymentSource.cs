@@ -35,13 +35,16 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
             {
                 if (indicesToAdd.Contains(index.IndexName))
                 {
-                    var indexSettingsDict = new Dictionary<string, ElasticIndexSettings>();
-                    indexSettingsDict.Add(index.IndexName, index);
+                    var indexSettingsDict = new Dictionary<string, ElasticIndexSettings>
+                    {
+                        { index.IndexName, index },
+                    };
+
                     data.Add(JObject.FromObject(indexSettingsDict));
                 }
             }
 
-            // Adding Elasticsearch settings
+            // Adding Elasticsearch settings.
             result.Steps.Add(new JObject(
                 new JProperty("name", "ElasticIndexSettings"),
                 new JProperty("Indices", data)

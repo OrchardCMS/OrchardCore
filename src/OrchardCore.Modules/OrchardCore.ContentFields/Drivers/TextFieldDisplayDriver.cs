@@ -15,7 +15,7 @@ namespace OrchardCore.ContentFields.Drivers
 {
     public class TextFieldDisplayDriver : ContentFieldDisplayDriver<TextField>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public TextFieldDisplayDriver(IStringLocalizer<TextFieldDisplayDriver> localizer)
         {
@@ -38,7 +38,8 @@ namespace OrchardCore.ContentFields.Drivers
         {
             return Initialize<EditTextFieldViewModel>(GetEditorShapeType(context), model =>
             {
-                model.Text = field.Text;
+                var settings = context.PartFieldDefinition.GetSettings<TextFieldSettings>();
+                model.Text = context.IsNew && field.Text == null ? settings.DefaultValue : field.Text;
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;

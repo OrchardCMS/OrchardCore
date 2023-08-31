@@ -21,10 +21,10 @@ namespace OrchardCore.Environment.Shell
 
         private IConfiguration _configuration;
         private IEnumerable<string> _configuredTenants;
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+        private readonly SemaphoreSlim _semaphore = new(1);
 
         private Func<string, Task<IConfigurationBuilder>> _tenantConfigBuilderFactory;
-        private readonly SemaphoreSlim _tenantConfigSemaphore = new SemaphoreSlim(1);
+        private readonly SemaphoreSlim _tenantConfigSemaphore = new(1);
 
         public ShellSettingsManager(
             IConfiguration applicationConfiguration,
@@ -211,6 +211,36 @@ namespace OrchardCore.Environment.Shell
                 try
                 {
                     await _tenantConfigSources.SaveAsync(settings.Name, tenantConfig.ToObject<Dictionary<string, string>>());
+                }
+                finally
+                {
+                    _tenantConfigSemaphore.Release();
+                }
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        public async Task RemoveSettingsAsync(ShellSettings settings)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                await EnsureConfigurationAsync();
+
+                if (settings == null)
+                {
+                    throw new ArgumentNullException(nameof(settings));
+                }
+
+                await _settingsSources.RemoveAsync(settings.Name);
+
+                await _tenantConfigSemaphore.WaitAsync();
+                try
+                {
+                    await _tenantConfigSources.RemoveAsync(settings.Name);
                 }
                 finally
                 {

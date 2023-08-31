@@ -32,15 +32,17 @@ namespace OrchardCore.Benchmark
          */
 
         [Benchmark]
+#pragma warning disable CA1822 // Mark members as static
         public void EvaluateSlugifyWithShortSlug()
         {
             _slugService.Slugify("Je veux aller à Saint-Étienne");
         }
 
-	    [Benchmark]
+        [Benchmark]
         public void EvaluateSlugifyWithLongSlug()
         {
             _slugService.Slugify("Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne");
         }
+#pragma warning restore CA1822 // Mark members as static
     }
 }

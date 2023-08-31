@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
@@ -57,11 +58,15 @@ namespace OrchardCore.Media
 {
     public class Startup : StartupBase
     {
-        private readonly AdminOptions _adminOptions;
+        private const string _imageSharpCacheFolder = "is-cache";
 
-        public Startup(IOptions<AdminOptions> adminOptions)
+        private readonly AdminOptions _adminOptions;
+        private readonly ShellSettings _shellSettings;
+
+        public Startup(IOptions<AdminOptions> adminOptions, ShellSettings shellSettings)
         {
             _adminOptions = adminOptions.Value;
+            _shellSettings = shellSettings;
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -113,8 +118,9 @@ namespace OrchardCore.Media
 
                 var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath);
 
-                var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>()
-                    .HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? null;
+                var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext
+                    ?.Features.Get<ShellContextFeature>()
+                    ?.OriginalPathBase ?? PathString.Empty;
 
                 if (originalPathBase.HasValue)
                 {
@@ -140,6 +146,7 @@ namespace OrchardCore.Media
                 .SetCacheKey<BackwardsCompatibleCacheKey>()
                 .Configure<PhysicalFileSystemCacheOptions>(options =>
                 {
+                    options.CacheFolder = $"{_shellSettings.Name}/{_imageSharpCacheFolder}";
                     options.CacheFolderDepth = 12;
                 })
                 .AddProvider<MediaResizingFileProvider>()
@@ -162,7 +169,6 @@ namespace OrchardCore.Media
             services.AddDataMigration<Migrations>();
             services.AddScoped<IContentFieldIndexHandler, MediaFieldIndexHandler>();
             services.AddMediaFileTextProvider<PdfMediaFileTextProvider>(".pdf");
-
             services.AddRecipeExecutionStep<MediaStep>();
 
             // MIME types
@@ -181,6 +187,8 @@ namespace OrchardCore.Media
             services.AddScoped<IMediaNameNormalizerService, NullMediaNameNormalizerService>();
 
             services.AddScoped<IUserAssetFolderNameProvider, DefaultUserAssetFolderNameProvider>();
+            services.AddSingleton<IChunkFileUploadService, ChunkFileUploadService>();
+            services.AddSingleton<IBackgroundTask, ChunkFileUploadBackgroundTask>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -344,7 +352,7 @@ namespace OrchardCore.Media
             );
         }
 
-        private string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsPath)
+        private static string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsPath)
         {
             return PathExtensions.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, assetsPath);
         }
@@ -382,6 +390,18 @@ namespace OrchardCore.Media
             services.AddTransient<IDeploymentSource, AllMediaProfilesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllMediaProfilesDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllMediaProfilesDeploymentStepDriver>();
+        }
+    }
+
+    [Feature("OrchardCore.Media.Indexing")]
+    public class MediaIndexingStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddMediaFileTextProvider<TextMediaFileTextProvider>(".txt");
+            services.AddMediaFileTextProvider<TextMediaFileTextProvider>(".md");
+            services.AddMediaFileTextProvider<WordDocumentMediaFileTextProvider>(".docx");
+            services.AddMediaFileTextProvider<PresentationDocumentMediaFileTextProvider>(".pptx");
         }
     }
 

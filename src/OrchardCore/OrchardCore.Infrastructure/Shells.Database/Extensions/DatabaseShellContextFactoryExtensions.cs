@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Shells.Database.Configuration;
 
 namespace OrchardCore.Shells.Database.Extensions
@@ -19,14 +18,13 @@ namespace OrchardCore.Shells.Database.Extensions
             }
 
             var settings = new ShellSettings()
-            {
-                Name = ShellHelper.DefaultShellName,
-                State = TenantState.Running
-            };
+                .AsDefaultShell()
+                .AsRunning();
 
             settings["DatabaseProvider"] = options.DatabaseProvider;
             settings["ConnectionString"] = options.ConnectionString;
             settings["TablePrefix"] = options.TablePrefix;
+            settings["Schema"] = options.Schema;
 
             return shellContextFactory.CreateDescribedContextAsync(settings, new ShellDescriptor());
         }

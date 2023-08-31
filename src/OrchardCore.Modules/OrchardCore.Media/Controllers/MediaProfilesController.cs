@@ -29,9 +29,9 @@ namespace OrchardCore.Media.Controllers
         private readonly MediaOptions _mediaOptions;
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-        private readonly dynamic New;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
+        protected readonly dynamic New;
 
         public MediaProfilesController(
             IAuthorizationService authorizationService,
@@ -66,7 +66,7 @@ namespace OrchardCore.Media.Controllers
             var mediaProfilesDocument = await _mediaProfilesManager.GetMediaProfilesDocumentAsync();
             var mediaProfiles = mediaProfilesDocument.MediaProfiles.ToList();
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
                 mediaProfiles = mediaProfiles.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
@@ -314,7 +314,7 @@ namespace OrchardCore.Media.Controllers
                         await _notifier.SuccessAsync(H["Media profiles successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
 

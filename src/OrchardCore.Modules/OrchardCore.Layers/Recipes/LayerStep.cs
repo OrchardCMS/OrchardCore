@@ -17,9 +17,9 @@ namespace OrchardCore.Layers.Recipes
     /// </summary>
     public class LayerStep : IRecipeStepHandler
     {
-        private readonly static JsonSerializer JsonSerializer = new JsonSerializer()
+        private readonly static JsonSerializer _jsonSerializer = new()
         {
-            TypeNameHandling = TypeNameHandling.Auto
+            TypeNameHandling = TypeNameHandling.Auto,
         };
 
         private readonly ILayerService _layerService;
@@ -70,14 +70,14 @@ namespace OrchardCore.Layers.Recipes
                     _conditionIdGenerator.GenerateUniqueId(layer.LayerRule);
                 }
 
-                // Replace any property that is set in the recipe step
+                // Replace any property that is set in the recipe step.
                 if (!String.IsNullOrEmpty(layerStep.Name))
                 {
                     layer.Name = layerStep.Name;
                 }
                 else
                 {
-                    throw new ArgumentNullException($"{nameof(layer.Name)} is required");
+                    throw new InvalidOperationException($"The layer '{nameof(layer.Name)}' is required.");
                 }
 
                 if (layerStep.LayerRule != null)
@@ -94,7 +94,7 @@ namespace OrchardCore.Layers.Recipes
                         var name = jCondition["Name"].ToString();
                         if (factories.TryGetValue(name, out var factory))
                         {
-                            var factoryCondition = (Condition)jCondition.ToObject(factory.Create().GetType(), JsonSerializer);
+                            var factoryCondition = (Condition)jCondition.ToObject(factory.Create().GetType(), _jsonSerializer);
 
                             layer.LayerRule.Conditions.Add(factoryCondition);
                         }
@@ -105,14 +105,12 @@ namespace OrchardCore.Layers.Recipes
                     }
                 }
 
-#pragma warning disable 0618
                 // Migrate any old rule in a recipe to the new rule format.
                 // Do not import the old rule.
                 if (!String.IsNullOrEmpty(layerStep.Rule))
                 {
                     _ruleMigrator.Migrate(layerStep.Rule, layer.LayerRule);
                 }
-#pragma warning restore 0618
 
                 if (!String.IsNullOrEmpty(layerStep.Description))
                 {

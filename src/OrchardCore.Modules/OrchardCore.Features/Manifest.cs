@@ -1,3 +1,4 @@
+using OrchardCore.Features;
 using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
@@ -8,7 +9,7 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
-    Id = "OrchardCore.Features",
+    Id = FeaturesConstants.FeatureId,
     Name = "Features",
     Description = "The Features module enables the administrator of the site to manage the installed modules as well as activate and de-activate features.",
     Dependencies = new[] { "OrchardCore.Resources" },

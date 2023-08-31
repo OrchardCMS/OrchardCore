@@ -27,8 +27,7 @@ namespace OrchardCore.Navigation
             ILogger<NavigationManager> logger,
             ShellSettings shellSettings,
             IUrlHelperFactory urlHelperFactory,
-            IAuthorizationService authorizationService
-            )
+            IAuthorizationService authorizationService)
         {
             _navigationProviders = navigationProviders;
             _logger = logger;
@@ -57,28 +56,28 @@ namespace OrchardCore.Navigation
 
             var menuItems = builder.Build();
 
-            // Merge all menu hierarchies into a single one
+            // Merge all menu hierarchies into a single one.
             Merge(menuItems);
 
-            // Remove unauthorized menu items
+            // Remove unauthorized menu items.
             menuItems = await AuthorizeAsync(menuItems, actionContext.HttpContext.User);
 
-            // Compute Url and RouteValues properties to Href
+            // Compute Url and RouteValues properties to Href.
             menuItems = ComputeHref(menuItems, actionContext);
 
-            // Keep only menu items with an Href, or that have child items with an Href
+            // Keep only menu items with an Href, or that have child items with an Href.
             menuItems = Reduce(menuItems);
 
             return menuItems;
         }
 
         /// <summary>
-        /// Mutates a list of <see cref="MenuItem"/> into a hierarchy
+        /// Mutates a list of <see cref="MenuItem"/> into a hierarchy.
         /// </summary>
         private static void Merge(List<MenuItem> items)
         {
             // Use two cursors to find all similar captions. If the same caption is represented
-            // by multiple menu item, try to merge it recursively.
+            // by multiple menu items, try to merge it recursively.
             for (var i = 0; i < items.Count; i++)
             {
                 var source = items[i];
@@ -87,7 +86,7 @@ namespace OrchardCore.Navigation
                 {
                     var cursor = items[j];
 
-                    // A match is found, add all its items to the source
+                    // A match is found, add all its items to the source.
                     if (String.Equals(cursor.Text.Name, source.Text.Name, StringComparison.OrdinalIgnoreCase))
                     {
                         merged = true;
@@ -98,7 +97,7 @@ namespace OrchardCore.Navigation
 
                         items.RemoveAt(j);
 
-                        // If the item to merge is more authoritative then use its values
+                        // If the item to merge is more authoritative then use its values.
                         if (cursor.Priority > source.Priority)
                         {
                             source.Culture = cursor.Culture;
@@ -119,7 +118,7 @@ namespace OrchardCore.Navigation
                             source.Classes.AddRange(cursor.Classes);
                         }
 
-                        //Fallback to get the same behavior than before having the Priority var
+                        // Fallback to get the same behavior than before having the Priority var.
                         if (cursor.Priority == source.Priority)
                         {
                             if (cursor.Position != null && source.Position == null)
@@ -145,7 +144,7 @@ namespace OrchardCore.Navigation
                     }
                 }
 
-                // If some items have been merged, apply recursively
+                // If some items have been merged, apply recursively.
                 if (merged)
                 {
                     Merge(source.Items);
@@ -171,7 +170,7 @@ namespace OrchardCore.Navigation
         /// <summary>
         /// Gets the url.from a menu item url a routeValueDictionary and an actionContext.
         /// </summary>
-        /// <param name="menuItemUrl">The </param>
+        /// <param name="menuItemUrl"></param>
         /// <param name="routeValueDictionary"></param>
         /// <param name="actionContext"></param>
         /// <returns></returns>
@@ -179,10 +178,7 @@ namespace OrchardCore.Navigation
         {
             if (routeValueDictionary?.Count > 0)
             {
-                if (_urlHelper == null)
-                {
-                    _urlHelper = _urlHelperFactory.GetUrlHelper(actionContext);
-                }
+                _urlHelper ??= _urlHelperFactory.GetUrlHelper(actionContext);
 
                 return _urlHelper.RouteUrl(new UrlRouteContext { Values = routeValueDictionary });
             }
@@ -192,7 +188,7 @@ namespace OrchardCore.Navigation
                 return "#";
             }
 
-            if (menuItemUrl[0] == '/' || menuItemUrl.IndexOf("://", StringComparison.Ordinal) >= 0)
+            if (menuItemUrl[0] == '/' || menuItemUrl.Contains("://"))
             {
                 // Return the unescaped url and let the browser generate all uri components.
                 return menuItemUrl;
@@ -200,23 +196,22 @@ namespace OrchardCore.Navigation
 
             if (menuItemUrl.StartsWith("~/", StringComparison.Ordinal))
             {
-                menuItemUrl = menuItemUrl.Substring(2);
+                menuItemUrl = menuItemUrl[2..];
             }
 
             // Use the unescaped 'Value' to not encode some possible reserved delimiters.
-            return actionContext.HttpContext.Request.PathBase.Add('/' + menuItemUrl).Value;
+            return actionContext.HttpContext.Request.PathBase.Add($"/{menuItemUrl}").Value;
         }
 
         /// <summary>
-        /// Updates the items by checking for permissions
+        /// Updates the items by checking for permissions.
         /// </summary>
         private async Task<List<MenuItem>> AuthorizeAsync(IEnumerable<MenuItem> items, ClaimsPrincipal user)
         {
             var filtered = new List<MenuItem>();
-
             foreach (var item in items)
             {
-                // TODO: Attach actual user and remove this clause
+                // TODO: Attach actual user and remove this clause.
                 if (user == null)
                 {
                     filtered.Add(item);
@@ -237,15 +232,14 @@ namespace OrchardCore.Navigation
                             break;
                         }
                     }
+
                     if (isAuthorized)
                     {
                         filtered.Add(item);
                     }
                 }
 
-                // Process child items
-                var oldItems = item.Items;
-
+                // Process child items.
                 item.Items = (await AuthorizeAsync(item.Items, user));
             }
 
@@ -253,12 +247,11 @@ namespace OrchardCore.Navigation
         }
 
         /// <summary>
-        /// Retains only menu items with an Href, or that have child items with an Href
+        /// Retains only menu items with an Href, or that have child items with an Href.
         /// </summary>
         private List<MenuItem> Reduce(IEnumerable<MenuItem> items)
         {
             var filtered = items.ToList();
-
             foreach (var item in items)
             {
                 if (!HasHrefOrChildHref(item))

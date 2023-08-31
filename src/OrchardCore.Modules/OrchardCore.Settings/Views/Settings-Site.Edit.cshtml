@@ -1,0 +1,51 @@
+@using System.Globalization
+
+@model SiteSettingsViewModel
+@inject OrchardCore.Modules.IClock Clock
+
+<div class="mb-3" asp-validation-class-for="SiteName">
+    <label asp-for="SiteName">@T["Site name"]</label>
+    <input asp-for="SiteName" class="form-control" />
+    <span asp-validation-for="SiteName"></span>
+    <span class="hint">@T["The site name."]</span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="PageTitleFormat">
+    <label asp-for="PageTitleFormat">@T["Page title format"]</label>
+    <input asp-for="PageTitleFormat" class="form-control" />
+    <span asp-validation-for="PageTitleFormat"></span>
+    <span class="hint">@T["The default format of page titles."]</span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="BaseUrl">
+    <label asp-for="BaseUrl">@T["Base url"]</label>
+    <input asp-for="BaseUrl" class="form-control" />
+    <span asp-validation-for="BaseUrl"></span>
+    <span class="hint">@T["Enter the fully qualified base URL of the web site."]</span>
+</div>
+
+<div class="row">
+    <div class="mb-3 col-xl-8" asp-validation-class-for="TimeZone">
+        <label asp-for="TimeZone">@T["Default Time Zone"]</label>
+        <select asp-for="TimeZone" class="form-select">
+            <option value="">@T["Local to server"]</option>
+            @foreach (var timezone in Clock.GetTimeZones().OrderBy(t => t.ToString()))
+            {
+                <option value="@timezone.TimeZoneId" selected="@(Model.TimeZone == timezone.TimeZoneId)">
+                    @timezone
+                </option>
+            }
+        </select>
+        <span asp-validation-for="TimeZone"></span>
+        <span class="hint">@T["Determines the default time zone used when displaying and editing dates and times. DST (daylight saving time) will be applied automatically per time zone if available."]</span>
+    </div>
+</div>
+
+<div class="mb-3">
+    <div class="col-xl-4" asp-validation-class-for="PageSize">
+        <label asp-for="PageSize">@T["Page size"]</label>
+        <input asp-for="PageSize" type="number" class="form-control" />
+        <span asp-validation-for="PageSize"></span>
+        <span class="hint">@T["The default page size."]</span>
+    </div>
+</div>

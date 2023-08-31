@@ -1,7 +1,7 @@
 /*!
- * Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
- * Copyright 2022 Fonticons, Inc.
+ * Copyright 2023 Fonticons, Inc.
  */
 .fa {
   font-family: var(--fa-style-family, "Font Awesome 6 Free");
@@ -258,8 +258,10 @@
             animation-duration: 1ms;
     -webkit-animation-iteration-count: 1;
             animation-iteration-count: 1;
-    transition-delay: 0s;
-    transition-duration: 0s; } }
+    -webkit-transition-delay: 0s;
+            transition-delay: 0s;
+    -webkit-transition-duration: 0s;
+            transition-duration: 0s; } }
 
 @-webkit-keyframes fa-beat {
   0%, 90% {
@@ -491,6 +493,7 @@
 
 /* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen
 readers do not read off random characters that represent icons */
+
 .fa-0::before {
   content: "\30"; }
 
@@ -1492,6 +1495,9 @@ readers do not read off random characters that represent icons */
 
 .fa-v::before {
   content: "\56"; }
+
+.fa-bangladeshi-taka-sign::before {
+  content: "\e2e6"; }
 
 .fa-bicycle::before {
   content: "\f206"; }
@@ -4064,9 +4070,6 @@ readers do not read off random characters that represent icons */
 .fa-subtract::before {
   content: "\f068"; }
 
-.fa-child-rifle::before {
-  content: "\e4e0"; }
-
 .fa-chess::before {
   content: "\f439"; }
 
@@ -5174,6 +5177,12 @@ readers do not read off random characters that represent icons */
 .fa-share-square::before {
   content: "\f14d"; }
 
+.fa-child-combatant::before {
+  content: "\e4e0"; }
+
+.fa-child-rifle::before {
+  content: "\e4e0"; }
+
 .fa-gun::before {
   content: "\e19b"; }
 
@@ -5350,6 +5359,9 @@ readers do not read off random characters that represent icons */
 
 .fa-hand-lizard::before {
   content: "\f258"; }
+
+.fa-notdef::before {
+  content: "\e1fe"; }
 
 .fa-disease::before {
   content: "\f7fa"; }
@@ -6538,6 +6550,9 @@ readers do not read off random characters that represent icons */
 .fa-edge:before {
   content: "\f282"; }
 
+.fa-threads:before {
+  content: "\e618"; }
+
 .fa-napster:before {
   content: "\f3d2"; }
 
@@ -6705,6 +6720,9 @@ readers do not read off random characters that represent icons */
 
 .fa-scribd:before {
   content: "\f28a"; }
+
+.fa-debian:before {
+  content: "\e60b"; }
 
 .fa-openid:before {
   content: "\f19b"; }
@@ -6945,6 +6963,9 @@ readers do not read off random characters that represent icons */
 
 .fa-neos:before {
   content: "\f612"; }
+
+.fa-square-threads:before {
+  content: "\e619"; }
 
 .fa-hackerrank:before {
   content: "\f5f7"; }
@@ -7287,6 +7308,9 @@ readers do not read off random characters that represent icons */
 
 .fa-erlang:before {
   content: "\f39d"; }
+
+.fa-x-twitter:before {
+  content: "\e61b"; }
 
 .fa-cotton-bureau:before {
   content: "\f89e"; }
@@ -7735,6 +7759,9 @@ readers do not read off random characters that represent icons */
 .fa-internet-explorer:before {
   content: "\f26b"; }
 
+.fa-stubber:before {
+  content: "\e5c7"; }
+
 .fa-telegram:before {
   content: "\f2c6"; }
 
@@ -7743,6 +7770,9 @@ readers do not read off random characters that represent icons */
 
 .fa-old-republic:before {
   content: "\f510"; }
+
+.fa-odysee:before {
+  content: "\e5c6"; }
 
 .fa-square-whatsapp:before {
   content: "\f40c"; }
@@ -7776,6 +7806,9 @@ readers do not read off random characters that represent icons */
 
 .fa-quora:before {
   content: "\f2c4"; }
+
+.fa-square-x-twitter:before {
+  content: "\e61a"; }
 
 .fa-reacteurope:before {
   content: "\f75d"; }

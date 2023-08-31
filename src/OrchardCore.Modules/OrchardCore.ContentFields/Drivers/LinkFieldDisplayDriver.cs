@@ -21,7 +21,7 @@ namespace OrchardCore.ContentFields.Drivers
     {
         private readonly IUrlHelperFactory _urlHelperFactory;
         private readonly IActionContextAccessor _actionContextAccessor;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly HtmlEncoder _htmlencoder;
 
@@ -56,8 +56,9 @@ namespace OrchardCore.ContentFields.Drivers
             return Initialize<EditLinkFieldViewModel>(GetEditorShapeType(context), model =>
             {
                 var settings = context.PartFieldDefinition.GetSettings<LinkFieldSettings>();
-                model.Url = context.IsNew ? settings.DefaultUrl : field.Url;
-                model.Text = context.IsNew ? settings.DefaultText : field.Text;
+                model.Url = context.IsNew && field.Url == null ? settings.DefaultUrl : field.Url;
+                model.Text = context.IsNew && field.Text == null ? settings.DefaultText : field.Text;
+
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
@@ -78,7 +79,7 @@ namespace OrchardCore.ContentFields.Drivers
                     var indexAnchor = urlToValidate.IndexOf('#');
                     if (indexAnchor > -1)
                     {
-                        urlToValidate = urlToValidate.Substring(0, indexAnchor);
+                        urlToValidate = urlToValidate[..indexAnchor];
                     }
 
                     if (urlToValidate.StartsWith("~/", StringComparison.Ordinal))

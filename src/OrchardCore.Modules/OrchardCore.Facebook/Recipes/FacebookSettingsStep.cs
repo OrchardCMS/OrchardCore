@@ -13,21 +13,21 @@ namespace OrchardCore.Facebook.Recipes
     {
         private readonly IFacebookService _facebookService;
 
-        public FacebookSettingsStep(IFacebookService loginService)
+        public FacebookSettingsStep(IFacebookService facebookService)
         {
-            _facebookService = loginService;
+            _facebookService = facebookService;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!string.Equals(context.Name, "FacebookCoreSettings", StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(context.Name, "FacebookCoreSettings", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
 
             var model = context.Step.ToObject<FacebookCoreSettingsStepModel>();
-
             var settings = await _facebookService.GetSettingsAsync();
+
             settings.AppId = model.AppId;
             settings.AppSecret = model.AppSecret;
             settings.SdkJs = model.SdkJs ?? "sdk.js";

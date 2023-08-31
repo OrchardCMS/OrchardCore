@@ -19,7 +19,7 @@ namespace OrchardCore.Autoroute.Core.Indexes
         /// <summary>
         /// The id of the document.
         /// </summary>
-        public int DocumentId { get; set; }
+        public long DocumentId { get; set; }
 
         /// <summary>
         /// The container content item id.
@@ -164,7 +164,7 @@ namespace OrchardCore.Autoroute.Core.Indexes
             {
                 var items = accessor.Invoke(content);
 
-                foreach (JObject jItem in items)
+                foreach (var jItem in items.Cast<JObject>())
                 {
                     var contentItem = jItem.ToObject<ContentItem>();
                     var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);

@@ -9,7 +9,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -17,6 +16,8 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Routing;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Seo;
+using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Cache;
 using OrchardCore.Sitemaps.Controllers;
@@ -253,6 +254,16 @@ namespace OrchardCore.Sitemaps
             services.AddTransient<IDeploymentSource, AllSitemapsDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllSitemapsDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllSitemapsDeploymentStepDriver>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Seo")]
+    public class SeoStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IRobotsProvider, SitemapsRobotsProvider>();
+            services.AddScoped<IDisplayDriver<ISite>, SitemapsRobotsSettingsDisplayDriver>();
         }
     }
 }

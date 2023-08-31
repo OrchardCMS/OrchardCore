@@ -1,11 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
-using Moq;
 using OrchardCore.Modules;
-using Xunit;
 
 namespace OrchardCore.Tests.Modules
 {
@@ -16,7 +9,7 @@ namespace OrchardCore.Tests.Modules
         {
             // Arrange
             string key = "X-Powered-By", value = "OrchardCore";
-            var headersArray = new Dictionary<string, StringValues>() { { key, string.Empty } };
+            var headersArray = new Dictionary<string, StringValues>() { { key, String.Empty } };
             var headersDic = new HeaderDictionary(headersArray);
             var httpResponseMock = new Mock<HttpResponse>();
             httpResponseMock.SetupGet(r => r.Headers).Returns(headersDic);
@@ -28,7 +21,7 @@ namespace OrchardCore.Tests.Modules
             optionsMock.SetupGet(o => o.Enabled).Returns(true);
             optionsMock.SetupGet(o => o.HeaderName).Returns(key);
             optionsMock.SetupGet(o => o.HeaderValue).Returns(value);
-            RequestDelegate requestDelegate = (context) => Task.CompletedTask;
+            static Task requestDelegate(HttpContext context) => Task.CompletedTask;
             var middleware = new PoweredByMiddleware(next: requestDelegate, options: optionsMock.Object);
 
             // Act
@@ -58,7 +51,7 @@ namespace OrchardCore.Tests.Modules
             optionsMock.SetupGet(o => o.Enabled).Returns(false);
             optionsMock.SetupGet(o => o.HeaderName).Returns(key);
             optionsMock.SetupGet(o => o.HeaderValue).Returns(value);
-            RequestDelegate requestDelegate = (context) => Task.CompletedTask;
+            static Task requestDelegate(HttpContext context) => Task.CompletedTask;
             var middleware = new PoweredByMiddleware(next: requestDelegate, options: optionsMock.Object);
 
             // Act

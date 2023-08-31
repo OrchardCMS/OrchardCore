@@ -1,7 +1,7 @@
 /*!
- * Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
- * Copyright 2022 Fonticons, Inc.
+ * Copyright 2023 Fonticons, Inc.
  */
 :root, :host {
   --fa-style-family-brands: 'Font Awesome 6 Brands';
@@ -183,6 +183,9 @@
 .fa-edge:before {
   content: "\f282"; }
 
+.fa-threads:before {
+  content: "\e618"; }
+
 .fa-napster:before {
   content: "\f3d2"; }
 
@@ -350,6 +353,9 @@
 
 .fa-scribd:before {
   content: "\f28a"; }
+
+.fa-debian:before {
+  content: "\e60b"; }
 
 .fa-openid:before {
   content: "\f19b"; }
@@ -590,6 +596,9 @@
 
 .fa-neos:before {
   content: "\f612"; }
+
+.fa-square-threads:before {
+  content: "\e619"; }
 
 .fa-hackerrank:before {
   content: "\f5f7"; }
@@ -932,6 +941,9 @@
 
 .fa-erlang:before {
   content: "\f39d"; }
+
+.fa-x-twitter:before {
+  content: "\e61b"; }
 
 .fa-cotton-bureau:before {
   content: "\f89e"; }
@@ -1380,6 +1392,9 @@
 .fa-internet-explorer:before {
   content: "\f26b"; }
 
+.fa-stubber:before {
+  content: "\e5c7"; }
+
 .fa-telegram:before {
   content: "\f2c6"; }
 
@@ -1388,6 +1403,9 @@
 
 .fa-old-republic:before {
   content: "\f510"; }
+
+.fa-odysee:before {
+  content: "\e5c6"; }
 
 .fa-square-whatsapp:before {
   content: "\f40c"; }
@@ -1421,6 +1439,9 @@
 
 .fa-quora:before {
   content: "\f2c4"; }
+
+.fa-square-x-twitter:before {
+  content: "\e61a"; }
 
 .fa-reacteurope:before {
   content: "\f75d"; }

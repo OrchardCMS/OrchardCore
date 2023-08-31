@@ -1,5 +1,14 @@
 @model OrchardCore.ContentFields.Settings.ContentPickerFieldSettingsViewModel
-@using OrchardCore.ContentManagement;
+@using OrchardCore.ContentManagement
+
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+<script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
 <div class="mb-3">
     <div class="form-check">
@@ -63,6 +72,14 @@
     <span class="hint">@T["The hint text to display for this field on the editor."]</span>
 </div>
 
+<div class="mb-3">
+    <div class="-md-75 w-xl-50 pr-md-3">
+        <label asp-for="TitlePattern">@T["Title Pattern"]</label>
+        <textarea asp-for="TitlePattern" rows="5" class="form-control"></textarea>
+    </div>
+    <span class="hint">@T["The pattern used to render the title in content picker. With Liquid support."]</span>
+</div>
+
 <script at="Foot">
     document.addEventListener('DOMContentLoaded', function() {
         var sources = document.getElementsByName('@Html.NameFor(x => x.Source)');
@@ -88,4 +105,18 @@
             source.dispatchEvent(new Event('change'));
         }
     });
+</script>
+
+<script at="Foot" depends-on="jquery">
+    //<![CDATA[
+    $(function () {
+        editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.TitlePattern)'), {
+            autoRefresh: true,
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
+    });
+    //]]>
 </script>

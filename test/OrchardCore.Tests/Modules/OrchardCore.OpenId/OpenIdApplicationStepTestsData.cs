@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using OrchardCore.OpenId.Abstractions.Descriptors;
-using Xunit;
 using static OpenIddict.Abstractions.OpenIddictConstants.Permissions;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
@@ -53,7 +50,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 });
         }
 
-        private void UnionIfNotNull<TItem>(ISet<TItem> itemSet, IEnumerable<TItem> items)
+        private static void UnionIfNotNull<TItem>(ISet<TItem> itemSet, IEnumerable<TItem> items)
         {
             if (items != null)
             {

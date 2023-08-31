@@ -15,7 +15,7 @@ namespace OrchardCore.Media.Azure
         private readonly ILogger _logger;
 
         // Local instance since it can be discarded once the startup is over
-        private readonly FluidParser _fluidParser = new FluidParser();
+        private readonly FluidParser _fluidParser = new();
 
         public MediaBlobStorageOptionsConfiguration(
             IShellConfiguration shellConfiguration,
@@ -36,6 +36,7 @@ namespace OrchardCore.Media.Azure
             options.ContainerName = section.GetValue(nameof(options.ContainerName), String.Empty);
             options.ConnectionString = section.GetValue(nameof(options.ConnectionString), String.Empty);
             options.CreateContainer = section.GetValue(nameof(options.CreateContainer), true);
+            options.RemoveContainer = section.GetValue(nameof(options.RemoveContainer), false);
 
             var templateOptions = new TemplateOptions();
             var templateContext = new TemplateContext(templateOptions);

@@ -1,40 +1,34 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Localization;
-using Xunit;
 
 namespace OrchardCore.Tests.Commands
 {
     public class CommandsTests
     {
-        private ICommandHandler _handler;
+        private readonly ICommandHandler _handler;
 
         public CommandsTests()
         {
             _handler = new StubCommandHandler();
         }
 
-        private CommandContext CreateCommandContext(string commandName)
+        private static CommandContext CreateCommandContext(string commandName)
         {
-            return CreateCommandContext(commandName, new Dictionary<string, string>(), new string[] { });
+            return CreateCommandContext(commandName, new Dictionary<string, string>(), Array.Empty<string>());
         }
 
-        private CommandContext CreateCommandContext(string commandName, IDictionary<string, string> switches)
+        private static CommandContext CreateCommandContext(string commandName, IDictionary<string, string> switches)
         {
-            return CreateCommandContext(commandName, switches, new string[] { });
+            return CreateCommandContext(commandName, switches, Array.Empty<string>());
         }
 
-        private CommandContext CreateCommandContext(string commandName, IDictionary<string, string> switches, string[] args)
+        private static CommandContext CreateCommandContext(string commandName, IDictionary<string, string> switches, string[] args)
         {
             var builder = new CommandHandlerDescriptorBuilder();
 
             var descriptor = builder.Build(typeof(StubCommandHandler));
 
-            var commandDescriptor = descriptor.Commands.Single(d => d.Names.Any(x => string.Equals(x, commandName, StringComparison.OrdinalIgnoreCase)));
+            var commandDescriptor = descriptor.Commands.Single(d => d.Names.Any(x => String.Equals(x, commandName, StringComparison.OrdinalIgnoreCase)));
 
             return new CommandContext
             {
@@ -42,8 +36,8 @@ namespace OrchardCore.Tests.Commands
                 Switches = switches,
                 CommandDescriptor = commandDescriptor,
                 Arguments = args,
-                Input = new StringReader(string.Empty),
-                Output = new StringWriter()
+                Input = new StringReader(String.Empty),
+                Output = new StringWriter(),
             };
         }
 
@@ -214,6 +208,7 @@ namespace OrchardCore.Tests.Commands
         [OrchardSwitch]
         public string User { get; set; }
 
+#pragma warning disable CA1822 // Mark members as static
         public string Foo()
         {
             return "Command Foo Executed";
@@ -229,7 +224,7 @@ namespace OrchardCore.Tests.Commands
         [CommandHelp("Baz help")]
         public string Baz()
         {
-            string trace = "Command Baz Called";
+            var trace = "Command Baz Called";
 
             if (Verbose)
             {
@@ -256,7 +251,7 @@ namespace OrchardCore.Tests.Commands
 
         public string ConcatParams(params string[] parameters)
         {
-            string concatenated = "";
+            var concatenated = "";
             foreach (var s in parameters)
             {
                 concatenated += s;
@@ -266,7 +261,7 @@ namespace OrchardCore.Tests.Commands
 
         public string ConcatAllParams(string leftmost, params string[] rest)
         {
-            string concatenated = leftmost;
+            var concatenated = leftmost;
             foreach (var s in rest)
             {
                 concatenated += s;
@@ -278,5 +273,6 @@ namespace OrchardCore.Tests.Commands
         {
             return;
         }
+#pragma warning restore CA1822 // Mark members as static
     }
 }

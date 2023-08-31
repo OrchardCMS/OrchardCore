@@ -14,10 +14,12 @@ namespace OrchardCore.DisplayManagement.Descriptors
         }
 
         [Shape]
+#pragma warning disable CA1822 // Mark members as static
         public IHtmlContent Baz(string text, int count)
+#pragma warning restore CA1822 // Mark members as static
         {
             var sb = new StringBuilder();
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 sb.Append(text);
             }

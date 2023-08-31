@@ -53,7 +53,7 @@ namespace OrchardCore.Workflows.Http.Controllers
 
         [HttpPost]
         [Admin]
-        public async Task<IActionResult> GenerateUrl(int workflowTypeId, string activityId, int tokenLifeSpan)
+        public async Task<IActionResult> GenerateUrl(long workflowTypeId, string activityId, int tokenLifeSpan)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
@@ -68,7 +68,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             }
 
             var token = _securityTokenService.CreateToken(new WorkflowPayload(workflowType.WorkflowTypeId, activityId), TimeSpan.FromDays(tokenLifeSpan == 0 ? NoExpiryTokenLifespan : tokenLifeSpan));
-            var url = Url.Action("Invoke", "HttpWorkflow", new { token = token });
+            var url = Url.Action("Invoke", "HttpWorkflow", new { token });
 
             return Ok(url);
         }

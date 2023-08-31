@@ -7,17 +7,23 @@
             en: {
                 fontFamily: 'Font'
             },
+            az: {
+                fontFamily: 'Şrift'
+            },
             by: {
                 fontFamily: 'Шрыфт'
             },
-            es: {
-                fontFamily: 'Fuente'
+            ca: {
+                fontFamily: 'Font'
             },
             da: {
                 fontFamily: 'Skrifttype'
             },
             de: {
                 fontFamily: 'Schriftart'
+            },
+            es: {
+                fontFamily: 'Fuente'
             },
             et: {
                 fontFamily: 'Font'
@@ -39,6 +45,9 @@
             },
             ru: {
                 fontFamily: 'Шрифт'
+            },
+            sl: {
+                fontFamily: 'Pisava'
             },
             tr: {
                 fontFamily: 'Yazı tipi'

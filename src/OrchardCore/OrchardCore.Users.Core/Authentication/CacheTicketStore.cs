@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -19,7 +17,7 @@ public class CacheTicketStore : ITicketStore
 
     private readonly IHttpContextAccessor _httpContextAccessor;
     private IDataProtector _dataProtector;
-    private ILogger<CacheTicketStore> _logger;
+    private ILogger _logger;
 
     public CacheTicketStore(IHttpContextAccessor httpContextAccessor)
     {
@@ -29,7 +27,7 @@ public class CacheTicketStore : ITicketStore
     public IDataProtector DataProtector => _dataProtector ??= _httpContextAccessor.HttpContext.RequestServices.GetService<IDataProtectionProvider>()
         .CreateProtector($"{nameof(CacheTicketStore)}_{IdentityConstants.ApplicationScheme}");
 
-    public ILogger<CacheTicketStore> Logger => _logger ??= _httpContextAccessor.HttpContext.RequestServices.GetService<ILogger<CacheTicketStore>>();
+    public ILogger Logger => _logger ??= _httpContextAccessor.HttpContext.RequestServices.GetService<ILogger<CacheTicketStore>>();
 
     public async Task RemoveAsync(string key)
     {
@@ -48,7 +46,7 @@ public class CacheTicketStore : ITicketStore
             var protectedBytes = DataProtector.Protect(SerializeTicket(ticket));
             await cache.SetAsync(cacheKey, protectedBytes, new DistributedCacheEntryOptions() { AbsoluteExpiration = ticket.Properties.ExpiresUtc.Value });
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             // Data Protection Error
             Logger.LogError(e, "{methodName} failed  for '{key}'.", nameof(RenewAsync), cacheKey);
@@ -65,15 +63,15 @@ public class CacheTicketStore : ITicketStore
             return null;
         }
 
-       try
+        try
         {
             var ticket = DeserializeTicket(DataProtector.Unprotect(bytes));
             return ticket;
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             // Data Protection Error
-            Logger.LogError(e, "{methodName} failed  for '{key}'.", nameof(RetrieveAsync) ,cacheKey);
+            Logger.LogError(e, "{methodName} failed  for '{key}'.", nameof(RetrieveAsync), cacheKey);
             return null;
         }
     }
@@ -90,16 +88,16 @@ public class CacheTicketStore : ITicketStore
             await cache.SetAsync(cacheKey, protectedBytes, new DistributedCacheEntryOptions() { AbsoluteExpiration = ticket.Properties.ExpiresUtc.Value });
             return key;
         }
-        catch(Exception e)
+        catch (Exception e)
         {
-            Logger.LogError(e, "{methodName} failed  for '{key}'.", nameof(StoreAsync) ,cacheKey);
+            Logger.LogError(e, "{methodName} failed  for '{key}'.", nameof(StoreAsync), cacheKey);
             return null;
         }
     }
 
-    private byte[] SerializeTicket(AuthenticationTicket source)
+    private static byte[] SerializeTicket(AuthenticationTicket source)
         => TicketSerializer.Default.Serialize(source);
 
-    private AuthenticationTicket DeserializeTicket(byte[] source)
+    private static AuthenticationTicket DeserializeTicket(byte[] source)
         => source == null ? null : TicketSerializer.Default.Deserialize(source);
 }

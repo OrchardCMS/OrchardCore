@@ -62,16 +62,10 @@ namespace OrchardCore.Shells.Azure.Configuration
 
             if (fileInfo != null)
             {
-                using (var stream = await _shellsFileStore.GetFileStreamAsync(appsettings))
-                {
-                    using (var streamReader = new StreamReader(stream))
-                    {
-                        using (var reader = new JsonTextReader(streamReader))
-                        {
-                            config = await JObject.LoadAsync(reader);
-                        }
-                    }
-                }
+                using var stream = await _shellsFileStore.GetFileStreamAsync(appsettings);
+                using var streamReader = new StreamReader(stream);
+                using var reader = new JsonTextReader(streamReader);
+                config = await JObject.LoadAsync(reader);
             }
             else
             {
@@ -90,20 +84,26 @@ namespace OrchardCore.Shells.Azure.Configuration
                 }
             }
 
-            using (var memoryStream = new MemoryStream())
-            {
-                using (var streamWriter = new StreamWriter(memoryStream))
-                {
-                    using (var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented })
-                    {
-                        await config.WriteToAsync(jsonWriter);
-                        await jsonWriter.FlushAsync();
-                        memoryStream.Position = 0;
-                        await _shellsFileStore.CreateFileFromStreamAsync(appsettings, memoryStream);
-                    }
-                }
-            }
+            using var memoryStream = new MemoryStream();
+            using var streamWriter = new StreamWriter(memoryStream);
+            using var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented };
 
+            await config.WriteToAsync(jsonWriter);
+            await jsonWriter.FlushAsync();
+
+            memoryStream.Position = 0;
+            await _shellsFileStore.CreateFileFromStreamAsync(appsettings, memoryStream);
+        }
+
+        public async Task RemoveAsync(string tenant)
+        {
+            var appsettings = IFileStoreExtensions.Combine(null, _container, tenant, "appsettings.json");
+
+            var fileInfo = await _shellsFileStore.GetFileInfoAsync(appsettings);
+            if (fileInfo != null)
+            {
+                await _shellsFileStore.RemoveFileAsync(appsettings);
+            }
         }
 
         private async Task<bool> TryMigrateFromFileAsync(string tenant, string destFile)
@@ -114,10 +114,8 @@ namespace OrchardCore.Shells.Azure.Configuration
                 return false;
             }
 
-            using (var file = File.OpenRead(tenantFile))
-            {
-                await _shellsFileStore.CreateFileFromStreamAsync(destFile, file);
-            }
+            using var file = File.OpenRead(tenantFile);
+            await _shellsFileStore.CreateFileFromStreamAsync(destFile, file);
 
             return true;
         }

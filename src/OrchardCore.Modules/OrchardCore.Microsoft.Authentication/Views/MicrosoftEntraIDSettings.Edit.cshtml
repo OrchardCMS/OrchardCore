@@ -1,0 +1,45 @@
+@using OrchardCore.Microsoft.Authentication.ViewModels
+@model AzureADSettingsViewModel
+
+<p class="alert alert-warning">
+    @T["The current tenant will be reloaded when the settings are saved."]
+    <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Microsoft.Authentication/#azure-active-directory" target="_blank">@T["See documentation"]</a>
+</p>
+
+<h3>@T["Microsoft Entra ID Authentication Settings"]</h3>
+
+<div class="mb-3" asp-validation-class-for="DisplayName">
+    <label>@T["Display Name"]</label>
+    <input asp-for="DisplayName" class="form-control" />
+    <span asp-validation-for="DisplayName"></span>
+    <span class="hint">@T["The display name of the provider."]</span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="AppId">
+    <label>@T["AppId"]</label>
+    <input asp-for="AppId" class="form-control" />
+    <span asp-validation-for="AppId"></span>
+    <span class="hint">@T["The Application ID found on the Microsoft Entra ID App registration parameters."]</span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="TenantId">
+    <label>@T["TenantId"]</label>
+    <input asp-for="TenantId" class="form-control" />
+    <span asp-validation-for="TenantId"></span>
+    <span class="hint">@T["The Tenant (Directory) ID found on the Microsoft Entra ID App registration parameters."]</span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="CallbackPath">
+    <label>@T["CallbackPath"]</label>
+    <input asp-for="CallbackPath" class="form-control" placeholder="/signin-oidc" />
+    <span asp-validation-for="CallbackPath"></span>
+    <span class="hint">@T["The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."]</span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="SaveTokens">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="SaveTokens">
+        <label class="form-check-label" asp-for="SaveTokens">@T["Store tokens"]</label>
+        <span class="hint dashed">@T["Store external authentication tokens for reuse"]</span>
+    </div>
+</div>

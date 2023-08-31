@@ -39,6 +39,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - Users: 
   - [Overview](modules/Users/README.md)
   - [Custom User Settings](modules/Users/CustomUserSettings/README.md)
+  - [Notifications](modules/Notifications/README.md)
 - [OpenId](modules/OpenId/README.md)
 - [Roles](modules/Roles/README.md)
 

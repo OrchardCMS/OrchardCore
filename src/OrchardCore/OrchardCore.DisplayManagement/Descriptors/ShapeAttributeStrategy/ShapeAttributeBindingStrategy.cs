@@ -60,7 +60,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
         }
 
         [DebuggerStepThrough]
-        private Func<DisplayContext, Task<IHtmlContent>> CreateDelegate(ShapeAttributeOccurrence attributeOccurrence)
+        private static Func<DisplayContext, Task<IHtmlContent>> CreateDelegate(ShapeAttributeOccurrence attributeOccurrence)
         {
             var type = attributeOccurrence.ServiceType;
             var methodInfo = attributeOccurrence.MethodInfo;
@@ -126,7 +126,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
 
         private static Func<object, object[], object> CreateMethodWrapper(Type type, MethodInfo method)
         {
-            CreateParamsExpressions(method, out ParameterExpression argsExp, out Expression[] paramsExps);
+            CreateParamsExpressions(method, out var argsExp, out var paramsExps);
 
             var targetExp = Expression.Parameter(typeof(object), "target");
             var castTargetExp = Expression.Convert(targetExp, type);

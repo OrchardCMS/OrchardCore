@@ -32,15 +32,12 @@ namespace OrchardCore.Media.Processing
     {
         public static string GetImageResizeUrl(string path, IDictionary<string, string> queryStringParams = null, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, int? quality = null, Format format = Format.Undefined, Anchor anchor = null, string bgcolor = null)
         {
-            if (string.IsNullOrEmpty(path) || (!width.HasValue && !height.HasValue && queryStringParams == null))
+            if (String.IsNullOrEmpty(path) || (!width.HasValue && !height.HasValue && queryStringParams == null))
             {
                 return path;
             }
 
-            if (queryStringParams == null)
-            {
-                queryStringParams = new Dictionary<string, string>();
-            }
+            queryStringParams ??= new Dictionary<string, string>();
 
             if (width.HasValue)
             {
@@ -57,14 +54,16 @@ namespace OrchardCore.Media.Processing
                 queryStringParams["rmode"] = resizeMode.ToString().ToLower();
             }
 
-            if (quality.HasValue)
-            {
-                queryStringParams["quality"] = quality.ToString();
-            }
-
+            // The format is set before quality such that the quality is not 
+            // invalidated when the url is generated.
             if (format != Format.Undefined)
             {
                 queryStringParams["format"] = format.ToString().ToLower();
+            }
+
+            if (quality.HasValue)
+            {
+                queryStringParams["quality"] = quality.ToString();
             }
 
             if (anchor != null)

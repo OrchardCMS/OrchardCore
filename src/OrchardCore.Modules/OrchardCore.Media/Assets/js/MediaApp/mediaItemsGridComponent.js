@@ -14,12 +14,12 @@ Vue.component('media-items-grid', {
                                 :src="buildMediaUrl(media.url, thumbSize)"
                                 :data-mime="media.mime"
                                 :style="{maxHeight: thumbSize +'px', maxWidth: thumbSize +'px'}" />
-                        <i v-else class="fa fa-file-o fa-lg" :data-mime="media.mime"></i>
+                        <i v-else class="fa-regular fa-file display-1" :data-mime="media.mime"></i>
                     </div>
                 <div class="media-container-main-item-title card-body">
-                        <a href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button edit-button" v-on:click.stop="renameMedia(media)"><i class="fa fa-edit" aria-hidden="true"></i></a>
-                        <a href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button delete-button" v-on:click.stop="deleteMedia(media)"><i class="fa fa-trash" aria-hidden="true"></i></a>
-                        <a :href="media.url" target="_blank" class="btn btn-light btn-sm float-end inline-media-button view-button""><i class="fa fa-download" aria-hidden="true"></i></a>
+                        <a href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button edit-button" v-on:click.stop="renameMedia(media)"><i class="fa-solid fa-edit" aria-hidden="true"></i></a>
+                        <a href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button delete-button" v-on:click.stop="deleteMedia(media)"><i class="fa-solid fa-trash" aria-hidden="true"></i></a>
+                        <a :href="media.url" target="_blank" class="btn btn-light btn-sm float-end inline-media-button view-button""><i class="fa-solid fa-download" aria-hidden="true"></i></a>
                         <span class="media-filename card-text small" :title="media.name">{{ media.name }}</span>
                     </div>
                  </li>
@@ -55,7 +55,7 @@ Vue.component('media-items-grid', {
             bus.$emit('mediaToggleRequested', media);
         },
         renameMedia: function (media) {
-            bus.$emit('renameMediaRequested', media);            
+            bus.$emit('renameMediaRequested', media);
         },
         deleteMedia: function (media) {
             bus.$emit('deleteMediaRequested', media);
