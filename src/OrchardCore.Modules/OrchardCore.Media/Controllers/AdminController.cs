@@ -158,6 +158,10 @@ namespace OrchardCore.Media.Controllers
             if (allowedExtensions.Count > 0)
             {
                 allowedExtensions = _allowedFileExtensions.Intersect(allowedExtensions).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            } 
+            else
+            {
+                allowedExtensions = _allowedFileExtensions;
             }
 
             return await _chunkFileUploadService.ProcessRequestAsync(
