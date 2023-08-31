@@ -208,6 +208,13 @@
   {
     "copy": true,
     "inputs": [
+      "Assets/trumbowyg/ui/icons.svg"
+    ],
+    "output": "wwwroot/Styles/ui/icons.svg"
+  },
+  {
+    "copy": true,
+    "inputs": [
       "node_modules/vue/dist/vue.global.*"
     ],
     "output": "wwwroot/Scripts/@"
