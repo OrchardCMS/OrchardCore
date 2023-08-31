@@ -9,7 +9,7 @@ using OrchardCore.Secrets.ViewModels;
 
 namespace OrchardCore.Secrets.Drivers;
 
-public class TestSecretDisplayDriver : DisplayDriver<Secret, TextSecret>
+public class TestSecretDisplayDriver : DisplayDriver<SecretBase, TextSecret>
 {
     protected readonly IStringLocalizer S;
 

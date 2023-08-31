@@ -24,7 +24,7 @@ public class SecretDecryptor : ISecretDecryptor
         var signatureBytes = Convert.FromBase64String(_descriptor.Signature);
 
         // The private key has been used for signing, the matching public key should be used for verification.
-        using var rsaSigner = RsaHelper.GenerateRsaSecurityKey(2048);
+        using var rsaSigner = RsaGenerator.GenerateRsaSecurityKey(2048);
         rsaSigner.ImportRSAPublicKey(_signingSecret.PublicKeyAsBytes(), out _);
 
         if (!rsaSigner.VerifyData(protectedBytes, signatureBytes, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1))
@@ -33,7 +33,7 @@ public class SecretDecryptor : ISecretDecryptor
         }
 
         // The public key has been used for encryption, the matching private key should be used for decryption.
-        using var rsaDecryptor = RsaHelper.GenerateRsaSecurityKey(2048);
+        using var rsaDecryptor = RsaGenerator.GenerateRsaSecurityKey(2048);
         rsaDecryptor.ImportRSAPrivateKey(_encryptionSecret.PrivateKeyAsBytes(), out _);
 
         var aesKey = rsaDecryptor.Decrypt(Convert.FromBase64String(_descriptor.Key), RSAEncryptionPadding.Pkcs1);

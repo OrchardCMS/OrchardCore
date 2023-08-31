@@ -9,7 +9,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
     {
         private static ISecretService GetSecretServiceMock()
         {
-            using var rsaEncryptor = RsaHelper.GenerateRsaSecurityKey(2048);
+            using var rsaEncryptor = RsaGenerator.GenerateRsaSecurityKey(2048);
 
             var rsaEncryptionSecret = new RsaSecret()
             {
@@ -18,7 +18,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
                 PrivateKey = Convert.ToBase64String(rsaEncryptor.ExportRSAPrivateKey()),
             };
 
-            using var rsaSigning = RsaHelper.GenerateRsaSecurityKey(2048);
+            using var rsaSigning = RsaGenerator.GenerateRsaSecurityKey(2048);
             var rsaSigningSecret = new RsaSecret()
             {
                 Name = "rsasigning",

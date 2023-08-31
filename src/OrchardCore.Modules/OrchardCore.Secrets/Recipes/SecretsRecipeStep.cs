@@ -32,7 +32,7 @@ public class SecretsRecipeStep : IRecipeStepHandler
             if (!String.IsNullOrEmpty(plaintext))
             {
                 // Rehyrdate from plaintext to secret type.
-                secret = JsonConvert.DeserializeObject(plaintext, secret.GetType()) as Secret;
+                secret = JsonConvert.DeserializeObject(plaintext, secret.GetType()) as SecretBase;
             }
 
             await _secretService.RemoveSecretAsync(kvp.Key, secretBinding.Store);

@@ -2,7 +2,7 @@ using System;
 
 namespace OrchardCore.Secrets.Models;
 
-public class RsaSecret : Secret
+public class RsaSecret : SecretBase
 {
     private byte[] _publicKeyAsBytes;
     private byte[] _privateKeyAsBytes;

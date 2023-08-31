@@ -36,11 +36,11 @@ public class SecretEncryptor : ISecretEncryptor
         }
 
         // The public key is used for encryption, the matching private key will have to be used for decryption.
-        using var rsaEncryptor = RsaHelper.GenerateRsaSecurityKey(2048);
+        using var rsaEncryptor = RsaGenerator.GenerateRsaSecurityKey(2048);
         rsaEncryptor.ImportRSAPublicKey(_encryptionSecret.PublicKeyAsBytes(), out _);
 
         // The private key is used for signing, the matching public key will have to be used for verification.
-        using var rsaSigner = RsaHelper.GenerateRsaSecurityKey(2048);
+        using var rsaSigner = RsaGenerator.GenerateRsaSecurityKey(2048);
         rsaSigner.ImportRSAPrivateKey(_signingSecret.PrivateKeyAsBytes(), out _);
 
         var rsaEncryptedAesKey = rsaEncryptor.Encrypt(aes.Key, RSAEncryptionPadding.Pkcs1);
@@ -48,12 +48,12 @@ public class SecretEncryptor : ISecretEncryptor
 
         var descriptor = new HybridKeyDescriptor
         {
-            EncryptionSecretName = _encryptionSecret.Name,
             Key = Convert.ToBase64String(rsaEncryptedAesKey),
             Iv = Convert.ToBase64String(aes.IV),
             ProtectedData = Convert.ToBase64String(encrypted),
             Signature = Convert.ToBase64String(signature),
-            SigningSecretName = _signingSecret.Name,
+            EncryptionSecret = _encryptionSecret.Name,
+            SigningSecret = _signingSecret.Name,
         };
 
         var serialized = JsonConvert.SerializeObject(descriptor);

@@ -24,23 +24,23 @@ public class KeyVaultSecretStore : ISecretStore
     public string DisplayName => S["KeyVault Secrets Store"];
     public bool IsReadOnly => false;
 
-    public async Task<Secret> GetSecretAsync(string key, Type type)
+    public async Task<SecretBase> GetSecretAsync(string key, Type type)
     {
-        if (!typeof(Secret).IsAssignableFrom(type))
+        if (!typeof(SecretBase).IsAssignableFrom(type))
         {
-            throw new ArgumentException("The type must implement " + nameof(Secret));
+            throw new ArgumentException("The type must implement " + nameof(SecretBase));
         }
 
         var value = await _keyVaultClientService.GetSecretAsync(key);
         if (!String.IsNullOrEmpty(value))
         {
-            return JsonConvert.DeserializeObject(value, type) as Secret;
+            return JsonConvert.DeserializeObject(value, type) as SecretBase;
         }
 
         return null;
     }
 
-    public Task UpdateSecretAsync(string key, Secret secret)
+    public Task UpdateSecretAsync(string key, SecretBase secret)
     {
         var value = JsonConvert.SerializeObject(secret);
 

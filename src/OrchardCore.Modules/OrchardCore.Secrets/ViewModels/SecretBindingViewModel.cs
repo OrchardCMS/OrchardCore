@@ -17,5 +17,5 @@ public class SecretBindingViewModel
     public IReadOnlyCollection<SecretStoreDescriptor> StoreEntries { get; set; }
 
     [BindNever]
-    public Secret Secret { get; set; }
+    public SecretBase Secret { get; set; }
 }

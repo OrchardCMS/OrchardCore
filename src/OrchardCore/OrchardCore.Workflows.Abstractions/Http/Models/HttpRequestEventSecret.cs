@@ -2,7 +2,7 @@ using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Workflows.Http.Models;
 
-public class HttpRequestEventSecret : Secret
+public class HttpRequestEventSecret : SecretBase
 {
     public string WorkflowTypeId { get; set; }
     public string ActivityId { get; set; }

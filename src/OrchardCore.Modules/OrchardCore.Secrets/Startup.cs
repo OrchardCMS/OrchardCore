@@ -33,9 +33,9 @@ namespace OrchardCore.Secrets
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
-            services.AddScoped<IDisplayManager<Secret>, DisplayManager<Secret>>();
-            services.AddScoped<IDisplayDriver<Secret>, TestSecretDisplayDriver>();
-            services.AddScoped<IDisplayDriver<Secret>, RsaSecretDisplayDriver>();
+            services.AddScoped<IDisplayManager<SecretBase>, DisplayManager<SecretBase>>();
+            services.AddScoped<IDisplayDriver<SecretBase>, TestSecretDisplayDriver>();
+            services.AddScoped<IDisplayDriver<SecretBase>, RsaSecretDisplayDriver>();
 
             services.AddSingleton<SecretBindingsManager>();
             services.AddSingleton<SecretsDocumentManager>();

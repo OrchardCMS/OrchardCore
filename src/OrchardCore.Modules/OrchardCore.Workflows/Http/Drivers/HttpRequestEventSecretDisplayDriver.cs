@@ -14,7 +14,7 @@ using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Workflows.Http.Drivers
 {
-    public class HttpRequestEventSecretDisplayDriver : DisplayDriver<Secret, HttpRequestEventSecret>
+    public class HttpRequestEventSecretDisplayDriver : DisplayDriver<SecretBase, HttpRequestEventSecret>
     {
         private readonly IWorkflowTypeStore _workflowTypeStore;
         private readonly IStringLocalizer S;

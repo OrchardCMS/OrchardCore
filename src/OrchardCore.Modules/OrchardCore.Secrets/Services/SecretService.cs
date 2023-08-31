@@ -42,20 +42,20 @@ public class SecretService : ISecretService
         }
     }
 
-    public Secret CreateSecret(string typeName)
+    public SecretBase CreateSecret(string typeName)
     {
-        if (!_activators.TryGetValue(typeName, out var factory) || !typeof(Secret).IsAssignableFrom(factory.Type))
+        if (!_activators.TryGetValue(typeName, out var factory) || !typeof(SecretBase).IsAssignableFrom(factory.Type))
         {
-            throw new ArgumentException($"The type should be configured and should implement '{nameof(Secret)}'.", nameof(typeName));
+            throw new ArgumentException($"The type should be configured and should implement '{nameof(SecretBase)}'.", nameof(typeName));
         }
 
         return factory.Create();
     }
 
-    public async Task<Secret> GetSecretAsync(SecretBinding binding)
+    public async Task<SecretBase> GetSecretAsync(SecretBinding binding)
     {
         if (!_activators.TryGetValue(binding.Type, out var factory) ||
-            !typeof(Secret).IsAssignableFrom(factory.Type))
+            !typeof(SecretBase).IsAssignableFrom(factory.Type))
         {
             return null;
         }
@@ -76,11 +76,11 @@ public class SecretService : ISecretService
         return secret;
     }
 
-    public async Task<Secret> GetSecretAsync(string key, Type type)
+    public async Task<SecretBase> GetSecretAsync(string key, Type type)
     {
-        if (!_activators.TryGetValue(type.Name, out var factory) || !typeof(Secret).IsAssignableFrom(factory.Type))
+        if (!_activators.TryGetValue(type.Name, out var factory) || !typeof(SecretBase).IsAssignableFrom(factory.Type))
         {
-            throw new ArgumentException($"The type should be configured and should implement '{nameof(Secret)}'.", nameof(type));
+            throw new ArgumentException($"The type should be configured and should implement '{nameof(SecretBase)}'.", nameof(type));
         }
 
         var bindings = await GetSecretBindingsAsync();
@@ -106,7 +106,7 @@ public class SecretService : ISecretService
 
     public IReadOnlyCollection<SecretStoreDescriptor> GetSecretStoreDescriptors() => _secretStoreDescriptors;
 
-    public async Task UpdateSecretAsync(string key, SecretBinding secretBinding, Secret secret)
+    public async Task UpdateSecretAsync(string key, SecretBinding secretBinding, SecretBase secret)
     {
         if (!String.Equals(key, key.ToSafeName(), StringComparison.OrdinalIgnoreCase))
         {

@@ -1,6 +1,6 @@
 namespace OrchardCore.Secrets.Models;
 
-public class TextSecret : Secret
+public class TextSecret : SecretBase
 {
     public string Text { get; set; }
 }

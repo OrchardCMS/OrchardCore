@@ -51,7 +51,7 @@ namespace OrchardCore.Workflows.Http
             services.AddActivity<SignalEvent, SignalEventDisplayDriver>();
 
             services.AddSingleton<IGlobalMethodProvider, TokenMethodProvider>();
-            services.AddScoped<IDisplayDriver<Secret>, HttpRequestEventSecretDisplayDriver>();
+            services.AddScoped<IDisplayDriver<SecretBase>, HttpRequestEventSecretDisplayDriver>();
             services.AddScoped<IHttpRequestEventSecretService, HttpRequestEventSecretService>();
         }
 

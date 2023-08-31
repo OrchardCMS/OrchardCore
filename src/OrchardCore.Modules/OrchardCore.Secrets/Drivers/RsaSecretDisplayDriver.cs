@@ -13,7 +13,7 @@ using OrchardCore.Secrets.ViewModels;
 
 namespace OrchardCore.Secrets.Drivers;
 
-public class RsaSecretDisplayDriver : DisplayDriver<Secret, RsaSecret>
+public class RsaSecretDisplayDriver : DisplayDriver<SecretBase, RsaSecret>
 {
     protected readonly IStringLocalizer S;
 
@@ -33,7 +33,7 @@ public class RsaSecretDisplayDriver : DisplayDriver<Secret, RsaSecret>
             // Generate new keys when creating.
             if (context.IsNew)
             {
-                using var rsa = RsaHelper.GenerateRsaSecurityKey(2048);
+                using var rsa = RsaGenerator.GenerateRsaSecurityKey(2048);
                 if (String.IsNullOrEmpty(secret.PublicKey))
                 {
                     model.PublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey());
@@ -57,7 +57,7 @@ public class RsaSecretDisplayDriver : DisplayDriver<Secret, RsaSecret>
                 // The private key is never returned to the view when editing.
                 model.PublicKey = secret.PublicKey;
 
-                using var rsa = RsaHelper.GenerateRsaSecurityKey(2048);
+                using var rsa = RsaGenerator.GenerateRsaSecurityKey(2048);
                 model.NewPublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey());
                 model.NewPrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey());
             }
@@ -114,7 +114,7 @@ public class RsaSecretDisplayDriver : DisplayDriver<Secret, RsaSecret>
             {
                 try
                 {
-                    using var rsa = RsaHelper.GenerateRsaSecurityKey(2048);
+                    using var rsa = RsaGenerator.GenerateRsaSecurityKey(2048);
                     rsa.ImportRSAPrivateKey(secret.PrivateKeyAsBytes(), out _);
                 }
                 catch (CryptographicException)
@@ -132,7 +132,7 @@ public class RsaSecretDisplayDriver : DisplayDriver<Secret, RsaSecret>
 
             try
             {
-                using var rsa = RsaHelper.GenerateRsaSecurityKey(2048);
+                using var rsa = RsaGenerator.GenerateRsaSecurityKey(2048);
                 rsa.ImportRSAPublicKey(secret.PublicKeyAsBytes(), out _);
             }
             catch (CryptographicException)

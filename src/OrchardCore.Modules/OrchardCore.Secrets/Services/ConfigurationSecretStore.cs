@@ -24,14 +24,14 @@ public class ConfigurationSecretStore : ISecretStore
     public string DisplayName => S["Configuration Secret Store"];
     public bool IsReadOnly => true;
 
-    public Task<Secret> GetSecretAsync(string key, Type type)
+    public Task<SecretBase> GetSecretAsync(string key, Type type)
     {
-        if (!typeof(Secret).IsAssignableFrom(type))
+        if (!typeof(SecretBase).IsAssignableFrom(type))
         {
-            throw new ArgumentException("The type must implement " + nameof(Secret));
+            throw new ArgumentException("The type must implement " + nameof(SecretBase));
         }
 
-        var secret = _shellConfiguration.GetSection($"OrchardCore_Secrets_ConfigurationSecretStore:{key}").Get(type) as Secret;
+        var secret = _shellConfiguration.GetSection($"OrchardCore_Secrets_ConfigurationSecretStore:{key}").Get(type) as SecretBase;
         if (secret is not null)
         {
             secret.Name = key;
@@ -40,7 +40,7 @@ public class ConfigurationSecretStore : ISecretStore
         return Task.FromResult(secret);
     }
 
-    public Task UpdateSecretAsync(string key, Secret secret) =>
+    public Task UpdateSecretAsync(string key, SecretBase secret) =>
         throw new NotSupportedException("The Configuration Secret Store is ReadOnly");
 
     public Task RemoveSecretAsync(string key) =>

@@ -27,7 +27,7 @@ public class AdminController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly ISecretService _secretService;
-    private readonly IDisplayManager<Secret> _displayManager;
+    private readonly IDisplayManager<SecretBase> _displayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly SecretOptions _secretsOptions;
     private readonly ISiteService _siteService;
@@ -40,7 +40,7 @@ public class AdminController : Controller
     public AdminController(
         IAuthorizationService authorizationService,
         ISecretService secretService,
-        IDisplayManager<Secret> displayManager,
+        IDisplayManager<SecretBase> displayManager,
         IUpdateModelAccessor updateModelAccessor,
         IOptions<SecretOptions> secretsOptions,
         ISiteService siteService,

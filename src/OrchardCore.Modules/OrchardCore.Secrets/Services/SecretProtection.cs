@@ -36,11 +36,11 @@ public class SecretProtection : ISecretProtection
 
         var descriptor = JsonConvert.DeserializeObject<HybridKeyDescriptor>(decoded);
 
-        var encryptionSecret = await _secretService.GetSecretAsync<RsaSecret>(descriptor.EncryptionSecretName)
-            ?? throw new InvalidOperationException($"'{descriptor.EncryptionSecretName}' secret not found.");
+        var encryptionSecret = await _secretService.GetSecretAsync<RsaSecret>(descriptor.EncryptionSecret)
+            ?? throw new InvalidOperationException($"'{descriptor.EncryptionSecret}' secret not found.");
 
-        var signingSecret = await _secretService.GetSecretAsync<RsaSecret>(descriptor.SigningSecretName)
-            ?? throw new InvalidOperationException($"'{descriptor.SigningSecretName}' secret not found.");
+        var signingSecret = await _secretService.GetSecretAsync<RsaSecret>(descriptor.SigningSecret)
+            ?? throw new InvalidOperationException($"'{descriptor.SigningSecret}' secret not found.");
 
         return new SecretDecryptor(descriptor, encryptionSecret, signingSecret);
     }

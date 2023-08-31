@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 
 namespace OrchardCore.Secrets.Services;
 
-public static class RsaHelper
+public static class RsaGenerator
 {
     public static RSA GenerateRsaSecurityKey(int size)
     {

@@ -5,7 +5,7 @@ namespace OrchardCore.Secrets.Services;
 
 public class SecretActivator
 {
-    public virtual Type Type => typeof(Secret);
+    public virtual Type Type => typeof(SecretBase);
 
-    public virtual Secret Create() => new();
+    public virtual SecretBase Create() => new();
 }

@@ -26,24 +26,24 @@ public class DatabaseSecretStore : ISecretStore
     public string DisplayName => S["Database Secret Store."];
     public bool IsReadOnly => false;
 
-    public async Task<Models.Secret> GetSecretAsync(string key, Type type)
+    public async Task<Models.SecretBase> GetSecretAsync(string key, Type type)
     {
-        if (!typeof(Models.Secret).IsAssignableFrom(type))
+        if (!typeof(Models.SecretBase).IsAssignableFrom(type))
         {
-            throw new ArgumentException($"The type must implement '{nameof(Models.Secret)}'.");
+            throw new ArgumentException($"The type must implement '{nameof(Models.SecretBase)}'.");
         }
 
         var secretsDocument = await _manager.GetSecretsDocumentAsync();
         if (secretsDocument.Secrets.TryGetValue(key, out var protectedData))
         {
             var plainText = _protector.Unprotect(protectedData);
-            return JsonConvert.DeserializeObject(plainText, type) as Models.Secret;
+            return JsonConvert.DeserializeObject(plainText, type) as Models.SecretBase;
         }
 
         return null;
     }
 
-    public Task UpdateSecretAsync(string key, Models.Secret secret) =>
+    public Task UpdateSecretAsync(string key, Models.SecretBase secret) =>
         _manager.UpdateSecretAsync(key, _protector.Protect(JsonConvert.SerializeObject(secret)));
 
     public Task RemoveSecretAsync(string key) => _manager.RemoveSecretAsync(key);
