@@ -13,6 +13,7 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Utilities;
 
 namespace OrchardCore.Navigation
 {
@@ -32,7 +33,7 @@ namespace OrchardCore.Navigation
                 {
                     if (displaying.Shape.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
                     {
-                        displaying.Shape.Metadata.Alternates.Add("Pager__" + EncodeAlternateElement(pagerId));
+                        displaying.Shape.Metadata.Alternates.Add("Pager__" + pagerId.EncodeAlternateElement());
                     };
                 });
 
@@ -48,7 +49,7 @@ namespace OrchardCore.Navigation
                 {
                     if (displaying.Shape.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
                     {
-                        displaying.Shape.Metadata.Alternates.Add("Pager__" + EncodeAlternateElement(pagerId));
+                        displaying.Shape.Metadata.Alternates.Add("Pager__" + pagerId.EncodeAlternateElement());
                     };
                 });
 
@@ -59,7 +60,7 @@ namespace OrchardCore.Navigation
 
                     if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
                     {
-                        displaying.Shape.Metadata.Alternates.Add("Pager_Gap__" + EncodeAlternateElement(pagerId));
+                        displaying.Shape.Metadata.Alternates.Add("Pager_Gap__" + pagerId.EncodeAlternateElement());
                     }
                 });
 
@@ -70,7 +71,7 @@ namespace OrchardCore.Navigation
 
                     if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
                     {
-                        displaying.Shape.Metadata.Alternates.Add("Pager_First__" + EncodeAlternateElement(pagerId));
+                        displaying.Shape.Metadata.Alternates.Add("Pager_First__" + pagerId.EncodeAlternateElement());
                     }
                 });
 
@@ -81,7 +82,7 @@ namespace OrchardCore.Navigation
 
                     if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
                     {
-                        displaying.Shape.Metadata.Alternates.Add("Pager_Previous__" + EncodeAlternateElement(pagerId));
+                        displaying.Shape.Metadata.Alternates.Add("Pager_Previous__" + pagerId.EncodeAlternateElement());
                     }
                 });
 
@@ -92,7 +93,7 @@ namespace OrchardCore.Navigation
 
                     if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
                     {
-                        displaying.Shape.Metadata.Alternates.Add("Pager_Next__" + EncodeAlternateElement(pagerId));
+                        displaying.Shape.Metadata.Alternates.Add("Pager_Next__" + pagerId.EncodeAlternateElement());
                     }
                 });
 
@@ -103,7 +104,7 @@ namespace OrchardCore.Navigation
 
                     if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
                     {
-                        displaying.Shape.Metadata.Alternates.Add("Pager_Last__" + EncodeAlternateElement(pagerId));
+                        displaying.Shape.Metadata.Alternates.Add("Pager_Last__" + pagerId.EncodeAlternateElement());
                     }
                 });
 
@@ -114,7 +115,7 @@ namespace OrchardCore.Navigation
 
                     if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
                     {
-                        displaying.Shape.Metadata.Alternates.Add("Pager_CurrentPage__" + EncodeAlternateElement(pagerId));
+                        displaying.Shape.Metadata.Alternates.Add("Pager_CurrentPage__" + pagerId.EncodeAlternateElement());
                     }
                 });
 
@@ -123,14 +124,9 @@ namespace OrchardCore.Navigation
                 {
                     if (displaying.Shape.TryGetProperty("PagerId", out string pagerId))
                     {
-                        displaying.Shape.Metadata.Alternates.Add("Pager_Links__" + EncodeAlternateElement(pagerId));
+                        displaying.Shape.Metadata.Alternates.Add("Pager_Links__" + pagerId.EncodeAlternateElement());
                     }
                 });
-        }
-
-        private static string EncodeAlternateElement(string alternateElement)
-        {
-            return alternateElement.Replace("-", "__").Replace('.', '_');
         }
     }
 

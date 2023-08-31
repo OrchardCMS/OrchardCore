@@ -6663,53 +6663,13 @@ $(function () {
     });
   }
 });
-$(function () {
-  $('input[data-bs-toggle="collapse"]').each(function () {
-    // Prevent bootstrap from altering its behavior
-    // c.f. https://github.com/twbs/bootstrap/issues/21079
-    $(this).removeAttr('data-bs-toggle');
-
-    // Expand the section if necessary
-    var target = $($(this).data('bs-target'));
-    if ($(this).prop('checked')) {
-      target.addClass('visible');
-    }
-    $(this).on('change', function (e) {
-      // During a double-click, ignore state changes while the element is collapsing
-      if (target.hasClass('collapsing')) {
-        $(this).prop('checked', !$(this).prop('checked'));
-      }
-      target.collapse($(this).prop('checked') ? 'show' : 'hide');
-    });
-  });
-});
-$(function () {
-  $('input[data-bs-toggle="collapse active"]').each(function () {
-    // Prevent bootstrap from altering its behavior for inputs that hide target when input value is checked
-    // c.f. https://github.com/twbs/bootstrap/issues/21079
-    $(this).removeAttr("data-bs-toggle");
-
-    // Expand the section if necessary
-    var target = $($(this).data('bs-target'));
-    if (!$(this).prop('checked')) {
-      target.addClass('show');
-    }
-    $(this).on('change', function (e) {
-      // During a double-click, ignore state changes while the element is collapsing
-      if (target.hasClass('collapsing')) {
-        console.log('collapsing');
-        $(this).prop('checked', !$(this).prop('checked'));
-      }
-      target.collapse($(this).prop('checked') ? 'hide' : 'show');
-    });
-  });
-
+(function () {
   // Tooltips
   var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
   var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
     return new bootstrap.Tooltip(tooltipTriggerEl);
   });
-});
+})();
 function getTechnicalName(name) {
   var result = '',
     c;

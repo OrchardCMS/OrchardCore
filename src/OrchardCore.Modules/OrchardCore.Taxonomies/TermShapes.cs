@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Utilities;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Taxonomies.Models;
 using OrchardCore.Taxonomies.ViewModels;
@@ -122,7 +123,7 @@ namespace OrchardCore.Taxonomies
 
                     termShape.Classes.Add(("term-" + taxonomyPart.TermContentType).HtmlClassify());
 
-                    var encodedContentType = EncodeAlternateElement(taxonomyPart.TermContentType);
+                    var encodedContentType = taxonomyPart.TermContentType.EncodeAlternateElement();
                     // Term__[ContentType] e.g. Term-Category, Term-Tag.
                     termShape.Metadata.Alternates.Add("Term__" + encodedContentType);
 
@@ -190,7 +191,7 @@ namespace OrchardCore.Taxonomies
                         }
                     }
 
-                    var encodedContentType = EncodeAlternateElement(taxonomyPart.TermContentType);
+                    var encodedContentType = taxonomyPart.TermContentType.EncodeAlternateElement();
 
                     // TermItem__level__[level] e.g. TermItem-level-2.
                     termItem.Metadata.Alternates.Add("TermItem__level__" + level);
@@ -223,7 +224,7 @@ namespace OrchardCore.Taxonomies
 
                     var termContentItem = termItem.GetProperty<ContentItem>("TermContentItem");
 
-                    var encodedContentType = EncodeAlternateElement(termContentItem.ContentItem.ContentType);
+                    var encodedContentType = termContentItem.ContentItem.ContentType.EncodeAlternateElement();
 
                     termItem.Metadata.Alternates.Add("TermContentItem__level__" + level);
 
@@ -274,16 +275,6 @@ namespace OrchardCore.Taxonomies
             contentItem = null;
 
             return level;
-        }
-
-        /// <summary>
-        /// Encodes dashed and dots so that they don't conflict in filenames.
-        /// </summary>
-        /// <param name="alternateElement"></param>
-        /// <returns></returns>
-        private static string EncodeAlternateElement(string alternateElement)
-        {
-            return alternateElement.Replace("-", "__").Replace('.', '_');
         }
 
         /// <summary>
