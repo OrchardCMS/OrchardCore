@@ -59,7 +59,7 @@ The newly created website should be able to run, and look like this:
 
 ```xml
 <PropertyGroup>
-  <TargetFramework>net6.0;net7.0</TargetFramework>
+  <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 </PropertyGroup>
 ```
 
@@ -85,7 +85,7 @@ builder.Services.AddOrchardCms();
 
 - Edit the `Program.cs` file
 - Add `app.UseOrchardCore();` 
-- Remove andy of the following lines if exists in your `Program.cs` file:
+- If any of the following lines exists in your `Program.cs` file, remove them:
 
 ```csharp
   builder.Services.AddRazorPages();
