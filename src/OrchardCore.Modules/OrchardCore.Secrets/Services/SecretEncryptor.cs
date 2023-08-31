@@ -3,22 +3,19 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
+using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Secrets.Services;
 
-public class DefaultEncryptor : IEncryptor
+public class SecretEncryptor : ISecretEncryptor
 {
-    private readonly string _encryptionSecretName;
-    private readonly byte[] _encryptionPublicKey;
-    private readonly byte[] _signingPrivateKey;
-    private readonly string _signingSecretName;
+    private readonly RsaSecret _encryptionSecret;
+    private readonly RsaSecret _signingSecret;
 
-    public DefaultEncryptor(byte[] encryptionPublicKey, byte[] signingPrivateKey, string encryptionSecretName, string signingSecretName)
+    public SecretEncryptor(RsaSecret encryptionSecret, RsaSecret signingSecret)
     {
-        _encryptionPublicKey = encryptionPublicKey;
-        _signingPrivateKey = signingPrivateKey;
-        _encryptionSecretName = encryptionSecretName;
-        _signingSecretName = signingSecretName;
+        _encryptionSecret = encryptionSecret;
+        _signingSecret = signingSecret;
     }
 
     public string Encrypt(string plainText)
@@ -38,28 +35,30 @@ public class DefaultEncryptor : IEncryptor
             encrypted = msEncrypt.ToArray();
         }
 
+        // The public key is used for encryption, the matching private key will have to be used for decryption.
         using var rsaEncryptor = RsaHelper.GenerateRsaSecurityKey(2048);
-        rsaEncryptor.ImportRSAPublicKey(_encryptionPublicKey, out _);
+        rsaEncryptor.ImportRSAPublicKey(_encryptionSecret.PublicKeyAsBytes(), out _);
 
+        // The private key is used for signing, the matching public key will have to be used for verification.
         using var rsaSigner = RsaHelper.GenerateRsaSecurityKey(2048);
-        rsaSigner.ImportRSAPrivateKey(_signingPrivateKey, out _);
+        rsaSigner.ImportRSAPrivateKey(_signingSecret.PrivateKeyAsBytes(), out _);
 
         var rsaEncryptedAesKey = rsaEncryptor.Encrypt(aes.Key, RSAEncryptionPadding.Pkcs1);
         var signature = rsaSigner.SignData(encrypted, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
 
         var descriptor = new HybridKeyDescriptor
         {
-            EncryptionSecretName = _encryptionSecretName,
+            EncryptionSecretName = _encryptionSecret.Name,
             Key = Convert.ToBase64String(rsaEncryptedAesKey),
             Iv = Convert.ToBase64String(aes.IV),
             ProtectedData = Convert.ToBase64String(encrypted),
             Signature = Convert.ToBase64String(signature),
-            SigningSecretName = _signingSecretName,
+            SigningSecretName = _signingSecret.Name,
         };
 
         var serialized = JsonConvert.SerializeObject(descriptor);
-        var encodedDescriptor = Convert.ToBase64String(Encoding.UTF8.GetBytes(serialized));
+        var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(serialized));
 
-        return encodedDescriptor;
+        return encoded;
     }
 }

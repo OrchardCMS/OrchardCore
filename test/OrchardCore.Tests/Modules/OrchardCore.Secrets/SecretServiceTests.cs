@@ -34,7 +34,7 @@ public class SecretServiceTests
         options.SecretTypes.Add(typeof(TextSecret));
         var secretOptions = Options.Create(options);
 
-        var secretService = new DefaultSecretService(
+        var secretService = new SecretService(
             new SecretBindingsManager(documentManager),
             new[] { store },
             secretOptions);

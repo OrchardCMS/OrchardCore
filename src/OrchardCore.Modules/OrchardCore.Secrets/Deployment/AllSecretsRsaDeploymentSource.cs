@@ -11,14 +11,12 @@ namespace OrchardCore.Secrets.Deployment;
 public class AllSecretsRsaDeploymentSource : IDeploymentSource
 {
     private readonly ISecretService _secretService;
-    private readonly IEncryptionProvider _encryptionProvider;
+    private readonly ISecretProtection _secretProtection;
 
-    public AllSecretsRsaDeploymentSource(
-        ISecretService secretService,
-        IEncryptionProvider encryptionProvider)
+    public AllSecretsRsaDeploymentSource(ISecretService secretService, ISecretProtection secretProtection)
     {
         _secretService = secretService;
-        _encryptionProvider = encryptionProvider;
+        _secretProtection = secretProtection;
     }
 
     public async Task ProcessDeploymentStepAsync(DeploymentStep deploymentStep, DeploymentPlanResult result)
@@ -28,27 +26,25 @@ public class AllSecretsRsaDeploymentSource : IDeploymentSource
             return;
         }
 
-        if (String.IsNullOrEmpty(result.EncryptionSecretName))
+        if (String.IsNullOrEmpty(result.EncryptionSecret))
         {
             throw new InvalidOperationException("You must set an encryption rsa secret for the deployment target before exporting secrets.");
         }
 
-        if (String.IsNullOrEmpty(result.SigningSecretName))
+        if (String.IsNullOrEmpty(result.SigningSecret))
         {
-            throw new InvalidOperationException("You must set a signin rsa secret for the deployment target before exporting secrets.");
+            throw new InvalidOperationException("You must set a signing rsa secret for the deployment target before exporting secrets.");
         }
 
         // Deployment secrets should already exist and not with a private key in both sides.
         var secretBindings = (await _secretService.GetSecretBindingsAsync()).Where(binding =>
-            !String.Equals(binding.Value.Name, result.EncryptionSecretName, StringComparison.OrdinalIgnoreCase) &&
-            !String.Equals(binding.Value.Name, result.SigningSecretName, StringComparison.OrdinalIgnoreCase));
+            !String.Equals(binding.Value.Name, result.EncryptionSecret, StringComparison.OrdinalIgnoreCase) &&
+            !String.Equals(binding.Value.Name, result.SigningSecret, StringComparison.OrdinalIgnoreCase));
 
         if (!secretBindings.Any())
         {
             return;
         }
-
-        var encryptor = await _encryptionProvider.CreateAsync(result.EncryptionSecretName, result.SigningSecretName);
 
         var secrets = new Dictionary<string, JObject>();
         foreach (var secretBinding in secretBindings)
@@ -59,6 +55,7 @@ public class AllSecretsRsaDeploymentSource : IDeploymentSource
             // When descriptor is readonly we ship a binding without the secret value.
             var jObject = new JObject(new JProperty("SecretBinding", JObject.FromObject(secretBinding.Value)));
 
+            var encryptor = await _secretProtection.CreateEncryptorAsync(result.EncryptionSecret, result.SigningSecret);
             if (!storeDescriptor.IsReadOnly)
             {
                 var secret = await _secretService.GetSecretAsync(secretBinding.Value);

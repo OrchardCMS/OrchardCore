@@ -16,8 +16,10 @@ public class DecryptMethodProvider : IGlobalMethodProvider
             Name = "decrypt",
             Method = serviceProvider => (Func<string, object>)(protectedData =>
             {
-                var decryptionProvider = serviceProvider.GetRequiredService<IDecryptionProvider>();
-                var decryptor = decryptionProvider.CreateAsync(protectedData).GetAwaiter().GetResult();
+                var decryptor = serviceProvider
+                    .GetRequiredService<ISecretProtection>()
+                    .CreateDecryptorAsync(protectedData).GetAwaiter().GetResult();
+
                 return decryptor.Decrypt(protectedData);
             })
         };

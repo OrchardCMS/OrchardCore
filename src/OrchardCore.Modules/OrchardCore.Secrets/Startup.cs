@@ -38,7 +38,10 @@ namespace OrchardCore.Secrets
             services.AddScoped<IDisplayDriver<Secret>, RsaSecretDisplayDriver>();
 
             services.AddSingleton<SecretBindingsManager>();
-            services.AddSingleton<ISecretService, DefaultSecretService>();
+            services.AddSingleton<SecretsDocumentManager>();
+            services.AddSingleton<ISecretService, SecretService>();
+            services.AddSingleton<ISecretProtection, SecretProtection>();
+            services.AddSingleton<ISecretStore, DatabaseSecretStore>();
 
             services.Configure<SecretOptions>(options =>
             {
@@ -46,17 +49,10 @@ namespace OrchardCore.Secrets
                 options.SecretTypes.Add(typeof(RsaSecret));
             });
 
-            services.AddTransient<IEncryptionProvider, DefaultEncryptionProvider>();
-            services.AddTransient<IDecryptionProvider, DefaultDecryptionProvider>();
-
             services.AddRecipeExecutionStep<SecretsRecipeStep>();
             services.AddTransient<IDeploymentSource, AllSecretsRsaDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllSecretsRsaDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllSecretsRsaDeploymentStepDriver>();
-
-            services.AddSingleton<DatabaseSecretDataProtector>();
-            services.AddSingleton<ISecretStore, DatabaseSecretStore>();
-            services.AddSingleton<SecretsDocumentManager>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

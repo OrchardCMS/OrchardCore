@@ -1,6 +1,6 @@
 namespace OrchardCore.Secrets.Services;
 
-internal class HybridKeyDescriptor
+public class HybridKeyDescriptor
 {
     public string EncryptionSecretName { get; set; }
     public string Key { get; set; }

@@ -1,6 +1,6 @@
 namespace OrchardCore.Secrets;
 
-public interface IEncryptor
+public interface ISecretEncryptor
 {
     string Encrypt(string plainText);
 }
