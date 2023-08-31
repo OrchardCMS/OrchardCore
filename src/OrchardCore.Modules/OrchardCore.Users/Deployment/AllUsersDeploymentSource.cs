@@ -18,9 +18,7 @@ public class AllUsersDeploymentSource : IDeploymentSource
 
     public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
     {
-        var allRolesStep = step as AllUsersDeploymentStep;
-
-        if (allRolesStep == null)
+        if (step is not AllUsersDeploymentStep allRolesStep)
         {
             return;
         }
