@@ -14,14 +14,14 @@ public class SecretProtection : ISecretProtection
 
     public async Task<ISecretEncryptor> CreateEncryptorAsync(string encryptionSecret, string signingSecret)
     {
-        var encryptionRsaSecret = await _secretService.GetSecretAsync<RsaSecret>(encryptionSecret)
+        var encryptionRsaSecret = await _secretService.GetSecretAsync<RSASecret>(encryptionSecret)
             ?? throw new InvalidOperationException($"Secret '{encryptionSecret}' not found.");
 
-        var signingRsaSecret = await _secretService.GetSecretAsync<RsaSecret>(signingSecret)
+        var signingRsaSecret = await _secretService.GetSecretAsync<RSASecret>(signingSecret)
             ?? throw new InvalidOperationException($"Secret '{signingSecret}' not found.");
 
         // The private key is needed for the signature.
-        if (signingRsaSecret.KeyType != RsaKeyType.PublicPrivatePair)
+        if (signingRsaSecret.KeyType != RSAKeyType.PublicPrivatePair)
         {
             throw new InvalidOperationException("Secret cannot be used for signing.");
         }
@@ -36,10 +36,10 @@ public class SecretProtection : ISecretProtection
 
         var descriptor = JsonConvert.DeserializeObject<HybridKeyDescriptor>(decoded);
 
-        var encryptionSecret = await _secretService.GetSecretAsync<RsaSecret>(descriptor.EncryptionSecret)
+        var encryptionSecret = await _secretService.GetSecretAsync<RSASecret>(descriptor.EncryptionSecret)
             ?? throw new InvalidOperationException($"'{descriptor.EncryptionSecret}' secret not found.");
 
-        var signingSecret = await _secretService.GetSecretAsync<RsaSecret>(descriptor.SigningSecret)
+        var signingSecret = await _secretService.GetSecretAsync<RSASecret>(descriptor.SigningSecret)
             ?? throw new InvalidOperationException($"'{descriptor.SigningSecret}' secret not found.");
 
         return new SecretDecryptor(descriptor, encryptionSecret, signingSecret);

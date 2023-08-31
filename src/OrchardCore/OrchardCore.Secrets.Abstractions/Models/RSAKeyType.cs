@@ -1,6 +1,6 @@
 namespace OrchardCore.Secrets.Models;
 
-public enum RsaKeyType
+public enum RSAKeyType
 {
     PublicPrivatePair,
     Public,

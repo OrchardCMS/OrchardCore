@@ -13,27 +13,27 @@ using OrchardCore.Secrets.ViewModels;
 
 namespace OrchardCore.Secrets.Drivers;
 
-public class RsaSecretDisplayDriver : DisplayDriver<SecretBase, RsaSecret>
+public class RsaSecretDisplayDriver : DisplayDriver<SecretBase, RSASecret>
 {
     protected readonly IStringLocalizer S;
 
     public RsaSecretDisplayDriver(IStringLocalizer<RsaSecretDisplayDriver> stringLocalizer) => S = stringLocalizer;
 
-    public override IDisplayResult Display(RsaSecret secret)
+    public override IDisplayResult Display(RSASecret secret)
     {
         return Combine(
             View("RsaSecret_Fields_Summary", secret).Location("Summary", "Content"),
             View("RsaSecret_Fields_Thumbnail", secret).Location("Thumbnail", "Content"));
     }
 
-    public override Task<IDisplayResult> EditAsync(RsaSecret secret, BuildEditorContext context)
+    public override Task<IDisplayResult> EditAsync(RSASecret secret, BuildEditorContext context)
     {
         return Task.FromResult<IDisplayResult>(Initialize<RsaSecretViewModel>("RsaSecret_Fields_Edit", model =>
         {
             // Generate new keys when creating.
             if (context.IsNew)
             {
-                using var rsa = RsaGenerator.GenerateRsaSecurityKey(2048);
+                using var rsa = RSAGenerator.GenerateRSASecurityKey(2048);
                 if (String.IsNullOrEmpty(secret.PublicKey))
                 {
                     model.PublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey());
@@ -57,7 +57,7 @@ public class RsaSecretDisplayDriver : DisplayDriver<SecretBase, RsaSecret>
                 // The private key is never returned to the view when editing.
                 model.PublicKey = secret.PublicKey;
 
-                using var rsa = RsaGenerator.GenerateRsaSecurityKey(2048);
+                using var rsa = RSAGenerator.GenerateRSASecurityKey(2048);
                 model.NewPublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey());
                 model.NewPrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey());
             }
@@ -68,14 +68,14 @@ public class RsaSecretDisplayDriver : DisplayDriver<SecretBase, RsaSecret>
                 new SelectListItem()
                 {
                     Text = S["Public Key"],
-                    Value = RsaKeyType.Public.ToString(),
-                    Selected = model.KeyType == RsaKeyType.Public
+                    Value = RSAKeyType.Public.ToString(),
+                    Selected = model.KeyType == RSAKeyType.Public
                 },
                 new SelectListItem()
                 {
                     Text = S["Public / Private Key Pair"],
-                    Value = RsaKeyType.PublicPrivatePair.ToString(),
-                    Selected = model.KeyType == RsaKeyType.PublicPrivatePair
+                    Value = RSAKeyType.PublicPrivatePair.ToString(),
+                    Selected = model.KeyType == RSAKeyType.PublicPrivatePair
                 },
             };
             model.Context = context;
@@ -83,7 +83,7 @@ public class RsaSecretDisplayDriver : DisplayDriver<SecretBase, RsaSecret>
             .Location("Content"));
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(RsaSecret secret, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(RSASecret secret, UpdateEditorContext context)
     {
         var model = new RsaSecretViewModel();
 
@@ -98,23 +98,23 @@ public class RsaSecretDisplayDriver : DisplayDriver<SecretBase, RsaSecret>
                 secret.PrivateKey = model.PrivateKey;
             }
 
-            if (model.KeyType == RsaKeyType.Public)
+            if (model.KeyType == RSAKeyType.Public)
             {
                 secret.PublicKey = model.PublicKey;
                 secret.PrivateKey = null;
             }
 
-            if (model.CycleKey && model.KeyType == RsaKeyType.PublicPrivatePair)
+            if (model.CycleKey && model.KeyType == RSAKeyType.PublicPrivatePair)
             {
                 secret.PublicKey = model.NewPublicKey;
                 secret.PrivateKey = model.NewPrivateKey;
             }
 
-            if (model.KeyType == RsaKeyType.PublicPrivatePair)
+            if (model.KeyType == RSAKeyType.PublicPrivatePair)
             {
                 try
                 {
-                    using var rsa = RsaGenerator.GenerateRsaSecurityKey(2048);
+                    using var rsa = RSAGenerator.GenerateRSASecurityKey(2048);
                     rsa.ImportRSAPrivateKey(secret.PrivateKeyAsBytes(), out _);
                 }
                 catch (CryptographicException)
@@ -132,7 +132,7 @@ public class RsaSecretDisplayDriver : DisplayDriver<SecretBase, RsaSecret>
 
             try
             {
-                using var rsa = RsaGenerator.GenerateRsaSecurityKey(2048);
+                using var rsa = RSAGenerator.GenerateRSASecurityKey(2048);
                 rsa.ImportRSAPublicKey(secret.PublicKeyAsBytes(), out _);
             }
             catch (CryptographicException)

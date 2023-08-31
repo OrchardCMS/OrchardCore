@@ -2,12 +2,12 @@ using System;
 
 namespace OrchardCore.Secrets.Models;
 
-public class RsaSecret : SecretBase
+public class RSASecret : SecretBase
 {
     private byte[] _publicKeyAsBytes;
     private byte[] _privateKeyAsBytes;
 
-    public RsaKeyType KeyType { get; set; }
+    public RSAKeyType KeyType { get; set; }
     public string PublicKey { get; set; }
     public string PrivateKey { get; set; }
 

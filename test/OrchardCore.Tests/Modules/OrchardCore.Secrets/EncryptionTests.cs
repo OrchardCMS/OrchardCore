@@ -9,17 +9,17 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
     {
         private static ISecretService GetSecretServiceMock()
         {
-            using var rsaEncryptor = RsaGenerator.GenerateRsaSecurityKey(2048);
+            using var rsaEncryptor = RSAGenerator.GenerateRSASecurityKey(2048);
 
-            var rsaEncryptionSecret = new RsaSecret()
+            var rsaEncryptionSecret = new RSASecret()
             {
                 Name = "rsaencryptor",
                 PublicKey = Convert.ToBase64String(rsaEncryptor.ExportRSAPublicKey()),
                 PrivateKey = Convert.ToBase64String(rsaEncryptor.ExportRSAPrivateKey()),
             };
 
-            using var rsaSigning = RsaGenerator.GenerateRsaSecurityKey(2048);
-            var rsaSigningSecret = new RsaSecret()
+            using var rsaSigning = RSAGenerator.GenerateRSASecurityKey(2048);
+            var rsaSigningSecret = new RSASecret()
             {
                 Name = "rsasigning",
                 PublicKey = Convert.ToBase64String(rsaSigning.ExportRSAPublicKey()),
@@ -28,8 +28,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
 
             var secretService = Mock.Of<ISecretService>();
 
-            Mock.Get(secretService).Setup(s => s.GetSecretAsync("rsaencryptor", typeof(RsaSecret))).ReturnsAsync(rsaEncryptionSecret);
-            Mock.Get(secretService).Setup(s => s.GetSecretAsync("rsasigning", typeof(RsaSecret))).ReturnsAsync(rsaSigningSecret);
+            Mock.Get(secretService).Setup(s => s.GetSecretAsync("rsaencryptor", typeof(RSASecret))).ReturnsAsync(rsaEncryptionSecret);
+            Mock.Get(secretService).Setup(s => s.GetSecretAsync("rsasigning", typeof(RSASecret))).ReturnsAsync(rsaSigningSecret);
 
             return secretService;
         }

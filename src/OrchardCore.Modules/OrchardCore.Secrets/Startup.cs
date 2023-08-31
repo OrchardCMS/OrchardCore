@@ -46,7 +46,7 @@ namespace OrchardCore.Secrets
             services.Configure<SecretOptions>(options =>
             {
                 options.SecretTypes.Add(typeof(TextSecret));
-                options.SecretTypes.Add(typeof(RsaSecret));
+                options.SecretTypes.Add(typeof(RSASecret));
             });
 
             services.AddRecipeExecutionStep<SecretsRecipeStep>();

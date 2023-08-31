@@ -9,10 +9,10 @@ namespace OrchardCore.Secrets.Services;
 
 public class SecretEncryptor : ISecretEncryptor
 {
-    private readonly RsaSecret _encryptionSecret;
-    private readonly RsaSecret _signingSecret;
+    private readonly RSASecret _encryptionSecret;
+    private readonly RSASecret _signingSecret;
 
-    public SecretEncryptor(RsaSecret encryptionSecret, RsaSecret signingSecret)
+    public SecretEncryptor(RSASecret encryptionSecret, RSASecret signingSecret)
     {
         _encryptionSecret = encryptionSecret;
         _signingSecret = signingSecret;
@@ -36,11 +36,11 @@ public class SecretEncryptor : ISecretEncryptor
         }
 
         // The public key is used for encryption, the matching private key will have to be used for decryption.
-        using var rsaEncryptor = RsaGenerator.GenerateRsaSecurityKey(2048);
+        using var rsaEncryptor = RSAGenerator.GenerateRSASecurityKey(2048);
         rsaEncryptor.ImportRSAPublicKey(_encryptionSecret.PublicKeyAsBytes(), out _);
 
         // The private key is used for signing, the matching public key will have to be used for verification.
-        using var rsaSigner = RsaGenerator.GenerateRsaSecurityKey(2048);
+        using var rsaSigner = RSAGenerator.GenerateRSASecurityKey(2048);
         rsaSigner.ImportRSAPrivateKey(_signingSecret.PrivateKeyAsBytes(), out _);
 
         var rsaEncryptedAesKey = rsaEncryptor.Encrypt(aes.Key, RSAEncryptionPadding.Pkcs1);

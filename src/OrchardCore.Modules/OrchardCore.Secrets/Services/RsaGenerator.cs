@@ -4,9 +4,9 @@ using System.Security.Cryptography;
 
 namespace OrchardCore.Secrets.Services;
 
-public static class RsaGenerator
+public static class RSAGenerator
 {
-    public static RSA GenerateRsaSecurityKey(int size)
+    public static RSA GenerateRSASecurityKey(int size)
     {
         // By default, the default RSA implementation used by .NET Core relies on the newest Windows CNG APIs.
         // Unfortunately, when a new key is generated using the default RSA.Create() method, it is not bound
