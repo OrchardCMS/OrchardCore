@@ -20,7 +20,7 @@ namespace OrchardCore.Environment.Shell
     /// </summary>
     public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
     {
-        private const int _reloadShellMaxRetriesCount = 9;
+        private const int ReloadShellMaxRetriesCount = 9;
 
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IShellContextFactory _shellContextFactory;
@@ -203,7 +203,7 @@ namespace OrchardCore.Environment.Shell
             }
 
             var count = 0;
-            while (count++ < _reloadShellMaxRetriesCount)
+            while (count++ < ReloadShellMaxRetriesCount)
             {
                 if (_shellContexts.TryRemove(settings.Name, out var context))
                 {

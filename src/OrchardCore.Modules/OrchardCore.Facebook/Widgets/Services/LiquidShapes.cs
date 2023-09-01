@@ -7,9 +7,11 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Facebook.Widgets.ViewModels;
 using OrchardCore.Liquid;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Facebook.Widgets.Services
 {
+    [Feature(FacebookConstants.Features.Widgets)]
     public class LiquidShapes : IShapeTableProvider
     {
         private readonly HtmlEncoder _htmlEncoder;

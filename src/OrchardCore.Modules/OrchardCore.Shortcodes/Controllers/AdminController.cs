@@ -279,6 +279,10 @@ namespace OrchardCore.Shortcodes.Controllers
             }
 
             // If we got this far, something failed, redisplay form
+
+            // If the name was changed or removed, prevent a 404 or a failure on the next post.
+            model.Name = sourceName;
+
             return View(model);
         }
 

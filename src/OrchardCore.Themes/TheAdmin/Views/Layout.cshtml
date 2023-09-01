@@ -1,4 +1,10 @@
+@using OrchardCore.DisplayManagement
+@using OrchardCore.DisplayManagement.ModelBinding
+@using OrchardCore.Users.Models
+
 @inject DarkModeService DarkModeService
+@inject IDisplayManager<UserMenu> UserMenuDisplayManager
+@inject IUpdateModelAccessor UpdateModelAccessor
 @{
     var adminSettings = Site.As<AdminSettings>();
     var darkMode = await DarkModeService.IsDarkModeAsync();
@@ -70,7 +76,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            @await DisplayAsync(await New.UserMenu())
+                            @await DisplayAsync(await UserMenuDisplayManager.BuildDisplayAsync(new UserMenu(), UpdateModelAccessor.ModelUpdater, "DetailAdmin"))
                         </li>
                     </ul>
                 </div>
