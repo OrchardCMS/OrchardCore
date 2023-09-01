@@ -10,6 +10,7 @@ public class TwoFactorUserMenuDisplayDriver : DisplayDriver<UserMenu>
     {
         return View("UserMenuItems__TwoFactor", model)
             .Location("Detail", "Content:15")
-            .Location("DetailAdmin", "Content:15");
+            .Location("DetailAdmin", "Content:15")
+            .Differentiator("TwoFactor");
     }
 }
