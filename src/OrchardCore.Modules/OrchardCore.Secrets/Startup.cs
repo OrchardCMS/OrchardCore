@@ -34,11 +34,9 @@ namespace OrchardCore.Secrets
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddScoped<IDisplayManager<SecretBase>, DisplayManager<SecretBase>>();
-            services.AddScoped<IDisplayDriver<SecretBase>, TestSecretDisplayDriver>();
+            services.AddScoped<IDisplayDriver<SecretBase>, TextSecretDisplayDriver>();
             services.AddScoped<IDisplayDriver<SecretBase>, RsaSecretDisplayDriver>();
 
-            services.AddSingleton<SecretBindingsManager>();
-            services.AddSingleton<SecretsDocumentManager>();
             services.AddSingleton<ISecretService, SecretService>();
             services.AddSingleton<ISecretProtection, SecretProtection>();
             services.AddSingleton<ISecretStore, DatabaseSecretStore>();
@@ -48,6 +46,9 @@ namespace OrchardCore.Secrets
                 options.SecretTypes.Add(typeof(TextSecret));
                 options.SecretTypes.Add(typeof(RSASecret));
             });
+
+            services.AddSingleton<SecretBindingsManager>();
+            services.AddSingleton<SecretsDocumentManager>();
 
             services.AddRecipeExecutionStep<SecretsRecipeStep>();
             services.AddTransient<IDeploymentSource, AllSecretsRsaDeploymentSource>();
