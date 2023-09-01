@@ -38,16 +38,16 @@ namespace OrchardCore.Secrets
             services.AddScoped<IDisplayDriver<SecretBase>, RSASecretDisplayDriver>();
 
             services.AddSingleton<ISecretService, SecretService>();
-            services.AddSingleton<ISecretProtectionProvider, SecretProtectionProvider>();
-            services.AddSingleton<ISecretStore, DatabaseSecretStore>();
-            services.AddSingleton<SecretsDocumentManager>();
-            services.AddSingleton<SecretBindingsManager>();
-
             services.Configure<SecretOptions>(options =>
             {
                 options.SecretTypes.Add(typeof(TextSecret));
                 options.SecretTypes.Add(typeof(RSASecret));
             });
+
+            services.AddSingleton<SecretBindingsManager>();
+            services.AddSingleton<SecretsDocumentManager>();
+            services.AddSingleton<ISecretStore, DatabaseSecretStore>();
+            services.AddSingleton<ISecretProtectionProvider, SecretProtectionProvider>();
 
             services.AddRecipeExecutionStep<SecretsRecipeStep>();
             services.AddTransient<IDeploymentSource, AllSecretsDeploymentSource>();
