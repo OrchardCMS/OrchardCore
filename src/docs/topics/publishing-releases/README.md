@@ -85,4 +85,9 @@ Let the whole world know about our shiny new release. Savor this part! These ste
 - [ ] Ask to publish a blog post on [.NET Foundation News](https://dotnetfoundation.org/news).
 - [ ] Tweet
 
+### After the release is done
+
+- [ ] Create a new milestone with the next release number.
+- [ ] Update the `OrchardCore.Commons.props` file with the next release number, and `<VersionSuffix>preview</VersionSuffix>` such that preview builds use the new one.
+
 ```
