@@ -6,10 +6,10 @@ namespace OrchardCore.Data;
 
 public static class ShellSettingsExtensions
 {
-    private const string _databaseTableOptions = "OrchardCore_Data_TableOptions";
-    private const string _defaultDocumentTable = $"{_databaseTableOptions}:DefaultDocumentTable";
-    private const string _defaultTableNameSeparator = $"{_databaseTableOptions}:DefaultTableNameSeparator";
-    private const string _defaultIdentityColumnSize = $"{_databaseTableOptions}:DefaultIdentityColumnSize";
+    private const string DatabaseTableOptions = "OrchardCore_Data_TableOptions";
+    private const string DefaultDocumentTable = $"{DatabaseTableOptions}:DefaultDocumentTable";
+    private const string DefaultTableNameSeparator = $"{DatabaseTableOptions}:DefaultTableNameSeparator";
+    private const string DefaultIdentityColumnSize = $"{DatabaseTableOptions}:DefaultIdentityColumnSize";
 
     private readonly static string[] _identityColumnSizes = new[] { nameof(Int64), nameof(Int32) };
 
@@ -36,7 +36,7 @@ public static class ShellSettingsExtensions
     public static string GetDocumentTable(this ShellSettings shellSettings)
     {
         var documentTable = (!shellSettings.IsInitialized()
-            ? shellSettings[_defaultDocumentTable]
+            ? shellSettings[DefaultDocumentTable]
             : shellSettings["DocumentTable"])
             ?.Trim();
 
@@ -51,7 +51,7 @@ public static class ShellSettingsExtensions
     public static string GetTableNameSeparator(this ShellSettings shellSettings)
     {
         var tableNameSeparator = (!shellSettings.IsInitialized()
-            ? shellSettings[_defaultTableNameSeparator]
+            ? shellSettings[DefaultTableNameSeparator]
             : shellSettings["TableNameSeparator"])
             ?.Trim();
 
@@ -74,7 +74,7 @@ public static class ShellSettingsExtensions
     public static string GetIdentityColumnSize(this ShellSettings shellSettings)
     {
         var identityColumnSize = (!shellSettings.IsInitialized()
-            ? shellSettings[_defaultIdentityColumnSize]
+            ? shellSettings[DefaultIdentityColumnSize]
             : shellSettings["IdentityColumnSize"])
             ?.Trim();
 

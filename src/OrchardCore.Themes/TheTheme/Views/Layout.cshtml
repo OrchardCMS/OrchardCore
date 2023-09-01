@@ -2,7 +2,7 @@
 @using OrchardCore.DisplayManagement.ModelBinding
 @using OrchardCore.Users.Models
 
-@inject IDisplayManager<UserMenu> UserMenuDisplayManager
+@inject IDisplayManager<UserMenu> DisplayManager
 @inject IUpdateModelAccessor UpdateModelAccessor
 
 <!DOCTYPE html>
@@ -33,7 +33,7 @@
                     <menu alias="alias:main-menu" cache-id="main-menu" cache-fixed-duration="00:05:00" cache-tag="alias:main-menu" />
                     <ul class="navbar-nav user-top-navbar">
                         @await RenderSectionAsync("NavbarTop", required: false)
-                        @await DisplayAsync(await UserMenuDisplayManager.BuildDisplayAsync(new UserMenu(), UpdateModelAccessor.ModelUpdater))
+                        @await DisplayAsync(await DisplayManager.BuildDisplayAsync(new UserMenu(), UpdateModelAccessor.ModelUpdater))
                     </ul>
                 </div>
             </div>

@@ -20,6 +20,7 @@ public class ChangeEmailUserMenuDisplayDriver : DisplayDriver<UserMenu>
         return View("UserMenuItems__ChangeEmail", model)
             .RenderWhen(async () => (await _siteService.GetSiteSettingsAsync()).As<ChangeEmailSettings>().AllowChangeEmail)
             .Location("Detail", "Content:20")
-            .Location("DetailAdmin", "Content:20");
+            .Location("DetailAdmin", "Content:20")
+            .Differentiator("ChangeEmail");
     }
 }

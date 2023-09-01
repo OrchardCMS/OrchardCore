@@ -18,10 +18,10 @@ namespace OrchardCore.Environment.Shell.Distributed
     /// </summary>
     internal class DistributedShellHostedService : BackgroundService
     {
-        private const string _shellChangedIdKey = "SHELL_CHANGED_ID";
-        private const string _shellCountChangedIdKey = "SHELL_COUNT_CHANGED_ID";
-        private const string _releaseIdKeySuffix = "_RELEASE_ID";
-        private const string _reloadIdKeySuffix = "_RELOAD_ID";
+        private const string ShellChangedIdKey = "SHELL_CHANGED_ID";
+        private const string ShellCountChangedIdKey = "SHELL_COUNT_CHANGED_ID";
+        private const string ReleaseIdKeySuffix = "_RELEASE_ID";
+        private const string ReloadIdKeySuffix = "_RELOAD_ID";
 
         private static readonly TimeSpan _minIdleTime = TimeSpan.FromSeconds(1);
         private static readonly TimeSpan _maxRetryTime = TimeSpan.FromMinutes(1);
@@ -140,7 +140,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                     string shellChangedId;
                     try
                     {
-                        shellChangedId = await distributedCache.GetStringAsync(_shellChangedIdKey, CancellationToken.None);
+                        shellChangedId = await distributedCache.GetStringAsync(ShellChangedIdKey, CancellationToken.None);
                     }
                     catch (Exception ex) when (!ex.IsFatal())
                     {
@@ -162,7 +162,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                     string shellCountChangedId;
                     try
                     {
-                        shellCountChangedId = await distributedCache.GetStringAsync(_shellCountChangedIdKey, CancellationToken.None);
+                        shellCountChangedId = await distributedCache.GetStringAsync(ShellCountChangedIdKey, CancellationToken.None);
                     }
                     catch (Exception ex) when (!ex.IsFatal())
                     {
@@ -333,8 +333,8 @@ namespace OrchardCore.Environment.Shell.Distributed
             try
             {
                 // Retrieve the tenant global identifiers from the distributed cache.
-                var shellChangedId = await distributedCache.GetStringAsync(_shellChangedIdKey);
-                var shellCountChangedId = await distributedCache.GetStringAsync(_shellCountChangedIdKey);
+                var shellChangedId = await distributedCache.GetStringAsync(ShellChangedIdKey);
+                var shellCountChangedId = await distributedCache.GetStringAsync(ShellCountChangedIdKey);
 
                 // Retrieve the names of all the tenants.
                 var names = await _shellSettingsManager.LoadSettingsNamesAsync();
@@ -408,7 +408,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                 await distributedCache.SetStringAsync(ReleaseIdKey(name), identifier.ReleaseId);
 
                 // Also update the global identifier specifying that a tenant has changed.
-                await distributedCache.SetStringAsync(_shellChangedIdKey, identifier.ReleaseId);
+                await distributedCache.SetStringAsync(ShellChangedIdKey, identifier.ReleaseId);
             }
             catch (Exception ex) when (!ex.IsFatal())
             {
@@ -462,11 +462,11 @@ namespace OrchardCore.Environment.Shell.Distributed
                 if (!name.IsDefaultShellName() && !_shellHost.TryGetSettings(name, out _))
                 {
                     // Also update the global identifier specifying that a tenant has been created.
-                    await distributedCache.SetStringAsync(_shellCountChangedIdKey, identifier.ReloadId);
+                    await distributedCache.SetStringAsync(ShellCountChangedIdKey, identifier.ReloadId);
                 }
 
                 // Also update the global identifier specifying that a tenant has changed.
-                await distributedCache.SetStringAsync(_shellChangedIdKey, identifier.ReloadId);
+                await distributedCache.SetStringAsync(ShellChangedIdKey, identifier.ReloadId);
             }
             catch (Exception ex) when (!ex.IsFatal())
             {
@@ -513,10 +513,10 @@ namespace OrchardCore.Environment.Shell.Distributed
                 var removedId = IdGenerator.GenerateId();
 
                 // Also update the global identifier specifying that a tenant has been removed.
-                await distributedCache.SetStringAsync(_shellCountChangedIdKey, removedId);
+                await distributedCache.SetStringAsync(ShellCountChangedIdKey, removedId);
 
                 // Also update the global identifier specifying that a tenant has changed.
-                await distributedCache.SetStringAsync(_shellChangedIdKey, removedId);
+                await distributedCache.SetStringAsync(ShellChangedIdKey, removedId);
             }
             catch (Exception ex) when (!ex.IsFatal())
             {
@@ -528,8 +528,8 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
         }
 
-        private static string ReleaseIdKey(string name) => name + _releaseIdKeySuffix;
-        private static string ReloadIdKey(string name) => name + _reloadIdKeySuffix;
+        private static string ReleaseIdKey(string name) => name + ReleaseIdKeySuffix;
+        private static string ReloadIdKey(string name) => name + ReloadIdKeySuffix;
 
         /// <summary>
         /// Creates a distributed context based on the default tenant context.
