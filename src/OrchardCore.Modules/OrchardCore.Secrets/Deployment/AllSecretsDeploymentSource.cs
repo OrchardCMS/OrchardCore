@@ -8,12 +8,12 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.Secrets.Deployment;
 
-public class AllSecretsRsaDeploymentSource : IDeploymentSource
+public class AllSecretsDeploymentSource : IDeploymentSource
 {
     private readonly ISecretService _secretService;
     private readonly ISecretProtectionProvider _protectionProvider;
 
-    public AllSecretsRsaDeploymentSource(ISecretService secretService, ISecretProtectionProvider protectionProvider)
+    public AllSecretsDeploymentSource(ISecretService secretService, ISecretProtectionProvider protectionProvider)
     {
         _secretService = secretService;
         _protectionProvider = protectionProvider;
@@ -21,7 +21,7 @@ public class AllSecretsRsaDeploymentSource : IDeploymentSource
 
     public async Task ProcessDeploymentStepAsync(DeploymentStep deploymentStep, DeploymentPlanResult result)
     {
-        if (deploymentStep is not AllSecretsRsaDeploymentStep allSecretsDeploymentStep)
+        if (deploymentStep is not AllSecretsDeploymentStep allSecretsDeploymentStep)
         {
             return;
         }

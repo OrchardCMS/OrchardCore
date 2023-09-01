@@ -13,11 +13,11 @@ using OrchardCore.Secrets.ViewModels;
 
 namespace OrchardCore.Secrets.Drivers;
 
-public class RsaSecretDisplayDriver : DisplayDriver<SecretBase, RSASecret>
+public class RSASecretDisplayDriver : DisplayDriver<SecretBase, RSASecret>
 {
     protected readonly IStringLocalizer S;
 
-    public RsaSecretDisplayDriver(IStringLocalizer<RsaSecretDisplayDriver> stringLocalizer) => S = stringLocalizer;
+    public RSASecretDisplayDriver(IStringLocalizer<RSASecretDisplayDriver> stringLocalizer) => S = stringLocalizer;
 
     public override IDisplayResult Display(RSASecret secret)
     {

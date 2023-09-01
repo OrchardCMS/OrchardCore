@@ -35,11 +35,13 @@ namespace OrchardCore.Secrets
 
             services.AddScoped<IDisplayManager<SecretBase>, DisplayManager<SecretBase>>();
             services.AddScoped<IDisplayDriver<SecretBase>, TextSecretDisplayDriver>();
-            services.AddScoped<IDisplayDriver<SecretBase>, RsaSecretDisplayDriver>();
+            services.AddScoped<IDisplayDriver<SecretBase>, RSASecretDisplayDriver>();
 
             services.AddSingleton<ISecretService, SecretService>();
             services.AddSingleton<ISecretProtectionProvider, SecretProtectionProvider>();
             services.AddSingleton<ISecretStore, DatabaseSecretStore>();
+            services.AddSingleton<SecretsDocumentManager>();
+            services.AddSingleton<SecretBindingsManager>();
 
             services.Configure<SecretOptions>(options =>
             {
@@ -47,13 +49,10 @@ namespace OrchardCore.Secrets
                 options.SecretTypes.Add(typeof(RSASecret));
             });
 
-            services.AddSingleton<SecretBindingsManager>();
-            services.AddSingleton<SecretsDocumentManager>();
-
             services.AddRecipeExecutionStep<SecretsRecipeStep>();
-            services.AddTransient<IDeploymentSource, AllSecretsRsaDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllSecretsRsaDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllSecretsRsaDeploymentStepDriver>();
+            services.AddTransient<IDeploymentSource, AllSecretsDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllSecretsDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, AllSecretsDeploymentStepDriver>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
