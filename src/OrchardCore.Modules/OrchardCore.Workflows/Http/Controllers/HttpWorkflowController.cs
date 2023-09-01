@@ -122,7 +122,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             secret.TokenLifeSpan = tokenLifeSpan;
 
             // When creating the first writeable store is used.
-            var store = _secretService.GetSecretStoreDescriptors().FirstOrDefault(store => !store.IsReadOnly);
+            var store = _secretService.GetSecretStoreInfos().FirstOrDefault(store => !store.IsReadOnly);
             if (store is null)
             {
                 return BadRequest();

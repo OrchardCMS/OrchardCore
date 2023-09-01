@@ -104,7 +104,7 @@ public class RsaSecretDisplayDriver : DisplayDriver<SecretBase, RSASecret>
                 secret.PrivateKey = null;
             }
 
-            if (model.CycleKey && model.KeyType == RSAKeyType.PublicPrivatePair)
+            if (model.HasNewKeys && model.KeyType == RSAKeyType.PublicPrivatePair)
             {
                 secret.PublicKey = model.NewPublicKey;
                 secret.PrivateKey = model.NewPrivateKey;

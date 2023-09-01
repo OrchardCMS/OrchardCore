@@ -37,10 +37,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
         [Fact]
         public async Task ShouldEncrypt()
         {
-            var secretService = GetSecretServiceMock();
-            var secretProtection = new SecretProtection(secretService);
-
-            var encryptor = await secretProtection.CreateEncryptorAsync("rsaencryptor", "rsasigning");
+            var protectionProvider = new SecretProtectionProvider(GetSecretServiceMock());
+            var encryptor = await protectionProvider.CreateEncryptorAsync("rsaencryptor", "rsasigning");
             var encrypted = encryptor.Encrypt("foo");
 
             Assert.True(!String.IsNullOrEmpty(encrypted));
@@ -49,13 +47,11 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
         [Fact]
         public async Task ShouldEncryptThenDecrypt()
         {
-            var secretService = GetSecretServiceMock();
-            var secretProtection = new SecretProtection(secretService);
-
-            var encryptor = await secretProtection.CreateEncryptorAsync("rsaencryptor", "rsasigning");
+            var protectionProvider = new SecretProtectionProvider(GetSecretServiceMock());
+            var encryptor = await protectionProvider.CreateEncryptorAsync("rsaencryptor", "rsasigning");
             var encrypted = encryptor.Encrypt("foo");
 
-            var decryptor = await secretProtection.CreateDecryptorAsync(encrypted);
+            var decryptor = await protectionProvider.CreateDecryptorAsync(encrypted);
             var decrypted = decryptor.Decrypt(encrypted);
 
             Assert.Equal("foo", decrypted);
@@ -64,18 +60,14 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
         [Fact]
         public async Task ShouldThrowWhenDecryptingWithBaDKeys()
         {
-            var encryptionSecretService = GetSecretServiceMock();
-            var encryptionSecretProtection = new SecretProtection(encryptionSecretService);
-
-            var encryptor = await encryptionSecretProtection.CreateEncryptorAsync("rsaencryptor", "rsasigning");
+            var protectionProvider = new SecretProtectionProvider(GetSecretServiceMock());
+            var encryptor = await protectionProvider.CreateEncryptorAsync("rsaencryptor", "rsasigning");
             var encrypted = encryptor.Encrypt("foo");
 
 
             // Generate new keys for decryption, which will cause the decryptor to throw.
-            var decryptionSecretService = GetSecretServiceMock();
-            var decryptionSecretProtection = new SecretProtection(decryptionSecretService);
-
-            var decryptor = await decryptionSecretProtection.CreateDecryptorAsync(encrypted);
+            protectionProvider = new SecretProtectionProvider(GetSecretServiceMock());
+            var decryptor = await protectionProvider.CreateDecryptorAsync(encrypted);
 
             Assert.Throws<CryptographicException>(() => decryptor.Decrypt(encrypted));
         }

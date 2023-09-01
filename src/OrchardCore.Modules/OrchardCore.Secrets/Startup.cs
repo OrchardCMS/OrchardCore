@@ -38,7 +38,7 @@ namespace OrchardCore.Secrets
             services.AddScoped<IDisplayDriver<SecretBase>, RsaSecretDisplayDriver>();
 
             services.AddSingleton<ISecretService, SecretService>();
-            services.AddSingleton<ISecretProtection, SecretProtection>();
+            services.AddSingleton<ISecretProtectionProvider, SecretProtectionProvider>();
             services.AddSingleton<ISecretStore, DatabaseSecretStore>();
 
             services.Configure<SecretOptions>(options =>

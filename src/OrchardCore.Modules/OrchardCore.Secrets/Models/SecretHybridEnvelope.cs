@@ -1,6 +1,6 @@
 namespace OrchardCore.Secrets.Models;
 
-public class HybridKeyDescriptor
+public class SecretHybridEnvelope
 {
     public string Key { get; set; }
     public string Iv { get; set; }

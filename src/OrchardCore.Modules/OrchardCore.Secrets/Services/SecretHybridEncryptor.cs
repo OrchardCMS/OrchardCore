@@ -7,12 +7,12 @@ using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Secrets.Services;
 
-public class SecretEncryptor : ISecretEncryptor
+public class SecretHybridEncryptor : ISecretEncryptor
 {
     private readonly RSASecret _encryptionSecret;
     private readonly RSASecret _signingSecret;
 
-    public SecretEncryptor(RSASecret encryptionSecret, RSASecret signingSecret)
+    public SecretHybridEncryptor(RSASecret encryptionSecret, RSASecret signingSecret)
     {
         _encryptionSecret = encryptionSecret;
         _signingSecret = signingSecret;
@@ -22,7 +22,6 @@ public class SecretEncryptor : ISecretEncryptor
     {
         byte[] encrypted;
         using var aes = Aes.Create();
-
         var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
         using (var msEncrypt = new MemoryStream())
         {
@@ -38,15 +37,14 @@ public class SecretEncryptor : ISecretEncryptor
         // The public key is used for encryption, the matching private key will have to be used for decryption.
         using var rsaEncryptor = RSAGenerator.GenerateRSASecurityKey(2048);
         rsaEncryptor.ImportRSAPublicKey(_encryptionSecret.PublicKeyAsBytes(), out _);
+        var rsaEncryptedAesKey = rsaEncryptor.Encrypt(aes.Key, RSAEncryptionPadding.Pkcs1);
 
         // The private key is used for signing, the matching public key will have to be used for verification.
         using var rsaSigner = RSAGenerator.GenerateRSASecurityKey(2048);
         rsaSigner.ImportRSAPrivateKey(_signingSecret.PrivateKeyAsBytes(), out _);
-
-        var rsaEncryptedAesKey = rsaEncryptor.Encrypt(aes.Key, RSAEncryptionPadding.Pkcs1);
         var signature = rsaSigner.SignData(encrypted, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
 
-        var descriptor = new HybridKeyDescriptor
+        var envelope = new SecretHybridEnvelope
         {
             Key = Convert.ToBase64String(rsaEncryptedAesKey),
             Iv = Convert.ToBase64String(aes.IV),
@@ -56,7 +54,7 @@ public class SecretEncryptor : ISecretEncryptor
             SigningSecret = _signingSecret.Name,
         };
 
-        var serialized = JsonConvert.SerializeObject(descriptor);
+        var serialized = JsonConvert.SerializeObject(envelope);
         var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(serialized));
 
         return encoded;

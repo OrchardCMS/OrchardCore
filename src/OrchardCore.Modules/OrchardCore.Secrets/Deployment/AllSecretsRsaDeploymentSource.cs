@@ -11,12 +11,12 @@ namespace OrchardCore.Secrets.Deployment;
 public class AllSecretsRsaDeploymentSource : IDeploymentSource
 {
     private readonly ISecretService _secretService;
-    private readonly ISecretProtection _secretProtection;
+    private readonly ISecretProtectionProvider _protectionProvider;
 
-    public AllSecretsRsaDeploymentSource(ISecretService secretService, ISecretProtection secretProtection)
+    public AllSecretsRsaDeploymentSource(ISecretService secretService, ISecretProtectionProvider protectionProvider)
     {
         _secretService = secretService;
-        _secretProtection = secretProtection;
+        _protectionProvider = protectionProvider;
     }
 
     public async Task ProcessDeploymentStepAsync(DeploymentStep deploymentStep, DeploymentPlanResult result)
@@ -49,14 +49,14 @@ public class AllSecretsRsaDeploymentSource : IDeploymentSource
         var secrets = new Dictionary<string, JObject>();
         foreach (var secretBinding in secretBindings)
         {
-            var storeDescriptor = _secretService.GetSecretStoreDescriptors().FirstOrDefault(store =>
+            var store = _secretService.GetSecretStoreInfos().FirstOrDefault(store =>
                 String.Equals(store.Name, secretBinding.Value.Store, StringComparison.OrdinalIgnoreCase));
 
-            // When descriptor is readonly we ship a binding without the secret value.
+            // When the store is readonly we ship a binding without the secret value.
             var jObject = new JObject(new JProperty("SecretBinding", JObject.FromObject(secretBinding.Value)));
 
-            var encryptor = await _secretProtection.CreateEncryptorAsync(result.EncryptionSecret, result.SigningSecret);
-            if (!storeDescriptor.IsReadOnly)
+            var encryptor = await _protectionProvider.CreateEncryptorAsync(result.EncryptionSecret, result.SigningSecret);
+            if (!store.IsReadOnly)
             {
                 var secret = await _secretService.GetSecretAsync(secretBinding.Value);
                 if (secret is not null)

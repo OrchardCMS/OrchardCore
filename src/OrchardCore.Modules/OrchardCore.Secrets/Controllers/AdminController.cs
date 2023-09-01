@@ -180,7 +180,7 @@ public class AdminController : Controller
         {
             Type = type,
             Editor = await _displayManager.BuildEditorAsync(secret, _updateModelAccessor.ModelUpdater, isNew: true, "", ""),
-            StoreEntries = _secretService.GetSecretStoreDescriptors(),
+            StoreInfos = _secretService.GetSecretStoreInfos(),
             Secret = secret,
         };
 
@@ -246,7 +246,7 @@ public class AdminController : Controller
         }
 
         model.Editor = editor;
-        model.StoreEntries = _secretService.GetSecretStoreDescriptors();
+        model.StoreInfos = _secretService.GetSecretStoreInfos();
 
         // If we got this far, something failed, redisplay form.
         return View(model);
@@ -274,7 +274,7 @@ public class AdminController : Controller
             Description = secretBinding.Description,
             Type = secretBinding.Type,
             Editor = await _displayManager.BuildEditorAsync(secret, _updateModelAccessor.ModelUpdater, isNew: false, "", ""),
-            StoreEntries = _secretService.GetSecretStoreDescriptors(),
+            StoreInfos = _secretService.GetSecretStoreInfos(),
             Secret = secret,
         };
 
@@ -338,7 +338,7 @@ public class AdminController : Controller
         }
 
         // If we got this far, something failed, redisplay form.
-        model.StoreEntries = _secretService.GetSecretStoreDescriptors();
+        model.StoreInfos = _secretService.GetSecretStoreInfos();
 
         // Prevent a page not found on the next post.
         model.Name = sourceName;

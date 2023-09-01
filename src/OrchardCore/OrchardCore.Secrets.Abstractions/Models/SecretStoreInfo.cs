@@ -1,6 +1,6 @@
 namespace OrchardCore.Secrets.Models;
 
-public class SecretStoreDescriptor
+public class SecretStoreInfo
 {
     public string Name { get; set; }
     public string DisplayName { get; set; }

@@ -14,7 +14,7 @@ public class SecretBindingViewModel
     public dynamic Editor { get; set; }
 
     [BindNever]
-    public IReadOnlyCollection<SecretStoreDescriptor> StoreEntries { get; set; }
+    public IReadOnlyCollection<SecretStoreInfo> StoreInfos { get; set; }
 
     [BindNever]
     public SecretBase Secret { get; set; }

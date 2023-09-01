@@ -11,20 +11,17 @@ namespace OrchardCore.Secrets.Services;
 
 public class SecretService : ISecretService
 {
-    private readonly SecretBindingsManager _secretBindingsManager;
-    private readonly IReadOnlyCollection<SecretStoreDescriptor> _secretStoreDescriptors;
+    private readonly SecretBindingsManager _bindingsManager;
+    private readonly IReadOnlyCollection<SecretStoreInfo> _storeInfos;
     private readonly IEnumerable<ISecretStore> _stores;
 
     private readonly Dictionary<string, SecretActivator> _activators = new();
 
-    public SecretService(
-        SecretBindingsManager secretBindingsManager,
-        IEnumerable<ISecretStore> secretStores,
-        IOptions<SecretOptions> secretOptions)
+    public SecretService(SecretBindingsManager bindingsManager, IEnumerable<ISecretStore> stores, IOptions<SecretOptions> options)
     {
-        _secretBindingsManager = secretBindingsManager;
+        _bindingsManager = bindingsManager;
 
-        _secretStoreDescriptors = secretStores.Select(store => new SecretStoreDescriptor
+        _storeInfos = stores.Select(store => new SecretStoreInfo
         {
             Name = store.Name,
             IsReadOnly = store.IsReadOnly,
@@ -32,9 +29,9 @@ public class SecretService : ISecretService
         })
             .ToArray();
 
-        _stores = secretStores;
+        _stores = stores;
 
-        foreach (var type in secretOptions.Value.SecretTypes)
+        foreach (var type in options.Value.SecretTypes)
         {
             var activatorType = typeof(SecretActivator<>).MakeGenericType(type);
             var activator = (SecretActivator)Activator.CreateInstance(activatorType);
@@ -94,17 +91,17 @@ public class SecretService : ISecretService
 
     public async Task<IDictionary<string, SecretBinding>> GetSecretBindingsAsync()
     {
-        var secretsDocument = await _secretBindingsManager.GetSecretBindingsDocumentAsync();
+        var secretsDocument = await _bindingsManager.GetSecretBindingsDocumentAsync();
         return secretsDocument.SecretBindings;
     }
 
     public async Task<IDictionary<string, SecretBinding>> LoadSecretBindingsAsync()
     {
-        var secretsDocument = await _secretBindingsManager.LoadSecretBindingsDocumentAsync();
+        var secretsDocument = await _bindingsManager.LoadSecretBindingsDocumentAsync();
         return secretsDocument.SecretBindings;
     }
 
-    public IReadOnlyCollection<SecretStoreDescriptor> GetSecretStoreDescriptors() => _secretStoreDescriptors;
+    public IReadOnlyCollection<SecretStoreInfo> GetSecretStoreInfos() => _storeInfos;
 
     public async Task UpdateSecretAsync(string key, SecretBinding secretBinding, SecretBase secret)
     {
@@ -116,7 +113,7 @@ public class SecretService : ISecretService
         var secretStore = _stores.FirstOrDefault(store => String.Equals(store.Name, secretBinding.Store, StringComparison.OrdinalIgnoreCase));
         if (secretStore is not null)
         {
-            await _secretBindingsManager.UpdateSecretBindingAsync(key, secretBinding);
+            await _bindingsManager.UpdateSecretBindingAsync(key, secretBinding);
 
             // This is a noop rather than an exception as updating a readonly store is considered a noop.
             if (!secretStore.IsReadOnly)
@@ -135,7 +132,7 @@ public class SecretService : ISecretService
         var secretStore = _stores.FirstOrDefault(store => String.Equals(store.Name, storeName, StringComparison.OrdinalIgnoreCase));
         if (secretStore is not null)
         {
-            await _secretBindingsManager.RemoveSecretBindingAsync(key);
+            await _bindingsManager.RemoveSecretBindingAsync(key);
 
             // This is a noop rather than an exception as updating a readonly store is considered a noop.
             if (!secretStore.IsReadOnly)

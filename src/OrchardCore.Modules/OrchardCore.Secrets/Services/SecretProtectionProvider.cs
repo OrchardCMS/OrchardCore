@@ -6,11 +6,11 @@ using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Secrets.Services;
 
-public class SecretProtection : ISecretProtection
+public class SecretProtectionProvider : ISecretProtectionProvider
 {
     private readonly ISecretService _secretService;
 
-    public SecretProtection(ISecretService secretService) => _secretService = secretService;
+    public SecretProtectionProvider(ISecretService secretService) => _secretService = secretService;
 
     public async Task<ISecretEncryptor> CreateEncryptorAsync(string encryptionSecret, string signingSecret)
     {
@@ -26,7 +26,7 @@ public class SecretProtection : ISecretProtection
             throw new InvalidOperationException("Secret cannot be used for signing.");
         }
 
-        return new SecretEncryptor(encryptionRsaSecret, signingRsaSecret);
+        return new SecretHybridEncryptor(encryptionRsaSecret, signingRsaSecret);
     }
 
     public async Task<ISecretDecryptor> CreateDecryptorAsync(string protectedData)
@@ -34,7 +34,7 @@ public class SecretProtection : ISecretProtection
         var bytes = Convert.FromBase64String(protectedData);
         var decoded = Encoding.UTF8.GetString(bytes);
 
-        var descriptor = JsonConvert.DeserializeObject<HybridKeyDescriptor>(decoded);
+        var descriptor = JsonConvert.DeserializeObject<SecretHybridEnvelope>(decoded);
 
         var encryptionSecret = await _secretService.GetSecretAsync<RSASecret>(descriptor.EncryptionSecret)
             ?? throw new InvalidOperationException($"'{descriptor.EncryptionSecret}' secret not found.");
@@ -42,6 +42,6 @@ public class SecretProtection : ISecretProtection
         var signingSecret = await _secretService.GetSecretAsync<RSASecret>(descriptor.SigningSecret)
             ?? throw new InvalidOperationException($"'{descriptor.SigningSecret}' secret not found.");
 
-        return new SecretDecryptor(descriptor, encryptionSecret, signingSecret);
+        return new SecretHybridDecryptor(descriptor, encryptionSecret, signingSecret);
     }
 }
