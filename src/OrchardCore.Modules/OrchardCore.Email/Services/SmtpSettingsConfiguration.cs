@@ -50,10 +50,10 @@ namespace OrchardCore.Email.Services
             options.UserName = settings.UserName;
 
             if (!String.IsNullOrEmpty(settings.PasswordSecret) &&
-                _secretService.GetSecretAsync<TextSecret>(settings.PasswordSecret)
-                    .GetAwaiter().GetResult()?.Text is string password)
+                _secretService.GetSecretAsync<TextSecret>(settings.PasswordSecret).GetAwaiter().GetResult()
+                    is { Text: not null } secret)
             {
-                options.Password = password;
+                options.Password = secret.Text;
                 options.PasswordSecret = settings.PasswordSecret;
             }
             else if (!String.IsNullOrWhiteSpace(settings.Password))
