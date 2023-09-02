@@ -109,10 +109,12 @@ namespace OrchardCore.Deployment.Remote.Controllers
                         Path.GetFileName(archiveFileName));
 
                     requestContent.Add(new StringContent(remoteInstance.ClientName), nameof(ImportViewModel.ClientName));
-                    if (!String.IsNullOrEmpty(remoteInstance.ApiKeySecret))
+
+                    if (!String.IsNullOrEmpty(remoteInstance.ApiKeySecret) &&
+                        (await _secretService.GetSecretAsync<TextSecret>(remoteInstance.ApiKeySecret))
+                            ?.Text is string apiKey)
                     {
-                        var secret = await _secretService.GetSecretAsync<TextSecret>(remoteInstance.ApiKeySecret);
-                        requestContent.Add(new StringContent(secret.Text), nameof(ImportViewModel.ApiKey));
+                        requestContent.Add(new StringContent(apiKey), nameof(ImportViewModel.ApiKey));
                     }
                     else
                     {

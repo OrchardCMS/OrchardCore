@@ -200,11 +200,11 @@
             var $pwd = $(".pwd");
             if ($pwd.attr('type') === 'password') {
                 $pwd.attr('type', 'text');
-                $(this).find('button > i').toggleClass('fa-eye-slash fa-eye');
+                $(this).find('button > svg').toggleClass('fa-eye-slash fa-eye');
                 $pwd.focus();
             } else {
                 $pwd.attr('type', 'password');
-                $(this).find('button > i').toggleClass('fa-eye fa-eye-slash');
+                $(this).find('button > svg').toggleClass('fa-eye fa-eye-slash');
                 $pwd.focus();
             }
         });             

@@ -23,7 +23,7 @@ public class DatabaseSecretStore : ISecretStore
     }
 
     public string Name => nameof(DatabaseSecretStore);
-    public string DisplayName => S["Database Secret Store."];
+    public string DisplayName => S["Database Secret Store"];
     public bool IsReadOnly => false;
 
     public async Task<Models.SecretBase> GetSecretAsync(string key, Type type)

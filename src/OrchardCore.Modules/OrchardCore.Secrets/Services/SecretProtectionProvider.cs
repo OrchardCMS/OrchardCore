@@ -31,17 +31,15 @@ public class SecretProtectionProvider : ISecretProtectionProvider
 
     public async Task<ISecretDecryptor> CreateDecryptorAsync(string protectedData)
     {
-        var bytes = Convert.FromBase64String(protectedData);
-        var decoded = Encoding.UTF8.GetString(bytes);
+        var decoded = Encoding.UTF8.GetString(Convert.FromBase64String(protectedData));
+        var envelope = JsonConvert.DeserializeObject<SecretHybridEnvelope>(decoded);
 
-        var descriptor = JsonConvert.DeserializeObject<SecretHybridEnvelope>(decoded);
+        var encryptionRsaSecret = await _secretService.GetSecretAsync<RSASecret>(envelope.EncryptionSecret)
+            ?? throw new InvalidOperationException($"'{envelope.EncryptionSecret}' secret not found.");
 
-        var encryptionSecret = await _secretService.GetSecretAsync<RSASecret>(descriptor.EncryptionSecret)
-            ?? throw new InvalidOperationException($"'{descriptor.EncryptionSecret}' secret not found.");
+        var signingRsaSecret = await _secretService.GetSecretAsync<RSASecret>(envelope.SigningSecret)
+            ?? throw new InvalidOperationException($"'{envelope.SigningSecret}' secret not found.");
 
-        var signingSecret = await _secretService.GetSecretAsync<RSASecret>(descriptor.SigningSecret)
-            ?? throw new InvalidOperationException($"'{descriptor.SigningSecret}' secret not found.");
-
-        return new SecretHybridDecryptor(descriptor, encryptionSecret, signingSecret);
+        return new SecretHybridDecryptor(envelope, encryptionRsaSecret, signingRsaSecret);
     }
 }
