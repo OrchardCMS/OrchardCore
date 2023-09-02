@@ -14,6 +14,7 @@ namespace OrchardCore.Workflows.Http.Services;
 public class HttpRequestEventSecretService : IHttpRequestEventSecretService
 {
     private const string TokenCacheKeyPrefix = "HttpRequestEventToken:";
+
     private readonly IMemoryCache _memoryCache;
     private readonly ISecretService _secretService;
     private readonly ISecurityTokenService _securityTokenService;
@@ -37,7 +38,7 @@ public class HttpRequestEventSecretService : IHttpRequestEventSecretService
     public async Task<string> GetUrlAsync(string httpRequestEventSecretName)
     {
         var secret = await _secretService.GetSecretAsync<HttpRequestEventSecret>(httpRequestEventSecretName);
-        if (secret == null)
+        if (secret is null || secret.WorkflowTypeId is null || secret.ActivityId is null)
         {
             return null;
         }

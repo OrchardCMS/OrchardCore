@@ -15,7 +15,7 @@
     var elementId =  ((ContentItem)Model.ContentItem).As<FormElementPart>()?.Id;
     string formId =  string.IsNullOrWhiteSpace(elementId) ?  $"form_{Model.ContentItem.ContentItemId}" : elementId;
     var action = formPart.Action;
-    if (!String.IsNullOrEmpty(formPart.HttpRequestEventSecret) && httpRequestEventSecretService != null)
+    if (!String.IsNullOrEmpty(formPart.HttpRequestEventSecret) && httpRequestEventSecretService is not null)
     {
         action = await httpRequestEventSecretService.GetUrlAsync(formPart.HttpRequestEventSecret);
     }
