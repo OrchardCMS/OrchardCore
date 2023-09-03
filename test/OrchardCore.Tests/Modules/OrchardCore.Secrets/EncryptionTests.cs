@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using Amazon.Runtime.Internal.Transform;
 using OrchardCore.Secrets;
 using OrchardCore.Secrets.Models;
 using OrchardCore.Secrets.Services;
@@ -10,8 +11,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
         private static ISecretService GetSecretServiceMock()
         {
             using var rsaEncryptor = RSAGenerator.GenerateRSASecurityKey(2048);
-
-            var rsaEncryptionSecret = new RSASecret()
+            var encryptionSecret = new RSASecret()
             {
                 Name = "rsaencryptor",
                 PublicKey = Convert.ToBase64String(rsaEncryptor.ExportRSAPublicKey()),
@@ -20,7 +20,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
             };
 
             using var rsaSigning = RSAGenerator.GenerateRSASecurityKey(2048);
-            var rsaSigningSecret = new RSASecret()
+            var signingSecret = new RSASecret()
             {
                 Name = "rsasigning",
                 PublicKey = Convert.ToBase64String(rsaSigning.ExportRSAPublicKey()),
@@ -28,10 +28,19 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
                 KeyType = RSAKeyType.PublicPrivatePair,
             };
 
+            var encryptionBinding = new SecretBinding() { Name = "rsaencryptor" };
+            var signingBinding = new SecretBinding() { Name = "rsasigning" };
+            var bindings = new Dictionary<string, SecretBinding>()
+            {
+                { "rsaencryptor", encryptionBinding },
+                { "rsasigning", signingBinding },
+            };
+
             var secretService = Mock.Of<ISecretService>();
 
-            Mock.Get(secretService).Setup(s => s.GetSecretAsync("rsaencryptor", typeof(RSASecret))).ReturnsAsync(rsaEncryptionSecret);
-            Mock.Get(secretService).Setup(s => s.GetSecretAsync("rsasigning", typeof(RSASecret))).ReturnsAsync(rsaSigningSecret);
+            Mock.Get(secretService).Setup(s => s.GetSecretBindingsAsync()).ReturnsAsync(bindings);
+            Mock.Get(secretService).Setup(s => s.GetSecretAsync(encryptionBinding)).ReturnsAsync(encryptionSecret);
+            Mock.Get(secretService).Setup(s => s.GetSecretAsync(signingBinding)).ReturnsAsync(signingSecret);
 
             return secretService;
         }

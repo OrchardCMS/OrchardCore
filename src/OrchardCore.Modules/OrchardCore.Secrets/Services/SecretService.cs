@@ -70,22 +70,6 @@ public class SecretService : ISecretService
         return secret;
     }
 
-    public async Task<SecretBase> GetSecretAsync(string name, Type type)
-    {
-        if (!_activators.TryGetValue(type.Name, out var factory) || !typeof(SecretBase).IsAssignableFrom(factory.Type))
-        {
-            throw new ArgumentException($"The type should be configured and should implement '{nameof(SecretBase)}'.", nameof(type));
-        }
-
-        var bindings = await GetSecretBindingsAsync();
-        if (!bindings.TryGetValue(name, out var binding))
-        {
-            return null;
-        }
-
-        return await GetSecretAsync(binding);
-    }
-
     public async Task<IDictionary<string, SecretBinding>> GetSecretBindingsAsync()
     {
         var secretsDocument = await _bindingsManager.GetSecretBindingsDocumentAsync();
