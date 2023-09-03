@@ -30,7 +30,7 @@ public class KeyVaultOptionsConfiguration : IConfigureOptions<SecretsKeyVaultOpt
 
     public void Configure(SecretsKeyVaultOptions options)
     {
-        var section = _shellConfiguration.GetSection("OrchardCore_Secrets_KeyVault");
+        var section = _shellConfiguration.GetSection("OrchardCore_Secrets:KeyVault");
 
         options.KeyVaultName = section.GetValue(nameof(options.KeyVaultName), String.Empty);
         options.Prefix = section.GetValue(nameof(options.Prefix), String.Empty);

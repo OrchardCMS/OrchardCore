@@ -16,7 +16,7 @@ public class ConfigurationSecretStore : ISecretStore
         IShellConfiguration shellConfiguration,
         IStringLocalizer<ConfigurationSecretStore> stringLocalizer)
     {
-        _configuration = shellConfiguration.GetSection("OrchardCore_Secrets_ConfigurationSecretStore");
+        _configuration = shellConfiguration.GetSection("OrchardCore_Secrets:Secrets");
         S = stringLocalizer;
     }
 
@@ -43,10 +43,6 @@ public class ConfigurationSecretStore : ISecretStore
         }
 
         var secret = section.Get(type) as SecretBase;
-        if (secret is not null)
-        {
-            secret.Name = name;
-        }
 
         return Task.FromResult(secret);
     }

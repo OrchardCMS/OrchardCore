@@ -63,12 +63,9 @@ public class SecretService : ISecretService
             return null;
         }
 
-        var secret = await secretStore.GetSecretAsync(binding.Name, factory.Type);
-        if (secret is null)
-        {
-            secret = factory.Create();
-            secret.Name = binding.Name;
-        }
+        var secret = (await secretStore.GetSecretAsync(binding.Name, factory.Type)) ?? factory.Create();
+
+        secret.Name = binding.Name;
 
         return secret;
     }
@@ -118,6 +115,8 @@ public class SecretService : ISecretService
             // This is a noop rather than an exception as updating a readonly store is considered a noop.
             if (!secretStore.IsReadOnly)
             {
+                secret.Name = binding.Name;
+
                 await secretStore.UpdateSecretAsync(name, secret);
             }
         }

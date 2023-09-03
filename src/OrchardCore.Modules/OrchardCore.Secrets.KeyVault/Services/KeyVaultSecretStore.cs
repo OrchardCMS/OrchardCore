@@ -38,10 +38,6 @@ public class KeyVaultSecretStore : ISecretStore
         }
 
         var secret = JsonConvert.DeserializeObject(value, type) as SecretBase;
-        if (secret is not null)
-        {
-            secret.Name = name;
-        }
 
         return secret;
     }
