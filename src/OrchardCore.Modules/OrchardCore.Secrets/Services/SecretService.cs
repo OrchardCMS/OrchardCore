@@ -100,24 +100,24 @@ public class SecretService : ISecretService
 
     public IReadOnlyCollection<SecretStoreInfo> GetSecretStoreInfos() => _storeInfos;
 
-    public async Task UpdateSecretAsync(string name, SecretBinding binding, SecretBase secret)
+    public async Task UpdateSecretAsync(SecretBinding binding, SecretBase secret)
     {
-        if (!String.Equals(name, name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+        if (!String.Equals(binding.Name, binding.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
         {
             throw new InvalidOperationException("The name contains invalid characters.");
         }
 
+        secret.Name = binding.Name;
+
         var secretStore = _stores.FirstOrDefault(store => String.Equals(store.Name, binding.Store, StringComparison.OrdinalIgnoreCase));
         if (secretStore is not null)
         {
-            await _bindingsManager.UpdateSecretBindingAsync(name, binding);
+            await _bindingsManager.UpdateSecretBindingAsync(binding.Name, binding);
 
             // This is a noop rather than an exception as updating a readonly store is considered a noop.
             if (!secretStore.IsReadOnly)
             {
-                secret.Name = binding.Name;
-
-                await secretStore.UpdateSecretAsync(name, secret);
+                await secretStore.UpdateSecretAsync(binding.Name, secret);
             }
         }
         else
@@ -126,17 +126,17 @@ public class SecretService : ISecretService
         }
     }
 
-    public async Task RemoveSecretAsync(string name, string storeName)
+    public async Task RemoveSecretAsync(SecretBinding binding)
     {
-        var store = _stores.FirstOrDefault(store => String.Equals(store.Name, storeName, StringComparison.OrdinalIgnoreCase))
-            ?? throw new InvalidOperationException($"The specified store '{storeName}' was not found.");
+        var store = _stores.FirstOrDefault(store => String.Equals(store.Name, binding.Store, StringComparison.OrdinalIgnoreCase))
+            ?? throw new InvalidOperationException($"The specified store '{binding.Store}' was not found.");
 
-        await _bindingsManager.RemoveSecretBindingAsync(name);
+        await _bindingsManager.RemoveSecretBindingAsync(binding.Name);
 
         // This is a noop rather than an exception as updating a readonly store is considered a noop.
         if (!store.IsReadOnly)
         {
-            await store.RemoveSecretAsync(name);
+            await store.RemoveSecretAsync(binding.Name);
         }
     }
 }

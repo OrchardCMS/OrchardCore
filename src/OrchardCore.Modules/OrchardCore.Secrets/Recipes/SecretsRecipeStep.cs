@@ -35,8 +35,11 @@ public class SecretsRecipeStep : IRecipeStepHandler
                 secret = JsonConvert.DeserializeObject(plaintext, secret.GetType()) as SecretBase;
             }
 
-            await _secretService.RemoveSecretAsync(kvp.Key, binding.Store);
-            await _secretService.UpdateSecretAsync(kvp.Key, binding, secret);
+            // The binding name is not required as it is deduced from the key.
+            binding.Name = kvp.Key;
+
+            await _secretService.RemoveSecretAsync(binding);
+            await _secretService.UpdateSecretAsync(binding, secret);
         }
     }
 }

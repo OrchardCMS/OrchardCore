@@ -36,7 +36,7 @@ public class AllSecretsDeploymentSource : IDeploymentSource
             throw new InvalidOperationException("You must set a signing rsa secret for the deployment target before exporting secrets.");
         }
 
-        // Deployment secrets should already exist and not with a private key in both sides.
+        // Secret binding names used for the deployment itself should already exist on both sides.
         var secretBindings = (await _secretService.GetSecretBindingsAsync()).Where(binding =>
             !String.Equals(binding.Value.Name, result.EncryptionSecret, StringComparison.OrdinalIgnoreCase) &&
             !String.Equals(binding.Value.Name, result.SigningSecret, StringComparison.OrdinalIgnoreCase));
@@ -46,16 +46,27 @@ public class AllSecretsDeploymentSource : IDeploymentSource
             return;
         }
 
+        var encryptor = await _protectionProvider.CreateEncryptorAsync(result.EncryptionSecret, result.SigningSecret);
+
         var secrets = new Dictionary<string, JObject>();
         foreach (var binding in secretBindings)
         {
             var store = _secretService.GetSecretStoreInfos().FirstOrDefault(store =>
                 String.Equals(store.Name, binding.Value.Store, StringComparison.OrdinalIgnoreCase));
 
-            // When the store is readonly we ship a binding without the secret value.
-            var jObject = new JObject(new JProperty("SecretBinding", JObject.FromObject(binding.Value)));
+            if (store is null)
+            {
+                continue;
+            }
 
-            var encryptor = await _protectionProvider.CreateEncryptorAsync(result.EncryptionSecret, result.SigningSecret);
+            var jsonBinding = JObject.FromObject(binding.Value);
+
+            // Cleanup the binding name as it will be deduced from the key.
+            jsonBinding.Remove("Name");
+
+            var jObject = new JObject(new JProperty("SecretBinding", jsonBinding));
+
+            // When the store is readonly we ship a binding without the secret value.
             if (!store.IsReadOnly)
             {
                 var secret = await _secretService.GetSecretAsync(binding.Value);

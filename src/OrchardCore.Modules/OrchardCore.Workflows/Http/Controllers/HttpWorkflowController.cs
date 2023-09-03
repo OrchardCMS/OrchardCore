@@ -98,8 +98,8 @@ namespace OrchardCore.Workflows.Http.Controllers
             secret.ActivityId = activityId;
             secret.TokenLifeSpan = tokenLifeSpan;
 
-            await _secretService.RemoveSecretAsync(secretName, binding.Store);
-            await _secretService.UpdateSecretAsync(secretName, binding, secret);
+            await _secretService.RemoveSecretAsync(binding);
+            await _secretService.UpdateSecretAsync(binding, secret);
 
             return Json(new { workflowTypeId, activityId });
         }
@@ -116,7 +116,6 @@ namespace OrchardCore.Workflows.Http.Controllers
 
             var secret = _secretService.CreateSecret<HttpRequestEventSecret>();
 
-            secret.Name = secretName;
             secret.WorkflowTypeId = workflowTypeId;
             secret.ActivityId = activityId;
             secret.TokenLifeSpan = tokenLifeSpan;
@@ -136,8 +135,8 @@ namespace OrchardCore.Workflows.Http.Controllers
                 Type = typeof(HttpRequestEventSecret).Name,
             };
 
-            await _secretService.RemoveSecretAsync(secretName, binding.Store);
-            await _secretService.UpdateSecretAsync(secretName, binding, secret);
+            await _secretService.RemoveSecretAsync(binding);
+            await _secretService.UpdateSecretAsync(binding, secret);
 
             return Json(secret);
         }

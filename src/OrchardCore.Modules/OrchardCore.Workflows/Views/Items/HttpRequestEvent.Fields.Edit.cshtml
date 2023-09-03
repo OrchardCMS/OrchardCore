@@ -43,7 +43,7 @@
     {
         secrets = httpRequestEventSecrets,
         selected = selectedHttpRequestEventSecret,
-        inputName = Html.NameFor(x => x.HttpRequestEventSecret),
+        inputName = Html.NameFor(e => e.HttpRequestEventSecret),
         linkUrl = Url.Action("LinkSecret", "HttpWorkflow"),
         createUrl = Url.Action("CreateSecret", "Httpworkflow"),
         linkSecretErrorMessage = T["Error linking secret"],

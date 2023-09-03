@@ -150,7 +150,7 @@ public class AdminController : Controller
                 case ContentsBulkAction.Remove:
                     foreach (var binding in checkedSecretBindings)
                     {
-                        await _secretService.RemoveSecretAsync(binding.Key, binding.Value.Store);
+                        await _secretService.RemoveSecretAsync(binding.Value);
                     }
 
                     await _notifier.SuccessAsync(H["Secrets successfully removed."]);
@@ -237,9 +237,7 @@ public class AdminController : Controller
                 Type = model.Type,
             };
 
-            secret.Name = model.Name;
-
-            await _secretService.UpdateSecretAsync(model.Name, binding, secret);
+            await _secretService.UpdateSecretAsync(binding, secret);
             await _notifier.SuccessAsync(H["Secret added successfully."]);
 
             return RedirectToAction(nameof(Index));
@@ -325,14 +323,13 @@ public class AdminController : Controller
         if (ModelState.IsValid)
         {
             // Remove this before updating the binding value.
-            await _secretService.RemoveSecretAsync(sourceName, binding.Store);
+            await _secretService.RemoveSecretAsync(binding);
 
             binding.Name = model.Name;
             binding.Store = model.SelectedStore;
             binding.Description = model.Description;
-            secret.Name = model.Name;
 
-            await _secretService.UpdateSecretAsync(model.Name, binding, secret);
+            await _secretService.UpdateSecretAsync(binding, secret);
 
             return RedirectToAction(nameof(Index));
         }
@@ -355,12 +352,12 @@ public class AdminController : Controller
         }
 
         var secretBindings = await _secretService.GetSecretBindingsAsync();
-        if (!secretBindings.TryGetValue(name, out var secretBinding))
+        if (!secretBindings.TryGetValue(name, out var binding))
         {
             return NotFound();
         }
 
-        await _secretService.RemoveSecretAsync(name, secretBinding.Store);
+        await _secretService.RemoveSecretAsync(binding);
 
         await _notifier.SuccessAsync(H["Secret deleted successfully."]);
 

@@ -13,6 +13,6 @@ public interface ISecretService
     Task<IDictionary<string, SecretBinding>> GetSecretBindingsAsync();
     Task<IDictionary<string, SecretBinding>> LoadSecretBindingsAsync();
     IReadOnlyCollection<SecretStoreInfo> GetSecretStoreInfos();
-    Task UpdateSecretAsync(string name, SecretBinding binding, SecretBase secret);
-    Task RemoveSecretAsync(string name, string storeName);
+    Task UpdateSecretAsync(SecretBinding binding, SecretBase secret);
+    Task RemoveSecretAsync(SecretBinding binding);
 }
