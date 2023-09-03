@@ -229,7 +229,7 @@ public class AdminController : Controller
 
         if (ModelState.IsValid)
         {
-            var secretBinding = new SecretBinding
+            var binding = new SecretBinding
             {
                 Name = model.Name,
                 Store = model.SelectedStore,
@@ -239,7 +239,7 @@ public class AdminController : Controller
 
             secret.Name = model.Name;
 
-            await _secretService.UpdateSecretAsync(model.Name, secretBinding, secret);
+            await _secretService.UpdateSecretAsync(model.Name, binding, secret);
             await _notifier.SuccessAsync(H["Secret added successfully."]);
 
             return RedirectToAction(nameof(Index));
@@ -260,19 +260,19 @@ public class AdminController : Controller
         }
 
         var secretBindings = await _secretService.GetSecretBindingsAsync();
-        if (!secretBindings.TryGetValue(name, out var secretBinding))
+        if (!secretBindings.TryGetValue(name, out var binding))
         {
             return RedirectToAction(nameof(Create), new { name });
         }
 
-        var secret = await _secretService.GetSecretAsync(secretBinding);
+        var secret = await _secretService.GetSecretAsync(binding);
 
         var model = new SecretBindingViewModel
         {
             Name = name,
-            SelectedStore = secretBinding.Store,
-            Description = secretBinding.Description,
-            Type = secretBinding.Type,
+            SelectedStore = binding.Store,
+            Description = binding.Description,
+            Type = binding.Type,
             Editor = await _displayManager.BuildEditorAsync(secret, _updateModelAccessor.ModelUpdater, isNew: false, "", ""),
             StoreInfos = _secretService.GetSecretStoreInfos(),
             Secret = secret,
@@ -312,12 +312,12 @@ public class AdminController : Controller
             }
         }
 
-        if (!secretBindings.TryGetValue(sourceName, out var secretBinding))
+        if (!secretBindings.TryGetValue(sourceName, out var binding))
         {
             return NotFound();
         }
 
-        var secret = await _secretService.GetSecretAsync(secretBinding);
+        var secret = await _secretService.GetSecretAsync(binding);
 
         var editor = await _displayManager.UpdateEditorAsync(secret, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
         model.Editor = editor;
@@ -325,14 +325,14 @@ public class AdminController : Controller
         if (ModelState.IsValid)
         {
             // Remove this before updating the binding value.
-            await _secretService.RemoveSecretAsync(sourceName, secretBinding.Store);
+            await _secretService.RemoveSecretAsync(sourceName, binding.Store);
 
-            secretBinding.Name = model.Name;
-            secretBinding.Store = model.SelectedStore;
-            secretBinding.Description = model.Description;
+            binding.Name = model.Name;
+            binding.Store = model.SelectedStore;
+            binding.Description = model.Description;
             secret.Name = model.Name;
 
-            await _secretService.UpdateSecretAsync(model.Name, secretBinding, secret);
+            await _secretService.UpdateSecretAsync(model.Name, binding, secret);
 
             return RedirectToAction(nameof(Index));
         }

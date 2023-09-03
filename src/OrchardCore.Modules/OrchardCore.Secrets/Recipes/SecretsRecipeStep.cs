@@ -24,8 +24,8 @@ public class SecretsRecipeStep : IRecipeStepHandler
         var secrets = (JObject)context.Step["Secrets"];
         foreach (var kvp in secrets)
         {
-            var secretBinding = kvp.Value["SecretBinding"].ToObject<SecretBinding>();
-            var secret = _secretService.CreateSecret(secretBinding.Type);
+            var binding = kvp.Value["SecretBinding"].ToObject<SecretBinding>();
+            var secret = _secretService.CreateSecret(binding.Type);
 
             // This will always be plaintext as decrypt has already operated on the secret.
             var plaintext = kvp.Value["Secret"]?.ToString();
@@ -35,8 +35,8 @@ public class SecretsRecipeStep : IRecipeStepHandler
                 secret = JsonConvert.DeserializeObject(plaintext, secret.GetType()) as SecretBase;
             }
 
-            await _secretService.RemoveSecretAsync(kvp.Key, secretBinding.Store);
-            await _secretService.UpdateSecretAsync(kvp.Key, secretBinding, secret);
+            await _secretService.RemoveSecretAsync(kvp.Key, binding.Store);
+            await _secretService.UpdateSecretAsync(kvp.Key, binding, secret);
         }
     }
 }

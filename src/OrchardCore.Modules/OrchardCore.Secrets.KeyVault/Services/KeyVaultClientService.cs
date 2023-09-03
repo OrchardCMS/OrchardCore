@@ -9,46 +9,46 @@ namespace OrchardCore.Secrets.KeyVault.Services;
 
 public class KeyVaultClientService
 {
-    private readonly SecretClient _secretClient;
+    private readonly SecretClient _client;
     private readonly string _prefix;
 
     public KeyVaultClientService(IOptions<SecretsKeyVaultOptions> options)
     {
         var keyVaultEndpointUri = new Uri($"https://{options.Value.KeyVaultName}.vault.azure.net");
 
-        _secretClient = new SecretClient(
+        _client = new SecretClient(
             keyVaultEndpointUri,
             new DefaultAzureCredential(new DefaultAzureCredentialOptions { ExcludeVisualStudioCodeCredential = true }));
 
         _prefix = options.Value.Prefix;
     }
 
-    public async Task<string> GetSecretAsync(string secretName)
+    public async Task<string> GetSecretAsync(string name)
     {
         if (!String.IsNullOrEmpty(_prefix))
         {
-            secretName = _prefix + secretName;
+            name = $"{_prefix}{name}";
         }
 
-        var secret = await _secretClient.GetSecretAsync(secretName);
+        var secret = await _client.GetSecretAsync(name);
 
         return secret.Value.Value;
 
     }
 
-    public async Task SetSecretAsync(string secretName, string secretValue)
+    public async Task SetSecretAsync(string name, string secretValue)
     {
         if (!String.IsNullOrEmpty(_prefix))
         {
-            secretName = _prefix + secretName;
+            name = $"{_prefix}{name}";
         }
 
-        await _secretClient.SetSecretAsync(secretName, secretValue);
+        await _client.SetSecretAsync(name, secretValue);
     }
 
-    public async Task RemoveSecretAsync(string secretName)
+    public async Task RemoveSecretAsync(string name)
     {
-        var operation = await _secretClient.StartDeleteSecretAsync(secretName);
+        var operation = await _client.StartDeleteSecretAsync(name);
 
         // TODO test this. I think we delete secrets on set, so we would need to wait for delete to complete,
         // before updating it again, perhaps not, we can check this.

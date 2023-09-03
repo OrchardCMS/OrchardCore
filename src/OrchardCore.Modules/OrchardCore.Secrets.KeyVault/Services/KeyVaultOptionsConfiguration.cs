@@ -21,8 +21,7 @@ public class KeyVaultOptionsConfiguration : IConfigureOptions<SecretsKeyVaultOpt
     public KeyVaultOptionsConfiguration(
         IShellConfiguration shellConfiguration,
         ShellSettings shellSettings,
-        ILogger<KeyVaultOptionsConfiguration> logger
-        )
+        ILogger<KeyVaultOptionsConfiguration> logger)
     {
         _shellConfiguration = shellConfiguration;
         _shellSettings = shellSettings;
@@ -53,7 +52,7 @@ public class KeyVaultOptionsConfiguration : IConfigureOptions<SecretsKeyVaultOpt
         {
             var template = _fluidParser.Parse(options.KeyVaultName);
 
-            // container name must be lowercase
+            // Container name must be lowercase.
             options.KeyVaultName = template.Render(templateContext, NullEncoder.Default).ToLower();
             options.KeyVaultName = options.KeyVaultName.Replace("\r", String.Empty).Replace("\n", String.Empty);
         }

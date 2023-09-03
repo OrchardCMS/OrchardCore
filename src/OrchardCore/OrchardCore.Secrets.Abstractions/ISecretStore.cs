@@ -9,7 +9,7 @@ public interface ISecretStore
     string Name { get; }
     string DisplayName { get; }
     bool IsReadOnly { get; }
-    Task<SecretBase> GetSecretAsync(string key, Type type);
-    Task UpdateSecretAsync(string key, SecretBase secret);
-    Task RemoveSecretAsync(string key);
+    Task<SecretBase> GetSecretAsync(string name, Type type);
+    Task UpdateSecretAsync(string name, SecretBase secret);
+    Task RemoveSecretAsync(string name);
 }

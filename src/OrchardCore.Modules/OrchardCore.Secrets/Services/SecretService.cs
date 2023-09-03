@@ -73,7 +73,7 @@ public class SecretService : ISecretService
         return secret;
     }
 
-    public async Task<SecretBase> GetSecretAsync(string key, Type type)
+    public async Task<SecretBase> GetSecretAsync(string name, Type type)
     {
         if (!_activators.TryGetValue(type.Name, out var factory) || !typeof(SecretBase).IsAssignableFrom(factory.Type))
         {
@@ -81,7 +81,7 @@ public class SecretService : ISecretService
         }
 
         var bindings = await GetSecretBindingsAsync();
-        if (!bindings.TryGetValue(key, out var binding))
+        if (!bindings.TryGetValue(name, out var binding))
         {
             return null;
         }
@@ -103,46 +103,41 @@ public class SecretService : ISecretService
 
     public IReadOnlyCollection<SecretStoreInfo> GetSecretStoreInfos() => _storeInfos;
 
-    public async Task UpdateSecretAsync(string key, SecretBinding secretBinding, SecretBase secret)
+    public async Task UpdateSecretAsync(string name, SecretBinding binding, SecretBase secret)
     {
-        if (!String.Equals(key, key.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+        if (!String.Equals(name, name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
         {
             throw new InvalidOperationException("The name contains invalid characters.");
         }
 
-        var secretStore = _stores.FirstOrDefault(store => String.Equals(store.Name, secretBinding.Store, StringComparison.OrdinalIgnoreCase));
+        var secretStore = _stores.FirstOrDefault(store => String.Equals(store.Name, binding.Store, StringComparison.OrdinalIgnoreCase));
         if (secretStore is not null)
         {
-            await _bindingsManager.UpdateSecretBindingAsync(key, secretBinding);
+            await _bindingsManager.UpdateSecretBindingAsync(name, binding);
 
             // This is a noop rather than an exception as updating a readonly store is considered a noop.
             if (!secretStore.IsReadOnly)
             {
-                await secretStore.UpdateSecretAsync(key, secret);
+                await secretStore.UpdateSecretAsync(name, secret);
             }
         }
         else
         {
-            throw new InvalidOperationException($"The specified store '{secretBinding.Store}' was not found.");
+            throw new InvalidOperationException($"The specified store '{binding.Store}' was not found.");
         }
     }
 
-    public async Task RemoveSecretAsync(string key, string storeName)
+    public async Task RemoveSecretAsync(string name, string storeName)
     {
-        var secretStore = _stores.FirstOrDefault(store => String.Equals(store.Name, storeName, StringComparison.OrdinalIgnoreCase));
-        if (secretStore is not null)
-        {
-            await _bindingsManager.RemoveSecretBindingAsync(key);
+        var store = _stores.FirstOrDefault(store => String.Equals(store.Name, storeName, StringComparison.OrdinalIgnoreCase))
+            ?? throw new InvalidOperationException($"The specified store '{storeName}' was not found.");
 
-            // This is a noop rather than an exception as updating a readonly store is considered a noop.
-            if (!secretStore.IsReadOnly)
-            {
-                await secretStore.RemoveSecretAsync(key);
-            }
-        }
-        else
+        await _bindingsManager.RemoveSecretBindingAsync(name);
+
+        // This is a noop rather than an exception as updating a readonly store is considered a noop.
+        if (!store.IsReadOnly)
         {
-            throw new InvalidOperationException($"The specified store '{storeName}' was not found.");
+            await store.RemoveSecretAsync(name);
         }
     }
 }

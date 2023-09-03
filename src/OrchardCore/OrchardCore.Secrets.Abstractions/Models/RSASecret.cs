@@ -7,9 +7,9 @@ public class RSASecret : SecretBase
     private byte[] _publicKeyAsBytes;
     private byte[] _privateKeyAsBytes;
 
-    public RSAKeyType KeyType { get; set; }
     public string PublicKey { get; set; }
     public string PrivateKey { get; set; }
+    public RSAKeyType KeyType { get; set; }
 
     public byte[] PublicKeyAsBytes()
     {

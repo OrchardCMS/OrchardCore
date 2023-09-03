@@ -16,6 +16,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
                 Name = "rsaencryptor",
                 PublicKey = Convert.ToBase64String(rsaEncryptor.ExportRSAPublicKey()),
                 PrivateKey = Convert.ToBase64String(rsaEncryptor.ExportRSAPrivateKey()),
+                KeyType = RSAKeyType.PublicPrivatePair,
             };
 
             using var rsaSigning = RSAGenerator.GenerateRSASecurityKey(2048);
@@ -24,6 +25,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
                 Name = "rsasigning",
                 PublicKey = Convert.ToBase64String(rsaSigning.ExportRSAPublicKey()),
                 PrivateKey = Convert.ToBase64String(rsaSigning.ExportRSAPrivateKey()),
+                KeyType = RSAKeyType.PublicPrivatePair,
             };
 
             var secretService = Mock.Of<ISecretService>();

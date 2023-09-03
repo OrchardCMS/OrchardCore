@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.IO.Compression;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -124,7 +125,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                     response = await _httpClient.PostAsync(remoteInstance.Url, requestContent);
                 }
 
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                if (response.StatusCode == HttpStatusCode.OK)
                 {
                     await _notifier.SuccessAsync(H["Deployment executed successfully."]);
                 }

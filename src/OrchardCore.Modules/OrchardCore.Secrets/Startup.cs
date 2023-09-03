@@ -18,6 +18,7 @@ using OrchardCore.Secrets.Models;
 using OrchardCore.Secrets.Options;
 using OrchardCore.Secrets.Recipes;
 using OrchardCore.Secrets.Services;
+using OrchardCore.Secrets.Stores;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Secrets
@@ -46,7 +47,10 @@ namespace OrchardCore.Secrets
 
             services.AddSingleton<SecretBindingsManager>();
             services.AddSingleton<SecretsDocumentManager>();
+
             services.AddSingleton<ISecretStore, DatabaseSecretStore>();
+            services.AddSingleton<ISecretStore, ConfigurationSecretStore>();
+
             services.AddSingleton<ISecretProtectionProvider, SecretProtectionProvider>();
 
             services.AddRecipeExecutionStep<SecretsRecipeStep>();
@@ -79,15 +83,6 @@ namespace OrchardCore.Secrets
                 pattern: _adminOptions.AdminUrlPrefix + "/Secrets/Edit/{name}",
                 defaults: new { controller = secretControllerName, action = nameof(AdminController.Edit) }
             );
-        }
-    }
-
-    [Feature("OrchardCore.Secrets.ConfigurationSecretStore")]
-    public class ConfigurationSecretStoreStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSingleton<ISecretStore, ConfigurationSecretStore>();
         }
     }
 }

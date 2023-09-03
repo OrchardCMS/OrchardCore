@@ -47,18 +47,18 @@ public class AllSecretsDeploymentSource : IDeploymentSource
         }
 
         var secrets = new Dictionary<string, JObject>();
-        foreach (var secretBinding in secretBindings)
+        foreach (var binding in secretBindings)
         {
             var store = _secretService.GetSecretStoreInfos().FirstOrDefault(store =>
-                String.Equals(store.Name, secretBinding.Value.Store, StringComparison.OrdinalIgnoreCase));
+                String.Equals(store.Name, binding.Value.Store, StringComparison.OrdinalIgnoreCase));
 
             // When the store is readonly we ship a binding without the secret value.
-            var jObject = new JObject(new JProperty("SecretBinding", JObject.FromObject(secretBinding.Value)));
+            var jObject = new JObject(new JProperty("SecretBinding", JObject.FromObject(binding.Value)));
 
             var encryptor = await _protectionProvider.CreateEncryptorAsync(result.EncryptionSecret, result.SigningSecret);
             if (!store.IsReadOnly)
             {
-                var secret = await _secretService.GetSecretAsync(secretBinding.Value);
+                var secret = await _secretService.GetSecretAsync(binding.Value);
                 if (secret is not null)
                 {
                     var plaintext = JsonConvert.SerializeObject(secret);
@@ -69,7 +69,7 @@ public class AllSecretsDeploymentSource : IDeploymentSource
                 }
             }
 
-            secrets.Add(secretBinding.Key, jObject);
+            secrets.Add(binding.Key, jObject);
         }
 
         result.Steps.Add(new JObject(

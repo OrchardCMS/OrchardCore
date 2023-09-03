@@ -83,7 +83,7 @@ namespace OrchardCore.Workflows.Http.Controllers
         public async Task<IActionResult> LinkSecret(string secretName, string workflowTypeId, string activityId, int tokenLifeSpan)
         {
             var secretBindings = await _secretService.LoadSecretBindingsAsync();
-            if (!secretBindings.TryGetValue(secretName, out var secretBinding))
+            if (!secretBindings.TryGetValue(secretName, out var binding))
             {
                 return NotFound();
             }
@@ -98,8 +98,8 @@ namespace OrchardCore.Workflows.Http.Controllers
             secret.ActivityId = activityId;
             secret.TokenLifeSpan = tokenLifeSpan;
 
-            await _secretService.RemoveSecretAsync(secretName, secretBinding.Store);
-            await _secretService.UpdateSecretAsync(secretName, secretBinding, secret);
+            await _secretService.RemoveSecretAsync(secretName, binding.Store);
+            await _secretService.UpdateSecretAsync(secretName, binding, secret);
 
             return Json(new { workflowTypeId, activityId });
         }
@@ -128,7 +128,7 @@ namespace OrchardCore.Workflows.Http.Controllers
                 return BadRequest();
             }
 
-            var secretBinding = new SecretBinding
+            var binding = new SecretBinding
             {
                 Name = secretName,
                 Store = store.Name,
@@ -136,8 +136,8 @@ namespace OrchardCore.Workflows.Http.Controllers
                 Type = typeof(HttpRequestEventSecret).Name,
             };
 
-            await _secretService.RemoveSecretAsync(secretName, secretBinding.Store);
-            await _secretService.UpdateSecretAsync(secretName, secretBinding, secret);
+            await _secretService.RemoveSecretAsync(secretName, binding.Store);
+            await _secretService.UpdateSecretAsync(secretName, binding, secret);
 
             return Json(secret);
         }

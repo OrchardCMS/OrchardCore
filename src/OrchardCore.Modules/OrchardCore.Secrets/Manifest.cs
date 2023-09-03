@@ -14,11 +14,3 @@ using OrchardCore.Modules.Manifest;
     Description = "The secrets feature manages secrets that other modules can contribute to.",
     Category = "Configuration"
 )]
-
-[assembly: Feature(
-    Id = "OrchardCore.Secrets.ConfigurationSecretStore",
-    Name = "Configuration Secrets Store",
-    Description = "The secrets configuration store is a readonly store for secrets.",
-    Category = "Configuration",
-    Dependencies = new[] { "OrchardCore.Secrets" }
-)]

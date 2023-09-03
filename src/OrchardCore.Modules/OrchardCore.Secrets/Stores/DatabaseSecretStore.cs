@@ -3,8 +3,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
+using OrchardCore.Secrets.Services;
 
-namespace OrchardCore.Secrets.Services;
+namespace OrchardCore.Secrets.Stores;
 
 public class DatabaseSecretStore : ISecretStore
 {
@@ -26,7 +27,7 @@ public class DatabaseSecretStore : ISecretStore
     public string DisplayName => S["Database Secret Store"];
     public bool IsReadOnly => false;
 
-    public async Task<Models.SecretBase> GetSecretAsync(string key, Type type)
+    public async Task<Models.SecretBase> GetSecretAsync(string name, Type type)
     {
         if (!typeof(Models.SecretBase).IsAssignableFrom(type))
         {
@@ -34,7 +35,7 @@ public class DatabaseSecretStore : ISecretStore
         }
 
         var secretsDocument = await _manager.GetSecretsDocumentAsync();
-        if (secretsDocument.Secrets.TryGetValue(key, out var protectedData))
+        if (secretsDocument.Secrets.TryGetValue(name, out var protectedData))
         {
             var plainText = _protector.Unprotect(protectedData);
             return JsonConvert.DeserializeObject(plainText, type) as Models.SecretBase;
@@ -43,8 +44,8 @@ public class DatabaseSecretStore : ISecretStore
         return null;
     }
 
-    public Task UpdateSecretAsync(string key, Models.SecretBase secret) =>
-        _manager.UpdateSecretAsync(key, _protector.Protect(JsonConvert.SerializeObject(secret)));
+    public Task UpdateSecretAsync(string name, Models.SecretBase secret) =>
+        _manager.UpdateSecretAsync(name, _protector.Protect(JsonConvert.SerializeObject(secret)));
 
-    public Task RemoveSecretAsync(string key) => _manager.RemoveSecretAsync(key);
+    public Task RemoveSecretAsync(string name) => _manager.RemoveSecretAsync(name);
 }
