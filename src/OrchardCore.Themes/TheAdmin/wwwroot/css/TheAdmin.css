@@ -1,5 +1,8 @@
 @charset "UTF-8";
-/* modal's z-index should be heigher than the z-index for the top-navbar and the side menu */
+/*
+    To ensure bootstrap use these global variables, they must be defined before importing bootstrap.
+*/
+/* modal's z-index should be heigher than the z-index for the top-navbar (i.e, $zindex-sticky + 100) and the side menu (i.e, $zindex-sticky + 50) */
 html[data-theme=default] {
   /*!
    * Bootstrap v5.1.3 (https://getbootstrap.com/)
@@ -6309,7 +6312,7 @@ html[dir][data-theme=default] .toast-body {
 html[data-theme=default] .modal {
   position: fixed;
   top: 0;
-  z-index: 1200;
+  z-index: 1150;
   display: none;
   width: 100%;
   height: 100%;
@@ -7568,41 +7571,41 @@ html[dir=rtl][data-theme=default] .fixed-bottom {
 html[data-theme=default] .sticky-top {
   position: sticky;
   top: 0;
-  z-index: 1020;
+  z-index: 1000;
 }
 @media (min-width: 576px) {
   html[data-theme=default] .sticky-sm-top {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
 }
 @media (min-width: 768px) {
   html[data-theme=default] .sticky-md-top {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
 }
 @media (min-width: 992px) {
   html[data-theme=default] .sticky-lg-top {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
 }
 @media (min-width: 1200px) {
   html[data-theme=default] .sticky-xl-top {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
 }
 @media (min-width: 1400px) {
   html[data-theme=default] .sticky-xxl-top {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
 }
 html[data-theme=default] .hstack {
@@ -27786,7 +27789,7 @@ html[dir=rtl][data-theme=default] .left-sidebar-compact .ta-navbar-top h1, html[
 }
 html[data-theme=default] .action-bar {
   top: 3.3rem;
-  z-index: 1050;
+  z-index: calc(1000 + 50);
 }
 html[dir][data-theme=default] .user-top-navbar {
   padding-top: 0;
@@ -35724,7 +35727,7 @@ html[dir][data-theme=darkmode] .toast-body {
 html[data-theme=darkmode] .modal {
   position: fixed;
   top: 0;
-  z-index: 1200;
+  z-index: 1150;
   display: none;
   width: 100%;
   height: 100%;
@@ -36983,41 +36986,41 @@ html[dir=rtl][data-theme=darkmode] .fixed-bottom {
 html[data-theme=darkmode] .sticky-top {
   position: sticky;
   top: 0;
-  z-index: 1020;
+  z-index: 1000;
 }
 @media (min-width: 576px) {
   html[data-theme=darkmode] .sticky-sm-top {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
 }
 @media (min-width: 768px) {
   html[data-theme=darkmode] .sticky-md-top {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
 }
 @media (min-width: 992px) {
   html[data-theme=darkmode] .sticky-lg-top {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
 }
 @media (min-width: 1200px) {
   html[data-theme=darkmode] .sticky-xl-top {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
 }
 @media (min-width: 1400px) {
   html[data-theme=darkmode] .sticky-xxl-top {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
 }
 html[data-theme=darkmode] .hstack {
@@ -57204,7 +57207,7 @@ html[dir=rtl][data-theme=darkmode] .left-sidebar-compact .ta-navbar-top h1, html
 }
 html[data-theme=darkmode] .action-bar {
   top: 3.3rem;
-  z-index: 1050;
+  z-index: calc(1000 + 50);
 }
 html[dir][data-theme=darkmode] .user-top-navbar {
   padding-top: 0;
