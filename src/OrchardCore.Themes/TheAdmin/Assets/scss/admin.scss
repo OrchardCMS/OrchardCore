@@ -1,5 +1,10 @@
 @use 'sass:math';
 
+$zindex-sticky: 1020;
+
+/* modal's z-index should be heigher than the z-index for the top-navbar and the side menu */
+$zindex-modal: 1200;
+
 html[data-theme='default'] {
     @import "modules/theme/default/_variables.scss";
     @import "../../node_modules/bootstrap/scss/bootstrap";

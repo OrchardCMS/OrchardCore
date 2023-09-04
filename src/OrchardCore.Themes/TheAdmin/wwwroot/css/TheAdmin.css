@@ -1,4 +1,5 @@
 @charset "UTF-8";
+/* modal's z-index should be heigher than the z-index for the top-navbar and the side menu */
 html[data-theme=default] {
   /*!
    * Bootstrap v5.1.3 (https://getbootstrap.com/)
@@ -6308,7 +6309,7 @@ html[dir][data-theme=default] .toast-body {
 html[data-theme=default] .modal {
   position: fixed;
   top: 0;
-  z-index: 1055;
+  z-index: 1200;
   display: none;
   width: 100%;
   height: 100%;
@@ -35723,7 +35724,7 @@ html[dir][data-theme=darkmode] .toast-body {
 html[data-theme=darkmode] .modal {
   position: fixed;
   top: 0;
-  z-index: 1055;
+  z-index: 1200;
   display: none;
   width: 100%;
   height: 100%;
