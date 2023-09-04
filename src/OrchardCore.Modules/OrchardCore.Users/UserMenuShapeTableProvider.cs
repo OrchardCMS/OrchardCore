@@ -6,11 +6,11 @@ namespace OrchardCore.Users;
 
 public class UserMenuShapeTableProvider : IShapeTableProvider
 {
-    private const string ShapePrefix = "UserMenuItems";
+    private const string BaseShapeType = "UserMenuItems";
 
-    private const string ShapeTypePrefix = $"{ShapePrefix}__";
+    private const string ShapeTypePrefix = $"{BaseShapeType}__";
 
-    private const string ShapeAlternatePrefix = $"{ShapePrefix}_";
+    private const string ShapeAlternatePrefix = $"{BaseShapeType}_";
 
     public void Discover(ShapeTableBuilder builder)
     {
