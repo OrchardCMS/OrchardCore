@@ -1,7 +1,4 @@
 @charset "UTF-8";
-/*
-    To ensure bootstrap use these global variables, they must be defined before importing bootstrap.
-*/
 /* modal's z-index should be heigher than the z-index for the top-navbar (i.e, $zindex-sticky + 100) and the side menu (i.e, $zindex-sticky + 50) */
 html[data-theme=default] {
   /*!

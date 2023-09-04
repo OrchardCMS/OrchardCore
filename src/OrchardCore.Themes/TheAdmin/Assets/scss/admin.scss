@@ -1,11 +1,6 @@
 @use 'sass:math';
 
-/*
-    To ensure bootstrap use these global variables, they must be defined before importing bootstrap.
-*/
-
-$zindex-sticky: 1000;
-$zindex-modal: 1150; /* modal's z-index should be heigher than the z-index for the top-navbar (i.e, $zindex-sticky + 100) and the side menu (i.e, $zindex-sticky + 50) */
+@import "modules/admin/_variables.scss";
 
 html[data-theme='default'] {
     @import "modules/theme/default/_variables.scss";
