@@ -61,7 +61,7 @@ public class AllSecretsDeploymentSource : IDeploymentSource
 
             var jsonBinding = JObject.FromObject(binding.Value);
 
-            // Cleanup the binding name as it will be deduced from the key.
+            // Cleanup binding names that will be deduced from their key.
             jsonBinding.Remove("Name");
 
             var jObject = new JObject(new JProperty("SecretBinding", jsonBinding));

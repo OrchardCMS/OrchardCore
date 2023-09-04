@@ -98,7 +98,7 @@ public class SecretService : ISecretService
         {
             await _bindingsManager.UpdateSecretBindingAsync(binding.Name, binding);
 
-            // This is a noop rather than an exception as updating a readonly store is considered a noop.
+            // Updating a readonly store is a noop.
             if (!secretStore.IsReadOnly)
             {
                 await secretStore.UpdateSecretAsync(binding.Name, secret);
@@ -117,10 +117,12 @@ public class SecretService : ISecretService
 
         await _bindingsManager.RemoveSecretBindingAsync(binding.Name);
 
-        // This is a noop rather than an exception as updating a readonly store is considered a noop.
-        if (!store.IsReadOnly)
+        // Updating a readonly store is a noop.
+        if (store.IsReadOnly)
         {
-            await store.RemoveSecretAsync(binding.Name);
+            return;
         }
+
+        await store.RemoveSecretAsync(binding.Name);
     }
 }

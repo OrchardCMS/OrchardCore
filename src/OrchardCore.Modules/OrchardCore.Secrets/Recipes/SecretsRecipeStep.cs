@@ -35,7 +35,7 @@ public class SecretsRecipeStep : IRecipeStepHandler
                 secret = JsonConvert.DeserializeObject(plaintext, secret.GetType()) as SecretBase;
             }
 
-            // The binding name is not required as it is deduced from the key.
+            // Binding names are deduced from their key.
             binding.Name = kvp.Key;
 
             await _secretService.RemoveSecretAsync(binding);

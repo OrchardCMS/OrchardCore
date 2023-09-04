@@ -17,8 +17,7 @@ namespace OrchardCore.Deployment.Remote.Services
 
         public RemoteClientService(
             ISession session,
-            IDataProtectionProvider dataProtectionProvider
-            )
+            IDataProtectionProvider dataProtectionProvider)
         {
             _dataProtector = dataProtectionProvider.CreateProtector("OrchardCore.Deployment").ToTimeLimitedDataProtector();
             _session = session;
@@ -64,22 +63,17 @@ namespace OrchardCore.Deployment.Remote.Services
         {
             var remoteClientList = await GetRemoteClientListAsync();
 
+            var protectedApiKey = !String.IsNullOrEmpty(apiKey)
+                ? _dataProtector.Protect(Encoding.UTF8.GetBytes(apiKey))
+                : Array.Empty<byte>();
+
             var remoteClient = new RemoteClient
             {
                 Id = Guid.NewGuid().ToString("n"),
                 ClientName = clientName,
-                ProtectedApiKey = _dataProtector.Protect(Encoding.UTF8.GetBytes(apiKey)),
-                ApiKeySecret = apiKeySecret
+                ProtectedApiKey = protectedApiKey,
+                ApiKeySecret = apiKeySecret,
             };
-
-            if (!String.IsNullOrEmpty(apiKey))
-            {
-                remoteClient.ProtectedApiKey = _dataProtector.Protect(Encoding.UTF8.GetBytes(apiKey));
-            }
-            else
-            {
-                remoteClient.ProtectedApiKey = Array.Empty<byte>();
-            }
 
             remoteClientList.RemoteClients.Add(remoteClient);
             _session.Save(remoteClientList);
@@ -90,8 +84,7 @@ namespace OrchardCore.Deployment.Remote.Services
         public async Task<bool> TryUpdateRemoteClient(string id, string clientName, string apiKey, string apiKeySecret)
         {
             var remoteClient = await GetRemoteClientAsync(id);
-
-            if (remoteClient == null)
+            if (remoteClient is null)
             {
                 return false;
             }
