@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Secrets.Models;
 using OrchardCore.Secrets.ViewModels;
 
 namespace OrchardCore.Secrets.ViewComponents;
@@ -38,14 +37,7 @@ public class SelectSecretViewComponent : ViewComponent
 
         if (!required)
         {
-            if (secretType == typeof(TextSecret).Name)
-            {
-                secrets.Insert(0, new SelectListItem() { Text = S["None - Use plain text instead"], Value = String.Empty });
-            }
-            else
-            {
-                secrets.Insert(0, new SelectListItem() { Text = S["None"], Value = String.Empty });
-            }
+            secrets.Insert(0, new SelectListItem() { Text = S["None"], Value = String.Empty });
         }
 
         var model = new SelectSecretViewModel
