@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -63,8 +62,6 @@ namespace OrchardCore.Seo.Drivers
                 {
                     aspect.MetaKeywords = part.MetaKeywords;
                 }
-
-
 
                 if (!string.IsNullOrEmpty(part.MetaRobots))
                 {

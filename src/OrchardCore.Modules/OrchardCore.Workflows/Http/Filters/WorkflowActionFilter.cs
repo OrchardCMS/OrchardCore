@@ -1,121 +1,127 @@
-using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Filters;
-using OrchardCore.Locking.Distributed;
-using OrchardCore.Workflows.Helpers;
-using OrchardCore.Workflows.Http.Services;
-using OrchardCore.Workflows.Services;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Workflows.Http.Filters
+namespace OrchardCore.Contents.Sitemaps
 {
-    internal class WorkflowActionFilter : IAsyncActionFilter
+    public class ContentTypesSitemapSourceDriver : DisplayDriver<SitemapSource, ContentTypesSitemapSource>
     {
-        private readonly IWorkflowManager _workflowManager;
-        private readonly IWorkflowTypeRouteEntries _workflowTypeRouteEntries;
-        private readonly IWorkflowInstanceRouteEntries _workflowRouteEntries;
-        private readonly IWorkflowTypeStore _workflowTypeStore;
-        private readonly IWorkflowStore _workflowStore;
-        private readonly IDistributedLock _distributedLock;
+        private readonly IEnumerable<IRouteableContentTypeProvider> _routeableContentTypeDefinitionProviders;
 
-        public WorkflowActionFilter(
-            IWorkflowManager workflowManager,
-            IWorkflowTypeRouteEntries workflowTypeRouteEntries,
-            IWorkflowInstanceRouteEntries workflowRouteEntries,
-            IWorkflowTypeStore workflowTypeStore,
-            IWorkflowStore workflowStore,
-            IDistributedLock distributedLock
-        )
+        public ContentTypesSitemapSourceDriver(
+            IEnumerable<IRouteableContentTypeProvider> routeableContentTypeDefinitionProviders
+            )
         {
-            _workflowManager = workflowManager;
-            _workflowTypeRouteEntries = workflowTypeRouteEntries;
-            _workflowRouteEntries = workflowRouteEntries;
-            _workflowTypeStore = workflowTypeStore;
-            _workflowStore = workflowStore;
-            _distributedLock = distributedLock;
+            _routeableContentTypeDefinitionProviders = routeableContentTypeDefinitionProviders;
         }
 
-        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        public override IDisplayResult Display(ContentTypesSitemapSource sitemapSource)
         {
-            var httpMethod = context.HttpContext.Request.Method;
-            var routeValues = context.RouteData.Values;
-            var workflowTypeEntries = await _workflowTypeRouteEntries.GetWorkflowRouteEntriesAsync(httpMethod, routeValues);
-            var workflowEntries = await _workflowRouteEntries.GetWorkflowRouteEntriesAsync(httpMethod, routeValues);
+            return Combine(
+                View("ContentTypesSitemapSource_SummaryAdmin", sitemapSource).Location("SummaryAdmin", "Content"),
+                View("ContentTypesSitemapSource_Thumbnail", sitemapSource).Location("Thumbnail", "Content")
+            );
+        }
 
-            if (workflowTypeEntries.Any())
-            {
-                var workflowTypeIds = workflowTypeEntries.Select(x => Int64.Parse(x.WorkflowId)).ToList();
-                var workflowTypes = (await _workflowTypeStore.GetAsync(workflowTypeIds)).ToDictionary(x => x.Id);
-                var correlationId = routeValues.GetValue<string>("correlationid");
+        public override IDisplayResult Edit(ContentTypesSitemapSource sitemapSource, IUpdateModel updater)
+        {
+            var contentTypeDefinitions = _routeableContentTypeDefinitionProviders
+                .SelectMany(x => x.ListRoutableTypeDefinitions());
 
-                foreach (var entry in workflowTypeEntries)
+            var entries = contentTypeDefinitions
+                .Select(ctd => new ContentTypeSitemapEntryViewModel
                 {
-                    if (workflowTypes.TryGetValue(Int64.Parse(entry.WorkflowId), out var workflowType))
-                    {
-                        var activity = workflowType.Activities.Single(x => x.ActivityId == entry.ActivityId);
+                    ContentTypeName = ctd.Name,
+                    ContentTypeDisplayName = ctd.DisplayName,
+                    IsChecked = sitemapSource.ContentTypes.Any(s => string.Equals(s.ContentTypeName, ctd.Name)),
+                    ChangeFrequency = sitemapSource.ContentTypes.FirstOrDefault(s => string.Equals(s.ContentTypeName, ctd.Name))?.ChangeFrequency ?? ChangeFrequency.Daily,
+                    Priority = sitemapSource.ContentTypes.FirstOrDefault(s => string.Equals(s.ContentTypeName, ctd.Name))?.Priority ?? 5,
+                })
+                .OrderBy(ctd => ctd.ContentTypeDisplayName)
+                .ToArray();
 
-                        if (activity.IsStart)
-                        {
-                            // If a singleton, try to acquire a lock per workflow type.
-                            (var locker, var locked) = await _distributedLock.TryAcquireWorkflowTypeLockAsync(workflowType);
-                            if (!locked)
-                            {
-                                continue;
-                            }
+            var limitedEntries = contentTypeDefinitions
+                .Select(ctd => new ContentTypeLimitedSitemapEntryViewModel
+                {
+                    ContentTypeName = ctd.Name,
+                    ContentTypeDisplayName = ctd.DisplayName
+                })
+                .OrderBy(ctd => ctd.ContentTypeDisplayName)
+                .ToArray();
 
-                            await using var acquiredLock = locker;
+            var limitedCtd = contentTypeDefinitions
+                .FirstOrDefault(ctd => string.Equals(sitemapSource.LimitedContentType.ContentTypeName, ctd.Name));
 
-                            // Check if this is a workflow singleton and there's already an halted instance on any activity.
-                            if (workflowType.IsSingleton && await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
-                            {
-                                continue;
-                            }
-
-                            await _workflowManager.StartWorkflowAsync(workflowType, activity, null, correlationId);
-                        }
-                    }
-                }
+            if (limitedCtd != null)
+            {
+                var limitedEntry = limitedEntries.FirstOrDefault(le => string.Equals(le.ContentTypeName, limitedCtd.Name));
+                limitedEntry.Priority = sitemapSource.LimitedContentType.Priority;
+                limitedEntry.ChangeFrequency = sitemapSource.LimitedContentType.ChangeFrequency;
+                limitedEntry.Skip = sitemapSource.LimitedContentType.Skip;
+                limitedEntry.Take = sitemapSource.LimitedContentType.Take;
             }
 
-            if (workflowEntries.Any())
+            return Initialize<ContentTypesSitemapSourceViewModel>("ContentTypesSitemapSource_Edit", model =>
             {
-                var workflowIds = workflowEntries.Select(x => x.WorkflowId).ToList();
-                var workflows = (await _workflowStore.GetAsync(workflowIds)).ToDictionary(x => x.WorkflowId);
-                var correlationId = routeValues.GetValue<string>("correlationid");
+                model.IndexAll = sitemapSource.IndexAll;
+                model.LimitItems = sitemapSource.LimitItems;
+                model.Priority = sitemapSource.Priority;
+                model.ChangeFrequency = sitemapSource.ChangeFrequency;
+                model.ContentTypes = entries;
+                model.LimitedContentTypes = limitedEntries;
+                model.LimitedContentType = limitedCtd != null ? limitedCtd.Name : contentTypeDefinitions.FirstOrDefault().Name;
+                model.SitemapSource = sitemapSource;
+            }).Location("Content");
+        }
 
-                foreach (var entry in workflowEntries)
-                {
-                    if (workflows.TryGetValue(entry.WorkflowId, out var workflow) &&
-                        (string.IsNullOrWhiteSpace(correlationId) ||
-                        workflow.CorrelationId == correlationId))
+        public override async Task<IDisplayResult> UpdateAsync(ContentTypesSitemapSource sitemap, UpdateEditorContext context)
+        {
+            var model = new ContentTypesSitemapSourceViewModel();
+
+            if (await context.Updater.TryUpdateModelAsync(model,
+                    Prefix,
+                    m => m.IndexAll,
+                    m => m.LimitItems,
+                    m => m.Priority,
+                    m => m.ChangeFrequency,
+                    m => m.ContentTypes,
+                    m => m.LimitedContentTypes,
+                    m => m.LimitedContentType
+                ))
+            {
+                sitemap.IndexAll = model.IndexAll;
+                sitemap.LimitItems = model.LimitItems;
+                sitemap.Priority = model.Priority;
+                sitemap.ChangeFrequency = model.ChangeFrequency;
+                sitemap.ContentTypes = model.ContentTypes
+                    .Where(x => x.IsChecked == true)
+                    .Select(x => new ContentTypeSitemapEntry
                     {
-                        // If atomic, try to acquire a lock per workflow instance.
-                        (var locker, var locked) = await _distributedLock.TryAcquireWorkflowLockAsync(workflow);
-                        if (!locked)
-                        {
-                            continue;
-                        }
+                        ContentTypeName = x.ContentTypeName,
+                        ChangeFrequency = x.ChangeFrequency,
+                        Priority = x.Priority,
+                    })
+                    .ToArray();
 
-                        await using var acquiredLock = locker;
-
-                        // If atomic, check if the workflow still exists and is still correlated.
-                        var haltedWorkflow = workflow.IsAtomic ? await _workflowStore.GetAsync(workflow.Id) : workflow;
-                        if (haltedWorkflow == null || (!string.IsNullOrWhiteSpace(correlationId) && haltedWorkflow.CorrelationId != correlationId))
-                        {
-                            continue;
-                        }
-
-                        // And if it is still halted on this activity.
-                        var blockingActivity = haltedWorkflow.BlockingActivities.SingleOrDefault(x => x.ActivityId == entry.ActivityId);
-                        if (blockingActivity != null)
-                        {
-                            await _workflowManager.ResumeWorkflowAsync(haltedWorkflow, blockingActivity);
-                        }
-                    }
+                var limitedEntry = model.LimitedContentTypes.FirstOrDefault(lct => string.Equals(lct.ContentTypeName, model.LimitedContentType));
+                if (limitedEntry != null)
+                {
+                    sitemap.LimitedContentType.ContentTypeName = limitedEntry.ContentTypeName;
+                    sitemap.LimitedContentType.ChangeFrequency = limitedEntry.ChangeFrequency;
+                    sitemap.LimitedContentType.Priority = limitedEntry.Priority;
+                    sitemap.LimitedContentType.Skip = limitedEntry.Skip;
+                    sitemap.LimitedContentType.Take = limitedEntry.Take;
                 }
-            }
+                else
+                {
+                    sitemap.LimitedContentType = new LimitedContentTypeSitemapEntry();
+                }
+            };
 
-            await next();
+            return Edit(sitemap, context.Updater);
         }
     }
 }

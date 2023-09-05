@@ -3,7 +3,6 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
-using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Microsoft.Authentication.Settings;
 using MicrosoftIdentityDefaults = Microsoft.Identity.Web.Constants;
 
