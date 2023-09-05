@@ -633,23 +633,6 @@ namespace OrchardCore.ContentTypes.Controllers
             var fields = _contentDefinitionService.GetFields().ToList();
 
             if (!fields.Any(field => string.Equals(field.Name, viewModel.FieldTypeName, StringComparison.OrdinalIgnoreCase)))
-
-/* Unmerged change from project 'OrchardCore.ContentTypes(net6.0)'
-Before:
-            {
-                return NotFound();
-            }
-
-            var partDefinition = partViewModel.PartDefinition;
-
-            viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? String.Empty;
-            viewModel.Name ??= String.Empty;
-
-            if (String.IsNullOrWhiteSpace(viewModel.DisplayName))
-            {
-After:
-            {
-*/
             {
                 return NotFound();
             }
@@ -658,103 +641,6 @@ After:
 
             viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? string.Empty;
             viewModel.Name ??= string.Empty;
-
-            if (string.IsNullOrWhiteSpace(viewModel.DisplayName))
-            {
-                return NotFound();
-            }
-
-            var partDefinition = partViewModel.PartDefinition;
-
-            viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? string.Empty;
-
-/* Unmerged change from project 'OrchardCore.ContentTypes(net6.0)'
-Before:
-            }
-
-            if (partDefinition.Fields.Any(f => String.Equals(f.DisplayName().Trim(), viewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase)))
-            {
-                ModelState.AddModelError("DisplayName", S["A field with the same Display Name already exists."]);
-            }
-
-            if (String.IsNullOrWhiteSpace(viewModel.Name))
-            {
-                ModelState.AddModelError("Name", S["The Technical Name can't be empty."]);
-            }
-
-            if (partDefinition.Fields.Any(f => String.Equals(f.Name.Trim(), viewModel.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
-            {
-                ModelState.AddModelError("Name", S["A field with the same Technical Name already exists."]);
-            }
-
-            if (!String.IsNullOrWhiteSpace(viewModel.Name) && !viewModel.Name[0].IsLetter())
-            {
-                ModelState.AddModelError("Name", S["The Technical Name must start with a letter."]);
-            }
-
-            if (!String.Equals(viewModel.Name, viewModel.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
-            {
-                ModelState.AddModelError("Name", S["The Technical Name contains invalid characters."]);
-            }
-
-            if (!ModelState.IsValid)
-            {
-                viewModel.Part = partDefinition;
-                viewModel.Fields = _contentDefinitionService.GetFields().Select(x => x.Name).OrderBy(x => x).ToList();
-
-                await _documentStore.CancelAsync();
-
-                ViewData["ReturnUrl"] = returnUrl;
-                return View(viewModel);
-            }
-
-            _contentDefinitionService.AddFieldToPart(viewModel.Name, viewModel.DisplayName, viewModel.FieldTypeName, partDefinition.Name);
-
-            await _notifier.SuccessAsync(H["The field \"{0}\" has been added.", viewModel.DisplayName]);
-After:
-            viewModel.Name ??= string.Empty;
-*/
-            }
-
-            if (partDefinition.Fields.Any(f => string.Equals(f.DisplayName().Trim(), viewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase)))
-            {
-                ModelState.AddModelError("DisplayName", S["A field with the same Display Name already exists."]);
-            }
-
-            if (string.IsNullOrWhiteSpace(viewModel.Name))
-            {
-                ModelState.AddModelError("Name", S["The Technical Name can't be empty."]);
-            }
-
-            if (partDefinition.Fields.Any(f => string.Equals(f.Name.Trim(), viewModel.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
-            {
-                ModelState.AddModelError("Name", S["A field with the same Technical Name already exists."]);
-            }
-
-            if (!string.IsNullOrWhiteSpace(viewModel.Name) && !viewModel.Name[0].IsLetter())
-            {
-                ModelState.AddModelError("Name", S["The Technical Name must start with a letter."]);
-            }
-
-            if (!string.Equals(viewModel.Name, viewModel.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
-            {
-                ModelState.AddModelError("Name", S["The Technical Name contains invalid characters."]);
-            }
-
-            if (!ModelState.IsValid)
-            {
-                viewModel.Part = partDefinition;
-                viewModel.Fields = _contentDefinitionService.GetFields().Select(x => x.Name).OrderBy(x => x).ToList();
-
-                await _documentStore.CancelAsync();
-
-                ViewData["ReturnUrl"] = returnUrl;
-                return View(viewModel);
-            }
-
-            _contentDefinitionService.AddFieldToPart(viewModel.Name, viewModel.DisplayName, viewModel.FieldTypeName, partDefinition.Name);
-
-            await _notifier.SuccessAsync(H["The field \"{0}\" has been added.", viewModel.DisplayName]);
 
             if (string.IsNullOrWhiteSpace(viewModel.DisplayName))
             {
