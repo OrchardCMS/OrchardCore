@@ -88,6 +88,7 @@ Let the whole world know about our shiny new release. Savor this part! These ste
 ### After the release is done
 
 - [ ] Create a new milestone with the next release number.
+- [ ] Create a new release notes documentation file for the next version in the OrchardCore.Docs project. (e.g, `/releases/1.8.0.md`).
 - [ ] Update the `OrchardCore.Commons.props` file with the next release number, and `<VersionSuffix>preview</VersionSuffix>` such that preview builds use the new one.
 
 ```
