@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Metadata;
@@ -42,9 +43,25 @@ namespace OrchardCore.ContentManagement.Display
             _logger = logger;
         }
 
-        public async Task BuildDisplayAsync(ContentItem contentItem, BuildDisplayContext context)
+        public async Task BuildDisplayAsync(ContentItem contentItem, BuildDisplayContext context,ContentTypeDefinition contentTypeDefinitionIn)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            ContentTypeDefinition contentTypeDefinition = null;
+
+            if (contentTypeDefinitionIn == null)
+            {
+                try
+                {
+                    contentTypeDefinition =  _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Content Type {ContentType} does not exist!", contentItem.ContentType);
+                }
+            }
+            else
+            {
+                contentTypeDefinition = contentTypeDefinitionIn;
+            }
 
             if (contentTypeDefinition == null)
             {
@@ -192,9 +209,26 @@ namespace OrchardCore.ContentManagement.Display
             }
         }
 
-        public async Task BuildEditorAsync(ContentItem contentItem, BuildEditorContext context)
+        public async Task BuildEditorAsync(ContentItem contentItem, BuildEditorContext context, ContentTypeDefinition contentTypeDefinitionIn)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            ContentTypeDefinition contentTypeDefinition = null;
+
+            if (contentTypeDefinitionIn == null)
+            {
+                try
+                {
+                    contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Content Type {ContentType} does not exist!", contentItem.ContentType);
+                }
+            }
+            else
+            {
+                contentTypeDefinition = contentTypeDefinitionIn;
+            }
+
             if (contentTypeDefinition == null)
             {
                 return;
@@ -283,11 +317,30 @@ namespace OrchardCore.ContentManagement.Display
             }
         }
 
-        public async Task UpdateEditorAsync(ContentItem contentItem, UpdateEditorContext context)
+        public async Task UpdateEditorAsync(ContentItem contentItem, UpdateEditorContext context, ContentTypeDefinition contentTypeDefinitionIn)
         {
-            var contentTypeDefinition = _contentDefinitionManager.LoadTypeDefinition(contentItem.ContentType);
+            ContentTypeDefinition contentTypeDefinition = null;
+
+            if (contentTypeDefinitionIn == null)
+            {
+                try
+                {
+                    contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Content Type {ContentType} does not exist!", contentItem.ContentType);
+                }
+            }
+            else
+            {
+                contentTypeDefinition = contentTypeDefinitionIn;
+            }
+
             if (contentTypeDefinition == null)
+            {
                 return;
+            }
 
             var contentShape = context.Shape as IZoneHolding;
             var partsShape = await context.ShapeFactory.CreateAsync("ContentZone",
