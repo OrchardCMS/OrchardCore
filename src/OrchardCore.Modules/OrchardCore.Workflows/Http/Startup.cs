@@ -8,6 +8,7 @@ using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Scripting;
 using OrchardCore.Secrets.Models;
+using OrchardCore.Secrets.Options;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Http.Activities;
 using OrchardCore.Workflows.Http.Drivers;
@@ -53,6 +54,10 @@ namespace OrchardCore.Workflows.Http
             services.AddSingleton<IGlobalMethodProvider, TokenMethodProvider>();
             services.AddScoped<IDisplayDriver<SecretBase>, HttpRequestEventSecretDisplayDriver>();
             services.AddScoped<IHttpRequestEventSecretService, HttpRequestEventSecretService>();
+            services.Configure<SecretOptions>(options =>
+            {
+                options.SecretTypes.Add(typeof(HttpRequestEventSecret));
+            });
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

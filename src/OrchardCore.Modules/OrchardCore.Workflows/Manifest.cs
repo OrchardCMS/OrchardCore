@@ -21,7 +21,7 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Workflows.Http",
     Name = "HTTP Workflows Activities",
     Description = "Provides HTTP-related services and activities.",
-    Dependencies = new[] { "OrchardCore.Workflows" },
+    Dependencies = new[] { "OrchardCore.Workflows", "OrchardCore.Secrets" },
     Category = "Workflows"
 )]
 

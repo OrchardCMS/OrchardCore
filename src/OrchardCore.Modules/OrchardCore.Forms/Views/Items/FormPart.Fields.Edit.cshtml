@@ -17,6 +17,29 @@
     </div>
 </div>
 
+@if (httpRequestEventSecretService != null)
+{
+    <div class="@Orchard.GetWrapperCssClasses()">
+        <div class="@Orchard.GetEndCssClasses()">
+            <div class="mb-3" asp-validation-class-for="HttpRequestEventSecret">
+                <label asp-for="HttpRequestEventSecret">@T["Http request event secret"]</label>
+                @await Component.InvokeAsync(
+            "SelectSecret",
+            new
+            {
+            secretType = "HttpRequestEventSecret",
+            selectedSecret = Model.HttpRequestEventSecret,
+            htmlId = Html.IdFor(m => m.HttpRequestEventSecret),
+            htmlName = Html.NameFor(m => m.HttpRequestEventSecret),
+            required  = false,
+            })
+                <span asp-validation-for="HttpRequestEventSecret"></span>
+                <span class="hint">@T["The secret for the http request event workflow activity to submit this form to. When provided will override the Action value."]</span>
+            </div>
+        </div>
+    </div>
+}
+
 <div class="@Orchard.GetWrapperCssClasses()">
     <label asp-for="Method" class="@Orchard.GetLabelCssClasses()">@T["Method"]</label>
     <div class="@Orchard.GetEndCssClasses()">
@@ -49,22 +72,3 @@
         </div>
     </div>
 </div>
-
-@if (httpRequestEventSecretService != null)
-{
-    <div class="mb-3" asp-validation-class-for="HttpRequestEventSecret">
-        <label asp-for="HttpRequestEventSecret">@T["Http request event secret"]</label>
-        @await Component.InvokeAsync(
-    "SelectSecret",
-    new
-    {
-    secretType = "HttpRequestEventSecret",
-    selectedSecret = Model.HttpRequestEventSecret,
-    htmlId = Html.IdFor(m => m.HttpRequestEventSecret),
-    htmlName = Html.NameFor(m => m.HttpRequestEventSecret),
-    required  = false,
-    })
-        <span asp-validation-for="HttpRequestEventSecret"></span>
-        <span class="hint">@T["The secret for the http request event workflow activity to submit this form to. When provided will override the Action value."]</span>
-    </div>
-}

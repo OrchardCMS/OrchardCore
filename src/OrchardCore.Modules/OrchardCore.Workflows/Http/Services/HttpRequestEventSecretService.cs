@@ -45,15 +45,17 @@ public class HttpRequestEventSecretService : IHttpRequestEventSecretService
 
         var tokenLifeSpan = secret.TokenLifeSpan == 0 ? HttpWorkflowController.NoExpiryTokenLifespan : secret.TokenLifeSpan;
 
-        // The cache key is a representation of the secrets values.
-        // If the secrets value changes the cache key will no longer be valid, and expire automatically.
+        // If the secret changes the cache key is no longer valid and the cache entry will auto expire.
         var cacheKey = $"{TokenCacheKeyPrefix}{secret.WorkflowTypeId}{secret.ActivityId}{tokenLifeSpan}";
 
         var url = _memoryCache.GetOrCreate(cacheKey, entry =>
         {
             entry.SlidingExpiration = TimeSpan.FromHours(24);
+
             var urlHelper = _urlHelperFactory.GetUrlHelper(_viewContextAccessor.ViewContext);
-            var token = _securityTokenService.CreateToken(new WorkflowPayload(secret.WorkflowTypeId, secret.ActivityId), TimeSpan.FromDays(tokenLifeSpan));
+
+            var token = _securityTokenService.CreateToken(new WorkflowPayload(
+                secret.WorkflowTypeId, secret.ActivityId), TimeSpan.FromDays(tokenLifeSpan));
 
             return urlHelper.Action("Invoke", "HttpWorkflow", new { area = "OrchardCore.Workflows", token });
         });
