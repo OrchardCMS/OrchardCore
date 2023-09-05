@@ -24,7 +24,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 m.ContentItem = part.ContentItem;
                 m.TaxonomyPart = part;
             })
-            .Location("Detail", "Content:5");
+            .Location("Detail", "Content");
         }
 
         public override IDisplayResult Edit(TaxonomyPart part)

@@ -35,9 +35,8 @@ namespace OrchardCore.Title.Drivers
                 model.TitlePart = titlePart;
                 model.ContentItem = titlePart.ContentItem;
             })
-            .Location("Detail", "Header:5")
-            .Location("Summary", "Header:5");
-
+            .Location("Detail", "Header")
+            .Location("Summary", "Header");
         }
 
         public override IDisplayResult Edit(TitlePart titlePart, BuildPartEditorContext context)

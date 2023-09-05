@@ -44,9 +44,8 @@ namespace OrchardCore.Html.Drivers
         public override IDisplayResult Display(HtmlBodyPart HtmlBodyPart, BuildPartDisplayContext context)
         {
             return Initialize<HtmlBodyPartViewModel>(GetDisplayShapeType(context), m => BuildViewModelAsync(m, HtmlBodyPart, context))
-                .Location("Detail", "Content:5")
-                .Location("Summary", "Content:10")
-                ;
+                .Location("Detail", "Content")
+                .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(HtmlBodyPart HtmlBodyPart, BuildPartEditorContext context)
