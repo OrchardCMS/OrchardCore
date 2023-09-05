@@ -7,6 +7,7 @@ namespace OrchardCore.Secrets.ViewModels;
 
 public class SelectSecretViewModel
 {
+    public string HtmlId { get; set; }
     public string HtmlName { get; set; }
 
     [BindNever]

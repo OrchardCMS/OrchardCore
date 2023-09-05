@@ -53,11 +53,18 @@
 @if (httpRequestEventSecretService != null)
 {
     <div class="mb-3" asp-validation-class-for="HttpRequestEventSecret">
-        <div class="w-100 w-md-50">
-            <label asp-for="HttpRequestEventSecret">@T["Http request event secret"]</label>
-            @await Component.InvokeAsync("SelectSecret", new { secretType = "HttpRequestEventSecret", selectedSecret = Model.HttpRequestEventSecret, htmlName = Html.NameFor(m => m.HttpRequestEventSecret), required  = false})
-            <span asp-validation-for="HttpRequestEventSecret"></span>
-        </div>
-        <span class="hint">@T["The name of the secret for the http request event workflow activity to submit this form to. When provided will override the Action value."]</span>
+        <label asp-for="HttpRequestEventSecret">@T["Http request event secret"]</label>
+        @await Component.InvokeAsync(
+    "SelectSecret",
+    new
+    {
+    secretType = "HttpRequestEventSecret",
+    selectedSecret = Model.HttpRequestEventSecret,
+    htmlId = Html.IdFor(m => m.HttpRequestEventSecret),
+    htmlName = Html.NameFor(m => m.HttpRequestEventSecret),
+    required  = false,
+    })
+        <span asp-validation-for="HttpRequestEventSecret"></span>
+        <span class="hint">@T["The secret for the http request event workflow activity to submit this form to. When provided will override the Action value."]</span>
     </div>
 }

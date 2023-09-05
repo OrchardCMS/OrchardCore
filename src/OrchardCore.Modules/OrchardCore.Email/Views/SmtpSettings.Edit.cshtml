@@ -114,7 +114,7 @@
                         <span class="hint d-block">@T["When this option is selected, the application pool or host-process identity is used to authenticate with the mail server."]</span>
                     </div>
 
-                    <div class="useCustomCredential collapse @(Model.UseDefaultCredentials? "": "show")">
+                    <div class="useCustomCredential collapse @(Model.UseDefaultCredentials ? "": "show")">
                         <div class="mb-3" asp-validation-class-for="UserName">
                             <label asp-for="UserName">@T["User name"]</label>
                             <input asp-for="UserName" class="form-control" type="text" />
@@ -122,32 +122,27 @@
                             <span class="hint">@T["The username for authentication."]</span>
                         </div>
 
-                        <div class="mb-3" asp-validation-class-for="Password">
-                            <label asp-for="Password">@T["Password"]</label>
-                            <div class="input-group mb-2 mb-sm-0">
-                                @if(String.IsNullOrEmpty(Model.Password))
-                                {
-                                    <input asp-for="Password" class="form-control pwd" type="password" />
-                                }
-                                else 
-                                {
-                                    <input asp-for="Password" class="form-control pwd" type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"/> 
-                                }
-                                <div class="input-group-append reveal" title="@T["Show/hide password"]">
-                                    <button type="button" class="btn btn-secondary" tabindex="-1" aria-hidden="true"><i class="fa fa-eye-slash"></i></button>
-                                </div>
-                            </div>                             
-                            <span asp-validation-for="Password"></span>
-                            <span class="hint">@T["The password for authentication."]</span>
+                        <div class="mb-3" asp-validation-class-for="PasswordSecret">
+                            <label asp-for="PasswordSecret">@T["Password secret"]</label>
+                            @await Component.InvokeAsync(
+                            "SelectSecret",
+                            new
+                            {
+                            secretType = "TextSecret",
+                            selectedSecret = Model.PasswordSecret,
+                            htmlId = Html.IdFor(m => m.PasswordSecret),
+                            htmlName = Html.NameFor(m => m.PasswordSecret),
+                            required  = false,
+                            })
+                            <span asp-validation-for="PasswordSecret"></span>
+                            <span class="hint">@T["The password secret used for authentication."]</span>
                         </div>
 
-                        <div class="mb-3" asp-validation-class-for="PasswordSecret">
-                            <div class="w-100 w-md-50">
-                                <label asp-for="PasswordSecret">@T["Password secret"]</label>
-                                @await Component.InvokeAsync("SelectSecret", new { secretType = "TextSecret", selectedSecret = Model.PasswordSecret, htmlName = Html.NameFor(m => m.PasswordSecret), required  = false})
-                                <span asp-validation-for="PasswordSecret"></span>
-                            </div>
-                            <span class="hint">@T["The name of the secret for the password. When provided will override the Password value."]</span>
+                        <div class="mb-3 plain-text" asp-validation-class-for="Password">
+                            @*<label asp-for="Password">@T["Password"]</label>*@
+                            <input asp-for="Password" class="form-control pwd" type="password" />
+                            <span asp-validation-for="Password"></span>
+                            <span class="hint">@T["The plain text password used for authentication."]</span>
                         </div>
                     </div>
                 </div>
@@ -196,7 +191,7 @@
         $("#@Html.IdFor(m => m.AutoSelectEncryption)")
             .change(showEncryptionMethod);
 
-        $(".reveal").on('click',function() {
+        $(".reveal").on('click', function () {
             var $pwd = $(".pwd");
             if ($pwd.attr('type') === 'password') {
                 $pwd.attr('type', 'text');
@@ -207,6 +202,16 @@
                 $(this).find('button > svg').toggleClass('fa-eye fa-eye-slash');
                 $pwd.focus();
             }
-        });             
+        });
+
+        $('#@Html.IdFor(m => m.PasswordSecret)').on('change', function () {
+            if (this.value === '') {
+                $('#@Html.IdFor(m => m.Password)').closest('.plain-text').show();
+                $('#@Html.IdFor(m => m.PasswordSecret)').siblings('.hint').hide();
+            } else {
+                $('#@Html.IdFor(m => m.Password)').closest('.plain-text').hide();
+                $('#@Html.IdFor(m => m.PasswordSecret)').siblings('.hint').show();
+            }
+        }).trigger('change');
     });
 </script>

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Secrets.Models;
 using OrchardCore.Secrets.ViewModels;
 
 namespace OrchardCore.Secrets.ViewComponents;
@@ -21,7 +22,7 @@ public class SelectSecretViewComponent : ViewComponent
         S = stringLocalizer;
     }
 
-    public async Task<IViewComponentResult> InvokeAsync(string secretType, string selectedSecret, string htmlName, bool required)
+    public async Task<IViewComponentResult> InvokeAsync(string secretType, string selectedSecret, string htmlId, string htmlName, bool required)
     {
         var secretBindings = await _secretService.GetSecretBindingsAsync();
 
@@ -37,13 +38,21 @@ public class SelectSecretViewComponent : ViewComponent
 
         if (!required)
         {
-            secrets.Insert(0, new SelectListItem() { Text = S["None"], Value = String.Empty });
+            if (secretType == typeof(TextSecret).Name)
+            {
+                secrets.Insert(0, new SelectListItem() { Text = S["None - Use plain text instead"], Value = String.Empty });
+            }
+            else
+            {
+                secrets.Insert(0, new SelectListItem() { Text = S["None"], Value = String.Empty });
+            }
         }
 
         var model = new SelectSecretViewModel
         {
+            HtmlId = htmlId,
             HtmlName = htmlName,
-            Secrets = secrets
+            Secrets = secrets,
         };
 
         return View(model);
