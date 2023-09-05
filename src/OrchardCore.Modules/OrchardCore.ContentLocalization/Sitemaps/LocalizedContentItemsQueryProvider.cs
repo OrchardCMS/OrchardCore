@@ -55,14 +55,14 @@ namespace OrchardCore.ContentLocalization.Sitemaps
             {
                 // Test that content type is still valid to include in sitemap.
                 var contentType = routeableContentTypeDefinitions
-                    .FirstOrDefault(ctd => String.Equals(source.LimitedContentType.ContentTypeName, ctd.Name));
+                    .FirstOrDefault(ctd => string.Equals(source.LimitedContentType.ContentTypeName, ctd.Name));
 
                 if (contentType == null)
                 {
                     return;
                 }
 
-                if (contentType.Parts.Any(ctd => String.Equals(ctd.Name, nameof(LocalizationPart))))
+                if (contentType.Parts.Any(ctd => string.Equals(ctd.Name, nameof(LocalizationPart))))
                 {
                     // Get all content items here for reference. Then reduce by default culture.
                     // We know that the content item should be localized.
@@ -78,7 +78,7 @@ namespace OrchardCore.ContentLocalization.Sitemaps
 
                     // Reduce by default culture.
                     var items = queryResults
-                        .Where(ci => String.Equals(ci.As<LocalizationPart>().Culture, defaultCulture))
+                        .Where(ci => string.Equals(ci.As<LocalizationPart>().Culture, defaultCulture))
                         .Skip(source.LimitedContentType.Skip)
                         .Take(source.LimitedContentType.Take);
 
@@ -105,7 +105,7 @@ namespace OrchardCore.ContentLocalization.Sitemaps
             {
                 // Test that content types are still valid to include in sitemap.
                 var typesToIndex = routeableContentTypeDefinitions
-                    .Where(ctd => source.ContentTypes.Any(s => String.Equals(ctd.Name, s.ContentTypeName)))
+                    .Where(ctd => source.ContentTypes.Any(s => string.Equals(ctd.Name, s.ContentTypeName)))
                     .Select(x => x.Name);
 
                 // No advantage here in reducing with localized index.

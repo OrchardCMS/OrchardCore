@@ -82,8 +82,73 @@ namespace OrchardCore.OpenId.Configuration
                     return;
                 }
 
-                options.AddScheme<OpenIddictValidationAspNetCoreHandler>(
+                options
+/* Unmerged change from project 'OrchardCore.OpenId(net6.0)'
+Before:
+                options.Audiences.Add(OpenIdConstants.Prefixes.Tenant + _shellSettings.Name);
+
+                // Note: token entry validation must be enabled to be able to validate reference tokens.
+                options.EnableTokenEntryValidation = configuration.UseReferenceAccessTokens;
+
+                // If an authority was explicitly set in the OpenID server options,
+                // prefer it to the dynamic tenant comparison as it's more efficient.
+                if (configuration.Authority != null)
+                {
+                    options.TokenValidationParameters.ValidIssuer = configuration.Authority.AbsoluteUri;
+                }
+                else
+                {
+                    options.TokenValidationParameters.IssuerValidator = (issuer, token, parameters) =>
+                    {
+                        if (!Uri.TryCreate(issuer, UriKind.Absolute, out Uri uri))
+                        {
+                            throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
+                        }
+
+                        var tenant = _runningShellTable.Match(HostString.FromUriComponent(uri), uri.AbsolutePath);
+                        if (tenant == null || !String.Equals(tenant.Name, settings.Tenant))
+                        {
+                            throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
+                        }
+
+                        return issuer;
+                    };
+                }
+            }).GetAwaiter().GetResult();
+After:
+                options.Audiences.Add(OpenIdConstants.Prefixes.Tenant + _shellSettings.Name).GetResult();
+*/
+.AddScheme<OpenIddictValidationAspNetCoreHandler>(
                     OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme, displayName: null);
+            }).GetAwaiter();
+
+                // Note: token entry validation must be enabled to be able to validate reference tokens.
+                options.EnableTokenEntryValidation = configuration.UseReferenceAccessTokens;
+
+                // If an authority was explicitly set in the OpenID server options,
+                // prefer it to the dynamic tenant comparison as it's more efficient.
+                if (configuration.Authority != null)
+                {
+                    options.TokenValidationParameters.ValidIssuer = configuration.Authority.AbsoluteUri;
+                }
+                else
+                {
+                    options.TokenValidationParameters.IssuerValidator = (issuer, token, parameters) =>
+                    {
+                        if (!Uri.TryCreate(issuer, UriKind.Absolute, out Uri uri))
+                        {
+                            throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
+                        }
+
+                        var tenant = _runningShellTable.Match(HostString.FromUriComponent(uri), uri.AbsolutePath);
+                        if (tenant == null || !string.Equals(tenant.Name, settings.Tenant))
+                        {
+                            throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
+                        }
+
+                        return issuer;
+                    };
+                }
             }).GetAwaiter().GetResult();
         }
 
@@ -101,7 +166,16 @@ namespace OrchardCore.OpenId.Configuration
             // Otherwise, set the authority to allow the handler to retrieve the endpoint URLs/signing keys
             // from the remote server's metadata by sending an OpenID Connect/OAuth 2.0 discovery request.
 
+
+/* Unmerged change from project 'OrchardCore.OpenId(net6.0)'
+Before:
+            if (!String.IsNullOrEmpty(settings.Tenant) &&
+                !String.Equals(settings.Tenant, _shellSettings.Name))
+After:
             if (settings.Authority != null)
+*/
+            if (!string.IsNullOrEmpty(settings.Tenant) &&
+                !string.Equals(settings.Tenant, _shellSettings.Name))
             {
                 options.Issuer = settings.Authority;
                 options.ConfigurationEndpoint = settings.MetadataAddress;
@@ -180,7 +254,7 @@ namespace OrchardCore.OpenId.Configuration
                         }
 
                         var tenant = _runningShellTable.Match(HostString.FromUriComponent(uri), uri.AbsolutePath);
-                        if (tenant == null || !String.Equals(tenant.Name, settings.Tenant))
+                        if (tenant == null || !string.Equals(tenant.Name, settings.Tenant))
                         {
                             throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
                         }
@@ -201,8 +275,8 @@ namespace OrchardCore.OpenId.Configuration
 
             // If the tokens are issued by an authorization server located in a separate tenant,
             // resolve the isolated data protection provider associated with the specified tenant.
-            if (!String.IsNullOrEmpty(settings.Tenant) &&
-                !String.Equals(settings.Tenant, _shellSettings.Name))
+            if (!string.IsNullOrEmpty(settings.Tenant) &&
+                !string.Equals(settings.Tenant, _shellSettings.Name))
             {
                 CreateTenantScope(settings.Tenant).UsingAsync(async scope =>
                 {
@@ -235,7 +309,7 @@ namespace OrchardCore.OpenId.Configuration
         private ShellScope CreateTenantScope(string tenant)
         {
             // Optimization: if the specified name corresponds to the current tenant, use the current 'ShellScope'.
-            if (String.IsNullOrEmpty(tenant) || String.Equals(tenant, _shellSettings.Name))
+            if (string.IsNullOrEmpty(tenant) || string.Equals(tenant, _shellSettings.Name))
             {
                 return ShellScope.Current;
             }

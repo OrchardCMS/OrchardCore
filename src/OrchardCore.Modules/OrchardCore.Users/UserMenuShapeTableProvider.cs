@@ -18,7 +18,7 @@ public class UserMenuShapeTableProvider : IShapeTableProvider
         builder.Describe($"{ShapeTypePrefix}*")
             .OnDisplaying(context =>
             {
-                if (String.IsNullOrEmpty(context.Shape.Metadata.DisplayType) || context.Shape.Metadata.DisplayType == "Detail")
+                if (string.IsNullOrEmpty(context.Shape.Metadata.DisplayType) || context.Shape.Metadata.DisplayType == "Detail")
                 {
                     return;
                 }

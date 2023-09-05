@@ -167,14 +167,14 @@ namespace OrchardCore.Lists.Services
             {
                 if (enableOrdering)
                 {
-                    var beforeValue = Int32.Parse(pager.Before);
+                    var beforeValue = int.Parse(pager.Before);
                     query = _session.Query<ContentItem>()
                         .With(CreateOrderedContainedPartIndexFilter(beforeValue, null, contentItemId))
                         .OrderByDescending(x => x.Order);
                 }
                 else
                 {
-                    var beforeValue = new DateTime(Int64.Parse(pager.Before));
+                    var beforeValue = new DateTime(long.Parse(pager.Before));
                     query = _session.Query<ContentItem>()
                         .With<ContainedPartIndex>(x => x.ListContentItemId == contentItemId);
 
@@ -226,14 +226,14 @@ namespace OrchardCore.Lists.Services
             {
                 if (enableOrdering)
                 {
-                    var afterValue = Int32.Parse(pager.After);
+                    var afterValue = int.Parse(pager.After);
                     query = _session.Query<ContentItem>()
                         .With(CreateOrderedContainedPartIndexFilter(null, afterValue, contentItemId))
                         .OrderBy(x => x.Order);
                 }
                 else
                 {
-                    var afterValue = new DateTime(Int64.Parse(pager.After));
+                    var afterValue = new DateTime(long.Parse(pager.After));
                     query = _session.Query<ContentItem>()
                         .With(CreateOrderedContainedPartIndexFilter(null, null, contentItemId));
 
@@ -352,7 +352,7 @@ namespace OrchardCore.Lists.Services
 
         private void ApplyContainedItemOptionsFilter(ContainedItemOptions containedItemOptions, IQuery<ContentItem> query)
         {
-            if (!String.IsNullOrEmpty(containedItemOptions.DisplayText))
+            if (!string.IsNullOrEmpty(containedItemOptions.DisplayText))
             {
                 query.With<ContentItemIndex>(i => i.DisplayText.Contains(containedItemOptions.DisplayText));
             }

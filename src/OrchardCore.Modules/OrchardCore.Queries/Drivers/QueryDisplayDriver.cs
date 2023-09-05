@@ -64,16 +64,16 @@ namespace OrchardCore.Queries.Drivers
         {
             await updater.TryUpdateModelAsync(model, Prefix, m => m.Name, m => m.Source, m => m.Schema);
 
-            if (String.IsNullOrEmpty(model.Name))
+            if (string.IsNullOrEmpty(model.Name))
             {
                 updater.ModelState.AddModelError(nameof(model.Name), S["Name is required"]);
             }
-            if (!String.IsNullOrEmpty(model.Schema) && !model.Schema.IsJson())
+            if (!string.IsNullOrEmpty(model.Schema) && !model.Schema.IsJson())
             {
                 updater.ModelState.AddModelError(nameof(model.Schema), S["Invalid schema JSON supplied."]);
             }
             var safeName = model.Name.ToSafeName();
-            if (String.IsNullOrEmpty(safeName) || model.Name != safeName)
+            if (string.IsNullOrEmpty(safeName) || model.Name != safeName)
             {
                 updater.ModelState.AddModelError(nameof(model.Name), S["Name contains illegal characters"]);
             }

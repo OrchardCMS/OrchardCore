@@ -75,7 +75,7 @@ namespace OrchardCore.Localization.Drivers
                         {
                             Supported = settings.SupportedCultures.Contains(cultureInfo.Name, StringComparer.OrdinalIgnoreCase),
                             CultureInfo = cultureInfo,
-                            IsDefault = String.Equals(settings.DefaultCulture, cultureInfo.Name, StringComparison.OrdinalIgnoreCase)
+                            IsDefault = string.Equals(settings.DefaultCulture, cultureInfo.Name, StringComparison.OrdinalIgnoreCase)
                         };
                     }).ToArray();
 

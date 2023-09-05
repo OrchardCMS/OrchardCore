@@ -24,7 +24,7 @@ namespace OrchardCore.Title.Drivers
         {
             var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
 
-            if (!settings.RenderTitle || String.IsNullOrWhiteSpace(titlePart.Title))
+            if (!settings.RenderTitle || string.IsNullOrWhiteSpace(titlePart.Title))
             {
                 return null;
             }
@@ -55,7 +55,7 @@ namespace OrchardCore.Title.Drivers
             if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Title))
             {
                 var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
-                if (settings.Options == TitlePartOptions.EditableRequired && String.IsNullOrWhiteSpace(model.Title))
+                if (settings.Options == TitlePartOptions.EditableRequired && string.IsNullOrWhiteSpace(model.Title))
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(model.Title), S["A value is required for Title."]);
                 }

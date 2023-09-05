@@ -23,7 +23,7 @@ namespace OrchardCore.ResourceManagement
         {
             foreach (var str in strings)
             {
-                if (!String.IsNullOrEmpty(str))
+                if (!string.IsNullOrEmpty(str))
                 {
                     return str;
                 }
@@ -58,6 +58,115 @@ namespace OrchardCore.ResourceManagement
             return this;
         }
 
+/* Unmerged change from project 'OrchardCore.ResourceManagement.Abstractions(net6.0)'
+Before:
+            if (String.IsNullOrEmpty(url))
+After:
+            if (string.IsNullOrEmpty(url))
+*/
+
+/* Unmerged change from project 'OrchardCore.ResourceManagement.Abstractions(net6.0)'
+Before:
+            if (String.IsNullOrEmpty(cdnIntegrity))
+After:
+            if (string.IsNullOrEmpty(cdnIntegrity))
+*/
+
+/* Unmerged change from project 'OrchardCore.ResourceManagement.Abstractions(net6.0)'
+Before:
+            if (String.IsNullOrEmpty(cdnUrl))
+After:
+            if (string.IsNullOrEmpty(cdnUrl))
+*/
+
+/* Unmerged change from project 'OrchardCore.ResourceManagement.Abstractions(net6.0)'
+Before:
+            if (String.IsNullOrEmpty(url))
+After:
+            if (string.IsNullOrEmpty(url))
+*/
+
+/* Unmerged change from project 'OrchardCore.ResourceManagement.Abstractions(net6.0)'
+Before:
+            if (!String.IsNullOrEmpty(settings.Culture))
+After:
+            if (!string.IsNullOrEmpty(settings.Culture))
+*/
+
+/* Unmerged change from project 'OrchardCore.ResourceManagement.Abstractions(net6.0)'
+Before:
+                if (!String.IsNullOrEmpty(nearestCulture))
+After:
+                if (!string.IsNullOrEmpty(nearestCulture))
+*/
+
+/* Unmerged change from project 'OrchardCore.ResourceManagement.Abstractions(net6.0)'
+Before:
+                if (!String.IsNullOrEmpty(_basePath))
+After:
+                if (!string.IsNullOrEmpty(_basePath))
+*/
+
+/* Unmerged change from project 'OrchardCore.ResourceManagement.Abstractions(net6.0)'
+Before:
+                    url = String.Concat(_basePath, url.AsSpan(1));
+After:
+                    url = string.Concat(_basePath, url.AsSpan(1));
+*/
+
+/* Unmerged change from project 'OrchardCore.ResourceManagement.Abstractions(net6.0)'
+Before:
+                    url = String.Concat(applicationPath, url.AsSpan(1));
+After:
+                    url = string.Concat(applicationPath, url.AsSpan(1));
+*/
+
+/* Unmerged change from project 'OrchardCore.ResourceManagement.Abstractions(net6.0)'
+Before:
+            if (url != null && !settings.DebugMode && !String.IsNullOrEmpty(settings.CdnBaseUrl) &&
+After:
+            if (url != null && !settings.DebugMode && !string.IsNullOrEmpty(settings.CdnBaseUrl) &&
+*/
+
+/* Unmerged change from project 'OrchardCore.ResourceManagement.Abstractions(net6.0)'
+Before:
+            if (!String.IsNullOrEmpty(CdnIntegrity) && url != null && url == UrlCdn)
+After:
+            if (!string.IsNullOrEmpty(CdnIntegrity) && url != null && url == UrlCdn)
+*/
+
+/* Unmerged change from project 'OrchardCore.ResourceManagement.Abstractions(net6.0)'
+Before:
+            else if (!String.IsNullOrEmpty(CdnDebugIntegrity) && url != null && url == UrlCdnDebug)
+After:
+            else if (!string.IsNullOrEmpty(CdnDebugIntegrity) && url != null && url == UrlCdnDebug)
+*/
+
+/* Unmerged change from project 'OrchardCore.ResourceManagement.Abstractions(net6.0)'
+Before:
+            if (!String.IsNullOrEmpty(url) && filePathAttributeName != null)
+After:
+            if (!string.IsNullOrEmpty(url) && filePathAttributeName != null)
+*/
+
+/* Unmerged change from project 'OrchardCore.ResourceManagement.Abstractions(net6.0)'
+Before:
+            else if (!String.IsNullOrEmpty(InnerContent))
+After:
+            else if (!string.IsNullOrEmpty(InnerContent))
+*/
+
+/* Unmerged change from project 'OrchardCore.ResourceManagement.Abstractions(net6.0)'
+Before:
+            return String.Equals(that.Name, Name) &&
+                String.Equals(that.Type, Type) &&
+                String.Equals(that.Version, Version);
+After:
+            return string.Equals(that.Name, Name) &&
+                string.Equals(that.Type, Type) &&
+                string.Equals(that.Version, Version);
+*/
+
         public ResourceDefinition SetBasePath(string basePath)
         {
             _basePath = basePath;
@@ -71,7 +180,7 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceDefinition SetUrl(string url, string urlDebug)
         {
-            if (String.IsNullOrEmpty(url))
+            if (string.IsNullOrEmpty(url))
             {
                 ThrowArgumentNullException(nameof(url));
             }
@@ -100,7 +209,7 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceDefinition SetCdnIntegrity(string cdnIntegrity, string cdnDebugIntegrity)
         {
-            if (String.IsNullOrEmpty(cdnIntegrity))
+            if (string.IsNullOrEmpty(cdnIntegrity))
             {
                 ThrowArgumentNullException(nameof(cdnIntegrity));
             }
@@ -114,7 +223,7 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceDefinition SetCdn(string cdnUrl, string cdnUrlDebug, bool? cdnSupportsSsl)
         {
-            if (String.IsNullOrEmpty(cdnUrl))
+            if (string.IsNullOrEmpty(cdnUrl))
             {
                 ThrowArgumentNullException(nameof(cdnUrl));
             }
@@ -208,14 +317,14 @@ namespace OrchardCore.ResourceManagement
                     : Coalesce(Url, UrlDebug, UrlCdn, UrlCdnDebug);
             }
 
-            if (String.IsNullOrEmpty(url))
+            if (string.IsNullOrEmpty(url))
             {
                 url = null;
             }
-            if (!String.IsNullOrEmpty(settings.Culture))
+            if (!string.IsNullOrEmpty(settings.Culture))
             {
                 var nearestCulture = FindNearestCulture(settings.Culture);
-                if (!String.IsNullOrEmpty(nearestCulture))
+                if (!string.IsNullOrEmpty(nearestCulture))
                 {
                     url = Path.ChangeExtension(url, nearestCulture + Path.GetExtension(url));
                 }
@@ -223,13 +332,13 @@ namespace OrchardCore.ResourceManagement
 
             if (url != null && url.StartsWith("~/", StringComparison.Ordinal))
             {
-                if (!String.IsNullOrEmpty(_basePath))
+                if (!string.IsNullOrEmpty(_basePath))
                 {
-                    url = String.Concat(_basePath, url.AsSpan(1));
+                    url = string.Concat(_basePath, url.AsSpan(1));
                 }
                 else
                 {
-                    url = String.Concat(applicationPath, url.AsSpan(1));
+                    url = string.Concat(applicationPath, url.AsSpan(1));
                 }
             }
 
@@ -241,7 +350,7 @@ namespace OrchardCore.ResourceManagement
             }
 
             // Don't prefix cdn if the path includes a protocol, i.e. is an external url, or is in debug mode.
-            if (url != null && !settings.DebugMode && !String.IsNullOrEmpty(settings.CdnBaseUrl) &&
+            if (url != null && !settings.DebugMode && !string.IsNullOrEmpty(settings.CdnBaseUrl) &&
 
                 // Don't evaluate with Uri.TryCreate as it produces incorrect results on Linux.
                 !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
@@ -300,12 +409,12 @@ namespace OrchardCore.ResourceManagement
                     break;
             }
 
-            if (!String.IsNullOrEmpty(CdnIntegrity) && url != null && url == UrlCdn)
+            if (!string.IsNullOrEmpty(CdnIntegrity) && url != null && url == UrlCdn)
             {
                 tagBuilder.Attributes["integrity"] = CdnIntegrity;
                 tagBuilder.Attributes["crossorigin"] = "anonymous";
             }
-            else if (!String.IsNullOrEmpty(CdnDebugIntegrity) && url != null && url == UrlCdnDebug)
+            else if (!string.IsNullOrEmpty(CdnDebugIntegrity) && url != null && url == UrlCdnDebug)
             {
                 tagBuilder.Attributes["integrity"] = CdnDebugIntegrity;
                 tagBuilder.Attributes["crossorigin"] = "anonymous";
@@ -321,11 +430,11 @@ namespace OrchardCore.ResourceManagement
                 tagBuilder.MergeAttributes(settings.Attributes);
             }
 
-            if (!String.IsNullOrEmpty(url) && filePathAttributeName != null)
+            if (!string.IsNullOrEmpty(url) && filePathAttributeName != null)
             {
                 tagBuilder.MergeAttribute(filePathAttributeName, url, true);
             }
-            else if (!String.IsNullOrEmpty(InnerContent))
+            else if (!string.IsNullOrEmpty(InnerContent))
             {
                 tagBuilder.InnerHtml.AppendHtml(InnerContent);
             }
@@ -366,9 +475,9 @@ namespace OrchardCore.ResourceManagement
             }
 
             var that = (ResourceDefinition)obj;
-            return String.Equals(that.Name, Name) &&
-                String.Equals(that.Type, Type) &&
-                String.Equals(that.Version, Version);
+            return string.Equals(that.Name, Name) &&
+                string.Equals(that.Type, Type) &&
+                string.Equals(that.Version, Version);
         }
 
         public override int GetHashCode()

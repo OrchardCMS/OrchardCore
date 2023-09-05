@@ -130,7 +130,7 @@ namespace OrchardCore.Search.Lucene
 
         public bool Exists(string indexName)
         {
-            if (String.IsNullOrWhiteSpace(indexName))
+            if (string.IsNullOrWhiteSpace(indexName))
             {
                 return false;
             }
@@ -261,7 +261,7 @@ namespace OrchardCore.Search.Lucene
                         break;
 
                     case DocumentIndex.Types.Integer:
-                        if (entry.Value != null && Int64.TryParse(entry.Value.ToString(), out var value))
+                        if (entry.Value != null && long.TryParse(entry.Value.ToString(), out var value))
                         {
                             doc.Add(new Int64Field(entry.Name, value, store));
 
@@ -294,7 +294,7 @@ namespace OrchardCore.Search.Lucene
                         break;
 
                     case DocumentIndex.Types.Text:
-                        if (entry.Value != null && !String.IsNullOrEmpty(Convert.ToString(entry.Value)))
+                        if (entry.Value != null && !string.IsNullOrEmpty(Convert.ToString(entry.Value)))
                         {
                             var stringValue = Convert.ToString(entry.Value);
 

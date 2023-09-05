@@ -73,14 +73,14 @@ namespace OrchardCore.ContentFields.Drivers
 
                 field.Value = null;
 
-                if (String.IsNullOrWhiteSpace(viewModel.Value))
+                if (string.IsNullOrWhiteSpace(viewModel.Value))
                 {
                     if (settings.Required)
                     {
                         updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
                     }
                 }
-                else if (!Decimal.TryParse(viewModel.Value, NumberStyles.Any, CultureInfo.CurrentUICulture, out var value))
+                else if (!decimal.TryParse(viewModel.Value, NumberStyles.Any, CultureInfo.CurrentUICulture, out var value))
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["{0} is an invalid number.", context.PartFieldDefinition.DisplayName()]);
                 }

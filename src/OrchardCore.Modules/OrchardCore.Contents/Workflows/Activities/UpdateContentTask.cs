@@ -70,7 +70,7 @@ namespace OrchardCore.Contents.Workflows.Activities
             var contentItemId = (await GetContentItemIdAsync(workflowContext))
                 ?? throw new InvalidOperationException($"The {nameof(UpdateContentTask)} failed to evaluate the 'ContentItemId'.");
 
-            var inlineEventOfSameContentItemId = String.Equals(InlineEvent.ContentItemId, contentItemId, StringComparison.OrdinalIgnoreCase);
+            var inlineEventOfSameContentItemId = string.Equals(InlineEvent.ContentItemId, contentItemId, StringComparison.OrdinalIgnoreCase);
 
             if (inlineEventOfSameContentItemId)
             {
@@ -119,7 +119,7 @@ namespace OrchardCore.Contents.Workflows.Activities
                 }
             }
 
-            if (!String.IsNullOrWhiteSpace(ContentProperties.Expression))
+            if (!string.IsNullOrWhiteSpace(ContentProperties.Expression))
             {
                 var contentProperties = await _expressionEvaluator.EvaluateAsync(ContentProperties, workflowContext, _javaScriptEncoder);
                 contentItem.Merge(JObject.Parse(contentProperties), new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
@@ -157,7 +157,7 @@ namespace OrchardCore.Contents.Workflows.Activities
             {
                 _updateModelAccessor.ModelUpdater.ModelState.AddModelError(nameof(UpdateContentTask),
                     $"The '{workflowContext.WorkflowType.Name}:{nameof(UpdateContentTask)}' failed to update the content item: "
-                    + String.Join(", ", result.Errors));
+                    + string.Join(", ", result.Errors));
             }
 
             workflowContext.LastResult = result;

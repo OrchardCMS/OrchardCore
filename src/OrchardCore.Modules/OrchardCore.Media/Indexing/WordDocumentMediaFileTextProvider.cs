@@ -19,7 +19,7 @@ public class WordDocumentMediaFileTextProvider : IMediaFileTextProvider
             var paragraphs = document.MainDocumentPart?.Document?.Body?.Descendants<Paragraph>();
             if (paragraphs is null || !paragraphs.Any())
             {
-                return Task.FromResult(String.Empty);
+                return Task.FromResult(string.Empty);
             }
 
             using var stringBuilder = ZString.CreateStringBuilder();
@@ -33,7 +33,7 @@ public class WordDocumentMediaFileTextProvider : IMediaFileTextProvider
         }
         catch
         {
-            return Task.FromResult(String.Empty);
+            return Task.FromResult(string.Empty);
         }
     }
 }

@@ -22,7 +22,7 @@ namespace OrchardCore.Tenants.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "FeatureProfiles", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "FeatureProfiles", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

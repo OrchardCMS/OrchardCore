@@ -45,7 +45,7 @@ namespace OrchardCore.HomeRoute.Routing
                 var endpoint = new RouteEndpoint
                 (
                     c => null,
-                    RoutePatternFactory.Parse(String.Empty, routeValues, null),
+                    RoutePatternFactory.Parse(string.Empty, routeValues, null),
                     0,
                     null,
                     null
@@ -66,7 +66,7 @@ namespace OrchardCore.HomeRoute.Routing
 
             foreach (var entry in routeValues)
             {
-                if (!String.Equals(explicitValues[entry.Key]?.ToString(), entry.Value?.ToString(), StringComparison.OrdinalIgnoreCase))
+                if (!string.Equals(explicitValues[entry.Key]?.ToString(), entry.Value?.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
                     return false;
                 }

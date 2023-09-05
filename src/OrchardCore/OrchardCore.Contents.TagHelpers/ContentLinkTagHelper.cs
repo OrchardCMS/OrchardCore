@@ -85,7 +85,7 @@ namespace OrchardCore.Contents.TagHelpers
                 contentItem = DisplayFor;
                 var previewAspect = await _contentManager.PopulateAspectAsync<PreviewAspect>(contentItem);
 
-                if (!String.IsNullOrEmpty(previewAspect.PreviewUrl))
+                if (!string.IsNullOrEmpty(previewAspect.PreviewUrl))
                 {
                     var previewUrl = previewAspect.PreviewUrl;
                     if (!previewUrl.StartsWith("~/", StringComparison.OrdinalIgnoreCase))
@@ -176,7 +176,7 @@ namespace OrchardCore.Contents.TagHelpers
             if (output.TagMode == TagMode.SelfClosing && metadata != null)
             {
                 output.TagMode = TagMode.StartTagAndEndTag;
-                if (!String.IsNullOrEmpty(contentItem.DisplayText))
+                if (!string.IsNullOrEmpty(contentItem.DisplayText))
                 {
                     output.Content.Append(contentItem.DisplayText);
                 }

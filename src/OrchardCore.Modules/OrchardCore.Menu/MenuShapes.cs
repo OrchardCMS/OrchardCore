@@ -61,7 +61,7 @@ namespace OrchardCore.Menu
 
                     var differentiator = FormatName(menu.GetProperty<string>("MenuName"));
 
-                    if (!String.IsNullOrEmpty(differentiator))
+                    if (!string.IsNullOrEmpty(differentiator))
                     {
                         // Menu__[MenuName] e.g. Menu-MainMenu
                         menu.Metadata.Alternates.Add("Menu__" + differentiator);
@@ -129,7 +129,7 @@ namespace OrchardCore.Menu
                     menuItem.Metadata.Alternates.Add("MenuItem__" + encodedContentType);
                     menuItem.Metadata.Alternates.Add("MenuItem__" + encodedContentType + "__level__" + level);
 
-                    if (!String.IsNullOrEmpty(differentiator))
+                    if (!string.IsNullOrEmpty(differentiator))
                     {
                         // MenuItem__[MenuName] e.g. MenuItem-MainMenu
                         // MenuItem__[MenuName]__level__[level] e.g. MenuItem-MainMenu-level-2
@@ -161,7 +161,7 @@ namespace OrchardCore.Menu
                     menuItem.Metadata.Alternates.Add("MenuItemLink__" + encodedContentType);
                     menuItem.Metadata.Alternates.Add("MenuItemLink__" + encodedContentType + "__level__" + level);
 
-                    if (!String.IsNullOrEmpty(differentiator))
+                    if (!string.IsNullOrEmpty(differentiator))
                     {
                         // MenuItemLink__[MenuName] e.g. MenuItemLink-MainMenu
                         // MenuItemLink__[MenuName]__level__[level] e.g. MenuItemLink-MainMenu-level-2
@@ -181,7 +181,7 @@ namespace OrchardCore.Menu
         /// </summary>
         private static string FormatName(string name)
         {
-            if (String.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 return null;
             }

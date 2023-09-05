@@ -25,7 +25,7 @@ namespace OrchardCore.ContentFields.Settings
             return Initialize<MonacoSettingsViewModel>("TextFieldMonacoEditorSettings_Edit", model =>
             {
                 var settings = partFieldDefinition.GetSettings<TextFieldMonacoEditorSettings>();
-                if (String.IsNullOrWhiteSpace(settings.Options))
+                if (string.IsNullOrWhiteSpace(settings.Options))
                 {
                     settings.Options = JsonConvert.SerializeObject(new { automaticLayout = true, language = "html" }, Formatting.Indented);
                 }

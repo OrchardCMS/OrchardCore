@@ -112,7 +112,7 @@ namespace OrchardCore.Lists.Drivers
                 .Location("Content"),
             };
 
-            if (!String.IsNullOrEmpty(containerContentType))
+            if (!string.IsNullOrEmpty(containerContentType))
             {
                 var definition = _contentDefinitionManager.GetTypeDefinition(containerContentType);
 

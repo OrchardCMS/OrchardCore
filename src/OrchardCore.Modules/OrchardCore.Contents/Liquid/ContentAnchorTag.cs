@@ -88,7 +88,7 @@ namespace OrchardCore.Contents.Liquid
                 contentItem = displayFor;
                 var previewAspect = await contentManager.PopulateAspectAsync<PreviewAspect>(contentItem);
 
-                if (!String.IsNullOrEmpty(previewAspect.PreviewUrl))
+                if (!string.IsNullOrEmpty(previewAspect.PreviewUrl))
                 {
                     var previewUrl = previewAspect.PreviewUrl;
                     if (!previewUrl.StartsWith("~/", StringComparison.OrdinalIgnoreCase))
@@ -215,7 +215,7 @@ namespace OrchardCore.Contents.Liquid
                     return completion;
                 }
             }
-            else if (!String.IsNullOrEmpty(contentItem.DisplayText))
+            else if (!string.IsNullOrEmpty(contentItem.DisplayText))
             {
                 writer.Write(encoder.Encode(contentItem.DisplayText));
             }

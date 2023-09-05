@@ -42,7 +42,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
             if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy, t => t.TermContentType))
             {
-                if (!String.IsNullOrWhiteSpace(model.Hierarchy))
+                if (!string.IsNullOrWhiteSpace(model.Hierarchy))
                 {
                     var originalTaxonomyItems = part.ContentItem.As<TaxonomyPart>();
 

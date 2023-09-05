@@ -41,7 +41,7 @@ namespace OrchardCore.Localization
                         Array.Copy(pluralArgument.Arguments, 0, arguments, 1, pluralArgument.Arguments.Length);
                     }
 
-                    translation = String.Format(translation, arguments);
+                    translation = string.Format(translation, arguments);
 
                     return new LocalizedString(name, translation, false);
                 }

@@ -82,7 +82,7 @@ namespace OrchardCore.ResourceManagement
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public RequireSettings UseCulture(string cultureName)
         {
-            if (!String.IsNullOrEmpty(cultureName))
+            if (!string.IsNullOrEmpty(cultureName))
             {
                 Culture = cultureName;
             }
@@ -123,6 +123,13 @@ namespace OrchardCore.ResourceManagement
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public 
+/* Unmerged change from project 'OrchardCore.ResourceManagement.Abstractions(net6.0)'
+Before:
+        public RequireSettings UseVersion(string version)
+        {
+            if (!String.IsNullOrEmpty(version))
+After:
         public RequireSettings WithBasePath(string basePath)
         {
             BasePath = basePath;
@@ -139,7 +146,11 @@ namespace OrchardCore.ResourceManagement
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public RequireSettings UseVersion(string version)
         {
-            if (!String.IsNullOrEmpty(version))
+            if (!string.IsNullOrEmpty(version))
+*/
+RequireSettings UseVersion(string version)
+        {
+            if (!string.IsNullOrEmpty(version))
             {
                 Version = version;
             }

@@ -75,7 +75,7 @@ namespace OrchardCore.Deployment.Controllers
 
             var deploymentPlans = _session.Query<DeploymentPlan, DeploymentPlanIndex>();
 
-            if (!String.IsNullOrWhiteSpace(options.Search))
+            if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 deploymentPlans = deploymentPlans.Where(x => x.Name.Contains(options.Search));
             }
@@ -211,7 +211,7 @@ namespace OrchardCore.Deployment.Controllers
 
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrWhiteSpace(model.Name))
+                if (string.IsNullOrWhiteSpace(model.Name))
                 {
                     ModelState.AddModelError(nameof(CreateDeploymentPlanViewModel.Name), S["The name is mandatory."]);
                 }
@@ -276,11 +276,11 @@ namespace OrchardCore.Deployment.Controllers
 
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrWhiteSpace(model.Name))
+                if (string.IsNullOrWhiteSpace(model.Name))
                 {
                     ModelState.AddModelError(nameof(EditDeploymentPlanViewModel.Name), S["The name is mandatory."]);
                 }
-                if (!String.Equals(model.Name, deploymentPlan.Name, StringComparison.OrdinalIgnoreCase))
+                if (!string.Equals(model.Name, deploymentPlan.Name, StringComparison.OrdinalIgnoreCase))
                 {
                     var count = await _session.QueryIndex<DeploymentPlanIndex>(x => x.Name == model.Name && x.DocumentId != model.Id).CountAsync();
                     if (count > 0)

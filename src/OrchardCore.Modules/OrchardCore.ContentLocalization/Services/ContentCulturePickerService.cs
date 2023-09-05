@@ -60,7 +60,7 @@ namespace OrchardCore.ContentLocalization.Services
                 }
             }
 
-            if (String.IsNullOrEmpty(contentItemId))
+            if (string.IsNullOrEmpty(contentItemId))
             {
                 return null;
             }
@@ -72,7 +72,7 @@ namespace OrchardCore.ContentLocalization.Services
         {
             var contentItemId = await GetContentItemIdFromRouteAsync(url);
 
-            if (!String.IsNullOrEmpty(contentItemId))
+            if (!string.IsNullOrEmpty(contentItemId))
             {
                 (var found, var localization) = await _localizationEntries.TryGetLocalizationAsync(contentItemId);
 
@@ -89,7 +89,7 @@ namespace OrchardCore.ContentLocalization.Services
         {
             var contentItemId = await GetContentItemIdFromRouteAsync(url);
 
-            if (!String.IsNullOrEmpty(contentItemId))
+            if (!string.IsNullOrEmpty(contentItemId))
             {
                 (var found, var localization) = await _localizationEntries.TryGetLocalizationAsync(contentItemId);
 

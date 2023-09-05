@@ -55,7 +55,7 @@ namespace OrchardCore.DisplayManagement.Zones
 
         public override string ToString()
         {
-            return String.Empty;
+            return string.Empty;
         }
 
         public override bool TryConvert(System.Dynamic.ConvertBinder binder, out object result)

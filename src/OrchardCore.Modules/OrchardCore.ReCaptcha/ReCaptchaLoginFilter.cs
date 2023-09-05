@@ -34,7 +34,7 @@ namespace OrchardCore.ReCaptcha
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
             if (!(context.Result is ViewResult || context.Result is PageResult)
-                || !String.Equals("OrchardCore.Users", Convert.ToString(context.RouteData.Values["area"]), StringComparison.OrdinalIgnoreCase))
+                || !string.Equals("OrchardCore.Users", Convert.ToString(context.RouteData.Values["area"]), StringComparison.OrdinalIgnoreCase))
             {
                 await next();
                 return;

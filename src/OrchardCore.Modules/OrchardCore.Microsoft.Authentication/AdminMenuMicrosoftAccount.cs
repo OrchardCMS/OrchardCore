@@ -18,7 +18,7 @@ namespace OrchardCore.Microsoft.Authentication
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 builder.Add(S["Security"], security => security
                         .Add(S["Authentication"], authentication => authentication
@@ -42,7 +42,7 @@ namespace OrchardCore.Microsoft.Authentication
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 builder.Add(S["Security"], security => security
                         .Add(S["Authentication"], authentication => authentication

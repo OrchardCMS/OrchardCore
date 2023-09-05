@@ -39,9 +39,34 @@ namespace OrchardCore.Contents.Sitemaps
                 {
                     ContentTypeName = ctd.Name,
                     ContentTypeDisplayName = ctd.DisplayName,
+
+/* Unmerged change from project 'OrchardCore.Contents(net6.0)'
+Before:
                     IsChecked = sitemapSource.ContentTypes.Any(s => String.Equals(s.ContentTypeName, ctd.Name)),
                     ChangeFrequency = sitemapSource.ContentTypes.FirstOrDefault(s => String.Equals(s.ContentTypeName, ctd.Name))?.ChangeFrequency ?? ChangeFrequency.Daily,
                     Priority = sitemapSource.ContentTypes.FirstOrDefault(s => String.Equals(s.ContentTypeName, ctd.Name))?.Priority ?? 5,
+After:
+                    IsChecked = sitemapSource.ContentTypes.Any(s => string.Equals(s.ContentTypeName, ctd.Name)),
+                    ChangeFrequency = sitemapSource.ContentTypes.FirstOrDefault(s => string.Equals(s.ContentTypeName, ctd.Name))?.ChangeFrequency ?? ChangeFrequency.Daily,
+                    Priority = sitemapSource.ContentTypes.FirstOrDefault(s => string.Equals(s.ContentTypeName, ctd.Name))?.Priority ?? 5,
+*/
+                    IsChecked = sitemapSource.ContentTypes.Any(s => 
+/* Unmerged change from project 'OrchardCore.Contents(net6.0)'
+Before:
+                .FirstOrDefault(ctd => String.Equals(sitemapSource.LimitedContentType.ContentTypeName, ctd.Name));
+After:
+                .FirstOrDefault(ctd => string.Equals(sitemapSource.LimitedContentType.ContentTypeName, ctd.Name));
+*/
+
+/* Unmerged change from project 'OrchardCore.Contents(net6.0)'
+Before:
+                var limitedEntry = limitedEntries.FirstOrDefault(le => String.Equals(le.ContentTypeName, limitedCtd.Name));
+After:
+                var limitedEntry = limitedEntries.FirstOrDefault(le => string.Equals(le.ContentTypeName, limitedCtd.Name));
+*/
+string.Equals(s.ContentTypeName, ctd.Name)),
+                    ChangeFrequency = sitemapSource.ContentTypes.FirstOrDefault(s => string.Equals(s.ContentTypeName, ctd.Name))?.ChangeFrequency ?? ChangeFrequency.Daily,
+                    Priority = sitemapSource.ContentTypes.FirstOrDefault(s => string.Equals(s.ContentTypeName, ctd.Name))?.Priority ?? 5,
                 })
                 .OrderBy(ctd => ctd.ContentTypeDisplayName)
                 .ToArray();
@@ -56,11 +81,11 @@ namespace OrchardCore.Contents.Sitemaps
                 .ToArray();
 
             var limitedCtd = contentTypeDefinitions
-                .FirstOrDefault(ctd => String.Equals(sitemapSource.LimitedContentType.ContentTypeName, ctd.Name));
+                .FirstOrDefault(ctd => string.Equals(sitemapSource.LimitedContentType.ContentTypeName, ctd.Name));
 
             if (limitedCtd != null)
             {
-                var limitedEntry = limitedEntries.FirstOrDefault(le => String.Equals(le.ContentTypeName, limitedCtd.Name));
+                var limitedEntry = limitedEntries.FirstOrDefault(le => string.Equals(le.ContentTypeName, limitedCtd.Name));
                 limitedEntry.Priority = sitemapSource.LimitedContentType.Priority;
                 limitedEntry.ChangeFrequency = sitemapSource.LimitedContentType.ChangeFrequency;
                 limitedEntry.Skip = sitemapSource.LimitedContentType.Skip;
@@ -109,7 +134,7 @@ namespace OrchardCore.Contents.Sitemaps
                     })
                     .ToArray();
 
-                var limitedEntry = model.LimitedContentTypes.FirstOrDefault(lct => String.Equals(lct.ContentTypeName, model.LimitedContentType));
+                var limitedEntry = model.LimitedContentTypes.FirstOrDefault(lct => string.Equals(lct.ContentTypeName, model.LimitedContentType));
                 if (limitedEntry != null)
                 {
                     sitemap.LimitedContentType.ContentTypeName = limitedEntry.ContentTypeName;

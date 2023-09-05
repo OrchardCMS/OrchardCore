@@ -27,7 +27,7 @@ public class SitemapsRobotsProvider : IRobotsProvider
     {
         var site = await _siteService.GetSiteSettingsAsync();
 
-        if (String.IsNullOrEmpty(site.BaseUrl))
+        if (string.IsNullOrEmpty(site.BaseUrl))
         {
             // Can't create sitemap links if there is not set base-url.
 

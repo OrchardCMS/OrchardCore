@@ -75,7 +75,7 @@ namespace OrchardCore.Navigation
 
             menuItemShape.Id = menuItem.Id;
 
-            if (!String.IsNullOrEmpty(menuItem.Href) && menuItem.Href[0] == '/')
+            if (!string.IsNullOrEmpty(menuItem.Href) && menuItem.Href[0] == '/')
             {
                 menuItemShape.Href = QueryHelpers.AddQueryString(menuItem.Href, menu.MenuName, menuItemShape.Hash);
             }
@@ -92,7 +92,7 @@ namespace OrchardCore.Navigation
 
         private static void MarkAsSelectedIfMatchesQueryOrCookie(MenuItem menuItem, dynamic menuItemShape, ViewContext viewContext)
         {
-            if (!String.IsNullOrEmpty(menuItem.Href) && menuItem.Href[0] == '/')
+            if (!string.IsNullOrEmpty(menuItem.Href) && menuItem.Href[0] == '/')
             {
                 var hash = viewContext.HttpContext.Request.Query[(string)menuItemShape.Menu.MenuName];
 
