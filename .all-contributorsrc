@@ -2753,6 +2753,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "brutoledo",
+      "name": "Bruno Toledo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5890282?v=4",
+      "profile": "https://github.com/brutoledo",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "skipCi": true
