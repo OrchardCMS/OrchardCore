@@ -11,7 +11,7 @@
 
 @{
     var secretBindings = await SecretService.GetSecretBindingsAsync();
-    var httpRequestEventSecretBindings = secretBindings.Where(x => String.Equals(nameof(HttpRequestEventSecret), x.Value.Type, StringComparison.OrdinalIgnoreCase));
+    var httpRequestEventSecretBindings = secretBindings.Where(kvp => String.Equals(nameof(HttpRequestEventSecret), kvp.Value.Type, StringComparison.OrdinalIgnoreCase));
     var defaultHtttpRequestEventSecret = new HttpRequestEventSecret { Name = "None", WorkflowTypeId = String.Empty };
 
     var httpRequestEventSecrets = new List<HttpRequestEventSecret>()
@@ -43,7 +43,7 @@
     {
         secrets = httpRequestEventSecrets,
         selected = selectedHttpRequestEventSecret,
-        inputName = Html.NameFor(e => e.HttpRequestEventSecret),
+        inputName = Html.NameFor(m => m.HttpRequestEventSecret),
         linkUrl = Url.Action("LinkSecret", "HttpWorkflow"),
         createUrl = Url.Action("CreateSecret", "Httpworkflow"),
         linkSecretErrorMessage = T["Error linking secret"],
@@ -88,7 +88,7 @@
     <span class="hint d-block mb-4 mt-1"><i class="fa fa-exclamation-triangle"></i> @T["Hit the <b>Regenerate</b> button after changing this value."]</span>
 </div>
 
-<div id="@Html.IdFor(x => x.HttpRequestEventSecret)" class="mb-3" data-secret-data="@jData" v-cloak>
+<div id="@Html.IdFor(m => m.HttpRequestEventSecret)" class="mb-3" data-secret-data="@jData" v-cloak>
     <div class="w-xl-50">
         <label asp-for="HttpRequestEventSecret">@T["Http Request Event Secret"]</label>
         <input name="@Html.NameFor(m => m.HttpRequestEventSecret)" type="hidden" v-bind:value="selected.name" />
@@ -131,5 +131,5 @@
 <style asp-name="http-request-event-editor" depends-on="vue-multiselect" asp-src="~/OrchardCore.Workflows/Styles/orchard.http-request-event-editor.min.css" debug-src="~/OrchardCore.Workflows/Styles/orchard.http-request-event-editor.css"></style>
 
 <script at="Foot">
-    initializeHttpRequestEventSecretManager(document.getElementById('@Html.IdFor(x => x.HttpRequestEventSecret)'));
+    initializeHttpRequestEventSecretManager(document.getElementById('@Html.IdFor(m => m.HttpRequestEventSecret)'));
 </script>

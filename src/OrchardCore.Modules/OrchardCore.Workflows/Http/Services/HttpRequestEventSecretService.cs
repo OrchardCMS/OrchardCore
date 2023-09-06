@@ -45,7 +45,7 @@ public class HttpRequestEventSecretService : IHttpRequestEventSecretService
 
         var tokenLifeSpan = secret.TokenLifeSpan == 0 ? HttpWorkflowController.NoExpiryTokenLifespan : secret.TokenLifeSpan;
 
-        // If the secret changes the cache key is no longer valid and the cache entry will auto expire.
+        // If the secret changes the key is no longer valid and the cache entry will expire automatically.
         var cacheKey = $"{TokenCacheKeyPrefix}{secret.WorkflowTypeId}{secret.ActivityId}{tokenLifeSpan}";
 
         var url = _memoryCache.GetOrCreate(cacheKey, entry =>

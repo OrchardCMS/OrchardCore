@@ -109,7 +109,7 @@ namespace OrchardCore.Workflows.Http.Controllers
         public async Task<IActionResult> CreateSecret(string secretName, string workflowTypeId, string activityId, int tokenLifeSpan)
         {
             var secretBindings = await _secretService.LoadSecretBindingsAsync();
-            if (!secretBindings.ContainsKey(secretName))
+            if (secretBindings.ContainsKey(secretName))
             {
                 return BadRequest();
             }

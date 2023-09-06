@@ -9,36 +9,39 @@
     var httpRequestEventSecretService = Context.RequestServices.GetService<IHttpRequestEventSecretService>();
 }
 
-<div class="@Orchard.GetWrapperCssClasses()">
-    <label asp-for="Action" class="@Orchard.GetLabelCssClasses()">@T["Action"]</label>
-    <div class="@Orchard.GetEndCssClasses()">
-        <input type="text" asp-for="Action" class="form-control content-preview-text" />
-        <span class="hint">@T["The URL to submit the form to."]</span>
-    </div>
-</div>
-
-@if (httpRequestEventSecretService != null)
+@if (httpRequestEventSecretService is not null)
 {
     <div class="@Orchard.GetWrapperCssClasses()">
         <div class="@Orchard.GetEndCssClasses()">
-            <div class="mb-3" asp-validation-class-for="HttpRequestEventSecret">
-                <label asp-for="HttpRequestEventSecret">@T["Http request event secret"]</label>
+            <div class="mb-3" asp-validation-class-for="ActionSecret">
+                <label asp-for="ActionSecret">@T["Action Secret"]</label>
                 @await Component.InvokeAsync(
             "SelectSecret",
             new
             {
             secretType = "HttpRequestEventSecret",
-            selectedSecret = Model.HttpRequestEventSecret,
-            htmlId = Html.IdFor(m => m.HttpRequestEventSecret),
-            htmlName = Html.NameFor(m => m.HttpRequestEventSecret),
+            selectedSecret = Model.ActionSecret,
+            htmlId = Html.IdFor(m => m.ActionSecret),
+            htmlName = Html.NameFor(m => m.ActionSecret),
             required  = false,
             })
-                <span asp-validation-for="HttpRequestEventSecret"></span>
-                <span class="hint">@T["The secret for the http request event workflow activity to submit this form to. When provided will override the Action value."]</span>
+                <span asp-validation-for="ActionSecret"></span>
+                <span class="hint">@T["The action secret if the form needs to be submitted to a secure http request event workflow activity."]</span>
             </div>
         </div>
     </div>
 }
+
+<div class="@Orchard.GetWrapperCssClasses() plain-text">
+    @if (httpRequestEventSecretService is null)
+    {
+        <label asp-for="Action" class="@Orchard.GetLabelCssClasses()">@T["Action"]</label>
+    }
+    <div class="@Orchard.GetEndCssClasses()">
+        <input type="text" asp-for="Action" class="form-control content-preview-text" />
+        <span class="hint">@T["The plain text URL to submit the form to."]</span>
+    </div>
+</div>
 
 <div class="@Orchard.GetWrapperCssClasses()">
     <label asp-for="Method" class="@Orchard.GetLabelCssClasses()">@T["Method"]</label>
@@ -72,3 +75,17 @@
         </div>
     </div>
 </div>
+
+<script at="Foot">
+    $(function () {
+        $('#@Html.IdFor(m => m.ActionSecret)').on('change', function () {
+            if (this.value === '') {
+                $('#@Html.IdFor(m => m.Action)').closest('.plain-text').show();
+                $('#@Html.IdFor(m => m.ActionSecret)').siblings('.hint').hide();
+            } else {
+                $('#@Html.IdFor(m => m.Action)').closest('.plain-text').hide();
+                $('#@Html.IdFor(m => m.ActionSecret)').siblings('.hint').show();
+            }
+        }).trigger('change');
+    });
+</script>
