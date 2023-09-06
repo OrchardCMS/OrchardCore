@@ -9,27 +9,29 @@
         <span asp-validation-for="ClientName" class="text-danger"></span>
     </div>
 
-    <div class="mb-3" asp-validation-class-for="ApiKeySecret">
-        <label asp-for="ApiKeySecret">@T["Api Key Secret"]</label>
-        @await Component.InvokeAsync(
-        "SelectSecret",
-        new
-        {
-        secretType = "TextSecret",
-        selectedSecret = Model.ApiKeySecret,
-        htmlId = Html.IdFor(m => m.ApiKeySecret),
-        htmlName = Html.NameFor(m => m.ApiKeySecret),
-        required  = false,
-        })
-        <span asp-validation-for="ApiKeySecret"></span>
-        <span class="hint">@T["The api key secret."]</span>
-    </div>
+    <div class="mb-3">
+        <div asp-validation-class-for="ApiKeySecret">
+            <label asp-for="ApiKeySecret">@T["Api Key Secret"]</label>
+            @await Component.InvokeAsync(
+            "SelectSecret",
+            new
+            {
+            secretType = "TextSecret",
+            selectedSecret = Model.ApiKeySecret,
+            htmlId = Html.IdFor(m => m.ApiKeySecret),
+            htmlName = Html.NameFor(m => m.ApiKeySecret),
+            required  = false,
+            })
+            <span asp-validation-for="ApiKeySecret"></span>
+            <span class="hint">@T["The api key secret."]</span>
+        </div>
 
-    <div class="mb-3 plain-text" asp-validation-class-for="ApiKey">
-        @* <label asp-for="ApiKey">@T["Api Key"]</label> *@
-        <input asp-for="ApiKey" type="password" class="form-control" />
-        <span asp-validation-for="ApiKey" class="text-danger"></span>
-        <span class="hint">@T["The plain text api key."]</span>
+        <div class="mt-1 plain-text" asp-validation-class-for="ApiKey">
+            @* <label asp-for="ApiKey">@T["Api Key"]</label> *@
+            <input asp-for="ApiKey" type="password" class="form-control" />
+            <span asp-validation-for="ApiKey" class="text-danger"></span>
+            <span class="hint">@T["The plain text api key."]</span>
+        </div>
     </div>
 
     <div class="mb-3">

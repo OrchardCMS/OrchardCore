@@ -122,27 +122,29 @@
                             <span class="hint">@T["The username for authentication."]</span>
                         </div>
 
-                        <div class="mb-3" asp-validation-class-for="PasswordSecret">
-                            <label asp-for="PasswordSecret">@T["Password secret"]</label>
-                            @await Component.InvokeAsync(
-                            "SelectSecret",
-                            new
-                            {
-                            secretType = "TextSecret",
-                            selectedSecret = Model.PasswordSecret,
-                            htmlId = Html.IdFor(m => m.PasswordSecret),
-                            htmlName = Html.NameFor(m => m.PasswordSecret),
-                            required  = false,
-                            })
-                            <span asp-validation-for="PasswordSecret"></span>
-                            <span class="hint">@T["The password secret used for authentication."]</span>
-                        </div>
+                        <div class="mb-3">
+                            <div asp-validation-class-for="PasswordSecret">
+                                <label asp-for="PasswordSecret">@T["Password secret"]</label>
+                                @await Component.InvokeAsync(
+                                "SelectSecret",
+                                new
+                                {
+                                secretType = "TextSecret",
+                                selectedSecret = Model.PasswordSecret,
+                                htmlId = Html.IdFor(m => m.PasswordSecret),
+                                htmlName = Html.NameFor(m => m.PasswordSecret),
+                                required  = false,
+                                })
+                                <span asp-validation-for="PasswordSecret"></span>
+                                <span class="hint">@T["The password secret used for authentication."]</span>
+                            </div>
 
-                        <div class="mb-3 plain-text" asp-validation-class-for="Password">
-                            @* <label asp-for="Password">@T["Password"]</label> *@
-                            <input asp-for="Password" class="form-control pwd" type="password" />
-                            <span asp-validation-for="Password"></span>
-                            <span class="hint">@T["The plain text password used for authentication."]</span>
+                            <div class="mt-1 plain-text" asp-validation-class-for="Password">
+                                @* <label asp-for="Password">@T["Password"]</label> *@
+                                <input asp-for="Password" class="form-control pwd" type="password" />
+                                <span asp-validation-for="Password"></span>
+                                <span class="hint">@T["The plain text password used for authentication."]</span>
+                            </div>
                         </div>
                     </div>
                 </div>

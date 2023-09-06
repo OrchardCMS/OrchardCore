@@ -35,6 +35,9 @@ function initializeHttpRequestEventSecretManager(element) {
         computed: {
             isLinkButtonVisible() {
                 return this.selected.workflowTypeId !== '' && (this.selected.activityId !== this.activityId || this.selected.workflowTypeId !== this.workflowTypeId);
+            },
+            isUrlVisible() {
+                return this.selected.name === 'None';
             }
         },
         methods: {
