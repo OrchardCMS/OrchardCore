@@ -70,7 +70,7 @@
         <button class="btn btn-primary" type="button" id="generate-url-button" title="@T["Generate a new URL"]" data-generate-url="@Url.Action("GenerateUrl", "HttpWorkflow")" data-antiforgery-token="@antiforgeryTokenSet.RequestToken" data-antiforgery-header-name="@antiforgeryTokenSet.HeaderName">@T["Regenerate"]</button>
         <span class="btn btn-secondary" onclick="select_all_and_copy(document.getElementById('workflow-url-text'))"><i class="fa-solid fa-copy" aria-hidden="true"></i> @T["Copy"]</span>
     </div>
-    <span class="hint"><i class="fa-solid fa-exclamation-triangle"></i> @T["Anyone that invokes this URL will trigger this workflow. Keep it in a safe place."]</span>
+    <span class="hint"><i class="fa-solid fa-exclamation-triangle" aria-hidden="true"></i> @T["Anyone that invokes this URL will trigger this workflow. Keep it in a safe place."]</span>
 </div>
 
 <div class="mb-3">
