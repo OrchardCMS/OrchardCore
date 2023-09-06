@@ -1,11 +1,19 @@
-// <sort-indicator> component
-Vue.component('sortIndicator', {
-    template: `
-        <div v-show="isActive" class="sort-indicator">
-            <span v-show="asc"><i class="small fa fa-chevron-up"></i></span>
-            <span v-show="!asc"><i class="small fa fa-chevron-down"></i></span>
-        </div>
-        `,
+<!-- 
+    <sort-indicator> component
+-->
+
+<template>
+    <div v-show="isActive" class="sort-indicator">
+        <span v-show="asc"><i class="small fa fa-chevron-up"></i></span>
+        <span v-show="!asc"><i class="small fa fa-chevron-down"></i></span>
+    </div>
+</template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+    name: "sortIndicator",
     props: {
         colname: String,
         selectedcolname: String,
@@ -17,3 +25,4 @@ Vue.component('sortIndicator', {
         }
     }
 });
+</script>

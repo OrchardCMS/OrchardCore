@@ -6,12 +6,12 @@
         <div :class="{folderhovered: isHovered , treeroot: level == 1}" >
             <a href="javascript:;" v-on:click="select" draggable="false" class="folder-menu-item">
                 <span v-on:click.stop="toggle" class="expand" :class="{opened: open, closed: !open, empty: empty}">
-                    <i v-if="open" class="fas fa-chevron-left"></i>
-                </span> 
+                    <fa-icon v-if="open" icon="fas fa-chevron-left"></fa-icon>
+                </span>
                 <div class="folder-name ms-2">{{model?.name}}</div>
                 <div class="btn-group folder-actions" >
-                    <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="createFolder" v-if="isSelected || isRoot"><i class="fas fa-plus" aria-hidden="true"></i></a>
-                    <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="deleteFolder" v-if="isSelected && !isRoot"><i class="fas fa-trash" aria-hidden="true"></i></a>
+                    <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="createFolder" v-if="isSelected || isRoot"><fa-icon icon="fas fa-plus"></fa-icon></a>
+                    <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="deleteFolder" v-if="isSelected && !isRoot"><fa-icon icon="fas fa-trash"></fa-icon></a>
                 </div>
             </a>
         </div>
@@ -28,6 +28,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import axios from 'axios';
 
 export default defineComponent({
     name: "folder",
@@ -68,6 +69,7 @@ export default defineComponent({
     created: function () {
         var self = this;
         var emitter = this.emitter;
+
         this.emitter.on('deleteFolder', function (folder:never) {
             if (self.children) {
                 var index = self.children && self.children.indexOf(folder)
@@ -121,19 +123,17 @@ export default defineComponent({
             if (this.open == false) {
                 this.open = true;
             }
-            $.ajax({
-                url: document.querySelector('#getFoldersUrl')?.nodeValue + "?path=" + encodeURIComponent(self.model.path),
-                method: 'GET',
-                success: function (data) {
-                    self.children = data;
-                    self.children.forEach(function (c) {
+            
+            axios.get(document.querySelector('#getFoldersUrl')?.nodeValue + "?path=" + encodeURIComponent(self.model?.path))
+            .then((response: { data: any; }) => {
+                self.children = response.data;
+                    self.children.forEach(function (c: any) {
                         c.parent = self.model;
                     });
-                },
-                error: function (error) {
-                    emtpy = false;
-                    console.error(error.responseText);
-                }
+            })
+            .catch((error: any) => {
+                //emtpy = false;
+                console.error(error.responseText);
             });
         },
         handleDragOver: function (e:any) {

@@ -30,7 +30,7 @@
         </ol>
       </div>
 
-<!--         <div id="mediaContainerMain" v-cloak>
+        <div id="mediaContainerMain" v-cloak>
             <div class="media-container-top-bar">
                 <nav class="nav action-bar pb-3 pt-3 pl-3">
                     <div class="me-auto ms-4">
@@ -115,7 +115,7 @@
             <div v-show="filteredMediaItems.length > 0" class="media-container-footer p-3">
                 <pager :source-items="filteredMediaItems"> </pager>
             </div>
-        </div> -->
+        </div>
     </div>
   </div>
 </template>
@@ -127,10 +127,20 @@
 <script lang="ts">
 import { defineComponent, defineAsyncComponent } from 'vue';
 import FolderComponent from './components/folderComponent.vue';
+import UploadComponent from './components/uploadComponent.vue';
+import UploadListComponent from './components/uploadListComponent.vue';
+import MediaItemsGridComponent from './components/mediaItemsGridComponent.vue';
+import MediaItemsTableComponent from './components/mediaItemsTableComponent.vue';
+import PagerComponent from './components/pagerComponent.vue';
 
 export default defineComponent({
   components: {
-    Folder: FolderComponent
+    Folder: FolderComponent,
+    Upload: UploadComponent,
+    UploadList: UploadListComponent,
+    MediaItemsGrid: MediaItemsGridComponent,
+    MediaItemsTable: MediaItemsTableComponent,
+    Pager: PagerComponent,
   },
   name: "App",
   props: {
