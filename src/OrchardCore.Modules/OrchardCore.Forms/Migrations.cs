@@ -39,13 +39,12 @@ namespace OrchardCore.Forms
 
             _contentDefinitionManager.AlterPartDefinition("FormElementLabelPart", part => part
                 .Attachable()
-                .WithDisplayName("Form Element Label Part")
                 .WithDescription("Provides a way to capture element's label.")
             );
 
             _contentDefinitionManager.AlterPartDefinition("FormElementValidationPart", part => part
                 .Attachable()
-                .WithDisplayName("Form Element Validation Part")
+                .WithDescription("Provides validation options to form elements.")
             );
 
             // FormInputElement
@@ -194,13 +193,12 @@ namespace OrchardCore.Forms
         {
             _contentDefinitionManager.AlterPartDefinition("FormElementLabelPart", part => part
                 .Attachable()
-                .WithDisplayName("Form Element Label Part")
                 .WithDescription("Provides a way to capture element's label.")
             );
 
             _contentDefinitionManager.AlterPartDefinition("FormElementValidationPart", part => part
                 .Attachable()
-                .WithDisplayName("Form Element Validation Part")
+                .WithDescription("Provides validation options to form elements.")
             );
 
             _contentDefinitionManager.AlterTypeDefinition("Select", type => type
