@@ -130,7 +130,7 @@ namespace OrchardCore.Navigation
             // Apply the selection to the hierarchy
             if (selectedItem != null)
             {
-                viewContext.HttpContext.Response.Cookies.Append(selectedItem.Menu.MenuName + '_' + HttpUtility.UrlEncode(ShellScope.Context.Settings.Name), selectedItem.Hash);
+                viewContext.HttpContext.Response.Cookies.Append(HttpUtility.UrlEncode(selectedItem.Menu.MenuName + '_' + ShellScope.Context.Settings.Name), selectedItem.Hash);
 
                 while (selectedItem.Parent != null)
                 {
