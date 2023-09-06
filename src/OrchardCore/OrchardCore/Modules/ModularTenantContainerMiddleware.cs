@@ -37,7 +37,7 @@ namespace OrchardCore.Modules
             {
                 if (shellSettings.IsInitializing())
                 {
-                    httpContext.Response.Headers.Add(HeaderNames.RetryAfter, "10");
+                    httpContext.Response.Headers.Append(HeaderNames.RetryAfter, "10");
                     httpContext.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
                     await httpContext.Response.WriteAsync("The requested tenant is currently initializing.");
                     return;

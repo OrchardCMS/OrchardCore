@@ -25,6 +25,7 @@ namespace OrchardCore.Workflows.Services
         private readonly IWorkflowStore _workflowStore;
         private readonly IWorkflowIdGenerator _workflowIdGenerator;
         private readonly Resolver<IEnumerable<IWorkflowValueSerializer>> _workflowValueSerializers;
+        private readonly IWorkflowFaultHandler _workflowFaultHandler;
         private readonly IDistributedLock _distributedLock;
         private readonly ILogger _logger;
         private readonly ILogger<MissingActivity> _missingActivityLogger;
@@ -41,18 +42,19 @@ namespace OrchardCore.Workflows.Services
             IWorkflowStore workflowRepository,
             IWorkflowIdGenerator workflowIdGenerator,
             Resolver<IEnumerable<IWorkflowValueSerializer>> workflowValueSerializers,
+            IWorkflowFaultHandler workflowFaultHandler,
             IDistributedLock distributedLock,
             ILogger<WorkflowManager> logger,
             ILogger<MissingActivity> missingActivityLogger,
             IStringLocalizer<MissingActivity> missingActivityLocalizer,
-            IClock clock
-        )
+            IClock clock)
         {
             _activityLibrary = activityLibrary;
             _workflowTypeStore = workflowTypeRepository;
             _workflowStore = workflowRepository;
             _workflowIdGenerator = workflowIdGenerator;
             _workflowValueSerializers = workflowValueSerializers;
+            _workflowFaultHandler = workflowFaultHandler;
             _distributedLock = distributedLock;
             _logger = logger;
             _missingActivityLogger = missingActivityLogger;
@@ -420,6 +422,8 @@ namespace OrchardCore.Workflows.Services
 
                     // Decrement the workflow scope recursion count.
                     DecrementRecursion(workflowContext.Workflow);
+
+                    await _workflowFaultHandler.OnWorkflowFaultAsync(this, workflowContext, activityContext, ex);
 
                     return blocking.Distinct();
                 }

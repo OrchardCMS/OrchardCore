@@ -22,7 +22,7 @@ namespace OrchardCore.Localization
             S = localizer;
         }
 
-        ///<inheritdocs />
+        /// <inheritdocs />
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))

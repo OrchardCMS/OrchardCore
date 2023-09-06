@@ -66,8 +66,8 @@ namespace OrchardCore.Flows.Drivers
                 m.BuildPartDisplayContext = context;
                 m.Settings = context.TypePartDefinition.GetSettings<BagPartSettings>();
             })
-            .Location("Detail", "Content:5")
-            .Location("Summary", "Content:5");
+            .Location("Detail", "Content")
+            .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(BagPart bagPart, BuildPartEditorContext context)

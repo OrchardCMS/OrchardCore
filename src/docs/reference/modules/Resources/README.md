@@ -44,8 +44,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 
 | Name                  | Type   | Versions      | Dependencies   |
 | --------------------- | ------ | ------------- | -------------- |
-| jQuery                | Script | 3.7.0         | -              |
-| jQuery.slim           | Script | 3.7.0         | -              |
+| jQuery                | Script | 3.7.1         | -              |
+| jQuery.slim           | Script | 3.7.1         | -              |
 | jQuery-ui             | Script | 1.12.1        | jQuery         |
 | jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
 | jquery.easing         | Script | 1.4.1         | -              |
@@ -60,9 +60,9 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | bootstrap-select      | Style  | 1.14.0-beta2  | -              |
 | codemirror            | Script | 5.65.7        | -              |
 | codemirror            | Style  | 5.65.7        | -              |
-| font-awesome          | Style  | 6.4.0         | -              |
-| font-awesome          | Script | 6.4.0         | -              |
-| font-awesome-v4-shims | Script | 6.4.0         | -              |
+| font-awesome          | Style  | 6.4.2         | -              |
+| font-awesome          | Script | 6.4.2         | -              |
+| font-awesome-v4-shims | Script | 6.4.2         | -              |
 | Sortable              | Script | 1.10.2        | -              |
 | trumbowyg             | Style  | 2.27.3        | -              |
 | trumbowyg             | Script | 2.27.3        | -              |

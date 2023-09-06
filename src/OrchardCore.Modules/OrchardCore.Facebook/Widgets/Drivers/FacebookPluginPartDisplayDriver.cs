@@ -33,9 +33,9 @@ namespace OrchardCore.Facebook.Widgets.Drivers
         {
             return Combine(
                 Initialize<FacebookPluginPartViewModel>("FacebookPluginPart", m => BuildViewModel(m, part))
-                    .Location("Detail", "Content:10"),
+                    .Location("Detail", "Content"),
                 Initialize<FacebookPluginPartViewModel>("FacebookPluginPart_Summary", m => BuildViewModel(m, part))
-                    .Location("Summary", "Content:10")
+                    .Location("Summary", "Content")
             );
         }
 

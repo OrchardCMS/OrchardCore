@@ -75,7 +75,7 @@ public class ShellRemovalManager : IShellRemovalManager
                 return context;
             }
 
-            using var shellContext = maximumContext;
+            await using var shellContext = maximumContext;
             (var locker, var locked) = await shellContext.TryAcquireShellRemovingLockAsync();
             if (!locked)
             {
@@ -89,7 +89,7 @@ public class ShellRemovalManager : IShellRemovalManager
 
             await using var acquiredLock = locker;
 
-            await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
+            await (await shellContext.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
             {
                 // Execute tenant level removing handlers (singletons or scoped) in a reverse order.
                 // If feature A depends on feature B, the activating handler of feature B should run

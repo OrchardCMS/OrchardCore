@@ -4,16 +4,29 @@ The `Notifications` module provides the infrastructure necessary to send notific
 
 ## Notification Methods
 
-There are many methods to send notifications to a user (e.x., Email, Web Push, Mobile Push, SMS, etc.). In addition to the notification center, OrchardCore is shipped with Email based notification feature. To allow users to receive notification via email, enable the `Email Notifications` feature. 
+There are many methods to send notifications to a user (e.x., Email, Web Push, Mobile Push, SMS, etc.). Any notification should appear in the notification center.
+
+!!! info
+When multiple notification methods are enabled, the user can opt-in/out any method they wishes to receive by editing their profile.
+
+### Email Notifications
+
+The `Email Notifications` feature offers a means to inform users by dispatching notifications through email.
 
 !!! note
-When using `Email Notifications` feature, you must also configure the [SMTP Service](../Email/README.md). When multiple notification methods are enabled, the user can opt-in/out any method they wishes to receive by editing their profile.
+When using `Email Notifications` feature, you must also configure the [SMTP Service](../Email/README.md).
 
+### Email Notifications
+
+The `SMS Notifications` feature offers a means to inform users by dispatching notifications through phone via SMS provider.
+
+!!! note
+When using `Email SMS` feature, you must also configure the [SMS Provider](../Sms/README.md).
 
 ## Adding Custom Notification Provider
 To add a new notification method like `Web Push`, `Mobile Push` or `SMS`, you can simply implement the `INotificationMethodProvider` interface. Then, register your new implementation. For example, in the `Email Notifications` feature we register the email notification provider like this 
 
-```C#
+```csharp
 [Feature("OrchardCore.Notifications.Email")]
 public class EmailNotificationsStartup : StartupBase
 {

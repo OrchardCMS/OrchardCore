@@ -37,7 +37,7 @@ namespace OrchardCore.FileStorage.AzureBlob
     /// </remarks>
     public class BlobFileStore : IFileStore
     {
-        private const string _directoryMarkerFileName = "OrchardCore.Media.txt";
+        private const string DirectoryMarkerFileName = "OrchardCore.Media.txt";
 
         private readonly BlobStorageOptions _options;
         private readonly IClock _clock;
@@ -148,7 +148,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                     var itemName = Path.GetFileName(WebUtility.UrlDecode(blob.Blob.Name)).Trim('/');
 
                     // Ignore directory marker files.
-                    if (itemName != _directoryMarkerFileName)
+                    if (itemName != DirectoryMarkerFileName)
                     {
                         var itemPath = this.Combine(path?.Trim('/'), itemName);
                         yield return new BlobFile(itemPath, blob.Blob.Properties.ContentLength, blob.Blob.Properties.LastModified);
@@ -192,7 +192,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                 }
 
                 // Ignore directory marker files.
-                if (!name.EndsWith(_directoryMarkerFileName))
+                if (!name.EndsWith(DirectoryMarkerFileName))
                 {
                     if (!String.IsNullOrEmpty(_basePrefix))
                     {
@@ -436,7 +436,7 @@ namespace OrchardCore.FileStorage.AzureBlob
 
         private async Task CreateDirectoryAsync(string path)
         {
-            var placeholderBlob = GetBlobReference(this.Combine(path, _directoryMarkerFileName));
+            var placeholderBlob = GetBlobReference(this.Combine(path, DirectoryMarkerFileName));
 
             // Create a directory marker file to make this directory appear when listing directories.
             using var stream = new MemoryStream(Encoding.UTF8.GetBytes("This is a directory marker file created by Orchard Core. It is safe to delete it."));

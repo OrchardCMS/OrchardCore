@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Utilities;
 using OrchardCore.Menu.Models;
 using OrchardCore.Mvc.Utilities;
 
@@ -118,7 +119,7 @@ namespace OrchardCore.Menu
                         }
                     }
 
-                    var encodedContentType = EncodeAlternateElement(menuContentItem.ContentItem.ContentType);
+                    var encodedContentType = menuContentItem.ContentItem.ContentType.EncodeAlternateElement();
 
                     // MenuItem__level__[level] e.g. MenuItem-level-2
                     menuItem.Metadata.Alternates.Add("MenuItem__level__" + level);
@@ -151,7 +152,7 @@ namespace OrchardCore.Menu
 
                     var menuContentItem = menuItem.GetProperty<ContentItem>("ContentItem");
 
-                    var encodedContentType = EncodeAlternateElement(menuContentItem.ContentItem.ContentType);
+                    var encodedContentType = menuContentItem.ContentItem.ContentType.EncodeAlternateElement();
 
                     menuItem.Metadata.Alternates.Add("MenuItemLink__level__" + level);
 
@@ -173,16 +174,6 @@ namespace OrchardCore.Menu
                         menuItem.Metadata.Alternates.Add("MenuItemLink__" + differentiator + "__" + encodedContentType + "__level__" + level);
                     }
                 });
-        }
-
-        /// <summary>
-        /// Encodes dashed and dots so that they don't conflict in filenames
-        /// </summary>
-        /// <param name="alternateElement"></param>
-        /// <returns></returns>
-        private static string EncodeAlternateElement(string alternateElement)
-        {
-            return alternateElement.Replace("-", "__").Replace('.', '_');
         }
 
         /// <summary>

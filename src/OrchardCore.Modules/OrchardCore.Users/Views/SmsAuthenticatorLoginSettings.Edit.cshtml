@@ -1,0 +1,13 @@
+@using OrchardCore.Users.Models
+@model SmsAuthenticatorLoginSettings
+
+<fieldset>
+    <legend>@T["SMS Authenticator Settings"]</legend>
+
+    <div class="mb-3" asp-validation-class-for="Body">
+        <span asp-validation-for="Body"></span>
+        <label class="form-check-label" asp-for="Body">@T["Message Body"]</label>
+        <textarea class="form-control" asp-for="Body"></textarea>
+        <span class="hint dashed">@T["The body to the message for sending the verification code. Liquid syntax is supported."]</span>
+    </div>
+</fieldset>

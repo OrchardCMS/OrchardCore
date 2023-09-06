@@ -83,23 +83,23 @@ namespace OrchardCore.Contents.Services
                             switch (contentsOrder)
                             {
                                 case ContentsOrder.Modified:
-                                    query.With<ContentItemIndex>().OrderByDescending(x => x.ModifiedUtc);
+                                    query.With<ContentItemIndex>().OrderByDescending(cr => cr.ModifiedUtc).ThenBy(cr => cr.Id);
                                     break;
                                 case ContentsOrder.Published:
-                                    query.With<ContentItemIndex>().OrderByDescending(cr => cr.PublishedUtc);
+                                    query.With<ContentItemIndex>().OrderByDescending(cr => cr.PublishedUtc).ThenBy(cr => cr.Id);
                                     break;
                                 case ContentsOrder.Created:
-                                    query.With<ContentItemIndex>().OrderByDescending(cr => cr.CreatedUtc);
+                                    query.With<ContentItemIndex>().OrderByDescending(cr => cr.CreatedUtc).ThenBy(cr => cr.Id);
                                     break;
                                 case ContentsOrder.Title:
-                                    query.With<ContentItemIndex>().OrderBy(cr => cr.DisplayText);
+                                    query.With<ContentItemIndex>().OrderBy(cr => cr.DisplayText).ThenBy(cr => cr.Id);
                                     break;
                             };
                         }
                         else
                         {
                             // Modified is a default value and applied when there is no filter.
-                            query.With<ContentItemIndex>().OrderByDescending(x => x.ModifiedUtc);
+                            query.With<ContentItemIndex>().OrderByDescending(cr => cr.ModifiedUtc).ThenBy(cr => cr.Id);
                         }
 
                         return query;

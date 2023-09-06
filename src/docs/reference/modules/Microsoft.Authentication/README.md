@@ -1,6 +1,6 @@
 # Microsoft Authentication (`OrchardCore.Microsoft.Authentication`)
 
-This module configures Orchard to support Microsoft Account and/or Microsoft Azure Active Directory accounts.
+This module configures Orchard to support Microsoft Account and/or Microsoft Microsoft Entra ID (Azure Active Directory) accounts.
 
 ## Microsoft Account
 
@@ -39,7 +39,7 @@ First, you need to create an Microsoft Entra ID app on the [Azure Portal](https:
 5. Configure the rest of the authentication settings of the app under its "Authentication" menu. There, under "Implicit grant and hybrid flows", enable both "Access tokens (used for implicit flows)" and "ID tokens (used for implicit and hybrid flows)". Without these, login will fail with errors.
 6. Configure the `email` claim under the "Token configuration" menu. Click "Add optional claim", as "Token type" select "ID", then select "email" and click "Add". Without this, Orchard can't match logins based on the user's email, and thus existing users won't be able to log in.
 
-You are now ready to configure Microsoft Entra ID login in Orchard too. After enabling the "Microsoft Azure Active Directory Authentication" feature, you will see the "Security" → "Azure Active Directory" menu in the admin. We recommend to configure at least the following settings:
+You are now ready to configure Microsoft Entra ID login in Orchard too. After enabling the "Microsoft Entra ID (Azure Active Directory) Authentication" feature, you will see the "Security" → "Microsoft Entra ID" menu in the admin. We recommend to configure at least the following settings:
 
 - Display Name: The text that will be displayed on the Orchard login screen. We recommend something like "My Company Microsoft account".
 - AppId: Use the above-mentioned "Application (client) ID" from the Azure Portal.
@@ -54,7 +54,7 @@ Existing users who have the same e-mail address in Orchard and in Microsoft Entr
 
 ### Recipe Step
 
-The Azure Active Directory can be set during recipes using the settings step. Here is a sample step:
+The Microsoft Entra ID can be set during recipes using the settings step. Here is a sample step:
 
 ```json
 {
@@ -71,7 +71,7 @@ The Azure Active Directory can be set during recipes using the settings step. He
 - If you want to enable new users to register to the site through their Microsoft Account and/or Microsoft Microsoft Entra ID login, the `OrchardCore.Users.Registration` feature must be enabled and setup accordingly.
 - Apart from during login, existing users can link their account to their Microsoft Account and/or Microsoft Microsoft Entra ID login through the External Logins link from User menu.
 
-## Microsoft Account & Azure Active Directory Settings Configuration
+## Microsoft Account & Microsoft Entra ID (Azure Active Directory) Settings Configuration
 
 The `OrchardCore.Microsoft.Authentication` module allows the user to use configuration values to override the settings configured from the admin area by calling the `ConfigureMicrosoftAccountSettings()` or `ConfigureAzureADSettings()` extension methods on `OrchardCoreBuilder` when initializing the app.
 

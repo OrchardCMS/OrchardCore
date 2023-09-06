@@ -41,7 +41,7 @@ namespace OrchardCore.Search.Elasticsearch
 {
     public class Startup : StartupBase
     {
-        private const string _configSectionName = "OrchardCore_Elasticsearch";
+        private const string ConfigSectionName = "OrchardCore_Elasticsearch";
         private readonly AdminOptions _adminOptions;
         private readonly IShellConfiguration _shellConfiguration;
         private readonly ILogger<Startup> _logger;
@@ -57,7 +57,7 @@ namespace OrchardCore.Search.Elasticsearch
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            var configuration = _shellConfiguration.GetSection(_configSectionName);
+            var configuration = _shellConfiguration.GetSection(ConfigSectionName);
             var elasticConfiguration = configuration.Get<ElasticConnectionOptions>();
 
             if (CheckOptions(elasticConfiguration, _logger))

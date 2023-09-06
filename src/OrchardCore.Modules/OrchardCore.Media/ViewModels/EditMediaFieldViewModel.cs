@@ -11,7 +11,9 @@ namespace OrchardCore.Media.ViewModels
         public string Paths { get; set; }
 
         public MediaField Field { get; set; }
+
         public ContentPart Part { get; set; }
+
         public ContentPartFieldDefinition PartFieldDefinition { get; set; }
 
         // This will be used by the uploader of an attached media field
@@ -19,13 +21,17 @@ namespace OrchardCore.Media.ViewModels
 
         // Media Text is an option that maybe applied to a media field through settings.
         public bool AllowMediaText { get; set; }
+
         public string MediaTexts { get; set; }
 
         // Anchor points are an option that maybe applied to a media field through settings.
         public bool AllowAnchors { get; set; }
+
         public Anchor[] Anchors { get; set; } = Array.Empty<Anchor>();
 
         public string[] AttachedFileNames { get; set; } = Array.Empty<string>();
+
+        public string[] AllowedExtensions { get; set; } = Array.Empty<string>();
     }
 
     public class EditMediaFieldItemInfo
