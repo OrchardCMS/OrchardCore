@@ -5,7 +5,6 @@
 <div asp-validation-summary="All"></div>
 <form asp-action="Create" method="post">
     <input type="hidden" asp-for="Type" />
-    <input type="hidden" asp-for="SecretId" />
 
     <div class="mb-3" asp-validation-class-for="Name">
         <label asp-for="Name">@T["Name"]</label>

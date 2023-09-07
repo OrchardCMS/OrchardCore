@@ -4,5 +4,5 @@ namespace OrchardCore.Workflows.Http.Services;
 
 public interface IHttpRequestEventSecretService
 {
-    Task<string> GetUrlAsync(string httpRequestEventSecretName);
+    Task<string> GetUrlAsync(string secretName);
 }

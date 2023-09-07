@@ -19,6 +19,8 @@ namespace OrchardCore.Workflows.Http.Controllers
 {
     public class HttpWorkflowController : Controller
     {
+        public const int NoExpiryTokenLifespan = 36500;
+
         private readonly IAuthorizationService _authorizationService;
         private readonly IWorkflowManager _workflowManager;
         private readonly IWorkflowTypeStore _workflowTypeStore;
@@ -29,7 +31,6 @@ namespace OrchardCore.Workflows.Http.Controllers
         private readonly IAntiforgery _antiforgery;
         private readonly IDistributedLock _distributedLock;
         private readonly ILogger _logger;
-        public const int NoExpiryTokenLifespan = 36500;
 
         public HttpWorkflowController(
             IAuthorizationService authorizationService,

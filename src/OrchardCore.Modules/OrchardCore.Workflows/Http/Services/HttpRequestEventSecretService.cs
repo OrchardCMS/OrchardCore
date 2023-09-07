@@ -13,6 +13,7 @@ namespace OrchardCore.Workflows.Http.Services;
 
 public class HttpRequestEventSecretService : IHttpRequestEventSecretService
 {
+    private const int NoExpiryTokenLifespan = HttpWorkflowController.NoExpiryTokenLifespan;
     private const string TokenCacheKeyPrefix = "HttpRequestEventToken:";
 
     private readonly IMemoryCache _memoryCache;
@@ -35,17 +36,16 @@ public class HttpRequestEventSecretService : IHttpRequestEventSecretService
         _urlHelperFactory = urlHelperFactory;
     }
 
-    public async Task<string> GetUrlAsync(string httpRequestEventSecretName)
+    public async Task<string> GetUrlAsync(string secretName)
     {
-        var secret = await _secretService.GetSecretAsync<HttpRequestEventSecret>(httpRequestEventSecretName);
+        var secret = await _secretService.GetSecretAsync<HttpRequestEventSecret>(secretName);
         if (secret is null || secret.WorkflowTypeId is null || secret.ActivityId is null)
         {
             return null;
         }
 
-        var tokenLifeSpan = secret.TokenLifeSpan == 0 ? HttpWorkflowController.NoExpiryTokenLifespan : secret.TokenLifeSpan;
-
         // If the secret changes the key is no longer valid and the cache entry will expire automatically.
+        var tokenLifeSpan = secret.TokenLifeSpan == 0 ? NoExpiryTokenLifespan : secret.TokenLifeSpan;
         var cacheKey = $"{TokenCacheKeyPrefix}{secret.WorkflowTypeId}{secret.ActivityId}{tokenLifeSpan}";
 
         var url = _memoryCache.GetOrCreate(cacheKey, entry =>
@@ -54,8 +54,9 @@ public class HttpRequestEventSecretService : IHttpRequestEventSecretService
 
             var urlHelper = _urlHelperFactory.GetUrlHelper(_viewContextAccessor.ViewContext);
 
-            var token = _securityTokenService.CreateToken(new WorkflowPayload(
-                secret.WorkflowTypeId, secret.ActivityId), TimeSpan.FromDays(tokenLifeSpan));
+            var token = _securityTokenService.CreateToken(
+                new WorkflowPayload(secret.WorkflowTypeId, secret.ActivityId),
+                TimeSpan.FromDays(tokenLifeSpan));
 
             return urlHelper.Action("Invoke", "HttpWorkflow", new { area = "OrchardCore.Workflows", token });
         });

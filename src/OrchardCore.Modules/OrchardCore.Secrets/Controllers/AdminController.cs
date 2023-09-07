@@ -182,10 +182,7 @@ public class AdminController : Controller
             Type = type,
             Editor = await _displayManager.BuildEditorAsync(secret, _updateModelAccessor.ModelUpdater, isNew: true, "", ""),
             StoreInfos = _secretService.GetSecretStoreInfos(),
-            Secret = secret,
         };
-
-        model.Editor.Secret = secret;
 
         return View(model);
     }
@@ -226,7 +223,6 @@ public class AdminController : Controller
         }
 
         dynamic editor = await _displayManager.UpdateEditorAsync(secret, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
-        editor.Secret = secret;
 
         if (ModelState.IsValid)
         {
@@ -269,15 +265,12 @@ public class AdminController : Controller
         var model = new SecretBindingViewModel
         {
             Name = name,
-            SelectedStore = binding.Store,
             Description = binding.Description,
+            SelectedStore = binding.Store,
             Type = binding.Type,
             Editor = await _displayManager.BuildEditorAsync(secret, _updateModelAccessor.ModelUpdater, isNew: false, "", ""),
             StoreInfos = _secretService.GetSecretStoreInfos(),
-            Secret = secret,
         };
-
-        model.Editor.Secret = secret;
 
         return View(model);
     }
