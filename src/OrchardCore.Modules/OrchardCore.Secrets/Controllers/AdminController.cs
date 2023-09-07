@@ -70,8 +70,8 @@ public class AdminController : Controller
 
         var siteSettings = await _siteService.GetSiteSettingsAsync();
         var pager = new Pager(pagerParameters, siteSettings.PageSize);
-        var secretBindings = (await _secretService.GetSecretBindingsAsync()).ToList();
 
+        var secretBindings = (await _secretService.GetSecretBindingsAsync()).ToList();
         if (!String.IsNullOrWhiteSpace(options.Search))
         {
             secretBindings = secretBindings.Where(kv => kv.Key.Contains(options.Search)).ToList();
@@ -82,7 +82,8 @@ public class AdminController : Controller
         secretBindings = secretBindings
             .OrderBy(kv => kv.Key)
             .Skip(pager.GetStartIndex())
-            .Take(pager.PageSize).ToList();
+            .Take(pager.PageSize)
+            .ToList();
 
         var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
 
@@ -95,7 +96,7 @@ public class AdminController : Controller
             thumbnails.Add(type.Name, thumbnail);
         }
 
-        var bindingEntries = new List<SecretBindingEntry>();
+        var entries = new List<SecretBindingEntry>();
         foreach (var binding in secretBindings)
         {
             var secret = await _secretService.GetSecretAsync(binding.Value);
@@ -106,7 +107,7 @@ public class AdminController : Controller
 
             dynamic summary = await _displayManager.BuildDisplayAsync(secret, _updateModelAccessor.ModelUpdater, "Summary");
             summary.Secret = secret;
-            bindingEntries.Add(new SecretBindingEntry
+            entries.Add(new SecretBindingEntry
             {
                 Name = binding.Key,
                 SecretBinding = binding.Value,
@@ -116,7 +117,7 @@ public class AdminController : Controller
 
         var model = new SecretBindingIndexViewModel
         {
-            SecretBindings = bindingEntries,
+            Entries = entries,
             Thumbnails = thumbnails,
             Options = options,
             Pager = pagerShape,

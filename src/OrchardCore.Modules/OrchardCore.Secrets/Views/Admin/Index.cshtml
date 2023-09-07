@@ -2,7 +2,7 @@
 
 @{
     int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
-    int endIndex = startIndex + Model.SecretBindings.Count - 1;
+    int endIndex = startIndex + Model.Entries.Count - 1;
 }
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Secrets"])</h1></zone>
@@ -29,7 +29,7 @@
         </div>
     </div>
     <ul class="list-group with-checkbox">
-        @if (Model.SecretBindings.Any())
+        @if (Model.Entries.Any())
         {
             <li class="list-group-item bg-primary">
                 <div class="row">
@@ -37,7 +37,7 @@
                         <div class="form-check my-1">
                             <input type="checkbox" class="form-check-input" id="select-all">
                             <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
-                            <label id="items" for="select-all">@T.Plural(Model.SecretBindings.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+                            <label id="items" for="select-all">@T.Plural(Model.Entries.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
                             <label id="selected-items" class="text-muted" for="select-all"></label>
                         </div>
                     </div>
@@ -56,7 +56,7 @@
                     </div>
                 </div>
             </li>
-            @foreach (var entry in Model.SecretBindings)
+            @foreach (var entry in Model.Entries)
             {
                 <li class="list-group-item">
                     <div class="form-check float-start">
