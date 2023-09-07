@@ -52,7 +52,7 @@ namespace OrchardCore.Workflows.Http.Activities
             set => SetProperty(value);
         }
 
-        public string HttpRequestEventSecret
+        public string UrlSecret
         {
             get => GetProperty<string>();
             set => SetProperty(value);

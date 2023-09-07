@@ -1,52 +1,44 @@
 @using Microsoft.AspNetCore.Antiforgery
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Serialization
 @using OrchardCore.Mvc.Core.Utilities
 @using OrchardCore.Secrets
 @using OrchardCore.Workflows.Http.Models
 @using OrchardCore.Workflows.Http.ViewModels
-@using Newtonsoft.Json
-@using Newtonsoft.Json.Serialization
+
 @model HttpRequestEventViewModel
 @inject IAntiforgery Antiforgery
 @inject ISecretService SecretService
 
 @{
     var secretBindings = await SecretService.GetSecretBindingsAsync();
-    var httpRequestEventSecretBindings = secretBindings.Where(kvp => String.Equals(nameof(HttpRequestEventSecret), kvp.Value.Type, StringComparison.OrdinalIgnoreCase));
-    var defaultHtttpRequestEventSecret = new HttpRequestEventSecret { Name = "None", WorkflowTypeId = String.Empty };
+    var bindings = secretBindings.Where(kvp => String.Equals(nameof(HttpRequestEventSecret), kvp.Value.Type, StringComparison.OrdinalIgnoreCase));
 
-    var httpRequestEventSecrets = new List<HttpRequestEventSecret>()
+    var defaultSecret = new HttpRequestEventSecret { Name = "None", WorkflowTypeId = String.Empty };
+    var secrets = new List<HttpRequestEventSecret>() { defaultSecret };
+    foreach (var binding in bindings)
     {
-        defaultHtttpRequestEventSecret
-    };
-
-    foreach (var httpRequestEventSecretBinding in httpRequestEventSecretBindings)
-    {
-        httpRequestEventSecrets.Add(await SecretService.GetSecretAsync<HttpRequestEventSecret>(httpRequestEventSecretBinding.Key));
+        secrets.Add(await SecretService.GetSecretAsync<HttpRequestEventSecret>(binding.Key));
     }
 
-    HttpRequestEventSecret selectedHttpRequestEventSecret = null;
-    if (!String.IsNullOrEmpty(Model.HttpRequestEventSecret))
+    HttpRequestEventSecret selectedSecret = null;
+    if (!String.IsNullOrEmpty(Model.UrlSecret))
     {
-        var existing = httpRequestEventSecrets.FirstOrDefault(secret => String.Equals(secret.Name, Model.HttpRequestEventSecret, StringComparison.OrdinalIgnoreCase));
+        var existing = secrets.FirstOrDefault(secret => String.Equals(secret.Name, Model.UrlSecret, StringComparison.OrdinalIgnoreCase));
         if (existing is not null)
         {
-            selectedHttpRequestEventSecret = existing;
+            selectedSecret = existing;
         }
-    }
-
-    if (selectedHttpRequestEventSecret is null)
-    {
-        selectedHttpRequestEventSecret = defaultHtttpRequestEventSecret;
     }
 
     var data = new
     {
-        secrets = httpRequestEventSecrets,
-        selected = selectedHttpRequestEventSecret,
+        secrets = secrets,
+        selected = selectedSecret ??= defaultSecret,
         linkUrl = Url.Action("LinkSecret", "HttpWorkflow"),
         createUrl = Url.Action("CreateSecret", "Httpworkflow"),
-        linkSecretErrorMessage = T["Error linking secret"],
-        createSecretErrorMessage = T["Error creating secret"]
+        linkError = T["Error linking secret"],
+        createError = T["Error creating secret"],
     };
 
     var jData = JsonConvert.SerializeObject(data, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
@@ -59,9 +51,9 @@
     <span class="hint">@T["The HTTP method to match."]</span>
 </div>
 
-<div id="@Html.IdFor(m => m.HttpRequestEventSecret)" class="mb-3" data-secret-data="@jData" v-cloak>
-    <label asp-for="HttpRequestEventSecret">@T["URL Secret"]</label>
-    <input name="@Html.NameFor(m => m.HttpRequestEventSecret)" type="hidden" v-bind:value="selected.name" />
+<div id="@Html.IdFor(m => m.UrlSecret)" class="mb-3" data-secret-data="@jData" v-cloak>
+    <label asp-for="UrlSecret">@T["URL Secret"]</label>
+    <input name="@Html.NameFor(m => m.UrlSecret)" type="hidden" v-bind:value="selected.name" />
 
     <vue-multiselect v-model="selected" class="mb-1"
                      placeholder="@T["Type to search"]"
@@ -78,19 +70,13 @@
                      tag-position="bottom"
                      tag-placeholder="@T["Press enter to create a new secret"]"
                      @@tag="create">
-        <template slot="noResult">
-            @T["No secret found"]
-        </template>
-        <template slot="noOptions">
-            @T["No secrets found"]
-        </template>
     </vue-multiselect>
 
-    <span v-show="!isUrlVisible" class="hint">@T["The URL secret whose token will be dynamically generated."]</span>
-    <span v-show="isLinkButtonVisible" class="hint"><i class="fa fa-exclamation-triangle"></i> @T["This secret is not linked to this workflow activity."]</span>
-    <button v-show="isLinkButtonVisible" type="button" class="ml-3 btn btn-primary btn-sm" v-on:click="linkSecret()">@T["Link"]</button>
+    <span v-show="hasSecret" class="hint">@T["The secret of the URL whose token will be dynamically generated."]</span>
+    <span v-show="!isLinked" class="hint"><i class="fa fa-exclamation-triangle"></i> @T["This secret is not linked to this workflow activity."]</span>
+    <button v-show="!isLinked" type="button" class="ml-3 btn btn-primary btn-sm" v-on:click="linkSecret()">@T["Link"]</button>
 
-    <div v-show="isUrlVisible">
+    <div v-show="!hasSecret">
         @{
             var antiforgeryTokenSet = Antiforgery.GetTokens(Context);
         }
@@ -123,5 +109,5 @@
 <style asp-name="http-request-event-editor" depends-on="vue-multiselect" asp-src="~/OrchardCore.Workflows/Styles/orchard.http-request-event-editor.min.css" debug-src="~/OrchardCore.Workflows/Styles/orchard.http-request-event-editor.css"></style>
 
 <script at="Foot">
-    initializeHttpRequestEventSecretManager(document.getElementById('@Html.IdFor(m => m.HttpRequestEventSecret)'));
+    initializeHttpRequestEventSecretManager(document.getElementById('@Html.IdFor(m => m.UrlSecret)'));
 </script>

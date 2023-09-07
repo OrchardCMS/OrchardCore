@@ -28,16 +28,18 @@ function initializeHttpRequestEventSecretManager(element) {
                 linkUrl: secretData.linkUrl,
                 createUrl: secretData.createUrl,
                 headers: headers,
-                linkSecretErrorMessage: secretData.linkSecretErrorMessage,
-                createSecretErrorMessage: secretData.createSecretErrorMessage
+                linkError: secretData.linkError,
+                createError: secretData.createError
             }
         },
         computed: {
-            isLinkButtonVisible() {
-                return this.selected.workflowTypeId !== '' && (this.selected.activityId !== this.activityId || this.selected.workflowTypeId !== this.workflowTypeId);
+            isLinked() {
+                return this.selected.name === 'None' ||
+                    (this.selected.activityId === this.activityId &&
+                        this.selected.workflowTypeId === this.workflowTypeId);
             },
-            isUrlVisible() {
-                return this.selected.name === 'None';
+            hasSecret() {
+                return this.selected.name !== 'None';
             }
         },
         methods: {
@@ -58,7 +60,7 @@ function initializeHttpRequestEventSecretManager(element) {
                         self.selected = data;
                     },
                     error: function () {
-                        alert(self.linkSecretErrorMessage);
+                        alert(self.createError);
                     }
                 });
             },
@@ -79,7 +81,7 @@ function initializeHttpRequestEventSecretManager(element) {
                         self.selected.activityId = data.activityId;
                     },
                     error: function () {
-                        alert(self.linkSecretErrorMessage);
+                        alert(self.linkError);
                     }
                 });
             }

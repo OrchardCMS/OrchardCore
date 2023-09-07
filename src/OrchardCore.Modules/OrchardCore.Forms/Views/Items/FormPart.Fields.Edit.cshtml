@@ -9,37 +9,35 @@
     var httpRequestEventSecretService = Context.RequestServices.GetService<IHttpRequestEventSecretService>();
 }
 
-@if (httpRequestEventSecretService is not null)
-{
-    <div class="@Orchard.GetWrapperCssClasses()">
-        <div class="@Orchard.GetEndCssClasses()">
-            <div class="mb-3" asp-validation-class-for="ActionSecret">
-                <label asp-for="ActionSecret">@T["Action Secret"]</label>
-                @await Component.InvokeAsync(
-            "SelectSecret",
-            new
-            {
-            secretType = "HttpRequestEventSecret",
-            selectedSecret = Model.ActionSecret,
-            htmlId = Html.IdFor(m => m.ActionSecret),
-            htmlName = Html.NameFor(m => m.ActionSecret),
-            required  = false,
-            })
-                <span asp-validation-for="ActionSecret"></span>
-                <span class="hint">@T["The action secret if the form needs to be submitted to a secure http request event workflow activity."]</span>
-            </div>
-        </div>
-    </div>
-}
-
-<div class="@Orchard.GetWrapperCssClasses() plain-text">
-    @if (httpRequestEventSecretService is null)
+<div class="@Orchard.GetWrapperCssClasses()">
+    @if (httpRequestEventSecretService is not null)
     {
-        <label asp-for="Action" class="@Orchard.GetLabelCssClasses()">@T["Action"]</label>
+        <div asp-validation-class-for="ActionSecret">
+            <label asp-for="ActionSecret">@T["Action Secret"]</label>
+            @await Component.InvokeAsync(
+        "SelectSecret",
+        new
+        {
+        secretType = "HttpRequestEventSecret",
+        selectedSecret = Model.ActionSecret,
+        htmlId = Html.IdFor(m => m.ActionSecret),
+        htmlName = Html.NameFor(m => m.ActionSecret),
+        required  = false,
+        })
+            <span asp-validation-for="ActionSecret"></span>
+            <span class="hint">@T["The action secret if the form needs to be submitted to a secure http request event workflow activity."]</span>
+        </div>
     }
-    <div class="@Orchard.GetEndCssClasses()">
-        <input type="text" asp-for="Action" class="form-control content-preview-text" />
-        <span class="hint">@T["The plain text URL to submit the form to."]</span>
+
+    <div class="mt-1 plain-text">
+        @if (httpRequestEventSecretService is null)
+        {
+            <label asp-for="Action" class="@Orchard.GetLabelCssClasses()">@T["Action"]</label>
+        }
+        <div class="@Orchard.GetEndCssClasses()">
+            <input type="text" asp-for="Action" class="form-control content-preview-text" />
+            <span class="hint">@T["The plain text URL to submit the form to."]</span>
+        </div>
     </div>
 </div>
 
