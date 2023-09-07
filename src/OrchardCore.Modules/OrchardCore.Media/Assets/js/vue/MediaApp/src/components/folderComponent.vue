@@ -1,26 +1,23 @@
 <template>
-    <li :class="{selected: isSelected}" 
-            v-on:dragleave.prevent = "handleDragLeave($event);" 
-            v-on:dragover.prevent.stop="handleDragOver($event);" 
-            v-on:drop.prevent.stop = "moveMediaToFolder(model, $event)" >
-        <div :class="{folderhovered: isHovered , treeroot: level == 1}" >
+    <li :class="{ selected: isSelected }" v-on:dragleave.prevent="handleDragLeave($event);"
+        v-on:dragover.prevent.stop="handleDragOver($event);" v-on:drop.prevent.stop="moveMediaToFolder(model, $event)">
+        <div :class="{ folderhovered: isHovered, treeroot: level == 1 }">
             <a href="javascript:;" v-on:click="select" draggable="false" class="folder-menu-item">
-                <span v-on:click.stop="toggle" class="expand" :class="{opened: open, closed: !open, empty: empty}">
+                <span v-on:click.stop="toggle" class="expand" :class="{ opened: open, closed: !open, empty: empty }">
                     <fa-icon v-if="open" icon="fas fa-chevron-left"></fa-icon>
                 </span>
-                <div class="folder-name ms-2">{{model?.name}}</div>
-                <div class="btn-group folder-actions" >
-                    <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="createFolder" v-if="isSelected || isRoot"><fa-icon icon="fas fa-plus"></fa-icon></a>
-                    <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="deleteFolder" v-if="isSelected && !isRoot"><fa-icon icon="fas fa-trash"></fa-icon></a>
+                <div class="folder-name ms-2">{{ model?.name }}</div>
+                <div class="btn-group folder-actions">
+                    <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="createFolder"
+                        v-if="isSelected || isRoot"><fa-icon icon="fas fa-plus"></fa-icon></a>
+                    <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="deleteFolder"
+                        v-if="isSelected && !isRoot"><fa-icon icon="fas fa-trash"></fa-icon></a>
                 </div>
             </a>
         </div>
         <ol v-show="open">
-            <folder v-for="folder in children"
-                    :key="folder.path"
-                    :model="folder"
-                    :selected-in-media-app="selectedInMediaApp"
-                    :level="(level ? level : 0) + 1">
+            <folder v-for="folder in children" :key="folder.path" :model="folder"
+                :selected-in-media-app="selectedInMediaApp" :level="(level ? level : 0) + 1">
             </folder>
         </ol>
     </li>
@@ -58,52 +55,54 @@ export default defineComponent({
         }
     },
     mounted() {
-        if ((this.isRoot == false) && (this.isAncestorOfSelectedFolder())){
+        if ((this.isRoot == false) && (this.isAncestorOfSelectedFolder())) {
             this.toggle();
         }
 
-        var level = this.level ? this.level : 0;
+        let level = this.level ? this.level : 0;
 
-        this.padding = level < 3 ?  16 : 16 + (level * 8);
+        this.padding = level < 3 ? 16 : 16 + (level * 8);
     },
     created: function () {
-        var self = this;
-        var emitter = this.emitter;
+        let self = this;
 
-        this.emitter.on('deleteFolder', function (folder:never) {
+        this.emitter.on('deleteFolder', function (folder: never) {
             if (self.children) {
-                var index = self.children && self.children.indexOf(folder)
+                let index = self.children && self.children.indexOf(folder)
                 if (index > -1) {
                     self.children.splice(index, 1)
-                    emitter.emit('folderDeleted');
+                    self.emitter.emit('folderDeleted');
                 }
             }
         });
 
-        this.emitter.on('addFolder', function (target:String, folder:never) {
+        this.emitter.on('addFolder', function (target: String, folder: never) {
             if (self.model == target) {
                 if (self.children !== null) {
                     self.children.push(folder);
                 }
+                
                 folder.parent = self.model;
-                emitter.emit('folderAdded', folder);
+                self.emitter.emit('folderAdded', folder);
             }
         });
     },
     methods: {
         isAncestorOfSelectedFolder: function () {
-/*             parentFolder = mediaApp.selectedFolder;
+            let parentFolder = mediaApp.selectedFolder;
+
             while (parentFolder) {
                 if (parentFolder.path == this.model.path) {
                     return true;
                 }
-            parentFolder = parentFolder.parent;
-            } */
+                parentFolder = parentFolder.parent;
+            }
 
             return false;
         },
         toggle: function () {
             this.open = !this.open;
+
             if (this.open && !this.children) {
                 this.loadChildren();
             }
@@ -112,49 +111,50 @@ export default defineComponent({
             this.emitter.emit('folderSelected', this.model);
             this.loadChildren();
         },
-        createFolder: function () {           
+        createFolder: function () {
             this.emitter.emit('createFolderRequested');
         },
         deleteFolder: function () {
             this.emitter.emit('deleteFolderRequested');
         },
-        loadChildren: function () {            
-            var self = this;
+        loadChildren: function () {
+            let self = this;
+            
             if (this.open == false) {
                 this.open = true;
             }
-            
+
             axios.get(document.querySelector('#getFoldersUrl')?.nodeValue + "?path=" + encodeURIComponent(self.model?.path))
-            .then((response: { data: any; }) => {
-                self.children = response.data;
+                .then((response: { data: any; }) => {
+                    self.children = response.data;
                     self.children.forEach(function (c: any) {
                         c.parent = self.model;
                     });
-            })
-            .catch((error: any) => {
-                //emtpy = false;
-                console.error(error.responseText);
-            });
+                })
+                .catch((error: any) => {
+                    //emtpy = false;
+                    console.error(error.responseText);
+                });
         },
-        handleDragOver: function (e:any) {
+        handleDragOver: function (e: any) {
             this.isHovered = true;
         },
-        handleDragLeave: function (e:any) {
-            this.isHovered = false;            
+        handleDragLeave: function (e: any) {
+            this.isHovered = false;
         },
-        moveMediaToFolder: function (folder:any, e:any) {
+        moveMediaToFolder: function (folder: any, e: any) {
 
-            var self = this;
+            let self = this;
             self.isHovered = false;
 
-            var mediaNames = JSON.parse(e.dataTransfer.getData('mediaNames')); 
+            let mediaNames = JSON.parse(e.dataTransfer.getData('mediaNames'));
 
             if (mediaNames.length < 1) {
                 return;
             }
 
-            var sourceFolder = e.dataTransfer.getData('sourceFolder');
-            var targetFolder = folder.path;
+            let sourceFolder = e.dataTransfer.getData('sourceFolder');
+            let targetFolder = folder.path;
 
             if (sourceFolder === '') {
                 sourceFolder = 'root';
@@ -169,27 +169,27 @@ export default defineComponent({
                 return;
             }
 
-/*             confirmDialog({...$("#moveMedia").data(), callback: function (resp) {
-                if (resp) {
-                    $.ajax({
-                        url: $('#moveMediaListUrl').val(),
-                        method: 'POST',
-                        data: {
-                            __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
-                            mediaNames: mediaNames,
-                            sourceFolder: sourceFolder,
-                            targetFolder: targetFolder
-                        },
-                        success: function () {
-                            bus.$emit('mediaListMoved'); // MediaApp will listen to this, and then it will reload page so the moved medias won't be there anymore
-                        },
-                        error: function (error) {
-                            console.error(error.responseText);
-                            bus.$emit('mediaListMoved', error.responseText);
-                        }
-                    });
-                }
-            }}); */
+            /*             confirmDialog({...$("#moveMedia").data(), callback: function (resp) {
+                            if (resp) {
+                                $.ajax({
+                                    url: $('#moveMediaListUrl').val(),
+                                    method: 'POST',
+                                    data: {
+                                        __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
+                                        mediaNames: mediaNames,
+                                        sourceFolder: sourceFolder,
+                                        targetFolder: targetFolder
+                                    },
+                                    success: function () {
+                                        bus.$emit('mediaListMoved'); // MediaApp will listen to this, and then it will reload page so the moved medias won't be there anymore
+                                    },
+                                    error: function (error) {
+                                        console.error(error.responseText);
+                                        bus.$emit('mediaListMoved', error.responseText);
+                                    }
+                                });
+                            }
+                        }}); */
         }
     }
 })

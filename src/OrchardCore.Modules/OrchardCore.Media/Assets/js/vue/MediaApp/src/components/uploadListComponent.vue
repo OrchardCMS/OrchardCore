@@ -6,7 +6,8 @@
         <div class="header" @click="expanded = !expanded">
             <span> {{ T.uploads }} </span>
             <span v-show="pendingCount"> (Pending: {{ pendingCount }}) </span>
-            <span v-show="errorCount" :class="{'text-danger': errorCount}"> ( {{ T.errors }}: {{ errorCount }} / <a href="javascript:;" v-on:click.stop="clearErrors"> {{ T.clearErrors }} </a>)</span>
+            <span v-show="errorCount" :class="{ 'text-danger': errorCount }"> ( {{ T.errors }}: {{ errorCount }} / <a
+                    href="javascript:;" v-on:click.stop="clearErrors"> {{ T.clearErrors }} </a>)</span>
             <div class="toggle-button">
                 <div v-show="expanded">
                     <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
@@ -26,8 +27,12 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import UploadComponent from './uploadComponent.vue';
 
 export default defineComponent({
+    components: {
+        Upload: UploadComponent,
+    },
     name: "uploadList",
     data: function () {
         return {
@@ -42,11 +47,10 @@ export default defineComponent({
         uploadInputId: String
     },
     created: function () {
-        var self = this;
         // retrieving localized strings from view
-        self.T.uploads = $('#t-uploads').val();
-        self.T.errors = $('#t-errors').val();
-        self.T.clearErrors = $('#t-clear-errors').val();
+        this.T.uploads = (<HTMLInputElement>document.getElementById('t-uploads'))?.value;
+        this.T.errors = (<HTMLInputElement>document.getElementById('t-errors'))?.value;
+        this.T.clearErrors = (<HTMLInputElement>document.getElementById('t-clear-errors'))?.value;;
     },
     computed: {
         fileCount: function () {
@@ -54,14 +58,32 @@ export default defineComponent({
         }
     },
     mounted: function () {
-        var self = this;
-        var uploadInput = document.getElementById(self.uploadInputId ?? 'fileupload');
-        $(uploadInput).bind('fileuploadadd', function (e, data) {
-            if (!data.files) { 
+        let self = this;
+        let uploadInput = document.getElementById(self.uploadInputId ?? 'fileupload');
+
+        uploadInput?.addEventListener('fileuploadadd', this.fileUploadAdd);
+
+        this.emitter.on('removalRequest', (fileUpload: { name: any; }) => {
+            self.files.forEach(function (item, index, array) {
+                if (item.name == fileUpload.name) {
+                    array.splice(index, 1);
+                }
+            });
+        })
+
+        this.emitter.on('ErrorOnUpload', () => {
+            self.updateCount();
+        })
+    },
+    methods: {
+        fileUploadAdd: function (data: any, ev: Event) {
+            let self = this;
+
+            if (!data.files) {
                 return;
             }
-            data.files.forEach(function (newFile) {                
-                var alreadyInList = self.files.some(function (f) {
+            data.files.forEach(function (newFile: { name: string; }) {
+                let alreadyInList = self.files.some(function (f) {
                     return f.name == newFile.name;
                 });
 
@@ -69,23 +91,9 @@ export default defineComponent({
                     self.files.push({ name: newFile.name, percentage: 0, errorMessage: '' });
                 } else {
                     console.error('A file with the same name is already on the queue:' + newFile.name);
-                }         
-            });            
-        });
-
-        bus.$on('removalRequest', function (fileUpload) {
-            self.files.forEach(function (item, index, array) {
-                if (item.name == fileUpload.name) {
-                    array.splice(index, 1);
                 }
             });
-        });
-
-        bus.$on('ErrorOnUpload', function (fileUpload) {
-            self.updateCount();
-        });
-    },
-    methods: {
+        },
         updateCount: function () {
             this.errorCount = this.files.filter(function (item) {
                 return item.errorMessage != '';
@@ -95,7 +103,7 @@ export default defineComponent({
                 this.expanded = false;
             }
         },
-        clearErrors: function () {            
+        clearErrors: function () {
             this.files = this.files.filter(function (item) {
                 return item.errorMessage == '';
             });

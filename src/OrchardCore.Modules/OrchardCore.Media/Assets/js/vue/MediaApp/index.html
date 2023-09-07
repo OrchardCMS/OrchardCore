@@ -1,23 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + Vue + TS</title>
-  </head>
-  <body>
-    <div id="mediaApp" 
-      data-get-folders-url="/folders-url"
-      data-delete-folders-url="/folders-url2"
-      data-create-folders-url="/folders-url3"
-      data-get-media-items-url="/folders-url4"
-      data-delete-media-url="/folders-url5"
-      data-rename-media-url="/folders-url6"
-      data-delete-media-list-url="/folders-url7"
-      data-move-media-list-url="/folders-url8"
-      data-upload-files-url="/folders-url9"
-    ></div>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Vite + Vue + TS</title>
+    </head>
+    <body>
+        <div
+            id="mediaApp"
+            data-base-path="https://localhost:5001"
+            data-get-folders-url="/Admin/Media/GetFolders"
+            data-delete-folders-url="/Admin/Media/DeleteFolder"
+            data-create-folders-url="/Admin/Media/CreateFolder"
+            data-get-media-items-url="/Admin/Media/GetMediaItems"
+            data-delete-media-url="/Admin/Media/DeleteMedia"
+            data-rename-media-url="/Admin/Media/MoveMedia"
+            data-delete-media-list-url="/Admin/Media/DeleteMediaList"
+            data-move-media-list-url="/Admin/Media/MoveMediaList"
+            data-upload-files-url="/Admin/Media/Upload"
+        ></div>
+        <script type="module" src="/src/main.ts"></script>
+    </body>
 </html>

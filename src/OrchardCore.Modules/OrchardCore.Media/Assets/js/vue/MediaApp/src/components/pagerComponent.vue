@@ -68,16 +68,16 @@ export default defineComponent({
         };
     },
     created: function () {
-        var self = this;
+        let self = this;
 
         // retrieving localized strings from view
-        self.T.pagerFirstButton = $('#t-pager-first-button').val();
-        self.T.pagerPreviousButton = $('#t-pager-previous-button').val();
-        self.T.pagerNextButton = $('#t-pager-next-button').val();
-        self.T.pagerLastButton = $('#t-pager-last-button').val();
-        self.T.pagerPageSizeLabel = $('#t-pager-page-size-label').val();
-        self.T.pagerPageLabel = $('#t-pager-page-label').val();
-        self.T.pagerTotalLabel = $('#t-pager-total-label').val();        
+        self.T.pagerFirstButton = (<HTMLInputElement>document.getElementById('t-pager-first-button'))?.value;
+        self.T.pagerPreviousButton = (<HTMLInputElement>document.getElementById('t-pager-previous-button'))?.value;
+        self.T.pagerNextButton = (<HTMLInputElement>document.getElementById('t-pager-next-button'))?.value;
+        self.T.pagerLastButton = (<HTMLInputElement>document.getElementById('t-pager-last-button'))?.value;
+        self.T.pagerPageSizeLabel = (<HTMLInputElement>document.getElementById('t-pager-page-size-label'))?.value;
+        self.T.pagerPageLabel = (<HTMLInputElement>document.getElementById('t-pager-page-label'))?.value;
+        self.T.pagerTotalLabel = (<HTMLInputElement>document.getElementById('t-pager-total-label'))?.value;      
     },
     methods: {
         next: function () {
@@ -92,7 +92,7 @@ export default defineComponent({
         goLast: function () {
             this.current = this.totalPages - 1;
         },
-        goTo: function (targetPage) {
+        goTo: function (targetPage: number) {
             this.current = targetPage;
         }
     },
@@ -101,7 +101,7 @@ export default defineComponent({
             return this.sourceItems ? this.sourceItems.length : 0;
         },
         totalPages: function () {
-            var pages = Math.ceil(this.total / this.pageSize);
+            let pages = Math.ceil(this.total / this.pageSize);
             return pages > 0 ? pages : 1;
         },
         isLastPage: function () {
@@ -126,31 +126,34 @@ export default defineComponent({
         // That event will be handled by the parent media app to display the items in the page.
         // this logic will not run if the computed property is not used in the template. We use a dummy "data-computed-trigger" attribute for that.
         itemsInCurrentPage: function () {
-            var start = this.pageSize * this.current;
-            var end = start + this.pageSize;
-            var result = this.sourceItems.slice(start, end);
-            bus.$emit('pagerEvent', result);
+            let emitter = this.emitter;
+            let start = this.pageSize * this.current;
+            let end = start + this.pageSize;
+            let result = this.sourceItems.slice(start, end);
+
+            emitter.emit('pagerEvent', result);
+
             return result;
         },
         pageLinks: function () {
 
-            var links = [];
+            let links = [];
 
             links.push(this.current + 1);
 
             // Add 2 items before current
-            var beforeCurrent = this.current > 0 ? this.current : -1;
+            let beforeCurrent = this.current > 0 ? this.current : -1;
             links.unshift(beforeCurrent);
 
-            var beforeBeforeCurrent = this.current > 1 ? this.current - 1 : -1;
+            let beforeBeforeCurrent = this.current > 1 ? this.current - 1 : -1;
             links.unshift(beforeBeforeCurrent);
 
 
             // Add 2 items after current
-            var afterCurrent = this.totalPages - this.current > 1 ? this.current + 2 : -1;
+            let afterCurrent = this.totalPages - this.current > 1 ? this.current + 2 : -1;
             links.push(afterCurrent);
 
-            var afterAfterCurrent = this.totalPages - this.current > 2 ? this.current + 3 : -1;
+            let afterAfterCurrent = this.totalPages - this.current > 2 ? this.current + 3 : -1;
             links.push(afterAfterCurrent);
 
             return links;

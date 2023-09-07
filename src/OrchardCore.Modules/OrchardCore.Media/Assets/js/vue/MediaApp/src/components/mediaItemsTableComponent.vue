@@ -67,8 +67,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import SortIndicatorComponent from './sortIndicatorComponent.vue';
+import { IMedia } from '../interfaces/interfaces';
 
 export default defineComponent({
     components: {
@@ -78,8 +79,8 @@ export default defineComponent({
     props: {
         sortBy: String,
         sortAsc: Boolean,
-        filteredMediaItems: Array,
-        selectedMedias: Array,
+        filteredMediaItems: Array as PropType<IMedia[]>,
+        selectedMedias: Array as PropType<IMedia[]>,
         thumbSize: Number
     },
     data() {
@@ -88,43 +89,43 @@ export default defineComponent({
         }
     },
     created: function () {
-        var self = this;
-        self.T.imageHeader = $('#t-image-header').val();
-        self.T.nameHeader = $('#t-name-header').val();
-        self.T.lastModifyHeader = $('#t-lastModify-header').val();
-        self.T.sizeHeader = $('#t-size-header').val();
-        self.T.typeHeader = $('#t-type-header').val();
-        self.T.editButton = $('#t-edit-button').val();
-        self.T.deleteButton = $('#t-delete-button').val();
-        self.T.viewButton = $('#t-view-button').val();
+        let self = this;
+        self.T.imageHeader = (<HTMLInputElement>document.getElementById('t-image-header'))?.value;
+        self.T.nameHeader = (<HTMLInputElement>document.getElementById('t-name-header'))?.value;
+        self.T.lastModifyHeader = (<HTMLInputElement>document.getElementById('t-lastModify-header'))?.value;
+        self.T.sizeHeader = (<HTMLInputElement>document.getElementById('t-size-header'))?.value;
+        self.T.typeHeader = (<HTMLInputElement>document.getElementById('t-type-header'))?.value;
+        self.T.editButton = (<HTMLInputElement>document.getElementById('t-edit-button'))?.value;
+        self.T.deleteButton = (<HTMLInputElement>document.getElementById('t-delete-button'))?.value;
+        self.T.viewButton = (<HTMLInputElement>document.getElementById('t-view-button'))?.value;
     },
     methods: {
-        isMediaSelected: function (media) {
-            var result = this.selectedMedias.some(function (element, index, array) {
+        isMediaSelected: function (media: IMedia) {
+            let result = this.selectedMedias?.some(function (element) {
                 return element.url.toLowerCase() === media.url.toLowerCase();
             });
             return result;
         },
-        buildMediaUrl: function (url, thumbSize) {
+        buildMediaUrl: function (url: string | string[], thumbSize: string) {
             return url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize;
         },
-        changeSort: function (newSort) {
-            bus.$emit('sortChangeRequested', newSort);
+        changeSort: function (newSort: any) {
+            this.emitter.emit('sortChangeRequested', newSort);
         },
-        toggleSelectionOfMedia: function (media) {
-            bus.$emit('mediaToggleRequested', media);
+        toggleSelectionOfMedia: function (media: IMedia) {
+            this.emitter.emit('mediaToggleRequested', media);
         },
-        renameMedia: function (media) {
-            bus.$emit('renameMediaRequested', media);
+        renameMedia: function (media: IMedia) {
+            this.emitter.emit('renameMediaRequested', media);
         },
-        deleteMedia: function (media) {
-            bus.$emit('deleteMediaRequested', media);
+        deleteMedia: function (media: IMedia) {
+            this.emitter.emit('deleteMediaRequested', media);
         },
-        dragStart: function (media, e) {
-            bus.$emit('mediaDragStartRequested', media, e);
+        dragStart: function (media: IMedia, e: any) {
+            this.emitter.emit('mediaDragStartRequested', media, e);
         },
-        printDateTime: function (datemillis) {
-            var d = new Date(datemillis);
+        printDateTime: function (datemillis: string | number | Date) {
+            let d = new Date(datemillis);
             return d.toLocaleString();
         }
     }

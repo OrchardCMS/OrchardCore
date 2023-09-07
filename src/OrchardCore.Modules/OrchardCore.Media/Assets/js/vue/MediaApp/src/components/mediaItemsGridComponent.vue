@@ -17,8 +17,7 @@
                 <a href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button delete-button"
                     v-on:click.stop="deleteMedia(media)"><i class="fa fa-trash" aria-hidden="true"></i></a>
                 <a :href="media.url" target="_blank"
-                    class="btn btn-light btn-sm float-end inline-media-button view-button""><i class=" fa fa-download"
-                    aria-hidden="true"></i></a>
+                    class="btn btn-light btn-sm float-end inline-media-button view-button"><fa-icon icon="fa-solid fa-download"></fa-icon></a>
                 <span class="media-filename card-text small" :title="media.name">{{ media.name }}</span>
             </div>
         </li>
@@ -27,21 +26,17 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-
-export interface IMedia {
-  mime: string;
-  name: string;
-  url: string;
-}
+import { IMedia } from '../interfaces/interfaces';
 
 export default defineComponent({
     name: "media-items-grid",
     props: {
-        filteredMediaItems: {
-            type: Array as PropType<IMedia[]>
-        },
-        selectedMedias: Array,
-        thumbSize: Number
+        filteredMediaItems: Array as PropType<IMedia[]>,
+        selectedMedias: Array as PropType<IMedia[]>,
+        thumbSize: {
+            type: Number,
+            required: true,
+        }
     },
     data() {
         return {
@@ -49,32 +44,32 @@ export default defineComponent({
         }
     },
     created: function () {
-        var self = this;
+        let self = this;
         // retrieving localized strings from view
-        self.T.editButton = $('#t-edit-button').val();
-        self.T.deleteButton = $('#t-delete-button').val();
+        self.T.editButton = (<HTMLInputElement>document.getElementById('t-edit-button'))?.value;
+        self.T.deleteButton = (<HTMLInputElement>document.getElementById('t-delete-button'))?.value;
     },
     methods: {
         isMediaSelected: function (media: IMedia) {
-            var result = this.selectedMedias?.some(function (element, _index, _array) {
+            let result = this.selectedMedias?.some(function (element: any, _index, _array) {
                 return element.url.toLowerCase() === media.url.toLowerCase();
             });
             return result;
         },
-        buildMediaUrl: function (url: string | string[], thumbSize: string) {
+        buildMediaUrl: function (url: string | string[], thumbSize: number) {
             return url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize;
         },
-        toggleSelectionOfMedia: function (media: any) {
-            bus.$emit('mediaToggleRequested', media);
+        toggleSelectionOfMedia: function (media: IMedia) {
+            this.emitter.emit('mediaToggleRequested', media);
         },
         renameMedia: function (media: IMedia) {
-            bus.$emit('renameMediaRequested', media);
+            this.emitter.emit('renameMediaRequested', media);
         },
         deleteMedia: function (media: IMedia) {
-            bus.$emit('deleteMediaRequested', media);
+            this.emitter.emit('deleteMediaRequested', media);
         },
         dragStart: function (media: IMedia, e: any) {
-            bus.$emit('mediaDragStartRequested', media, e);
+            this.emitter.emit('mediaDragStartRequested', media, e);
         }
     }
 });
