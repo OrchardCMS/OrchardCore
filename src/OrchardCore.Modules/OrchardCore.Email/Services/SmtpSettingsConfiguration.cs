@@ -49,12 +49,10 @@ namespace OrchardCore.Email.Services
             options.UseDefaultCredentials = settings.UseDefaultCredentials;
             options.UserName = settings.UserName;
 
-            if (!String.IsNullOrEmpty(settings.PasswordSecret) &&
-                _secretService.GetSecretAsync<TextSecret>(settings.PasswordSecret).GetAwaiter().GetResult()
-                    is { Text: not null } secret)
+            if (!String.IsNullOrEmpty(settings.PasswordSecret))
             {
-                options.Password = secret.Text;
                 options.PasswordSecret = settings.PasswordSecret;
+                options.Password = _secretService.GetSecretAsync<TextSecret>(settings.PasswordSecret).GetAwaiter().GetResult()?.Text;
             }
             else if (!String.IsNullOrWhiteSpace(settings.Password))
             {

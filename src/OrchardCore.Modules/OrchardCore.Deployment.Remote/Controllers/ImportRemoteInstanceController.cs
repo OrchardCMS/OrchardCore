@@ -50,17 +50,15 @@ namespace OrchardCore.Deployment.Remote.Controllers
             var remoteClientList = await _remoteClientService.GetRemoteClientListAsync();
 
             var remoteClient = remoteClientList.RemoteClients.FirstOrDefault(client => client.ClientName == model.ClientName);
-            if (remoteClient == null)
+            if (remoteClient is null)
             {
                 return StatusCode((int)HttpStatusCode.BadRequest, "The remote client was not provided");
             }
 
             var apiKey = String.Empty;
-            if (!String.IsNullOrEmpty(remoteClient.ApiKeySecret) &&
-                (await _secretService.GetSecretAsync<TextSecret>(remoteClient.ApiKeySecret))
-                    is { Text: not null } secret)
+            if (!String.IsNullOrEmpty(remoteClient.ApiKeySecret))
             {
-                apiKey = secret.Text;
+                apiKey = (await _secretService.GetSecretAsync<TextSecret>(remoteClient.ApiKeySecret))?.Text;
             }
             else
             {

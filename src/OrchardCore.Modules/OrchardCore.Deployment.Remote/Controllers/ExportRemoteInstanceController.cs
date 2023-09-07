@@ -111,11 +111,10 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
                     requestContent.Add(new StringContent(remoteInstance.ClientName), nameof(ImportViewModel.ClientName));
 
-                    if (!String.IsNullOrEmpty(remoteInstance.ApiKeySecret) &&
-                        (await _secretService.GetSecretAsync<TextSecret>(remoteInstance.ApiKeySecret))
-                            is { Text: not null } secret)
+                    if (!String.IsNullOrEmpty(remoteInstance.ApiKeySecret))
                     {
-                        requestContent.Add(new StringContent(secret.Text), nameof(ImportViewModel.ApiKey));
+                        var secret = await _secretService.GetSecretAsync<TextSecret>(remoteInstance.ApiKeySecret);
+                        requestContent.Add(new StringContent(secret?.Text), nameof(ImportViewModel.ApiKey));
                     }
                     else
                     {
