@@ -1,6 +1,6 @@
 @model OrchardCore.ContentFields.Settings.UserPickerFieldSettingsViewModel
 
-<script asp-name="vuejs" at="Foot"></script>
+<script asp-name="vuejs" version="2" at="Foot"></script>
 
 <div class="mb-3">
     <div class="form-check">
@@ -50,7 +50,7 @@
     <span class="hint">@T["The hint text to display for this field on the editor."]</span>
 </div>
 
-<script at="Foot" depends-on="vuejs">
+<script at="Foot" depends-on="vuejs:2">
     var app = new Vue({
         el: "#userRolesVue",
         data: {

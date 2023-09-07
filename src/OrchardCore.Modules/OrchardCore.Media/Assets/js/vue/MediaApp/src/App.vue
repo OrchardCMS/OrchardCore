@@ -1,19 +1,8 @@
 <template>
-    <div v-on:dragover="handleScrollWhileDrag">
+    <div class="mediaApp" v-on:dragover="handleScrollWhileDrag">
         <div id="customdropzone">
             <h3>Drop your media here</h3>
             <p>Your files will be uploaded to the current folder when you drop them here</p>
-            <ul>
-                <li>{{ basePath }}{{ getFoldersUrl }}</li>
-                <li>{{ basePath }}{{ deleteFoldersUrl }}</li>
-                <li>{{ basePath }}{{ createFoldersUrl }}</li>
-                <li>{{ basePath }}{{ getMediaItemsUrl }}</li>
-                <li>{{ basePath }}{{ deleteMediaUrl }}</li>
-                <li>{{ basePath }}{{ renameMediaUrl }}</li>
-                <li>{{ basePath }}{{ deleteMediaListUrl }}</li>
-                <li>{{ basePath }}{{ moveMediaListUrl }}</li>
-                <li>{{ basePath }}{{ uploadFilesUrl }}</li>
-            </ul>
         </div>
         <div class="alert message-warning" v-if="errors.length > 0">
             <ul>
@@ -53,33 +42,32 @@
                         <div class="btn-group visibility-buttons">
                             <button type="button" id="toggle-grid-table-button" class="btn btn-light btn-sm"
                                 :class="{ selected: gridView }" v-on:click="gridView = true">
-                                <span title="Grid View"><i class="fa fa-th-large" aria-hidden="true"></i></span>
+                                <span title="Grid View"><fa-icon icon="fa-solid fa-th-large"></fa-icon></span>
                             </button>
                             <button type="button" id="toggle-grid-table-button" class="btn btn-light btn-sm"
                                 :class="{ selected: !gridView }" v-on:click="gridView = false">
-                                <span title="List View"><i class="fa fa-th-list" aria-hidden="true"></i></span>
+                                <span title="List View"><fa-icon icon="fa-solid fa-th-list"></fa-icon></span>
                             </button>
                         </div>
                         <div class="btn-group visibility-buttons" v-show="gridView">
                             <button type="button" id="toggle-thumbsize-button" class="btn btn-light btn-sm"
                                 :class="{ selected: smallThumbs }" v-on:click="smallThumbs = true">
-                                <span title="Small Thumbs"><i class="fa fa-compress" aria-hidden="true"></i></span>
+                                <span title="Small Thumbs"><fa-icon icon="fa-solid fa-compress"></fa-icon></span>
                             </button>
                             <button type="button" id="toggle-thumbsize-button" class="btn btn-light btn-sm me-2"
                                 :class="{ selected: !smallThumbs }" v-on:click="smallThumbs = false">
-                                <span title="Large Thumbs"><i class="fa fa-expand" aria-hidden="true"></i></span>
+                                <span title="Large Thumbs"><fa-icon icon="fa-solid fa-expand"></fa-icon></span>
                             </button>
                         </div>
 
                         <div class="nav-item ms-2">
                             <div class="media-filter">
                                 <div class="input-group input-group-sm">
-                                    <span class="fa fa-filter icon-inside-input"></span>
+                                    <fa-icon icon="fa-solid fa-filter icon-inside-input"></fa-icon>
                                     <input type="text" id="media-filter-input" v-model="mediaFilter"
                                         class="form-control input-filter" placeholder="Filter..." aria-label="Filter..." />
                                     <button id="clear-media-filter-button" class="btn btn-outline-secondary" type="button"
-                                        :disabled="mediaFilter == ''" v-on:click="mediaFilter = ''"><i class="fa fa-times"
-                                            aria-hidden="true"></i></button>
+                                        :disabled="mediaFilter == ''" v-on:click="mediaFilter = ''"><fa-icon icon="fa-solid fa-times"></fa-icon></button>
                                 </div>
                             </div>
                         </div>
@@ -144,6 +132,8 @@ import MediaItemsGridComponent from './components/mediaItemsGridComponent.vue';
 import MediaItemsTableComponent from './components/mediaItemsTableComponent.vue';
 import PagerComponent from './components/pagerComponent.vue';
 import DragDropThumbnail from './assets/drag-thumbnail.png';
+import "bootstrap/dist/css/bootstrap.min.css" // TODO remove
+import "bootstrap" // TODO remove
 
 const debug = dbg("oc:media-app");
 
@@ -195,16 +185,17 @@ export default defineComponent({
         },
         uploadFilesUrl: {
             type: String,
-            required: true
+            required: true,
         },
-        pathBase: {
+        translations: {
             type: String,
             required: true
-        },
+        }
     },
     data() {
         return {
-            selectedFolder: Object,
+            t: Object,
+            selectedFolder: {} as IMediaElement,
             mediaItems: [],
             selectedMedias: [],
             errors: [],
@@ -228,15 +219,17 @@ export default defineComponent({
 
         self.dragDropThumbnail.src = DragDropThumbnail;
 
-        this.emitter.on('folderSelected', (folder: {}) => {
+        this.t = JSON.parse(this.$props.translations);
+
+        this.emitter.on('folderSelected', (folder: IMediaElement) => {
             self.selectedFolder = folder;
         })
 
-        this.emitter.on('folderDeleted', (folder: {}) => {
+        this.emitter.on('folderDeleted', () => {
             self.selectRoot();
         })
 
-        this.emitter.on('folderAdded', (folder: { selected?: any; }) => {
+        this.emitter.on('folderAdded', (folder: IMediaElement) => {
             self.selectedFolder = folder;
             folder.selected = true;
         })

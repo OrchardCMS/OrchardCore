@@ -25,8 +25,8 @@
     var valuesKey = Html.NameFor(x => x.Values);
 }
 
-<script asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-multitextfieldpicker.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-multitextfieldpicker.js" asp-name="multitextfieldpicker" at="Foot" depends-on="vuejs, vue-multiselect"></script>
-<style asp-src="~/OrchardCore.ContentFields/Styles/vue-multiselect-multitextfieldpicker.min.css" debug-src="~/OrchardCore.ContentFields/Styles/vue-multiselect-multitextfieldpicker.css" asp-name="multitextfieldpicker" depends-on="vue-multiselect"></style>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-multitextfieldpicker.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-multitextfieldpicker.js" asp-name="multitextfieldpicker" at="Foot" depends-on="vuejs:2, vue-multiselect:2"></script>
+<style asp-src="~/OrchardCore.ContentFields/Styles/vue-multiselect-multitextfieldpicker.min.css" debug-src="~/OrchardCore.ContentFields/Styles/vue-multiselect-multitextfieldpicker.css" asp-name="multitextfieldpicker" depends-on="vue-multiselect:2"></style>
 
 <div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x.Values)_FieldWrapper">
     <label class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>

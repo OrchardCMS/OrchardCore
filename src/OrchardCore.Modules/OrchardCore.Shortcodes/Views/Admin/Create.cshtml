@@ -15,7 +15,7 @@
 
 <style asp-name="codemirror"></style>
 <style asp-name="codemirror-addon-display-fullscreen"></style>
-<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror"  at="Foot"></script>
 <script asp-name="codemirror-addon-edit-closetag" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
@@ -32,7 +32,7 @@
 
 <style asp-name="vue-multiselect"></style>
 <style asp-src="~/OrchardCore.Shortcodes/Styles/shortcodes.min.css" debug-src="~/OrchardCore.Shortcodes/Styles/shortcodes.css" asp-name="shortcodes"></style>    
-<script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.js" at="Foot" depends-on="vuejs, vue-multiselect"></script>
+<script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.js" at="Foot" depends-on="vuejs:2, vue-multiselect:2"></script>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Create Shortcode"])</h1></zone>
 

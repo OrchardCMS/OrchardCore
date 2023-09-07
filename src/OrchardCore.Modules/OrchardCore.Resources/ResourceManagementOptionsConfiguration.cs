@@ -452,11 +452,26 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("vue-multiselect")
-                .SetDependencies("vuejs")
+                .SetDependencies("vuejs:2")
+                .SetUrl("~/OrchardCore.Resources/Scripts/vue-multiselect.min.js", "~/OrchardCore.Resources/Scripts/vue-multiselect.min.js")
+                .SetCdn("https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.6/dist/vue-multiselect.min.js", "https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.6/dist/vue-multiselect.min.js")
+                .SetCdnIntegrity("sha384-a4eXewRTYCwYdFtSnMCZTNtiXrfdul6aQdueRgHPAx2y1Ldp0QaFdCTpOx0ycsXU", "sha384-a4eXewRTYCwYdFtSnMCZTNtiXrfdul6aQdueRgHPAx2y1Ldp0QaFdCTpOx0ycsXU")
+                .SetVersion("2.1.6");
+
+            manifest
+                .DefineScript("vue-multiselect")
+                .SetDependencies("vuejs:3")
                 .SetUrl("~/OrchardCore.Resources/Scripts/vue-multiselect.umd.min.js", "~/OrchardCore.Resources/Scripts/vue-multiselect.umd.js")
                 .SetCdn("https://cdn.jsdelivr.net/npm/vue-multiselect@3.0.0-alpha.2/dist/vue-multiselect.umd.min.js", "https://cdn.jsdelivr.net/npm/vue-multiselect@3.0.0-alpha.2/dist/vue-multiselect.umd.js")
                 .SetCdnIntegrity("sha256-BG2jF5avrBI525b65+XV3oBDf4aMwv0Gmby5+PR3YUc=", "sha256-XB6NElpLwfeswT2RqMxDyIXKP83r37JQoZaiSWXEFnA=")
                 .SetVersion("3.0.0");
+
+            //TODO add vendor folder
+            manifest
+                .DefineStyle("vue-multiselect")
+                .SetCdn("https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.6/dist/vue-multiselect.min.css", "https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.6/dist/vue-multiselect.min.css")
+                .SetCdnIntegrity("sha384-PPH/T7V86Z1+B4eMPef4FJXLD5fsTpObWoCoK3CiNtSX7aji+5qxpOCn1f2TDYAM", "sha384-PPH/T7V86Z1+B4eMPef4FJXLD5fsTpObWoCoK3CiNtSX7aji+5qxpOCn1f2TDYAM")
+                .SetVersion("2.1.6");
 
             manifest
                 .DefineStyle("vue-multiselect")
@@ -474,7 +489,14 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("vuedraggable")
-                .SetDependencies("vuejs", "Sortable")
+                .SetDependencies("vuejs:2", "Sortable")
+                .SetCdn("https://cdn.jsdelivr.net/npm/vuedraggable@2.24.3/dist/vuedraggable.umd.min.js", "https://cdn.jsdelivr.net/npm/vuedraggable@2.24.3/dist/vuedraggable.umd.js")
+                .SetCdnIntegrity("sha384-qUA1xXJiX23E4GOeW/XHtsBkV9MUcHLSjhi3FzO08mv8+W8bv5AQ1cwqLskycOTs", "sha384-+jB9vXc/EaIJTlNiZG2tv+TUpKm6GR9HCRZb3VkI3lscZWqrCYDbX2ZXffNJldL9")
+                .SetVersion("2.24.3");
+
+            manifest
+                .DefineScript("vuedraggable")
+                .SetDependencies("vuejs:3", "Sortable")
                 .SetUrl("~/OrchardCore.Resources/Scripts/vuedraggable.umd.min.js", "~/OrchardCore.Resources/Scripts/vuedraggable.umd.js")
                 .SetCdn("https://cdn.jsdelivr.net/npm/vuedraggable@4.1.0/dist/vuedraggable.umd.min.js", "https://cdn.jsdelivr.net/npm/vuedraggable@4.1.0/dist/vuedraggable.umd.js")
                 .SetCdnIntegrity("sha256-FjxpX3VAkThN5LyMBcYXWG07S53R7zenPcuYdGsHM5I=", "sha256-WmIsBn89Zsqc1mnbARPrEIskG1iJLpZaMM91oA8QLDI=")

@@ -59,7 +59,7 @@ export default defineComponent({
     },
     mounted: function () {
         let self = this;
-        let uploadInput = document.getElementById(self.uploadInputId ?? 'fileupload');
+        let uploadInput = <HTMLInputElement>document.getElementById(self.uploadInputId ?? 'fileupload');
 
         uploadInput?.addEventListener('fileuploadadd', this.fileUploadAdd);
 

@@ -25,6 +25,7 @@ using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
+using OrchardCore.Localization;
 using OrchardCore.Media.Controllers;
 using OrchardCore.Media.Core;
 using OrchardCore.Media.Deployment;
@@ -71,6 +72,8 @@ namespace OrchardCore.Media
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IJSLocalizer, MediaJSLocalizer>();
+            services.AddSingleton<IJSLocalizer, NullJSLocalizer>();
             services.AddSingleton<IAnchorTag, MediaAnchorTag>();
 
             services.Configure<TemplateOptions>(o =>

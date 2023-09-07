@@ -17,4 +17,5 @@ export interface IMediaElement {
     path: string;
     folder: string;
     isDirectory: boolean;
+    selected: boolean;
 }
