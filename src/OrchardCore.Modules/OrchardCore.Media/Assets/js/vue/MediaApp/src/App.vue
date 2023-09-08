@@ -1,8 +1,8 @@
 <template>
     <div class="mediaApp" v-on:dragover="handleScrollWhileDrag">
         <div id="customdropzone">
-            <h3>Drop your media here</h3>
-            <p>Your files will be uploaded to the current folder when you drop them here</p>
+            <h3>{{ t.DropHere }}</h3>
+            <p>{{ t.DropTitle }}</p>
         </div>
         <div class="alert message-warning" v-if="errors.length > 0">
             <ul>
@@ -14,7 +14,7 @@
         <div id="mediaContainer" class="align-items-stretch">
             <div id="navigationApp" class="media-container-navigation m-0 p-0" v-cloak>
                 <ol id="folder-tree">
-                    <folder :model="root" ref="rootFolder" :selected-in-media-app="selectedFolder" :level="1">
+                    <folder :model="root" :base-path="basePath" ref="rootFolder" :selected-in-media-app="selectedFolder" :level="1">
                     </folder>
                 </ol>
             </div>
@@ -24,19 +24,20 @@
                     <nav class="nav action-bar pb-3 pt-3 pl-3">
                         <div class="me-auto ms-4">
                             <a href="javascript:;" class="btn btn-light btn-sm me-2" v-on:click="selectAll">
-                                Select All
+                                {{ t.SelectAll }}
                             </a>
                             <a href="javascript:;" class="btn btn-light btn-sm me-2" v-on:click="unSelectAll"
                                 :class="{ disabled: selectedMedias.length < 1 }">
-                                Select None
+                                {{ t.SelectNone }}
                             </a>
                             <a href="javascript:;" class="btn btn-light btn-sm me-2" v-on:click="invertSelection">
-                                Invert
+                                {{ t.Invert }}
                             </a>
                             <a href="javascript:;" class="btn btn-light btn-sm me-2" v-on:click="deleteMediaList"
                                 :class="{ disabled: selectedMedias.length < 1 }">
-                                Delete <span class="badge rounded-pill bg-light" v-show="selectedMedias.length > 0">{{
-                                    selectedMedias.length }}</span>
+                                {{ t.Delete }} <span class="badge rounded-pill bg-light"
+                                    v-show="selectedMedias.length > 0">{{
+                                        selectedMedias.length }}</span>
                             </a>
                         </div>
                         <div class="btn-group visibility-buttons">
@@ -65,9 +66,10 @@
                                 <div class="input-group input-group-sm">
                                     <fa-icon icon="fa-solid fa-filter icon-inside-input"></fa-icon>
                                     <input type="text" id="media-filter-input" v-model="mediaFilter"
-                                        class="form-control input-filter" placeholder="Filter..." aria-label="Filter..." />
+                                        class="form-control input-filter" :placeholder="t.Filter" :aria-label="t.Filter" />
                                     <button id="clear-media-filter-button" class="btn btn-outline-secondary" type="button"
-                                        :disabled="mediaFilter == ''" v-on:click="mediaFilter = ''"><fa-icon icon="fa-solid fa-times"></fa-icon></button>
+                                        :disabled="mediaFilter == ''" v-on:click="mediaFilter = ''"><fa-icon
+                                            icon="fa-solid fa-times"></fa-icon></button>
                                 </div>
                             </div>
                         </div>
@@ -76,7 +78,7 @@
                                 <label for="fileupload" class="btn btn-sm btn-primary fileinput-button upload-button">
                                     <input id="fileupload" type="file" name="files" multiple />
                                     <fa-icon icon="fa-solid fa-plus"></fa-icon>
-                                    Upload
+                                    {{ t.Upload }}
                                 </label>
                             </div>
                         </div>
@@ -85,32 +87,34 @@
                     <nav id="breadcrumb" class="d-flex justify-content-end align-items-end">
                         <div class="breadcrumb-path p-3">
                             <span class="breadcrumb-item" :class="{ active: isHome }">
-                                <a id="t-mediaLibrary" :href="isHome ? 'javascript:void(0)' : '#'" v-on:click="selectRoot">Media Library</a>
+                                <a id="t-mediaLibrary" :href="isHome ? 'javascript:void(0)' : '#'"
+                                    v-on:click="selectRoot">{{ t.MediaLibrary }}</a>
                             </span>
                             <span v-for="(folder, i) in parents" v-cloak class="breadcrumb-item"
                                 :class="{ active: parents.length - i == 1 }">
-                                <a :href="parents.length - i == 1 ? 'javascript:void(0)' : '#'" v-on:click="selectedFolder = folder;">{{
-                                    folder.name }}</a>
+                                <a :href="parents.length - i == 1 ? 'javascript:void(0)' : '#'"
+                                    v-on:click="selectedFolder = folder;">{{
+                                        folder.name }}</a>
                             </span>
                         </div>
                     </nav>
                 </div>
                 <div class="media-container-middle p-3">
-                    <upload-list></upload-list>
+                    <upload-list :t="t"></upload-list>
 
-                    <media-items-table :sort-by="sortBy" :sort-asc="sortAsc" :filtered-media-items="itemsInPage"
-                        :selected-medias="selectedMedias" :thumb-size="thumbSize"
+                    <media-items-table :t="t" :base-path="basePath" :sort-by="sortBy" :sort-asc="sortAsc"
+                        :filtered-media-items="itemsInPage" :selected-medias="selectedMedias" :thumb-size="thumbSize"
                         v-show="itemsInPage.length > 0 && !gridView"></media-items-table>
 
-                    <media-items-grid v-show="gridView" :filtered-media-items="itemsInPage"
+                    <media-items-grid :t="t" :base-path="basePath" v-show="gridView" :filtered-media-items="itemsInPage"
                         :selected-medias="selectedMedias" :thumb-size="thumbSize"></media-items-grid>
 
-                    <div class="alert-info p-2" v-show="mediaItems.length > 0 && filteredMediaItems.length < 1">Nothing to
-                        show with this filter</div>
-                    <div class="alert-info p-2" v-show="mediaItems.length < 1">This folder is empty</div>
+                    <div class="alert-info p-2" v-show="mediaItems.length > 0 && filteredMediaItems.length < 1">{{
+                        t.FolderFilterEmpty }}</div>
+                    <div class="alert-info p-2" v-show="mediaItems.length < 1">{{ t.FolderEmpty }}</div>
                 </div>
                 <div v-show="filteredMediaItems.length > 0" class="media-container-footer p-3">
-                    <pager :source-items="filteredMediaItems"> </pager>
+                    <pager :t="t" :source-items="filteredMediaItems"> </pager>
                 </div>
             </div>
         </div>
@@ -121,11 +125,9 @@
 @import "./assets/scss/media.scss";
 </style>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
+<script>
 import axios from 'axios';
 import dbg from 'debug';
-import { IMedia, IMediaElement } from './interfaces/interfaces';
 import FolderComponent from './components/folderComponent.vue';
 import UploadListComponent from './components/uploadListComponent.vue';
 import MediaItemsGridComponent from './components/mediaItemsGridComponent.vue';
@@ -133,11 +135,10 @@ import MediaItemsTableComponent from './components/mediaItemsTableComponent.vue'
 import PagerComponent from './components/pagerComponent.vue';
 import DragDropThumbnail from './assets/drag-thumbnail.png';
 import "bootstrap/dist/css/bootstrap.min.css" // TODO remove
-import "bootstrap" // TODO remove
 
 const debug = dbg("oc:media-app");
 
-export default defineComponent({
+export default {
     components: {
         Folder: FolderComponent,
         UploadList: UploadListComponent,
@@ -195,7 +196,7 @@ export default defineComponent({
     data() {
         return {
             t: Object,
-            selectedFolder: {} as IMediaElement,
+            selectedFolder: {},
             mediaItems: [],
             selectedMedias: [],
             errors: [],
@@ -211,7 +212,7 @@ export default defineComponent({
                 path: '',
                 folder: '',
                 isDirectory: true
-            } as IMediaElement
+            }
         }
     },
     created: function () {
@@ -221,7 +222,7 @@ export default defineComponent({
 
         this.t = JSON.parse(this.$props.translations);
 
-        this.emitter.on('folderSelected', (folder: IMediaElement) => {
+        this.emitter.on('folderSelected', (folder) => {
             self.selectedFolder = folder;
         })
 
@@ -229,20 +230,20 @@ export default defineComponent({
             self.selectRoot();
         })
 
-        this.emitter.on('folderAdded', (folder: IMediaElement) => {
+        this.emitter.on('folderAdded', (folder) => {
             self.selectedFolder = folder;
             folder.selected = true;
         })
 
-        this.emitter.on('mediaListMoved', (errorInfo: never) => {
+        this.emitter.on('mediaListMoved', (errorInfo) => {
             self.loadFolder(self.selectedFolder);
             if (errorInfo) {
                 self.errors.push(errorInfo);
             }
         })
 
-        this.emitter.on('mediaRenamed', (newName: any, newPath: any, oldPath: any) => {
-            let media = <IMedia>self.mediaItems.filter(function (item: IMedia) {
+        this.emitter.on('mediaRenamed', (newName, newPath, oldPath) => {
+            let media = self.mediaItems.filter(function (item) {
                 return item.mediaPath === oldPath; // mediaPath ??? should it not be .url ?
             })[0];
 
@@ -259,28 +260,28 @@ export default defineComponent({
         })
 
         // common handlers for actions in both grid and table view.
-        this.emitter.on('sortChangeRequested', (newSort: any) => {
+        this.emitter.on('sortChangeRequested', (newSort) => {
             self.changeSort(newSort);
         })
 
-        this.emitter.on('mediaToggleRequested', (media: any) => {
+        this.emitter.on('mediaToggleRequested', (media) => {
             self.toggleSelectionOfMedia(media);
         })
 
-        this.emitter.on('renameMediaRequested', (media: any) => {
+        this.emitter.on('renameMediaRequested', (media) => {
             self.renameMedia(media);
         })
 
-        this.emitter.on('deleteMediaRequested', (media: any) => {
+        this.emitter.on('deleteMediaRequested', (media) => {
             self.deleteMediaItem(media);
         })
 
-        this.emitter.on('mediaDragStartRequested', (media: any, e: any) => {
+        this.emitter.on('mediaDragStartRequested', (media, e) => {
             self.handleDragStart(media, e);
         })
 
         // handler for pager events
-        this.emitter.on('pagerEvent', (itemsInPage: never[]) => {
+        this.emitter.on('pagerEvent', (itemsInPage) => {
             self.itemsInPage = itemsInPage;
             self.selectedMedias = [];
         })
@@ -317,7 +318,7 @@ export default defineComponent({
 
             self.selectedMedias = [];
 
-            let filtered = self.mediaItems.filter(function (item: IMedia) {
+            let filtered = self.mediaItems.filter(function (item) {
                 return item.name.toLowerCase().indexOf(self.mediaFilter.toLowerCase()) > - 1;
             });
 
@@ -385,6 +386,69 @@ export default defineComponent({
     },
     mounted: function () {
         this.$refs.rootFolder.toggle();
+
+
+
+
+
+        var chunkedFileUploadId = crypto.randomUUID();
+
+        $('#fileupload')
+            .fileupload({
+                dropZone: $('#mediaApp'),
+                limitConcurrentUploads: 20,
+                dataType: 'json',
+                url: $('#uploadFiles').val(),
+                maxChunkSize: Number($('#maxUploadChunkSize').val() || 0),
+                formData: function () {
+                    var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
+
+                    return [
+                        { name: 'path', value: mediaApp.selectedFolder.path },
+                        { name: '__RequestVerificationToken', value: antiForgeryToken },
+                        { name: '__chunkedFileUploadId', value: chunkedFileUploadId },
+                    ]
+                },
+                done: function (e, data) {
+                    $.each(data.result.files, function (index, file) {
+                        if (!file.error) {
+                            mediaApp.mediaItems.push(file)
+                        }
+                    });
+                }
+            })
+            .on('fileuploadchunkbeforesend', (e, options) => {
+                let file = options.files[0];
+                // Here we replace the blob with a File object to ensure the file name and others are preserved for the backend.
+                options.blob = new File(
+                    [options.blob],
+                    file.name,
+                    {
+                        type: file.type,
+                        lastModified: file.lastModified,
+                    });
+            });
+
+
+
+        $(document).bind('dragover', function (e) {
+            var dt = e.originalEvent.dataTransfer;
+            if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') != -1 : dt.types.contains('Files'))) {
+                var dropZone = $('#customdropzone'),
+                    timeout = window.dropZoneTimeout;
+                if (timeout) {
+                    clearTimeout(timeout);
+                } else {
+                    dropZone.addClass('in');
+                }
+                var hoveredDropZone = $(e.target).closest(dropZone);
+                window.dropZoneTimeout = setTimeout(function () {
+                    window.dropZoneTimeout = null;
+                    dropZone.removeClass('in');
+                }, 100);
+            }
+        });
+
     },
     methods: {
         uploadUrl: function () {
@@ -393,14 +457,14 @@ export default defineComponent({
                 return null;
             }
 
-            let urlValue = (<HTMLInputElement>document.getElementById('uploadFiles')).value;
+            let urlValue = document.getElementById('uploadFiles').value;
 
             return urlValue + (urlValue.indexOf('?') == -1 ? '?' : '&') + "path=" + encodeURIComponent(this.selectedFolder.path);
         },
         selectRoot: function () {
             this.selectedFolder = this.root;
         },
-        loadFolder: function (folder: IMediaElement) {
+        loadFolder: function (folder) {
             this.errors = [];
             this.selectedMedias = [];
             let self = this;
@@ -409,8 +473,8 @@ export default defineComponent({
 
             if (mediaUrl != null) {
                 axios.get(mediaUrl + (mediaUrl.indexOf('?') == -1 ? '?' : '&') + "path=" + encodeURIComponent(folder.path))
-                    .then((response: { data: any; }) => {
-                        response.data.forEach(function (item: { open: boolean; }) {
+                    .then((response) => {
+                        response.data.forEach(function (item) {
                             item.open = false;
                         });
                         self.mediaItems = response.data;
@@ -418,8 +482,8 @@ export default defineComponent({
                         self.sortBy = '';
                         self.sortAsc = true;
                     })
-                    .catch(() => {
-                        debug('loadFolder: error loading folder:', folder);
+                    .catch((e) => {
+                        debug('loadFolder: error loading folder:', folder, e);
                         self.selectRoot();
                     });
             }
@@ -434,7 +498,7 @@ export default defineComponent({
             this.selectedMedias = [];
         },
         invertSelection: function () {
-            let temp: never[] = [];
+            let temp = [];
             for (let i = 0; i < this.filteredMediaItems.length; i++) {
                 if (this.isMediaSelected(this.filteredMediaItems[i]) == false) {
                     temp.push(this.filteredMediaItems[i]);
@@ -442,14 +506,14 @@ export default defineComponent({
             }
             this.selectedMedias = temp;
         },
-        toggleSelectionOfMedia: function (media: any) {
+        toggleSelectionOfMedia: function (media) {
             if (this.isMediaSelected(media) == true) {
                 this.selectedMedias.splice(this.selectedMedias.indexOf(media), 1);
             } else {
                 this.selectedMedias.push(media);
             }
         },
-        isMediaSelected: function (media: { url: string; }) {
+        isMediaSelected: function (media) {
             let result = this.selectedMedias?.some(function (element, index, array) {
                 return element.url.toLowerCase() === media.url.toLowerCase();
             });
@@ -463,30 +527,30 @@ export default defineComponent({
                 return;
             }
 
-            /*             confirmDialog({
-                            ...$("#deleteFolder").data(), callback: function (resp) {
-                                if (resp) {
-                                    $.ajax({
-                                        url: $('#deleteFolderUrl').val() + "?path=" + encodeURIComponent(folder.path),
-                                        method: 'POST',
-                                        data: {
-                                            __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
-                                        },
-                                        success: function (data) {
-                                            bus.$emit('deleteFolder', folder);
-                                        },
-                                        error: function (error) {
-                                            console.error(error.responseText);
-                                        }
-                                    });
-                                }
+            confirmDialog({
+                ...$("#deleteFolder").data(), callback: function (resp) {
+                    if (resp) {
+                        $.ajax({
+                            url: $('#deleteFolderUrl').val() + "?path=" + encodeURIComponent(folder.path),
+                            method: 'POST',
+                            data: {
+                                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
+                            },
+                            success: function (data) {
+                                bus.$emit('deleteFolder', folder);
+                            },
+                            error: function (error) {
+                                console.error(error.responseText);
                             }
-                        }); */
+                        });
+                    }
+                }
+            });
         },
         createFolder: function () {
-            (<HTMLElement>document.getElementById('createFolderModal-errors')).textContent = "";
+            document.getElementById('createFolderModal-errors').textContent = "";
             //modal.show();
-            let createFolderModalInput = (<HTMLInputElement>document.querySelector('#createFolderModal .modal-body input'));
+            let createFolderModalInput = document.querySelector('#createFolderModal .modal-body input');
             createFolderModalInput.value = "";
             createFolderModalInput.focus();
         },
@@ -497,7 +561,7 @@ export default defineComponent({
             $('#old-item-name').val(media.name);
             $('#renameMediaModal .modal-body input').val(media.name).focus();
         },
-        selectAndDeleteMedia: function (media: any) {
+        selectAndDeleteMedia: function (media) {
             //this.deleteMedia();
         },
         deleteMediaList: function () {
@@ -508,38 +572,38 @@ export default defineComponent({
                 return;
             }
 
-            /*             confirmDialog({
-                            ...$("#deleteMedia").data(), callback: function (resp) {
-                                if (resp) {
-                                    let paths = [];
-                                    for (let i = 0; i < mediaList.length; i++) {
-                                        paths.push(mediaList[i].mediaPath);
+            confirmDialog({
+                ...$("#deleteMedia").data(), callback: function (resp) {
+                    if (resp) {
+                        let paths = [];
+                        for (let i = 0; i < mediaList.length; i++) {
+                            paths.push(mediaList[i].mediaPath);
+                        }
+
+                        $.ajax({
+                            url: $('#deleteMediaListUrl').val(),
+                            method: 'POST',
+                            data: {
+                                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
+                                paths: paths
+                            },
+                            success: function (data) {
+                                for (let i = 0; i < self.selectedMedias.length; i++) {
+                                    let index = self.mediaItems && self.mediaItems.indexOf(self.selectedMedias[i]);
+                                    if (index > -1) {
+                                        self.mediaItems.splice(index, 1);
+                                        bus.$emit('mediaDeleted', self.selectedMedias[i]);
                                     }
-            
-                                    $.ajax({
-                                        url: $('#deleteMediaListUrl').val(),
-                                        method: 'POST',
-                                        data: {
-                                            __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
-                                            paths: paths
-                                        },
-                                        success: function (data) {
-                                            for (let i = 0; i < self.selectedMedias.length; i++) {
-                                                let index = self.mediaItems && self.mediaItems.indexOf(self.selectedMedias[i]);
-                                                if (index > -1) {
-                                                    self.mediaItems.splice(index, 1);
-                                                    bus.$emit('mediaDeleted', self.selectedMedias[i]);
-                                                }
-                                            }
-                                            self.selectedMedias = [];
-                                        },
-                                        error: function (error) {
-                                            console.error(error.responseText);
-                                        }
-                                    });
                                 }
+                                self.selectedMedias = [];
+                            },
+                            error: function (error) {
+                                console.error(error.responseText);
                             }
-                        }); */
+                        });
+                    }
+                }
+            });
         },
         deleteMediaItem: function (media) {
             let self = this;
@@ -547,32 +611,32 @@ export default defineComponent({
                 return;
             }
 
-            /*             confirmDialog({
-                            ...$("#deleteMedia").data(), callback: function (resp) {
-                                if (resp) {
-                                    $.ajax({
-                                        url: $('#deleteMediaUrl').val() + "?path=" + encodeURIComponent(media.mediaPath),
-                                        method: 'POST',
-                                        data: {
-                                            __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
-                                        },
-                                        success: function (data) {
-                                            let index = self.mediaItems && self.mediaItems.indexOf(media)
-                                            if (index > -1) {
-                                                self.mediaItems.splice(index, 1);
-                                                bus.$emit('mediaDeleted', media);
-                                            }
-                                            //self.selectedMedia = null;
-                                        },
-                                        error: function (error) {
-                                            console.error(error.responseText);
-                                        }
-                                    });
+            this.confirmDialog({
+                ...$("#deleteMedia").data(), callback: function (resp) {
+                    if (resp) {
+                        $.ajax({
+                            url: self.$props.basePath + self.$props.deleteMediaUrl + "?path=" + encodeURIComponent(media.mediaPath),
+                            method: 'POST',
+                            data: {
+                                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
+                            },
+                            success: function (data) {
+                                let index = self.mediaItems && self.mediaItems.indexOf(media)
+                                if (index > -1) {
+                                    self.mediaItems.splice(index, 1);
+                                    self.emitter.emit('mediaDeleted', media)
                                 }
+                                //self.selectedMedia = null;
+                            },
+                            error: function (error) {
+                                console.error(error.responseText);
                             }
-                        }); */
+                        });
+                    }
+                }
+            });
         },
-        handleDragStart: function (media: IMedia, e: { dataTransfer: { setData: (arg0: string, arg1: string) => void; setDragImage: (arg0: HTMLImageElement, arg1: number, arg2: number) => void; effectAllowed: string; }; }) {
+        handleDragStart: function (media, e) {
             // first part of move media to folder:
             // prepare the data that will be handled by the folder component on drop event
             let mediaNames = [];
@@ -591,7 +655,7 @@ export default defineComponent({
             e.dataTransfer.setDragImage(this.dragDropThumbnail, 10, 10);
             e.dataTransfer.effectAllowed = 'move';
         },
-        handleScrollWhileDrag: function (e: { clientY: number; }) {
+        handleScrollWhileDrag: function (e) {
             if (e.clientY < 150) {
                 window.scrollBy(0, -10);
             }
@@ -600,14 +664,58 @@ export default defineComponent({
                 window.scrollBy(0, 10);
             }
         },
-        changeSort: function (newSort: string) {
+        changeSort: function (newSort) {
             if (this.sortBy == newSort) {
                 this.sortAsc = !this.sortAsc;
             } else {
                 this.sortAsc = true;
                 this.sortBy = newSort;
             }
+        },
+        confirmDialog: function ({callback, ...options}) {
+            const defaultOptions = $('#confirmRemoveModalMetadata').data();
+            const { title, message, okText, cancelText, okClass, cancelClass } = $.extend({}, defaultOptions, options);
+
+            $('<div id="confirmRemoveModal" class="modal" tabindex="-1" role="dialog">\
+                <div class="modal-dialog modal-dialog-centered" role="document">\
+                    <div class="modal-content">\
+                        <div class="modal-header">\
+                            <h5 class="modal-title">' + title + '</h5>\
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>\
+                        </div>\
+                        <div class="modal-body">\
+                            <p>' + message + '</p>\
+                        </div>\
+                        <div class="modal-footer">\
+                            <button id="modalOkButton" type="button" class="btn ' + okClass + '">' + okText + '</button>\
+                            <button id="modalCancelButton" type="button" class="btn ' + cancelClass + '" data-bs-dismiss="modal">' + cancelText + '</button>\
+                        </div>\
+                    </div>\
+                </div>\
+            </div>').appendTo('body');
+
+            var confirmModal = new bootstrap.Modal($('#confirmRemoveModal'), {
+                backdrop: 'static',
+                keyboard: false
+            })
+
+            confirmModal.show();
+
+            document.getElementById('confirmRemoveModal').addEventListener('hidden.bs.modal', function () {
+                document.getElementById('confirmRemoveModal').remove();
+                confirmModal.dispose();
+            });
+
+            $('#modalOkButton').click(function () {
+                callback(true);
+                confirmModal.hide();
+            });
+
+            $('#modalCancelButton').click(function () {
+                callback(false);
+                confirmModal.hide();
+            });
         }
     }
-});
+};
 </script>

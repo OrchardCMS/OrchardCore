@@ -4,16 +4,16 @@
 <template>
     <div class="upload-list" v-show="files.length > 0">
         <div class="header" @click="expanded = !expanded">
-            <span> {{ T.uploads }} </span>
+            <span> {{ t.Uploads }} </span>
             <span v-show="pendingCount"> (Pending: {{ pendingCount }}) </span>
-            <span v-show="errorCount" :class="{ 'text-danger': errorCount }"> ( {{ T.errors }}: {{ errorCount }} / <a
-                    href="javascript:;" v-on:click.stop="clearErrors"> {{ T.clearErrors }} </a>)</span>
+            <span v-show="errorCount" :class="{ 'text-danger': errorCount }"> ( {{ t.Errors }}: {{ errorCount }} / <a
+                    href="javascript:;" v-on:click.stop="clearErrors"> {{ t.ClearErrors }} </a>)</span>
             <div class="toggle-button">
                 <div v-show="expanded">
-                    <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+                    <fa-icon icon="fa-solid fa-chevron-down"></fa-icon>
                 </div>
                 <div v-show="!expanded">
-                    <i class="fa-solid fa-chevron-up" aria-hidden="true"></i>
+                    <fa-icon icon="fa-solid fa-chevron-up"></fa-icon>
                 </div>
             </div>
         </div>
@@ -25,11 +25,10 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script>
 import UploadComponent from './uploadComponent.vue';
 
-export default defineComponent({
+export default {
     components: {
         Upload: UploadComponent,
     },
@@ -37,20 +36,17 @@ export default defineComponent({
     data: function () {
         return {
             files: [],
-            T: {},
             expanded: false,
             pendingCount: 0,
             errorCount: 0
         }
     },
     props: {
-        uploadInputId: String
+        uploadInputId: String,
+        t: Object
     },
     created: function () {
-        // retrieving localized strings from view
-        this.T.uploads = (<HTMLInputElement>document.getElementById('t-uploads'))?.value;
-        this.T.errors = (<HTMLInputElement>document.getElementById('t-errors'))?.value;
-        this.T.clearErrors = (<HTMLInputElement>document.getElementById('t-clear-errors'))?.value;;
+
     },
     computed: {
         fileCount: function () {
@@ -59,11 +55,11 @@ export default defineComponent({
     },
     mounted: function () {
         let self = this;
-        let uploadInput = <HTMLInputElement>document.getElementById(self.uploadInputId ?? 'fileupload');
+        let uploadInput = document.getElementById(self.uploadInputId ?? 'fileupload');
 
         uploadInput?.addEventListener('fileuploadadd', this.fileUploadAdd);
 
-        this.emitter.on('removalRequest', (fileUpload: { name: any; }) => {
+        this.emitter.on('removalRequest', (fileUpload) => {
             self.files.forEach(function (item, index, array) {
                 if (item.name == fileUpload.name) {
                     array.splice(index, 1);
@@ -76,13 +72,13 @@ export default defineComponent({
         })
     },
     methods: {
-        fileUploadAdd: function (data: any, ev: Event) {
+        fileUploadAdd: function (data, ev) {
             let self = this;
 
             if (!data.files) {
                 return;
             }
-            data.files.forEach(function (newFile: { name: string; }) {
+            data.files.forEach(function (newFile) {
                 let alreadyInList = self.files.some(function (f) {
                     return f.name == newFile.name;
                 });
@@ -114,5 +110,5 @@ export default defineComponent({
             this.updateCount();
         }
     }
-});
+};
 </script>

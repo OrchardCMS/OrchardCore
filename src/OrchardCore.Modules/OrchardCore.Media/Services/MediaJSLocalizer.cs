@@ -37,40 +37,44 @@ public class MediaJSLocalizer: IJSLocalizer
             dictionary.Add("MoveMediaTitle", S["Move media"].Value);
             dictionary.Add("MoveMediaMessage", S["Are you sure you want to move the selected media to this folder?"].Value);
             dictionary.Add("SameFolderMessage", S["The media is already on this folder"].Value);
-            dictionary.Add("t-edit-button", S["Edit"].Value);
-            dictionary.Add("t-delete-button", S["Delete"].Value);
-            dictionary.Add("t-view-button", S["View"].Value);
+            dictionary.Add("EditButton", S["Edit"].Value);
+            dictionary.Add("DeleteButton", S["Delete"].Value);
+            dictionary.Add("ViewButton", S["View"].Value);
             dictionary.Add("SelectAll", S["Select All"].Value);
-            //Select None
-            //Invert
-            //Delete
-            //Drop your media here
-            //Your files will be uploaded to the current folder when you drop them here
-            //Upload
+            dictionary.Add("FolderEmpty", S["This folder is empty"].Value);
+            dictionary.Add("FolderFilterEmpty", S["Nothing to show with this filter"].Value);
+            dictionary.Add("Upload", S["Upload"].Value);
+            dictionary.Add("SelectNone", S["Select None"].Value);
+            dictionary.Add("Invert", S["Invert"].Value);
+            dictionary.Add("Delete", S["Delete"].Value);
+            dictionary.Add("DropHere", S["Drop your media here"].Value);
+            dictionary.Add("DropTitle", S["Your files will be uploaded to the current folder when you drop them here"].Value);
+            dictionary.Add("MediaLibrary", S["Media Library"].Value);
+            dictionary.Add("Filter", S["Filter..."].Value);
 
             // Localizable Strings for uploadComponent
-            dictionary.Add("t-error", S["This file exceeds the maximum upload size"].Value);
+            dictionary.Add("Error", S["This file exceeds the maximum upload size"].Value);
 
             // Localizable Strings for uploadListcomponent
-            dictionary.Add("t-uploads", S["Uploads"].Value);
-            dictionary.Add("t-errors", S["Errors"].Value); // Duplicate here, need to rename
-            dictionary.Add("t-clear-errors", S["Clear Errors"].Value);
+            dictionary.Add("Uploads", S["Uploads"].Value);
+            dictionary.Add("Errors", S["Errors"].Value);
+            dictionary.Add("ClearErrors", S["Clear Errors"].Value);
 
             // Localizable Strings for mediaItemsTableComponent
-            dictionary.Add("t-image-header", S["Image"].Value);
-            dictionary.Add("t-name-header", S["Name"].Value);
-            dictionary.Add("t-lastModify-header", S["Last modification"].Value);
-            dictionary.Add("t-size-header", S["Size"].Value);
-            dictionary.Add("t-type-header", S["Type"].Value);
+            dictionary.Add("ImageHeader", S["Image"].Value);
+            dictionary.Add("NameHeader", S["Name"].Value);
+            dictionary.Add("LastModifyHeader", S["Last modification"].Value);
+            dictionary.Add("SizeHeader", S["Size"].Value);
+            dictionary.Add("TypeHeader", S["Type"].Value);
 
             // Localizable Strings for pagerComponent
-            dictionary.Add("t-pager-first-button", S["First"].Value);
-            dictionary.Add("t-pager-previous-button", S["Previous"].Value);
-            dictionary.Add("t-pager-next-button", S["Next"].Value);
-            dictionary.Add("t-pager-last-button", S["Last"].Value);
-            dictionary.Add("t-pager-page-size-label", S["Page Size"].Value);
-            dictionary.Add("t-pager-page-label", S["Page:"].Value);
-            dictionary.Add("t-pager-total-label", S["Total items:"].Value);
+            dictionary.Add("PagerFirstButton", S["First"].Value);
+            dictionary.Add("PagerPreviousButton", S["Previous"].Value);
+            dictionary.Add("PagerNextButton", S["Next"].Value);
+            dictionary.Add("PagerLastButton", S["Last"].Value);
+            dictionary.Add("PagerPageSizeLabel", S["Page Size"].Value);
+            dictionary.Add("PagerPageLabel", S["Page:"].Value);
+            dictionary.Add("PagerTotalLabel", S["Total items:"].Value);
 
         }
 

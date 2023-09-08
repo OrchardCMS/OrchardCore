@@ -5,24 +5,24 @@
     <table class="table media-items-table m-0">
         <thead>
             <tr class="header-row">
-                <th scope="col" class="thumbnail-column">{{ T.imageHeader }}</th>
+                <th scope="col" class="thumbnail-column">{{ t.ImageHeader }}</th>
                 <th scope="col" v-on:click="changeSort('name')">
-                    {{ T.nameHeader }}
+                    {{ t.NameHeader }}
                     <sort-indicator colname="name" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator>
                 </th>
                 <th scope="col" v-on:click="changeSort('lastModify')">
-                    {{ T.lastModifyHeader }}
+                    {{ t.LastModifyHeader }}
                     <sort-indicator colname="lastModify" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator>
                 </th>
                 <th scope="col" v-on:click="changeSort('size')">
                     <span class="optional-col">
-                        {{ T.sizeHeader }}
+                        {{ t.SizeHeader }}
                         <sort-indicator colname="size" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator>
                     </span>
                 </th>
                 <th scope="col" v-on:click="changeSort('mime')">
                     <span class="optional-col">
-                        {{ T.typeHeader }}
+                        {{ t.TypeHeader }}
                         <sort-indicator colname="mime" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator>
                     </span>
                 </th>
@@ -44,10 +44,10 @@
                         <span class="break-word"> {{ media.name }} </span>
                         <div class="buttons-container">
                             <a href="javascript:;" class="btn btn-link btn-sm me-1 edit-button"
-                                v-on:click.stop="renameMedia(media)"> {{ T.editButton }} </a>
+                                v-on:click.stop="renameMedia(media)"> {{ t.EditButton }} </a>
                             <a href="javascript:;" class="btn btn-link btn-sm delete-button"
-                                v-on:click.stop="deleteMedia(media)"> {{ T.deleteButton }} </a>
-                            <a :href="media.url" target="_blank" class="btn btn-link btn-sm view-button"> {{ T.viewButton }}
+                                v-on:click.stop="deleteMedia(media)"> {{ t.DeleteButton }} </a>
+                            <a :href="basePath + media.url" target="_blank" class="btn btn-link btn-sm view-button"> {{ t.ViewButton }}
                             </a>
                         </div>
                     </div>
@@ -66,12 +66,10 @@
     </table>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
+<script>
 import SortIndicatorComponent from './sortIndicatorComponent.vue';
-import { IMedia } from '../interfaces/interfaces';
 
-export default defineComponent({
+export default {
     components: {
         SortIndicator: SortIndicatorComponent,
     },
@@ -79,55 +77,60 @@ export default defineComponent({
     props: {
         sortBy: String,
         sortAsc: Boolean,
-        filteredMediaItems: Array as PropType<IMedia[]>,
-        selectedMedias: Array as PropType<IMedia[]>,
-        thumbSize: Number
+        filteredMediaItems: Array,
+        selectedMedias: Array,
+        thumbSize: Number,
+        basePath: String,
+        t: {
+            type: Object,
+            required: true,
+        }
     },
-    data() {
+/*     data() {
         return {
             T: {}
         }
-    },
-    created: function () {
+    }, */
+/*     created: function () {
         let self = this;
-        self.T.imageHeader = (<HTMLInputElement>document.getElementById('t-image-header'))?.value;
-        self.T.nameHeader = (<HTMLInputElement>document.getElementById('t-name-header'))?.value;
-        self.T.lastModifyHeader = (<HTMLInputElement>document.getElementById('t-lastModify-header'))?.value;
-        self.T.sizeHeader = (<HTMLInputElement>document.getElementById('t-size-header'))?.value;
-        self.T.typeHeader = (<HTMLInputElement>document.getElementById('t-type-header'))?.value;
-        self.T.editButton = (<HTMLInputElement>document.getElementById('t-edit-button'))?.value;
-        self.T.deleteButton = (<HTMLInputElement>document.getElementById('t-delete-button'))?.value;
-        self.T.viewButton = (<HTMLInputElement>document.getElementById('t-view-button'))?.value;
-    },
+        self.t.imageHeader = (<HTMLInputElement>document.getElementById('t-image-header'))?.value;
+        self.t.nameHeader = (<HTMLInputElement>document.getElementById('t-name-header'))?.value;
+        self.t.lastModifyHeader = (<HTMLInputElement>document.getElementById('t-lastModify-header'))?.value;
+        self.t.sizeHeader = (<HTMLInputElement>document.getElementById('t-size-header'))?.value;
+        self.t.typeHeader = (<HTMLInputElement>document.getElementById('t-type-header'))?.value;
+        self.t.editButton = (<HTMLInputElement>document.getElementById('t-edit-button'))?.value;
+        self.t.deleteButton = (<HTMLInputElement>document.getElementById('t-delete-button'))?.value;
+        self.t.viewButton = (<HTMLInputElement>document.getElementById('t-view-button'))?.value;
+    }, */
     methods: {
-        isMediaSelected: function (media: IMedia) {
+        isMediaSelected: function (media) {
             let result = this.selectedMedias?.some(function (element) {
                 return element.url.toLowerCase() === media.url.toLowerCase();
             });
             return result;
         },
-        buildMediaUrl: function (url: string | string[], thumbSize: string) {
-            return url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize;
+        buildMediaUrl: function (url, thumbSize) {
+            return "https://localhost:5001" + url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize;
         },
-        changeSort: function (newSort: any) {
+        changeSort: function (newSort) {
             this.emitter.emit('sortChangeRequested', newSort);
         },
-        toggleSelectionOfMedia: function (media: IMedia) {
+        toggleSelectionOfMedia: function (media) {
             this.emitter.emit('mediaToggleRequested', media);
         },
-        renameMedia: function (media: IMedia) {
+        renameMedia: function (media) {
             this.emitter.emit('renameMediaRequested', media);
         },
-        deleteMedia: function (media: IMedia) {
+        deleteMedia: function (media) {
             this.emitter.emit('deleteMediaRequested', media);
         },
-        dragStart: function (media: IMedia, e: any) {
+        dragStart: function (media, e) {
             this.emitter.emit('mediaDragStartRequested', media, e);
         },
-        printDateTime: function (datemillis: string | number | Date) {
+        printDateTime: function (datemillis) {
             let d = new Date(datemillis);
             return d.toLocaleString();
         }
     }
-});
+};
 </script>

@@ -10,26 +10,26 @@
         <nav id="media-pager" class="d-flex justify-content-center" aria-label="Pagination Navigation" role="navigation" :data-computed-trigger="itemsInCurrentPage.length">
             <ul class="pagination pagination-sm m-0">
                 <li class="page-item media-first-button" :class="{disabled : !canDoFirst}">
-                    <a class="page-link" href="#" :tabindex="canDoFirst ? 0 : -1" v-on:click="goFirst">{{ T.pagerFirstButton }}</a>
+                    <a class="page-link" href="#" :tabindex="canDoFirst ? 0 : -1" v-on:click="goFirst">{{ t.PagerFirstButton }}</a>
                 </li>
                 <li class="page-item" :class="{disabled : !canDoPrev}">
-                    <a class="page-link" href="#" :tabindex="canDoPrev ? 0 : -1" v-on:click="previous">{{ T.pagerPreviousButton }}</a>
+                    <a class="page-link" href="#" :tabindex="canDoPrev ? 0 : -1" v-on:click="previous">{{ t.PagerPreviousButton }}</a>
                 </li>
-                <li v-if="link !== -1" class="page-item page-number"  :class="{active : current == link - 1}" v-for="link in pageLinks">
+                <li class="page-item page-number"  :class="{active : current == link - 1}" v-for="link in pageLinks">
                     <a class="page-link" href="#" v-on:click="goTo(link - 1)" :aria-label="'Goto Page' + link">
                         {{link}}
                         <span v-if="current == link -1" class="visually-hidden">(current)</span>
                     </a>
                 </li>
                 <li class="page-item" :class="{disabled : !canDoNext}">
-                    <a class="page-link" href="#" :tabindex="canDoNext ? 0 : -1" v-on:click="next">{{ T.pagerNextButton }}</a>
+                    <a class="page-link" href="#" :tabindex="canDoNext ? 0 : -1" v-on:click="next">{{ t.PagerNextButton }}</a>
                 </li>
                 <li class="page-item media-last-button" :class="{disabled : !canDoLast}">
-                    <a class="page-link" href="#" :tabindex="canDoLast ? 0 : -1" v-on:click="goLast">{{ T.pagerLastButton }}</a>
+                    <a class="page-link" href="#" :tabindex="canDoLast ? 0 : -1" v-on:click="goLast">{{ t.PagerLastButton }}</a>
                 </li>
                 <li class="page-item ms-4 page-size-info">
                     <div style="display: flex;">
-                        <span class="page-link disabled text-muted page-size-label">{{ T.pagerPageSizeLabel }}</span>
+                        <span class="page-link disabled text-muted page-size-label">{{ t.PagerPageSizeLabel }}</span>
                         <select id="pageSizeSelect" class="page-link" v-model="pageSize">
                             <option v-for="option in pageSizeOptions" v-bind:value="option">
                                 {{option}}
@@ -42,43 +42,45 @@
         <nav class="d-flex justify-content-center">
             <ul class="pagination pagination-sm m-0 mt-2">
                 <li class="page-item ms-4 page-info">
-                    <span class="page-link disabled text-muted ">{{ T.pagerPageLabel }} {{current + 1}}/{{totalPages}}</span>
+                    <span class="page-link disabled text-muted ">{{ t.PagerPageLabel }} {{current + 1}}/{{totalPages}}</span>
                 </li>
                 <li class="page-item ms-4 total-info">
-                    <span class="page-link disabled text-muted "> {{ T.pagerTotalLabel }} {{total}}</span>
+                    <span class="page-link disabled text-muted "> {{ t.PagerTotalLabel }} {{total}}</span>
                 </li>
             </ul>
         </nav>
         </div>
 </template>
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script>
 
-export default defineComponent({
+export default {
     name: "pager",
     props: {
-        sourceItems: Array
+        sourceItems: Array,
+        t: {
+            type: Object,
+            required: true,
+        }
     },
     data() {
         return {
             pageSize: 10,
             pageSizeOptions: [10, 30, 50, 100],
             current: 0,
-            T: {}
         };
     },
-    created: function () {
+/*     created: function () {
         let self = this;
 
         // retrieving localized strings from view
-        self.T.pagerFirstButton = (<HTMLInputElement>document.getElementById('t-pager-first-button'))?.value;
-        self.T.pagerPreviousButton = (<HTMLInputElement>document.getElementById('t-pager-previous-button'))?.value;
-        self.T.pagerNextButton = (<HTMLInputElement>document.getElementById('t-pager-next-button'))?.value;
-        self.T.pagerLastButton = (<HTMLInputElement>document.getElementById('t-pager-last-button'))?.value;
-        self.T.pagerPageSizeLabel = (<HTMLInputElement>document.getElementById('t-pager-page-size-label'))?.value;
-        self.T.pagerPageLabel = (<HTMLInputElement>document.getElementById('t-pager-page-label'))?.value;
-        self.T.pagerTotalLabel = (<HTMLInputElement>document.getElementById('t-pager-total-label'))?.value;      
-    },
+        self.t.pagerFirstButton = (<HTMLInputElement>document.getElementById('t-pager-first-button'))?.value;
+        self.t.pagerPreviousButton = (<HTMLInputElement>document.getElementById('t-pager-previous-button'))?.value;
+        self.t.pagerNextButton = (<HTMLInputElement>document.getElementById('t-pager-next-button'))?.value;
+        self.t.pagerLastButton = (<HTMLInputElement>document.getElementById('t-pager-last-button'))?.value;
+        self.t.pagerPageSizeLabel = (<HTMLInputElement>document.getElementById('t-pager-page-size-label'))?.value;
+        self.t.pagerPageLabel = (<HTMLInputElement>document.getElementById('t-pager-page-label'))?.value;
+        self.t.pagerTotalLabel = (<HTMLInputElement>document.getElementById('t-pager-total-label'))?.value;      
+    }, */
     methods: {
         next: function () {
             this.current = this.current + 1;
@@ -92,7 +94,7 @@ export default defineComponent({
         goLast: function () {
             this.current = this.totalPages - 1;
         },
-        goTo: function (targetPage: number) {
+        goTo: function (targetPage) {
             this.current = targetPage;
         }
     },
@@ -167,5 +169,5 @@ export default defineComponent({
             this.current = 0;
         }
     }
-});
+};
 </script>

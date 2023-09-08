@@ -23,16 +23,19 @@
     </li>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script>
 import axios from 'axios';
 
-export default defineComponent({
+export default {
     name: "folder",
     props: {
         model: Object,
         selectedInMediaApp: Object,
-        level: Number
+        level: Number,
+        basePath: {
+            type: String,
+            required: true
+        },
     },
     data() {
         return {
@@ -40,7 +43,8 @@ export default defineComponent({
             children: [], // not initialized state (for lazy-loading)
             parent: null,
             isHovered: false,
-            padding: 0
+            padding: 0,
+            getFoldersUrl: document.getElementById('mediaApp').dataset.getFoldersUrl
         }
     },
     computed: {
@@ -66,7 +70,7 @@ export default defineComponent({
     created: function () {
         let self = this;
 
-        this.emitter.on('deleteFolder', function (folder: never) {
+        this.emitter.on('deleteFolder', function (folder) {
             if (self.children) {
                 let index = self.children && self.children.indexOf(folder)
                 if (index > -1) {
@@ -76,7 +80,7 @@ export default defineComponent({
             }
         });
 
-        this.emitter.on('addFolder', function (target: String, folder: never) {
+        this.emitter.on('addFolder', function (target, folder) {
             if (self.model == target) {
                 if (self.children !== null) {
                     self.children.push(folder);
@@ -124,25 +128,25 @@ export default defineComponent({
                 this.open = true;
             }
 
-            axios.get(document.querySelector('#getFoldersUrl')?.nodeValue + "?path=" + encodeURIComponent(self.model?.path))
-                .then((response: { data: any; }) => {
+            axios.get(this.basePath + this.getFoldersUrl + "?path=" + encodeURIComponent(self.model?.path))
+                .then((response) => {
                     self.children = response.data;
-                    self.children.forEach(function (c: any) {
+                    self.children.forEach(function (c) {
                         c.parent = self.model;
                     });
                 })
-                .catch((error: any) => {
+                .catch((error) => {
                     //emtpy = false;
                     console.error(error.responseText);
                 });
         },
-        handleDragOver: function (e: any) {
+        handleDragOver: function (e) {
             this.isHovered = true;
         },
-        handleDragLeave: function (e: any) {
+        handleDragLeave: function (e) {
             this.isHovered = false;
         },
-        moveMediaToFolder: function (folder: any, e: any) {
+        moveMediaToFolder: function (folder, e) {
 
             let self = this;
             self.isHovered = false;
@@ -192,7 +196,7 @@ export default defineComponent({
                         }}); */
         }
     }
-})
+}
 </script>
 
 

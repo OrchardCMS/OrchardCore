@@ -15,8 +15,14 @@ import { defineComponent } from 'vue';
 export default defineComponent({
     name: "sortIndicator",
     props: {
-        colname: String,
-        selectedcolname: String,
+        colname: { 
+            type: String,
+            required: true,
+        },
+        selectedcolname: { 
+            type: String,
+            required: true,
+        },
         asc: Boolean
     },
     computed: {

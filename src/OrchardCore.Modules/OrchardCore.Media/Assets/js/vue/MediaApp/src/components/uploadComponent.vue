@@ -17,10 +17,8 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-
-export default defineComponent({
+<script>
+export default {
     name: "upload",
     props: {
         model: {
@@ -31,7 +29,7 @@ export default defineComponent({
     },
     mounted: function () {
         let self = this;
-        const uploadInput = <HTMLInputElement>document.getElementById(self.uploadInputId ?? 'fileupload');
+        const uploadInput = document.getElementById(self.uploadInputId ?? 'fileupload');
 
         uploadInput.addEventListener('fileuploadprogress', (data) => {
             if (data.files[0].name !== self.model.name) {
@@ -58,11 +56,11 @@ export default defineComponent({
                 return;
             }
 
-            self.handleFailure(data.files[0].name, (<HTMLInputElement>document.getElementById('t-error')).value);
+            self.handleFailure(data.files[0].name, document.getElementById('t-error').value);
         });
     },
     methods: {
-        handleFailure: function (fileName: any, message: any) {
+        handleFailure: function (fileName, message) {
             if (fileName !== this.model.name) {
                 return;
             }
@@ -74,5 +72,5 @@ export default defineComponent({
             this.emitter.emit('removalRequest', this.model);
         }
     }
-});
+};
 </script>

@@ -12,11 +12,11 @@
                 <i v-else class="fa fa-file-o fa-lg" :data-mime="media.mime"></i>
             </div>
             <div class="media-container-main-item-title card-body">
-                <a href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button edit-button"
-                    v-on:click.stop="renameMedia(media)"><i class="fa fa-edit" aria-hidden="true"></i></a>
-                <a href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button delete-button"
-                    v-on:click.stop="deleteMedia(media)"><i class="fa fa-trash" aria-hidden="true"></i></a>
-                <a :href="media.url" target="_blank"
+                <a alt="{{ t.EditButton }}" href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button edit-button"
+                    v-on:click.stop="renameMedia(media)"><fa-icon icon="fa-solid fa-edit"></fa-icon></a>
+                <a alt="{{ t.DeleteButton }}" href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button delete-button"
+                    v-on:click.stop="deleteMedia(media)"><fa-icon icon="fa-solid fa-trash"></fa-icon></a>
+                <a :href="basePath + media.url" target="_blank"
                     class="btn btn-light btn-sm float-end inline-media-button view-button"><fa-icon icon="fa-solid fa-download"></fa-icon></a>
                 <span class="media-filename card-text small" :title="media.name">{{ media.name }}</span>
             </div>
@@ -24,17 +24,20 @@
     </ol>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { IMedia } from '../interfaces/interfaces';
+<script>
 
-export default defineComponent({
+export default {
     name: "media-items-grid",
     props: {
-        filteredMediaItems: Array as PropType<IMedia[]>,
-        selectedMedias: Array as PropType<IMedia[]>,
+        filteredMediaItems: Array,
+        selectedMedias: Array,
+        basePath: String,
         thumbSize: {
             type: Number,
+            required: true,
+        },
+        t: {
+            type: Object,
             required: true,
         }
     },
@@ -43,34 +46,34 @@ export default defineComponent({
             T: {}
         }
     },
-    created: function () {
+/*     created: function () {
         let self = this;
         // retrieving localized strings from view
         self.T.editButton = (<HTMLInputElement>document.getElementById('t-edit-button'))?.value;
         self.T.deleteButton = (<HTMLInputElement>document.getElementById('t-delete-button'))?.value;
-    },
+    }, */
     methods: {
-        isMediaSelected: function (media: IMedia) {
-            let result = this.selectedMedias?.some(function (element: any, _index, _array) {
+        isMediaSelected: function (media) {
+            var result = this.selectedMedias?.some(function (element, index, array) {
                 return element.url.toLowerCase() === media.url.toLowerCase();
             });
             return result;
         },
-        buildMediaUrl: function (url: string | string[], thumbSize: number) {
-            return url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize;
+        buildMediaUrl: function (url, thumbSize) {
+            return "https://localhost:5001" + url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize;
         },
-        toggleSelectionOfMedia: function (media: IMedia) {
+        toggleSelectionOfMedia: function (media) {
             this.emitter.emit('mediaToggleRequested', media);
         },
-        renameMedia: function (media: IMedia) {
+        renameMedia: function (media) {
             this.emitter.emit('renameMediaRequested', media);
         },
-        deleteMedia: function (media: IMedia) {
+        deleteMedia: function (media) {
             this.emitter.emit('deleteMediaRequested', media);
         },
-        dragStart: function (media: IMedia, e: any) {
+        dragStart: function (media, e) {
             this.emitter.emit('mediaDragStartRequested', media, e);
         }
     }
-});
+};
 </script>
