@@ -36,7 +36,8 @@ namespace OrchardCore.DisplayManagement.Liquid
                     _sharedPaths = new List<string>();
 
                     var filePaths = templateOptions.Value.FileProvider.GetViewFilePaths(
-                        Application.ModulesPath, new[] { LiquidViewTemplate.ViewExtension },
+                        Application.ModulesPath,
+                        new[] { LiquidViewTemplate.ViewExtension },
                         LiquidViewTemplate.ViewsFolder);
 
                     _sharedPaths.AddRange(filePaths.Select(p => '/' + p));
@@ -65,7 +66,8 @@ namespace OrchardCore.DisplayManagement.Liquid
                         RelativePath = viewPath,
                         Item = new RazorViewCompiledItem(
                             typeof(LiquidPage),
-                            MvcViewDocumentClassifierPass.MvcViewDocumentKind, viewPath),
+                            MvcViewDocumentClassifierPass.MvcViewDocumentKind,
+                            viewPath),
                     });
                 }
             }

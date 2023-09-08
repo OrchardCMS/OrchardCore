@@ -15,10 +15,10 @@ namespace OrchardCore.DisplayManagement.Theming
     public class ThemingViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeature>
     {
         public static readonly string ThemeLayoutFileName = $"DefaultOrchardCoreThemingLayout{RazorViewEngine.ViewExtension}";
+        public static readonly string ThemeLayoutFilePath = $"/{ThemeLayoutFileName}";
 
-        private static readonly string _themeLayoutFilePath = $"/{ThemeLayoutFileName}";
-        private static readonly string _viewStart = $"{_viewStartWithoutExtension}{RazorViewEngine.ViewExtension}";
-        private static readonly string _viewStartWithoutExtension = "/_ViewStart";
+        private static readonly string _viewStartPath = "/_ViewStart";
+        private static readonly string _viewStartPathWithExtension = $"{_viewStartPath}{RazorViewEngine.ViewExtension}";
 
         public ThemingViewsFeatureProvider()
         {
@@ -29,21 +29,21 @@ namespace OrchardCore.DisplayManagement.Theming
             feature.ViewDescriptors.Add(new CompiledViewDescriptor()
             {
                 ExpirationTokens = Array.Empty<IChangeToken>(),
-                RelativePath = _viewStart,
+                RelativePath = _viewStartPathWithExtension,
                 Item = new RazorViewCompiledItem(
                     typeof(ThemeViewStart),
                     MvcViewDocumentClassifierPass.MvcViewDocumentKind,
-                    _viewStartWithoutExtension),
+                    _viewStartPath),
             });
 
             feature.ViewDescriptors.Add(new CompiledViewDescriptor()
             {
                 ExpirationTokens = Array.Empty<IChangeToken>(),
-                RelativePath = _themeLayoutFilePath,
+                RelativePath = ThemeLayoutFilePath,
                 Item = new RazorViewCompiledItem(
                     typeof(ThemeLayout),
                     MvcViewDocumentClassifierPass.MvcViewDocumentKind,
-                    _themeLayoutFilePath),
+                    ThemeLayoutFilePath),
             });
         }
     }
