@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Zones;
+using OrchardCore.DisplayManagement.Extensions;
 
 namespace OrchardCore.DisplayManagement.Title
 {
@@ -48,7 +49,7 @@ namespace OrchardCore.DisplayManagement.Title
                 return _fixedTitle;
             }
 
-            if (_title != null)
+            if (_title != null && System.String.Empty != _title.GetString())
             {
                 return _title;
             }
@@ -82,6 +83,7 @@ namespace OrchardCore.DisplayManagement.Title
         public void Clear()
         {
             _fixedTitle = null;
+            _title = null;
             _titleParts.Clear();
         }
     }
