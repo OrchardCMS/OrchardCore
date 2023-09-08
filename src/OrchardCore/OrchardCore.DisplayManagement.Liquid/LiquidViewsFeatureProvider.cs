@@ -5,6 +5,7 @@ using Fluid;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
+using Microsoft.AspNetCore.Mvc.Razor.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Razor;
 using OrchardCore.Modules;
@@ -15,8 +16,8 @@ namespace OrchardCore.DisplayManagement.Liquid
     public class LiquidViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeature>
     {
         public const string DefaultLiquidViewName = "DefaultLiquidViewName";
-        public static readonly string DefaultRazorViewPath = '/' + DefaultLiquidViewName + RazorViewEngine.ViewExtension;
-        public static readonly string DefaultLiquidViewPath = '/' + DefaultLiquidViewName + LiquidViewTemplate.ViewExtension;
+        public static readonly string DefaultRazorViewPath = $"/{DefaultLiquidViewName}{RazorViewEngine.ViewExtension}";
+        public static readonly string DefaultLiquidViewPath = $"/{DefaultLiquidViewName}{LiquidViewTemplate.ViewExtension}";
 
         private static List<string> _sharedPaths;
         private static readonly object _synLock = new();
@@ -48,7 +49,10 @@ namespace OrchardCore.DisplayManagement.Liquid
             feature.ViewDescriptors.Add(new CompiledViewDescriptor
             {
                 RelativePath = DefaultRazorViewPath,
-                Item = new RazorViewCompiledItem(typeof(LiquidPage), @"mvc.1.0.view", DefaultLiquidViewPath)
+                Item = new RazorViewCompiledItem(
+                    typeof(LiquidPage),
+                    MvcViewDocumentClassifierPass.MvcViewDocumentKind,
+                    DefaultLiquidViewPath),
             });
 
             foreach (var path in _sharedPaths)
@@ -59,7 +63,9 @@ namespace OrchardCore.DisplayManagement.Liquid
                     feature.ViewDescriptors.Add(new CompiledViewDescriptor
                     {
                         RelativePath = viewPath,
-                        Item = new RazorViewCompiledItem(typeof(LiquidPage), @"mvc.1.0.view", viewPath)
+                        Item = new RazorViewCompiledItem(
+                            typeof(LiquidPage),
+                            MvcViewDocumentClassifierPass.MvcViewDocumentKind, viewPath),
                     });
                 }
             }
