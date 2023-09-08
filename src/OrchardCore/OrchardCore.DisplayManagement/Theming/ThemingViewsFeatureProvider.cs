@@ -16,7 +16,7 @@ namespace OrchardCore.DisplayManagement.Theming
     {
         public static readonly string ThemeLayoutFileName = $"DefaultOrchardCoreThemingLayout{RazorViewEngine.ViewExtension}";
         public static readonly string ThemeLayoutFilePath = $"/{ThemeLayoutFileName}";
-        public static readonly string MvcViewDocumentKind = $@"""{MvcViewDocumentClassifierPass.MvcViewDocumentKind}""";
+        public static readonly string MvcViewDocumentKind = @"""MvcViewDocumentClassifierPass.MvcViewDocumentKind""";
 
         private static readonly string _viewStartPath = "/_ViewStart";
         private static readonly string _viewStartPathWithExtension = $"{_viewStartPath}{RazorViewEngine.ViewExtension}";
