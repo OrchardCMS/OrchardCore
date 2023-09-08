@@ -2771,6 +2771,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "ludovic-th",
+      "name": "ludovic-th",
+      "avatar_url": "https://avatars.githubusercontent.com/u/65158865?v=4",
+      "profile": "https://github.com/ludovic-th",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
