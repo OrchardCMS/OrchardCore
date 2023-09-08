@@ -426,195 +426,6 @@
   });
 }(jQuery);
 /* ===========================================================
- * trumbowyg.cleanpaste.js v1.0
- * Font Clean paste plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Authors : Eric Radin
- *           Todd Graham (slackwalker)
- *
- * This plugin will perform a "cleaning" on any paste, in particular
- * it will clean pasted content of microsoft word document tags and classes.
- */
-
-(function ($) {
-  'use strict';
-
-  function checkValidTags(snippet) {
-    var theString = snippet;
-
-    // Replace uppercase element names with lowercase
-    theString = theString.replace(/<[^> ]*/g, function (match) {
-      return match.toLowerCase();
-    });
-
-    // Replace uppercase attribute names with lowercase
-    theString = theString.replace(/<[^>]*>/g, function (match) {
-      match = match.replace(/ [^=]+=/g, function (match2) {
-        return match2.toLowerCase();
-      });
-      return match;
-    });
-
-    // Put quotes around unquoted attributes
-    theString = theString.replace(/<[^>]*>/g, function (match) {
-      match = match.replace(/( [^=]+=)([^"][^ >]*)/g, '$1\"$2\"');
-      return match;
-    });
-    return theString;
-  }
-  function cleanIt(html) {
-    // first make sure all tags and attributes are made valid
-    html = checkValidTags(html);
-
-    // Replace opening bold tags with strong
-    html = html.replace(/<b(\s+|>)/g, '<strong$1');
-    // Replace closing bold tags with closing strong
-    html = html.replace(/<\/b(\s+|>)/g, '</strong$1');
-
-    // Replace italic tags with em
-    html = html.replace(/<i(\s+|>)/g, '<em$1');
-    // Replace closing italic tags with closing em
-    html = html.replace(/<\/i(\s+|>)/g, '</em$1');
-
-    // strip out comments -cgCraft
-    html = html.replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, '');
-
-    // strip out &nbsp; -cgCraft
-    html = html.replace(/&nbsp;/gi, ' ');
-    // strip out extra spaces -cgCraft
-    html = html.replace(/ <\//gi, '</');
-
-    // Remove multiple spaces
-    html.replace(/\s+/g, ' ');
-
-    // strip &nbsp; -cgCraft
-    html = html.replace(/^\s*|\s*$/g, '');
-
-    // Strip out unaccepted attributes
-    html = html.replace(/<[^>]*>/g, function (match) {
-      match = match.replace(/ ([^=]+)="[^"]*"/g, function (match2, attributeName) {
-        if (['alt', 'href', 'src', 'title'].indexOf(attributeName) !== -1) {
-          return match2;
-        }
-        return '';
-      });
-      return match;
-    });
-
-    // Final clean out for MS Word crud
-    html = html.replace(/<\?xml[^>]*>/g, '');
-    html = html.replace(/<[^ >]+:[^>]*>/g, '');
-    html = html.replace(/<\/[^ >]+:[^>]*>/g, '');
-
-    // remove unwanted tags
-    html = html.replace(/<(div|span|style|meta|link).*?>/gi, '');
-    return html;
-  }
-
-  // clean editor
-  // this will clean the inserted contents
-  // it does a compare, before and after paste to determine the
-  // pasted contents
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      cleanPaste: {
-        init: function init(trumbowyg) {
-          trumbowyg.pasteHandlers.push(function (pasteEvent) {
-            setTimeout(function () {
-              try {
-                trumbowyg.saveRange();
-                var clipboardData = (pasteEvent.originalEvent || pasteEvent).clipboardData,
-                  pastedData = clipboardData.getData('Text'),
-                  node = trumbowyg.doc.getSelection().focusNode,
-                  range = trumbowyg.doc.createRange(),
-                  cleanedPaste = cleanIt(pastedData.trim()),
-                  newNode = $(cleanedPaste)[0] || trumbowyg.doc.createTextNode(cleanedPaste);
-                if (trumbowyg.$ed.html() === '') {
-                  // simply append if there is no content in editor
-                  trumbowyg.$ed[0].appendChild(newNode);
-                } else {
-                  // insert pasted content behind last focused node
-                  range.setStartAfter(node);
-                  range.setEndAfter(node);
-                  trumbowyg.doc.getSelection().removeAllRanges();
-                  trumbowyg.doc.getSelection().addRange(range);
-                  trumbowyg.range.insertNode(newNode);
-                }
-
-                // now set cursor right after pasted content
-                range = trumbowyg.doc.createRange();
-                range.setStartAfter(newNode);
-                range.setEndAfter(newNode);
-                trumbowyg.doc.getSelection().removeAllRanges();
-                trumbowyg.doc.getSelection().addRange(range);
-
-                // prevent defaults
-                pasteEvent.stopPropagation();
-                pasteEvent.preventDefault();
-
-                // save new node as focused node
-                trumbowyg.saveRange();
-                trumbowyg.syncCode();
-                trumbowyg.$c.trigger('tbwchange');
-              } catch (c) {}
-            }, 0);
-          });
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.cleanpaste.js v1.0
- * Font Clean paste plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Authors : Eric Radin
- *           Todd Graham (slackwalker)
- *
- * This plugin will perform a "cleaning" on any paste, in particular
- * it will clean pasted content of microsoft word document tags and classes.
- */
-!function (e) {
-  "use strict";
-
-  e.extend(!0, e.trumbowyg, {
-    plugins: {
-      cleanPaste: {
-        init: function init(t) {
-          t.pasteHandlers.push(function (r) {
-            setTimeout(function () {
-              try {
-                t.saveRange();
-                var a = (r.originalEvent || r).clipboardData.getData("Text"),
-                  n = t.doc.getSelection().focusNode,
-                  c = t.doc.createRange(),
-                  g = ((l = (l = (l = (l = (l = (l = (l = (l = (l = a.trim()).replace(/<[^> ]*/g, function (e) {
-                    return e.toLowerCase();
-                  }).replace(/<[^>]*>/g, function (e) {
-                    return e.replace(/ [^=]+=/g, function (e) {
-                      return e.toLowerCase();
-                    });
-                  }).replace(/<[^>]*>/g, function (e) {
-                    return e.replace(/( [^=]+=)([^"][^ >]*)/g, '$1"$2"');
-                  })).replace(/<b(\s+|>)/g, "<strong$1")).replace(/<\/b(\s+|>)/g, "</strong$1")).replace(/<i(\s+|>)/g, "<em$1")).replace(/<\/i(\s+|>)/g, "</em$1")).replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, "")).replace(/&nbsp;/gi, " ")).replace(/ <\//gi, "</")).replace(/\s+/g, " "), (l = (l = (l = (l = (l = l.replace(/^\s*|\s*$/g, "")).replace(/<[^>]*>/g, function (e) {
-                    return e.replace(/ ([^=]+)="[^"]*"/g, function (e, t) {
-                      return -1 !== ["alt", "href", "src", "title"].indexOf(t) ? e : "";
-                    });
-                  })).replace(/<\?xml[^>]*>/g, "")).replace(/<[^ >]+:[^>]*>/g, "")).replace(/<\/[^ >]+:[^>]*>/g, "")).replace(/<(div|span|style|meta|link).*?>/gi, "")),
-                  o = e(g)[0] || t.doc.createTextNode(g);
-                "" === t.$ed.html() ? t.$ed[0].appendChild(o) : (c.setStartAfter(n), c.setEndAfter(n), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), t.range.insertNode(o)), (c = t.doc.createRange()).setStartAfter(o), c.setEndAfter(o), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), r.stopPropagation(), r.preventDefault(), t.saveRange(), t.syncCode(), t.$c.trigger("tbwchange");
-              } catch (e) {}
-              var l;
-            }, 0);
-          });
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
  * trumbowyg.emoji.js v0.1
  * Emoji picker plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -835,6 +646,205 @@
     }
   });
 }(jQuery);
+/* ===========================================================
+ * trumbowyg.cleanpaste.js v1.0
+ * Font Clean paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Authors : Eric Radin
+ *           Todd Graham (slackwalker)
+ *
+ * This plugin will perform a "cleaning" on any paste, in particular
+ * it will clean pasted content of microsoft word document tags and classes.
+ */
+
+(function ($) {
+  'use strict';
+
+  function checkValidTags(snippet) {
+    var theString = snippet;
+
+    // Replace uppercase element names with lowercase
+    theString = theString.replace(/<[^> ]*/g, function (match) {
+      return match.toLowerCase();
+    });
+
+    // Replace uppercase attribute names with lowercase
+    theString = theString.replace(/<[^>]*>/g, function (match) {
+      match = match.replace(/ [^=]+=/g, function (match2) {
+        return match2.toLowerCase();
+      });
+      return match;
+    });
+
+    // Put quotes around unquoted attributes
+    theString = theString.replace(/<[^>]*>/g, function (match) {
+      match = match.replace(/( [^=]+=)([^"][^ >]*)/g, '$1\"$2\"');
+      return match;
+    });
+    return theString;
+  }
+  function cleanIt(html) {
+    // first make sure all tags and attributes are made valid
+    html = checkValidTags(html);
+
+    // Replace opening bold tags with strong
+    html = html.replace(/<b(\s+|>)/g, '<strong$1');
+    // Replace closing bold tags with closing strong
+    html = html.replace(/<\/b(\s+|>)/g, '</strong$1');
+
+    // Replace italic tags with em
+    html = html.replace(/<i(\s+|>)/g, '<em$1');
+    // Replace closing italic tags with closing em
+    html = html.replace(/<\/i(\s+|>)/g, '</em$1');
+
+    // strip out comments -cgCraft
+    html = html.replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, '');
+
+    // strip out &nbsp; -cgCraft
+    html = html.replace(/&nbsp;/gi, ' ');
+    // strip out extra spaces -cgCraft
+    html = html.replace(/ <\//gi, '</');
+
+    // Remove multiple spaces
+    html.replace(/\s+/g, ' ');
+
+    // strip &nbsp; -cgCraft
+    html = html.replace(/^\s*|\s*$/g, '');
+
+    // Strip out unaccepted attributes
+    html = html.replace(/<[^>]*>/g, function (match) {
+      match = match.replace(/ ([^=]+)="[^"]*"/g, function (match2, attributeName) {
+        if (['alt', 'href', 'src', 'title'].indexOf(attributeName) !== -1) {
+          return match2;
+        }
+        return '';
+      });
+      return match;
+    });
+
+    // Final clean out for MS Word crud
+    html = html.replace(/<\?xml[^>]*>/g, '');
+    html = html.replace(/<[^ >]+:[^>]*>/g, '');
+    html = html.replace(/<\/[^ >]+:[^>]*>/g, '');
+
+    // remove unwanted tags
+    html = html.replace(/<(div|span|style|meta|link).*?>/gi, '');
+    return html;
+  }
+
+  // clean editor
+  // this will clean the inserted contents
+  // it does a compare, before and after paste to determine the
+  // pasted contents
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      cleanPaste: {
+        init: function init(trumbowyg) {
+          trumbowyg.pasteHandlers.push(function (pasteEvent) {
+            setTimeout(function () {
+              try {
+                trumbowyg.saveRange();
+                var clipboardData = (pasteEvent.originalEvent || pasteEvent).clipboardData,
+                  pastedData = clipboardData.getData('Text'),
+                  node = trumbowyg.doc.getSelection().focusNode,
+                  range = trumbowyg.doc.createRange(),
+                  cleanedPaste = cleanIt(pastedData.trim()),
+                  newNode = $(cleanedPaste)[0] || trumbowyg.doc.createTextNode(cleanedPaste);
+                if (trumbowyg.$ed.html() === '') {
+                  // simply append if there is no content in editor
+                  trumbowyg.$ed[0].appendChild(newNode);
+                } else {
+                  // insert pasted content behind last focused node
+                  range.setStartAfter(node);
+                  range.setEndAfter(node);
+                  trumbowyg.doc.getSelection().removeAllRanges();
+                  trumbowyg.doc.getSelection().addRange(range);
+                  trumbowyg.range.insertNode(newNode);
+                }
+
+                // now set cursor right after pasted content
+                range = trumbowyg.doc.createRange();
+                range.setStartAfter(newNode);
+                range.setEndAfter(newNode);
+                trumbowyg.doc.getSelection().removeAllRanges();
+                trumbowyg.doc.getSelection().addRange(range);
+
+                // prevent defaults
+                pasteEvent.stopPropagation();
+                pasteEvent.preventDefault();
+
+                // save new node as focused node
+                trumbowyg.saveRange();
+                trumbowyg.syncCode();
+                trumbowyg.$c.trigger('tbwchange');
+              } catch (c) {}
+            }, 0);
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.cleanpaste.js v1.0
+ * Font Clean paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Authors : Eric Radin
+ *           Todd Graham (slackwalker)
+ *
+ * This plugin will perform a "cleaning" on any paste, in particular
+ * it will clean pasted content of microsoft word document tags and classes.
+ */
+!function (e) {
+  "use strict";
+
+  e.extend(!0, e.trumbowyg, {
+    plugins: {
+      cleanPaste: {
+        init: function init(t) {
+          t.pasteHandlers.push(function (r) {
+            setTimeout(function () {
+              try {
+                t.saveRange();
+                var a = (r.originalEvent || r).clipboardData.getData("Text"),
+                  n = t.doc.getSelection().focusNode,
+                  c = t.doc.createRange(),
+                  g = ((l = (l = (l = (l = (l = (l = (l = (l = (l = a.trim()).replace(/<[^> ]*/g, function (e) {
+                    return e.toLowerCase();
+                  }).replace(/<[^>]*>/g, function (e) {
+                    return e.replace(/ [^=]+=/g, function (e) {
+                      return e.toLowerCase();
+                    });
+                  }).replace(/<[^>]*>/g, function (e) {
+                    return e.replace(/( [^=]+=)([^"][^ >]*)/g, '$1"$2"');
+                  })).replace(/<b(\s+|>)/g, "<strong$1")).replace(/<\/b(\s+|>)/g, "</strong$1")).replace(/<i(\s+|>)/g, "<em$1")).replace(/<\/i(\s+|>)/g, "</em$1")).replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, "")).replace(/&nbsp;/gi, " ")).replace(/ <\//gi, "</")).replace(/\s+/g, " "), (l = (l = (l = (l = (l = l.replace(/^\s*|\s*$/g, "")).replace(/<[^>]*>/g, function (e) {
+                    return e.replace(/ ([^=]+)="[^"]*"/g, function (e, t) {
+                      return -1 !== ["alt", "href", "src", "title"].indexOf(t) ? e : "";
+                    });
+                  })).replace(/<\?xml[^>]*>/g, "")).replace(/<[^ >]+:[^>]*>/g, "")).replace(/<\/[^ >]+:[^>]*>/g, "")).replace(/<(div|span|style|meta|link).*?>/gi, "")),
+                  o = e(g)[0] || t.doc.createTextNode(g);
+                "" === t.$ed.html() ? t.$ed[0].appendChild(o) : (c.setStartAfter(n), c.setEndAfter(n), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), t.range.insertNode(o)), (c = t.doc.createRange()).setStartAfter(o), c.setEndAfter(o), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), r.stopPropagation(), r.preventDefault(), t.saveRange(), t.syncCode(), t.$c.trigger("tbwchange");
+              } catch (e) {}
+              var l;
+            }, 0);
+          });
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.colors.js v1.2
+ * Colors picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ */
+
 (function ($) {
   'use strict';
 
@@ -842,254 +852,475 @@
     langs: {
       // jshint camelcase:false
       en: {
-        fontFamily: 'Font'
+        foreColor: 'Text color',
+        backColor: 'Background color',
+        foreColorRemove: 'Remove text color',
+        backColorRemove: 'Remove background color'
       },
       az: {
-        fontFamily: 'Şrift'
+        foreColor: 'Yazı rəngi',
+        backColor: 'Arxa plan rəngi',
+        foreColorRemove: 'Yazı rəngini sil',
+        backColorRemove: 'Arxa plan rəngini sil'
       },
       by: {
-        fontFamily: 'Шрыфт'
+        foreColor: 'Колер тэксту',
+        backColor: 'Колер фону тэксту',
+        foreColorRemove: 'Выдаліць колер тэксту',
+        backColorRemove: 'Выдаліць колер фону тэксту'
       },
       ca: {
-        fontFamily: 'Font'
+        foreColor: 'Color del text',
+        backColor: 'Color del fons',
+        foreColorRemove: 'Eliminar color del text',
+        backColorRemove: 'Eliminar color del fons'
+      },
+      cs: {
+        foreColor: 'Barva textu',
+        backColor: 'Barva pozadí'
       },
       da: {
-        fontFamily: 'Skrifttype'
+        foreColor: 'Tekstfarve',
+        backColor: 'Baggrundsfarve'
       },
       de: {
-        fontFamily: 'Schriftart'
+        foreColor: 'Textfarbe',
+        backColor: 'Hintergrundfarbe'
       },
       es: {
-        fontFamily: 'Fuente'
+        foreColor: 'Color del texto',
+        backColor: 'Color del fondo',
+        foreColorRemove: 'Eliminar color del texto',
+        backColorRemove: 'Eliminar color del fondo'
       },
       et: {
-        fontFamily: 'Font'
+        foreColor: 'Teksti värv',
+        backColor: 'Taustavärv',
+        foreColorRemove: 'Eemalda teksti värv',
+        backColorRemove: 'Eemalda taustavärv'
       },
       fr: {
-        fontFamily: 'Police'
+        foreColor: 'Couleur du texte',
+        backColor: 'Couleur de fond',
+        foreColorRemove: 'Supprimer la couleur du texte',
+        backColorRemove: 'Supprimer la couleur de fond'
       },
       hu: {
-        fontFamily: 'Betűtípus'
+        foreColor: 'Betű szín',
+        backColor: 'Háttér szín',
+        foreColorRemove: 'Betű szín eltávolítása',
+        backColorRemove: 'Háttér szín eltávolítása'
+      },
+      ja: {
+        foreColor: '文字色',
+        backColor: '背景色'
       },
       ko: {
-        fontFamily: '글꼴'
+        foreColor: '글자색',
+        backColor: '배경색',
+        foreColorRemove: '글자색 지우기',
+        backColorRemove: '배경색 지우기'
       },
       nl: {
-        fontFamily: 'Lettertype'
+        foreColor: 'Tekstkleur',
+        backColor: 'Achtergrondkleur'
       },
       pt_br: {
-        fontFamily: 'Fonte'
+        foreColor: 'Cor de fonte',
+        backColor: 'Cor de fundo'
       },
       ru: {
-        fontFamily: 'Шрифт'
+        foreColor: 'Цвет текста',
+        backColor: 'Цвет выделения текста',
+        foreColorRemove: 'Очистить цвет текста',
+        backColorRemove: 'Очистить цвет выделения текста'
       },
       sl: {
-        fontFamily: 'Pisava'
+        foreColor: 'Barva teksta',
+        backColor: 'Barva ozadja',
+        foreColorRemove: 'Ponastavi barvo teksta',
+        backColorRemove: 'Ponastavi barvo ozadja'
+      },
+      sk: {
+        foreColor: 'Farba textu',
+        backColor: 'Farba pozadia'
       },
       tr: {
-        fontFamily: 'Yazı tipi'
+        foreColor: 'Yazı rengi',
+        backColor: 'Arka plan rengi',
+        foreColorRemove: 'Yazı rengini kaldır',
+        backColorRemove: 'Arka plan rengini kaldır'
+      },
+      zh_cn: {
+        foreColor: '文字颜色',
+        backColor: '背景颜色'
       },
       zh_tw: {
-        fontFamily: '字體'
+        foreColor: '文字顏色',
+        backColor: '背景顏色'
       }
     }
   });
+
   // jshint camelcase:true
 
+  function hex(x) {
+    return ('0' + parseInt(x).toString(16)).slice(-2);
+  }
+  function colorToHex(rgb) {
+    if (rgb.search('rgb') === -1) {
+      return rgb.replace('#', '');
+    } else if (rgb === 'rgba(0, 0, 0, 0)') {
+      return 'transparent';
+    } else {
+      rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/);
+      if (rgb == null) {
+        return 'transparent'; // No match, return transparent as unkown color
+      }
+
+      return hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+    }
+  }
+  function colorTagHandler(element, trumbowyg) {
+    var tags = [];
+    if (!element.style) {
+      return tags;
+    }
+
+    // background color
+    if (element.style.backgroundColor !== '') {
+      var backColor = colorToHex(element.style.backgroundColor);
+      if (trumbowyg.o.plugins.colors.colorList.indexOf(backColor) >= 0) {
+        tags.push('backColor' + backColor);
+      } else {
+        tags.push('backColorFree');
+      }
+    }
+
+    // text color
+    var foreColor;
+    if (element.style.color !== '') {
+      foreColor = colorToHex(element.style.color);
+    } else if (element.hasAttribute('color')) {
+      foreColor = colorToHex(element.getAttribute('color'));
+    }
+    if (foreColor) {
+      if (trumbowyg.o.plugins.colors.colorList.indexOf(foreColor) >= 0) {
+        tags.push('foreColor' + foreColor);
+      } else {
+        tags.push('foreColorFree');
+      }
+    }
+    return tags;
+  }
   var defaultOptions = {
-    fontList: [{
-      name: 'Arial',
-      family: 'Arial, Helvetica, sans-serif'
-    }, {
-      name: 'Arial Black',
-      family: 'Arial Black, Gadget, sans-serif'
-    }, {
-      name: 'Comic Sans',
-      family: 'Comic Sans MS, Textile, cursive, sans-serif'
-    }, {
-      name: 'Courier New',
-      family: 'Courier New, Courier, monospace'
-    }, {
-      name: 'Georgia',
-      family: 'Georgia, serif'
-    }, {
-      name: 'Impact',
-      family: 'Impact, Charcoal, sans-serif'
-    }, {
-      name: 'Lucida Console',
-      family: 'Lucida Console, Monaco, monospace'
-    }, {
-      name: 'Lucida Sans',
-      family: 'Lucida Sans Uncide, Lucida Grande, sans-serif'
-    }, {
-      name: 'Palatino',
-      family: 'Palatino Linotype, Book Antiqua, Palatino, serif'
-    }, {
-      name: 'Tahoma',
-      family: 'Tahoma, Geneva, sans-serif'
-    }, {
-      name: 'Times New Roman',
-      family: 'Times New Roman, Times, serif'
-    }, {
-      name: 'Trebuchet',
-      family: 'Trebuchet MS, Helvetica, sans-serif'
-    }, {
-      name: 'Verdana',
-      family: 'Verdana, Geneva, sans-serif'
-    }]
+    colorList: ['ffffff', '000000', 'eeece1', '1f497d', '4f81bd', 'c0504d', '9bbb59', '8064a2', '4bacc6', 'f79646', 'ffff00', 'f2f2f2', '7f7f7f', 'ddd9c3', 'c6d9f0', 'dbe5f1', 'f2dcdb', 'ebf1dd', 'e5e0ec', 'dbeef3', 'fdeada', 'fff2ca', 'd8d8d8', '595959', 'c4bd97', '8db3e2', 'b8cce4', 'e5b9b7', 'd7e3bc', 'ccc1d9', 'b7dde8', 'fbd5b5', 'ffe694', 'bfbfbf', '3f3f3f', '938953', '548dd4', '95b3d7', 'd99694', 'c3d69b', 'b2a2c7', 'b7dde8', 'fac08f', 'f2c314', 'a5a5a5', '262626', '494429', '17365d', '366092', '953734', '76923c', '5f497a', '92cddc', 'e36c09', 'c09100', '7f7f7f', '0c0c0c', '1d1b10', '0f243e', '244061', '632423', '4f6128', '3f3151', '31859b', '974806', '7f6000'],
+    foreColorList: null,
+    // fallbacks on colorList
+    backColorList: null,
+    // fallbacks on colorList
+    allowCustomForeColor: true,
+    allowCustomBackColor: true,
+    displayAsList: false
   };
 
-  // Add dropdown with web safe fonts
+  // Add all colors in two dropdowns
   $.extend(true, $.trumbowyg, {
     plugins: {
-      fontfamily: {
+      color: {
         init: function init(trumbowyg) {
-          trumbowyg.o.plugins.fontfamily = $.extend({}, defaultOptions, trumbowyg.o.plugins.fontfamily || {});
-          trumbowyg.addBtnDef('fontfamily', {
-            dropdown: buildDropdown(trumbowyg),
-            hasIcon: false,
-            text: trumbowyg.lang.fontFamily
-          });
-        }
+          trumbowyg.o.plugins.colors = trumbowyg.o.plugins.colors || defaultOptions;
+          var dropdownClass = trumbowyg.o.plugins.colors.displayAsList ? trumbowyg.o.prefix + 'dropdown--color-list' : '';
+          var foreColorBtnDef = {
+              dropdown: buildDropdown('foreColor', trumbowyg),
+              dropdownClass: dropdownClass
+            },
+            backColorBtnDef = {
+              dropdown: buildDropdown('backColor', trumbowyg),
+              dropdownClass: dropdownClass
+            };
+          trumbowyg.addBtnDef('foreColor', foreColorBtnDef);
+          trumbowyg.addBtnDef('backColor', backColorBtnDef);
+        },
+        tagHandler: colorTagHandler
       }
     }
   });
-  function buildDropdown(trumbowyg) {
-    var dropdown = [];
-    $.each(trumbowyg.o.plugins.fontfamily.fontList, function (index, font) {
-      trumbowyg.addBtnDef('fontfamily_' + index, {
-        title: '<span style="font-family: ' + font.family + ';">' + font.name + '</span>',
-        hasIcon: false,
-        fn: function fn() {
-          trumbowyg.execCmd('fontName', font.family, true);
-        }
-      });
-      dropdown.push('fontfamily_' + index);
+  function buildDropdown(_fn, trumbowyg) {
+    var dropdown = [],
+      trumbowygColorOptions = trumbowyg.o.plugins.colors,
+      colorList = trumbowygColorOptions[_fn + 'List'] || trumbowygColorOptions.colorList;
+    $.each(colorList, function (i, color) {
+      var btn = _fn + color,
+        btnDef = {
+          fn: _fn,
+          forceCss: true,
+          hasIcon: false,
+          text: trumbowyg.lang['#' + color] || '#' + color,
+          param: '#' + color,
+          style: 'background-color: #' + color + ';'
+        };
+      if (trumbowygColorOptions.displayAsList && _fn === 'foreColor') {
+        btnDef.style = 'color: #' + color + ' !important;';
+      }
+      trumbowyg.addBtnDef(btn, btnDef);
+      dropdown.push(btn);
     });
+
+    // Remove color
+    var removeColorButtonName = _fn + 'Remove',
+      removeColorBtnDef = {
+        fn: 'removeFormat',
+        hasIcon: false,
+        param: _fn,
+        style: 'background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);'
+      };
+    if (trumbowygColorOptions.displayAsList) {
+      removeColorBtnDef.style = '';
+    }
+    trumbowyg.addBtnDef(removeColorButtonName, removeColorBtnDef);
+    dropdown.push(removeColorButtonName);
+
+    // Custom color
+    if (trumbowygColorOptions['allowCustom' + _fn.charAt(0).toUpperCase() + _fn.substr(1)]) {
+      // add free color btn
+      var freeColorButtonName = _fn + 'Free',
+        freeColorBtnDef = {
+          fn: function fn() {
+            trumbowyg.openModalInsert(trumbowyg.lang[_fn], {
+              color: {
+                label: _fn,
+                forceCss: true,
+                type: 'color',
+                value: '#FFFFFF'
+              }
+            },
+            // callback
+            function (values) {
+              trumbowyg.execCmd(_fn, values.color);
+              return true;
+            });
+          },
+          hasIcon: false,
+          text: '#',
+          // style adjust for displaying the text
+          style: 'text-indent: 0; line-height: 20px; padding: 0 5px;'
+        };
+      trumbowyg.addBtnDef(freeColorButtonName, freeColorBtnDef);
+      dropdown.push(freeColorButtonName);
+    }
     return dropdown;
   }
 })(jQuery);
-!function (a) {
+/* ===========================================================
+ * trumbowyg.colors.js v1.2
+ * Colors picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ */
+!function (o) {
   "use strict";
 
-  a.extend(!0, a.trumbowyg, {
+  function r(o) {
+    return ("0" + parseInt(o).toString(16)).slice(-2);
+  }
+  function e(o) {
+    return -1 === o.search("rgb") ? o.replace("#", "") : "rgba(0, 0, 0, 0)" === o || null == (o = o.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/)) ? "transparent" : r(o[1]) + r(o[2]) + r(o[3]);
+  }
+  o.extend(!0, o.trumbowyg, {
     langs: {
       en: {
-        fontFamily: "Font"
+        foreColor: "Text color",
+        backColor: "Background color",
+        foreColorRemove: "Remove text color",
+        backColorRemove: "Remove background color"
       },
       az: {
-        fontFamily: "Şrift"
+        foreColor: "Yazı rəngi",
+        backColor: "Arxa plan rəngi",
+        foreColorRemove: "Yazı rəngini sil",
+        backColorRemove: "Arxa plan rəngini sil"
       },
       by: {
-        fontFamily: "Шрыфт"
+        foreColor: "Колер тэксту",
+        backColor: "Колер фону тэксту",
+        foreColorRemove: "Выдаліць колер тэксту",
+        backColorRemove: "Выдаліць колер фону тэксту"
       },
       ca: {
-        fontFamily: "Font"
+        foreColor: "Color del text",
+        backColor: "Color del fons",
+        foreColorRemove: "Eliminar color del text",
+        backColorRemove: "Eliminar color del fons"
+      },
+      cs: {
+        foreColor: "Barva textu",
+        backColor: "Barva pozadí"
       },
       da: {
-        fontFamily: "Skrifttype"
+        foreColor: "Tekstfarve",
+        backColor: "Baggrundsfarve"
       },
       de: {
-        fontFamily: "Schriftart"
+        foreColor: "Textfarbe",
+        backColor: "Hintergrundfarbe"
       },
       es: {
-        fontFamily: "Fuente"
+        foreColor: "Color del texto",
+        backColor: "Color del fondo",
+        foreColorRemove: "Eliminar color del texto",
+        backColorRemove: "Eliminar color del fondo"
       },
       et: {
-        fontFamily: "Font"
+        foreColor: "Teksti värv",
+        backColor: "Taustavärv",
+        foreColorRemove: "Eemalda teksti värv",
+        backColorRemove: "Eemalda taustavärv"
       },
       fr: {
-        fontFamily: "Police"
+        foreColor: "Couleur du texte",
+        backColor: "Couleur de fond",
+        foreColorRemove: "Supprimer la couleur du texte",
+        backColorRemove: "Supprimer la couleur de fond"
       },
       hu: {
-        fontFamily: "Betűtípus"
+        foreColor: "Betű szín",
+        backColor: "Háttér szín",
+        foreColorRemove: "Betű szín eltávolítása",
+        backColorRemove: "Háttér szín eltávolítása"
+      },
+      ja: {
+        foreColor: "文字色",
+        backColor: "背景色"
       },
       ko: {
-        fontFamily: "글꼴"
+        foreColor: "글자색",
+        backColor: "배경색",
+        foreColorRemove: "글자색 지우기",
+        backColorRemove: "배경색 지우기"
       },
       nl: {
-        fontFamily: "Lettertype"
+        foreColor: "Tekstkleur",
+        backColor: "Achtergrondkleur"
       },
       pt_br: {
-        fontFamily: "Fonte"
+        foreColor: "Cor de fonte",
+        backColor: "Cor de fundo"
       },
       ru: {
-        fontFamily: "Шрифт"
+        foreColor: "Цвет текста",
+        backColor: "Цвет выделения текста",
+        foreColorRemove: "Очистить цвет текста",
+        backColorRemove: "Очистить цвет выделения текста"
       },
       sl: {
-        fontFamily: "Pisava"
+        foreColor: "Barva teksta",
+        backColor: "Barva ozadja",
+        foreColorRemove: "Ponastavi barvo teksta",
+        backColorRemove: "Ponastavi barvo ozadja"
+      },
+      sk: {
+        foreColor: "Farba textu",
+        backColor: "Farba pozadia"
       },
       tr: {
-        fontFamily: "Yazı tipi"
+        foreColor: "Yazı rengi",
+        backColor: "Arka plan rengi",
+        foreColorRemove: "Yazı rengini kaldır",
+        backColorRemove: "Arka plan rengini kaldır"
+      },
+      zh_cn: {
+        foreColor: "文字颜色",
+        backColor: "背景颜色"
       },
       zh_tw: {
-        fontFamily: "字體"
+        foreColor: "文字顏色",
+        backColor: "背景顏色"
       }
     }
   });
-  var n = {
-    fontList: [{
-      name: "Arial",
-      family: "Arial, Helvetica, sans-serif"
-    }, {
-      name: "Arial Black",
-      family: "Arial Black, Gadget, sans-serif"
-    }, {
-      name: "Comic Sans",
-      family: "Comic Sans MS, Textile, cursive, sans-serif"
-    }, {
-      name: "Courier New",
-      family: "Courier New, Courier, monospace"
-    }, {
-      name: "Georgia",
-      family: "Georgia, serif"
-    }, {
-      name: "Impact",
-      family: "Impact, Charcoal, sans-serif"
-    }, {
-      name: "Lucida Console",
-      family: "Lucida Console, Monaco, monospace"
-    }, {
-      name: "Lucida Sans",
-      family: "Lucida Sans Uncide, Lucida Grande, sans-serif"
-    }, {
-      name: "Palatino",
-      family: "Palatino Linotype, Book Antiqua, Palatino, serif"
-    }, {
-      name: "Tahoma",
-      family: "Tahoma, Geneva, sans-serif"
-    }, {
-      name: "Times New Roman",
-      family: "Times New Roman, Times, serif"
-    }, {
-      name: "Trebuchet",
-      family: "Trebuchet MS, Helvetica, sans-serif"
-    }, {
-      name: "Verdana",
-      family: "Verdana, Geneva, sans-serif"
-    }]
+  var l = {
+    colorList: ["ffffff", "000000", "eeece1", "1f497d", "4f81bd", "c0504d", "9bbb59", "8064a2", "4bacc6", "f79646", "ffff00", "f2f2f2", "7f7f7f", "ddd9c3", "c6d9f0", "dbe5f1", "f2dcdb", "ebf1dd", "e5e0ec", "dbeef3", "fdeada", "fff2ca", "d8d8d8", "595959", "c4bd97", "8db3e2", "b8cce4", "e5b9b7", "d7e3bc", "ccc1d9", "b7dde8", "fbd5b5", "ffe694", "bfbfbf", "3f3f3f", "938953", "548dd4", "95b3d7", "d99694", "c3d69b", "b2a2c7", "b7dde8", "fac08f", "f2c314", "a5a5a5", "262626", "494429", "17365d", "366092", "953734", "76923c", "5f497a", "92cddc", "e36c09", "c09100", "7f7f7f", "0c0c0c", "1d1b10", "0f243e", "244061", "632423", "4f6128", "3f3151", "31859b", "974806", "7f6000"],
+    foreColorList: null,
+    backColorList: null,
+    allowCustomForeColor: !0,
+    allowCustomBackColor: !0,
+    displayAsList: !1
   };
-  function i(n) {
-    var i = [];
-    return a.each(n.o.plugins.fontfamily.fontList, function (a, e) {
-      n.addBtnDef("fontfamily_" + a, {
-        title: '<span style="font-family: ' + e.family + ';">' + e.name + "</span>",
+  function a(r, e) {
+    var l = [],
+      a = e.o.plugins.colors,
+      t = a[r + "List"] || a.colorList;
+    o.each(t, function (o, t) {
+      var c = r + t,
+        f = {
+          fn: r,
+          forceCss: !0,
+          hasIcon: !1,
+          text: e.lang["#" + t] || "#" + t,
+          param: "#" + t,
+          style: "background-color: #" + t + ";"
+        };
+      a.displayAsList && "foreColor" === r && (f.style = "color: #" + t + " !important;"), e.addBtnDef(c, f), l.push(c);
+    });
+    var c = r + "Remove",
+      f = {
+        fn: "removeFormat",
         hasIcon: !1,
-        fn: function fn() {
-          n.execCmd("fontName", e.family, !0);
-        }
-      }), i.push("fontfamily_" + a);
-    }), i;
+        param: r,
+        style: "background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);"
+      };
+    if (a.displayAsList && (f.style = ""), e.addBtnDef(c, f), l.push(c), a["allowCustom" + r.charAt(0).toUpperCase() + r.substr(1)]) {
+      var n = r + "Free",
+        d = {
+          fn: function fn() {
+            e.openModalInsert(e.lang[r], {
+              color: {
+                label: r,
+                forceCss: !0,
+                type: "color",
+                value: "#FFFFFF"
+              }
+            }, function (o) {
+              return e.execCmd(r, o.color), !0;
+            });
+          },
+          hasIcon: !1,
+          text: "#",
+          style: "text-indent: 0; line-height: 20px; padding: 0 5px;"
+        };
+      e.addBtnDef(n, d), l.push(n);
+    }
+    return l;
   }
-  a.extend(!0, a.trumbowyg, {
+  o.extend(!0, o.trumbowyg, {
     plugins: {
-      fontfamily: {
-        init: function init(e) {
-          e.o.plugins.fontfamily = a.extend({}, n, e.o.plugins.fontfamily || {}), e.addBtnDef("fontfamily", {
-            dropdown: i(e),
-            hasIcon: !1,
-            text: e.lang.fontFamily
-          });
+      color: {
+        init: function init(o) {
+          o.o.plugins.colors = o.o.plugins.colors || l;
+          var r = o.o.plugins.colors.displayAsList ? o.o.prefix + "dropdown--color-list" : "",
+            e = {
+              dropdown: a("foreColor", o),
+              dropdownClass: r
+            },
+            t = {
+              dropdown: a("backColor", o),
+              dropdownClass: r
+            };
+          o.addBtnDef("foreColor", e), o.addBtnDef("backColor", t);
+        },
+        tagHandler: function tagHandler(o, r) {
+          var l,
+            a = [];
+          if (!o.style) return a;
+          if ("" !== o.style.backgroundColor) {
+            var t = e(o.style.backgroundColor);
+            r.o.plugins.colors.colorList.indexOf(t) >= 0 ? a.push("backColor" + t) : a.push("backColorFree");
+          }
+          return "" !== o.style.color ? l = e(o.style.color) : o.hasAttribute("color") && (l = e(o.getAttribute("color"))), l && (r.o.plugins.colors.colorList.indexOf(l) >= 0 ? a.push("foreColor" + l) : a.push("foreColorFree")), a;
         }
       }
     }
@@ -1818,16 +2049,6 @@
     }
   });
 }(jQuery);
-/* ===========================================================
- * trumbowyg.colors.js v1.2
- * Colors picker plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Alexandre Demode (Alex-D)
- *          Twitter : @AlexandreDemode
- *          Website : alex-d.fr
- */
-
 (function ($) {
   'use strict';
 
@@ -1835,716 +2056,254 @@
     langs: {
       // jshint camelcase:false
       en: {
-        foreColor: 'Text color',
-        backColor: 'Background color',
-        foreColorRemove: 'Remove text color',
-        backColorRemove: 'Remove background color'
+        fontFamily: 'Font'
       },
       az: {
-        foreColor: 'Yazı rəngi',
-        backColor: 'Arxa plan rəngi',
-        foreColorRemove: 'Yazı rəngini sil',
-        backColorRemove: 'Arxa plan rəngini sil'
+        fontFamily: 'Şrift'
       },
       by: {
-        foreColor: 'Колер тэксту',
-        backColor: 'Колер фону тэксту',
-        foreColorRemove: 'Выдаліць колер тэксту',
-        backColorRemove: 'Выдаліць колер фону тэксту'
+        fontFamily: 'Шрыфт'
       },
       ca: {
-        foreColor: 'Color del text',
-        backColor: 'Color del fons',
-        foreColorRemove: 'Eliminar color del text',
-        backColorRemove: 'Eliminar color del fons'
-      },
-      cs: {
-        foreColor: 'Barva textu',
-        backColor: 'Barva pozadí'
+        fontFamily: 'Font'
       },
       da: {
-        foreColor: 'Tekstfarve',
-        backColor: 'Baggrundsfarve'
+        fontFamily: 'Skrifttype'
       },
       de: {
-        foreColor: 'Textfarbe',
-        backColor: 'Hintergrundfarbe'
+        fontFamily: 'Schriftart'
       },
       es: {
-        foreColor: 'Color del texto',
-        backColor: 'Color del fondo',
-        foreColorRemove: 'Eliminar color del texto',
-        backColorRemove: 'Eliminar color del fondo'
+        fontFamily: 'Fuente'
       },
       et: {
-        foreColor: 'Teksti värv',
-        backColor: 'Taustavärv',
-        foreColorRemove: 'Eemalda teksti värv',
-        backColorRemove: 'Eemalda taustavärv'
+        fontFamily: 'Font'
       },
       fr: {
-        foreColor: 'Couleur du texte',
-        backColor: 'Couleur de fond',
-        foreColorRemove: 'Supprimer la couleur du texte',
-        backColorRemove: 'Supprimer la couleur de fond'
+        fontFamily: 'Police'
       },
       hu: {
-        foreColor: 'Betű szín',
-        backColor: 'Háttér szín',
-        foreColorRemove: 'Betű szín eltávolítása',
-        backColorRemove: 'Háttér szín eltávolítása'
-      },
-      ja: {
-        foreColor: '文字色',
-        backColor: '背景色'
+        fontFamily: 'Betűtípus'
       },
       ko: {
-        foreColor: '글자색',
-        backColor: '배경색',
-        foreColorRemove: '글자색 지우기',
-        backColorRemove: '배경색 지우기'
+        fontFamily: '글꼴'
       },
       nl: {
-        foreColor: 'Tekstkleur',
-        backColor: 'Achtergrondkleur'
+        fontFamily: 'Lettertype'
       },
       pt_br: {
-        foreColor: 'Cor de fonte',
-        backColor: 'Cor de fundo'
+        fontFamily: 'Fonte'
       },
       ru: {
-        foreColor: 'Цвет текста',
-        backColor: 'Цвет выделения текста',
-        foreColorRemove: 'Очистить цвет текста',
-        backColorRemove: 'Очистить цвет выделения текста'
+        fontFamily: 'Шрифт'
       },
       sl: {
-        foreColor: 'Barva teksta',
-        backColor: 'Barva ozadja',
-        foreColorRemove: 'Ponastavi barvo teksta',
-        backColorRemove: 'Ponastavi barvo ozadja'
-      },
-      sk: {
-        foreColor: 'Farba textu',
-        backColor: 'Farba pozadia'
+        fontFamily: 'Pisava'
       },
       tr: {
-        foreColor: 'Yazı rengi',
-        backColor: 'Arka plan rengi',
-        foreColorRemove: 'Yazı rengini kaldır',
-        backColorRemove: 'Arka plan rengini kaldır'
-      },
-      zh_cn: {
-        foreColor: '文字颜色',
-        backColor: '背景颜色'
+        fontFamily: 'Yazı tipi'
       },
       zh_tw: {
-        foreColor: '文字顏色',
-        backColor: '背景顏色'
+        fontFamily: '字體'
       }
     }
   });
-
   // jshint camelcase:true
 
-  function hex(x) {
-    return ('0' + parseInt(x).toString(16)).slice(-2);
-  }
-  function colorToHex(rgb) {
-    if (rgb.search('rgb') === -1) {
-      return rgb.replace('#', '');
-    } else if (rgb === 'rgba(0, 0, 0, 0)') {
-      return 'transparent';
-    } else {
-      rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/);
-      if (rgb == null) {
-        return 'transparent'; // No match, return transparent as unkown color
-      }
-
-      return hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
-    }
-  }
-  function colorTagHandler(element, trumbowyg) {
-    var tags = [];
-    if (!element.style) {
-      return tags;
-    }
-
-    // background color
-    if (element.style.backgroundColor !== '') {
-      var backColor = colorToHex(element.style.backgroundColor);
-      if (trumbowyg.o.plugins.colors.colorList.indexOf(backColor) >= 0) {
-        tags.push('backColor' + backColor);
-      } else {
-        tags.push('backColorFree');
-      }
-    }
-
-    // text color
-    var foreColor;
-    if (element.style.color !== '') {
-      foreColor = colorToHex(element.style.color);
-    } else if (element.hasAttribute('color')) {
-      foreColor = colorToHex(element.getAttribute('color'));
-    }
-    if (foreColor) {
-      if (trumbowyg.o.plugins.colors.colorList.indexOf(foreColor) >= 0) {
-        tags.push('foreColor' + foreColor);
-      } else {
-        tags.push('foreColorFree');
-      }
-    }
-    return tags;
-  }
   var defaultOptions = {
-    colorList: ['ffffff', '000000', 'eeece1', '1f497d', '4f81bd', 'c0504d', '9bbb59', '8064a2', '4bacc6', 'f79646', 'ffff00', 'f2f2f2', '7f7f7f', 'ddd9c3', 'c6d9f0', 'dbe5f1', 'f2dcdb', 'ebf1dd', 'e5e0ec', 'dbeef3', 'fdeada', 'fff2ca', 'd8d8d8', '595959', 'c4bd97', '8db3e2', 'b8cce4', 'e5b9b7', 'd7e3bc', 'ccc1d9', 'b7dde8', 'fbd5b5', 'ffe694', 'bfbfbf', '3f3f3f', '938953', '548dd4', '95b3d7', 'd99694', 'c3d69b', 'b2a2c7', 'b7dde8', 'fac08f', 'f2c314', 'a5a5a5', '262626', '494429', '17365d', '366092', '953734', '76923c', '5f497a', '92cddc', 'e36c09', 'c09100', '7f7f7f', '0c0c0c', '1d1b10', '0f243e', '244061', '632423', '4f6128', '3f3151', '31859b', '974806', '7f6000'],
-    foreColorList: null,
-    // fallbacks on colorList
-    backColorList: null,
-    // fallbacks on colorList
-    allowCustomForeColor: true,
-    allowCustomBackColor: true,
-    displayAsList: false
+    fontList: [{
+      name: 'Arial',
+      family: 'Arial, Helvetica, sans-serif'
+    }, {
+      name: 'Arial Black',
+      family: 'Arial Black, Gadget, sans-serif'
+    }, {
+      name: 'Comic Sans',
+      family: 'Comic Sans MS, Textile, cursive, sans-serif'
+    }, {
+      name: 'Courier New',
+      family: 'Courier New, Courier, monospace'
+    }, {
+      name: 'Georgia',
+      family: 'Georgia, serif'
+    }, {
+      name: 'Impact',
+      family: 'Impact, Charcoal, sans-serif'
+    }, {
+      name: 'Lucida Console',
+      family: 'Lucida Console, Monaco, monospace'
+    }, {
+      name: 'Lucida Sans',
+      family: 'Lucida Sans Uncide, Lucida Grande, sans-serif'
+    }, {
+      name: 'Palatino',
+      family: 'Palatino Linotype, Book Antiqua, Palatino, serif'
+    }, {
+      name: 'Tahoma',
+      family: 'Tahoma, Geneva, sans-serif'
+    }, {
+      name: 'Times New Roman',
+      family: 'Times New Roman, Times, serif'
+    }, {
+      name: 'Trebuchet',
+      family: 'Trebuchet MS, Helvetica, sans-serif'
+    }, {
+      name: 'Verdana',
+      family: 'Verdana, Geneva, sans-serif'
+    }]
   };
 
-  // Add all colors in two dropdowns
+  // Add dropdown with web safe fonts
   $.extend(true, $.trumbowyg, {
     plugins: {
-      color: {
+      fontfamily: {
         init: function init(trumbowyg) {
-          trumbowyg.o.plugins.colors = trumbowyg.o.plugins.colors || defaultOptions;
-          var dropdownClass = trumbowyg.o.plugins.colors.displayAsList ? trumbowyg.o.prefix + 'dropdown--color-list' : '';
-          var foreColorBtnDef = {
-              dropdown: buildDropdown('foreColor', trumbowyg),
-              dropdownClass: dropdownClass
-            },
-            backColorBtnDef = {
-              dropdown: buildDropdown('backColor', trumbowyg),
-              dropdownClass: dropdownClass
-            };
-          trumbowyg.addBtnDef('foreColor', foreColorBtnDef);
-          trumbowyg.addBtnDef('backColor', backColorBtnDef);
-        },
-        tagHandler: colorTagHandler
+          trumbowyg.o.plugins.fontfamily = $.extend({}, defaultOptions, trumbowyg.o.plugins.fontfamily || {});
+          trumbowyg.addBtnDef('fontfamily', {
+            dropdown: buildDropdown(trumbowyg),
+            hasIcon: false,
+            text: trumbowyg.lang.fontFamily
+          });
+        }
       }
     }
   });
-  function buildDropdown(_fn, trumbowyg) {
-    var dropdown = [],
-      trumbowygColorOptions = trumbowyg.o.plugins.colors,
-      colorList = trumbowygColorOptions[_fn + 'List'] || trumbowygColorOptions.colorList;
-    $.each(colorList, function (i, color) {
-      var btn = _fn + color,
-        btnDef = {
-          fn: _fn,
-          forceCss: true,
-          hasIcon: false,
-          text: trumbowyg.lang['#' + color] || '#' + color,
-          param: '#' + color,
-          style: 'background-color: #' + color + ';'
-        };
-      if (trumbowygColorOptions.displayAsList && _fn === 'foreColor') {
-        btnDef.style = 'color: #' + color + ' !important;';
-      }
-      trumbowyg.addBtnDef(btn, btnDef);
-      dropdown.push(btn);
-    });
-
-    // Remove color
-    var removeColorButtonName = _fn + 'Remove',
-      removeColorBtnDef = {
-        fn: 'removeFormat',
+  function buildDropdown(trumbowyg) {
+    var dropdown = [];
+    $.each(trumbowyg.o.plugins.fontfamily.fontList, function (index, font) {
+      trumbowyg.addBtnDef('fontfamily_' + index, {
+        title: '<span style="font-family: ' + font.family + ';">' + font.name + '</span>',
         hasIcon: false,
-        param: _fn,
-        style: 'background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);'
-      };
-    if (trumbowygColorOptions.displayAsList) {
-      removeColorBtnDef.style = '';
-    }
-    trumbowyg.addBtnDef(removeColorButtonName, removeColorBtnDef);
-    dropdown.push(removeColorButtonName);
-
-    // Custom color
-    if (trumbowygColorOptions['allowCustom' + _fn.charAt(0).toUpperCase() + _fn.substr(1)]) {
-      // add free color btn
-      var freeColorButtonName = _fn + 'Free',
-        freeColorBtnDef = {
-          fn: function fn() {
-            trumbowyg.openModalInsert(trumbowyg.lang[_fn], {
-              color: {
-                label: _fn,
-                forceCss: true,
-                type: 'color',
-                value: '#FFFFFF'
-              }
-            },
-            // callback
-            function (values) {
-              trumbowyg.execCmd(_fn, values.color);
-              return true;
-            });
-          },
-          hasIcon: false,
-          text: '#',
-          // style adjust for displaying the text
-          style: 'text-indent: 0; line-height: 20px; padding: 0 5px;'
-        };
-      trumbowyg.addBtnDef(freeColorButtonName, freeColorBtnDef);
-      dropdown.push(freeColorButtonName);
-    }
+        fn: function fn() {
+          trumbowyg.execCmd('fontName', font.family, true);
+        }
+      });
+      dropdown.push('fontfamily_' + index);
+    });
     return dropdown;
   }
 })(jQuery);
-/* ===========================================================
- * trumbowyg.colors.js v1.2
- * Colors picker plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Alexandre Demode (Alex-D)
- *          Twitter : @AlexandreDemode
- *          Website : alex-d.fr
- */
-!function (o) {
+!function (a) {
   "use strict";
 
-  function r(o) {
-    return ("0" + parseInt(o).toString(16)).slice(-2);
-  }
-  function e(o) {
-    return -1 === o.search("rgb") ? o.replace("#", "") : "rgba(0, 0, 0, 0)" === o || null == (o = o.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/)) ? "transparent" : r(o[1]) + r(o[2]) + r(o[3]);
-  }
-  o.extend(!0, o.trumbowyg, {
+  a.extend(!0, a.trumbowyg, {
     langs: {
       en: {
-        foreColor: "Text color",
-        backColor: "Background color",
-        foreColorRemove: "Remove text color",
-        backColorRemove: "Remove background color"
+        fontFamily: "Font"
       },
       az: {
-        foreColor: "Yazı rəngi",
-        backColor: "Arxa plan rəngi",
-        foreColorRemove: "Yazı rəngini sil",
-        backColorRemove: "Arxa plan rəngini sil"
+        fontFamily: "Şrift"
       },
       by: {
-        foreColor: "Колер тэксту",
-        backColor: "Колер фону тэксту",
-        foreColorRemove: "Выдаліць колер тэксту",
-        backColorRemove: "Выдаліць колер фону тэксту"
+        fontFamily: "Шрыфт"
       },
       ca: {
-        foreColor: "Color del text",
-        backColor: "Color del fons",
-        foreColorRemove: "Eliminar color del text",
-        backColorRemove: "Eliminar color del fons"
-      },
-      cs: {
-        foreColor: "Barva textu",
-        backColor: "Barva pozadí"
+        fontFamily: "Font"
       },
       da: {
-        foreColor: "Tekstfarve",
-        backColor: "Baggrundsfarve"
+        fontFamily: "Skrifttype"
       },
       de: {
-        foreColor: "Textfarbe",
-        backColor: "Hintergrundfarbe"
+        fontFamily: "Schriftart"
       },
       es: {
-        foreColor: "Color del texto",
-        backColor: "Color del fondo",
-        foreColorRemove: "Eliminar color del texto",
-        backColorRemove: "Eliminar color del fondo"
+        fontFamily: "Fuente"
       },
       et: {
-        foreColor: "Teksti värv",
-        backColor: "Taustavärv",
-        foreColorRemove: "Eemalda teksti värv",
-        backColorRemove: "Eemalda taustavärv"
+        fontFamily: "Font"
       },
       fr: {
-        foreColor: "Couleur du texte",
-        backColor: "Couleur de fond",
-        foreColorRemove: "Supprimer la couleur du texte",
-        backColorRemove: "Supprimer la couleur de fond"
+        fontFamily: "Police"
       },
       hu: {
-        foreColor: "Betű szín",
-        backColor: "Háttér szín",
-        foreColorRemove: "Betű szín eltávolítása",
-        backColorRemove: "Háttér szín eltávolítása"
-      },
-      ja: {
-        foreColor: "文字色",
-        backColor: "背景色"
+        fontFamily: "Betűtípus"
       },
       ko: {
-        foreColor: "글자색",
-        backColor: "배경색",
-        foreColorRemove: "글자색 지우기",
-        backColorRemove: "배경색 지우기"
+        fontFamily: "글꼴"
       },
       nl: {
-        foreColor: "Tekstkleur",
-        backColor: "Achtergrondkleur"
+        fontFamily: "Lettertype"
       },
       pt_br: {
-        foreColor: "Cor de fonte",
-        backColor: "Cor de fundo"
+        fontFamily: "Fonte"
       },
       ru: {
-        foreColor: "Цвет текста",
-        backColor: "Цвет выделения текста",
-        foreColorRemove: "Очистить цвет текста",
-        backColorRemove: "Очистить цвет выделения текста"
+        fontFamily: "Шрифт"
       },
       sl: {
-        foreColor: "Barva teksta",
-        backColor: "Barva ozadja",
-        foreColorRemove: "Ponastavi barvo teksta",
-        backColorRemove: "Ponastavi barvo ozadja"
-      },
-      sk: {
-        foreColor: "Farba textu",
-        backColor: "Farba pozadia"
+        fontFamily: "Pisava"
       },
       tr: {
-        foreColor: "Yazı rengi",
-        backColor: "Arka plan rengi",
-        foreColorRemove: "Yazı rengini kaldır",
-        backColorRemove: "Arka plan rengini kaldır"
-      },
-      zh_cn: {
-        foreColor: "文字颜色",
-        backColor: "背景颜色"
+        fontFamily: "Yazı tipi"
       },
       zh_tw: {
-        foreColor: "文字顏色",
-        backColor: "背景顏色"
+        fontFamily: "字體"
       }
     }
   });
-  var l = {
-    colorList: ["ffffff", "000000", "eeece1", "1f497d", "4f81bd", "c0504d", "9bbb59", "8064a2", "4bacc6", "f79646", "ffff00", "f2f2f2", "7f7f7f", "ddd9c3", "c6d9f0", "dbe5f1", "f2dcdb", "ebf1dd", "e5e0ec", "dbeef3", "fdeada", "fff2ca", "d8d8d8", "595959", "c4bd97", "8db3e2", "b8cce4", "e5b9b7", "d7e3bc", "ccc1d9", "b7dde8", "fbd5b5", "ffe694", "bfbfbf", "3f3f3f", "938953", "548dd4", "95b3d7", "d99694", "c3d69b", "b2a2c7", "b7dde8", "fac08f", "f2c314", "a5a5a5", "262626", "494429", "17365d", "366092", "953734", "76923c", "5f497a", "92cddc", "e36c09", "c09100", "7f7f7f", "0c0c0c", "1d1b10", "0f243e", "244061", "632423", "4f6128", "3f3151", "31859b", "974806", "7f6000"],
-    foreColorList: null,
-    backColorList: null,
-    allowCustomForeColor: !0,
-    allowCustomBackColor: !0,
-    displayAsList: !1
+  var n = {
+    fontList: [{
+      name: "Arial",
+      family: "Arial, Helvetica, sans-serif"
+    }, {
+      name: "Arial Black",
+      family: "Arial Black, Gadget, sans-serif"
+    }, {
+      name: "Comic Sans",
+      family: "Comic Sans MS, Textile, cursive, sans-serif"
+    }, {
+      name: "Courier New",
+      family: "Courier New, Courier, monospace"
+    }, {
+      name: "Georgia",
+      family: "Georgia, serif"
+    }, {
+      name: "Impact",
+      family: "Impact, Charcoal, sans-serif"
+    }, {
+      name: "Lucida Console",
+      family: "Lucida Console, Monaco, monospace"
+    }, {
+      name: "Lucida Sans",
+      family: "Lucida Sans Uncide, Lucida Grande, sans-serif"
+    }, {
+      name: "Palatino",
+      family: "Palatino Linotype, Book Antiqua, Palatino, serif"
+    }, {
+      name: "Tahoma",
+      family: "Tahoma, Geneva, sans-serif"
+    }, {
+      name: "Times New Roman",
+      family: "Times New Roman, Times, serif"
+    }, {
+      name: "Trebuchet",
+      family: "Trebuchet MS, Helvetica, sans-serif"
+    }, {
+      name: "Verdana",
+      family: "Verdana, Geneva, sans-serif"
+    }]
   };
-  function a(r, e) {
-    var l = [],
-      a = e.o.plugins.colors,
-      t = a[r + "List"] || a.colorList;
-    o.each(t, function (o, t) {
-      var c = r + t,
-        f = {
-          fn: r,
-          forceCss: !0,
-          hasIcon: !1,
-          text: e.lang["#" + t] || "#" + t,
-          param: "#" + t,
-          style: "background-color: #" + t + ";"
-        };
-      a.displayAsList && "foreColor" === r && (f.style = "color: #" + t + " !important;"), e.addBtnDef(c, f), l.push(c);
-    });
-    var c = r + "Remove",
-      f = {
-        fn: "removeFormat",
+  function i(n) {
+    var i = [];
+    return a.each(n.o.plugins.fontfamily.fontList, function (a, e) {
+      n.addBtnDef("fontfamily_" + a, {
+        title: '<span style="font-family: ' + e.family + ';">' + e.name + "</span>",
         hasIcon: !1,
-        param: r,
-        style: "background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);"
-      };
-    if (a.displayAsList && (f.style = ""), e.addBtnDef(c, f), l.push(c), a["allowCustom" + r.charAt(0).toUpperCase() + r.substr(1)]) {
-      var n = r + "Free",
-        d = {
-          fn: function fn() {
-            e.openModalInsert(e.lang[r], {
-              color: {
-                label: r,
-                forceCss: !0,
-                type: "color",
-                value: "#FFFFFF"
-              }
-            }, function (o) {
-              return e.execCmd(r, o.color), !0;
-            });
-          },
-          hasIcon: !1,
-          text: "#",
-          style: "text-indent: 0; line-height: 20px; padding: 0 5px;"
-        };
-      e.addBtnDef(n, d), l.push(n);
-    }
-    return l;
+        fn: function fn() {
+          n.execCmd("fontName", e.family, !0);
+        }
+      }), i.push("fontfamily_" + a);
+    }), i;
   }
-  o.extend(!0, o.trumbowyg, {
+  a.extend(!0, a.trumbowyg, {
     plugins: {
-      color: {
-        init: function init(o) {
-          o.o.plugins.colors = o.o.plugins.colors || l;
-          var r = o.o.plugins.colors.displayAsList ? o.o.prefix + "dropdown--color-list" : "",
-            e = {
-              dropdown: a("foreColor", o),
-              dropdownClass: r
-            },
-            t = {
-              dropdown: a("backColor", o),
-              dropdownClass: r
-            };
-          o.addBtnDef("foreColor", e), o.addBtnDef("backColor", t);
-        },
-        tagHandler: function tagHandler(o, r) {
-          var l,
-            a = [];
-          if (!o.style) return a;
-          if ("" !== o.style.backgroundColor) {
-            var t = e(o.style.backgroundColor);
-            r.o.plugins.colors.colorList.indexOf(t) >= 0 ? a.push("backColor" + t) : a.push("backColorFree");
-          }
-          return "" !== o.style.color ? l = e(o.style.color) : o.hasAttribute("color") && (l = e(o.getAttribute("color"))), l && (r.o.plugins.colors.colorList.indexOf(l) >= 0 ? a.push("foreColor" + l) : a.push("foreColorFree")), a;
-        }
-      }
-    }
-  });
-}(jQuery);
-/*/* ===========================================================
- * trumbowyg.history.js v1.0
- * history plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Sven Dunemann [dunemann@forelabs.eu]
- */
-
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      history: {
-        destroy: function destroy(t) {
-          t.$c.off('tbwinit.history tbwchange.history');
-        },
-        init: function init(t) {
-          t.o.plugins.history = $.extend(true, {
-            _stack: [],
-            _index: -1,
-            _focusEl: undefined
-          }, t.o.plugins.history || {});
-          var btnBuildDefRedo = {
-            title: t.lang.redo,
-            ico: 'redo',
-            key: 'Y',
-            fn: function fn() {
-              if (t.o.plugins.history._index < t.o.plugins.history._stack.length - 1) {
-                t.o.plugins.history._index += 1;
-                var index = t.o.plugins.history._index;
-                var newState = t.o.plugins.history._stack[index];
-                t.execCmd('html', newState);
-                // because of some semantic optimisations we have to save the state back
-                // to history
-                t.o.plugins.history._stack[index] = t.$ed.html();
-                carretToEnd();
-                toggleButtonStates();
-              }
-            }
-          };
-          var btnBuildDefUndo = {
-            title: t.lang.undo,
-            ico: 'undo',
-            key: 'Z',
-            fn: function fn() {
-              if (t.o.plugins.history._index > 0) {
-                t.o.plugins.history._index -= 1;
-                var index = t.o.plugins.history._index,
-                  newState = t.o.plugins.history._stack[index];
-                t.execCmd('html', newState);
-                // because of some semantic optimisations we have to save the state back
-                // to history
-                t.o.plugins.history._stack[index] = t.$ed.html();
-                carretToEnd();
-                toggleButtonStates();
-              }
-            }
-          };
-          var pushToHistory = function pushToHistory() {
-            var index = t.o.plugins.history._index,
-              stack = t.o.plugins.history._stack,
-              latestState = stack.slice(-1)[0] || '<p></p>',
-              prevState = stack[index],
-              newState = t.$ed.html(),
-              focusEl = t.doc.getSelection().focusNode,
-              focusElText = '',
-              latestStateTagsList,
-              newStateTagsList,
-              prevFocusEl = t.o.plugins.history._focusEl;
-            latestStateTagsList = $('<div>' + latestState + '</div>').find('*').map(function () {
-              return this.localName;
-            });
-            newStateTagsList = $('<div>' + newState + '</div>').find('*').map(function () {
-              return this.localName;
-            });
-            if (focusEl) {
-              t.o.plugins.history._focusEl = focusEl;
-              focusElText = focusEl.outerHTML || focusEl.textContent;
-            }
-            if (newState !== prevState) {
-              // a new stack entry is defined when current insert ends on a whitespace character
-              // or count of node elements has been changed
-              // or focused element differs from previous one
-              if (focusElText.slice(-1).match(/\s/) || !arraysAreIdentical(latestStateTagsList, newStateTagsList) || t.o.plugins.history._index <= 0 || focusEl !== prevFocusEl) {
-                t.o.plugins.history._index += 1;
-                // remove newer entries in history when something new was added
-                // because timeline was changes with interaction
-                t.o.plugins.history._stack = stack.slice(0, t.o.plugins.history._index);
-                // now add new state to modified history
-                t.o.plugins.history._stack.push(newState);
-              } else {
-                // modify last stack entry
-                t.o.plugins.history._stack[index] = newState;
-              }
-              toggleButtonStates();
-            }
-          };
-          var toggleButtonStates = function toggleButtonStates() {
-            var index = t.o.plugins.history._index,
-              stackSize = t.o.plugins.history._stack.length,
-              undoState = index > 0,
-              redoState = stackSize !== 0 && index !== stackSize - 1;
-            toggleButtonState('historyUndo', undoState);
-            toggleButtonState('historyRedo', redoState);
-          };
-          var toggleButtonState = function toggleButtonState(btn, enable) {
-            var button = t.$box.find('.trumbowyg-' + btn + '-button');
-            if (enable) {
-              button.removeClass('trumbowyg-disable');
-            } else if (!button.hasClass('trumbowyg-disable')) {
-              button.addClass('trumbowyg-disable');
-            }
-          };
-          var arraysAreIdentical = function arraysAreIdentical(a, b) {
-            if (a === b) {
-              return true;
-            }
-            if (a == null || b == null) {
-              return false;
-            }
-            if (a.length !== b.length) {
-              return false;
-            }
-            for (var i = 0; i < a.length; i += 1) {
-              if (a[i] !== b[i]) {
-                return false;
-              }
-            }
-            return true;
-          };
-          var carretToEnd = function carretToEnd() {
-            var node = t.doc.getSelection().focusNode,
-              range = t.doc.createRange();
-            if (node.childNodes.length > 0) {
-              range.setStartAfter(node.childNodes[node.childNodes.length - 1]);
-              range.setEndAfter(node.childNodes[node.childNodes.length - 1]);
-              t.doc.getSelection().removeAllRanges();
-              t.doc.getSelection().addRange(range);
-            }
-          };
-          t.$c.on('tbwinit.history tbwchange.history', pushToHistory);
-          t.addBtnDef('historyRedo', btnBuildDefRedo);
-          t.addBtnDef('historyUndo', btnBuildDefUndo);
-        }
-      }
-    }
-  });
-})(jQuery);
-/*/* ===========================================================
- * trumbowyg.history.js v1.0
- * history plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Sven Dunemann [dunemann@forelabs.eu]
- */
-!function (i) {
-  "use strict";
-
-  i.extend(!0, i.trumbowyg, {
-    plugins: {
-      history: {
-        destroy: function destroy(i) {
-          i.$c.off("tbwinit.history tbwchange.history");
-        },
-        init: function init(t) {
-          t.o.plugins.history = i.extend(!0, {
-            _stack: [],
-            _index: -1,
-            _focusEl: void 0
-          }, t.o.plugins.history || {});
-          var o = {
-              title: t.lang.redo,
-              ico: "redo",
-              key: "Y",
-              fn: function fn() {
-                if (t.o.plugins.history._index < t.o.plugins.history._stack.length - 1) {
-                  t.o.plugins.history._index += 1;
-                  var i = t.o.plugins.history._index,
-                    o = t.o.plugins.history._stack[i];
-                  t.execCmd("html", o), t.o.plugins.history._stack[i] = t.$ed.html(), r(), s();
-                }
-              }
-            },
-            n = {
-              title: t.lang.undo,
-              ico: "undo",
-              key: "Z",
-              fn: function fn() {
-                if (t.o.plugins.history._index > 0) {
-                  t.o.plugins.history._index -= 1;
-                  var i = t.o.plugins.history._index,
-                    o = t.o.plugins.history._stack[i];
-                  t.execCmd("html", o), t.o.plugins.history._stack[i] = t.$ed.html(), r(), s();
-                }
-              }
-            },
-            s = function s() {
-              var i = t.o.plugins.history._index,
-                o = t.o.plugins.history._stack.length,
-                n = 0 !== o && i !== o - 1;
-              e("historyUndo", i > 0), e("historyRedo", n);
-            },
-            e = function e(i, o) {
-              var n = t.$box.find(".trumbowyg-" + i + "-button");
-              o ? n.removeClass("trumbowyg-disable") : n.hasClass("trumbowyg-disable") || n.addClass("trumbowyg-disable");
-            },
-            l = function l(i, t) {
-              if (i === t) return !0;
-              if (null == i || null == t) return !1;
-              if (i.length !== t.length) return !1;
-              for (var o = 0; o < i.length; o += 1) if (i[o] !== t[o]) return !1;
-              return !0;
-            },
-            r = function r() {
-              var i = t.doc.getSelection().focusNode,
-                o = t.doc.createRange();
-              i.childNodes.length > 0 && (o.setStartAfter(i.childNodes[i.childNodes.length - 1]), o.setEndAfter(i.childNodes[i.childNodes.length - 1]), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(o));
-            };
-          t.$c.on("tbwinit.history tbwchange.history", function () {
-            var o,
-              n,
-              e = t.o.plugins.history._index,
-              r = t.o.plugins.history._stack,
-              d = r.slice(-1)[0] || "<p></p>",
-              u = r[e],
-              h = t.$ed.html(),
-              c = t.doc.getSelection().focusNode,
-              g = "",
-              a = t.o.plugins.history._focusEl;
-            o = i("<div>" + d + "</div>").find("*").map(function () {
-              return this.localName;
-            }), n = i("<div>" + h + "</div>").find("*").map(function () {
-              return this.localName;
-            }), c && (t.o.plugins.history._focusEl = c, g = c.outerHTML || c.textContent), h !== u && (g.slice(-1).match(/\s/) || !l(o, n) || t.o.plugins.history._index <= 0 || c !== a ? (t.o.plugins.history._index += 1, t.o.plugins.history._stack = r.slice(0, t.o.plugins.history._index), t.o.plugins.history._stack.push(h)) : t.o.plugins.history._stack[e] = h, s());
-          }), t.addBtnDef("historyRedo", o), t.addBtnDef("historyUndo", n);
+      fontfamily: {
+        init: function init(e) {
+          e.o.plugins.fontfamily = a.extend({}, n, e.o.plugins.fontfamily || {}), e.addBtnDef("fontfamily", {
+            dropdown: i(e),
+            hasIcon: !1,
+            text: e.lang.fontFamily
+          });
         }
       }
     }
@@ -3059,6 +2818,462 @@
               ico: "outdent"
             };
           n.addBtnDef("indent", t), n.addBtnDef("outdent", e);
+        }
+      }
+    }
+  });
+}(jQuery);
+/*/* ===========================================================
+ * trumbowyg.history.js v1.0
+ * history plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Sven Dunemann [dunemann@forelabs.eu]
+ */
+
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      history: {
+        destroy: function destroy(t) {
+          t.$c.off('tbwinit.history tbwchange.history');
+        },
+        init: function init(t) {
+          t.o.plugins.history = $.extend(true, {
+            _stack: [],
+            _index: -1,
+            _focusEl: undefined
+          }, t.o.plugins.history || {});
+          var btnBuildDefRedo = {
+            title: t.lang.redo,
+            ico: 'redo',
+            key: 'Y',
+            fn: function fn() {
+              if (t.o.plugins.history._index < t.o.plugins.history._stack.length - 1) {
+                t.o.plugins.history._index += 1;
+                var index = t.o.plugins.history._index;
+                var newState = t.o.plugins.history._stack[index];
+                t.execCmd('html', newState);
+                // because of some semantic optimisations we have to save the state back
+                // to history
+                t.o.plugins.history._stack[index] = t.$ed.html();
+                carretToEnd();
+                toggleButtonStates();
+              }
+            }
+          };
+          var btnBuildDefUndo = {
+            title: t.lang.undo,
+            ico: 'undo',
+            key: 'Z',
+            fn: function fn() {
+              if (t.o.plugins.history._index > 0) {
+                t.o.plugins.history._index -= 1;
+                var index = t.o.plugins.history._index,
+                  newState = t.o.plugins.history._stack[index];
+                t.execCmd('html', newState);
+                // because of some semantic optimisations we have to save the state back
+                // to history
+                t.o.plugins.history._stack[index] = t.$ed.html();
+                carretToEnd();
+                toggleButtonStates();
+              }
+            }
+          };
+          var pushToHistory = function pushToHistory() {
+            var index = t.o.plugins.history._index,
+              stack = t.o.plugins.history._stack,
+              latestState = stack.slice(-1)[0] || '<p></p>',
+              prevState = stack[index],
+              newState = t.$ed.html(),
+              focusEl = t.doc.getSelection().focusNode,
+              focusElText = '',
+              latestStateTagsList,
+              newStateTagsList,
+              prevFocusEl = t.o.plugins.history._focusEl;
+            latestStateTagsList = $('<div>' + latestState + '</div>').find('*').map(function () {
+              return this.localName;
+            });
+            newStateTagsList = $('<div>' + newState + '</div>').find('*').map(function () {
+              return this.localName;
+            });
+            if (focusEl) {
+              t.o.plugins.history._focusEl = focusEl;
+              focusElText = focusEl.outerHTML || focusEl.textContent;
+            }
+            if (newState !== prevState) {
+              // a new stack entry is defined when current insert ends on a whitespace character
+              // or count of node elements has been changed
+              // or focused element differs from previous one
+              if (focusElText.slice(-1).match(/\s/) || !arraysAreIdentical(latestStateTagsList, newStateTagsList) || t.o.plugins.history._index <= 0 || focusEl !== prevFocusEl) {
+                t.o.plugins.history._index += 1;
+                // remove newer entries in history when something new was added
+                // because timeline was changes with interaction
+                t.o.plugins.history._stack = stack.slice(0, t.o.plugins.history._index);
+                // now add new state to modified history
+                t.o.plugins.history._stack.push(newState);
+              } else {
+                // modify last stack entry
+                t.o.plugins.history._stack[index] = newState;
+              }
+              toggleButtonStates();
+            }
+          };
+          var toggleButtonStates = function toggleButtonStates() {
+            var index = t.o.plugins.history._index,
+              stackSize = t.o.plugins.history._stack.length,
+              undoState = index > 0,
+              redoState = stackSize !== 0 && index !== stackSize - 1;
+            toggleButtonState('historyUndo', undoState);
+            toggleButtonState('historyRedo', redoState);
+          };
+          var toggleButtonState = function toggleButtonState(btn, enable) {
+            var button = t.$box.find('.trumbowyg-' + btn + '-button');
+            if (enable) {
+              button.removeClass('trumbowyg-disable');
+            } else if (!button.hasClass('trumbowyg-disable')) {
+              button.addClass('trumbowyg-disable');
+            }
+          };
+          var arraysAreIdentical = function arraysAreIdentical(a, b) {
+            if (a === b) {
+              return true;
+            }
+            if (a == null || b == null) {
+              return false;
+            }
+            if (a.length !== b.length) {
+              return false;
+            }
+            for (var i = 0; i < a.length; i += 1) {
+              if (a[i] !== b[i]) {
+                return false;
+              }
+            }
+            return true;
+          };
+          var carretToEnd = function carretToEnd() {
+            var node = t.doc.getSelection().focusNode,
+              range = t.doc.createRange();
+            if (node.childNodes.length > 0) {
+              range.setStartAfter(node.childNodes[node.childNodes.length - 1]);
+              range.setEndAfter(node.childNodes[node.childNodes.length - 1]);
+              t.doc.getSelection().removeAllRanges();
+              t.doc.getSelection().addRange(range);
+            }
+          };
+          t.$c.on('tbwinit.history tbwchange.history', pushToHistory);
+          t.addBtnDef('historyRedo', btnBuildDefRedo);
+          t.addBtnDef('historyUndo', btnBuildDefUndo);
+        }
+      }
+    }
+  });
+})(jQuery);
+/*/* ===========================================================
+ * trumbowyg.history.js v1.0
+ * history plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Sven Dunemann [dunemann@forelabs.eu]
+ */
+!function (i) {
+  "use strict";
+
+  i.extend(!0, i.trumbowyg, {
+    plugins: {
+      history: {
+        destroy: function destroy(i) {
+          i.$c.off("tbwinit.history tbwchange.history");
+        },
+        init: function init(t) {
+          t.o.plugins.history = i.extend(!0, {
+            _stack: [],
+            _index: -1,
+            _focusEl: void 0
+          }, t.o.plugins.history || {});
+          var o = {
+              title: t.lang.redo,
+              ico: "redo",
+              key: "Y",
+              fn: function fn() {
+                if (t.o.plugins.history._index < t.o.plugins.history._stack.length - 1) {
+                  t.o.plugins.history._index += 1;
+                  var i = t.o.plugins.history._index,
+                    o = t.o.plugins.history._stack[i];
+                  t.execCmd("html", o), t.o.plugins.history._stack[i] = t.$ed.html(), r(), s();
+                }
+              }
+            },
+            n = {
+              title: t.lang.undo,
+              ico: "undo",
+              key: "Z",
+              fn: function fn() {
+                if (t.o.plugins.history._index > 0) {
+                  t.o.plugins.history._index -= 1;
+                  var i = t.o.plugins.history._index,
+                    o = t.o.plugins.history._stack[i];
+                  t.execCmd("html", o), t.o.plugins.history._stack[i] = t.$ed.html(), r(), s();
+                }
+              }
+            },
+            s = function s() {
+              var i = t.o.plugins.history._index,
+                o = t.o.plugins.history._stack.length,
+                n = 0 !== o && i !== o - 1;
+              e("historyUndo", i > 0), e("historyRedo", n);
+            },
+            e = function e(i, o) {
+              var n = t.$box.find(".trumbowyg-" + i + "-button");
+              o ? n.removeClass("trumbowyg-disable") : n.hasClass("trumbowyg-disable") || n.addClass("trumbowyg-disable");
+            },
+            l = function l(i, t) {
+              if (i === t) return !0;
+              if (null == i || null == t) return !1;
+              if (i.length !== t.length) return !1;
+              for (var o = 0; o < i.length; o += 1) if (i[o] !== t[o]) return !1;
+              return !0;
+            },
+            r = function r() {
+              var i = t.doc.getSelection().focusNode,
+                o = t.doc.createRange();
+              i.childNodes.length > 0 && (o.setStartAfter(i.childNodes[i.childNodes.length - 1]), o.setEndAfter(i.childNodes[i.childNodes.length - 1]), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(o));
+            };
+          t.$c.on("tbwinit.history tbwchange.history", function () {
+            var o,
+              n,
+              e = t.o.plugins.history._index,
+              r = t.o.plugins.history._stack,
+              d = r.slice(-1)[0] || "<p></p>",
+              u = r[e],
+              h = t.$ed.html(),
+              c = t.doc.getSelection().focusNode,
+              g = "",
+              a = t.o.plugins.history._focusEl;
+            o = i("<div>" + d + "</div>").find("*").map(function () {
+              return this.localName;
+            }), n = i("<div>" + h + "</div>").find("*").map(function () {
+              return this.localName;
+            }), c && (t.o.plugins.history._focusEl = c, g = c.outerHTML || c.textContent), h !== u && (g.slice(-1).match(/\s/) || !l(o, n) || t.o.plugins.history._index <= 0 || c !== a ? (t.o.plugins.history._index += 1, t.o.plugins.history._stack = r.slice(0, t.o.plugins.history._index), t.o.plugins.history._stack.push(h)) : t.o.plugins.history._stack[e] = h, s());
+          }), t.addBtnDef("historyRedo", o), t.addBtnDef("historyUndo", n);
+        }
+      }
+    }
+  });
+}(jQuery);
+/*/* ===========================================================
+ * trumbowyg.insertaudio.js v1.0
+ * InsertAudio plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Adam Hess (AdamHess)
+ */
+
+(function ($) {
+  'use strict';
+
+  var insertAudioOptions = {
+    src: {
+      label: 'URL',
+      required: true
+    },
+    autoplay: {
+      label: 'AutoPlay',
+      required: false,
+      type: 'checkbox'
+    },
+    muted: {
+      label: 'Muted',
+      required: false,
+      type: 'checkbox'
+    },
+    preload: {
+      label: 'preload options',
+      required: false
+    }
+  };
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        insertAudio: 'Insert Audio'
+      },
+      az: {
+        insertAudio: 'Səs yerləşdir'
+      },
+      by: {
+        insertAudio: 'Уставіць аўдыё'
+      },
+      ca: {
+        insertAudio: 'Inserir Audio'
+      },
+      da: {
+        insertAudio: 'Indsæt lyd'
+      },
+      es: {
+        insertAudio: 'Insertar Audio'
+      },
+      et: {
+        insertAudio: 'Lisa helifail'
+      },
+      fr: {
+        insertAudio: 'Insérer un son'
+      },
+      hu: {
+        insertAudio: 'Audio beszúrás'
+      },
+      ja: {
+        insertAudio: '音声の挿入'
+      },
+      ko: {
+        insertAudio: '소리 넣기'
+      },
+      pt_br: {
+        insertAudio: 'Inserir áudio'
+      },
+      ru: {
+        insertAudio: 'Вставить аудио'
+      },
+      sl: {
+        insertAudio: 'Vstavi zvočno datoteko'
+      },
+      tr: {
+        insertAudio: 'Ses Ekle'
+      }
+      // jshint camelcase:true
+    },
+
+    plugins: {
+      insertAudio: {
+        init: function init(trumbowyg) {
+          var btnDef = {
+            fn: function fn() {
+              var insertAudioCallback = function insertAudioCallback(v) {
+                // controls should always be show otherwise the audio will
+                // be invisible defeating the point of a wysiwyg
+                var html = '<audio controls';
+                if (v.src) {
+                  html += ' src=\'' + v.src + '\'';
+                }
+                if (v.autoplay) {
+                  html += ' autoplay';
+                }
+                if (v.muted) {
+                  html += ' muted';
+                }
+                if (v.preload) {
+                  html += ' preload=\'' + v + '\'';
+                }
+                html += '></audio>';
+                var node = $(html)[0];
+                trumbowyg.range.deleteContents();
+                trumbowyg.range.insertNode(node);
+                return true;
+              };
+              trumbowyg.openModalInsert(trumbowyg.lang.insertAudio, insertAudioOptions, insertAudioCallback);
+            }
+          };
+          trumbowyg.addBtnDef('insertAudio', btnDef);
+        }
+      }
+    }
+  });
+})(jQuery);
+/*/* ===========================================================
+ * trumbowyg.insertaudio.js v1.0
+ * InsertAudio plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Adam Hess (AdamHess)
+ */
+!function (e) {
+  "use strict";
+
+  var i = {
+    src: {
+      label: "URL",
+      required: !0
+    },
+    autoplay: {
+      label: "AutoPlay",
+      required: !1,
+      type: "checkbox"
+    },
+    muted: {
+      label: "Muted",
+      required: !1,
+      type: "checkbox"
+    },
+    preload: {
+      label: "preload options",
+      required: !1
+    }
+  };
+  e.extend(!0, e.trumbowyg, {
+    langs: {
+      en: {
+        insertAudio: "Insert Audio"
+      },
+      az: {
+        insertAudio: "Səs yerləşdir"
+      },
+      by: {
+        insertAudio: "Уставіць аўдыё"
+      },
+      ca: {
+        insertAudio: "Inserir Audio"
+      },
+      da: {
+        insertAudio: "Indsæt lyd"
+      },
+      es: {
+        insertAudio: "Insertar Audio"
+      },
+      et: {
+        insertAudio: "Lisa helifail"
+      },
+      fr: {
+        insertAudio: "Insérer un son"
+      },
+      hu: {
+        insertAudio: "Audio beszúrás"
+      },
+      ja: {
+        insertAudio: "音声の挿入"
+      },
+      ko: {
+        insertAudio: "소리 넣기"
+      },
+      pt_br: {
+        insertAudio: "Inserir áudio"
+      },
+      ru: {
+        insertAudio: "Вставить аудио"
+      },
+      sl: {
+        insertAudio: "Vstavi zvočno datoteko"
+      },
+      tr: {
+        insertAudio: "Ses Ekle"
+      }
+    },
+    plugins: {
+      insertAudio: {
+        init: function init(r) {
+          var t = {
+            fn: function fn() {
+              r.openModalInsert(r.lang.insertAudio, i, function (i) {
+                var t = "<audio controls";
+                i.src && (t += " src='" + i.src + "'"), i.autoplay && (t += " autoplay"), i.muted && (t += " muted"), i.preload && (t += " preload='" + i + "'");
+                var o = e(t += "></audio>")[0];
+                return r.range.deleteContents(), r.range.insertNode(o), !0;
+              });
+            }
+          };
+          r.addBtnDef("insertAudio", t);
         }
       }
     }
@@ -3734,216 +3949,215 @@
     }
   });
 }(jQuery);
-/*/* ===========================================================
- * trumbowyg.insertaudio.js v1.0
- * InsertAudio plugin for Trumbowyg
+/* ===========================================================
+ * trumbowyg.mention.js v0.1
+ * Mention plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
  * ===========================================================
- * Author : Adam Hess (AdamHess)
+ * Author : Viper
+ *          Github: https://github.com/Globulopolis
+ *          Website: http://киноархив.com
  */
 
 (function ($) {
   'use strict';
 
-  var insertAudioOptions = {
-    src: {
-      label: 'URL',
-      required: true
-    },
-    autoplay: {
-      label: 'AutoPlay',
-      required: false,
-      type: 'checkbox'
-    },
-    muted: {
-      label: 'Muted',
-      required: false,
-      type: 'checkbox'
-    },
-    preload: {
-      label: 'preload options',
-      required: false
-    }
+  var defaultOptions = {
+    source: [],
+    formatDropdownItem: formatDropdownItem,
+    formatResult: formatResult
   };
   $.extend(true, $.trumbowyg, {
     langs: {
       // jshint camelcase:false
       en: {
-        insertAudio: 'Insert Audio'
+        mention: 'Mention'
       },
       az: {
-        insertAudio: 'Səs yerləşdir'
+        mention: 'Bildirmək'
       },
       by: {
-        insertAudio: 'Уставіць аўдыё'
-      },
-      ca: {
-        insertAudio: 'Inserir Audio'
+        mention: 'Згадаць'
       },
       da: {
-        insertAudio: 'Indsæt lyd'
-      },
-      es: {
-        insertAudio: 'Insertar Audio'
+        mention: 'Nævn'
       },
       et: {
-        insertAudio: 'Lisa helifail'
+        mention: 'Maini'
       },
       fr: {
-        insertAudio: 'Insérer un son'
+        mention: 'Mentionner'
       },
       hu: {
-        insertAudio: 'Audio beszúrás'
-      },
-      ja: {
-        insertAudio: '音声の挿入'
+        mention: 'Említ'
       },
       ko: {
-        insertAudio: '소리 넣기'
+        mention: '언급'
       },
       pt_br: {
-        insertAudio: 'Inserir áudio'
+        mention: 'Menção'
       },
       ru: {
-        insertAudio: 'Вставить аудио'
+        mention: 'Упомянуть'
       },
       sl: {
-        insertAudio: 'Vstavi zvočno datoteko'
+        mention: 'Omeni'
       },
       tr: {
-        insertAudio: 'Ses Ekle'
+        mention: 'Bahset'
+      },
+      zh_tw: {
+        mention: '標記'
       }
       // jshint camelcase:true
     },
 
     plugins: {
-      insertAudio: {
+      mention: {
         init: function init(trumbowyg) {
+          trumbowyg.o.plugins.mention = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.mention || {});
           var btnDef = {
-            fn: function fn() {
-              var insertAudioCallback = function insertAudioCallback(v) {
-                // controls should always be show otherwise the audio will
-                // be invisible defeating the point of a wysiwyg
-                var html = '<audio controls';
-                if (v.src) {
-                  html += ' src=\'' + v.src + '\'';
-                }
-                if (v.autoplay) {
-                  html += ' autoplay';
-                }
-                if (v.muted) {
-                  html += ' muted';
-                }
-                if (v.preload) {
-                  html += ' preload=\'' + v + '\'';
-                }
-                html += '></audio>';
-                var node = $(html)[0];
-                trumbowyg.range.deleteContents();
-                trumbowyg.range.insertNode(node);
-                return true;
-              };
-              trumbowyg.openModalInsert(trumbowyg.lang.insertAudio, insertAudioOptions, insertAudioCallback);
-            }
+            dropdown: buildDropdown(trumbowyg.o.plugins.mention.source, trumbowyg)
           };
-          trumbowyg.addBtnDef('insertAudio', btnDef);
+          trumbowyg.addBtnDef('mention', btnDef);
         }
       }
     }
   });
+
+  /**
+   * Build dropdown list
+   *
+   * @param {Array}   items      Items
+   * @param {object}  trumbowyg  Editor
+   *
+   * @return {Array}
+   */
+  function buildDropdown(items, trumbowyg) {
+    var dropdown = [];
+    $.each(items, function (i, item) {
+      var btn = 'mention-' + i,
+        btnDef = {
+          hasIcon: false,
+          text: trumbowyg.o.plugins.mention.formatDropdownItem(item),
+          fn: function fn() {
+            trumbowyg.execCmd('insertHTML', trumbowyg.o.plugins.mention.formatResult(item));
+            return true;
+          }
+        };
+      trumbowyg.addBtnDef(btn, btnDef);
+      dropdown.push(btn);
+    });
+    return dropdown;
+  }
+
+  /**
+   * Format item in dropdown.
+   *
+   * @param   {object}  item  Item object.
+   *
+   * @return  {string}
+   */
+  function formatDropdownItem(item) {
+    return item.login;
+  }
+
+  /**
+   * Format result pasted in editor.
+   *
+   * @param   {object}  item  Item object.
+   *
+   * @return  {string}
+   */
+  function formatResult(item) {
+    return '@' + item.login + ' ';
+  }
 })(jQuery);
-/*/* ===========================================================
- * trumbowyg.insertaudio.js v1.0
- * InsertAudio plugin for Trumbowyg
+/* ===========================================================
+ * trumbowyg.mention.js v0.1
+ * Mention plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
  * ===========================================================
- * Author : Adam Hess (AdamHess)
+ * Author : Viper
+ *          Github: https://github.com/Globulopolis
+ *          Website: http://киноархив.com
  */
-!function (e) {
+!function (n) {
   "use strict";
 
-  var i = {
-    src: {
-      label: "URL",
-      required: !0
+  var t = {
+    source: [],
+    formatDropdownItem: function formatDropdownItem(n) {
+      return n.login;
     },
-    autoplay: {
-      label: "AutoPlay",
-      required: !1,
-      type: "checkbox"
-    },
-    muted: {
-      label: "Muted",
-      required: !1,
-      type: "checkbox"
-    },
-    preload: {
-      label: "preload options",
-      required: !1
+    formatResult: function formatResult(n) {
+      return "@" + n.login + " ";
     }
   };
-  e.extend(!0, e.trumbowyg, {
+  function o(t, o) {
+    var e = [];
+    return n.each(t, function (n, t) {
+      var i = "mention-" + n,
+        m = {
+          hasIcon: !1,
+          text: o.o.plugins.mention.formatDropdownItem(t),
+          fn: function fn() {
+            return o.execCmd("insertHTML", o.o.plugins.mention.formatResult(t)), !0;
+          }
+        };
+      o.addBtnDef(i, m), e.push(i);
+    }), e;
+  }
+  n.extend(!0, n.trumbowyg, {
     langs: {
       en: {
-        insertAudio: "Insert Audio"
+        mention: "Mention"
       },
       az: {
-        insertAudio: "Səs yerləşdir"
+        mention: "Bildirmək"
       },
       by: {
-        insertAudio: "Уставіць аўдыё"
-      },
-      ca: {
-        insertAudio: "Inserir Audio"
+        mention: "Згадаць"
       },
       da: {
-        insertAudio: "Indsæt lyd"
-      },
-      es: {
-        insertAudio: "Insertar Audio"
+        mention: "Nævn"
       },
       et: {
-        insertAudio: "Lisa helifail"
+        mention: "Maini"
       },
       fr: {
-        insertAudio: "Insérer un son"
+        mention: "Mentionner"
       },
       hu: {
-        insertAudio: "Audio beszúrás"
-      },
-      ja: {
-        insertAudio: "音声の挿入"
+        mention: "Említ"
       },
       ko: {
-        insertAudio: "소리 넣기"
+        mention: "언급"
       },
       pt_br: {
-        insertAudio: "Inserir áudio"
+        mention: "Menção"
       },
       ru: {
-        insertAudio: "Вставить аудио"
+        mention: "Упомянуть"
       },
       sl: {
-        insertAudio: "Vstavi zvočno datoteko"
+        mention: "Omeni"
       },
       tr: {
-        insertAudio: "Ses Ekle"
+        mention: "Bahset"
+      },
+      zh_tw: {
+        mention: "標記"
       }
     },
     plugins: {
-      insertAudio: {
-        init: function init(r) {
-          var t = {
-            fn: function fn() {
-              r.openModalInsert(r.lang.insertAudio, i, function (i) {
-                var t = "<audio controls";
-                i.src && (t += " src='" + i.src + "'"), i.autoplay && (t += " autoplay"), i.muted && (t += " muted"), i.preload && (t += " preload='" + i + "'");
-                var o = e(t += "></audio>")[0];
-                return r.range.deleteContents(), r.range.insertNode(o), !0;
-              });
-            }
+      mention: {
+        init: function init(e) {
+          e.o.plugins.mention = n.extend(!0, {}, t, e.o.plugins.mention || {});
+          var i = {
+            dropdown: o(e.o.plugins.mention.source, e)
           };
-          r.addBtnDef("insertAudio", t);
+          e.addBtnDef("mention", i);
         }
       }
     }
@@ -4193,6 +4407,80 @@
   });
 }(jQuery);
 /* ===========================================================
+ * trumbowyg.pasteimage.js v1.0
+ * Basic base64 paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ */
+
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      pasteImage: {
+        init: function init(trumbowyg) {
+          trumbowyg.pasteHandlers.push(function (pasteEvent) {
+            try {
+              var items = (pasteEvent.originalEvent || pasteEvent).clipboardData.items,
+                mustPreventDefault = false,
+                reader;
+              for (var i = items.length - 1; i >= 0; i -= 1) {
+                if (items[i].type.match(/^image\//)) {
+                  reader = new FileReader();
+                  /* jshint -W083 */
+                  reader.onloadend = function (event) {
+                    trumbowyg.execCmd('insertImage', event.target.result, false, true);
+                  };
+                  /* jshint +W083 */
+                  reader.readAsDataURL(items[i].getAsFile());
+                  mustPreventDefault = true;
+                }
+              }
+              if (mustPreventDefault) {
+                pasteEvent.stopPropagation();
+                pasteEvent.preventDefault();
+              }
+            } catch (c) {}
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.pasteimage.js v1.0
+ * Basic base64 paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ */
+!function (e) {
+  "use strict";
+
+  e.extend(!0, e.trumbowyg, {
+    plugins: {
+      pasteImage: {
+        init: function init(e) {
+          e.pasteHandlers.push(function (t) {
+            try {
+              for (var a, n = (t.originalEvent || t).clipboardData.items, i = !1, r = n.length - 1; r >= 0; r -= 1) n[r].type.match(/^image\//) && ((a = new FileReader()).onloadend = function (t) {
+                e.execCmd("insertImage", t.target.result, !1, !0);
+              }, a.readAsDataURL(n[r].getAsFile()), i = !0);
+              i && (t.stopPropagation(), t.preventDefault());
+            } catch (e) {}
+          });
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
  * trumbowyg.pasteembed.js v1.0
  * Url paste to iframe with noembed. Plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -4332,294 +4620,6 @@
                 });
               }
             } catch (t) {}
-          });
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.mention.js v0.1
- * Mention plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Viper
- *          Github: https://github.com/Globulopolis
- *          Website: http://киноархив.com
- */
-
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    source: [],
-    formatDropdownItem: formatDropdownItem,
-    formatResult: formatResult
-  };
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        mention: 'Mention'
-      },
-      az: {
-        mention: 'Bildirmək'
-      },
-      by: {
-        mention: 'Згадаць'
-      },
-      da: {
-        mention: 'Nævn'
-      },
-      et: {
-        mention: 'Maini'
-      },
-      fr: {
-        mention: 'Mentionner'
-      },
-      hu: {
-        mention: 'Említ'
-      },
-      ko: {
-        mention: '언급'
-      },
-      pt_br: {
-        mention: 'Menção'
-      },
-      ru: {
-        mention: 'Упомянуть'
-      },
-      sl: {
-        mention: 'Omeni'
-      },
-      tr: {
-        mention: 'Bahset'
-      },
-      zh_tw: {
-        mention: '標記'
-      }
-      // jshint camelcase:true
-    },
-
-    plugins: {
-      mention: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.mention = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.mention || {});
-          var btnDef = {
-            dropdown: buildDropdown(trumbowyg.o.plugins.mention.source, trumbowyg)
-          };
-          trumbowyg.addBtnDef('mention', btnDef);
-        }
-      }
-    }
-  });
-
-  /**
-   * Build dropdown list
-   *
-   * @param {Array}   items      Items
-   * @param {object}  trumbowyg  Editor
-   *
-   * @return {Array}
-   */
-  function buildDropdown(items, trumbowyg) {
-    var dropdown = [];
-    $.each(items, function (i, item) {
-      var btn = 'mention-' + i,
-        btnDef = {
-          hasIcon: false,
-          text: trumbowyg.o.plugins.mention.formatDropdownItem(item),
-          fn: function fn() {
-            trumbowyg.execCmd('insertHTML', trumbowyg.o.plugins.mention.formatResult(item));
-            return true;
-          }
-        };
-      trumbowyg.addBtnDef(btn, btnDef);
-      dropdown.push(btn);
-    });
-    return dropdown;
-  }
-
-  /**
-   * Format item in dropdown.
-   *
-   * @param   {object}  item  Item object.
-   *
-   * @return  {string}
-   */
-  function formatDropdownItem(item) {
-    return item.login;
-  }
-
-  /**
-   * Format result pasted in editor.
-   *
-   * @param   {object}  item  Item object.
-   *
-   * @return  {string}
-   */
-  function formatResult(item) {
-    return '@' + item.login + ' ';
-  }
-})(jQuery);
-/* ===========================================================
- * trumbowyg.mention.js v0.1
- * Mention plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Viper
- *          Github: https://github.com/Globulopolis
- *          Website: http://киноархив.com
- */
-!function (n) {
-  "use strict";
-
-  var t = {
-    source: [],
-    formatDropdownItem: function formatDropdownItem(n) {
-      return n.login;
-    },
-    formatResult: function formatResult(n) {
-      return "@" + n.login + " ";
-    }
-  };
-  function o(t, o) {
-    var e = [];
-    return n.each(t, function (n, t) {
-      var i = "mention-" + n,
-        m = {
-          hasIcon: !1,
-          text: o.o.plugins.mention.formatDropdownItem(t),
-          fn: function fn() {
-            return o.execCmd("insertHTML", o.o.plugins.mention.formatResult(t)), !0;
-          }
-        };
-      o.addBtnDef(i, m), e.push(i);
-    }), e;
-  }
-  n.extend(!0, n.trumbowyg, {
-    langs: {
-      en: {
-        mention: "Mention"
-      },
-      az: {
-        mention: "Bildirmək"
-      },
-      by: {
-        mention: "Згадаць"
-      },
-      da: {
-        mention: "Nævn"
-      },
-      et: {
-        mention: "Maini"
-      },
-      fr: {
-        mention: "Mentionner"
-      },
-      hu: {
-        mention: "Említ"
-      },
-      ko: {
-        mention: "언급"
-      },
-      pt_br: {
-        mention: "Menção"
-      },
-      ru: {
-        mention: "Упомянуть"
-      },
-      sl: {
-        mention: "Omeni"
-      },
-      tr: {
-        mention: "Bahset"
-      },
-      zh_tw: {
-        mention: "標記"
-      }
-    },
-    plugins: {
-      mention: {
-        init: function init(e) {
-          e.o.plugins.mention = n.extend(!0, {}, t, e.o.plugins.mention || {});
-          var i = {
-            dropdown: o(e.o.plugins.mention.source, e)
-          };
-          e.addBtnDef("mention", i);
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.pasteimage.js v1.0
- * Basic base64 paste plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Alexandre Demode (Alex-D)
- *          Twitter : @AlexandreDemode
- *          Website : alex-d.fr
- */
-
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      pasteImage: {
-        init: function init(trumbowyg) {
-          trumbowyg.pasteHandlers.push(function (pasteEvent) {
-            try {
-              var items = (pasteEvent.originalEvent || pasteEvent).clipboardData.items,
-                mustPreventDefault = false,
-                reader;
-              for (var i = items.length - 1; i >= 0; i -= 1) {
-                if (items[i].type.match(/^image\//)) {
-                  reader = new FileReader();
-                  /* jshint -W083 */
-                  reader.onloadend = function (event) {
-                    trumbowyg.execCmd('insertImage', event.target.result, false, true);
-                  };
-                  /* jshint +W083 */
-                  reader.readAsDataURL(items[i].getAsFile());
-                  mustPreventDefault = true;
-                }
-              }
-              if (mustPreventDefault) {
-                pasteEvent.stopPropagation();
-                pasteEvent.preventDefault();
-              }
-            } catch (c) {}
-          });
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.pasteimage.js v1.0
- * Basic base64 paste plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Alexandre Demode (Alex-D)
- *          Twitter : @AlexandreDemode
- *          Website : alex-d.fr
- */
-!function (e) {
-  "use strict";
-
-  e.extend(!0, e.trumbowyg, {
-    plugins: {
-      pasteImage: {
-        init: function init(e) {
-          e.pasteHandlers.push(function (t) {
-            try {
-              for (var a, n = (t.originalEvent || t).clipboardData.items, i = !1, r = n.length - 1; r >= 0; r -= 1) n[r].type.match(/^image\//) && ((a = new FileReader()).onloadend = function (t) {
-                e.execCmd("insertImage", t.target.result, !1, !0);
-              }, a.readAsDataURL(n[r].getAsFile()), i = !0);
-              i && (t.stopPropagation(), t.preventDefault());
-            } catch (e) {}
           });
         }
       }
@@ -5597,6 +5597,540 @@
             hasIcon: !1,
             text: t.lang.template
           });
+        }
+      }
+    }
+  });
+}(jQuery);
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+/* ===========================================================
+ * trumbowyg.upload.js v1.2
+ * Upload plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ * Mod by : Aleksandr-ru
+ *          Twitter : @Aleksandr_ru
+ *          Website : aleksandr.ru
+ */
+
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    serverPath: '',
+    fileFieldName: 'fileToUpload',
+    data: [],
+    // Additional data for ajax [{name: 'key', value: 'value'}]
+    headers: {},
+    // Additional headers
+    xhrFields: {},
+    // Additional fields
+    urlPropertyName: 'file',
+    // How to get url from the json response (for instance 'url' for {url: ....})
+    statusPropertyName: 'success',
+    // How to get status from the json response
+    success: undefined,
+    // Success callback: function (data, trumbowyg, $modal, values) {}
+    error: undefined,
+    // Error callback: function () {}
+    imageWidthModalEdit: false // Add ability to edit image width
+  };
+
+  function getDeep(object, propertyParts) {
+    var mainProperty = propertyParts.shift(),
+      otherProperties = propertyParts;
+    if (object !== null) {
+      if (otherProperties.length === 0) {
+        return object[mainProperty];
+      }
+      if (_typeof(object) === 'object') {
+        return getDeep(object[mainProperty], otherProperties);
+      }
+    }
+    return object;
+  }
+  addXhrProgressEvent();
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        upload: 'Upload',
+        file: 'File',
+        uploadError: 'Error'
+      },
+      az: {
+        upload: 'Yüklə',
+        file: 'Fayl',
+        uploadError: 'Xəta'
+      },
+      by: {
+        upload: 'Загрузка',
+        file: 'Файл',
+        uploadError: 'Памылка'
+      },
+      ca: {
+        upload: 'Pujar fitxer',
+        file: 'Fitxer',
+        uploadError: 'Error'
+      },
+      cs: {
+        upload: 'Nahrát obrázek',
+        file: 'Soubor',
+        uploadError: 'Chyba'
+      },
+      da: {
+        upload: 'Upload',
+        file: 'Fil',
+        uploadError: 'Fejl'
+      },
+      de: {
+        upload: 'Hochladen',
+        file: 'Datei',
+        uploadError: 'Fehler'
+      },
+      es: {
+        upload: 'Subir archivo',
+        file: 'Archivo',
+        uploadError: 'Error'
+      },
+      et: {
+        upload: 'Lae üles',
+        file: 'Fail',
+        uploadError: 'Viga'
+      },
+      fr: {
+        upload: 'Envoi',
+        file: 'Fichier',
+        uploadError: 'Erreur'
+      },
+      hu: {
+        upload: 'Feltöltés',
+        file: 'Fájl',
+        uploadError: 'Hiba'
+      },
+      ja: {
+        upload: 'アップロード',
+        file: 'ファイル',
+        uploadError: 'エラー'
+      },
+      ko: {
+        upload: '그림 올리기',
+        file: '파일',
+        uploadError: '에러'
+      },
+      pt_br: {
+        upload: 'Enviar do local',
+        file: 'Arquivo',
+        uploadError: 'Erro'
+      },
+      ru: {
+        upload: 'Загрузка',
+        file: 'Файл',
+        uploadError: 'Ошибка'
+      },
+      sl: {
+        upload: 'Naloži datoteko',
+        file: 'Datoteka',
+        uploadError: 'Napaka'
+      },
+      sk: {
+        upload: 'Nahrať',
+        file: 'Súbor',
+        uploadError: 'Chyba'
+      },
+      tr: {
+        upload: 'Yükle',
+        file: 'Dosya',
+        uploadError: 'Hata'
+      },
+      zh_cn: {
+        upload: '上传',
+        file: '文件',
+        uploadError: '错误'
+      },
+      zh_tw: {
+        upload: '上傳',
+        file: '文件',
+        uploadError: '錯誤'
+      }
+    },
+    // jshint camelcase:true
+
+    plugins: {
+      upload: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.upload = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.upload || {});
+          var btnDef = {
+            fn: function fn() {
+              trumbowyg.saveRange();
+              var file,
+                prefix = trumbowyg.o.prefix;
+              var fields = {
+                file: {
+                  type: 'file',
+                  required: true,
+                  attributes: {
+                    accept: 'image/*'
+                  }
+                },
+                alt: {
+                  label: 'description',
+                  value: trumbowyg.getRangeText()
+                }
+              };
+              if (trumbowyg.o.plugins.upload.imageWidthModalEdit) {
+                fields.width = {
+                  value: ''
+                };
+              }
+
+              // Prevent multiple submissions while uploading
+              var isUploading = false;
+              var $modal = trumbowyg.openModalInsert(
+              // Title
+              trumbowyg.lang.upload,
+              // Fields
+              fields,
+              // Callback
+              function (values) {
+                if (isUploading) {
+                  return;
+                }
+                isUploading = true;
+                var data = new FormData();
+                data.append(trumbowyg.o.plugins.upload.fileFieldName, file);
+                trumbowyg.o.plugins.upload.data.map(function (cur) {
+                  data.append(cur.name, cur.value);
+                });
+                $.map(values, function (curr, key) {
+                  if (key !== 'file') {
+                    data.append(key, curr);
+                  }
+                });
+                if ($('.' + prefix + 'progress', $modal).length === 0) {
+                  $('.' + prefix + 'modal-title', $modal).after($('<div/>', {
+                    'class': prefix + 'progress'
+                  }).append($('<div/>', {
+                    'class': prefix + 'progress-bar'
+                  })));
+                }
+                $.ajax({
+                  url: trumbowyg.o.plugins.upload.serverPath,
+                  headers: trumbowyg.o.plugins.upload.headers,
+                  xhrFields: trumbowyg.o.plugins.upload.xhrFields,
+                  type: 'POST',
+                  data: data,
+                  cache: false,
+                  dataType: 'json',
+                  processData: false,
+                  contentType: false,
+                  progressUpload: function progressUpload(e) {
+                    $('.' + prefix + 'progress-bar').css('width', Math.round(e.loaded * 100 / e.total) + '%');
+                  },
+                  success: function success(data) {
+                    if (trumbowyg.o.plugins.upload.success) {
+                      trumbowyg.o.plugins.upload.success(data, trumbowyg, $modal, values);
+                    } else {
+                      if (!!getDeep(data, trumbowyg.o.plugins.upload.statusPropertyName.split('.'))) {
+                        var url = getDeep(data, trumbowyg.o.plugins.upload.urlPropertyName.split('.'));
+                        trumbowyg.execCmd('insertImage', url, false, true);
+                        var $img = $('img[src="' + url + '"]:not([alt])', trumbowyg.$box);
+                        $img.attr('alt', values.alt);
+                        if (trumbowyg.o.plugins.upload.imageWidthModalEdit && parseInt(values.width) > 0) {
+                          $img.attr({
+                            width: values.width
+                          });
+                        }
+                        setTimeout(function () {
+                          trumbowyg.closeModal();
+                        }, 250);
+                        trumbowyg.$c.trigger('tbwuploadsuccess', [trumbowyg, data, url]);
+                      } else {
+                        trumbowyg.addErrorOnModalField($('input[type=file]', $modal), trumbowyg.lang[data.message]);
+                        trumbowyg.$c.trigger('tbwuploaderror', [trumbowyg, data]);
+                      }
+                    }
+                    isUploading = false;
+                  },
+                  error: trumbowyg.o.plugins.upload.error || function () {
+                    trumbowyg.addErrorOnModalField($('input[type=file]', $modal), trumbowyg.lang.uploadError);
+                    trumbowyg.$c.trigger('tbwuploaderror', [trumbowyg]);
+                    isUploading = false;
+                  }
+                });
+              });
+              $('input[type=file]').on('change', function (e) {
+                try {
+                  // If multiple files allowed, we just get the first.
+                  file = e.target.files[0];
+                } catch (err) {
+                  // In IE8, multiple files not allowed
+                  file = e.target.value;
+                }
+              });
+            }
+          };
+          trumbowyg.addBtnDef('upload', btnDef);
+        }
+      }
+    }
+  });
+  function addXhrProgressEvent() {
+    if (!$.trumbowyg.addedXhrProgressEvent) {
+      // Avoid adding progress event multiple times
+      var originalXhr = $.ajaxSettings.xhr;
+      $.ajaxSetup({
+        xhr: function xhr() {
+          var that = this,
+            req = originalXhr();
+          if (req && _typeof(req.upload) === 'object' && that.progressUpload !== undefined) {
+            req.upload.addEventListener('progress', function (e) {
+              that.progressUpload(e);
+            }, false);
+          }
+          return req;
+        }
+      });
+      $.trumbowyg.addedXhrProgressEvent = true;
+    }
+  }
+})(jQuery);
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+/* ===========================================================
+ * trumbowyg.upload.js v1.2
+ * Upload plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ * Mod by : Aleksandr-ru
+ *          Twitter : @Aleksandr_ru
+ *          Website : aleksandr.ru
+ */
+!function (r) {
+  "use strict";
+
+  var a = {
+    serverPath: "",
+    fileFieldName: "fileToUpload",
+    data: [],
+    headers: {},
+    xhrFields: {},
+    urlPropertyName: "file",
+    statusPropertyName: "success",
+    success: void 0,
+    error: void 0,
+    imageWidthModalEdit: !1
+  };
+  function o(r, a) {
+    var e = a.shift(),
+      l = a;
+    if (null !== r) {
+      if (0 === l.length) return r[e];
+      if ("object" == _typeof(r)) return o(r[e], l);
+    }
+    return r;
+  }
+  !function () {
+    if (!r.trumbowyg.addedXhrProgressEvent) {
+      var a = r.ajaxSettings.xhr;
+      r.ajaxSetup({
+        xhr: function xhr() {
+          var r = this,
+            o = a();
+          return o && "object" == _typeof(o.upload) && void 0 !== r.progressUpload && o.upload.addEventListener("progress", function (a) {
+            r.progressUpload(a);
+          }, !1), o;
+        }
+      }), r.trumbowyg.addedXhrProgressEvent = !0;
+    }
+  }(), r.extend(!0, r.trumbowyg, {
+    langs: {
+      en: {
+        upload: "Upload",
+        file: "File",
+        uploadError: "Error"
+      },
+      az: {
+        upload: "Yüklə",
+        file: "Fayl",
+        uploadError: "Xəta"
+      },
+      by: {
+        upload: "Загрузка",
+        file: "Файл",
+        uploadError: "Памылка"
+      },
+      ca: {
+        upload: "Pujar fitxer",
+        file: "Fitxer",
+        uploadError: "Error"
+      },
+      cs: {
+        upload: "Nahrát obrázek",
+        file: "Soubor",
+        uploadError: "Chyba"
+      },
+      da: {
+        upload: "Upload",
+        file: "Fil",
+        uploadError: "Fejl"
+      },
+      de: {
+        upload: "Hochladen",
+        file: "Datei",
+        uploadError: "Fehler"
+      },
+      es: {
+        upload: "Subir archivo",
+        file: "Archivo",
+        uploadError: "Error"
+      },
+      et: {
+        upload: "Lae üles",
+        file: "Fail",
+        uploadError: "Viga"
+      },
+      fr: {
+        upload: "Envoi",
+        file: "Fichier",
+        uploadError: "Erreur"
+      },
+      hu: {
+        upload: "Feltöltés",
+        file: "Fájl",
+        uploadError: "Hiba"
+      },
+      ja: {
+        upload: "アップロード",
+        file: "ファイル",
+        uploadError: "エラー"
+      },
+      ko: {
+        upload: "그림 올리기",
+        file: "파일",
+        uploadError: "에러"
+      },
+      pt_br: {
+        upload: "Enviar do local",
+        file: "Arquivo",
+        uploadError: "Erro"
+      },
+      ru: {
+        upload: "Загрузка",
+        file: "Файл",
+        uploadError: "Ошибка"
+      },
+      sl: {
+        upload: "Naloži datoteko",
+        file: "Datoteka",
+        uploadError: "Napaka"
+      },
+      sk: {
+        upload: "Nahrať",
+        file: "Súbor",
+        uploadError: "Chyba"
+      },
+      tr: {
+        upload: "Yükle",
+        file: "Dosya",
+        uploadError: "Hata"
+      },
+      zh_cn: {
+        upload: "上传",
+        file: "文件",
+        uploadError: "错误"
+      },
+      zh_tw: {
+        upload: "上傳",
+        file: "文件",
+        uploadError: "錯誤"
+      }
+    },
+    plugins: {
+      upload: {
+        init: function init(e) {
+          e.o.plugins.upload = r.extend(!0, {}, a, e.o.plugins.upload || {});
+          var l = {
+            fn: function fn() {
+              e.saveRange();
+              var a,
+                l = e.o.prefix,
+                d = {
+                  file: {
+                    type: "file",
+                    required: !0,
+                    attributes: {
+                      accept: "image/*"
+                    }
+                  },
+                  alt: {
+                    label: "description",
+                    value: e.getRangeText()
+                  }
+                };
+              e.o.plugins.upload.imageWidthModalEdit && (d.width = {
+                value: ""
+              });
+              var t = !1,
+                i = e.openModalInsert(e.lang.upload, d, function (d) {
+                  if (!t) {
+                    t = !0;
+                    var u = new FormData();
+                    u.append(e.o.plugins.upload.fileFieldName, a), e.o.plugins.upload.data.map(function (r) {
+                      u.append(r.name, r.value);
+                    }), r.map(d, function (r, a) {
+                      "file" !== a && u.append(a, r);
+                    }), 0 === r("." + l + "progress", i).length && r("." + l + "modal-title", i).after(r("<div/>", {
+                      "class": l + "progress"
+                    }).append(r("<div/>", {
+                      "class": l + "progress-bar"
+                    }))), r.ajax({
+                      url: e.o.plugins.upload.serverPath,
+                      headers: e.o.plugins.upload.headers,
+                      xhrFields: e.o.plugins.upload.xhrFields,
+                      type: "POST",
+                      data: u,
+                      cache: !1,
+                      dataType: "json",
+                      processData: !1,
+                      contentType: !1,
+                      progressUpload: function progressUpload(a) {
+                        r("." + l + "progress-bar").css("width", Math.round(100 * a.loaded / a.total) + "%");
+                      },
+                      success: function success(a) {
+                        if (e.o.plugins.upload.success) e.o.plugins.upload.success(a, e, i, d);else if (o(a, e.o.plugins.upload.statusPropertyName.split("."))) {
+                          var l = o(a, e.o.plugins.upload.urlPropertyName.split("."));
+                          e.execCmd("insertImage", l, !1, !0);
+                          var u = r('img[src="' + l + '"]:not([alt])', e.$box);
+                          u.attr("alt", d.alt), e.o.plugins.upload.imageWidthModalEdit && parseInt(d.width) > 0 && u.attr({
+                            width: d.width
+                          }), setTimeout(function () {
+                            e.closeModal();
+                          }, 250), e.$c.trigger("tbwuploadsuccess", [e, a, l]);
+                        } else e.addErrorOnModalField(r("input[type=file]", i), e.lang[a.message]), e.$c.trigger("tbwuploaderror", [e, a]);
+                        t = !1;
+                      },
+                      error: e.o.plugins.upload.error || function () {
+                        e.addErrorOnModalField(r("input[type=file]", i), e.lang.uploadError), e.$c.trigger("tbwuploaderror", [e]), t = !1;
+                      }
+                    });
+                  }
+                });
+              r("input[type=file]").on("change", function (r) {
+                try {
+                  a = r.target.files[0];
+                } catch (o) {
+                  a = r.target.value;
+                }
+              });
+            }
+          };
+          e.addBtnDef("upload", l);
         }
       }
     }
@@ -7928,540 +8462,6 @@
             t.o.plugins.table.colorList.indexOf(s) >= 0 ? a.push("tableCellBackgroundColor" + s) : a.push("freeTableCellBackgroundColor");
           }
           return a;
-        }
-      }
-    }
-  });
-}(jQuery);
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-/* ===========================================================
- * trumbowyg.upload.js v1.2
- * Upload plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Alexandre Demode (Alex-D)
- *          Twitter : @AlexandreDemode
- *          Website : alex-d.fr
- * Mod by : Aleksandr-ru
- *          Twitter : @Aleksandr_ru
- *          Website : aleksandr.ru
- */
-
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    serverPath: '',
-    fileFieldName: 'fileToUpload',
-    data: [],
-    // Additional data for ajax [{name: 'key', value: 'value'}]
-    headers: {},
-    // Additional headers
-    xhrFields: {},
-    // Additional fields
-    urlPropertyName: 'file',
-    // How to get url from the json response (for instance 'url' for {url: ....})
-    statusPropertyName: 'success',
-    // How to get status from the json response
-    success: undefined,
-    // Success callback: function (data, trumbowyg, $modal, values) {}
-    error: undefined,
-    // Error callback: function () {}
-    imageWidthModalEdit: false // Add ability to edit image width
-  };
-
-  function getDeep(object, propertyParts) {
-    var mainProperty = propertyParts.shift(),
-      otherProperties = propertyParts;
-    if (object !== null) {
-      if (otherProperties.length === 0) {
-        return object[mainProperty];
-      }
-      if (_typeof(object) === 'object') {
-        return getDeep(object[mainProperty], otherProperties);
-      }
-    }
-    return object;
-  }
-  addXhrProgressEvent();
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        upload: 'Upload',
-        file: 'File',
-        uploadError: 'Error'
-      },
-      az: {
-        upload: 'Yüklə',
-        file: 'Fayl',
-        uploadError: 'Xəta'
-      },
-      by: {
-        upload: 'Загрузка',
-        file: 'Файл',
-        uploadError: 'Памылка'
-      },
-      ca: {
-        upload: 'Pujar fitxer',
-        file: 'Fitxer',
-        uploadError: 'Error'
-      },
-      cs: {
-        upload: 'Nahrát obrázek',
-        file: 'Soubor',
-        uploadError: 'Chyba'
-      },
-      da: {
-        upload: 'Upload',
-        file: 'Fil',
-        uploadError: 'Fejl'
-      },
-      de: {
-        upload: 'Hochladen',
-        file: 'Datei',
-        uploadError: 'Fehler'
-      },
-      es: {
-        upload: 'Subir archivo',
-        file: 'Archivo',
-        uploadError: 'Error'
-      },
-      et: {
-        upload: 'Lae üles',
-        file: 'Fail',
-        uploadError: 'Viga'
-      },
-      fr: {
-        upload: 'Envoi',
-        file: 'Fichier',
-        uploadError: 'Erreur'
-      },
-      hu: {
-        upload: 'Feltöltés',
-        file: 'Fájl',
-        uploadError: 'Hiba'
-      },
-      ja: {
-        upload: 'アップロード',
-        file: 'ファイル',
-        uploadError: 'エラー'
-      },
-      ko: {
-        upload: '그림 올리기',
-        file: '파일',
-        uploadError: '에러'
-      },
-      pt_br: {
-        upload: 'Enviar do local',
-        file: 'Arquivo',
-        uploadError: 'Erro'
-      },
-      ru: {
-        upload: 'Загрузка',
-        file: 'Файл',
-        uploadError: 'Ошибка'
-      },
-      sl: {
-        upload: 'Naloži datoteko',
-        file: 'Datoteka',
-        uploadError: 'Napaka'
-      },
-      sk: {
-        upload: 'Nahrať',
-        file: 'Súbor',
-        uploadError: 'Chyba'
-      },
-      tr: {
-        upload: 'Yükle',
-        file: 'Dosya',
-        uploadError: 'Hata'
-      },
-      zh_cn: {
-        upload: '上传',
-        file: '文件',
-        uploadError: '错误'
-      },
-      zh_tw: {
-        upload: '上傳',
-        file: '文件',
-        uploadError: '錯誤'
-      }
-    },
-    // jshint camelcase:true
-
-    plugins: {
-      upload: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.upload = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.upload || {});
-          var btnDef = {
-            fn: function fn() {
-              trumbowyg.saveRange();
-              var file,
-                prefix = trumbowyg.o.prefix;
-              var fields = {
-                file: {
-                  type: 'file',
-                  required: true,
-                  attributes: {
-                    accept: 'image/*'
-                  }
-                },
-                alt: {
-                  label: 'description',
-                  value: trumbowyg.getRangeText()
-                }
-              };
-              if (trumbowyg.o.plugins.upload.imageWidthModalEdit) {
-                fields.width = {
-                  value: ''
-                };
-              }
-
-              // Prevent multiple submissions while uploading
-              var isUploading = false;
-              var $modal = trumbowyg.openModalInsert(
-              // Title
-              trumbowyg.lang.upload,
-              // Fields
-              fields,
-              // Callback
-              function (values) {
-                if (isUploading) {
-                  return;
-                }
-                isUploading = true;
-                var data = new FormData();
-                data.append(trumbowyg.o.plugins.upload.fileFieldName, file);
-                trumbowyg.o.plugins.upload.data.map(function (cur) {
-                  data.append(cur.name, cur.value);
-                });
-                $.map(values, function (curr, key) {
-                  if (key !== 'file') {
-                    data.append(key, curr);
-                  }
-                });
-                if ($('.' + prefix + 'progress', $modal).length === 0) {
-                  $('.' + prefix + 'modal-title', $modal).after($('<div/>', {
-                    'class': prefix + 'progress'
-                  }).append($('<div/>', {
-                    'class': prefix + 'progress-bar'
-                  })));
-                }
-                $.ajax({
-                  url: trumbowyg.o.plugins.upload.serverPath,
-                  headers: trumbowyg.o.plugins.upload.headers,
-                  xhrFields: trumbowyg.o.plugins.upload.xhrFields,
-                  type: 'POST',
-                  data: data,
-                  cache: false,
-                  dataType: 'json',
-                  processData: false,
-                  contentType: false,
-                  progressUpload: function progressUpload(e) {
-                    $('.' + prefix + 'progress-bar').css('width', Math.round(e.loaded * 100 / e.total) + '%');
-                  },
-                  success: function success(data) {
-                    if (trumbowyg.o.plugins.upload.success) {
-                      trumbowyg.o.plugins.upload.success(data, trumbowyg, $modal, values);
-                    } else {
-                      if (!!getDeep(data, trumbowyg.o.plugins.upload.statusPropertyName.split('.'))) {
-                        var url = getDeep(data, trumbowyg.o.plugins.upload.urlPropertyName.split('.'));
-                        trumbowyg.execCmd('insertImage', url, false, true);
-                        var $img = $('img[src="' + url + '"]:not([alt])', trumbowyg.$box);
-                        $img.attr('alt', values.alt);
-                        if (trumbowyg.o.plugins.upload.imageWidthModalEdit && parseInt(values.width) > 0) {
-                          $img.attr({
-                            width: values.width
-                          });
-                        }
-                        setTimeout(function () {
-                          trumbowyg.closeModal();
-                        }, 250);
-                        trumbowyg.$c.trigger('tbwuploadsuccess', [trumbowyg, data, url]);
-                      } else {
-                        trumbowyg.addErrorOnModalField($('input[type=file]', $modal), trumbowyg.lang[data.message]);
-                        trumbowyg.$c.trigger('tbwuploaderror', [trumbowyg, data]);
-                      }
-                    }
-                    isUploading = false;
-                  },
-                  error: trumbowyg.o.plugins.upload.error || function () {
-                    trumbowyg.addErrorOnModalField($('input[type=file]', $modal), trumbowyg.lang.uploadError);
-                    trumbowyg.$c.trigger('tbwuploaderror', [trumbowyg]);
-                    isUploading = false;
-                  }
-                });
-              });
-              $('input[type=file]').on('change', function (e) {
-                try {
-                  // If multiple files allowed, we just get the first.
-                  file = e.target.files[0];
-                } catch (err) {
-                  // In IE8, multiple files not allowed
-                  file = e.target.value;
-                }
-              });
-            }
-          };
-          trumbowyg.addBtnDef('upload', btnDef);
-        }
-      }
-    }
-  });
-  function addXhrProgressEvent() {
-    if (!$.trumbowyg.addedXhrProgressEvent) {
-      // Avoid adding progress event multiple times
-      var originalXhr = $.ajaxSettings.xhr;
-      $.ajaxSetup({
-        xhr: function xhr() {
-          var that = this,
-            req = originalXhr();
-          if (req && _typeof(req.upload) === 'object' && that.progressUpload !== undefined) {
-            req.upload.addEventListener('progress', function (e) {
-              that.progressUpload(e);
-            }, false);
-          }
-          return req;
-        }
-      });
-      $.trumbowyg.addedXhrProgressEvent = true;
-    }
-  }
-})(jQuery);
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-/* ===========================================================
- * trumbowyg.upload.js v1.2
- * Upload plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Alexandre Demode (Alex-D)
- *          Twitter : @AlexandreDemode
- *          Website : alex-d.fr
- * Mod by : Aleksandr-ru
- *          Twitter : @Aleksandr_ru
- *          Website : aleksandr.ru
- */
-!function (r) {
-  "use strict";
-
-  var a = {
-    serverPath: "",
-    fileFieldName: "fileToUpload",
-    data: [],
-    headers: {},
-    xhrFields: {},
-    urlPropertyName: "file",
-    statusPropertyName: "success",
-    success: void 0,
-    error: void 0,
-    imageWidthModalEdit: !1
-  };
-  function o(r, a) {
-    var e = a.shift(),
-      l = a;
-    if (null !== r) {
-      if (0 === l.length) return r[e];
-      if ("object" == _typeof(r)) return o(r[e], l);
-    }
-    return r;
-  }
-  !function () {
-    if (!r.trumbowyg.addedXhrProgressEvent) {
-      var a = r.ajaxSettings.xhr;
-      r.ajaxSetup({
-        xhr: function xhr() {
-          var r = this,
-            o = a();
-          return o && "object" == _typeof(o.upload) && void 0 !== r.progressUpload && o.upload.addEventListener("progress", function (a) {
-            r.progressUpload(a);
-          }, !1), o;
-        }
-      }), r.trumbowyg.addedXhrProgressEvent = !0;
-    }
-  }(), r.extend(!0, r.trumbowyg, {
-    langs: {
-      en: {
-        upload: "Upload",
-        file: "File",
-        uploadError: "Error"
-      },
-      az: {
-        upload: "Yüklə",
-        file: "Fayl",
-        uploadError: "Xəta"
-      },
-      by: {
-        upload: "Загрузка",
-        file: "Файл",
-        uploadError: "Памылка"
-      },
-      ca: {
-        upload: "Pujar fitxer",
-        file: "Fitxer",
-        uploadError: "Error"
-      },
-      cs: {
-        upload: "Nahrát obrázek",
-        file: "Soubor",
-        uploadError: "Chyba"
-      },
-      da: {
-        upload: "Upload",
-        file: "Fil",
-        uploadError: "Fejl"
-      },
-      de: {
-        upload: "Hochladen",
-        file: "Datei",
-        uploadError: "Fehler"
-      },
-      es: {
-        upload: "Subir archivo",
-        file: "Archivo",
-        uploadError: "Error"
-      },
-      et: {
-        upload: "Lae üles",
-        file: "Fail",
-        uploadError: "Viga"
-      },
-      fr: {
-        upload: "Envoi",
-        file: "Fichier",
-        uploadError: "Erreur"
-      },
-      hu: {
-        upload: "Feltöltés",
-        file: "Fájl",
-        uploadError: "Hiba"
-      },
-      ja: {
-        upload: "アップロード",
-        file: "ファイル",
-        uploadError: "エラー"
-      },
-      ko: {
-        upload: "그림 올리기",
-        file: "파일",
-        uploadError: "에러"
-      },
-      pt_br: {
-        upload: "Enviar do local",
-        file: "Arquivo",
-        uploadError: "Erro"
-      },
-      ru: {
-        upload: "Загрузка",
-        file: "Файл",
-        uploadError: "Ошибка"
-      },
-      sl: {
-        upload: "Naloži datoteko",
-        file: "Datoteka",
-        uploadError: "Napaka"
-      },
-      sk: {
-        upload: "Nahrať",
-        file: "Súbor",
-        uploadError: "Chyba"
-      },
-      tr: {
-        upload: "Yükle",
-        file: "Dosya",
-        uploadError: "Hata"
-      },
-      zh_cn: {
-        upload: "上传",
-        file: "文件",
-        uploadError: "错误"
-      },
-      zh_tw: {
-        upload: "上傳",
-        file: "文件",
-        uploadError: "錯誤"
-      }
-    },
-    plugins: {
-      upload: {
-        init: function init(e) {
-          e.o.plugins.upload = r.extend(!0, {}, a, e.o.plugins.upload || {});
-          var l = {
-            fn: function fn() {
-              e.saveRange();
-              var a,
-                l = e.o.prefix,
-                d = {
-                  file: {
-                    type: "file",
-                    required: !0,
-                    attributes: {
-                      accept: "image/*"
-                    }
-                  },
-                  alt: {
-                    label: "description",
-                    value: e.getRangeText()
-                  }
-                };
-              e.o.plugins.upload.imageWidthModalEdit && (d.width = {
-                value: ""
-              });
-              var t = !1,
-                i = e.openModalInsert(e.lang.upload, d, function (d) {
-                  if (!t) {
-                    t = !0;
-                    var u = new FormData();
-                    u.append(e.o.plugins.upload.fileFieldName, a), e.o.plugins.upload.data.map(function (r) {
-                      u.append(r.name, r.value);
-                    }), r.map(d, function (r, a) {
-                      "file" !== a && u.append(a, r);
-                    }), 0 === r("." + l + "progress", i).length && r("." + l + "modal-title", i).after(r("<div/>", {
-                      "class": l + "progress"
-                    }).append(r("<div/>", {
-                      "class": l + "progress-bar"
-                    }))), r.ajax({
-                      url: e.o.plugins.upload.serverPath,
-                      headers: e.o.plugins.upload.headers,
-                      xhrFields: e.o.plugins.upload.xhrFields,
-                      type: "POST",
-                      data: u,
-                      cache: !1,
-                      dataType: "json",
-                      processData: !1,
-                      contentType: !1,
-                      progressUpload: function progressUpload(a) {
-                        r("." + l + "progress-bar").css("width", Math.round(100 * a.loaded / a.total) + "%");
-                      },
-                      success: function success(a) {
-                        if (e.o.plugins.upload.success) e.o.plugins.upload.success(a, e, i, d);else if (o(a, e.o.plugins.upload.statusPropertyName.split("."))) {
-                          var l = o(a, e.o.plugins.upload.urlPropertyName.split("."));
-                          e.execCmd("insertImage", l, !1, !0);
-                          var u = r('img[src="' + l + '"]:not([alt])', e.$box);
-                          u.attr("alt", d.alt), e.o.plugins.upload.imageWidthModalEdit && parseInt(d.width) > 0 && u.attr({
-                            width: d.width
-                          }), setTimeout(function () {
-                            e.closeModal();
-                          }, 250), e.$c.trigger("tbwuploadsuccess", [e, a, l]);
-                        } else e.addErrorOnModalField(r("input[type=file]", i), e.lang[a.message]), e.$c.trigger("tbwuploaderror", [e, a]);
-                        t = !1;
-                      },
-                      error: e.o.plugins.upload.error || function () {
-                        e.addErrorOnModalField(r("input[type=file]", i), e.lang.uploadError), e.$c.trigger("tbwuploaderror", [e]), t = !1;
-                      }
-                    });
-                  }
-                });
-              r("input[type=file]").on("change", function (r) {
-                try {
-                  a = r.target.files[0];
-                } catch (o) {
-                  a = r.target.value;
-                }
-              });
-            }
-          };
-          e.addBtnDef("upload", l);
         }
       }
     }
