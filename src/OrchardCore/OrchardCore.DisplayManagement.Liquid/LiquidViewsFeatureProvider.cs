@@ -18,7 +18,7 @@ namespace OrchardCore.DisplayManagement.Liquid
         public const string DefaultLiquidViewName = "DefaultLiquidViewName";
         public static readonly string DefaultRazorViewPath = $"/{DefaultLiquidViewName}{RazorViewEngine.ViewExtension}";
         public static readonly string DefaultLiquidViewPath = $"/{DefaultLiquidViewName}{LiquidViewTemplate.ViewExtension}";
-        public static readonly string[] LiquidViewExtenions = new[] { LiquidViewTemplate.ViewExtension };
+        public static readonly string[] LiquidViewExtensions = new[] { LiquidViewTemplate.ViewExtension };
 
         private static List<string> _sharedPaths;
         private static readonly object _synLock = new();
@@ -38,7 +38,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
                     var filePaths = templateOptions.Value.FileProvider.GetViewFilePaths(
                         Application.ModulesPath,
-                        LiquidViewExtenions,
+                        LiquidViewExtensions,
                         LiquidViewTemplate.ViewsFolder);
 
                     _sharedPaths.AddRange(filePaths.Select(path => $"/{path}"));
