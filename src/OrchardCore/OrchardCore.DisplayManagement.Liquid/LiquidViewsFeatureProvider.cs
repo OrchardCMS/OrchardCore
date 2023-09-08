@@ -5,9 +5,9 @@ using Fluid;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
-using Microsoft.AspNetCore.Mvc.Razor.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Razor;
+using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.FileProviders;
 
@@ -18,6 +18,7 @@ namespace OrchardCore.DisplayManagement.Liquid
         public const string DefaultLiquidViewName = "DefaultLiquidViewName";
         public static readonly string DefaultRazorViewPath = $"/{DefaultLiquidViewName}{RazorViewEngine.ViewExtension}";
         public static readonly string DefaultLiquidViewPath = $"/{DefaultLiquidViewName}{LiquidViewTemplate.ViewExtension}";
+        public static readonly string[] LiquidViewExtenions = new[] { LiquidViewTemplate.ViewExtension };
 
         private static List<string> _sharedPaths;
         private static readonly object _synLock = new();
@@ -37,10 +38,10 @@ namespace OrchardCore.DisplayManagement.Liquid
 
                     var filePaths = templateOptions.Value.FileProvider.GetViewFilePaths(
                         Application.ModulesPath,
-                        new[] { LiquidViewTemplate.ViewExtension },
+                        LiquidViewExtenions,
                         LiquidViewTemplate.ViewsFolder);
 
-                    _sharedPaths.AddRange(filePaths.Select(p => '/' + p));
+                    _sharedPaths.AddRange(filePaths.Select(path => $"/{path}"));
                 }
             }
         }
@@ -52,7 +53,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                 RelativePath = DefaultRazorViewPath,
                 Item = new RazorViewCompiledItem(
                     typeof(LiquidPage),
-                    MvcViewDocumentClassifierPass.MvcViewDocumentKind,
+                    ThemingViewsFeatureProvider.MvcViewDocumentKind,
                     DefaultLiquidViewPath),
             });
 
@@ -66,7 +67,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                         RelativePath = viewPath,
                         Item = new RazorViewCompiledItem(
                             typeof(LiquidPage),
-                            MvcViewDocumentClassifierPass.MvcViewDocumentKind,
+                            ThemingViewsFeatureProvider.MvcViewDocumentKind,
                             viewPath),
                     });
                 }

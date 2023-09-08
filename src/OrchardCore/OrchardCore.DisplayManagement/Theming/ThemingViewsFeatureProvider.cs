@@ -16,6 +16,7 @@ namespace OrchardCore.DisplayManagement.Theming
     {
         public static readonly string ThemeLayoutFileName = $"DefaultOrchardCoreThemingLayout{RazorViewEngine.ViewExtension}";
         public static readonly string ThemeLayoutFilePath = $"/{ThemeLayoutFileName}";
+        public static readonly string MvcViewDocumentKind = $@"""{MvcViewDocumentClassifierPass.MvcViewDocumentKind}""";
 
         private static readonly string _viewStartPath = "/_ViewStart";
         private static readonly string _viewStartPathWithExtension = $"{_viewStartPath}{RazorViewEngine.ViewExtension}";
@@ -32,7 +33,7 @@ namespace OrchardCore.DisplayManagement.Theming
                 RelativePath = _viewStartPathWithExtension,
                 Item = new RazorViewCompiledItem(
                     typeof(ThemeViewStart),
-                    MvcViewDocumentClassifierPass.MvcViewDocumentKind,
+                    MvcViewDocumentKind,
                     _viewStartPath),
             });
 
@@ -42,7 +43,7 @@ namespace OrchardCore.DisplayManagement.Theming
                 RelativePath = ThemeLayoutFilePath,
                 Item = new RazorViewCompiledItem(
                     typeof(ThemeLayout),
-                    MvcViewDocumentClassifierPass.MvcViewDocumentKind,
+                    MvcViewDocumentKind,
                     ThemeLayoutFilePath),
             });
         }
