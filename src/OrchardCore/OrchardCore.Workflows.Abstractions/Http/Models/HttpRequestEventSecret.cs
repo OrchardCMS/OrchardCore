@@ -6,5 +6,4 @@ public class HttpRequestEventSecret : SecretBase
 {
     public string WorkflowTypeId { get; set; }
     public string ActivityId { get; set; }
-    public int TokenLifeSpan { get; set; }
 }

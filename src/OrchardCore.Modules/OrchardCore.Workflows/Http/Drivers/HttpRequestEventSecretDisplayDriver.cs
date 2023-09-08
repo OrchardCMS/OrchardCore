@@ -6,11 +6,11 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
-using OrchardCore.Workflows.Http.ViewModels;
-using OrchardCore.Workflows.Http.Models;
-using OrchardCore.Workflows.Services;
-using OrchardCore.Workflows.Http.Activities;
 using OrchardCore.Secrets.Models;
+using OrchardCore.Workflows.Http.Activities;
+using OrchardCore.Workflows.Http.Models;
+using OrchardCore.Workflows.Http.ViewModels;
+using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Drivers
 {
@@ -39,7 +39,6 @@ namespace OrchardCore.Workflows.Http.Drivers
             return Task.FromResult<IDisplayResult>(Initialize<HttpRequestEventSecretViewModel>("HttpRequestEventSecret_Fields_Edit", async model =>
             {
                 model.WorkflowTypeId = secret.WorkflowTypeId;
-                model.TokenLifeSpan = secret.TokenLifeSpan;
 
                 model.WorkflowTypes = (await _workflowTypeStore.GetByStartActivityAsync(nameof(HttpRequestEvent)))
                     .Select(wft => new SelectListItem() { Text = wft.Name, Value = wft.WorkflowTypeId }).ToList();
@@ -81,7 +80,6 @@ namespace OrchardCore.Workflows.Http.Drivers
                 }
 
                 secret.WorkflowTypeId = model.WorkflowTypeId;
-                secret.TokenLifeSpan = model.TokenLifeSpan;
             }
 
             return await EditAsync(secret, context);

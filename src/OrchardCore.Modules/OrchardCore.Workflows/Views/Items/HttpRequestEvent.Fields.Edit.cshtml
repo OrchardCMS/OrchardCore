@@ -72,11 +72,11 @@
                      @@tag="create">
     </vue-multiselect>
 
-    <span v-show="hasSecret" class="hint">@T["The secret of the URL whose token will be dynamically generated."]</span>
+    <span v-show="hasSecret" class="hint">@T["The secret of the URL whose token will be generated dynamically."]</span>
     <span v-show="!isLinked" class="hint"><i class="fa fa-exclamation-triangle"></i> @T["This secret is not linked to this workflow activity."]</span>
     <button v-show="!isLinked" type="button" class="ml-3 btn btn-primary btn-sm" v-on:click="linkSecret()">@T["Link"]</button>
 
-    <div v-show="!hasSecret">
+    <div v-show="!hasSecret" class="mb-3">
         @{
             var antiforgeryTokenSet = Antiforgery.GetTokens(Context);
         }
@@ -89,19 +89,19 @@
         <span class="hint">@T["The plain text URL."]</span>
         <span class="hint"><i class="fa-solid fa-exclamation-triangle" aria-hidden="true"></i> @T["Anyone that invokes this URL will trigger this workflow. Keep it in a safe place."]</span>
     </div>
+
+    <div v-show="!hasSecret">
+        <label asp-for="TokenLifeSpan">@T["Token Life Span"]</label>
+        <input type="number" asp-for="TokenLifeSpan" id="token-lifespan" class="form-control" />
+        <span class="hint"><i class="fa-solid fa-exclamation-triangle" aria-hidden="true"></i> @T["Hit the <b>Regenerate</b> button after changing this value."]</span>
+        <span class="hint">@T["Number of days to expire the token. 0 for the token to never expire"]</span>
+    </div>
 </div>
 
 <div class="mb-3">
     <input type="checkbox" asp-for="ValidateAntiforgeryToken" />
     <label asp-for="ValidateAntiforgeryToken">@T["Validate Antiforgery Token"]</label>
     <span class="hint dashed">@T["Uncheck this option if the request comes from a service that invokes this URL as a webhook. If this URL is requested from a form, then keep this option checked to ensure the form values have not been tampered with."]</span>
-</div>
-
-<div class="mb-3">
-    <label asp-for="TokenLifeSpan">@T["Token Life Span"]</label>
-    <input type="number" asp-for="TokenLifeSpan" id="token-lifespan" class="form-control" />
-    <span class="hint"><i class="fa-solid fa-exclamation-triangle" aria-hidden="true"></i> @T["Hit the <b>Regenerate</b> button after changing this value."]</span>
-    <span class="hint">@T["Number of days to expire the token. 0 for the token to never expire"]</span>
 </div>
 
 <script depends-on="jQuery,vuejs,vue-multiselect" asp-src="~/OrchardCore.Workflows/Scripts/orchard.http-request-event-editor.min.js" debug-src="~/OrchardCore.Workflows/Scripts/orchard.http-request-event-editor.js" at="Foot"></script>

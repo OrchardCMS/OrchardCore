@@ -97,7 +97,6 @@ namespace OrchardCore.Workflows.Http.Controllers
 
             secret.WorkflowTypeId = workflowTypeId;
             secret.ActivityId = activityId;
-            secret.TokenLifeSpan = tokenLifeSpan;
 
             await _secretService.RemoveSecretAsync(binding);
             await _secretService.UpdateSecretAsync(binding, secret);
@@ -119,7 +118,6 @@ namespace OrchardCore.Workflows.Http.Controllers
 
             secret.WorkflowTypeId = workflowTypeId;
             secret.ActivityId = activityId;
-            secret.TokenLifeSpan = tokenLifeSpan;
 
             // When creating the first writeable store is used.
             var store = _secretService.GetSecretStoreInfos().FirstOrDefault(store => !store.IsReadOnly);
