@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using OrchardCore.Environment.Shell.Scope;
@@ -129,7 +130,7 @@ namespace OrchardCore.Navigation
             // Apply the selection to the hierarchy
             if (selectedItem != null)
             {
-                viewContext.HttpContext.Response.Cookies.Append(selectedItem.Menu.MenuName + '_' + ShellScope.Context.Settings.Name, selectedItem.Hash);
+                viewContext.HttpContext.Response.Cookies.Append(HttpUtility.UrlEncode($"{selectedItem.Menu.MenuName}_{ShellScope.Context.Settings.Name}"), selectedItem.Hash);
 
                 while (selectedItem.Parent != null)
                 {
