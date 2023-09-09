@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Razor;
-using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.FileProviders;
 
@@ -51,10 +50,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             feature.ViewDescriptors.Add(new CompiledViewDescriptor
             {
                 RelativePath = DefaultRazorViewPath,
-                Item = new RazorViewCompiledItem(
-                    typeof(LiquidPage),
-                    ThemingViewsFeatureProvider.MvcViewDocumentKind,
-                    DefaultLiquidViewPath),
+                Item = new RazorViewCompiledItem(typeof(LiquidPage), DefaultLiquidViewPath),
             });
 
             foreach (var path in _sharedPaths)
@@ -65,10 +61,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                     feature.ViewDescriptors.Add(new CompiledViewDescriptor
                     {
                         RelativePath = viewPath,
-                        Item = new RazorViewCompiledItem(
-                            typeof(LiquidPage),
-                            ThemingViewsFeatureProvider.MvcViewDocumentKind,
-                            viewPath),
+                        Item = new RazorViewCompiledItem(typeof(LiquidPage), viewPath),
                     });
                 }
             }

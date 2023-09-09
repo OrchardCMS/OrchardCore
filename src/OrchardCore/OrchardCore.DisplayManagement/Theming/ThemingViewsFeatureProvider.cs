@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
-using Microsoft.AspNetCore.Mvc.Razor.Extensions;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.DisplayManagement.Razor;
 
@@ -16,9 +15,6 @@ namespace OrchardCore.DisplayManagement.Theming
     {
         public static readonly string ThemeLayoutFileName = $"DefaultOrchardCoreThemingLayout{RazorViewEngine.ViewExtension}";
         public static readonly string ThemeLayoutFilePath = $"/{ThemeLayoutFileName}";
-
-        public static readonly string MvcViewDocumentKind =
-            @"""Microsoft.AspNetCore.Mvc.Razor.Extensions.MvcViewDocumentClassifierPass.MvcViewDocumentKind""";
 
         private static readonly string _viewStartPath = "/_ViewStart";
         private static readonly string _viewStartPathWithExtension = $"{_viewStartPath}{RazorViewEngine.ViewExtension}";
@@ -33,20 +29,14 @@ namespace OrchardCore.DisplayManagement.Theming
             {
                 ExpirationTokens = Array.Empty<IChangeToken>(),
                 RelativePath = _viewStartPathWithExtension,
-                Item = new RazorViewCompiledItem(
-                    typeof(ThemeViewStart),
-                    MvcViewDocumentKind,
-                    _viewStartPath),
+                Item = new RazorViewCompiledItem(typeof(ThemeViewStart), _viewStartPath),
             });
 
             feature.ViewDescriptors.Add(new CompiledViewDescriptor()
             {
                 ExpirationTokens = Array.Empty<IChangeToken>(),
                 RelativePath = ThemeLayoutFilePath,
-                Item = new RazorViewCompiledItem(
-                    typeof(ThemeLayout),
-                    MvcViewDocumentKind,
-                    ThemeLayoutFilePath),
+                Item = new RazorViewCompiledItem(typeof(ThemeLayout), ThemeLayoutFilePath),
             });
         }
     }
