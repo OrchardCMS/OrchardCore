@@ -5,20 +5,21 @@ using Microsoft.AspNetCore.Razor.Hosting;
 
 namespace OrchardCore.DisplayManagement.Razor
 {
-    public class RazorViewCompiledItem : RazorCompiledItem
+    public sealed class RazorViewCompiledItem : RazorCompiledItem
     {
+        private object[] _metadata;
+
         public RazorViewCompiledItem(Type type, string identifier, object[] metadata = null)
         {
             Type = type;
             Identifier = identifier;
-            Metadata = metadata ?? Array.Empty<object>();
         }
 
         public override string Identifier { get; }
 
         public override string Kind => MvcViewDocumentClassifierPass.MvcViewDocumentKind;
 
-        public override IReadOnlyList<object> Metadata { get; }
+        public override IReadOnlyList<object> Metadata => _metadata ??= Type.GetCustomAttributes(inherit: true);
 
         public override Type Type { get; }
     }
