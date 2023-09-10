@@ -1,16 +1,20 @@
-@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Options
 @using OrchardCore
 @using OrchardCore.Forms.ViewModels
-@using OrchardCore.Workflows.Http.Services
+@using OrchardCore.Secrets.Options
+@using OrchardCore.Workflows.Http.Models
+
 @model FormPartEditViewModel
 
+@inject IOptions<SecretOptions> SecretOptions
+
 @{
-    @* The Forms module does not require the Workflows module so this service may not be available. *@
-    var httpRequestEventSecretService = Context.RequestServices.GetService<IHttpRequestEventSecretService>();
+    @* The Forms module does not require the Workflows module so this secret type may not be available. *@
+    var hasHttpRequestEventSecret = SecretOptions.Value.SecretTypes.Contains(typeof(HttpRequestEventSecret));
 }
 
 <div class="@Orchard.GetWrapperCssClasses()">
-    @if (httpRequestEventSecretService is not null)
+    @if (hasHttpRequestEventSecret)
     {
         <div asp-validation-class-for="ActionSecret">
             <label asp-for="ActionSecret">@T["Action Secret"]</label>
@@ -30,7 +34,7 @@
     }
 
     <div class="mt-1 plain-text">
-        @if (httpRequestEventSecretService is null)
+        @if (!hasHttpRequestEventSecret)
         {
             <label asp-for="Action" class="@Orchard.GetLabelCssClasses()">@T["Action"]</label>
         }

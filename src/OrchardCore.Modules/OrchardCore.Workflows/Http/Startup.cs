@@ -53,7 +53,6 @@ namespace OrchardCore.Workflows.Http
 
             services.AddSingleton<IGlobalMethodProvider, TokenMethodProvider>();
             services.AddScoped<IDisplayDriver<SecretBase>, HttpRequestEventSecretDisplayDriver>();
-            services.AddScoped<IHttpRequestEventSecretService, HttpRequestEventSecretService>();
             services.Configure<SecretOptions>(options =>
             {
                 options.SecretTypes.Add(typeof(HttpRequestEventSecret));
