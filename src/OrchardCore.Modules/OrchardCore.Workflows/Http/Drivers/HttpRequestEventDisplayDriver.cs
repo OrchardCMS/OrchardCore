@@ -12,7 +12,6 @@ namespace OrchardCore.Workflows.Http.Drivers
             model.Url = activity.Url;
             model.ValidateAntiforgeryToken = activity.ValidateAntiforgeryToken;
             model.TokenLifeSpan = activity.TokenLifeSpan;
-            model.UrlSecret = activity.UrlSecret;
         }
 
         protected override void UpdateActivity(HttpRequestEventViewModel model, HttpRequestEvent activity)
@@ -21,7 +20,6 @@ namespace OrchardCore.Workflows.Http.Drivers
             activity.Url = model.Url?.Trim();
             activity.ValidateAntiforgeryToken = model.ValidateAntiforgeryToken;
             activity.TokenLifeSpan = model.TokenLifeSpan;
-            activity.UrlSecret = model.UrlSecret;
         }
     }
 }
