@@ -17,7 +17,7 @@ namespace OrchardCore.Workflows.Http.Drivers
     public class HttpRequestEventSecretDisplayDriver : DisplayDriver<SecretBase, HttpRequestEventSecret>
     {
         private readonly IWorkflowTypeStore _workflowTypeStore;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public HttpRequestEventSecretDisplayDriver(
             IWorkflowTypeStore workflowTypeStore,
@@ -41,7 +41,7 @@ namespace OrchardCore.Workflows.Http.Drivers
                 model.WorkflowTypeId = secret.WorkflowTypeId;
 
                 model.WorkflowTypes = (await _workflowTypeStore.GetByStartActivityAsync(nameof(HttpRequestEvent)))
-                    .Select(wft => new SelectListItem() { Text = wft.Name, Value = wft.WorkflowTypeId }).ToList();
+                    .Select(wf => new SelectListItem() { Text = wf.Name, Value = wf.WorkflowTypeId }).ToList();
 
                 model.Context = context;
             }).Location("Content"));

@@ -2,11 +2,8 @@
 @using Microsoft.Extensions.Options
 @using OrchardCore.Forms.Models
 @using OrchardCore.Mvc.Utilities
-@using OrchardCore.Secrets.Options
 @using OrchardCore.Workflows.Http
 @using OrchardCore.Workflows.Http.Models
-
-@inject IOptions<SecretOptions> SecretOptions
 
 @{
     var formPart = ((ContentItem)Model.ContentItem).As<FormPart>();
@@ -17,9 +14,10 @@
     var formId = string.IsNullOrWhiteSpace(elementId) ? $"form_{Model.ContentItem.ContentItemId}" : elementId;
 
     var action = formPart.Action;
-    if (!String.IsNullOrEmpty(formPart.ActionSecret) && SecretOptions.Value.SecretTypes.Contains(typeof(HttpRequestEventSecret)))
+    var payload = formPart.WorkflowPayload;
+    if (!String.IsNullOrEmpty(payload.WorkflowId) && !String.IsNullOrEmpty(payload.ActivityId))
     {
-        action = await Url.GetHttpRequestEventUrlAsync(formPart.ActionSecret);
+        action = Url.GenerateHttpRequestEventUrl(payload);
     }
 }
 

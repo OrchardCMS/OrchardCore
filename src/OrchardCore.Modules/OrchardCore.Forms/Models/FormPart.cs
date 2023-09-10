@@ -1,4 +1,5 @@
 using OrchardCore.ContentManagement;
+using OrchardCore.Workflows.Http.Models;
 
 namespace OrchardCore.Forms.Models
 {
@@ -9,6 +10,6 @@ namespace OrchardCore.Forms.Models
         public string WorkflowTypeId { get; set; }
         public string EncType { get; set; }
         public bool EnableAntiForgeryToken { get; set; } = true;
-        public string ActionSecret { get; set; }
+        public WorkflowPayload WorkflowPayload { get; set; } = new();
     }
 }
