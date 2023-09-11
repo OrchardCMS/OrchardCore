@@ -134,7 +134,6 @@ namespace OrchardCore.Workflows.Controllers
                 ActivityId = activityId,
                 ActivityEditor = activityEditor,
                 WorkflowTypeId = workflowTypeId,
-                WorkflowTypeUniqueId = workflowType.WorkflowTypeId,
                 ReturnUrl = returnUrl,
             };
 

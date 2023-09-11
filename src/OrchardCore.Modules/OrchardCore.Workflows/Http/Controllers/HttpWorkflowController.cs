@@ -109,7 +109,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             // Get the activity record using the activity ID provided by the token.
             var startActivity = workflowType.Activities.FirstOrDefault(x => x.ActivityId == payload.ActivityId);
 
-            if (startActivity is null)
+            if (startActivity == null)
             {
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
