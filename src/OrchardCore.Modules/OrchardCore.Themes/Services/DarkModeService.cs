@@ -26,7 +26,7 @@ namespace OrchardCore.Themes.Services
 
         public string CurrentTenant { get; }
 
-        public string CurrentTheme { get; set; } = "default";
+        public string CurrentTheme { get; set; } = "light";
 
         public async Task<bool> IsDarkModeAsync()
         {
@@ -49,7 +49,7 @@ namespace OrchardCore.Themes.Services
 
             if (result)
             {
-                CurrentTheme = "darkmode";
+                CurrentTheme = "dark";
             }
 
             return result;

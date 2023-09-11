@@ -15,7 +15,7 @@
     var brandingHtml = await DisplayAsync(await New.AdminBranding());
 }
 <!DOCTYPE html>
-<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="auto" data-tenant="@DarkModeService.CurrentTenant" data-darkmode="@adminSettings.DisplayDarkMode">
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="@DarkModeService.CurrentTheme" data-tenant="@DarkModeService.CurrentTenant" data-darkmode="@adminSettings.DisplayDarkMode">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
@@ -59,16 +59,23 @@
                             @if (adminSettings.DisplayDarkMode)
                             {
                                 <li class="nav-item">
-                                    <a id="btn-darkmode" class="nav-link" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
+                                    <a id="btn-darkmode" 
+                                    class="nav-link"
+                                       data-bs-toggle="tooltip"
+                                       data-bs-placement="bottom"
+                                       title="@(darkMode ? T["Light mode"] : T["Dark mode"])"
+                                       role="button"
+                                       data-theme-name-dark="@T["Dark mode"]"
+                                       data-theme-name-light="@T["Light mode"]"
+                                       data-theme-icon-dark="fa-solid fa-moon"
+                                       data-theme-icon-light="fa-solid fa-sun">
                                         @if (darkMode)
                                         {
-                                            <i class="color-mode-icon fa-solid fa-sun" aria-hidden="true"></i>
-                                            <span class="d-none">@T["Light mode"]</span>
+                                            <i class="fa-solid fa-sun" aria-hidden="true"></i>
                                         }
                                         else
                                         {
-                                            <i class="color-mode-icon fa-solid fa-moon" aria-hidden="true"></i>
-                                            <span class="d-none">@T["Dark mode"]</span>
+                                            <i class="fa-solid fa-moon" aria-hidden="true"></i>
                                         }
                                     </a>
                                 </li>

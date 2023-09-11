@@ -9,6 +9,26 @@
 
     const getStoredTheme = () => localStorage.getItem('theme')
     const setStoredTheme = theme => localStorage.setItem('theme', theme)
+    const setPreferred = (selector, theme) => {
+        let iconName = '';
+        let iconTitle = '';
+        if (theme == 'dark') {
+            iconName = selector.getAttribute('data-theme-icon-light');
+            iconTitle = selector.getAttribute('data-theme-name-light');
+        } else {
+            iconName = selector.getAttribute('data-theme-icon-dark');
+            iconTitle = selector.getAttribute('data-theme-name-dark');
+        }
+
+        selector.innerHTML = `<i class="${iconName}" aria-hidden="true"></i>`;
+        selector.setAttribute('title', iconTitle);
+        selector.setAttribute('data-bs-original-title', iconTitle);
+        selector.setAttribute('aria-label', iconTitle);
+
+        setStoredTheme(theme);
+        setTheme(theme);
+        persistAdminPreferences(theme);
+    }
 
     const getPreferredTheme = () => {
         const storedTheme = getStoredTheme()
@@ -27,38 +47,26 @@
         }
     }
 
-    setTheme(getPreferredTheme())
+    const themeSwitcher = document.querySelector('#btn-darkmode')
+
+    setPreferred(themeSwitcher, getPreferredTheme())
 
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
         const storedTheme = getStoredTheme()
         if (storedTheme !== 'light' && storedTheme !== 'dark') {
             setTheme(getPreferredTheme())
         }
-    })
-
-    const themeSwitcher = document.querySelector('#btn-darkmode')
-    const themeIcon = themeSwitcher.querySelector('.color-mode-icon');
+    });
 
     if (themeSwitcher) {
         themeSwitcher.addEventListener('click', () => {
 
             let currentTheme = getStoredTheme();
-            let nextTheme = 'dark'
-            if (currentTheme == nextTheme) {
-                nextTheme = 'light';
-            }
-
-            if (nextTheme == 'dark') {
-                themeIcon.classList.remove('fa-moon');
-                themeIcon.classList.add('fa-sun');
+            if (currentTheme == 'dark') {
+                setPreferred(themeSwitcher, 'light');
             } else {
-                themeIcon.classList.remove('fa-sun');
-                themeIcon.classList.add('fa-moon');
+                setPreferred(themeSwitcher, 'dark');
             }
-
-            setStoredTheme(nextTheme);
-            setTheme(nextTheme);
-            persistAdminPreferences(nextTheme);
         });
     }
 })();

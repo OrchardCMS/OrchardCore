@@ -7316,6 +7316,24 @@ $('body').on('submit', 'form.no-multisubmit', function (e) {
   var setStoredTheme = function setStoredTheme(theme) {
     return localStorage.setItem('theme', theme);
   };
+  var setPreferred = function setPreferred(selector, theme) {
+    var iconName = '';
+    var iconTitle = '';
+    if (theme == 'dark') {
+      iconName = selector.getAttribute('data-theme-icon-light');
+      iconTitle = selector.getAttribute('data-theme-name-light');
+    } else {
+      iconName = selector.getAttribute('data-theme-icon-dark');
+      iconTitle = selector.getAttribute('data-theme-name-dark');
+    }
+    selector.innerHTML = "<i class=\"".concat(iconName, "\" aria-hidden=\"true\"></i>");
+    selector.setAttribute('title', iconTitle);
+    selector.setAttribute('data-bs-original-title', iconTitle);
+    selector.setAttribute('aria-label', iconTitle);
+    setStoredTheme(theme);
+    setTheme(theme);
+    persistAdminPreferences(theme);
+  };
   var getPreferredTheme = function getPreferredTheme() {
     var storedTheme = getStoredTheme();
     if (storedTheme) {
@@ -7330,32 +7348,22 @@ $('body').on('submit', 'form.no-multisubmit', function (e) {
       document.documentElement.setAttribute('data-bs-theme', theme);
     }
   };
-  setTheme(getPreferredTheme());
+  var themeSwitcher = document.querySelector('#btn-darkmode');
+  setPreferred(themeSwitcher, getPreferredTheme());
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
     var storedTheme = getStoredTheme();
     if (storedTheme !== 'light' && storedTheme !== 'dark') {
       setTheme(getPreferredTheme());
     }
   });
-  var themeSwitcher = document.querySelector('#btn-darkmode');
-  var themeIcon = themeSwitcher.querySelector('.color-mode-icon');
   if (themeSwitcher) {
     themeSwitcher.addEventListener('click', function () {
       var currentTheme = getStoredTheme();
-      var nextTheme = 'dark';
-      if (currentTheme == nextTheme) {
-        nextTheme = 'light';
-      }
-      if (nextTheme == 'dark') {
-        themeIcon.classList.remove('fa-moon');
-        themeIcon.classList.add('fa-sun');
+      if (currentTheme == 'dark') {
+        setPreferred(themeSwitcher, 'light');
       } else {
-        themeIcon.classList.remove('fa-sun');
-        themeIcon.classList.add('fa-moon');
+        setPreferred(themeSwitcher, 'dark');
       }
-      setStoredTheme(nextTheme);
-      setTheme(nextTheme);
-      persistAdminPreferences(nextTheme);
     });
   }
 })();
