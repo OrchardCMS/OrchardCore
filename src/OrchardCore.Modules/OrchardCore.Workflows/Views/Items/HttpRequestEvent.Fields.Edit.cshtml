@@ -3,7 +3,7 @@
 @using OrchardCore.Workflows.Http.ViewModels
 
 @model HttpRequestEventViewModel
-@inject IAntiforgery Antiforgery
+@inject IAntiforgery antiforgery
 
 <div class="mb-3" asp-validation-class-for="HttpMethod">
     <label asp-for="HttpMethod">@T["HTTP Method"]</label>
@@ -12,9 +12,9 @@
     <span class="hint">@T["The HTTP method to match."]</span>
 </div>
 
-<div class="mb-3">
+<div>
     @{
-        var antiforgeryTokenSet = Antiforgery.GetTokens(Context);
+        var antiforgeryTokenSet = antiforgery.GetTokens(Context);
     }
     <div class="input-group">
         <span class="input-group-text" id="basic-addon3">@Url.GetBaseUrl()</span>
@@ -28,12 +28,12 @@
 <div class="mb-3">
     <input type="checkbox" asp-for="ValidateAntiforgeryToken" />
     <label asp-for="ValidateAntiforgeryToken">@T["Validate Antiforgery Token"]</label>
-    <span class="hint dashed">@T["Uncheck this option if the request comes from a service that invokes this URL as a webhook. If this URL is requested from a form, then keep this option checked to ensure the form values have not been tampered with."]</span>
+    <span class="hint">@T["Uncheck this option if the request comes from a service that invokes this URL as a webhook. If this URL is requested from a form, then keep this option checked to ensure the form values have not been tampered with."]</span>
 </div>
 
 <div class="mb-3">
-    <label asp-for="TokenLifeSpan">@T["Token Life Span"]</label>
     <input type="number" asp-for="TokenLifeSpan" id="token-lifespan" class="form-control" />
+    <label asp-for="TokenLifeSpan">@T["Token Life Span"]</label>
     <span class="hint"><i class="fa-solid fa-exclamation-triangle" aria-hidden="true"></i> @T["Hit the <b>Regenerate</b> button after changing this value."]</span>
     <span class="hint">@T["Number of days to expire the token. 0 for the token to never expire"]</span>
 </div>
