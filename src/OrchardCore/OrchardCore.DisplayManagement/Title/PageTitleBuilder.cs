@@ -1,8 +1,8 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.DisplayManagement.Extensions;
-using System;
 
 namespace OrchardCore.DisplayManagement.Title
 {
