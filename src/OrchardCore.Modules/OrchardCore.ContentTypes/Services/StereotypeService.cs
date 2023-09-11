@@ -3,11 +3,6 @@ using System.Linq;
 
 namespace OrchardCore.ContentTypes.Services
 {
-    public interface IStereotypeService
-    {
-        IEnumerable<StereotypeDescription> GetStereotypes();
-    }
-
     public class StereotypeService : IStereotypeService
     {
         private readonly IEnumerable<IStereotypesProvider> _providers;

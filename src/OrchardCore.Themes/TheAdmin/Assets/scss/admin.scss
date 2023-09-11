@@ -1,5 +1,7 @@
 @use 'sass:math';
 
+@import "modules/admin/_variables.scss";
+
 html[data-theme='default'] {
     @import "modules/theme/default/_variables.scss";
     @import "../../node_modules/bootstrap/scss/bootstrap";

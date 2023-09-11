@@ -52,12 +52,12 @@ public class EmailAuthenticatorLoginSettingsDisplayDriver : SectionDisplayDriver
 
         if (!_liquidTemplateManager.Validate(settings.Subject, out var subjectErrors))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(settings.Subject), String.Join(" ", subjectErrors));
+            context.Updater.ModelState.AddModelError(Prefix, nameof(settings.Subject), String.Join(' ', subjectErrors));
         }
 
         if (!_liquidTemplateManager.Validate(settings.Body, out var bodyErrors))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(settings.Body), String.Join(" ", bodyErrors));
+            context.Updater.ModelState.AddModelError(Prefix, nameof(settings.Body), String.Join(' ', bodyErrors));
         }
 
         return Edit(settings);

@@ -8,7 +8,7 @@ namespace OrchardCore.Tests.ResourceManagement
 {
     public class ResourceManagerTests
     {
-        private const string basePath = "http://host";
+        private const string BasePath = "http://host";
 
         private readonly IBrowsingContext _browsingContext;
 
@@ -543,8 +543,8 @@ namespace OrchardCore.Tests.ResourceManagement
                 .QuerySelectorAll<IHtmlLinkElement>("link");
 
             Assert.Equal(2, links.Count());
-            Assert.Contains(links, link => link.Relation == "icon" && link.Href == $"{basePath}/favicon.ico");
-            Assert.Contains(links, link => link.Relation == "alternate" && link.Type == "application/pdf" && link.Href == $"{basePath}/pdf");
+            Assert.Contains(links, link => link.Relation == "icon" && link.Href == $"{BasePath}/favicon.ico");
+            Assert.Contains(links, link => link.Relation == "alternate" && link.Type == "application/pdf" && link.Href == $"{BasePath}/pdf");
         }
 
         [Fact]
@@ -586,18 +586,18 @@ namespace OrchardCore.Tests.ResourceManagement
                 .QuerySelectorAll<IHtmlStyleElement>("style");
 
             Assert.Equal(2, links.Count());
-            Assert.Contains(links, link => link.Href == $"{basePath}/dependency.css");
-            Assert.Contains(links, link => link.Href == $"{basePath}/required.css");
+            Assert.Contains(links, link => link.Href == $"{BasePath}/dependency.css");
+            Assert.Contains(links, link => link.Href == $"{BasePath}/required.css");
             Assert.Single(styles);
             Assert.Contains(styles, style => style.InnerHtml == customStyle);
             // Required stylesheet after its dependency
-            Assert.Equal(DocumentPositions.Following, links.First(link => link.Href == $"{basePath}/dependency.css")
+            Assert.Equal(DocumentPositions.Following, links.First(link => link.Href == $"{BasePath}/dependency.css")
                 .CompareDocumentPosition(
-                    links.First(link => link.Href == $"{basePath}/required.css")
+                    links.First(link => link.Href == $"{BasePath}/required.css")
                 )
             );
             // Custom style after resources
-            Assert.Equal(DocumentPositions.Following, links.First(link => link.Href == $"{basePath}/required.css")
+            Assert.Equal(DocumentPositions.Following, links.First(link => link.Href == $"{BasePath}/required.css")
                 .CompareDocumentPosition(
                     styles.First(style => style.InnerHtml == customStyle)
                 )
@@ -862,7 +862,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             content.WriteTo(writer, HtmlEncoder.Default);
 
-            return await _browsingContext.OpenAsync(res => res.Content(writer.ToString()).Address(basePath));
+            return await _browsingContext.OpenAsync(res => res.Content(writer.ToString()).Address(BasePath));
         }
 
         #endregion

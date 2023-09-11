@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
@@ -33,54 +34,66 @@ namespace OrchardCore.Media.Indexing
             var options = context.Settings.ToOptions();
             var settings = context.ContentPartFieldDefinition.GetSettings<MediaFieldSettings>();
 
-            if (field.Paths?.Length > 0)
-            {
-                if (settings.AllowMediaText)
-                {
-                    foreach (var key in context.Keys)
-                    {
-                        if (field.MediaTexts != null)
-                        {
-                            foreach (var mediaText in field.MediaTexts)
-                            {
-                                context.DocumentIndex.Set(key + MediaTextKeySuffix, mediaText, options);
-                            }
-                        }
-                        else
-                        {
-                            context.DocumentIndex.Set(key + MediaTextKeySuffix, "NULL", options);
-                        }
-                    }
-                }
-
-                foreach (var path in field.Paths)
-                {
-                    var providerType = _mediaFileIndexingOptions.GetRegisteredMediaFileTextProvider(Path.GetExtension(path));
-
-                    if (providerType != null)
-                    {
-                        using var fileStream = await _mediaFileStore.GetFileStreamAsync(path);
-
-                        if (fileStream != null)
-                        {
-                            var fileText = await _serviceProvider
-                                .CreateInstance<IMediaFileTextProvider>(providerType)
-                                .GetTextAsync(path, fileStream);
-
-                            foreach (var key in context.Keys)
-                            {
-                                context.DocumentIndex.Set(key + FileTextKeySuffix, fileText, options);
-                            }
-                        }
-                    }
-                }
-            }
-            else
+            if (field.Paths?.Length == 0)
             {
                 foreach (var key in context.Keys)
                 {
                     context.DocumentIndex.Set(key + MediaTextKeySuffix, "NULL", options);
                     context.DocumentIndex.Set(key + FileTextKeySuffix, "NULL", options);
+                }
+
+                return;
+            }
+
+            if (settings.AllowMediaText)
+            {
+                foreach (var key in context.Keys)
+                {
+                    if (field.MediaTexts != null)
+                    {
+                        foreach (var mediaText in field.MediaTexts)
+                        {
+                            context.DocumentIndex.Set(key + MediaTextKeySuffix, mediaText, options);
+                        }
+                    }
+                    else
+                    {
+                        context.DocumentIndex.Set(key + MediaTextKeySuffix, "NULL", options);
+                    }
+                }
+            }
+
+            var paths = new HashSet<string>();
+
+            foreach (var path in field.Paths)
+            {
+                // The same file could be added several time to the field.
+                if (!paths.Add(path))
+                {
+                    // When a path is already processed, skip it.
+                    continue;
+                }
+
+                var providerType = _mediaFileIndexingOptions.GetRegisteredMediaFileTextProvider(Path.GetExtension(path));
+
+                if (providerType == null)
+                {
+                    continue;
+                }
+
+                using var fileStream = await _mediaFileStore.GetFileStreamAsync(path);
+
+                if (fileStream == null)
+                {
+                    continue;
+                }
+
+                var fileText = await _serviceProvider.CreateInstance<IMediaFileTextProvider>(providerType)
+                    .GetTextAsync(path, fileStream);
+
+                foreach (var key in context.Keys)
+                {
+                    context.DocumentIndex.Set(key + FileTextKeySuffix, fileText, options);
                 }
             }
         }

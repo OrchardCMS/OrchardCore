@@ -167,6 +167,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 Description = settings.Description,
                 LockTimeout = settings.LockTimeout,
                 LockExpiration = settings.LockExpiration,
+                UsePipeline = settings.UsePipeline,
             };
 
             return View(model);
@@ -201,6 +202,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 settings.Description = model.Description;
                 settings.LockTimeout = model.LockTimeout;
                 settings.LockExpiration = model.LockExpiration;
+                settings.UsePipeline = model.UsePipeline;
 
                 await _backgroundTaskManager.UpdateAsync(model.Name, settings);
 
