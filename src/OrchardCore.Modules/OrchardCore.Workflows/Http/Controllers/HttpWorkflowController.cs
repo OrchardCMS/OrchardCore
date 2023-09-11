@@ -17,8 +17,6 @@ namespace OrchardCore.Workflows.Http.Controllers
 {
     public class HttpWorkflowController : Controller
     {
-        public const int NoExpiryTokenLifespan = 36500;
-
         private readonly IAuthorizationService _authorizationService;
         private readonly IWorkflowManager _workflowManager;
         private readonly IWorkflowTypeStore _workflowTypeStore;
@@ -28,6 +26,7 @@ namespace OrchardCore.Workflows.Http.Controllers
         private readonly IAntiforgery _antiforgery;
         private readonly IDistributedLock _distributedLock;
         private readonly ILogger _logger;
+        public const int NoExpiryTokenLifespan = 36500;
 
         public HttpWorkflowController(
             IAuthorizationService authorizationService,
@@ -63,7 +62,7 @@ namespace OrchardCore.Workflows.Http.Controllers
 
             var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
 
-            if (workflowType is null)
+            if (workflowType == null)
             {
                 return NotFound();
             }
@@ -87,7 +86,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             // Get the workflow type.
             var workflowType = await _workflowTypeStore.GetAsync(payload.WorkflowId);
 
-            if (workflowType is null)
+            if (workflowType == null)
             {
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
@@ -123,7 +122,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             // Instantiate and bind an actual HttpRequestEvent object to check its settings.
             var httpRequestActivity = _activityLibrary.InstantiateActivity<HttpRequestEvent>(startActivity);
 
-            if (httpRequestActivity is null)
+            if (httpRequestActivity == null)
             {
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
@@ -180,7 +179,7 @@ namespace OrchardCore.Workflows.Http.Controllers
                 {
                     var blockingActivity = workflow.BlockingActivities.FirstOrDefault(x => x.ActivityId == startActivity.ActivityId);
 
-                    if (blockingActivity is not null)
+                    if (blockingActivity != null)
                     {
                         if (_logger.IsEnabled(LogLevel.Debug))
                         {
@@ -233,7 +232,7 @@ namespace OrchardCore.Workflows.Http.Controllers
                 var workflow = await _workflowStore.GetAsync(payload.WorkflowId);
                 var signalActivities = workflow?.BlockingActivities.Where(x => x.Name == SignalEvent.EventName).ToList();
 
-                if (signalActivities is null)
+                if (signalActivities == null)
                 {
                     return NotFound();
                 }
@@ -248,8 +247,8 @@ namespace OrchardCore.Workflows.Http.Controllers
                     workflow = workflow.IsAtomic ? await _workflowStore.GetAsync(workflow.WorkflowId) : workflow;
                     if (workflow != null)
                     {
-                        // The workflow could be blocking on multiple Signal activities, but only the activity with the
-                        // provided signal name will be executed as SignalEvent checks for the provided "Signal" input.
+                        // The workflow could be blocking on multiple Signal activities, but only the activity with the provided signal name
+                        // will be executed as SignalEvent checks for the provided "Signal" input.
                         signalActivities = workflow.BlockingActivities.Where(x => x.Name == SignalEvent.EventName).ToList();
                         foreach (var signalActivity in signalActivities)
                         {

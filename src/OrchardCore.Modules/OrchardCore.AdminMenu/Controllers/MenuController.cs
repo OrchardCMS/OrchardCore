@@ -72,8 +72,8 @@ namespace OrchardCore.AdminMenu.Controllers
             var pageSize = pager.PageSize;
             IEnumerable<Models.AdminMenu> results = new List<Models.AdminMenu>();
 
-            // Todo: handle the case where there is a deserialization exception on some of the presets.
-            // Load at least the ones without error. Provide a way to delete the ones on error.
+            // todo: handle the case where there is a deserialization exception on some of the presets.
+            // load at least the ones without error. Provide a way to delete the ones on error.
             try
             {
                 results = adminMenuList

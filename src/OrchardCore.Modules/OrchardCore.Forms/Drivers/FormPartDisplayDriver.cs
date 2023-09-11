@@ -51,6 +51,7 @@ namespace OrchardCore.Forms.Drivers
         public async override Task<IDisplayResult> UpdateAsync(FormPart part, IUpdateModel updater)
         {
             var viewModel = new FormPartEditViewModel();
+
             if (await updater.TryUpdateModelAsync(viewModel, Prefix))
             {
                 part.Action = viewModel.Action?.Trim();

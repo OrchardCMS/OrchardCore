@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Secrets;
 using OrchardCore.Secrets.Models;
 using OrchardCore.Settings;
@@ -13,20 +12,17 @@ namespace OrchardCore.Email.Services
     public class SmtpSettingsConfiguration : IConfigureOptions<SmtpSettings>
     {
         private readonly ISiteService _site;
-        private readonly ShellSettings _shellSettings;
         private readonly ISecretService _secretService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ILogger _logger;
 
         public SmtpSettingsConfiguration(
             ISiteService site,
-            ShellSettings shellSettings,
             ISecretService secretService,
             IDataProtectionProvider dataProtectionProvider,
             ILogger<SmtpSettingsConfiguration> logger)
         {
             _site = site;
-            _shellSettings = shellSettings;
             _secretService = secretService;
             _dataProtectionProvider = dataProtectionProvider;
             _logger = logger;

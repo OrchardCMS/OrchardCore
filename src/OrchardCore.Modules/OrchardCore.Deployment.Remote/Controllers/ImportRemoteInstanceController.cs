@@ -49,8 +49,8 @@ namespace OrchardCore.Deployment.Remote.Controllers
         {
             var remoteClientList = await _remoteClientService.GetRemoteClientListAsync();
 
-            var remoteClient = remoteClientList.RemoteClients.FirstOrDefault(client => client.ClientName == model.ClientName);
-            if (remoteClient is null)
+            var remoteClient = remoteClientList.RemoteClients.FirstOrDefault(x => x.ClientName == model.ClientName);
+            if (remoteClient == null)
             {
                 return StatusCode((int)HttpStatusCode.BadRequest, "The remote client was not provided");
             }
@@ -74,13 +74,13 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             if (model.ApiKey != apiKey || model.ClientName != remoteClient.ClientName)
             {
-                return StatusCode((int)HttpStatusCode.BadRequest, "The Api Key was not recognized.");
+                return StatusCode((int)HttpStatusCode.BadRequest, "The Api Key was not recognized");
             }
 
-            // Create a temporary filename to save the archive.
+            // Create a temporary filename to save the archive
             var tempArchiveName = Path.GetTempFileName() + ".zip";
 
-            // Create a temporary folder to extract the archive to.
+            // Create a temporary folder to extract the archive to
             var tempArchiveFolder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
             try

@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Deployment.Remote.Models
+namespace OrchardCore.Deployment.Remote.Models
 {
     public class RemoteInstance
     {
@@ -9,7 +9,7 @@
         public string ApiKey { get; set; }
 
         /// <summary>
-        /// The name of the api key secret that will be used to authentication this remote instance.
+        /// The name of the api key secret that will be used to authenticate this remote instance.
         /// When a secret key is provided, it overrides the <see cref="ApiKey"/> value.
         /// </summary>
         public string ApiKeySecret { get; set; }

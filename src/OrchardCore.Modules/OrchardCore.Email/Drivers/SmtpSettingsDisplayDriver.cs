@@ -39,6 +39,7 @@ namespace OrchardCore.Email.Drivers
         public override async Task<IDisplayResult> EditAsync(SmtpSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
+
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
             {
                 return null;
@@ -65,7 +66,7 @@ namespace OrchardCore.Email.Drivers
                 }).Location("Content:5").OnGroup(GroupId),
             };
 
-            if (settings.DefaultSender is not null)
+            if (settings.DefaultSender != null)
             {
                 shapes.Add(Dynamic("SmtpSettings_TestButton").Location("Actions").OnGroup(GroupId));
             }
@@ -73,9 +74,10 @@ namespace OrchardCore.Email.Drivers
             return Combine(shapes);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(SmtpSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(SmtpSettings section, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
+
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
             {
                 return null;
@@ -83,26 +85,26 @@ namespace OrchardCore.Email.Drivers
 
             if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
-                var previousPassword = settings.Password;
-                await context.Updater.TryUpdateModelAsync(settings, Prefix);
+                var previousPassword = section.Password;
+                await context.Updater.TryUpdateModelAsync(section, Prefix);
 
                 // Restore password if the input is empty, meaning that it has not been reset.
-                if (String.IsNullOrWhiteSpace(settings.Password))
+                if (String.IsNullOrWhiteSpace(section.Password))
                 {
-                    settings.Password = previousPassword;
+                    section.Password = previousPassword;
                 }
                 else
                 {
-                    // Encrypt the password.
+                    // Encrypt the password
                     var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration));
-                    settings.Password = protector.Protect(settings.Password);
+                    section.Password = protector.Protect(section.Password);
                 }
 
                 // Release the tenant to apply the settings.
                 await _shellHost.ReleaseShellContextAsync(_shellSettings);
             }
 
-            return await EditAsync(settings, context);
+            return await EditAsync(section, context);
         }
     }
 }

@@ -7,7 +7,7 @@ namespace OrchardCore.Deployment.Remote.Models
         public byte[] ProtectedApiKey { get; set; }
 
         /// <summary>
-        /// The name of the api key secret that will be used to authentication this remote instance.
+        /// The name of the api key secret that will be used to authenticate this remote client.
         /// When a secret key is provided, it overrides the <see cref="ProtectedApiKey"/> value.
         /// </summary>        
         public string ApiKeySecret { get; set; }
