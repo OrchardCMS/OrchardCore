@@ -15,7 +15,7 @@
     @{
         var antiforgeryTokenSet = antiforgery.GetTokens(Context);
     }
-    <div class="input-group mb3">
+    <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon3">@Url.GetBaseUrl()</span>
         <input asp-for="Url" type="text" id="workflow-url-text" class="form-control" readonly />
         <button class="btn btn-primary" type="button" id="generate-url-button" title="@T["Generate a new URL"]" data-generate-url="@Url.Action("GenerateUrl", "HttpWorkflow")" data-antiforgery-token="@antiforgeryTokenSet.RequestToken" data-antiforgery-header-name="@antiforgeryTokenSet.HeaderName">@T["Regenerate"]</button>
