@@ -7301,26 +7301,64 @@ $('body').on('submit', 'form.no-multisubmit', function (e) {
     form.removeClass(submittingClass);
   }, 5000);
 });
-$('#btn-darkmode').click(function () {
-  if ($('html').attr('data-theme') === 'darkmode') {
-    $('html').attr('data-theme', 'default');
-    $(this).children(':first').removeClass('fa-sun');
-    $(this).children(':first').addClass('fa-moon');
-  } else {
-    $('html').attr('data-theme', 'darkmode');
-    $(this).children(':first').removeClass('fa-moon');
-    $(this).children(':first').addClass('fa-sun');
-  }
-  persistAdminPreferences();
-});
-$(function () {
-  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    if ($('html').attr('data-theme') === 'darkmode') {
-      $('#btn-darkmode').children(':first').removeClass('fa-moon');
-      $('#btn-darkmode').children(':first').addClass('fa-sun');
+/*!
+ * Color mode toggler for Bootstrap's docs (https://getbootstrap.com/)
+ * Copyright 2011-2023 The Bootstrap Authors
+ * Licensed under the Creative Commons Attribution 3.0 Unported License.
+ */
+
+(function () {
+  'use strict';
+
+  var getStoredTheme = function getStoredTheme() {
+    return localStorage.getItem('theme');
+  };
+  var setStoredTheme = function setStoredTheme(theme) {
+    return localStorage.setItem('theme', theme);
+  };
+  var getPreferredTheme = function getPreferredTheme() {
+    var storedTheme = getStoredTheme();
+    if (storedTheme) {
+      return storedTheme;
     }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  };
+  var setTheme = function setTheme(theme) {
+    if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.documentElement.setAttribute('data-bs-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-bs-theme', theme);
+    }
+  };
+  setTheme(getPreferredTheme());
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+    var storedTheme = getStoredTheme();
+    if (storedTheme !== 'light' && storedTheme !== 'dark') {
+      setTheme(getPreferredTheme());
+    }
+  });
+  var themeSwitcher = document.querySelector('#btn-darkmode');
+  var themeIcon = themeSwitcher.querySelector('.color-mode-icon');
+  if (themeSwitcher) {
+    themeSwitcher.addEventListener('click', function () {
+      var currentTheme = getStoredTheme();
+      var nextTheme = 'dark';
+      if (currentTheme == nextTheme) {
+        nextTheme = 'light';
+      }
+      if (nextTheme == 'dark') {
+        themeIcon.classList.remove('fa-moon');
+        themeIcon.classList.add('fa-sun');
+      } else {
+        themeIcon.classList.remove('fa-sun');
+        themeIcon.classList.add('fa-moon');
+      }
+      setStoredTheme(nextTheme);
+      setTheme(nextTheme);
+      persistAdminPreferences(nextTheme);
+    });
   }
-});
+})();
 // When we load compact status from preferences we need to do some other tasks besides adding the class to the body.
 // UserPreferencesLoader has already added the needed class.
 $(function () {
@@ -8729,14 +8767,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 // Each time the sidebar status is modified, that is persisted to localStorage.
 // When the page is loaded again, userPreferencesLoader.js will read that info to 
 // restore the sidebar to the previous state.
-function persistAdminPreferences() {
+function persistAdminPreferences(theme) {
   setTimeout(function () {
-    var tenant = $('html').attr('data-tenant');
+    var tenant = document.documentElement.getAttribute('data-tenant');
     var key = tenant + '-adminPreferences';
     var adminPreferences = {};
-    adminPreferences.leftSidebarCompact = $('body').hasClass('left-sidebar-compact') ? true : false;
+    adminPreferences.leftSidebarCompact = document.body.classList.contains('left-sidebar-compact') ? true : false;
     adminPreferences.isCompactExplicit = isCompactExplicit;
-    adminPreferences.darkMode = $('html').attr('data-theme') === 'darkmode' ? true : false;
+    adminPreferences.darkMode = (theme || document.documentElement.getAttribute('data-bs-theme')) === 'dark' ? true : false;
     localStorage.setItem(key, JSON.stringify(adminPreferences));
     Cookies.set(key, JSON.stringify(adminPreferences), {
       expires: 360

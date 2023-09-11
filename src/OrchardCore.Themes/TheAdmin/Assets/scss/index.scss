@@ -1,0 +1,28 @@
+/* Import _variables before Bootstrap to allow overriding Bootstrap variables */
+@import 'variables';
+@import '../../node_modules/bootstrap/scss/bootstrap';
+
+
+@import 'components/layout';
+@import 'components/action-bar';
+@import "../../node_modules/bootstrap-select/sass/bootstrap-select";
+@import 'components/bootstrap-select';
+@import 'components/codemirror';
+@import 'components/dropdown';
+@import 'components/forms';
+@import 'components/grid';
+@import 'components/list-group';
+@import 'components/login';
+@import 'components/messages';
+@import 'components/monaco';
+@import 'components/navbar';
+@import 'components/nouislider';
+@import 'components/pager';
+@import 'components/sidebar-menu';
+@import 'components/tabs';
+@import 'components/trumbowyg';
+@import 'components/validations';
+
+/* Include themes */
+@import 'themes/light/index';
+@import 'themes/dark/index';

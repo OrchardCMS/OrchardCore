@@ -1,3 +1,5 @@
+@import './_variables';
+
 .media-field-toolbar {
     display: flex;
 
@@ -45,12 +47,11 @@
 .icon-media-anchor {
     position: absolute;
     line-height: 0px;
-    color: $white;
+    color: var(--bs-white);
     font-size: 1.875rem;
 
-    path
-    {
-        stroke:$black;
+    path {
+        stroke: var(--bs-black);
         stroke-width: 10;
     }
 }

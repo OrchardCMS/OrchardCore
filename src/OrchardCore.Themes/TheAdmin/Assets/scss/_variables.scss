@@ -1,0 +1,35 @@
+// Global variables to override Bootstrap variables.
+// Because !default means that a variable is not assigned if it already contains a value,
+// we alter the variable before importing boostrap as _variables.scss will use !default
+@import '../../node_modules/bootstrap/scss/_functions';
+@import '../../node_modules/bootstrap/scss/_variables';
+
+// Override any of Bootstrap variables.
+$link-decoration: none;
+$link-hover-decoration: underline;
+
+// Custom variables.
+$top-nav-height: 52px !default;
+$footer-height: 40px !default;
+$left-navigation-width: 260px !default;
+$left-navigation-width-when-compact: 48px !default;
+$link-padding-left: 16px !default;
+
+:root {
+    --oc-border-content: 1px solid #dedede;
+    --oc-admin-menu-bg-color: #eaeaea;
+    --oc-scrollbar-color: #495057;
+    --oc-admin-menu-font-color: #{$gray-800};
+    --oc-admin-menu-font-color-hover: #{$gray-100};
+    --oc-admin-menu-item-bg-color: #{$gray-100};
+    --oc-admin-menu-item-font-color: #{$gray-700};
+    --oc-admin-menu-item-font-color-active: #000;
+    --oc-li-hover-bg-color: #{$gray-100};
+    --oc-zindex-dropdown: #{$zindex-dropdown};
+    --oc-top-nav-height: #{$top-nav-height};
+    --oc-footer-height: #{$footer-height};
+    --oc-start-navigation-width: #{$left-navigation-width};
+    --oc-start-navigation-width-when-compact: #{$left-navigation-width-when-compact};
+    --oc-link-padding-left: 1#{$link-padding-left};
+    --bs-dropdown-zindex: #{$zindex-dropdown};
+}

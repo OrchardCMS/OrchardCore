@@ -1,5 +1,7 @@
 @using OrchardCore.DisplayManagement
 @using OrchardCore.DisplayManagement.ModelBinding
+@using OrchardCore.Environment.Shell
+@using OrchardCore.Themes.Services
 @using OrchardCore.Users.Models
 
 @inject DarkModeService DarkModeService
@@ -13,7 +15,7 @@
     var brandingHtml = await DisplayAsync(await New.AdminBranding());
 }
 <!DOCTYPE html>
-<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-tenant="@DarkModeService.CurrentTenant" data-theme="@DarkModeService.CurrentTheme" data-darkmode="@adminSettings.DisplayDarkMode">
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="auto" data-tenant="@DarkModeService.CurrentTenant" data-darkmode="@adminSettings.DisplayDarkMode">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
@@ -36,52 +38,54 @@
 </head>
 <body class="preload">
     <div class="ta-wrapper">
-        <div class="ta-navbar-top navbar-expand-lg bg-primary">
-            <div class="d-flex w-100 justify-content-between align-items-center">
-                <div class="brand-wrapper">
-                    <div class="d-flex w-100 justify-content-between align-items-center">
-                        @brandingHtml
+        <nav class="ta-navbar-top navbar navbar-expand-lg text-bg-theme">
+            <div class="container-fluid">
+                <div class="d-flex w-100 justify-content-between align-items-center">
+                    <div class="brand-wrapper">
+                        <div class="d-flex w-100 justify-content-between align-items-center">
+                            @brandingHtml
 
-                        @if (adminSettings.DisplayTitlesInTopbar)
-                        {
-                            <div class="brand-wrapper-title">
-                                @await RenderSectionAsync("Title", required: false)
-                            </div>
-                        }
+                            @if (adminSettings.DisplayTitlesInTopbar)
+                            {
+                                <div class="brand-wrapper-title">
+                                    @await RenderSectionAsync("Title", required: false)
+                                </div>
+                            }
+                        </div>
                     </div>
-                </div>
-                <div class="d-flex align-items-end pe-md-3">
-                    <ul class="nav navbar user-top-navbar">
-                        @await RenderSectionAsync("NavbarTop", required: false)
-                        @if (adminSettings.DisplayDarkMode)
-                        {
+                    <div class="d-flex align-items-end">
+                        <ul class="navbar-nav user-top-navbar flex-row">
+                            @await RenderSectionAsync("NavbarTop", required: false)
+                            @if (adminSettings.DisplayDarkMode)
+                            {
+                                <li class="nav-item">
+                                    <a id="btn-darkmode" class="nav-link" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
+                                        @if (darkMode)
+                                        {
+                                            <i class="color-mode-icon fa-solid fa-sun" aria-hidden="true"></i>
+                                            <span class="d-none">@T["Light mode"]</span>
+                                        }
+                                        else
+                                        {
+                                            <i class="color-mode-icon fa-solid fa-moon" aria-hidden="true"></i>
+                                            <span class="d-none">@T["Dark mode"]</span>
+                                        }
+                                    </a>
+                                </li>
+                            }
                             <li class="nav-item">
-                                <a id="btn-darkmode" class="nav-link" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
-                                    @if (darkMode)
-                                    {
-                                        <i class="fa-solid fa-sun" aria-hidden="true"></i>
-                                        <span class="d-none">@T["Light mode"]</span>
-                                    }
-                                    else
-                                    {
-                                        <i class="fa-solid fa-moon" aria-hidden="true"></i>
-                                        <span class="d-none">@T["Dark mode"]</span>
-                                    }
+                                <a href="@Url.Content("~/")" class="nav-link" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@T["Visit Site"]" role="button">
+                                    <i class="fa-solid fa-fw fa-external-link" aria-hidden="true"></i>
                                 </a>
                             </li>
-                        }
-                        <li class="nav-item">
-                            <a href="@Url.Content("~/")" class="nav-link" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@T["Visit Site"]" role="button">
-                                <i class="fa-solid fa-fw fa-external-link" aria-hidden="true"></i>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            @await DisplayAsync(await DisplayManager.BuildDisplayAsync(new UserMenu(), UpdateModelAccessor.ModelUpdater, "DetailAdmin"))
-                        </li>
-                    </ul>
+                            <li class="nav-item">
+                                @await DisplayAsync(await DisplayManager.BuildDisplayAsync(new UserMenu(), UpdateModelAccessor.ModelUpdater, "DetailAdmin"))
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </div>
+        </nav>
 
         <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">
             @await RenderSectionAsync("Navigation", required: false)

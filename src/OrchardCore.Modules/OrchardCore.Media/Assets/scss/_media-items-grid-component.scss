@@ -1,3 +1,5 @@
+@import './_variables';
+
 ol.media-items-grid {
     display: flex;
     flex-direction: row;
@@ -16,7 +18,7 @@ ol.media-items-grid {
         border-radius: 0;
 
         .inline-media-button {
-            color: $media-color;
+            color: var(--oc-media-color);
             opacity: 0;
             padding-top: 0px;
             position: absolute;

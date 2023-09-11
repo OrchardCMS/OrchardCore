@@ -7,11 +7,10 @@
     }
 
     .vue-multiselect .multiselect--active {
-        z-index: 1000; // bootstrap's default for dropdowns
+        z-index: var(--oc-zindex-dropdown, 1000); // bootstrap's default for dropdowns
     }
 }
 
 [v-cloak] {
     display: none;
 }
-

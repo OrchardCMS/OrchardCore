@@ -1,5 +1,5 @@
 .multitextfieldpicker .vue-multiselect .multiselect--active {
-  z-index: 1000;
+  z-index: var(--oc-zindex-dropdown, 1000);
 }
 
 [v-cloak] {

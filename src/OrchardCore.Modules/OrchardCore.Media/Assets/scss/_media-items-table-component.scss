@@ -1,3 +1,5 @@
+@import './_variables';
+
 .media-items-table {
     padding: 20px;
     font-size: 0.875rem;
@@ -7,7 +9,7 @@
             border-top: none !important;
             padding-top: 8px;
             padding-bottom: 8px;
-            color: $media-color;
+            color: var(--oc-media-color);
             font-size: 0.8125rem;
             user-select: none;
 
@@ -21,13 +23,13 @@
         height: 75px;
 
         td {
-            border-top: $media-border-content;
+            border-top: var(--oc-media-border-content);
             padding: 0.25rem !important;
         }
 
         &.selected {
-            background-color: $selected-background-color;
-            border-left: solid 2px $primary;
+            background-color: var(--oc-media-selected-background-color);
+            border-left: solid 2px var(--bs-primary);
         }
     }
 
@@ -83,7 +85,7 @@
     }
 
     .btn-link {
-        color: $gray-600;
+        color: var(--gray-600);
         padding-left: 0;
     }
 

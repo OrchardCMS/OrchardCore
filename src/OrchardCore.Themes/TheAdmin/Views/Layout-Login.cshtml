@@ -1,9 +1,11 @@
-@inject DarkModeService DarkModeService;
+@using OrchardCore.Environment.Shell
+
+@inject ShellSettings ShellSettings
 @{
-    var darkMode = await DarkModeService.IsDarkModeAsync();
+    var adminSettings = Site.As<AdminSettings>();
 }
 <!DOCTYPE html>
-<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-theme="@DarkModeService.CurrentTheme">
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="auto" data-tenant="@ShellSettings.Name" data-darkmode="@adminSettings.DisplayDarkMode">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">

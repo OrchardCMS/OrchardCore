@@ -1,0 +1,25 @@
+@import '../../_variables';
+@import '../../../../node_modules/bootstrap/scss/mixins/_color-mode';
+
+@include color-mode(dark) {
+    --oc-border-content: 1px solid rgb(57, 62, 64);
+    --oc-link-padding-left: 16px !default;
+    --oc-admin-menu-bg-color: rgb(36, 39, 40);
+    --oc-admin-menu-font-color: rgb(181, 175, 166);
+    --oc-admin-menu-font-color-hover: rgb(181, 175, 166);
+    --oc-admin-menu-item-bg-color: rgb(27, 30, 31);
+    --oc-admin-menu-item-font-color: rgb(189, 183, 175);
+    --oc-admin-menu-item-font-color-active: rgba(232, 230, 227, 0.9);
+    --oc-li-hover-bg-color: rgb(27, 30, 31);
+    --oc-scrollbar-color: #495057;
+    /*
+    --bs-body-color: #92929D;
+    --bs-body-color-rgb: #{to-rgb(#92929D)};
+    --bs-body-bg: #13131C;
+    --bs-body-bg-rgb: #{to-rgb(#13131C)};
+    --bs-tertiary-bg: #7575a1;
+    --bs-border-color: #25252E;
+    */
+    @import "badge";
+    @import "card";
+}

@@ -1,9 +1,12 @@
 [
   {
     "generateSourceMaps": false,
-    "generateRTL": true,
+    "generateRTL": false,
     "inputs": [
-      "Assets/scss/admin.scss"
+      "Assets/scss/index.scss"
+    ],
+    "watch": [
+      "Assets/scss/**/*.scss"
     ],
     "output": "wwwroot/css/TheAdmin.css"
   },

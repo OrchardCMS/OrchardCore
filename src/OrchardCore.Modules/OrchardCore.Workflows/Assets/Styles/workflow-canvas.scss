@@ -1,3 +1,7 @@
+@import '../../node_modules/bootstrap/scss/_functions';
+@import '../../node_modules/bootstrap/scss/_variables';
+@import '../../node_modules/bootstrap/scss/mixins/_color-mode';
+
 .workflow-container {
     .workflow-canvas-container {
         border: 1px solid #e4e5e6;
@@ -24,7 +28,6 @@
         display: none;
         border: 1px solid #346789;
         box-shadow: 2px 2px 19px #aaa;
-        -o-box-shadow: 2px 2px 9px #aaa;
         -webkit-box-shadow: 2px 2px 9px #aaa;
         -moz-box-shadow: 2px 2px 9px #aaa;
         -moz-border-radius: 0.5em;
@@ -42,7 +45,6 @@
         font-size: 0.7em;
         -webkit-transition: -webkit-box-shadow 0.15s ease-in;
         -moz-transition: -moz-box-shadow 0.15s ease-in;
-        -o-transition: -o-box-shadow 0.15s ease-in;
         transition: box-shadow 0.15s ease-in;
 
         &.activity-task {
@@ -98,7 +100,7 @@
     }
 }
 
-:root[data-theme='darkmode'] {
+@include color-mode(dark) {
     .workflow-canvas {
         color: #000000;
     }
