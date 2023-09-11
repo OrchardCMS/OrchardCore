@@ -60,7 +60,7 @@ class DiffViewer extends React.Component<{}, DiffViewerState> {
             oldText: oldText,
             leftText: oldText,
             newText: mountId.getAttribute('data-new-text') + ' - ' + mountId.getAttribute('data-new-time'),
-            useDarkMode: document.documentElement.getAttribute('data-theme').toLowerCase() === 'darkmode' ? true : false,
+            useDarkMode: document.documentElement.getAttribute('data-bs-theme').toLowerCase() === 'darkmode' ? true : false,
             splitText: mountId.getAttribute('data-split'),
             unifiedText: mountId.getAttribute('data-unified'),
         });
