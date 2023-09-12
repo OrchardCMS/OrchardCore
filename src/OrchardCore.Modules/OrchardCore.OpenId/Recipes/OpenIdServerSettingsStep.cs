@@ -31,10 +31,12 @@ namespace OrchardCore.OpenId.Recipes
             settings.AccessTokenFormat = model.AccessTokenFormat;
             settings.Authority = !String.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
 
+            settings.EncryptionRsaSecret = model.EncryptionRsaSecret;
             settings.EncryptionCertificateStoreLocation = model.EncryptionCertificateStoreLocation;
             settings.EncryptionCertificateStoreName = model.EncryptionCertificateStoreName;
             settings.EncryptionCertificateThumbprint = model.EncryptionCertificateThumbprint;
 
+            settings.SigningRsaSecret = model.SigningRsaSecret;
             settings.SigningCertificateStoreLocation = model.SigningCertificateStoreLocation;
             settings.SigningCertificateStoreName = model.SigningCertificateStoreName;
             settings.SigningCertificateThumbprint = model.SigningCertificateThumbprint;

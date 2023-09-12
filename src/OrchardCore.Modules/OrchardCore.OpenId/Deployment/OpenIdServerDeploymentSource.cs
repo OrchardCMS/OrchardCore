@@ -34,10 +34,12 @@ namespace OrchardCore.OpenId.Deployment
                 AccessTokenFormat = settings.AccessTokenFormat,
                 Authority = settings.Authority?.AbsoluteUri,
 
+                EncryptionRsaSecret = settings.EncryptionRsaSecret,
                 EncryptionCertificateStoreLocation = settings.EncryptionCertificateStoreLocation,
                 EncryptionCertificateStoreName = settings.EncryptionCertificateStoreName,
                 EncryptionCertificateThumbprint = settings.EncryptionCertificateThumbprint,
 
+                SigningRsaSecret = settings.SigningRsaSecret,
                 SigningCertificateStoreLocation = settings.SigningCertificateStoreLocation,
                 SigningCertificateStoreName = settings.SigningCertificateStoreName,
                 SigningCertificateThumbprint = settings.SigningCertificateThumbprint,
