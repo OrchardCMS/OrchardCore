@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.GraphQL.Options;
@@ -41,13 +39,6 @@ namespace OrchardCore.ContentTypes.GraphQL.Drivers
                 {
                     await updater.TryUpdateModelAsync(model, Prefix, x => x.Settings);
                 }
-
-                model.Settings.AvailablePreventFieldNameCollisionMethods = new List<SelectListItem>() {
-                    new SelectListItem { Value = nameof(PreventFieldNameCollisionMethods.None), Text = S["Do nothing"] },
-                    new SelectListItem { Value = nameof(PreventFieldNameCollisionMethods.AddPartNamePrefix), Text = S["Add Part Name Prefix"] },
-                    new SelectListItem { Value = nameof(PreventFieldNameCollisionMethods.AddCustomPrefix), Text = S["Add Custom Prefix"] },
-                    new SelectListItem { Value = nameof(PreventFieldNameCollisionMethods.AddCustomSuffix), Text = S["Add Custom Suffix"] }
-                };
             }).Location("Content");
         }
 

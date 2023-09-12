@@ -64,7 +64,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     {
                         foreach (var fieldProvider in contentFieldProviders)
                         {
-                            var customFieldName = _contentOptions.GetCustomFieldName(part, part.Name, field.Name);
+                            var customFieldName = _contentOptions.GetFieldName(part, part.Name, field.Name);
 
                             var fieldType = fieldProvider.GetField(field, part.Name, customFieldName);
 

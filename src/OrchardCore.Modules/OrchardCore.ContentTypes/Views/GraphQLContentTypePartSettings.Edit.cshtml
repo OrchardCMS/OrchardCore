@@ -25,17 +25,10 @@
     }
 </div>
 
-<div class="form-group mb-3 mt-3">
-    <label class="form-label" asp-for="Settings.PreventFieldNameCollisionMethod">@T["Prevent Field Name Collision Method"]</label>
-    <select class="form-select" asp-for="Settings.PreventFieldNameCollisionMethod" asp-items="settings.AvailablePreventFieldNameCollisionMethods">
-        <option value="" disabled>@T["Choose prevent name collision method"]</option>
-    </select>
-</div>
-
-<div class="form-group mb-3" asp-validation-class-for="Settings.PreventFieldNameCollisionCustomValue">
-    <label class="form-label" asp-for="Settings.PreventFieldNameCollisionCustomValue">@T["Custom Suffix/Prefix"]</label>
-    <input class="form-control" asp-for="Settings.PreventFieldNameCollisionCustomValue" />
-    <span class="text-danger" asp-validation-for="Settings.PreventFieldNameCollisionCustomValue"></span>
+<div class="form-check mb-3 mt-3">
+    <input type="checkbox" class="form-check-input" asp-for="Settings.PreventFieldNameCollision" checked="@settings.PreventFieldNameCollision" />
+    <label class="form-check-label" asp-for="Settings.PreventFieldNameCollision">@T["Prevent Field Name Collision"]</label>
+    <span class="hint">@T["Check to prevent fields' names collisions in the GraphQL schema when they are collapsed."]</span>
 </div>
 
 <div class="form-check mb-3">
@@ -53,21 +46,17 @@
 
 <script at="Foot">
     (function () {
-        const collapseCheck = document.getElementById("@(Html.IdFor(x => x.Settings.Collapse))");
-        const methodSelector = document.getElementById("@(Html.IdFor(x => x.Settings.PreventFieldNameCollisionMethod))");
-        const customValueInput = document.getElementById("@Html.IdFor(x => x.Settings.PreventFieldNameCollisionCustomValue)");
-        const setCustomValueInputVisibility = (checked = true) => customValueInput.parentElement.style.display = checked &&
-            ["AddCustomPrefix", "AddCustomSuffix"].includes(methodSelector.value) ? 'block' : 'none';
-        methodSelector.addEventListener('change', (e) => {
-            setCustomValueInputVisibility();
-        });
-        const setFieldsVisibility = (checked) => {
-            methodSelector.parentElement.style.display = checked ? 'block' : 'none';
-            setCustomValueInputVisibility(checked);
+        const collapseCheckbox = document.getElementById("@(Html.IdFor(x => x.Settings.Collapse))");
+        const preventFieldNameCollisionCheckbox = document.getElementById("@(Html.IdFor(x => x.Settings.PreventFieldNameCollision))");
+        const setFieldVisibility = (checked) => {
+            preventFieldNameCollisionCheckbox.parentElement.style.display = checked ? 'block' : 'none';
+            if (!checked) {
+                preventFieldNameCollisionCheckbox.checked = false;
+            }            
         };
-        collapseCheck.addEventListener('change', (e) => {
-            setFieldsVisibility(e.target.checked);
+        collapseCheckbox.addEventListener('change', (e) => {
+            setFieldVisibility(e.target.checked);
         });
-        setFieldsVisibility(@(collapsed.ToString().ToLower()));   
+        setFieldVisibility(@(collapsed.ToString().ToLower()));
     })();
 </script>
