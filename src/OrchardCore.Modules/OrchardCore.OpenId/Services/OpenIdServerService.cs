@@ -17,8 +17,9 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.OpenId.Settings;
-using OrchardCore.Settings;
 using OrchardCore.Secrets;
+using OrchardCore.Secrets.Models;
+using OrchardCore.Settings;
 
 namespace OrchardCore.OpenId.Services
 {
@@ -280,9 +281,31 @@ namespace OrchardCore.OpenId.Services
         {
             var settings = await GetSettingsAsync();
 
+            // If a RSA secret was provided, try to use it first.
             if (!String.IsNullOrEmpty(settings.EncryptionRsaSecret))
             {
+                var secret = await _secretService.GetSecretAsync<RSASecret>(settings.EncryptionRsaSecret);
+                if (secret is not null)
+                {
+                    return ImmutableArray.Create<SecurityKey>(_memoryCache.GetOrCreate(
+                        $"{nameof(OpenIdServerService)}{nameof(settings.EncryptionRsaSecret)}",
+                        entry =>
+                    {
+                        entry.SetPriority(CacheItemPriority.NeverRemove);
 
+                        var rsa = GenerateRsaSecurityKey(size: 2048);
+                        rsa.ImportRSAPublicKey(secret.PublicKeyAsBytes(), out _);
+
+                        if (secret.KeyType == RSAKeyType.PublicPrivatePair)
+                        {
+                            rsa.ImportRSAPrivateKey(secret.PrivateKeyAsBytes(), out _);
+                        }
+
+                        return new RsaSecurityKey(rsa);
+                    }));
+                }
+
+                _logger.LogWarning("The encryption RSA secret '{SecretName}' could not be found.", settings.EncryptionRsaSecret);
             }
 
             // If a certificate was explicitly provided, return it immediately
@@ -353,6 +376,33 @@ namespace OrchardCore.OpenId.Services
         public async Task<ImmutableArray<SecurityKey>> GetSigningKeysAsync()
         {
             var settings = await GetSettingsAsync();
+
+            // If a RSA secret was provided, try to use it first.
+            if (!String.IsNullOrEmpty(settings.SigningRsaSecret))
+            {
+                var secret = await _secretService.GetSecretAsync<RSASecret>(settings.SigningRsaSecret);
+                if (secret is not null)
+                {
+                    return ImmutableArray.Create<SecurityKey>(_memoryCache.GetOrCreate(
+                        $"{nameof(OpenIdServerService)}{nameof(settings.SigningRsaSecret)}",
+                        entry =>
+                    {
+                        entry.SetPriority(CacheItemPriority.NeverRemove);
+
+                        var rsa = GenerateRsaSecurityKey(size: 2048);
+                        rsa.ImportRSAPublicKey(secret.PublicKeyAsBytes(), out _);
+
+                        if (secret.KeyType == RSAKeyType.PublicPrivatePair)
+                        {
+                            rsa.ImportRSAPrivateKey(secret.PrivateKeyAsBytes(), out _);
+                        }
+
+                        return new RsaSecurityKey(rsa);
+                    }));
+                }
+
+                _logger.LogWarning("The encryption RSA secret '{SecretName}' could not be found.", settings.EncryptionRsaSecret);
+            }
 
             // If a certificate was explicitly provided, return it immediately
             // instead of using the fallback managed certificates logic.
