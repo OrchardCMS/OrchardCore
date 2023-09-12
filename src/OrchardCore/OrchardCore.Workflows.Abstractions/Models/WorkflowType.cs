@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using OrchardCore.Entities;
 
 namespace OrchardCore.Workflows.Models
 {
     /// <summary>
     /// Represents a workflow type.
     /// </summary>
-    public class WorkflowType
+    public class WorkflowType : Entity
     {
         public long Id { get; set; }
 

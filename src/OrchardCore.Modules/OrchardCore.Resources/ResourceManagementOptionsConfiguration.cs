@@ -35,16 +35,16 @@ namespace OrchardCore.Resources
             manifest
                 .DefineScript("jQuery")
                 .SetUrl("~/OrchardCore.Resources/Scripts/jquery.min.js", "~/OrchardCore.Resources/Scripts/jquery.js")
-                .SetCdn("https://code.jquery.com/jquery-3.7.0.min.js", "https://code.jquery.com/jquery-3.7.0.js")
-                .SetCdnIntegrity("sha384-NXgwF8Kv9SSAr+jemKKcbvQsz+teULH/a5UNJvZc6kP47hZgl62M1vGnw6gHQhb1", "sha384-ogycHROOTGA//2Q8YUfjz1Sr7xMOJTUmY2ucsPVuXAg4CtpgQJQzGZsX768KqetU")
-                .SetVersion("3.7.0");
+                .SetCdn("https://code.jquery.com/jquery-3.7.1.min.js", "https://code.jquery.com/jquery-3.7.1.js")
+                .SetCdnIntegrity("sha384-1H217gwSVyLSIfaLxHbE7dRb3v4mYCKbpQvzx0cegeju1MVsGrX5xXxAvs/HgeFs", "sha384-wsqsSADZR1YRBEZ4/kKHNSmU+aX8ojbnKUMN4RyD3jDkxw5mHtoe2z/T/n4l56U/")
+                .SetVersion("3.7.1");
 
             manifest
                 .DefineScript("jQuery.slim")
                 .SetUrl("~/OrchardCore.Resources/Scripts/jquery.slim.min.js", "~/OrchardCore.Resources/Scripts/jquery.slim.js")
-                .SetCdn("https://code.jquery.com/jquery-3.7.0.slim.min.js", "https://code.jquery.com/jquery-3.7.0.slim.js")
-                .SetCdnIntegrity("sha384-w5y/xIeYixWvfM+A1cEbmHPURnvyqmVg5eVENruEdDjcyRLUSNej7512JQGspFUr", "sha384-VL8kOjBfskeSJSSQ+WVg0FhbQBudbviBQz4N9owZTFBqbb30htL9q46oLaCYU4no")
-                .SetVersion("3.7.0");
+                .SetCdn("https://code.jquery.com/jquery-3.7.1.slim.min.js", "https://code.jquery.com/jquery-3.7.1.slim.js")
+                .SetCdnIntegrity("sha384-5AkRS45j4ukf+JbWAfHL8P4onPA9p0KwwP7pUdjSQA3ss9edbJUJc/XcYAiheSSz", "sha384-5yyt26go0PtGiMk9qStZt+lySzAg8ZSY0i7q6l05kHEEChYiHvf0NsjlexoEdASI")
+                .SetVersion("3.7.1");
 
             manifest
                 .DefineScript("jQuery")
@@ -201,16 +201,16 @@ namespace OrchardCore.Resources
             manifest
                 .DefineStyle("bootstrap-select")
                 .SetUrl("~/OrchardCore.Resources/Styles/bootstrap-select.min.css", "~/OrchardCore.Resources/Styles/bootstrap-select.css")
-                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/css/bootstrap-select.min.css", "https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/css/bootstrap-select.css")
-                .SetCdnIntegrity("sha256-UqiEyrW1sB5d6ZDzcWXKfYCR4MKVYMEdXNjJde84cjc=", "sha256-bmB8s0iyqUelK/WUqWRUG6y8K6RZYD2D/GJU2iIpF8s=")
+                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css", "https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.css")
+                .SetCdnIntegrity("sha384-xF1Y2i6HgC34+4EWddbDhlQuru7cLSKRcPT3hoL3mPoKoV+624vVSZJmegPX77vS", "sha384-DtuOZ7LbR+xAYzDGD4YLpe9eiAayUBwZRqAcoy+RepIoV53tAoJbXnr4AX1xTJ43")
                 .SetVersion("1.14.0");
 
             manifest
                 .DefineScript("bootstrap-select")
                 .SetDependencies("jQuery")
                 .SetUrl("~/OrchardCore.Resources/Scripts/bootstrap-select.min.js", "~/OrchardCore.Resources/Scripts/bootstrap-select.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/js/bootstrap-select.min.js", "https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/js/bootstrap-select.js")
-                .SetCdnIntegrity("sha256-KK/CsQKh6Rb0LsRn4Z8Jcs4h7rRquelIb4EjQm6ige4=", "sha256-igJSxRuCIkTAOsoD48Fqd3mYbVGWL17ajzNLe+Ke2Hk=")
+                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js", "https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.js")
+                .SetCdnIntegrity("sha384-0O3sg2SQIGn4393xwamQISjphC8DIXjCzlhj1gPAMC5xGg+2perF5Mehr5njv0fZ", "sha384-2b0aLFg/Ejp4OF57nW0BUqNzm259RHYYMf/mpKClBijsEH2P+4ea2oWAq0twd8L0")
                 .SetVersion("1.14.0");
 
             manifest
