@@ -28,10 +28,12 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 result.IntrospectionEndpointPath = "/connect/introspect";
                 result.RevocationEndpointPath = "/connect/revoke";
 
+                result.EncryptionRsaSecret = String.Empty;
                 result.EncryptionCertificateStoreLocation = StoreLocation.LocalMachine;
                 result.EncryptionCertificateStoreName = StoreName.My;
                 result.EncryptionCertificateThumbprint = Guid.NewGuid().ToString();
 
+                result.SigningRsaSecret = String.Empty;
                 result.SigningCertificateStoreLocation = StoreLocation.LocalMachine;
                 result.SigningCertificateStoreName = StoreName.My;
                 result.SigningCertificateThumbprint = Guid.NewGuid().ToString();

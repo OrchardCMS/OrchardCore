@@ -18,6 +18,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Settings;
+using OrchardCore.Secrets;
 
 namespace OrchardCore.OpenId.Services
 {
@@ -29,6 +30,7 @@ namespace OrchardCore.OpenId.Services
         private readonly IOptionsMonitor<ShellOptions> _shellOptions;
         private readonly ShellSettings _shellSettings;
         private readonly ISiteService _siteService;
+        private readonly ISecretService _secretService;
         protected readonly IStringLocalizer S;
 
         public OpenIdServerService(
@@ -38,6 +40,7 @@ namespace OrchardCore.OpenId.Services
             IOptionsMonitor<ShellOptions> shellOptions,
             ShellSettings shellSettings,
             ISiteService siteService,
+            ISecretService secretService,
             IStringLocalizer<OpenIdServerService> stringLocalizer)
         {
             _dataProtector = dataProtectionProvider.CreateProtector(nameof(OpenIdServerService));
@@ -46,6 +49,7 @@ namespace OrchardCore.OpenId.Services
             _shellOptions = shellOptions;
             _shellSettings = shellSettings;
             _siteService = siteService;
+            _secretService = secretService;
             S = stringLocalizer;
         }
 
@@ -275,6 +279,11 @@ namespace OrchardCore.OpenId.Services
         public async Task<ImmutableArray<SecurityKey>> GetEncryptionKeysAsync()
         {
             var settings = await GetSettingsAsync();
+
+            if (!String.IsNullOrEmpty(settings.EncryptionRsaSecret))
+            {
+
+            }
 
             // If a certificate was explicitly provided, return it immediately
             // instead of using the fallback managed certificates logic.
