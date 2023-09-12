@@ -387,7 +387,7 @@ namespace OrchardCore.OpenId.Services
                     return ImmutableArray.Create<SecurityKey>(new RsaSecurityKey(rsa));
                 }
 
-                _logger.LogWarning("The signing RSA secret '{SecretName}' could not be found.", settings.EncryptionRsaSecret);
+                _logger.LogWarning("The signing RSA secret '{SecretName}' could not be found.", settings.SigningRsaSecret);
             }
 
             // If a certificate was explicitly provided, return it immediately
