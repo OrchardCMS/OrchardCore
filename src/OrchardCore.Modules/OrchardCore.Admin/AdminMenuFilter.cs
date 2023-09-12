@@ -1,7 +1,5 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Shapes;
@@ -27,7 +25,7 @@ namespace OrchardCore.Admin
         public async Task OnResultExecutionAsync(ResultExecutingContext filterContext, ResultExecutionDelegate next)
         {
             // Should only run on a full view rendering result
-            if (filterContext.Result is not ViewResult && filterContext.Result is not PageResult)
+            if (!filterContext.IsViewOrPageResult())
             {
                 await next();
                 return;
