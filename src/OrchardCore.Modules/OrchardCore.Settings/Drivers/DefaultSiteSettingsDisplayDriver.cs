@@ -30,6 +30,11 @@ namespace OrchardCore.Settings.Drivers
 
         public override Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
         {
+            if (!IsGeneralSettings(context))
+            {
+                return Task.FromResult<IDisplayResult>(null);
+            }
+
             context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__General");
 
             var result = Combine(
@@ -49,7 +54,7 @@ namespace OrchardCore.Settings.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(ISite site, UpdateEditorContext context)
         {
-            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
+            if (IsGeneralSettings(context))
             {
                 var model = new SiteSettingsViewModel();
 
@@ -104,5 +109,8 @@ namespace OrchardCore.Settings.Drivers
             model.AppendVersion = site.AppendVersion;
             model.CacheMode = site.CacheMode;
         }
+
+        private static bool IsGeneralSettings(BuildEditorContext context)
+            => context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase);
     }
 }
