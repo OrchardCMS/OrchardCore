@@ -121,7 +121,7 @@ namespace OrchardCore.Tenants.Controllers
                     shellSettings["DatabaseProvider"] = model.DatabaseProvider;
                     shellSettings["Secret"] = Guid.NewGuid().ToString();
                     shellSettings["RecipeName"] = model.RecipeName;
-                    shellSettings["FeatureProfile"] = String.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
+                    shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
 
                     await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
@@ -172,7 +172,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["Category"] = model.Category;
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
-                shellSettings["FeatureProfile"] = String.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
+                shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
 
                 if (shellSettings.IsUninitialized())
                 {
@@ -305,13 +305,13 @@ namespace OrchardCore.Tenants.Controllers
                 return this.ChallengeOrForbid("Api");
             }
 
-            if (!String.IsNullOrEmpty(model.UserName) && model.UserName.Any(c => !_identityOptions.User.AllowedUserNameCharacters.Contains(c)))
+            if (!string.IsNullOrEmpty(model.UserName) && model.UserName.Any(c => !_identityOptions.User.AllowedUserNameCharacters.Contains(c)))
             {
                 ModelState.AddModelError(nameof(model.UserName), S["User name '{0}' is invalid, can only contain letters or digits.", model.UserName]);
             }
 
             // Only add additional error if attribute validation has passed.
-            if (!String.IsNullOrEmpty(model.Email) && !_emailAddressValidator.Validate(model.Email))
+            if (!string.IsNullOrEmpty(model.Email) && !_emailAddressValidator.Validate(model.Email))
             {
                 ModelState.AddModelError(nameof(model.Email), S["The email is invalid."]);
             }
@@ -338,12 +338,12 @@ namespace OrchardCore.Tenants.Controllers
 
             var databaseProvider = shellSettings["DatabaseProvider"];
 
-            if (String.IsNullOrEmpty(databaseProvider))
+            if (string.IsNullOrEmpty(databaseProvider))
             {
                 databaseProvider = model.DatabaseProvider;
             }
 
-            if (String.IsNullOrEmpty(databaseProvider))
+            if (string.IsNullOrEmpty(databaseProvider))
             {
                 return BadRequest(S["The database provider is not defined."]);
             }
@@ -356,40 +356,40 @@ namespace OrchardCore.Tenants.Controllers
 
             var tablePrefix = shellSettings["TablePrefix"];
 
-            if (String.IsNullOrEmpty(tablePrefix))
+            if (string.IsNullOrEmpty(tablePrefix))
             {
                 tablePrefix = model.TablePrefix;
             }
 
             var schema = shellSettings["Schema"];
 
-            if (String.IsNullOrEmpty(schema))
+            if (string.IsNullOrEmpty(schema))
             {
                 schema = model.Schema;
             }
 
             var connectionString = shellSettings["connectionString"];
 
-            if (String.IsNullOrEmpty(connectionString))
+            if (string.IsNullOrEmpty(connectionString))
             {
                 connectionString = model.ConnectionString;
             }
 
-            if (selectedProvider.HasConnectionString && String.IsNullOrEmpty(connectionString))
+            if (selectedProvider.HasConnectionString && string.IsNullOrEmpty(connectionString))
             {
                 return BadRequest(S["The connection string is required for this database provider."]);
             }
 
             var recipeName = shellSettings["RecipeName"];
 
-            if (String.IsNullOrEmpty(recipeName))
+            if (string.IsNullOrEmpty(recipeName))
             {
                 recipeName = model.RecipeName;
             }
 
             RecipeDescriptor recipeDescriptor = null;
 
-            if (String.IsNullOrEmpty(recipeName))
+            if (string.IsNullOrEmpty(recipeName))
             {
                 if (model.Recipe == null)
                 {
@@ -408,14 +408,14 @@ namespace OrchardCore.Tenants.Controllers
                 recipeDescriptor = new RecipeDescriptor
                 {
                     FileProvider = fileProvider,
-                    BasePath = String.Empty,
+                    BasePath = string.Empty,
                     RecipeFileInfo = fileProvider.GetFileInfo(Path.GetFileName(tempFilename))
                 };
             }
             else
             {
                 var setupRecipes = await _setupService.GetSetupRecipesAsync();
-                recipeDescriptor = setupRecipes.FirstOrDefault(x => String.Equals(x.Name, recipeName, StringComparison.OrdinalIgnoreCase));
+                recipeDescriptor = setupRecipes.FirstOrDefault(x => string.Equals(x.Name, recipeName, StringComparison.OrdinalIgnoreCase));
 
                 if (recipeDescriptor == null)
                 {
@@ -465,13 +465,13 @@ namespace OrchardCore.Tenants.Controllers
             var hostString = host != null ? new HostString(host) : Request.Host;
 
             var pathString = HttpContext.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? PathString.Empty;
-            if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
+            if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
             {
                 pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
             }
 
             var queryString = QueryString.Empty;
-            if (!String.IsNullOrEmpty(token))
+            if (!string.IsNullOrEmpty(token))
             {
                 queryString = QueryString.Create("token", token);
             }

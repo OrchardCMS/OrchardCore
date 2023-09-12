@@ -36,7 +36,7 @@ namespace OrchardCore.Users.TimeZone.Services
         public async Task<ITimeZone> GetUserTimeZoneAsync()
         {
             var currentTimeZoneId = await GetCurrentUserTimeZoneIdAsync();
-            if (String.IsNullOrEmpty(currentTimeZoneId))
+            if (string.IsNullOrEmpty(currentTimeZoneId))
             {
                 return null;
             }
@@ -48,7 +48,7 @@ namespace OrchardCore.Users.TimeZone.Services
         {
             var userName = user?.UserName;
 
-            if (!String.IsNullOrEmpty(userName))
+            if (!string.IsNullOrEmpty(userName))
             {
                 return _distributedCache.RemoveAsync(GetCacheKey(userName));
             }
@@ -60,7 +60,7 @@ namespace OrchardCore.Users.TimeZone.Services
         {
             var userName = _httpContextAccessor.HttpContext.User?.Identity?.Name;
 
-            if (String.IsNullOrEmpty(userName))
+            if (string.IsNullOrEmpty(userName))
             {
                 return null;
             }
@@ -68,12 +68,12 @@ namespace OrchardCore.Users.TimeZone.Services
             var key = GetCacheKey(userName);
             var timeZoneId = await _distributedCache.GetStringAsync(key);
 
-            if (String.IsNullOrEmpty(timeZoneId))
+            if (string.IsNullOrEmpty(timeZoneId))
             {
                 var user = await _userManager.FindByNameAsync(userName) as User;
                 timeZoneId = user.As<UserTimeZone>()?.TimeZoneId;
 
-                if (!String.IsNullOrEmpty(timeZoneId))
+                if (!string.IsNullOrEmpty(timeZoneId))
                 {
                     await _distributedCache.SetStringAsync(key, timeZoneId, new DistributedCacheEntryOptions { SlidingExpiration = _slidingExpiration });
                 }

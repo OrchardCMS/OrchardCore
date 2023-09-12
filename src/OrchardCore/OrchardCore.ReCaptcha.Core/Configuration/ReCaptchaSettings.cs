@@ -19,7 +19,7 @@ namespace OrchardCore.ReCaptcha.Configuration
 
         public bool IsValid()
         {
-            return !String.IsNullOrWhiteSpace(SiteKey) && !String.IsNullOrWhiteSpace(SecretKey);
+            return !string.IsNullOrWhiteSpace(SiteKey) && !string.IsNullOrWhiteSpace(SecretKey);
         }
     }
 }

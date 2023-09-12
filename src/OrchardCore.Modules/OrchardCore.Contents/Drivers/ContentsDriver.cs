@@ -46,18 +46,18 @@ namespace OrchardCore.Contents.Drivers
                 {
                     var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);
 
-                    if (hasStereotype && !String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
+                    if (hasStereotype && !string.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
                     {
                         ctx.Shape.Metadata.Alternates.Add($"{stereotype}__ContentsMetadata");
                     }
 
                     var displayType = ctx.Shape.Metadata.DisplayType;
 
-                    if (!String.IsNullOrEmpty(displayType) && displayType != "Detail")
+                    if (!string.IsNullOrEmpty(displayType) && displayType != "Detail")
                     {
                         ctx.Shape.Metadata.Alternates.Add($"ContentsMetadata_{ctx.Shape.Metadata.DisplayType}");
 
-                        if (hasStereotype && !String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
+                        if (hasStereotype && !string.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
                         {
                             ctx.Shape.Metadata.Alternates.Add($"{stereotype}_{displayType}__ContentsMetadata");
                         }

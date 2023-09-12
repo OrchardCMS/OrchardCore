@@ -38,7 +38,7 @@ public class FacebookPixelFilter : IAsyncResultFilter
             {
                 var settings = (await _siteService.GetSiteSettingsAsync()).As<FacebookPixelSettings>();
 
-                if (!String.IsNullOrWhiteSpace(settings?.PixelId))
+                if (!string.IsNullOrWhiteSpace(settings?.PixelId))
                 {
                     _scriptsCache = new HtmlString($"<script>const MetaPixelId = '{settings.PixelId.Replace("'", "")}';</script>");
                 }

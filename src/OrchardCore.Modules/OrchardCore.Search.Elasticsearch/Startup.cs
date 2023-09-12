@@ -76,7 +76,7 @@ namespace OrchardCore.Search.Elasticsearch
                     case "CloudConnectionPool":
                         BasicAuthenticationCredentials credentials = null;
 
-                        if (!String.IsNullOrWhiteSpace(elasticConfiguration.Username) && !String.IsNullOrWhiteSpace(elasticConfiguration.Password) && !String.IsNullOrWhiteSpace(elasticConfiguration.CloudId))
+                        if (!string.IsNullOrWhiteSpace(elasticConfiguration.Username) && !string.IsNullOrWhiteSpace(elasticConfiguration.Password) && !string.IsNullOrWhiteSpace(elasticConfiguration.CloudId))
                         {
                             credentials = new BasicAuthenticationCredentials(elasticConfiguration.Username, elasticConfiguration.Password);
                             pool = new CloudConnectionPool(elasticConfiguration.CloudId, credentials);
@@ -102,12 +102,12 @@ namespace OrchardCore.Search.Elasticsearch
 
                 var settings = new ConnectionSettings(pool).ThrowExceptions();
 
-                if (elasticConfiguration.ConnectionType != "CloudConnectionPool" && !String.IsNullOrWhiteSpace(elasticConfiguration.Username) && !String.IsNullOrWhiteSpace(elasticConfiguration.Password))
+                if (elasticConfiguration.ConnectionType != "CloudConnectionPool" && !string.IsNullOrWhiteSpace(elasticConfiguration.Username) && !string.IsNullOrWhiteSpace(elasticConfiguration.Password))
                 {
                     settings.BasicAuthentication(elasticConfiguration.Username, elasticConfiguration.Password);
                 }
 
-                if (!String.IsNullOrWhiteSpace(elasticConfiguration.CertificateFingerprint))
+                if (!string.IsNullOrWhiteSpace(elasticConfiguration.CertificateFingerprint))
                 {
                     settings.CertificateFingerprint(elasticConfiguration.CertificateFingerprint);
                 }
@@ -247,7 +247,7 @@ namespace OrchardCore.Search.Elasticsearch
                 return false;
             }
 
-            if (String.IsNullOrWhiteSpace(elasticConnectionOptions.Url))
+            if (string.IsNullOrWhiteSpace(elasticConnectionOptions.Url))
             {
                 logger.LogError("Elasticsearch is enabled but not active because the 'Url' is missing or empty in application configuration.");
                 optionsAreValid = false;

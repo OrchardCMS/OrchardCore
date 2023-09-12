@@ -139,7 +139,7 @@ namespace OrchardCore.ResourceManagement
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public RequireSettings UseVersion(string version)
         {
-            if (!String.IsNullOrEmpty(version))
+            if (!string.IsNullOrEmpty(version))
             {
                 Version = version;
             }

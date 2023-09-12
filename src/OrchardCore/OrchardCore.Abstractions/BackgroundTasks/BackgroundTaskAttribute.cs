@@ -23,7 +23,7 @@ namespace OrchardCore.BackgroundTasks
         /// <summary>
         /// The description of this background task.
         /// </summary>
-        public string Description { get; set; } = String.Empty;
+        public string Description { get; set; } = string.Empty;
 
         /// <summary>
         /// The timeout in milliseconds to acquire a lock before executing the task atomically.

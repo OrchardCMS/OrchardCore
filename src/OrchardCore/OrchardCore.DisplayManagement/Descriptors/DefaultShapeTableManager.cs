@@ -171,7 +171,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
                 return true;
             }
 
-            if (String.IsNullOrEmpty(themeId))
+            if (string.IsNullOrEmpty(themeId))
             {
                 return false;
             }

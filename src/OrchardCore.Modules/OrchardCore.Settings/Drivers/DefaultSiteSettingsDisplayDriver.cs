@@ -73,7 +73,7 @@ namespace OrchardCore.Settings.Drivers
                 site.ResourceDebugMode = model.ResourceDebugMode;
                 site.AppendVersion = model.AppendVersion;
                 site.CacheMode = model.CacheMode;
-
+                
                 if (model.PageSize.Value < 1)
                 {
                     context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be greater than zero."]);
@@ -85,7 +85,7 @@ namespace OrchardCore.Settings.Drivers
                 }
             }
 
-            if (!String.IsNullOrEmpty(site.BaseUrl) && !Uri.TryCreate(site.BaseUrl, UriKind.Absolute, out _))
+            if (!string.IsNullOrEmpty(site.BaseUrl) && !Uri.TryCreate(site.BaseUrl, UriKind.Absolute, out _))
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.BaseUrl), S["The Base url must be a fully qualified URL."]);
             }

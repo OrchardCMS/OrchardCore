@@ -87,7 +87,7 @@ namespace OrchardCore.Apis.GraphQL.Services
                     var identifier = await builder.GetIdentifierAsync();
 
                     // Null being a valid value not yet updated.
-                    if (identifier != String.Empty)
+                    if (identifier != string.Empty)
                     {
                         _identifiers[builder] = identifier;
                     }

@@ -37,7 +37,7 @@ namespace OrchardCore.Google.Analytics
                 {
                     var settings = (await _siteService.GetSiteSettingsAsync()).As<GoogleAnalyticsSettings>();
 
-                    if (!String.IsNullOrWhiteSpace(settings?.TrackingID))
+                    if (!string.IsNullOrWhiteSpace(settings?.TrackingID))
                     {
                         _scriptsCache = new HtmlString($"<!-- Global site tag (gtag.js) - Google Analytics -->\n<script async src=\"https://www.googletagmanager.com/gtag/js?id={settings.TrackingID}\"></script>\n<script>window.dataLayer = window.dataLayer || [];function gtag() {{ dataLayer.push(arguments); }}gtag('js', new Date());gtag('config', '{settings.TrackingID}')</script>\n<!-- End Global site tag (gtag.js) - Google Analytics -->");
                     }

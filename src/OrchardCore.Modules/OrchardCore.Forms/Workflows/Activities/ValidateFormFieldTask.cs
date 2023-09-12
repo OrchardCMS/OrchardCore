@@ -54,7 +54,7 @@ namespace OrchardCore.Forms.Workflows.Activities
         {
             var form = _httpContextAccessor.HttpContext.Request.Form;
             var fieldValue = form[FieldName];
-            var isValid = !String.IsNullOrWhiteSpace(fieldValue);
+            var isValid = !string.IsNullOrWhiteSpace(fieldValue);
             var outcome = isValid ? "Valid" : "Invalid";
 
             if (!isValid)

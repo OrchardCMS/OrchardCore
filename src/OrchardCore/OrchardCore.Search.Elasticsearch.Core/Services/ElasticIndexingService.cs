@@ -55,10 +55,10 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         public async Task ProcessContentItemsAsync(string indexName = default)
         {
             var allIndices = new Dictionary<string, long>();
-            var lastTaskId = Int64.MaxValue;
+            var lastTaskId = long.MaxValue;
             IEnumerable<ElasticIndexSettings> indexSettingsList = null;
 
-            if (String.IsNullOrEmpty(indexName))
+            if (string.IsNullOrEmpty(indexName))
             {
                 indexSettingsList = await _elasticIndexSettingsService.GetSettingsAsync();
 

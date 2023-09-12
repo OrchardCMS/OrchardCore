@@ -28,7 +28,7 @@ namespace OrchardCore.Tests.Commands
 
             var descriptor = builder.Build(typeof(StubCommandHandler));
 
-            var commandDescriptor = descriptor.Commands.Single(d => d.Names.Any(x => String.Equals(x, commandName, StringComparison.OrdinalIgnoreCase)));
+            var commandDescriptor = descriptor.Commands.Single(d => d.Names.Any(x => string.Equals(x, commandName, StringComparison.OrdinalIgnoreCase)));
 
             return new CommandContext
             {
@@ -36,7 +36,7 @@ namespace OrchardCore.Tests.Commands
                 Switches = switches,
                 CommandDescriptor = commandDescriptor,
                 Arguments = args,
-                Input = new StringReader(String.Empty),
+                Input = new StringReader(string.Empty),
                 Output = new StringWriter(),
             };
         }
@@ -236,7 +236,7 @@ namespace OrchardCore.Tests.Commands
                 trace += " : Entering Level 2";
             }
 
-            if (!String.IsNullOrEmpty(User))
+            if (!string.IsNullOrEmpty(User))
             {
                 trace += " : current user is " + User;
             }

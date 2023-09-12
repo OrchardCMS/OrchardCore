@@ -45,10 +45,10 @@ namespace OrchardCore.Media.Shortcodes
             }
 
             // Handle self closing shortcodes.
-            if (String.IsNullOrEmpty(content))
+            if (string.IsNullOrEmpty(content))
             {
                 content = arguments.NamedOrDefault("src");
-                if (String.IsNullOrEmpty(content))
+                if (string.IsNullOrEmpty(content))
                 {
                     // Do not handle the deprecated media shortcode in this edge case.
                     return ImageShortcode;
@@ -61,7 +61,7 @@ namespace OrchardCore.Media.Shortcodes
                 if (content.StartsWith("~/", StringComparison.Ordinal))
                 {
                     content = _httpContextAccessor.HttpContext.Request.PathBase.Add(content[1..]).Value;
-                    if (!String.IsNullOrEmpty(_options.CdnBaseUrl))
+                    if (!string.IsNullOrEmpty(_options.CdnBaseUrl))
                     {
                         content = _options.CdnBaseUrl + content;
                     }
@@ -71,8 +71,8 @@ namespace OrchardCore.Media.Shortcodes
                     content = _mediaFileStore.MapPathToPublicUrl(content);
                 }
             }
-            var className = String.Empty;
-            var altText = String.Empty;
+            var className = string.Empty;
+            var altText = string.Empty;
             if (arguments.Any())
             {
                 var queryStringParams = new Dictionary<string, string>();

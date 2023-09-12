@@ -36,11 +36,11 @@ public class NotificationIndexProvider : IndexProvider<Notification>
         context.For<NotificationIndex>()
             .Map(notification =>
             {
-                var content = notification.Summary ?? String.Empty;
+                var content = notification.Summary ?? string.Empty;
 
                 var bodyInfo = notification.As<NotificationBodyInfo>();
 
-                if (!String.IsNullOrEmpty(bodyInfo?.TextBody))
+                if (!string.IsNullOrEmpty(bodyInfo?.TextBody))
                 {
                     content += $" {bodyInfo.TextBody}";
                 }
@@ -70,6 +70,6 @@ public class NotificationIndexProvider : IndexProvider<Notification>
 
     public static string StripHTML(string html)
     {
-        return _htmlRegex.Replace(html, String.Empty);
+        return _htmlRegex.Replace(html, string.Empty);
     }
 }

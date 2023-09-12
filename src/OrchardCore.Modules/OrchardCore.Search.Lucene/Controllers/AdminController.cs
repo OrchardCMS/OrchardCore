@@ -104,7 +104,7 @@ namespace OrchardCore.Search.Lucene.Controllers
             var count = indexes.Count();
             var results = indexes;
 
-            if (!String.IsNullOrWhiteSpace(options.Search))
+            if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 results = results.Where(q => q.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase));
             }
@@ -144,7 +144,7 @@ namespace OrchardCore.Search.Lucene.Controllers
 
         public async Task<ActionResult> Edit(string indexName = null)
         {
-            var IsCreate = String.IsNullOrWhiteSpace(indexName);
+            var IsCreate = string.IsNullOrWhiteSpace(indexName);
             var settings = new LuceneIndexSettings();
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLuceneIndexes))
@@ -343,7 +343,7 @@ namespace OrchardCore.Search.Lucene.Controllers
 
         public Task<IActionResult> Query(string indexName, string query)
         {
-            query = String.IsNullOrWhiteSpace(query) ? "" : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query));
+            query = string.IsNullOrWhiteSpace(query) ? "" : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query));
             return Query(new AdminQueryViewModel { IndexName = indexName, DecodedQuery = query });
         }
 
@@ -363,7 +363,7 @@ namespace OrchardCore.Search.Lucene.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            if (String.IsNullOrEmpty(model.IndexName))
+            if (string.IsNullOrEmpty(model.IndexName))
             {
                 model.IndexName = model.Indices[0];
             }
@@ -373,12 +373,12 @@ namespace OrchardCore.Search.Lucene.Controllers
                 return NotFound();
             }
 
-            if (String.IsNullOrWhiteSpace(model.DecodedQuery))
+            if (string.IsNullOrWhiteSpace(model.DecodedQuery))
             {
                 return View(model);
             }
 
-            if (String.IsNullOrEmpty(model.Parameters))
+            if (string.IsNullOrEmpty(model.Parameters))
             {
                 model.Parameters = "{ }";
             }
@@ -486,7 +486,7 @@ namespace OrchardCore.Search.Lucene.Controllers
                 ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexedContentTypes), S["At least one content type selection is required."]);
             }
 
-            if (String.IsNullOrWhiteSpace(model.IndexName))
+            if (string.IsNullOrWhiteSpace(model.IndexName))
             {
                 ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["The index name is required."]);
             }

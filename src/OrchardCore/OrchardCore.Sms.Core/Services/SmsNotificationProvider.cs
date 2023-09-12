@@ -27,7 +27,7 @@ public class SmsNotificationProvider : INotificationMethodProvider
     {
         var user = notify as User;
 
-        if (String.IsNullOrEmpty(user?.Email))
+        if (string.IsNullOrEmpty(user?.Email))
         {
             return false;
         }

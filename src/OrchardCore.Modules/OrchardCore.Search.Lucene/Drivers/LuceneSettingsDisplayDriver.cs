@@ -42,7 +42,7 @@ namespace OrchardCore.Search.Lucene.Drivers
             return Initialize<LuceneSettingsViewModel>("LuceneSettings_Edit", async model =>
                 {
                     model.SearchIndex = settings.SearchIndex;
-                    model.SearchFields = String.Join(", ", settings.DefaultSearchFields ?? Array.Empty<string>());
+                    model.SearchFields = string.Join(", ", settings.DefaultSearchFields ?? Array.Empty<string>());
                     model.SearchIndexes = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName);
                     model.AllowLuceneQueriesInSearch = settings.AllowLuceneQueriesInSearch;
                 }).Location("Content:2").OnGroup(GroupId);

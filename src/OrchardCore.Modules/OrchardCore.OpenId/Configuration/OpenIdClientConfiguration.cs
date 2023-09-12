@@ -52,7 +52,7 @@ namespace OrchardCore.OpenId.Configuration
         public void Configure(string name, OpenIdConnectOptions options)
         {
             // Ignore OpenID Connect client handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!String.Equals(name, OpenIdConnectDefaults.AuthenticationScheme))
+            if (!string.Equals(name, OpenIdConnectDefaults.AuthenticationScheme))
             {
                 return;
             }
@@ -67,7 +67,7 @@ namespace OrchardCore.OpenId.Configuration
             options.ClientId = settings.ClientId;
             options.SignedOutRedirectUri = settings.SignedOutRedirectUri ?? options.SignedOutRedirectUri;
             options.SignedOutCallbackPath = settings.SignedOutCallbackPath ?? options.SignedOutCallbackPath;
-            options.RequireHttpsMetadata = String.Equals(settings.Authority.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase);
+            options.RequireHttpsMetadata = string.Equals(settings.Authority.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase);
             options.GetClaimsFromUserInfoEndpoint = true;
             options.ResponseMode = settings.ResponseMode;
             options.ResponseType = settings.ResponseType;
@@ -83,7 +83,7 @@ namespace OrchardCore.OpenId.Configuration
                 }
             }
 
-            if (!String.IsNullOrEmpty(settings.ClientSecret))
+            if (!string.IsNullOrEmpty(settings.ClientSecret))
             {
                 var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration));
 
