@@ -6,21 +6,19 @@
 @model FormPartEditViewModel
 
 <div class="@Orchard.GetWrapperCssClasses()">
-    <div>
-        <label asp-for="WorkflowPayload.WorkflowId" class="@Orchard.GetLabelCssClasses()">@T["Workflow Action"]</label>
-        <div class="@Orchard.GetEndCssClasses()">
-            <select asp-for="WorkflowPayload.WorkflowId" asp-items="Model.WorkflowTypes" class="form-control" asp-validation-class-for="WorkflowPayload.WorkflowId"></select>
-            <span asp-validation-for="WorkflowPayload.WorkflowId"></span>
-            <span class="hint">@T["A secure 'Action' URL is auto generated on demand to target this 'Workflow' containing an http request event."]</span>
-        </div>
+    <label asp-for="WorkflowPayload.WorkflowId" class="@Orchard.GetLabelCssClasses()">@T["Workflow"]</label>
+    <div class="@Orchard.GetEndCssClasses()">
+        <select asp-for="WorkflowPayload.WorkflowId" asp-items="Model.WorkflowTypes" class="form-control" asp-validation-class-for="WorkflowPayload.WorkflowId"></select>
+        <span asp-validation-for="WorkflowPayload.WorkflowId"></span>
+        <span class="hint">@T["The workflow containing an http request event activity to submit the form to. A secure URL is generated dynamically."]</span>
     </div>
+</div>
 
-    <div class="mt-1 plain-text">
-        @* <label asp-for="Action" class="@Orchard.GetLabelCssClasses()">@T["Action"]</label> *@
-        <div class="@Orchard.GetEndCssClasses()">
-            <input type="text" asp-for="Action" class="form-control content-preview-text" />
-            <span class="hint">@T["The plain text 'Action' URL to submit the form to."]</span>
-        </div>
+<div class="@Orchard.GetWrapperCssClasses() plain-text">
+    <label asp-for="Action" class="@Orchard.GetLabelCssClasses()">@T["Action"]</label>
+    <div class="@Orchard.GetEndCssClasses()">
+        <input type="text" asp-for="Action" class="form-control content-preview-text" />
+        <span class="hint">@T["The URL to submit the form to."]</span>
     </div>
 </div>
 
@@ -62,10 +60,8 @@
         $('#@Html.IdFor(m => m.WorkflowPayload.WorkflowId)').on('change', function () {
             if (this.value === '') {
                 $('#@Html.IdFor(m => m.Action)').closest('.plain-text').show();
-                $('#@Html.IdFor(m => m.WorkflowPayload.WorkflowId)').siblings('.hint').hide();
             } else {
                 $('#@Html.IdFor(m => m.Action)').closest('.plain-text').hide();
-                $('#@Html.IdFor(m => m.WorkflowPayload.WorkflowId)').siblings('.hint').show();
             }
         }).trigger('change');
     });
