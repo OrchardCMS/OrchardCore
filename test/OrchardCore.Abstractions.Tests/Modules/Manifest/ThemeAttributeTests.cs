@@ -22,7 +22,7 @@ namespace OrchardCore.DisplayManagement.Manifest
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="ThemeAttribute(string, string, string, string, string, string, string, string, bool, bool, bool)"/>,
+        /// <see cref="ThemeAttribute(String, String, String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>,
         /// arguments in order,
         /// <c>id, baseTheme, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -48,7 +48,7 @@ namespace OrchardCore.DisplayManagement.Manifest
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="ThemeAttribute(string, string, string, string, string, string, string, string, string, bool, bool, bool)"/>,
+        /// <see cref="ThemeAttribute(String, String, String, String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>,
         /// arguments in order,
         /// <c>id, name, baseTheme, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -64,7 +64,7 @@ namespace OrchardCore.DisplayManagement.Manifest
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="ThemeAttribute(string, string, string, string, string, string, string, string, string, string, string, bool, bool, bool)"/>,
+        /// <see cref="ThemeAttribute(String, String, String, String, String, String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>,
         /// arguments in order,
         /// <c>id, name, baseTheme, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -79,7 +79,7 @@ namespace OrchardCore.DisplayManagement.Manifest
             };
 
         /// <summary>
-        /// Verify the <see cref="ThemeAttribute(string, string, string, string, string, string, string ,string, bool, bool, bool)"/>
+        /// Verify the <see cref="ThemeAttribute(String, String, String, String, String, String, String ,String, Boolean, Boolean, Boolean)"/>
         /// ctor, arguments
         /// <c>id, baseTheme, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -102,17 +102,17 @@ namespace OrchardCore.DisplayManagement.Manifest
             var tagString = String.Join(';', tags);
 
             ReportKeyValuePairs(
-                new RenderKeyValuePair(nameof(id), id)
-                , new RenderKeyValuePair(nameof(baseTheme), baseTheme)
-                , new RenderKeyValuePair(nameof(description), description)
-                , new RenderKeyValuePair(nameof(author), author)
-                , new RenderKeyValuePair(nameof(semVer), semVer)
-                , new RenderKeyValuePair(nameof(website), website)
-                , new RenderKeyValuePair(nameof(deps), depString)
-                , new RenderKeyValuePair(nameof(tags), tagString)
-                , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
-                , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
-                , new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
+                new RenderKeyValuePair(nameof(id), id),
+                new RenderKeyValuePair(nameof(baseTheme), baseTheme),
+                new RenderKeyValuePair(nameof(description), description),
+                new RenderKeyValuePair(nameof(author), author),
+                new RenderKeyValuePair(nameof(semVer), semVer),
+                new RenderKeyValuePair(nameof(website), website),
+                new RenderKeyValuePair(nameof(deps), depString),
+                new RenderKeyValuePair(nameof(tags), tagString),
+                new RenderKeyValuePair(nameof(defaultTenant), defaultTenant),
+                new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled),
+                new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
             var theme = CreateFromArgs(ThemeString8Bool3CtorClassifier, id, baseTheme, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, enabledByDependencyOnly);
@@ -145,7 +145,7 @@ namespace OrchardCore.DisplayManagement.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="ThemeAttribute(string, string, string, string, string, string, string, string ,string, bool, bool, bool)"/>
+        /// Verify the <see cref="ThemeAttribute(String, String, String, String, String, String, String, String ,String, Boolean, Boolean, Boolean)"/>
         /// ctor, arguments
         /// <c>id, name, baseTheme, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -169,18 +169,18 @@ namespace OrchardCore.DisplayManagement.Manifest
             var tagString = String.Join(';', tags);
 
             ReportKeyValuePairs(
-                new RenderKeyValuePair(nameof(id), id)
-                , new RenderKeyValuePair(nameof(name), name)
-                , new RenderKeyValuePair(nameof(baseTheme), baseTheme)
-                , new RenderKeyValuePair(nameof(description), description)
-                , new RenderKeyValuePair(nameof(author), author)
-                , new RenderKeyValuePair(nameof(semVer), semVer)
-                , new RenderKeyValuePair(nameof(website), website)
-                , new RenderKeyValuePair(nameof(deps), depString)
-                , new RenderKeyValuePair(nameof(tags), tagString)
-                , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
-                , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
-                , new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
+                new RenderKeyValuePair(nameof(id), id),
+                new RenderKeyValuePair(nameof(name), name),
+                new RenderKeyValuePair(nameof(baseTheme), baseTheme),
+                new RenderKeyValuePair(nameof(description), description),
+                new RenderKeyValuePair(nameof(author), author),
+                new RenderKeyValuePair(nameof(semVer), semVer),
+                new RenderKeyValuePair(nameof(website), website),
+                new RenderKeyValuePair(nameof(deps), depString),
+                new RenderKeyValuePair(nameof(tags), tagString),
+                new RenderKeyValuePair(nameof(defaultTenant), defaultTenant),
+                new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled),
+                new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
             var theme = CreateFromArgs(ThemeString9Bool3CtorClassifier, id, name, baseTheme, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, enabledByDependencyOnly);
@@ -213,7 +213,7 @@ namespace OrchardCore.DisplayManagement.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="ThemeAttribute(string, string, string, string, string, string, string, string, string, string ,string, bool, bool, bool)"/>
+        /// Verify the <see cref="ThemeAttribute(String, String, String, String, String, String, String, String, String, String ,String, Boolean, Boolean, Boolean)"/>
         /// ctor, arguments
         /// <c>id, name, baseTheme, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -240,20 +240,20 @@ namespace OrchardCore.DisplayManagement.Manifest
             var priString = $"{priority}";
 
             ReportKeyValuePairs(
-                new RenderKeyValuePair(nameof(id), id)
-                , new RenderKeyValuePair(nameof(name), name)
-                , new RenderKeyValuePair(nameof(baseTheme), baseTheme)
-                , new RenderKeyValuePair(nameof(category), category)
-                , new RenderKeyValuePair(nameof(priority), priority)
-                , new RenderKeyValuePair(nameof(description), description)
-                , new RenderKeyValuePair(nameof(author), author)
-                , new RenderKeyValuePair(nameof(semVer), semVer)
-                , new RenderKeyValuePair(nameof(website), website)
-                , new RenderKeyValuePair(nameof(deps), depString)
-                , new RenderKeyValuePair(nameof(tags), tagString)
-                , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
-                , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
-                , new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
+                new RenderKeyValuePair(nameof(id), id),
+                new RenderKeyValuePair(nameof(name), name),
+                new RenderKeyValuePair(nameof(baseTheme), baseTheme),
+                new RenderKeyValuePair(nameof(category), category),
+                new RenderKeyValuePair(nameof(priority), priority),
+                new RenderKeyValuePair(nameof(description), description),
+                new RenderKeyValuePair(nameof(author), author),
+                new RenderKeyValuePair(nameof(semVer), semVer),
+                new RenderKeyValuePair(nameof(website), website),
+                new RenderKeyValuePair(nameof(deps), depString),
+                new RenderKeyValuePair(nameof(tags), tagString),
+                new RenderKeyValuePair(nameof(defaultTenant), defaultTenant),
+                new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled),
+                new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
             var theme = CreateFromArgs(ThemeString11Bool3CtorClassifier, id, name, baseTheme, category, priString, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, enabledByDependencyOnly);
@@ -312,17 +312,17 @@ namespace OrchardCore.DisplayManagement.Manifest
             var rootType = typeof(Examples.Themes.AssyAttrib.Charlie.Root);
 
             ReportKeyValuePairs(
-                new RenderKeyValuePair(nameof(id), id)
-                , new RenderKeyValuePair(nameof(baseTheme), baseTheme)
-                , new RenderKeyValuePair(nameof(description), description)
-                , new RenderKeyValuePair(nameof(author), author)
-                , new RenderKeyValuePair(nameof(semVer), semVer)
-                , new RenderKeyValuePair(nameof(website), website)
-                , new RenderKeyValuePair(nameof(deps), depString)
-                , new RenderKeyValuePair(nameof(tags), tagString)
-                , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
-                , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
-                , new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
+                new RenderKeyValuePair(nameof(id), id),
+                new RenderKeyValuePair(nameof(baseTheme), baseTheme),
+                new RenderKeyValuePair(nameof(description), description),
+                new RenderKeyValuePair(nameof(author), author),
+                new RenderKeyValuePair(nameof(semVer), semVer),
+                new RenderKeyValuePair(nameof(website), website),
+                new RenderKeyValuePair(nameof(deps), depString),
+                new RenderKeyValuePair(nameof(tags), tagString),
+                new RenderKeyValuePair(nameof(defaultTenant), defaultTenant),
+                new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled),
+                new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
             // We are looking for one instance of ThemeAttribute in particular in this case
@@ -389,18 +389,18 @@ namespace OrchardCore.DisplayManagement.Manifest
             var rootType = typeof(Examples.Themes.AssyAttrib.Bravo.Root);
 
             ReportKeyValuePairs(
-                new RenderKeyValuePair(nameof(id), id)
-                , new RenderKeyValuePair(nameof(name), name)
-                , new RenderKeyValuePair(nameof(baseTheme), baseTheme)
-                , new RenderKeyValuePair(nameof(description), description)
-                , new RenderKeyValuePair(nameof(author), author)
-                , new RenderKeyValuePair(nameof(semVer), semVer)
-                , new RenderKeyValuePair(nameof(website), website)
-                , new RenderKeyValuePair(nameof(deps), depString)
-                , new RenderKeyValuePair(nameof(tags), tagString)
-                , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
-                , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
-                , new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
+                new RenderKeyValuePair(nameof(id), id),
+                new RenderKeyValuePair(nameof(name), name),
+                new RenderKeyValuePair(nameof(baseTheme), baseTheme),
+                new RenderKeyValuePair(nameof(description), description),
+                new RenderKeyValuePair(nameof(author), author),
+                new RenderKeyValuePair(nameof(semVer), semVer),
+                new RenderKeyValuePair(nameof(website), website),
+                new RenderKeyValuePair(nameof(deps), depString),
+                new RenderKeyValuePair(nameof(tags), tagString),
+                new RenderKeyValuePair(nameof(defaultTenant), defaultTenant),
+                new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled),
+                new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
             // We are looking for one instance of ThemeAttribute in particular in this case
@@ -468,20 +468,20 @@ namespace OrchardCore.DisplayManagement.Manifest
             var rootType = typeof(Examples.Themes.AssyAttrib.Alpha.Root);
 
             ReportKeyValuePairs(
-                new RenderKeyValuePair(nameof(id), id)
-                , new RenderKeyValuePair(nameof(name), name)
-                , new RenderKeyValuePair(nameof(baseTheme), baseTheme)
-                , new RenderKeyValuePair(nameof(category), category)
-                , new RenderKeyValuePair(nameof(priority), priority)
-                , new RenderKeyValuePair(nameof(description), description)
-                , new RenderKeyValuePair(nameof(author), author)
-                , new RenderKeyValuePair(nameof(semVer), semVer)
-                , new RenderKeyValuePair(nameof(website), website)
-                , new RenderKeyValuePair(nameof(deps), depString)
-                , new RenderKeyValuePair(nameof(tags), tagString)
-                , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
-                , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
-                , new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
+                new RenderKeyValuePair(nameof(id), id),
+                new RenderKeyValuePair(nameof(name), name),
+                new RenderKeyValuePair(nameof(baseTheme), baseTheme),
+                new RenderKeyValuePair(nameof(category), category),
+                new RenderKeyValuePair(nameof(priority), priority),
+                new RenderKeyValuePair(nameof(description), description),
+                new RenderKeyValuePair(nameof(author), author),
+                new RenderKeyValuePair(nameof(semVer), semVer),
+                new RenderKeyValuePair(nameof(website), website),
+                new RenderKeyValuePair(nameof(deps), depString),
+                new RenderKeyValuePair(nameof(tags), tagString),
+                new RenderKeyValuePair(nameof(defaultTenant), defaultTenant),
+                new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled),
+                new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
             // We are looking for one instance of ThemeAttribute in particular in this case

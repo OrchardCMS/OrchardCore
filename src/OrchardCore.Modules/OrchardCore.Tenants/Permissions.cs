@@ -7,8 +7,8 @@ namespace OrchardCore.Tenants
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageTenants = new Permission("ManageTenants", "Manage tenants");
-        public static readonly Permission ManageTenantFeatureProfiles = new Permission("ManageTenantFeatureProfiles", "Manage tenant feature profiles");
+        public static readonly Permission ManageTenants = new("ManageTenants", "Manage tenants");
+        public static readonly Permission ManageTenantFeatureProfiles = new("ManageTenantFeatureProfiles", "Manage tenant feature profiles");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
@@ -25,7 +25,7 @@ namespace OrchardCore.Tenants
                     Permissions = new[]
                     {
                         ManageTenants,
-                        ManageTenantFeatureProfiles
+                        ManageTenantFeatureProfiles,
                     }
                 }
             };

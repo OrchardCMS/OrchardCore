@@ -1,0 +1,25 @@
+@using OrchardCore.Users.Services
+@model RequestCodeSmsAuthenticatorViewModel
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="TwoFactorAuthentication">@T["Two-Factor Authentication"]</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@RenderTitleSegments(T["Configure SMS Authenticator"])</li>
+    </ol>
+</nav>
+
+<div class="alert alert-info">
+    @T["To utilize SMS as a two-factor authentication method, please click the 'Request Code' button below in order to confirm your Phone number."]
+</div>
+
+<form method="post">
+    <div class="mb-3">
+        <label asp-for="PhoneNumber">@T["Phone Number"]</label>
+        <input class="form-control" type="text" asp-for="PhoneNumber" asp-is-disabled="!Model.AllowChangingPhoneNumber">
+        @if (Model.AllowChangingPhoneNumber)
+        {
+            <span>@T["Phone number must include a country code. For example, +1 for United States."]</span>
+        }
+    </div>
+    <button type="submit" class="btn btn-primary">@T["Request Code"]</button>
+</form>

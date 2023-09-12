@@ -20,8 +20,8 @@ namespace OrchardCore.DataProtection.Azure
         private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
-        // Local instance since it can be discarded once the startup is over
-        private readonly FluidParser _fluidParser = new FluidParser();
+        // Local instance since it can be discarded once the startup is over.
+        private readonly FluidParser _fluidParser = new();
 
         public Startup(
             IShellConfiguration configuration,
@@ -39,7 +39,7 @@ namespace OrchardCore.DataProtection.Azure
         {
             var connectionString = _configuration.GetValue<string>("OrchardCore_DataProtection_Azure:ConnectionString");
 
-            if (!string.IsNullOrWhiteSpace(connectionString))
+            if (!String.IsNullOrWhiteSpace(connectionString))
             {
                 services.AddDataProtection().PersistKeysToAzureBlobStorage(connectionString, GetBlobContainerName(connectionString), GetBlobName());
             }

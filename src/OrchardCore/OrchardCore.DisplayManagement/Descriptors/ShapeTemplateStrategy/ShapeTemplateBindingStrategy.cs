@@ -20,15 +20,14 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
         private readonly ILogger _logger;
         private readonly IShellFeaturesManager _shellFeaturesManager;
 
-        private readonly Dictionary<string, IShapeTemplateViewEngine> _viewEnginesByExtension =
-            new Dictionary<string, IShapeTemplateViewEngine>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IShapeTemplateViewEngine> _viewEnginesByExtension = new(StringComparer.OrdinalIgnoreCase);
 
         public ShapeTemplateBindingStrategy(
             IEnumerable<IShapeTemplateHarvester> harvesters,
             IShellFeaturesManager shellFeaturesManager,
             IEnumerable<IShapeTemplateViewEngine> shapeTemplateViewEngines,
             IShapeTemplateFileProviderAccessor fileProviderAccessor,
-            ILogger<DefaultShapeTableManager> logger)
+            ILogger<ShapeTemplateBindingStrategy> logger)
         {
             _harvesters = harvesters;
             _shellFeaturesManager = shellFeaturesManager;

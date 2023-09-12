@@ -9,7 +9,9 @@ namespace OrchardCore.DynamicCache
     public class CachedShapeWrapperShapes : IShapeAttributeProvider
     {
         [Shape]
+#pragma warning disable CA1822 // Mark members as static
         public IHtmlContent CachedShapeWrapper(IShape Shape)
+#pragma warning restore CA1822 // Mark members as static
         {
             // No need to optimize this code as it will be used for debugging purpose
 

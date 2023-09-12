@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Autoroute.Models;
@@ -13,7 +14,7 @@ namespace OrchardCore.Autoroute.Settings
     public class AutoroutePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<AutoroutePart>
     {
         private readonly ILiquidTemplateManager _templateManager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AutoroutePartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<AutoroutePartSettingsDisplayDriver> localizer)
         {
@@ -53,9 +54,9 @@ namespace OrchardCore.Autoroute.Settings
                 m => m.ManageContainedItemRoutes,
                 m => m.AllowAbsolutePath);
 
-            if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
+            if (!String.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
             {
-                context.Updater.ModelState.AddModelError(nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                context.Updater.ModelState.AddModelError(nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", String.Join(" ", errors)]);
             }
             else
             {

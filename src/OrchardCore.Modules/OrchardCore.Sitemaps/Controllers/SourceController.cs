@@ -25,9 +25,9 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly ISitemapManager _sitemapManager;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly INotifier _notifier;
-        private readonly dynamic New;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
+        protected readonly dynamic New;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public SourceController(
             IAuthorizationService authorizationService,

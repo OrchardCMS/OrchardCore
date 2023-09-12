@@ -6,7 +6,7 @@
 
 <div class="mb-3" asp-validation-class-for="HttpMethod">
     <label asp-for="HttpMethod">@T["HTTP Method"]</label>
-    <select asp-for="HttpMethod" class="form-select" asp-items="Model.GetAvailableHttpMethods()"></select>
+    <select asp-for="HttpMethod" class="form-select" asp-items="HttpRequestEventViewModel.GetAvailableHttpMethods()"></select>
     <span asp-validation-for="HttpMethod"></span>
     <span class="hint">@T["The HTTP method to match."]</span>
 </div>

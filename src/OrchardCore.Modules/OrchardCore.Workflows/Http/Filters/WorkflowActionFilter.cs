@@ -44,13 +44,13 @@ namespace OrchardCore.Workflows.Http.Filters
 
             if (workflowTypeEntries.Any())
             {
-                var workflowTypeIds = workflowTypeEntries.Select(x => Int32.Parse(x.WorkflowId)).ToList();
+                var workflowTypeIds = workflowTypeEntries.Select(x => Int64.Parse(x.WorkflowId)).ToList();
                 var workflowTypes = (await _workflowTypeStore.GetAsync(workflowTypeIds)).ToDictionary(x => x.Id);
                 var correlationId = routeValues.GetValue<string>("correlationid");
 
                 foreach (var entry in workflowTypeEntries)
                 {
-                    if (workflowTypes.TryGetValue(Int32.Parse(entry.WorkflowId), out var workflowType))
+                    if (workflowTypes.TryGetValue(Int64.Parse(entry.WorkflowId), out var workflowType))
                     {
                         var activity = workflowType.Activities.Single(x => x.ActivityId == entry.ActivityId);
 

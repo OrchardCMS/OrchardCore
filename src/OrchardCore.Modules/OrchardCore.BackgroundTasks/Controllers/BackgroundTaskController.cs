@@ -28,9 +28,9 @@ namespace OrchardCore.BackgroundTasks.Controllers
         private readonly BackgroundTaskManager _backgroundTaskManager;
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
-        private readonly dynamic New;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
+        protected readonly dynamic New;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public BackgroundTaskController(
             IAuthorizationService authorizationService,
@@ -167,6 +167,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 Description = settings.Description,
                 LockTimeout = settings.LockTimeout,
                 LockExpiration = settings.LockExpiration,
+                UsePipeline = settings.UsePipeline,
             };
 
             return View(model);
@@ -201,6 +202,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 settings.Description = model.Description;
                 settings.LockTimeout = model.LockTimeout;
                 settings.LockExpiration = model.LockExpiration;
+                settings.UsePipeline = model.UsePipeline;
 
                 await _backgroundTaskManager.UpdateAsync(model.Name, settings);
 

@@ -32,10 +32,10 @@ namespace OrchardCore.Shortcodes.Controllers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
+        protected readonly dynamic New;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
-        private readonly dynamic New;
 
         public AdminController(
             IAuthorizationService authorizationService,
@@ -108,7 +108,7 @@ namespace OrchardCore.Shortcodes.Controllers
             });
         }
 
-        public async Task<IActionResult> Create(ShortcodeTemplateViewModel model)
+        public async Task<IActionResult> Create()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
             {
@@ -279,6 +279,10 @@ namespace OrchardCore.Shortcodes.Controllers
             }
 
             // If we got this far, something failed, redisplay form
+
+            // If the name was changed or removed, prevent a 404 or a failure on the next post.
+            model.Name = sourceName;
+
             return View(model);
         }
 
@@ -329,7 +333,7 @@ namespace OrchardCore.Shortcodes.Controllers
                         await _notifier.SuccessAsync(H["Shortcode templates successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
 

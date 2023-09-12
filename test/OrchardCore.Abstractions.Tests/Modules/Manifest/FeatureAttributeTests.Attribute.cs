@@ -84,7 +84,7 @@ namespace OrchardCore.Modules.Manifest
         /// Creates a <typeparamref name="TAttribute"/> from its <paramref name="args"/>, with
         /// the ability to apply a <paramref name="classifier"/> to each of the arguments. We
         /// classify the <see cref="Type"/> of each argument this way because each one may be
-        /// Null, particularly, <see cref="string"/> arguments, which is okay for Features,
+        /// Null, particularly, <see cref="String"/> arguments, which is okay for Features,
         /// Modules, etc.
         /// </summary>
         /// <param name="classifier"></param>
@@ -108,17 +108,13 @@ namespace OrchardCore.Modules.Manifest
             // Identify the Ctor with the Parameters aligned to the Classified Arguments.
             var allAttributeCtorWithParameterTypes = allAttributeCtors.Select(ctor => new
             {
-                Callback = ctor
-                ,
-                Types = ctor.GetParameters().Select(_ => _.ParameterType).ToArray()
+                Callback = ctor,
+                Types = ctor.GetParameters().Select(_ => _.ParameterType).ToArray(),
             }).ToArray();
 
-            var attributeCtor = allAttributeCtorWithParameterTypes.SingleOrDefault(_ => _.Types.SequenceEqual(types))?.Callback;
-
-            if (attributeCtor == null)
-            {
-                throw new ArgumentException($"Unable to align ctor to args({args.Length}).", nameof(args));
-            }
+            var attributeCtor = allAttributeCtorWithParameterTypes.SingleOrDefault(_ => _.Types.SequenceEqual(types))
+                ?.Callback
+                ?? throw new ArgumentException($"Unable to align ctor to args({args.Length}).", nameof(args));
 
             var feature = attributeCtor.Invoke(args);
 
@@ -127,7 +123,7 @@ namespace OrchardCore.Modules.Manifest
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="FeatureAttribute(string, string, string, bool, bool, bool)"/>, arguments in
+        /// <see cref="FeatureAttribute(String, String, String, Boolean, Boolean, Boolean)"/>, arguments in
         /// order, <c>id, description, featureDependencies, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
         /// <param name="index"></param>
@@ -142,7 +138,7 @@ namespace OrchardCore.Modules.Manifest
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="FeatureAttribute(string, string, string, string, bool, bool, bool)"/>, arguments in
+        /// <see cref="FeatureAttribute(String, String, String, String, Boolean, Boolean, Boolean)"/>, arguments in
         /// order, <c>id, name, description, featureDependencies, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
         /// <param name="index"></param>
@@ -157,7 +153,7 @@ namespace OrchardCore.Modules.Manifest
 
         /// <summary>
         /// Classifier supporting
-        /// <see cref="FeatureAttribute(string, string, string, string, string, string, bool, bool, bool)"/>, arguments in
+        /// <see cref="FeatureAttribute(String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>, arguments in
         /// order, <c>id, name, category, priority, description, featureDependencies, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
         /// <param name="index"></param>
@@ -225,9 +221,9 @@ namespace OrchardCore.Modules.Manifest
         protected static T[] GetArray<T>(params T[] values) => GetValues(values).ToArray();
 
         /// <summary>
-        /// Provides a Pair that may be rendered to <see cref="string"/>.
+        /// Provides a Pair that may be rendered to <see cref="String"/>.
         /// </summary>
-        protected struct RenderKeyValuePair
+        protected readonly struct RenderKeyValuePair
         {
             /// <summary>
             /// Pair instance supporting the Render.

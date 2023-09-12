@@ -13,7 +13,7 @@ const actionName = process.argv[2];
 
 if(actionName != 'install' && actionName != 'update') {
 
-    console.log('Invalid arguments. The first argument should be either "install" or "udpate".');
+    console.log('Invalid arguments. The first argument should be either "install" or "update".');
 
     return;
 }

@@ -11,7 +11,7 @@ namespace OrchardCore.DisplayManagement.Shapes
     /// </summary>
     public class AlternatesCollection : IEnumerable<string>
     {
-        public static AlternatesCollection Empty = new AlternatesCollection();
+        public static readonly AlternatesCollection Empty = new();
 
         private KeyedAlternateCollection _collection;
 
@@ -111,10 +111,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         private void EnsureCollection()
         {
-            if (_collection == null)
-            {
-                _collection = new KeyedAlternateCollection();
-            }
+            _collection ??= new KeyedAlternateCollection();
         }
 
         public IEnumerator<string> GetEnumerator()

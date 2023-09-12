@@ -10,7 +10,7 @@ namespace OrchardCore.Workflows.Activities
     public class WhileLoopTask : TaskActivity
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public WhileLoopTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<WhileLoopTask> localizer)
         {

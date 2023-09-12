@@ -18,7 +18,7 @@ public class MediaS3BucketTenantEvents : ModularTenantEvents
     private readonly ShellSettings _shellSettings;
     private readonly AwsStorageOptions _options;
     private readonly IAmazonS3 _amazonS3Client;
-    private readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
     private readonly ILogger _logger;
 
     public MediaS3BucketTenantEvents(
@@ -38,7 +38,7 @@ public class MediaS3BucketTenantEvents : ModularTenantEvents
     public override async Task ActivatingAsync()
     {
         if (!_options.CreateBucket ||
-            _shellSettings.State == Environment.Shell.Models.TenantState.Uninitialized ||
+            _shellSettings.IsUninitialized() ||
             String.IsNullOrEmpty(_options.BucketName))
         {
             return;

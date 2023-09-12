@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -5,7 +6,7 @@ namespace OrchardCore.ResourceManagement
 {
     public class LinkEntry
     {
-        private readonly TagBuilder _builder = new TagBuilder("link");
+        private readonly TagBuilder _builder = new("link");
 
         public string Condition { get; set; }
 
@@ -62,7 +63,7 @@ namespace OrchardCore.ResourceManagement
 
         public IHtmlContent GetTag()
         {
-            if (!string.IsNullOrEmpty(Condition))
+            if (!String.IsNullOrEmpty(Condition))
             {
                 var htmlBuilder = new HtmlContentBuilder();
                 htmlBuilder.AppendHtml("<!--[if " + Condition + "]>");

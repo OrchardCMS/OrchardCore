@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -13,7 +14,7 @@ namespace OrchardCore.ContentPreview.Settings
     public class PreviewPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<PreviewPart>
     {
         private readonly ILiquidTemplateManager _templateManager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public PreviewPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<PreviewPartSettingsDisplayDriver> localizer)
         {
@@ -40,9 +41,9 @@ namespace OrchardCore.ContentPreview.Settings
                 m => m.Pattern
                 );
 
-            if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
+            if (!String.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
             {
-                context.Updater.ModelState.AddModelError(nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                context.Updater.ModelState.AddModelError(nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", String.Join(" ", errors)]);
             }
             else
             {

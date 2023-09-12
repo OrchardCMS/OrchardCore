@@ -125,10 +125,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             if (area != null)
             {
                 // Unconditionally replace any value from asp-route-area.
-                if (localRouteValues == null)
-                {
-                    localRouteValues = new RouteValueDictionary();
-                }
+                localRouteValues ??= new RouteValueDictionary();
                 localRouteValues["area"] = area;
             }
 

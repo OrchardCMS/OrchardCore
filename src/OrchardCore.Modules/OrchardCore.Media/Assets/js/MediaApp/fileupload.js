@@ -1,25 +1,41 @@
 $(document).on('mediaApp:ready', function () {
-    $('#fileupload').fileupload({
-        dropZone: $('#mediaApp'),
-        limitConcurrentUploads: 20,
-        dataType: 'json',
-        url: $('#uploadFiles').val(),
-        formData: function () {
-            var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
+    var chunkedFileUploadId = crypto.randomUUID();
 
-            return [
-                { name: 'path', value: mediaApp.selectedFolder.path },
-                { name: '__RequestVerificationToken', value: antiForgeryToken },
-            ]
-        },
-        done: function (e, data) {
-            $.each(data.result.files, function (index, file) {
-                if (!file.error) {
-                    mediaApp.mediaItems.push(file)
-                }
-            });
-        }
-    });
+    $('#fileupload')
+        .fileupload({
+            dropZone: $('#mediaApp'),
+            limitConcurrentUploads: 20,
+            dataType: 'json',
+            url: $('#uploadFiles').val(),
+            maxChunkSize: Number($('#maxUploadChunkSize').val() || 0),
+            formData: function () {
+                var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
+
+                return [
+                    { name: 'path', value: mediaApp.selectedFolder.path },
+                    { name: '__RequestVerificationToken', value: antiForgeryToken },
+                    { name: '__chunkedFileUploadId', value: chunkedFileUploadId },
+                ]
+            },
+            done: function (e, data) {
+                $.each(data.result.files, function (index, file) {
+                    if (!file.error) {
+                        mediaApp.mediaItems.push(file)
+                    }
+                });
+            }
+        })
+        .on('fileuploadchunkbeforesend', (e, options) => {
+            let file = options.files[0];
+            // Here we replace the blob with a File object to ensure the file name and others are preserved for the backend.
+            options.blob = new File(
+                [options.blob],
+                file.name,
+                {
+                    type: file.type,
+                    lastModified: file.lastModified,
+                });
+        });
 });
 
 

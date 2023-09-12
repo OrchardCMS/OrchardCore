@@ -13,8 +13,9 @@ namespace OrchardCore.Resources.Liquid
 {
     public class ScriptTag
     {
-        private static readonly char[] Separators = new[] { ',', ' ' };
-        public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        private static readonly char[] _separators = new[] { ',', ' ' };
+
+        public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder _, TemplateContext context)
         {
             var services = ((LiquidTemplateContext)context).Services;
             var resourceManager = services.GetRequiredService<IResourceManager>();
@@ -88,12 +89,12 @@ namespace OrchardCore.Resources.Liquid
 
                     if (!String.IsNullOrEmpty(culture))
                     {
-                        definition.SetCultures(culture.Split(Separators, StringSplitOptions.RemoveEmptyEntries));
+                        definition.SetCultures(culture.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
                     }
 
                     if (!String.IsNullOrEmpty(dependsOn))
                     {
-                        definition.SetDependencies(dependsOn.Split(Separators, StringSplitOptions.RemoveEmptyEntries));
+                        definition.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
                     }
 
                     if (appendVersion.HasValue)
@@ -192,7 +193,7 @@ namespace OrchardCore.Resources.Liquid
                 // This allows additions to the pre registered scripts dependencies.
                 if (!String.IsNullOrEmpty(dependsOn))
                 {
-                    setting.SetDependencies(dependsOn.Split(Separators, StringSplitOptions.RemoveEmptyEntries));
+                    setting.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 if (at == ResourceLocation.Unspecified || at == ResourceLocation.Inline)
@@ -219,12 +220,12 @@ namespace OrchardCore.Resources.Liquid
 
                 if (!String.IsNullOrEmpty(culture))
                 {
-                    definition.SetCultures(culture.Split(Separators, StringSplitOptions.RemoveEmptyEntries));
+                    definition.SetCultures(culture.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 if (!String.IsNullOrEmpty(dependsOn))
                 {
-                    definition.SetDependencies(dependsOn.Split(Separators, StringSplitOptions.RemoveEmptyEntries));
+                    definition.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 if (appendVersion.HasValue)

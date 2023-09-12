@@ -24,20 +24,17 @@ namespace OrchardCore.Facebook.Login.Configuration
         private readonly FacebookSettings _facebookSettings;
         private readonly IFacebookLoginService _loginService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
         public FacebookLoginConfiguration(
             IOptions<FacebookSettings> facebookSettings,
             IFacebookLoginService loginService,
             IDataProtectionProvider dataProtectionProvider,
-            ShellSettings shellSettings,
             ILogger<FacebookLoginConfiguration> logger)
         {
             _facebookSettings = facebookSettings.Value;
             _loginService = loginService;
             _dataProtectionProvider = dataProtectionProvider;
-            _shellSettings = shellSettings;
             _logger = logger;
         }
 

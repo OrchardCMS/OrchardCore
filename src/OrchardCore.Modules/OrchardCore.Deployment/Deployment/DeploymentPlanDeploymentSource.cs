@@ -45,10 +45,10 @@ namespace OrchardCore.Deployment.Deployment
                                       {
                                           Type = GetStepType(deploymentStepFactories, step),
                                           Step = step
-                                      }).ToArray()
+                                      }).ToArray(),
                          }).ToArray();
 
-            // Adding deployment plans
+            // Adding deployment plans.
             result.Steps.Add(new JObject(
                 new JProperty("name", "deployment"),
                 new JProperty("Plans", JArray.FromObject(plans))
@@ -59,7 +59,7 @@ namespace OrchardCore.Deployment.Deployment
         /// A Site Settings Step is generic and the name is mapped to the <see cref="IDeploymentStepFactory.Name"/> so its 'Type' should be determined though a lookup.
         /// A normal steps name is not mapped to the <see cref="IDeploymentStepFactory.Name"/> and should use its type.
         /// </summary>
-        private string GetStepType(IDictionary<string, IDeploymentStepFactory> deploymentStepFactories, DeploymentStep step)
+        private static string GetStepType(IDictionary<string, IDeploymentStepFactory> deploymentStepFactories, DeploymentStep step)
         {
             if (deploymentStepFactories.TryGetValue(step.Name, out var deploymentStepFactory))
             {

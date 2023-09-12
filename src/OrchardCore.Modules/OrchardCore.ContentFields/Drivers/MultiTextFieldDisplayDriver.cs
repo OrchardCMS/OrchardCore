@@ -16,7 +16,7 @@ namespace OrchardCore.ContentFields.Fields
 {
     public class MultiTextFieldDisplayDriver : ContentFieldDisplayDriver<MultiTextField>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public MultiTextFieldDisplayDriver(IStringLocalizer<MultiTextFieldDisplayDriver> localizer)
         {

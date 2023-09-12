@@ -55,10 +55,7 @@ namespace OrchardCore.Seo.Drivers
 
                 var actionContext = _actionContextAccessor.ActionContext;
 
-                if (actionContext == null)
-                {
-                    actionContext = await GetActionContextAsync(_httpContextAccessor.HttpContext);
-                }
+                actionContext ??= await GetActionContextAsync(_httpContextAccessor.HttpContext);
 
                 var urlHelper = _urlHelperFactory.GetUrlHelper(actionContext);
                 var contentItemMetadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(context.ContentItem);
