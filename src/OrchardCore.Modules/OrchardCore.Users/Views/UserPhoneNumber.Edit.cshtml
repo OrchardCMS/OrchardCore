@@ -1,0 +1,21 @@
+@model OrchardCore.Users.ViewModels.EditUserPhoneNumberViewModel
+
+<div class="mb-3" asp-validation-class-for="PhoneNumber">
+    <label asp-for="PhoneNumber">@T["Phone Number"]</label>
+    <div class="input-group col-md-4">
+        <span class="input-group-text"><i class="fa-solid fa-phone" aria-hidden="true"></i></span>
+        <input asp-for="PhoneNumber" class="form-control" type="tel" asp-is-disabled="@(!Model.AllowEditing)" />
+        <span class="input-group-text">
+            @if (Model.PhoneNumberConfirmed)
+            {
+                <i class="fas fa-check-circle text-success" title="@T["Verified"]"></i>
+            }
+            else
+            {
+                <i class="fas fa-exclamation-circle" title="@T["Unverified"]"></i>
+            }
+        </span>
+    </div>
+    <span>@T["Phone number must include a country code. For example, +1 for United States."]</span>
+    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+</div>

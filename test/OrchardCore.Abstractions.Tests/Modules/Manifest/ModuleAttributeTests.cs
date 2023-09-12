@@ -45,18 +45,19 @@ namespace OrchardCore.Modules.Manifest
         /// </summary>
         /// <param name="attributeType"></param>
         /// <param name="expected"></param>
-        [Theory
-            , InlineData(typeof(ModuleAttribute), "Module")
-            , InlineData(typeof(ThemeAttribute), "Theme")
-            , InlineData(typeof(TestAttributePrefix), nameof(TestAttributePrefix))
-            ]
+        [
+            Theory,
+            InlineData(typeof(ModuleAttribute), "Module"),
+            InlineData(typeof(ThemeAttribute), "Theme"),
+            InlineData(typeof(TestAttributePrefix), nameof(TestAttributePrefix))
+        ]
         public virtual void AttributePrefix(Type attributeType, string expected)
         {
             Assert.Equal(expected, ModuleAttribute.GetAttributePrefix(attributeType));
         }
 
         /// <summary>
-        /// Verify the <see cref="ModuleAttribute(string, string, string, string, string, string, string, bool, bool, bool)"/>
+        /// Verify the <see cref="ModuleAttribute(String, String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>
         /// ctor, arguments
         /// <c>id, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -79,16 +80,16 @@ namespace OrchardCore.Modules.Manifest
             var tagString = String.Join(';', tags);
 
             ReportKeyValuePairs(
-                new RenderKeyValuePair(nameof(id), id)
-                , new RenderKeyValuePair(nameof(description), description)
-                , new RenderKeyValuePair(nameof(author), author)
-                , new RenderKeyValuePair(nameof(semVer), semVer)
-                , new RenderKeyValuePair(nameof(website), website)
-                , new RenderKeyValuePair(nameof(deps), depString)
-                , new RenderKeyValuePair(nameof(tags), tagString)
-                , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
-                , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
-                , new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
+                new RenderKeyValuePair(nameof(id), id),
+                new RenderKeyValuePair(nameof(description), description),
+                new RenderKeyValuePair(nameof(author), author),
+                new RenderKeyValuePair(nameof(semVer), semVer),
+                new RenderKeyValuePair(nameof(website), website),
+                new RenderKeyValuePair(nameof(deps), depString),
+                new RenderKeyValuePair(nameof(tags), tagString),
+                new RenderKeyValuePair(nameof(defaultTenant), defaultTenant),
+                new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled),
+                new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
             var module = CreateFromArgs(ModuleString7Object3CtorClassifier, id, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, enabledByDependencyOnly);
@@ -123,7 +124,7 @@ namespace OrchardCore.Modules.Manifest
 
         // TODO: TBD: add the ArgumentException path for the bool (object) variations...
         /// <summary>
-        /// Verify the <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, bool, bool, bool)"/>
+        /// Verify the <see cref="ModuleAttribute(String, String, String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>
         /// ctor, arguments
         /// <c>id, name, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -147,17 +148,17 @@ namespace OrchardCore.Modules.Manifest
             var tagString = String.Join(';', tags);
 
             ReportKeyValuePairs(
-                new RenderKeyValuePair(nameof(id), id)
-                , new RenderKeyValuePair(nameof(name), name)
-                , new RenderKeyValuePair(nameof(description), description)
-                , new RenderKeyValuePair(nameof(author), author)
-                , new RenderKeyValuePair(nameof(semVer), semVer)
-                , new RenderKeyValuePair(nameof(website), website)
-                , new RenderKeyValuePair(nameof(deps), depString)
-                , new RenderKeyValuePair(nameof(tags), tagString)
-                , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
-                , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
-                , new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
+                new RenderKeyValuePair(nameof(id), id),
+                new RenderKeyValuePair(nameof(name), name),
+                new RenderKeyValuePair(nameof(description), description),
+                new RenderKeyValuePair(nameof(author), author),
+                new RenderKeyValuePair(nameof(semVer), semVer),
+                new RenderKeyValuePair(nameof(website), website),
+                new RenderKeyValuePair(nameof(deps), depString),
+                new RenderKeyValuePair(nameof(tags), tagString),
+                new RenderKeyValuePair(nameof(defaultTenant), defaultTenant),
+                new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled),
+                new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
             var module = CreateFromArgs(ModuleString8Object3CtorClassifier, id, name, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, enabledByDependencyOnly);
@@ -191,7 +192,7 @@ namespace OrchardCore.Modules.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, string, string, bool, bool, bool)"/>
+        /// Verify the <see cref="ModuleAttribute(String, String, String, String, String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>
         /// ctor, arguments
         /// <c>id, name, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -217,19 +218,19 @@ namespace OrchardCore.Modules.Manifest
             var tagString = String.Join(';', tags);
 
             ReportKeyValuePairs(
-                new RenderKeyValuePair(nameof(id), id)
-                , new RenderKeyValuePair(nameof(name), name)
-                , new RenderKeyValuePair(nameof(category), category)
-                , new RenderKeyValuePair(nameof(priority), priority)
-                , new RenderKeyValuePair(nameof(description), description)
-                , new RenderKeyValuePair(nameof(author), author)
-                , new RenderKeyValuePair(nameof(semVer), semVer)
-                , new RenderKeyValuePair(nameof(website), website)
-                , new RenderKeyValuePair(nameof(deps), depString)
-                , new RenderKeyValuePair(nameof(tags), tagString)
-                , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
-                , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
-                , new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
+                new RenderKeyValuePair(nameof(id), id),
+                new RenderKeyValuePair(nameof(name), name),
+                new RenderKeyValuePair(nameof(category), category),
+                new RenderKeyValuePair(nameof(priority), priority),
+                new RenderKeyValuePair(nameof(description), description),
+                new RenderKeyValuePair(nameof(author), author),
+                new RenderKeyValuePair(nameof(semVer), semVer),
+                new RenderKeyValuePair(nameof(website), website),
+                new RenderKeyValuePair(nameof(deps), depString),
+                new RenderKeyValuePair(nameof(tags), tagString),
+                new RenderKeyValuePair(nameof(defaultTenant), defaultTenant),
+                new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled),
+                new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
             var module = CreateFromArgs(ModuleString10Object3CtorClassifier, id, name, category, priString, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, enabledByDependencyOnly);
@@ -261,7 +262,7 @@ namespace OrchardCore.Modules.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, string, string, string, bool, bool, bool)"/>
+        /// Verify the <see cref="ModuleAttribute(String, String, String, String, String, String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>
         /// ctor, arguments
         /// <c>id, name, type, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -288,20 +289,20 @@ namespace OrchardCore.Modules.Manifest
             var tagString = String.Join(';', tags);
 
             ReportKeyValuePairs(
-                new RenderKeyValuePair(nameof(id), id)
-                , new RenderKeyValuePair(nameof(name), name)
-                , new RenderKeyValuePair(nameof(type), type)
-                , new RenderKeyValuePair(nameof(category), category)
-                , new RenderKeyValuePair(nameof(priority), priority)
-                , new RenderKeyValuePair(nameof(description), description)
-                , new RenderKeyValuePair(nameof(author), author)
-                , new RenderKeyValuePair(nameof(semVer), semVer)
-                , new RenderKeyValuePair(nameof(website), website)
-                , new RenderKeyValuePair(nameof(deps), depString)
-                , new RenderKeyValuePair(nameof(tags), tagString)
-                , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
-                , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
-                , new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
+                new RenderKeyValuePair(nameof(id), id),
+                new RenderKeyValuePair(nameof(name), name),
+                new RenderKeyValuePair(nameof(type), type),
+                new RenderKeyValuePair(nameof(category), category),
+                new RenderKeyValuePair(nameof(priority), priority),
+                new RenderKeyValuePair(nameof(description), description),
+                new RenderKeyValuePair(nameof(author), author),
+                new RenderKeyValuePair(nameof(semVer), semVer),
+                new RenderKeyValuePair(nameof(website), website),
+                new RenderKeyValuePair(nameof(deps), depString),
+                new RenderKeyValuePair(nameof(tags), tagString),
+                new RenderKeyValuePair(nameof(defaultTenant), defaultTenant),
+                new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled),
+                new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
             var module = CreateFromArgs(ModuleString11Object3CtorClassifier, id, name, type, category, priString, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, enabledByDependencyOnly);
@@ -338,9 +339,10 @@ namespace OrchardCore.Modules.Manifest
         /////// TODO: MWP: what purpose d(oes/id) it serve, would a simple ctor on ModuleAttribute itself be sufficient?
         ///// TODO: MWP: possible xUnit issue discovering this as a Theory... / https://github.com/xunit/xunit/discussions/2508
         ///// <param name = "rootType" ></ param >
-        //[Theory
-        //    , InlineData(typeof(Abstractions.AssyAttrib.Alpha.Root))
-        //    ]
+        //[
+        //    Theory,
+        //    InlineData(typeof(Abstractions.AssyAttrib.Alpha.Root))
+        //]
         //public virtual void Csproj_AssyAttrib_Id_Name_Cat_Pri(Type rootType)
 
         // TODO: MWP: verify as well, if there are services, contexts, infos, etc, that are more actively involved...
@@ -371,16 +373,16 @@ namespace OrchardCore.Modules.Manifest
             var tagString = String.Join(';', tags);
 
             ReportKeyValuePairs(
-                new RenderKeyValuePair(nameof(id), id)
-                , new RenderKeyValuePair(nameof(description), description)
-                , new RenderKeyValuePair(nameof(author), author)
-                , new RenderKeyValuePair(nameof(semVer), semVer)
-                , new RenderKeyValuePair(nameof(website), website)
-                , new RenderKeyValuePair(nameof(deps), depString)
-                , new RenderKeyValuePair(nameof(tags), tagString)
-                , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
-                , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
-                , new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
+                new RenderKeyValuePair(nameof(id), id),
+                new RenderKeyValuePair(nameof(description), description),
+                new RenderKeyValuePair(nameof(author), author),
+                new RenderKeyValuePair(nameof(semVer), semVer),
+                new RenderKeyValuePair(nameof(website), website),
+                new RenderKeyValuePair(nameof(deps), depString),
+                new RenderKeyValuePair(nameof(tags), tagString),
+                new RenderKeyValuePair(nameof(defaultTenant), defaultTenant),
+                new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled),
+                new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
             // We are looking for one instance of ModuleAttribute in particular in this case
@@ -442,17 +444,17 @@ namespace OrchardCore.Modules.Manifest
             var tagString = String.Join(';', tags);
 
             ReportKeyValuePairs(
-                new RenderKeyValuePair(nameof(id), id)
-                , new RenderKeyValuePair(nameof(name), name)
-                , new RenderKeyValuePair(nameof(description), description)
-                , new RenderKeyValuePair(nameof(author), author)
-                , new RenderKeyValuePair(nameof(semVer), semVer)
-                , new RenderKeyValuePair(nameof(website), website)
-                , new RenderKeyValuePair(nameof(deps), depString)
-                , new RenderKeyValuePair(nameof(tags), tagString)
-                , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
-                , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
-                , new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
+                new RenderKeyValuePair(nameof(id), id),
+                new RenderKeyValuePair(nameof(name), name),
+                new RenderKeyValuePair(nameof(description), description),
+                new RenderKeyValuePair(nameof(author), author),
+                new RenderKeyValuePair(nameof(semVer), semVer),
+                new RenderKeyValuePair(nameof(website), website),
+                new RenderKeyValuePair(nameof(deps), depString),
+                new RenderKeyValuePair(nameof(tags), tagString),
+                new RenderKeyValuePair(nameof(defaultTenant), defaultTenant),
+                new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled),
+                new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
             // We are looking for one instance of ModuleAttribute in particular in this case
@@ -515,19 +517,19 @@ namespace OrchardCore.Modules.Manifest
             var tagString = String.Join(';', tags);
 
             ReportKeyValuePairs(
-                new RenderKeyValuePair(nameof(id), id)
-                , new RenderKeyValuePair(nameof(name), name)
-                , new RenderKeyValuePair(nameof(category), category)
-                , new RenderKeyValuePair(nameof(priority), priority)
-                , new RenderKeyValuePair(nameof(description), description)
-                , new RenderKeyValuePair(nameof(author), author)
-                , new RenderKeyValuePair(nameof(semVer), semVer)
-                , new RenderKeyValuePair(nameof(website), website)
-                , new RenderKeyValuePair(nameof(deps), depString)
-                , new RenderKeyValuePair(nameof(tags), tagString)
-                , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
-                , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
-                , new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
+                new RenderKeyValuePair(nameof(id), id),
+                new RenderKeyValuePair(nameof(name), name),
+                new RenderKeyValuePair(nameof(category), category),
+                new RenderKeyValuePair(nameof(priority), priority),
+                new RenderKeyValuePair(nameof(description), description),
+                new RenderKeyValuePair(nameof(author), author),
+                new RenderKeyValuePair(nameof(semVer), semVer),
+                new RenderKeyValuePair(nameof(website), website),
+                new RenderKeyValuePair(nameof(deps), depString),
+                new RenderKeyValuePair(nameof(tags), tagString),
+                new RenderKeyValuePair(nameof(defaultTenant), defaultTenant),
+                new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled),
+                new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
             // We are looking for one instance of ModuleAttribute in particular in this case
@@ -640,25 +642,25 @@ namespace OrchardCore.Modules.Manifest
              * should contain 'two' in the following shapes:
              */
             Assert.Contains(features, _ =>
-                _.Id == String.Join(".", baseId, One)
-                && _.Name == _.Id
-                && _.Category == Two.ToLower()
-                && _.InternalPriority == _3
-                && _.Description == four
-                && _.Dependencies.SequenceEqual(GetValues(five, six, seven))
-                && _.DefaultTenantOnly == tenant
-                && _.IsAlwaysEnabled == enabled
+                _.Id == String.Join(".", baseId, One) &&
+                _.Name == _.Id &&
+                _.Category == Two.ToLower() &&
+                _.InternalPriority == _3 &&
+                _.Description == four &&
+                _.Dependencies.SequenceEqual(GetValues(five, six, seven)) &&
+                _.DefaultTenantOnly == tenant &&
+                _.IsAlwaysEnabled == enabled
             );
 
             Assert.Contains(features, _ =>
-                _.Id == String.Join(".", baseId, Two)
-                && _.Name == _.Id
-                && _.Category == three
-                && _.InternalPriority == _4
-                && _.Description == five
-                && _.Dependencies.SequenceEqual(GetValues(six, seven, eight))
-                && _.DefaultTenantOnly == tenant
-                && _.IsAlwaysEnabled == enabled
+                _.Id == String.Join(".", baseId, Two) &&
+                _.Name == _.Id &&
+                _.Category == three &&
+                _.InternalPriority == _4 &&
+                _.Description == five &&
+                _.Dependencies.SequenceEqual(GetValues(six, seven, eight)) &&
+                _.DefaultTenantOnly == tenant &&
+                _.IsAlwaysEnabled == enabled
             );
         }
 

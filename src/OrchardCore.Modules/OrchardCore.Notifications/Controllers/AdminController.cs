@@ -32,13 +32,13 @@ public class AdminController : Controller, IUpdateModel
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly ISession _session;
-    private readonly dynamic New;
+    protected readonly dynamic New;
     private readonly IDisplayManager<Notification> _webNoticiationDisplayManager;
     private readonly INotificationsAdminListQueryService _notificationsAdminListQueryService;
     private readonly IDisplayManager<ListNotificationOptions> _notificationOptionsDisplayManager;
     private readonly INotifier _notifier;
-    private readonly IStringLocalizer<AdminController> S;
-    private readonly IHtmlLocalizer H;
+    protected readonly IStringLocalizer S;
+    protected readonly IHtmlLocalizer H;
     private readonly IShapeFactory _shapeFactory;
     private readonly PagerOptions _pagerOptions;
     private readonly IClock _clock;

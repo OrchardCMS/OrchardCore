@@ -55,7 +55,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         public async Task ProcessContentItemsAsync(string indexName = default)
         {
             var allIndices = new Dictionary<string, long>();
-            var lastTaskId = Int32.MaxValue;
+            var lastTaskId = Int64.MaxValue;
             IEnumerable<ElasticIndexSettings> indexSettingsList = null;
 
             if (String.IsNullOrEmpty(indexName))
@@ -194,7 +194,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                                 var cultureAspect = await contentManager.PopulateAspectAsync<CultureAspect>(context.ContentItem);
                                 var culture = cultureAspect.HasCulture ? cultureAspect.Culture.Name : null;
-                                var ignoreIndexedCulture = settings.Culture == "any" ? false : culture != settings.Culture;
+                                var ignoreIndexedCulture = settings.Culture != "any" && culture != settings.Culture;
 
                                 // Ignore if the content item content type or culture is not indexed in this index
                                 if (!settings.IndexedContentTypes.Contains(context.ContentItem.ContentType) || ignoreIndexedCulture)

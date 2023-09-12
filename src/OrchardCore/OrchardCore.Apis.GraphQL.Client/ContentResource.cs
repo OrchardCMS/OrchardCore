@@ -7,7 +7,7 @@ namespace OrchardCore.Apis.GraphQL.Client
 {
     public class ContentResource
     {
-        private HttpClient _client;
+        private readonly HttpClient _client;
 
         public ContentResource(HttpClient client)
         {

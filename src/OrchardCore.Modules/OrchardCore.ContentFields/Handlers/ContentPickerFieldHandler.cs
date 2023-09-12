@@ -9,7 +9,7 @@ namespace OrchardCore.ContentFields.Handlers;
 
 public class ContentPickerFieldHandler : ContentFieldHandler<ContentPickerField>
 {
-    private readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
 
     public ContentPickerFieldHandler(IStringLocalizer<ContentPickerFieldHandler> stringLocalizer)
     {

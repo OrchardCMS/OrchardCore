@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Security.Services;
-using OrchardCore.Settings;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
@@ -29,12 +27,13 @@ namespace OrchardCore.Users.Services
         IUserAuthenticationTokenStore<IUser>,
         IUserTwoFactorRecoveryCodeStore<IUser>,
         IUserTwoFactorStore<IUser>,
-        IUserAuthenticatorKeyStore<IUser>
+        IUserAuthenticatorKeyStore<IUser>,
+        IUserPhoneNumberStore<IUser>
     {
-        private const string _tokenProtector = "OrchardCore.UserStore.Token";
-        private const string _internalLoginProvider = "[OrchardCoreUserStore]";
-        private const string _recoveryCodeTokenName = "RecoveryCodes";
-        private const string _authenticatorKeyTokenName = "AuthenticatorKey";
+        private const string TokenProtector = "OrchardCore.UserStore.Token";
+        private const string InternalLoginProvider = "[OrchardCoreUserStore]";
+        private const string RecoveryCodeTokenName = "RecoveryCodes";
+        private const string AuthenticatorKeyTokenName = "AuthenticatorKey";
 
         private readonly ISession _session;
         private readonly ILookupNormalizer _keyNormalizer;
@@ -42,7 +41,6 @@ namespace OrchardCore.Users.Services
         private readonly ILogger _logger;
         private readonly IRoleService _roleService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ISiteService _siteService;
 
         public UserStore(ISession session,
             ILookupNormalizer keyNormalizer,
@@ -50,15 +48,13 @@ namespace OrchardCore.Users.Services
             ILogger<UserStore> logger,
             IEnumerable<IUserEventHandler> handlers,
             IRoleService roleService,
-            IDataProtectionProvider dataProtectionProvider,
-            ISiteService siteService)
+            IDataProtectionProvider dataProtectionProvider)
         {
             _session = session;
             _keyNormalizer = keyNormalizer;
             _userIdGenerator = userIdGenerator;
             _logger = logger;
             _dataProtectionProvider = dataProtectionProvider;
-            _siteService = siteService;
             Handlers = handlers;
             _roleService = roleService;
         }
@@ -67,6 +63,7 @@ namespace OrchardCore.Users.Services
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
         }
 
         public string NormalizeKey(string key)
@@ -751,7 +748,7 @@ namespace OrchardCore.Users.Services
             var userToken = GetUserToken(user, loginProvider, name);
             if (userToken != null)
             {
-                var value = _dataProtectionProvider.CreateProtector(_tokenProtector).Unprotect(userToken.Value);
+                var value = _dataProtectionProvider.CreateProtector(TokenProtector).Unprotect(userToken.Value);
 
                 return Task.FromResult(value);
             }
@@ -823,7 +820,7 @@ namespace OrchardCore.Users.Services
             // Encrypt the token.
             if (userToken != null)
             {
-                userToken.Value = _dataProtectionProvider.CreateProtector(_tokenProtector).Protect(value);
+                userToken.Value = _dataProtectionProvider.CreateProtector(TokenProtector).Protect(value);
             }
 
             return Task.CompletedTask;
@@ -970,16 +967,14 @@ namespace OrchardCore.Users.Services
             return Task.CompletedTask;
         }
 
-        public async Task<bool> GetTwoFactorEnabledAsync(IUser user, CancellationToken cancellationToken)
+        public Task<bool> GetTwoFactorEnabledAsync(IUser user, CancellationToken cancellationToken)
         {
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
-
-            if (settings.IsTwoFactorAuthenticationEnabled() && user is User u)
+            if (user is User u)
             {
-                return u.TwoFactorEnabled;
+                return Task.FromResult(u.TwoFactorEnabled);
             }
 
-            return false;
+            return Task.FromResult(false);
         }
         #endregion
 
@@ -998,7 +993,7 @@ namespace OrchardCore.Users.Services
 
             var mergedCodes = String.Join(";", recoveryCodes);
 
-            return SetTokenAsync(user, _internalLoginProvider, _recoveryCodeTokenName, mergedCodes, cancellationToken);
+            return SetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, mergedCodes, cancellationToken);
         }
 
         public async Task<bool> RedeemCodeAsync(IUser user, string code, CancellationToken cancellationToken)
@@ -1013,7 +1008,7 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentException($"{nameof(code)} cannot be null or empty.");
             }
 
-            var mergedCodes = await GetTokenAsync(user, _internalLoginProvider, _recoveryCodeTokenName, cancellationToken).ConfigureAwait(false) ?? String.Empty;
+            var mergedCodes = await GetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, cancellationToken).ConfigureAwait(false) ?? String.Empty;
             var splitCodes = mergedCodes.Split(';');
             if (splitCodes.Contains(code))
             {
@@ -1033,7 +1028,7 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            var mergedCodes = await GetTokenAsync(user, _internalLoginProvider, _recoveryCodeTokenName, cancellationToken).ConfigureAwait(false) ?? "";
+            var mergedCodes = await GetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, cancellationToken).ConfigureAwait(false) ?? "";
             if (mergedCodes.Length > 0)
             {
                 // non-allocating version of mergedCodes.Split(';').Length
@@ -1059,10 +1054,72 @@ namespace OrchardCore.Users.Services
 
         #region IUserAuthenticatorKeyStore<IUser>
         public virtual Task SetAuthenticatorKeyAsync(IUser user, string key, CancellationToken cancellationToken)
-            => SetTokenAsync(user, _internalLoginProvider, _authenticatorKeyTokenName, key, cancellationToken);
+            => SetTokenAsync(user, InternalLoginProvider, AuthenticatorKeyTokenName, key, cancellationToken);
 
         public virtual Task<string> GetAuthenticatorKeyAsync(IUser user, CancellationToken cancellationToken)
-            => GetTokenAsync(user, _internalLoginProvider, _authenticatorKeyTokenName, cancellationToken);
+            => GetTokenAsync(user, InternalLoginProvider, AuthenticatorKeyTokenName, cancellationToken);
+        #endregion
+
+        #region IUserPhoneNumberStore<IUser>
+        public Task SetPhoneNumberAsync(IUser user, string phoneNumber, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (user is User u)
+            {
+                u.PhoneNumber = phoneNumber;
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task SetPhoneNumberConfirmedAsync(IUser user, bool confirmed, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (user is User u)
+            {
+                u.PhoneNumberConfirmed = confirmed;
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task<string> GetPhoneNumberAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (user is User u)
+            {
+                return Task.FromResult(u.PhoneNumber);
+            }
+
+            return Task.FromResult<string>(null);
+        }
+
+        public Task<bool> GetPhoneNumberConfirmedAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (user is User u)
+            {
+                return Task.FromResult(u.PhoneNumberConfirmed);
+            }
+
+            return Task.FromResult<bool>(false);
+        }
         #endregion
     }
 }

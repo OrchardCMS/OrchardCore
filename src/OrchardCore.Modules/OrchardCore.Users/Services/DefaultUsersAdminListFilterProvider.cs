@@ -104,7 +104,7 @@ namespace OrchardCore.Users.Services
                     .MapTo<UserIndexOptions>((val, model) => model.SelectedRole = val)
                     .MapFrom<UserIndexOptions>((model) => (!String.IsNullOrEmpty(model.SelectedRole), model.SelectedRole))
                 )
-                .WithDefaultTerm("name", builder => builder
+                .WithDefaultTerm(UsersAdminListFilterOptions.DefaultTermName, builder => builder
                     .ManyCondition(
                         (val, query, ctx) =>
                         {

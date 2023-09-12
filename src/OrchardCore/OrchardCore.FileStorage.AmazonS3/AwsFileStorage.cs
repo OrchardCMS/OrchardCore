@@ -103,7 +103,7 @@ public class AwsFileStore : IFileStore
             var folderPath = awsFolderPath;
             if (!IsNullOrEmpty(_basePrefix))
             {
-                folderPath = folderPath.Substring(_basePrefix.Length - 1);
+                folderPath = folderPath[(_basePrefix.Length - 1)..];
             }
 
             folderPath = folderPath.TrimEnd('/');
@@ -287,7 +287,7 @@ public class AwsFileStore : IFileStore
         return path;
     }
 
-    private string NormalizePrefix(string prefix)
+    private static string NormalizePrefix(string prefix)
     {
         prefix = prefix.Trim('/') + '/';
         if (prefix.Length == 1)

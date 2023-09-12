@@ -275,11 +275,9 @@ namespace OrchardCore.Tests.ResourceManagement
         #region Helpers
         private static string ReadIHtmlContent(IHtmlContent content)
         {
-            using (var writer = new StringWriter())
-            {
-                content?.WriteTo(writer, HtmlEncoder.Default);
-                return writer.ToString();
-            }
+            using var writer = new StringWriter();
+            content?.WriteTo(writer, HtmlEncoder.Default);
+            return writer.ToString();
         }
 
         #endregion

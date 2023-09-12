@@ -30,7 +30,7 @@ namespace OrchardCore.Setup.Controllers
         private readonly IEmailAddressValidator _emailAddressValidator;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public SetupController(
             IClock clock,
@@ -176,7 +176,7 @@ namespace OrchardCore.Setup.Controllers
             var executionId = await _setupService.SetupAsync(setupContext);
 
             // Check if any Setup component failed (e.g., database connection validation)
-            if (setupContext.Errors.Any())
+            if (setupContext.Errors.Count > 0)
             {
                 foreach (var error in setupContext.Errors)
                 {
@@ -234,7 +234,7 @@ namespace OrchardCore.Setup.Controllers
             var result = false;
             try
             {
-                var shellScope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName);
+                var shellScope = await _shellHost.GetScopeAsync(ShellSettings.DefaultShellName);
 
                 await shellScope.UsingAsync(scope =>
                 {

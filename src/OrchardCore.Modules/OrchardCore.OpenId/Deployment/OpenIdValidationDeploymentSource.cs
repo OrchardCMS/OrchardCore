@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.OpenId.Services;
+using OrchardCore.OpenId.Settings;
 
 namespace OrchardCore.OpenId.Deployment
 {
@@ -25,10 +26,13 @@ namespace OrchardCore.OpenId.Deployment
 
             var validationSettings = await _openIdValidationService.GetSettingsAsync();
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "OpenIdValidation"),
-                new JProperty("OpenIdValidation", JObject.FromObject(validationSettings))
-            ));
+            // The 'name' property should match the related recipe step name.
+            var jObject = new JObject(new JProperty("name", nameof(OpenIdValidationSettings)));
+
+            // Merge settings as the recipe step doesn't use a child property.
+            jObject.Merge(JObject.FromObject(validationSettings));
+
+            result.Steps.Add(jObject);
         }
     }
 }

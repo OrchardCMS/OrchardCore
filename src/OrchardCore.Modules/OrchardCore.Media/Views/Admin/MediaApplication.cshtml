@@ -1,3 +1,10 @@
+@using Microsoft.Extensions.Options
+@using OrchardCore.Media
+
+@model MediaApplicationViewModel
+
+@inject IOptions<MediaOptions> MediaOptions
+
 @{
     Layout = null;
 }
@@ -66,7 +73,7 @@
                     <div class="d-inline-flex ms-2 me-3 mb-1 pt-1">
                         <div class="btn-group btn-group-sm">
                             <label for="fileupload" class="btn btn-sm btn-primary fileinput-button upload-button">
-                                <input id="fileupload" type="file" name="files" multiple="multiple">
+                                <input id="fileupload" type="file" name="files" multiple="multiple" accept="@Model.Extensions">
                                 <i class="fa-solid fa-plus" aria-hidden="true"></i>
                                 @T["Upload"]
                             </label>
@@ -113,12 +120,15 @@
 <input type="hidden" id="getFoldersUrl" value="@Url.Action("GetFolders", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="deleteFolderUrl" value="@Url.Action("DeleteFolder", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="createFolderUrl" value="@Url.Action("CreateFolder", "Admin", new { area = "OrchardCore.Media" })" />
-<input type="hidden" id="getMediaItemsUrl" value="@Url.Action("GetMediaItems", "Admin", new { area = "OrchardCore.Media" })" />
+<input type="hidden" id="getMediaItemsUrl" value="@Url.Action("GetMediaItems", "Admin", new { area = "OrchardCore.Media", extensions = Model.Extensions })" />
 <input type="hidden" id="deleteMediaUrl" value="@Url.Action("DeleteMedia", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="renameMediaUrl" value="@Url.Action("MoveMedia", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="deleteMediaListUrl" value="@Url.Action("DeleteMediaList", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="moveMediaListUrl" value="@Url.Action("MoveMediaList", "Admin", new { area = "OrchardCore.Media" })" />
-<input type="hidden" id="uploadFiles" value="@Url.Action("Upload", "Admin", new { area = "OrchardCore.Media" })" />
+<input type="hidden" id="uploadFiles" value="@Url.Action("Upload", "Admin", new { area = "OrchardCore.Media", extensions = Model.Extensions })" />
+
+@* Chunked file upload settings *@
+<input type="hidden" id="maxUploadChunkSize" value="@MediaOptions.Value.MaxUploadChunkSize" />
 
 @*Localizable Strings shared*@
 <input type="hidden" id="deleteFolder" data-title="@T["Delete media folder"]" data-message="@T["Are you sure you want to delete this folder?"]" />

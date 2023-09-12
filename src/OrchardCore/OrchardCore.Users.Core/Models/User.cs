@@ -7,7 +7,7 @@ namespace OrchardCore.Users.Models
 {
     public class User : Entity, IUser
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public string UserId { get; set; }
 
@@ -17,6 +17,8 @@ namespace OrchardCore.Users.Models
 
         public string Email { get; set; }
 
+        public string PhoneNumber { get; set; }
+
         public string NormalizedEmail { get; set; }
 
         public string PasswordHash { get; set; }
@@ -24,6 +26,8 @@ namespace OrchardCore.Users.Models
         public string SecurityStamp { get; set; }
 
         public bool EmailConfirmed { get; set; }
+
+        public bool PhoneNumberConfirmed { get; set; }
 
         public bool IsEnabled { get; set; } = true;
 

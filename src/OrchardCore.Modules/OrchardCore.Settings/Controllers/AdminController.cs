@@ -19,7 +19,7 @@ namespace OrchardCore.Settings.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly CultureOptions _cultureOptions;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
 
         public AdminController(
             ISiteService siteService,

@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
@@ -21,7 +20,7 @@ namespace OrchardCore.Search.Elasticsearch
         private readonly ShellSettings _shellSettings;
         private readonly ElasticIndexManager _elasticIndexManager;
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly ILogger _logger;
 
         public ElasticIndexInitializerService(
@@ -40,7 +39,7 @@ namespace OrchardCore.Search.Elasticsearch
 
         public override Task ActivatedAsync()
         {
-            if (_shellSettings.State == TenantState.Running)
+            if (_shellSettings.IsRunning())
             {
                 ShellScope.AddDeferredTask(async scope =>
                 {

@@ -5,7 +5,9 @@ using Microsoft.Extensions.Options;
 using OrchardCore;
 using OrchardCore.ResourceManagement;
 
+#pragma warning disable CA1050 // Declare types in namespaces
 public static class ResourceCdnHelperExtensions
+#pragma warning restore CA1050 // Declare types in namespaces
 {
     /// <summary>
     /// Prefixes the Cdn Base URL to the specified resource path.
@@ -17,7 +19,7 @@ public static class ResourceCdnHelperExtensions
 
         if (resourcePath.StartsWith("~/", StringComparison.Ordinal))
         {
-            resourcePath = orchardHelper.HttpContext.Request.PathBase.Add(resourcePath.Substring(1)).Value;
+            resourcePath = orchardHelper.HttpContext.Request.PathBase.Add(resourcePath[1..]).Value;
         }
 
         // If append version is set, allow it to override the site setting.

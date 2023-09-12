@@ -32,15 +32,12 @@ namespace OrchardCore.Media.Processing
     {
         public static string GetImageResizeUrl(string path, IDictionary<string, string> queryStringParams = null, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, int? quality = null, Format format = Format.Undefined, Anchor anchor = null, string bgcolor = null)
         {
-            if (string.IsNullOrEmpty(path) || (!width.HasValue && !height.HasValue && queryStringParams == null))
+            if (String.IsNullOrEmpty(path) || (!width.HasValue && !height.HasValue && queryStringParams == null))
             {
                 return path;
             }
 
-            if (queryStringParams == null)
-            {
-                queryStringParams = new Dictionary<string, string>();
-            }
+            queryStringParams ??= new Dictionary<string, string>();
 
             if (width.HasValue)
             {

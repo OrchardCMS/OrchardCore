@@ -15,7 +15,6 @@ using OpenIddict.Validation;
 using OpenIddict.Validation.AspNetCore;
 using OpenIddict.Validation.DataProtection;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
@@ -211,7 +210,7 @@ namespace OrchardCore.OpenId.Configuration
                     // relies on a data protection provider whose lifetime is managed by the other tenant.
                     // To make sure the other tenant is not disposed before all the pending requests are
                     // processed by the current tenant, a tenant dependency is manually added.
-                    scope.ShellContext.AddDependentShell(await _shellHost.GetOrCreateShellContextAsync(_shellSettings));
+                    await scope.ShellContext.AddDependentShellAsync(await _shellHost.GetOrCreateShellContextAsync(_shellSettings));
 
                     // Note: the data protection provider is always registered as a singleton and thus will
                     // survive the current scope, which is mainly used to prevent the other tenant from being
@@ -249,7 +248,7 @@ namespace OrchardCore.OpenId.Configuration
             var settings = await service.GetSettingsAsync();
             if ((await service.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
             {
-                if (_shellSettings.State == TenantState.Running)
+                if (_shellSettings.IsRunning())
                 {
                     _logger.LogWarning("The OpenID Connect module is not correctly configured.");
                 }
@@ -265,7 +264,7 @@ namespace OrchardCore.OpenId.Configuration
             var settings = await _validationService.GetSettingsAsync();
             if ((await _validationService.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
             {
-                if (_shellSettings.State == TenantState.Running)
+                if (_shellSettings.IsRunning())
                 {
                     _logger.LogWarning("The OpenID Connect module is not correctly configured.");
                 }

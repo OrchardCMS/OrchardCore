@@ -71,7 +71,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual async ValueTask<TApplication> FindByIdAsync(string identifier, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(identifier))
+            if (String.IsNullOrEmpty(identifier))
             {
                 throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
             }
@@ -84,7 +84,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual async ValueTask<TApplication> FindByClientIdAsync(string identifier, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(identifier))
+            if (String.IsNullOrEmpty(identifier))
             {
                 throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
             }
@@ -97,20 +97,20 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual async ValueTask<TApplication> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(identifier))
+            if (String.IsNullOrEmpty(identifier))
             {
                 throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
             }
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.GetAsync<TApplication>(int.Parse(identifier, CultureInfo.InvariantCulture), collection: OpenIdCollection);
+            return await _session.GetAsync<TApplication>(Int64.Parse(identifier, CultureInfo.InvariantCulture), collection: OpenIdCollection);
         }
 
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TApplication> FindByPostLogoutRedirectUriAsync(string uri, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(uri))
+            if (String.IsNullOrEmpty(uri))
             {
                 throw new ArgumentException("The URI cannot be null or empty.", nameof(uri));
             }
@@ -125,7 +125,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TApplication> FindByRedirectUriAsync(string uri, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(uri))
+            if (String.IsNullOrEmpty(uri))
             {
                 throw new ArgumentException("The URI cannot be null or empty.", nameof(uri));
             }
@@ -300,7 +300,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
         /// <inheritdoc/>
         public virtual ValueTask<TApplication> InstantiateAsync(CancellationToken cancellationToken)
-            => new ValueTask<TApplication>(new TApplication { ApplicationId = Guid.NewGuid().ToString("n") });
+            => new(new TApplication { ApplicationId = Guid.NewGuid().ToString("n") });
 
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TApplication> ListAsync(int? count, int? offset, CancellationToken cancellationToken)
@@ -523,7 +523,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TApplication> ListInRoleAsync(string role, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(role))
+            if (String.IsNullOrEmpty(role))
             {
                 throw new ArgumentException("The role name cannot be null or empty.", nameof(role));
             }

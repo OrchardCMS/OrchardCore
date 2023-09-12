@@ -19,7 +19,7 @@ namespace OrchardCore.Data.Documents
     {
         private readonly string _tenantPath;
 
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+        private readonly SemaphoreSlim _semaphore = new(1);
 
         public FileDocumentStore(IOptions<ShellOptions> shellOptions, ShellSettings shellSettings)
         {

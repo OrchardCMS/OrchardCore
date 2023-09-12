@@ -57,7 +57,7 @@ namespace OrchardCore.Taxonomies.Drivers
         {
             if (pager.Before != null)
             {
-                var beforeValue = new DateTime(long.Parse(pager.Before));
+                var beforeValue = new DateTime(Int64.Parse(pager.Before));
                 var query = _session.Query<ContentItem>()
                     .With<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId)
                     .With<ContentItemIndex>(CreateContentIndexFilter(beforeValue, null))
@@ -66,14 +66,14 @@ namespace OrchardCore.Taxonomies.Drivers
 
                 var containedItems = await query.ListAsync();
 
-                if (containedItems.Count() == 0)
+                if (!containedItems.Any())
                 {
                     return containedItems;
                 }
 
                 containedItems = containedItems.Reverse();
 
-                // There is always an After as we clicked on Before
+                // There is always an After as we clicked on Before.
                 pager.Before = null;
                 pager.After = containedItems.Last().CreatedUtc.Value.Ticks.ToString();
 
@@ -87,7 +87,7 @@ namespace OrchardCore.Taxonomies.Drivers
             }
             else if (pager.After != null)
             {
-                var afterValue = new DateTime(long.Parse(pager.After));
+                var afterValue = new DateTime(Int64.Parse(pager.After));
                 var query = _session.Query<ContentItem>()
                     .With<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId)
                     .With<ContentItemIndex>(CreateContentIndexFilter(null, afterValue))
@@ -96,12 +96,12 @@ namespace OrchardCore.Taxonomies.Drivers
 
                 var containedItems = await query.ListAsync();
 
-                if (containedItems.Count() == 0)
+                if (!containedItems.Any())
                 {
                     return containedItems;
                 }
 
-                // There is always a Before page as we clicked on After
+                // There is always a Before page as we clicked on After.
                 pager.Before = containedItems.First().CreatedUtc.Value.Ticks.ToString();
                 pager.After = null;
 
@@ -123,7 +123,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
                 var containedItems = await query.ListAsync();
 
-                if (containedItems.Count() == 0)
+                if (!containedItems.Any())
                 {
                     return containedItems;
                 }

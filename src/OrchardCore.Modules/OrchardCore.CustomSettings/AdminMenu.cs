@@ -10,7 +10,7 @@ namespace OrchardCore.CustomSettings
     public class AdminMenu : INavigationProvider
     {
         private readonly CustomSettingsService _customSettingsService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenu(
             IStringLocalizer<AdminMenu> localizer,

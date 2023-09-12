@@ -27,11 +27,11 @@ namespace OrchardCore.Placements.Controllers
         private readonly ILogger _logger;
         private readonly IAuthorizationService _authorizationService;
         private readonly PlacementsManager _placementsManager;
-        private readonly IHtmlLocalizer H;
-        private readonly IStringLocalizer S;
         private readonly INotifier _notifier;
         private readonly PagerOptions _pagerOptions;
-        private readonly dynamic New;
+        protected readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
+        protected readonly dynamic New;
 
         public AdminController(
             ILogger<AdminController> logger,
@@ -70,12 +70,12 @@ namespace OrchardCore.Placements.Controllers
                 ShapeType = entry.Key
             }).ToList();
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
                 shapeList = shapeList.Where(x => x.ShapeType.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            var count = shapeList.Count();
+            var count = shapeList.Count;
 
             shapeList = shapeList.OrderBy(x => x.ShapeType)
                 .Skip(pager.GetStartIndex())
@@ -142,11 +142,11 @@ namespace OrchardCore.Placements.Controllers
                     DisplayType = displayType,
                     Differentiator = differentiator
                 };
-                if (!string.IsNullOrEmpty(contentType))
+                if (!String.IsNullOrEmpty(contentType))
                 {
                     generatedNode.Filters.Add("contentType", new JArray(contentType));
                 }
-                if (!string.IsNullOrEmpty(contentPart))
+                if (!String.IsNullOrEmpty(contentPart))
                 {
                     generatedNode.Filters.Add("contentPart", new JArray(contentPart));
                 }
@@ -176,21 +176,22 @@ namespace OrchardCore.Placements.Controllers
 
             if (viewModel.Creating && await _placementsManager.GetShapePlacementsAsync(viewModel.ShapeType) != null)
             {
-                // Prevent overriding existing rules on creation
+                // Prevent overriding existing rules on creation.
                 await _notifier.WarningAsync(H["Placement rules for \"{0}\" already exists. Please edit existing rule.", viewModel.ShapeType]);
                 return View(viewModel);
             }
 
             try
             {
-                IEnumerable<PlacementNode> placementNodes = JsonConvert.DeserializeObject<PlacementNode[]>(viewModel.Nodes) ?? new PlacementNode[0];
+                var placementNodes = JsonConvert.DeserializeObject<PlacementNode[]>(viewModel.Nodes)
+                    ?? Enumerable.Empty<PlacementNode>();
 
-                // Remove empty nodes
+                // Remove empty nodes.
                 placementNodes = placementNodes.Where(node => !IsEmpty(node));
 
                 if (placementNodes.Any())
                 {
-                    // Save
+                    // Save.
                     await _placementsManager.UpdateShapePlacementsAsync(viewModel.ShapeType, placementNodes);
                     viewModel.Creating = false;
 
@@ -203,7 +204,7 @@ namespace OrchardCore.Placements.Controllers
                 }
                 else
                 {
-                    // Remove if empty
+                    // Remove if empty.
                     await _placementsManager.RemoveShapePlacementsAsync(viewModel.ShapeType);
                     await _notifier.SuccessAsync(H["The \"{0}\" placement has been deleted.", viewModel.ShapeType]);
                 }
@@ -265,7 +266,7 @@ namespace OrchardCore.Placements.Controllers
                         await _notifier.SuccessAsync(H["Placements successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
 
@@ -286,24 +287,24 @@ namespace OrchardCore.Placements.Controllers
 
         private static bool ShouldCreateNode(IEnumerable<PlacementNode> nodes, string displayType, string contentType, string contentPart, string differentiator)
         {
-            if (string.IsNullOrEmpty(displayType) && string.IsNullOrEmpty(differentiator))
+            if (String.IsNullOrEmpty(displayType) && String.IsNullOrEmpty(differentiator))
             {
                 return false;
             }
             else
             {
                 return !nodes.Any(node =>
-                    (string.IsNullOrEmpty(displayType) || node.DisplayType == displayType) &&
-                    (string.IsNullOrEmpty(contentType) || (node.Filters.ContainsKey("contentType") && FilterEquals(node.Filters["contentType"], contentType))) &&
-                    (string.IsNullOrEmpty(contentPart) || (node.Filters.ContainsKey("contentPart") && FilterEquals(node.Filters["contentPart"], contentPart))) &&
-                    (string.IsNullOrEmpty(differentiator) || node.Differentiator == differentiator));
+                    (String.IsNullOrEmpty(displayType) || node.DisplayType == displayType) &&
+                    (String.IsNullOrEmpty(contentType) || (node.Filters.ContainsKey("contentType") && FilterEquals(node.Filters["contentType"], contentType))) &&
+                    (String.IsNullOrEmpty(contentPart) || (node.Filters.ContainsKey("contentPart") && FilterEquals(node.Filters["contentPart"], contentPart))) &&
+                    (String.IsNullOrEmpty(differentiator) || node.Differentiator == differentiator));
             }
         }
 
         private static bool IsEmpty(PlacementNode node)
         {
-            return string.IsNullOrEmpty(node.Location)
-                && string.IsNullOrEmpty(node.ShapeType)
+            return String.IsNullOrEmpty(node.Location)
+                && String.IsNullOrEmpty(node.ShapeType)
                 && (node.Alternates == null || node.Alternates.Length == 0)
                 && (node.Wrappers == null || node.Wrappers.Length == 0);
         }

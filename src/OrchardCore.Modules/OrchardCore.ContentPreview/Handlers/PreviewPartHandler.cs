@@ -49,7 +49,7 @@ namespace OrchardCore.ContentPreview.Handlers
                     var model = new PreviewPartViewModel()
                     {
                         PreviewPart = part,
-                        ContentItem = part.ContentItem
+                        ContentItem = part.ContentItem,
                     };
 
                     previewAspect.PreviewUrl = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,

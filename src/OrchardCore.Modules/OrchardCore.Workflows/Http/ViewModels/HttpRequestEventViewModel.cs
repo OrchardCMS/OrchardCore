@@ -12,7 +12,7 @@ namespace OrchardCore.Workflows.Http.ViewModels
 
         public int TokenLifeSpan { get; set; }
 
-        public IList<SelectListItem> GetAvailableHttpMethods()
+        public static IList<SelectListItem> GetAvailableHttpMethods()
         {
             var availableHttpMethods = new[] { "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS" };
             return availableHttpMethods.Select(x => new SelectListItem { Text = x, Value = x }).ToList();

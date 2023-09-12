@@ -9,7 +9,7 @@ namespace OrchardCore.DisplayManagement
 {
     public static class Arguments
     {
-        private static ConcurrentDictionary<Type, Func<object, NamedEnumerable<object>>> _propertiesAccessors = new ConcurrentDictionary<Type, Func<object, NamedEnumerable<object>>>();
+        private static readonly ConcurrentDictionary<Type, Func<object, NamedEnumerable<object>>> _propertiesAccessors = new();
 
         public static INamedEnumerable<T> FromT<T>(IEnumerable<T> arguments, IEnumerable<string> names)
         {
@@ -91,7 +91,7 @@ namespace OrchardCore.DisplayManagement
 
             IDictionary<string, T> INamedEnumerable<T>.Named
             {
-                get { return _named ?? (_named = new Named(_arguments, _names)); }
+                get { return _named ??= new Named(_arguments, _names); }
             }
 
             private class Named : IDictionary<string, T>
@@ -116,7 +116,7 @@ namespace OrchardCore.DisplayManagement
 
                 private IEnumerable<KeyValuePair<string, T>> MakeEnumerable()
                 {
-                    return _enumerable ?? (_enumerable = _arguments.Zip(_names, (arg, name) => new KeyValuePair<string, T>(name, arg)));
+                    return _enumerable ??= _arguments.Zip(_names, (arg, name) => new KeyValuePair<string, T>(name, arg));
                 }
 
                 IEnumerator<KeyValuePair<string, T>> IEnumerable<KeyValuePair<string, T>>.GetEnumerator()
@@ -195,13 +195,13 @@ namespace OrchardCore.DisplayManagement
                 {
                     get
                     {
-                        if (((IDictionary<string, T>)this).TryGetValue(key, out T result))
+                        if (((IDictionary<string, T>)this).TryGetValue(key, out var result))
                         {
                             return result;
                         }
                         else
                         {
-                            return default(T);
+                            return default;
                         }
                     }
                     set { throw new NotImplementedException(); }
@@ -222,6 +222,6 @@ namespace OrchardCore.DisplayManagement
             }
         }
 
-        public static INamedEnumerable<object> Empty = From(Array.Empty<object>(), Array.Empty<string>());
+        public static readonly INamedEnumerable<object> Empty = From(Array.Empty<object>(), Array.Empty<string>());
     }
 }

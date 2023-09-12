@@ -12,7 +12,7 @@ namespace OrchardCore.Google.Authentication.Services
     public class GoogleAuthenticationService : IGoogleAuthenticationService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public GoogleAuthenticationService(
             ISiteService siteService,
