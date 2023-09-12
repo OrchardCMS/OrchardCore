@@ -34,6 +34,9 @@ namespace OrchardCore.OpenId.Services
         private readonly ISecretService _secretService;
         protected readonly IStringLocalizer S;
 
+        private RSA _encryptionRsa;
+        private RSA _signingRsa;
+
         public OpenIdServerService(
             IDataProtectionProvider dataProtectionProvider,
             ILogger<OpenIdServerService> logger,
@@ -136,7 +139,8 @@ namespace OrchardCore.OpenId.Services
                 }
             }
 
-            if (settings.SigningCertificateStoreLocation != null &&
+            if (String.IsNullOrEmpty(settings.SigningRsaSecret) &&
+                settings.SigningCertificateStoreLocation != null &&
                 settings.SigningCertificateStoreName != null &&
                 !String.IsNullOrEmpty(settings.SigningCertificateThumbprint))
             {
@@ -284,6 +288,11 @@ namespace OrchardCore.OpenId.Services
             // If a RSA secret was provided, try to use it first.
             if (!String.IsNullOrEmpty(settings.EncryptionRsaSecret))
             {
+                if (_encryptionRsa is not null)
+                {
+                    return ImmutableArray.Create<SecurityKey>(new RsaSecurityKey(_encryptionRsa));
+                }
+
                 var secret = await _secretService.GetSecretAsync<RSASecret>(settings.EncryptionRsaSecret);
                 if (secret is not null)
                 {
@@ -295,6 +304,8 @@ namespace OrchardCore.OpenId.Services
                         rsa.ImportRSAPrivateKey(secret.PrivateKeyAsBytes(), out _);
                     }
 
+                    _encryptionRsa = rsa;
+
                     return ImmutableArray.Create<SecurityKey>(new RsaSecurityKey(rsa));
                 }
 
@@ -303,7 +314,7 @@ namespace OrchardCore.OpenId.Services
 
             // If a certificate was explicitly provided, return it immediately
             // instead of using the fallback managed certificates logic.
-            if (settings.EncryptionCertificateStoreLocation != null &&
+            else if (settings.EncryptionCertificateStoreLocation != null &&
                 settings.EncryptionCertificateStoreName != null &&
                 !String.IsNullOrEmpty(settings.EncryptionCertificateThumbprint))
             {
@@ -373,6 +384,11 @@ namespace OrchardCore.OpenId.Services
             // If a RSA secret was provided, try to use it first.
             if (!String.IsNullOrEmpty(settings.SigningRsaSecret))
             {
+                if (_signingRsa is not null)
+                {
+                    return ImmutableArray.Create<SecurityKey>(new RsaSecurityKey(_signingRsa));
+                }
+
                 var secret = await _secretService.GetSecretAsync<RSASecret>(settings.SigningRsaSecret);
                 if (secret is not null)
                 {
@@ -384,6 +400,8 @@ namespace OrchardCore.OpenId.Services
                         rsa.ImportRSAPrivateKey(secret.PrivateKeyAsBytes(), out _);
                     }
 
+                    _signingRsa = rsa;
+
                     return ImmutableArray.Create<SecurityKey>(new RsaSecurityKey(rsa));
                 }
 
@@ -392,7 +410,7 @@ namespace OrchardCore.OpenId.Services
 
             // If a certificate was explicitly provided, return it immediately
             // instead of using the fallback managed certificates logic.
-            if (settings.SigningCertificateStoreLocation != null &&
+            else if (settings.SigningCertificateStoreLocation != null &&
                 settings.SigningCertificateStoreName != null &&
                 !String.IsNullOrEmpty(settings.SigningCertificateThumbprint))
             {
