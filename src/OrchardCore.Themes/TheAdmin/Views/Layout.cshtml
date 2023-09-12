@@ -59,8 +59,8 @@
                             @if (adminSettings.DisplayDarkMode)
                             {
                                 <li class="nav-item">
-                                    <a id="btn-darkmode" 
-                                    class="nav-link"
+                                    <a id="btn-darkmode"
+                                       class="nav-link"
                                        data-bs-toggle="tooltip"
                                        data-bs-placement="bottom"
                                        title="@(darkMode ? T["Light mode"] : T["Dark mode"])"
@@ -69,14 +69,7 @@
                                        data-theme-name-light="@T["Light mode"]"
                                        data-theme-icon-dark="fa-solid fa-moon"
                                        data-theme-icon-light="fa-solid fa-sun">
-                                        @if (darkMode)
-                                        {
-                                            <i class="fa-solid fa-sun" aria-hidden="true"></i>
-                                        }
-                                        else
-                                        {
-                                            <i class="fa-solid fa-moon" aria-hidden="true"></i>
-                                        }
+                                        <i class="fa-solid @(darkMode ? "fa-sun" : "fa-moon")" aria-hidden="true"></i>
                                     </a>
                                 </li>
                             }

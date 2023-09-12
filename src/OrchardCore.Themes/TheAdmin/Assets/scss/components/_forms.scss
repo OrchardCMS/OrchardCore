@@ -51,6 +51,7 @@
     float: right;
     font-size: 12px;
 }
+
 // When the validation message in inside the label, add a separator
 label .field-validation-error::before {
     content: "- ";
@@ -69,11 +70,14 @@ input[type="password"]::-ms-clear {
     display: none;
 }
 
-.has-filter .form-control, .has-search .form-control {
+.has-filter .form-control,
+.has-search .form-control {
     padding-left: 2rem;
+    color: var(--bs-body-color);
 }
 
-.has-filter .form-control-feedback, .has-search .form-control-feedback {
+.has-filter .form-control-feedback,
+.has-search .form-control-feedback {
     position: absolute;
     left: 1.75rem;
     z-index: 4;
@@ -83,6 +87,7 @@ input[type="password"]::-ms-clear {
     line-height: 1rem;
     text-align: center;
     pointer-events: none;
+    color: var(--bs-secondary);
 }
 
 .has-filter .form-control-feedback {
@@ -94,7 +99,12 @@ input[type="password"]::-ms-clear {
     left: 1.75rem;
 }
 
-.has-search:not(.input-group) .form-control-feedback, .has-filter:not(.input-group) .form-control-feedback {
+.has-search:not(.input-group) .form-control-feedback,
+.has-filter:not(.input-group) .form-control-feedback {
     left: 1.75rem;
     top: 1.25rem;
+}
+
+.has-filter .btn:not(.show) {
+    border-color: var(--bs-border-color) !important;
 }

@@ -12007,10 +12007,11 @@ body {
   min-height: 1rem;
 }
 
+/*
 svg {
-  vertical-align: -0.125em;
+    vertical-align: -.125em;
 }
-
+    */
 .unset {
   all: unset;
 }
@@ -12617,11 +12618,14 @@ input[type=password]::-ms-clear {
   display: none;
 }
 
-.has-filter .form-control, .has-search .form-control {
+.has-filter .form-control,
+.has-search .form-control {
   padding-left: 2rem;
+  color: var(--bs-body-color);
 }
 
-.has-filter .form-control-feedback, .has-search .form-control-feedback {
+.has-filter .form-control-feedback,
+.has-search .form-control-feedback {
   position: absolute;
   left: 1.75rem;
   z-index: 4;
@@ -12631,6 +12635,7 @@ input[type=password]::-ms-clear {
   line-height: 1rem;
   text-align: center;
   pointer-events: none;
+  color: var(--bs-secondary);
 }
 
 .has-filter .form-control-feedback {
@@ -12642,9 +12647,14 @@ input[type=password]::-ms-clear {
   left: 1.75rem;
 }
 
-.has-search:not(.input-group) .form-control-feedback, .has-filter:not(.input-group) .form-control-feedback {
+.has-search:not(.input-group) .form-control-feedback,
+.has-filter:not(.input-group) .form-control-feedback {
   left: 1.75rem;
   top: 1.25rem;
+}
+
+.has-filter .btn:not(.show), .has-filter .bootstrap-select .popover-header .close:not(.show), .bootstrap-select .popover-header .has-filter .close:not(.show), .has-filter .button:not(.show) {
+  border-color: var(--bs-border-color) !important;
 }
 
 .ta-col-grouping.col-xs .col-xs {
@@ -21140,14 +21150,6 @@ span.field-validation-error {
   --oc-admin-menu-item-font-color-active: rgba(232, 230, 227, 0.9);
   --oc-li-hover-bg-color: rgb(27, 30, 31);
   --oc-scrollbar-color: #495057;
-  /*
-  --bs-body-color: #92929D;
-  --bs-body-color-rgb: 146, 146, 157;
-  --bs-body-bg: #13131C;
-  --bs-body-bg-rgb: 19, 19, 28;
-  --bs-tertiary-bg: #7575a1;
-  --bs-border-color: #25252E;
-  */
 }
 [data-bs-theme=dark] .card {
   --bs-card-bg: #1C1C25;
