@@ -287,22 +287,15 @@ namespace OrchardCore.OpenId.Services
                 var secret = await _secretService.GetSecretAsync<RSASecret>(settings.EncryptionRsaSecret);
                 if (secret is not null)
                 {
-                    return ImmutableArray.Create<SecurityKey>(_memoryCache.GetOrCreate(
-                        $"{nameof(OpenIdServerService)}{nameof(settings.EncryptionRsaSecret)}",
-                        entry =>
+                    var rsa = GenerateRsaSecurityKey(size: 2048);
+
+                    rsa.ImportRSAPublicKey(secret.PublicKeyAsBytes(), out _);
+                    if (secret.KeyType == RSAKeyType.PublicPrivatePair)
                     {
-                        entry.SetPriority(CacheItemPriority.NeverRemove);
+                        rsa.ImportRSAPrivateKey(secret.PrivateKeyAsBytes(), out _);
+                    }
 
-                        var rsa = GenerateRsaSecurityKey(size: 2048);
-                        rsa.ImportRSAPublicKey(secret.PublicKeyAsBytes(), out _);
-
-                        if (secret.KeyType == RSAKeyType.PublicPrivatePair)
-                        {
-                            rsa.ImportRSAPrivateKey(secret.PrivateKeyAsBytes(), out _);
-                        }
-
-                        return new RsaSecurityKey(rsa);
-                    }));
+                    return ImmutableArray.Create<SecurityKey>(new RsaSecurityKey(rsa));
                 }
 
                 _logger.LogWarning("The encryption RSA secret '{SecretName}' could not be found.", settings.EncryptionRsaSecret);
@@ -383,25 +376,18 @@ namespace OrchardCore.OpenId.Services
                 var secret = await _secretService.GetSecretAsync<RSASecret>(settings.SigningRsaSecret);
                 if (secret is not null)
                 {
-                    return ImmutableArray.Create<SecurityKey>(_memoryCache.GetOrCreate(
-                        $"{nameof(OpenIdServerService)}{nameof(settings.SigningRsaSecret)}",
-                        entry =>
+                    var rsa = GenerateRsaSecurityKey(size: 2048);
+
+                    rsa.ImportRSAPublicKey(secret.PublicKeyAsBytes(), out _);
+                    if (secret.KeyType == RSAKeyType.PublicPrivatePair)
                     {
-                        entry.SetPriority(CacheItemPriority.NeverRemove);
+                        rsa.ImportRSAPrivateKey(secret.PrivateKeyAsBytes(), out _);
+                    }
 
-                        var rsa = GenerateRsaSecurityKey(size: 2048);
-                        rsa.ImportRSAPublicKey(secret.PublicKeyAsBytes(), out _);
-
-                        if (secret.KeyType == RSAKeyType.PublicPrivatePair)
-                        {
-                            rsa.ImportRSAPrivateKey(secret.PrivateKeyAsBytes(), out _);
-                        }
-
-                        return new RsaSecurityKey(rsa);
-                    }));
+                    return ImmutableArray.Create<SecurityKey>(new RsaSecurityKey(rsa));
                 }
 
-                _logger.LogWarning("The encryption RSA secret '{SecretName}' could not be found.", settings.EncryptionRsaSecret);
+                _logger.LogWarning("The signing RSA secret '{SecretName}' could not be found.", settings.EncryptionRsaSecret);
             }
 
             // If a certificate was explicitly provided, return it immediately
