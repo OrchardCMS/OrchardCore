@@ -131,7 +131,7 @@ namespace OrchardCore.DisplayManagement.Notify
                 return;
             }
 
-            if (filterContext.Result is not ViewResult && filterContext.Result is not PageResult)
+            if (!filterContext.IsViewOrPageResult())
             {
                 await next();
                 return;
