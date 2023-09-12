@@ -119,7 +119,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
 
         public bool HasField(ContentPartFieldDefinition field)
         {
-            return ContentFieldTypeMappings.ContainsKey(field.FieldDefinition.Name);
+            return _contentFieldTypeMappings.ContainsKey(field.FieldDefinition.Name);
         }
 
         private class FieldTypeDescriptor
