@@ -69,7 +69,7 @@
                             <a asp-action="Delete" asp-route-name="@entry.Name" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>
                         <a asp-action="Edit" asp-route-name="@entry.Name">@entry.Name</a>
-                        @if (!String.IsNullOrWhiteSpace(entry.ShortcodeTemplate.Hint))
+                        @if (!string.IsNullOrWhiteSpace(entry.ShortcodeTemplate.Hint))
                         {
                             <span class="hint dashed">@entry.ShortcodeTemplate.Hint</span>
                         }

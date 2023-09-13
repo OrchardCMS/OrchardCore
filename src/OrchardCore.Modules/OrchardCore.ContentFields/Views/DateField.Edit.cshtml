@@ -14,7 +14,7 @@
                 <input asp-for="Value" type="date" class="form-control content-preview-select" required="@settings.Required" />
             </div>
         </div>
-        @if (!String.IsNullOrEmpty(settings.Hint))
+        @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
         }

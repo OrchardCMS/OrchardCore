@@ -26,9 +26,9 @@
             </div>
         }
 
-        @if (!String.IsNullOrEmpty(Model.CurrentProvider))
+        @if (!string.IsNullOrEmpty(Model.CurrentProvider))
         {
-            var shape = await DisplayManager.BuildEditorAsync(new TwoFactorMethod(), UpdateModelAccessor.ModelUpdater, false, Model.CurrentProvider, String.Empty);
+            var shape = await DisplayManager.BuildEditorAsync(new TwoFactorMethod(), UpdateModelAccessor.ModelUpdater, false, Model.CurrentProvider, string.Empty);
 
             @await DisplayAsync(shape)
         }
