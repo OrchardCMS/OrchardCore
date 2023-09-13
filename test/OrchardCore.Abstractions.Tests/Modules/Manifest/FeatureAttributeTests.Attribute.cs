@@ -245,7 +245,7 @@ namespace OrchardCore.Modules.Manifest
             /// </summary>
             /// <param name="_"></param>
             /// <returns></returns>
-            /// <remarks>Given value may be Null, Nullable, Sring, or Boolean. Otherwise,
+            /// <remarks>Given value may be Null, Nullable, String, or Boolean. Otherwise,
             /// makes a best effort to convert directly to string.</remarks>
             private static string DefaultRender(object _)
             {
