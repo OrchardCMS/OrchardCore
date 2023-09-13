@@ -63,7 +63,7 @@ namespace OrchardCore.Workflows.Http.Services
                 var activity = activityLibrary.InstantiateActivity<HttpRequestFilterEvent>(x);
                 var entry = new WorkflowRoutesEntry
                 {
-                    WorkflowId = workflow.WorkflowId,
+                    WorkflowId = workflow.Id.ToString(),
                     ActivityId = x.ActivityId,
                     HttpMethod = activity.HttpMethod,
                     RouteValues = activity.RouteValues,

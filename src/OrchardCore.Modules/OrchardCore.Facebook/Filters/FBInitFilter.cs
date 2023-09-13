@@ -29,7 +29,7 @@ namespace OrchardCore.Facebook.Filters
             {
                 var site = (await _siteService.GetSiteSettingsAsync());
                 var settings = site.As<FacebookSettings>();
-                if (!String.IsNullOrWhiteSpace(settings?.AppId))
+                if (!string.IsNullOrWhiteSpace(settings?.AppId))
                 {
                     if (settings.FBInit)
                     {
