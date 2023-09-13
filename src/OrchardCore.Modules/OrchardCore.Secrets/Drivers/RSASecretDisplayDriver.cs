@@ -34,7 +34,7 @@ public class RSASecretDisplayDriver : DisplayDriver<SecretBase, RSASecret>
             if (context.IsNew)
             {
                 using var rsa = RSAGenerator.GenerateRSASecurityKey(2048);
-                if (String.IsNullOrEmpty(secret.PublicKey))
+                if (string.IsNullOrEmpty(secret.PublicKey))
                 {
                     model.PublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey());
                 }
@@ -43,7 +43,7 @@ public class RSASecretDisplayDriver : DisplayDriver<SecretBase, RSASecret>
                     model.PublicKey = secret.PublicKey;
                 }
 
-                if (String.IsNullOrEmpty(secret.PrivateKey))
+                if (string.IsNullOrEmpty(secret.PrivateKey))
                 {
                     model.PrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey());
                 }

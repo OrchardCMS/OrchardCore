@@ -57,7 +57,7 @@ public class SecretService : ISecretService
             return null;
         }
 
-        var secretStore = _stores.FirstOrDefault(store => String.Equals(store.Name, binding.Store, StringComparison.OrdinalIgnoreCase));
+        var secretStore = _stores.FirstOrDefault(store => string.Equals(store.Name, binding.Store, StringComparison.OrdinalIgnoreCase));
         if (secretStore is null)
         {
             return null;
@@ -86,14 +86,14 @@ public class SecretService : ISecretService
 
     public async Task UpdateSecretAsync(SecretBinding binding, SecretBase secret)
     {
-        if (!String.Equals(binding.Name, binding.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+        if (!string.Equals(binding.Name, binding.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
         {
             throw new InvalidOperationException("The name contains invalid characters.");
         }
 
         secret.Name = binding.Name;
 
-        var secretStore = _stores.FirstOrDefault(store => String.Equals(store.Name, binding.Store, StringComparison.OrdinalIgnoreCase));
+        var secretStore = _stores.FirstOrDefault(store => string.Equals(store.Name, binding.Store, StringComparison.OrdinalIgnoreCase));
         if (secretStore is not null)
         {
             await _bindingsManager.UpdateSecretBindingAsync(binding.Name, binding);
@@ -112,7 +112,7 @@ public class SecretService : ISecretService
 
     public async Task RemoveSecretAsync(SecretBinding binding)
     {
-        var store = _stores.FirstOrDefault(store => String.Equals(store.Name, binding.Store, StringComparison.OrdinalIgnoreCase))
+        var store = _stores.FirstOrDefault(store => string.Equals(store.Name, binding.Store, StringComparison.OrdinalIgnoreCase))
             ?? throw new InvalidOperationException($"The specified store '{binding.Store}' was not found.");
 
         await _bindingsManager.RemoveSecretBindingAsync(binding.Name);

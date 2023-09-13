@@ -55,8 +55,8 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 return StatusCode((int)HttpStatusCode.BadRequest, "The remote client was not provided");
             }
 
-            var apiKey = String.Empty;
-            if (!String.IsNullOrEmpty(remoteClient.ApiKeySecret))
+            var apiKey = string.Empty;
+            if (!string.IsNullOrEmpty(remoteClient.ApiKeySecret))
             {
                 apiKey = (await _secretService.GetSecretAsync<TextSecret>(remoteClient.ApiKeySecret))?.Text;
             }

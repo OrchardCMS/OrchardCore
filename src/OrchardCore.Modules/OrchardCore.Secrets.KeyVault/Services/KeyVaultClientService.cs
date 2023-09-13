@@ -25,7 +25,7 @@ public class KeyVaultClientService
 
     public async Task<string> GetSecretAsync(string name)
     {
-        if (!String.IsNullOrEmpty(_prefix))
+        if (!string.IsNullOrEmpty(_prefix))
         {
             name = $"{_prefix}{name}";
         }
@@ -38,7 +38,7 @@ public class KeyVaultClientService
 
     public async Task SetSecretAsync(string name, string secretValue)
     {
-        if (!String.IsNullOrEmpty(_prefix))
+        if (!string.IsNullOrEmpty(_prefix))
         {
             name = $"{_prefix}{name}";
         }

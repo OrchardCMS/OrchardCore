@@ -26,20 +26,20 @@ public class AllSecretsDeploymentSource : IDeploymentSource
             return;
         }
 
-        if (String.IsNullOrEmpty(result.EncryptionSecret))
+        if (string.IsNullOrEmpty(result.EncryptionSecret))
         {
             throw new InvalidOperationException("You must set an encryption rsa secret for the deployment target before exporting secrets.");
         }
 
-        if (String.IsNullOrEmpty(result.SigningSecret))
+        if (string.IsNullOrEmpty(result.SigningSecret))
         {
             throw new InvalidOperationException("You must set a signing rsa secret for the deployment target before exporting secrets.");
         }
 
         // Secret binding names used for the deployment itself should already exist on both sides.
         var secretBindings = (await _secretService.GetSecretBindingsAsync()).Where(binding =>
-            !String.Equals(binding.Value.Name, result.EncryptionSecret, StringComparison.OrdinalIgnoreCase) &&
-            !String.Equals(binding.Value.Name, result.SigningSecret, StringComparison.OrdinalIgnoreCase));
+            !string.Equals(binding.Value.Name, result.EncryptionSecret, StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(binding.Value.Name, result.SigningSecret, StringComparison.OrdinalIgnoreCase));
 
         if (!secretBindings.Any())
         {
@@ -52,7 +52,7 @@ public class AllSecretsDeploymentSource : IDeploymentSource
         foreach (var binding in secretBindings)
         {
             var store = _secretService.GetSecretStoreInfos().FirstOrDefault(store =>
-                String.Equals(store.Name, binding.Value.Store, StringComparison.OrdinalIgnoreCase));
+                string.Equals(store.Name, binding.Value.Store, StringComparison.OrdinalIgnoreCase));
 
             if (store is null)
             {

@@ -16,7 +16,7 @@ public class SecretsRecipeStep : IRecipeStepHandler
 
     public async Task ExecuteAsync(RecipeExecutionContext context)
     {
-        if (!String.Equals(context.Name, "Secrets", StringComparison.OrdinalIgnoreCase))
+        if (!string.Equals(context.Name, "Secrets", StringComparison.OrdinalIgnoreCase))
         {
             return;
         }
@@ -29,7 +29,7 @@ public class SecretsRecipeStep : IRecipeStepHandler
 
             // This will always be plaintext as decrypt has already operated on the secret.
             var plaintext = kvp.Value["Secret"]?.ToString();
-            if (!String.IsNullOrEmpty(plaintext))
+            if (!string.IsNullOrEmpty(plaintext))
             {
                 // Rehyrdate from plaintext to secret type.
                 secret = JsonConvert.DeserializeObject(plaintext, secret.GetType()) as SecretBase;

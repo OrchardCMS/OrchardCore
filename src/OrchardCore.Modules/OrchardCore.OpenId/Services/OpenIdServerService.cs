@@ -139,7 +139,7 @@ namespace OrchardCore.OpenId.Services
                 }
             }
 
-            if (String.IsNullOrEmpty(settings.SigningRsaSecret) &&
+            if (string.IsNullOrEmpty(settings.SigningRsaSecret) &&
                 settings.SigningCertificateStoreLocation != null &&
                 settings.SigningCertificateStoreName != null &&
                 !string.IsNullOrEmpty(settings.SigningCertificateThumbprint))
@@ -286,7 +286,7 @@ namespace OrchardCore.OpenId.Services
             var settings = await GetSettingsAsync();
 
             // If a RSA secret was provided, try to use it first.
-            if (!String.IsNullOrEmpty(settings.EncryptionRsaSecret))
+            if (!string.IsNullOrEmpty(settings.EncryptionRsaSecret))
             {
                 if (_encryptionRsa is not null)
                 {
@@ -382,7 +382,7 @@ namespace OrchardCore.OpenId.Services
             var settings = await GetSettingsAsync();
 
             // If a RSA secret was provided, try to use it first.
-            if (!String.IsNullOrEmpty(settings.SigningRsaSecret))
+            if (!string.IsNullOrEmpty(settings.SigningRsaSecret))
             {
                 if (_signingRsa is not null)
                 {

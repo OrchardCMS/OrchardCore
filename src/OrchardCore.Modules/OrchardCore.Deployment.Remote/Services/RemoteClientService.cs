@@ -63,7 +63,7 @@ namespace OrchardCore.Deployment.Remote.Services
         {
             var remoteClientList = await GetRemoteClientListAsync();
 
-            var protectedApiKey = !String.IsNullOrEmpty(apiKey)
+            var protectedApiKey = !string.IsNullOrEmpty(apiKey)
                 ? _dataProtector.Protect(Encoding.UTF8.GetBytes(apiKey))
                 : Array.Empty<byte>();
 
@@ -90,7 +90,7 @@ namespace OrchardCore.Deployment.Remote.Services
             }
 
             remoteClient.ClientName = clientName;
-            if (!String.IsNullOrEmpty(apiKey))
+            if (!string.IsNullOrEmpty(apiKey))
             {
                 remoteClient.ProtectedApiKey = _dataProtector.Protect(Encoding.UTF8.GetBytes(apiKey));
             }

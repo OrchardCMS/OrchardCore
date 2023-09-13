@@ -37,7 +37,7 @@ namespace OrchardCore.Forms.Drivers
                 m.EnableAntiForgeryToken = part.EnableAntiForgeryToken;
                 m.WorkflowPayload = part.WorkflowPayload;
 
-                m.WorkflowTypes.Insert(0, new SelectListItem() { Text = S["None"], Value = String.Empty });
+                m.WorkflowTypes.Insert(0, new SelectListItem() { Text = S["None"], Value = string.Empty });
 
                 var workflowTypeStore = _services.GetService<IWorkflowTypeStore>();
                 if (workflowTypeStore is not null)
@@ -68,7 +68,7 @@ namespace OrchardCore.Forms.Drivers
                     {
                         part.WorkflowPayload.ActivityId = (await workflowTypeStore.GetAsync(part.WorkflowPayload.WorkflowId))
                             ?.Activities
-                            .FirstOrDefault(a => String.Equals(a.Name, "HttpRequestEvent", StringComparison.OrdinalIgnoreCase))
+                            .FirstOrDefault(a => string.Equals(a.Name, "HttpRequestEvent", StringComparison.OrdinalIgnoreCase))
                             ?.ActivityId;
                     }
                 }

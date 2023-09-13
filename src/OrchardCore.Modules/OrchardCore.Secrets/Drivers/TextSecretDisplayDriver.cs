@@ -27,7 +27,7 @@ public class TextSecretDisplayDriver : DisplayDriver<SecretBase, TextSecret>
         return Task.FromResult<IDisplayResult>(Initialize<TextSecretViewModel>("TextSecret_Fields_Edit", model =>
         {
             // The text value is never returned to the view.
-            model.Text = String.Empty;
+            model.Text = string.Empty;
             model.Context = context;
         })
             .Location("Content"));
@@ -39,13 +39,13 @@ public class TextSecretDisplayDriver : DisplayDriver<SecretBase, TextSecret>
 
         if (await context.Updater.TryUpdateModelAsync(model, Prefix))
         {
-            if (context.IsNew && String.IsNullOrEmpty(model.Text))
+            if (context.IsNew && string.IsNullOrEmpty(model.Text))
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.Text), S["The text value is required."]);
             }
 
             // The text value is only updated when a new value has been provided.
-            if (!String.IsNullOrEmpty(model.Text))
+            if (!string.IsNullOrEmpty(model.Text))
             {
                 secret.Text = model.Text;
             }

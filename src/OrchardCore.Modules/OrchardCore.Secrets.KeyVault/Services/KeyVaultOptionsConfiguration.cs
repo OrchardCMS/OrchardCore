@@ -32,8 +32,8 @@ public class KeyVaultOptionsConfiguration : IConfigureOptions<SecretsKeyVaultOpt
     {
         var section = _shellConfiguration.GetSection("OrchardCore_Secrets:KeyVault");
 
-        options.KeyVaultName = section.GetValue(nameof(options.KeyVaultName), String.Empty);
-        options.Prefix = section.GetValue(nameof(options.Prefix), String.Empty);
+        options.KeyVaultName = section.GetValue(nameof(options.KeyVaultName), string.Empty);
+        options.Prefix = section.GetValue(nameof(options.Prefix), string.Empty);
 
         var templateOptions = new TemplateOptions();
         var templateContext = new TemplateContext(templateOptions);
@@ -54,7 +54,7 @@ public class KeyVaultOptionsConfiguration : IConfigureOptions<SecretsKeyVaultOpt
 
             // Container name must be lowercase.
             options.KeyVaultName = template.Render(templateContext, NullEncoder.Default).ToLower();
-            options.KeyVaultName = options.KeyVaultName.Replace("\r", String.Empty).Replace("\n", String.Empty);
+            options.KeyVaultName = options.KeyVaultName.Replace("\r", string.Empty).Replace("\n", string.Empty);
         }
         catch (Exception e)
         {
@@ -69,7 +69,7 @@ public class KeyVaultOptionsConfiguration : IConfigureOptions<SecretsKeyVaultOpt
         {
             var template = _fluidParser.Parse(options.Prefix);
             options.Prefix = template.Render(templateContext, NullEncoder.Default);
-            options.Prefix = options.Prefix.Replace("\r", String.Empty).Replace("\n", String.Empty);
+            options.Prefix = options.Prefix.Replace("\r", string.Empty).Replace("\n", string.Empty);
         }
         catch (Exception e)
         {

@@ -72,7 +72,7 @@ public class AdminController : Controller
         var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
         var secretBindings = (await _secretService.GetSecretBindingsAsync()).ToList();
-        if (!String.IsNullOrWhiteSpace(options.Search))
+        if (!string.IsNullOrWhiteSpace(options.Search))
         {
             secretBindings = secretBindings.Where(kv => kv.Key.Contains(options.Search)).ToList();
         }
@@ -203,12 +203,12 @@ public class AdminController : Controller
 
         if (ModelState.IsValid)
         {
-            if (String.IsNullOrWhiteSpace(model.Name))
+            if (string.IsNullOrWhiteSpace(model.Name))
             {
                 ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["The name is mandatory."]);
             }
 
-            if (!String.Equals(model.Name, model.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(model.Name, model.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["The name contains invalid characters."]);
             }
@@ -287,13 +287,13 @@ public class AdminController : Controller
 
         if (ModelState.IsValid)
         {
-            if (String.IsNullOrWhiteSpace(model.Name))
+            if (string.IsNullOrWhiteSpace(model.Name))
             {
                 ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["The name is mandatory."]);
             }
             if (!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase))
             {
-                if (!String.Equals(model.Name, model.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+                if (!string.Equals(model.Name, model.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
                 {
                     ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["The name contains invalid characters."]);
                 }

@@ -32,7 +32,7 @@ public class KeyVaultSecretStore : ISecretStore
         }
 
         var value = await _keyVaultClientService.GetSecretAsync(name);
-        if (String.IsNullOrEmpty(value))
+        if (string.IsNullOrEmpty(value))
         {
             return null;
         }

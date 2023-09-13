@@ -26,18 +26,18 @@ public class SelectSecretViewComponent : ViewComponent
         var secretBindings = await _secretService.GetSecretBindingsAsync();
 
         var secrets = secretBindings
-            .Where(kv => String.Equals(secretType, kv.Value.Type, StringComparison.OrdinalIgnoreCase))
+            .Where(kv => string.Equals(secretType, kv.Value.Type, StringComparison.OrdinalIgnoreCase))
             .Select(kv => new SelectListItem()
             {
                 Text = kv.Key,
                 Value = kv.Key,
-                Selected = String.Equals(kv.Key, selectedSecret, StringComparison.OrdinalIgnoreCase),
+                Selected = string.Equals(kv.Key, selectedSecret, StringComparison.OrdinalIgnoreCase),
             })
             .ToList();
 
         if (!required)
         {
-            secrets.Insert(0, new SelectListItem() { Text = S["None"], Value = String.Empty });
+            secrets.Insert(0, new SelectListItem() { Text = S["None"], Value = string.Empty });
         }
 
         var model = new SelectSecretViewModel
