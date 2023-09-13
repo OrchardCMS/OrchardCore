@@ -163,7 +163,7 @@ namespace OrchardCore.ContentManagement
 
         public async Task<ContentItem> GetAsync(string contentItemId, VersionOptions options)
         {
-            if (String.IsNullOrEmpty(contentItemId))
+            if (string.IsNullOrEmpty(contentItemId))
             {
                 return null;
             }
@@ -597,7 +597,7 @@ namespace OrchardCore.ContentManagement
 
         public async Task CreateAsync(ContentItem contentItem, VersionOptions options)
         {
-            if (String.IsNullOrEmpty(contentItem.ContentItemVersionId))
+            if (string.IsNullOrEmpty(contentItem.ContentItemVersionId))
             {
                 contentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(contentItem);
                 contentItem.Published = true;
@@ -655,11 +655,11 @@ namespace OrchardCore.ContentManagement
             {
                 // Preload all the versions for this batch from the database.
                 var versionIds = batchedContentItems
-                     .Where(x => !String.IsNullOrEmpty(x.ContentItemVersionId))
+                     .Where(x => !string.IsNullOrEmpty(x.ContentItemVersionId))
                      .Select(x => x.ContentItemVersionId);
 
                 var itemIds = batchedContentItems
-                    .Where(x => !String.IsNullOrEmpty(x.ContentItemId))
+                    .Where(x => !string.IsNullOrEmpty(x.ContentItemId))
                     .Select(x => x.ContentItemId);
 
                 var existingContentItems = await _session
@@ -668,7 +668,7 @@ namespace OrchardCore.ContentManagement
                         (x.Latest || x.Published || x.ContentItemVersionId.IsIn(versionIds)))
                     .ListAsync();
 
-                var versionsToUpdate = existingContentItems.Where(c => versionIds.Any(v => String.Equals(v, c.ContentItemVersionId, StringComparison.OrdinalIgnoreCase)));
+                var versionsToUpdate = existingContentItems.Where(c => versionIds.Any(v => string.Equals(v, c.ContentItemVersionId, StringComparison.OrdinalIgnoreCase)));
                 var versionsThatMaybeEvicted = existingContentItems.Except(versionsToUpdate);
 
                 foreach (var version in existingContentItems)
@@ -679,7 +679,7 @@ namespace OrchardCore.ContentManagement
                 foreach (var importingItem in batchedContentItems)
                 {
                     ContentItem originalVersion = null;
-                    if (!String.IsNullOrEmpty(importingItem.ContentItemVersionId))
+                    if (!string.IsNullOrEmpty(importingItem.ContentItemVersionId))
                     {
                         if (importedVersionIds.Contains(importingItem.ContentItemVersionId))
                         {
@@ -689,7 +689,7 @@ namespace OrchardCore.ContentManagement
 
                         importedVersionIds.Add(importingItem.ContentItemVersionId);
 
-                        originalVersion = versionsToUpdate.FirstOrDefault(x => String.Equals(x.ContentItemVersionId, importingItem.ContentItemVersionId, StringComparison.OrdinalIgnoreCase));
+                        originalVersion = versionsToUpdate.FirstOrDefault(x => string.Equals(x.ContentItemVersionId, importingItem.ContentItemVersionId, StringComparison.OrdinalIgnoreCase));
                     }
 
                     if (originalVersion == null)
@@ -699,16 +699,16 @@ namespace OrchardCore.ContentManagement
 
                         await Handlers.InvokeAsync((handler, context) => handler.ImportingAsync(context), context, _logger);
 
-                        var evictionVersions = versionsThatMaybeEvicted.Where(x => String.Equals(x.ContentItemId, importingItem.ContentItemId, StringComparison.OrdinalIgnoreCase));
+                        var evictionVersions = versionsThatMaybeEvicted.Where(x => string.Equals(x.ContentItemId, importingItem.ContentItemId, StringComparison.OrdinalIgnoreCase));
                         var result = await CreateContentItemVersionAsync(importingItem, evictionVersions);
                         if (!result.Succeeded)
                         {
                             if (_logger.IsEnabled(LogLevel.Error))
                             {
-                                _logger.LogError("Error importing content item version id '{ContentItemVersionId}' : '{Errors}'", importingItem?.ContentItemVersionId, String.Join(", ", result.Errors));
+                                _logger.LogError("Error importing content item version id '{ContentItemVersionId}' : '{Errors}'", importingItem?.ContentItemVersionId, string.Join(", ", result.Errors));
                             }
 
-                            throw new ValidationException(String.Join(", ", result.Errors));
+                            throw new ValidationException(string.Join(", ", result.Errors));
                         }
 
                         // Imported handlers will only be fired if the validation has been successful.
@@ -750,16 +750,16 @@ namespace OrchardCore.ContentManagement
 
                         await Handlers.InvokeAsync((handler, context) => handler.ImportingAsync(context), context, _logger);
 
-                        var evictionVersions = versionsThatMaybeEvicted.Where(x => String.Equals(x.ContentItemId, importingItem.ContentItemId, StringComparison.OrdinalIgnoreCase));
+                        var evictionVersions = versionsThatMaybeEvicted.Where(x => string.Equals(x.ContentItemId, importingItem.ContentItemId, StringComparison.OrdinalIgnoreCase));
                         var result = await UpdateContentItemVersionAsync(originalVersion, importingItem, evictionVersions);
                         if (!result.Succeeded)
                         {
                             if (_logger.IsEnabled(LogLevel.Error))
                             {
-                                _logger.LogError("Error importing content item version id '{ContentItemVersionId}' : '{Errors}'", importingItem.ContentItemVersionId, String.Join(", ", result.Errors));
+                                _logger.LogError("Error importing content item version id '{ContentItemVersionId}' : '{Errors}'", importingItem.ContentItemVersionId, string.Join(", ", result.Errors));
                             }
 
-                            throw new ValidationException(String.Join(", ", result.Errors));
+                            throw new ValidationException(string.Join(", ", result.Errors));
                         }
 
                         // Imported handlers will only be fired if the validation has been successful.
@@ -925,7 +925,7 @@ namespace OrchardCore.ContentManagement
 
         private async Task<ContentValidateResult> CreateContentItemVersionAsync(ContentItem contentItem, IEnumerable<ContentItem> evictionVersions = null)
         {
-            if (String.IsNullOrEmpty(contentItem.ContentItemId))
+            if (string.IsNullOrEmpty(contentItem.ContentItemId))
             {
                 // NewAsync should be used to create new content items.
                 throw new InvalidOperationException($"The content item is missing a '{nameof(ContentItem.ContentItemId)}'.");
@@ -940,7 +940,7 @@ namespace OrchardCore.ContentManagement
             var owner = contentItem.Owner;
             var author = contentItem.Author;
 
-            if (String.IsNullOrEmpty(contentItem.ContentItemVersionId))
+            if (string.IsNullOrEmpty(contentItem.ContentItemVersionId))
             {
                 contentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(contentItem);
             }
@@ -1006,11 +1006,11 @@ namespace OrchardCore.ContentManagement
             // There is a risk here that the owner or author does not exist in the importing system.
             // We check that at least a value has been supplied, if not the owner property and author
             // property would be left as the user who has run this import.
-            if (!String.IsNullOrEmpty(owner))
+            if (!string.IsNullOrEmpty(owner))
             {
                 contentItem.Owner = owner;
             }
-            if (!String.IsNullOrEmpty(author))
+            if (!string.IsNullOrEmpty(author))
             {
                 contentItem.Author = author;
             }

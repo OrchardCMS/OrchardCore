@@ -87,7 +87,7 @@ namespace OrchardCore.Navigation
                     var cursor = items[j];
 
                     // A match is found, add all its items to the source.
-                    if (String.Equals(cursor.Text.Name, source.Text.Name, StringComparison.OrdinalIgnoreCase))
+                    if (string.Equals(cursor.Text.Name, source.Text.Name, StringComparison.OrdinalIgnoreCase))
                     {
                         merged = true;
                         foreach (var child in cursor.Items)
@@ -183,7 +183,7 @@ namespace OrchardCore.Navigation
                 return _urlHelper.RouteUrl(new UrlRouteContext { Values = routeValueDictionary });
             }
 
-            if (String.IsNullOrEmpty(menuItemUrl))
+            if (string.IsNullOrEmpty(menuItemUrl))
             {
                 return "#";
             }

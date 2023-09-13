@@ -21,7 +21,7 @@ namespace OrchardCore.Features.Recipes.Executors
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "Feature", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "Feature", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

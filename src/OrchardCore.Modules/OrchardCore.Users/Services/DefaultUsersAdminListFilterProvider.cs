@@ -47,7 +47,7 @@ namespace OrchardCore.Users.Services
                         {
                             UsersFilter.Enabled => (true, model.Filter.ToString()),
                             UsersFilter.Disabled => (true, model.Filter.ToString()),
-                            _ => (false, String.Empty)
+                            _ => (false, string.Empty)
                         };
                     })
                 )
@@ -87,7 +87,7 @@ namespace OrchardCore.Users.Services
                             return (true, model.Order.ToString());
                         }
 
-                        return (false, String.Empty);
+                        return (false, string.Empty);
                     })
                     .AlwaysRun()
                 )
@@ -102,7 +102,7 @@ namespace OrchardCore.Users.Services
                         return new ValueTask<IQuery<User>>(query);
                     })
                     .MapTo<UserIndexOptions>((val, model) => model.SelectedRole = val)
-                    .MapFrom<UserIndexOptions>((model) => (!String.IsNullOrEmpty(model.SelectedRole), model.SelectedRole))
+                    .MapFrom<UserIndexOptions>((model) => (!string.IsNullOrEmpty(model.SelectedRole), model.SelectedRole))
                 )
                 .WithDefaultTerm(UsersAdminListFilterOptions.DefaultTermName, builder => builder
                     .ManyCondition(

@@ -64,7 +64,7 @@ namespace OrchardCore.AuditTrail.Controllers
             };
 
             // This is used by Contents feature for routing so needs to be passed into the options.
-            if (!String.IsNullOrEmpty(correlationId))
+            if (!string.IsNullOrEmpty(correlationId))
             {
                 options.CorrelationId = correlationId;
                 options.CorrelationIdFromRoute = true;
@@ -129,7 +129,7 @@ namespace OrchardCore.AuditTrail.Controllers
         {
             await _auditTrailOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false, "", "");
             // When the user has typed something into the search input no further evaluation of the form post is required.
-            if (!String.Equals(options.SearchText, options.OriginalSearchText, StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(options.SearchText, options.OriginalSearchText, StringComparison.OrdinalIgnoreCase))
             {
                 return RedirectToAction(nameof(Index), new RouteValueDictionary { { "q", options.SearchText } });
             }

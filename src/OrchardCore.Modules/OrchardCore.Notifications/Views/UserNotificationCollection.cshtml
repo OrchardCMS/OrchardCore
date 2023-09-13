@@ -32,7 +32,7 @@
                 {
                     var notification = Model.Value.Notifications[i];
 
-                    <div class="@(i == maxCount - 1 ? String.Empty : "border-bottom")">
+                    <div class="@(i == maxCount - 1 ? string.Empty : "border-bottom")">
                         @await DisplayAsync(notification)
                     </div>
                 }

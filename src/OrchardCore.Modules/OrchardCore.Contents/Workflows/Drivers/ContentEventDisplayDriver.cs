@@ -61,7 +61,7 @@ namespace OrchardCore.Contents.Workflows.Drivers
         protected IEnumerable<string> FilterContentTypesQuery(IEnumerable<string> contentTypeNames)
         {
             var contentTypeDefinitions = ContentDefinitionManager.ListTypeDefinitions().ToDictionary(x => x.Name);
-            return contentTypeNames.Where(x => !String.IsNullOrWhiteSpace(x) && contentTypeDefinitions.ContainsKey(x));
+            return contentTypeNames.Where(x => !string.IsNullOrWhiteSpace(x) && contentTypeDefinitions.ContainsKey(x));
         }
     }
 }

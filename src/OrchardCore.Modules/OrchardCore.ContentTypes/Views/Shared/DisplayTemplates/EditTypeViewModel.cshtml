@@ -9,7 +9,7 @@
 
         <span class="badge rounded-pill ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Technical Name"]"><i class="fa-solid fa-file-alt text-danger" aria-hidden="true"></i> @Model.Name</span>
 
-        @if (!String.IsNullOrWhiteSpace(settings.Stereotype))
+        @if (!string.IsNullOrWhiteSpace(settings.Stereotype))
         {
             <span class="badge rounded-pill ta-badge font-weight-normal" data-bs-toggle="tooltip" title="Stereotype"><i class="fa-solid fa-file text-info" aria-hidden="true"></i> @settings.Stereotype</span>
         }
@@ -24,7 +24,7 @@
     </div>
 </div>
 
-@if (!String.IsNullOrWhiteSpace(settings.Description))
+@if (!string.IsNullOrWhiteSpace(settings.Description))
 {
     <div class="row">
         <div class="col">

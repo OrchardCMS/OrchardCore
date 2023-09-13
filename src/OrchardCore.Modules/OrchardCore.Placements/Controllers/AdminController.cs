@@ -70,7 +70,7 @@ namespace OrchardCore.Placements.Controllers
                 ShapeType = entry.Key
             }).ToList();
 
-            if (!String.IsNullOrWhiteSpace(options.Search))
+            if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 shapeList = shapeList.Where(x => x.ShapeType.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
@@ -142,11 +142,11 @@ namespace OrchardCore.Placements.Controllers
                     DisplayType = displayType,
                     Differentiator = differentiator
                 };
-                if (!String.IsNullOrEmpty(contentType))
+                if (!string.IsNullOrEmpty(contentType))
                 {
                     generatedNode.Filters.Add("contentType", new JArray(contentType));
                 }
-                if (!String.IsNullOrEmpty(contentPart))
+                if (!string.IsNullOrEmpty(contentPart))
                 {
                     generatedNode.Filters.Add("contentPart", new JArray(contentPart));
                 }
@@ -275,7 +275,7 @@ namespace OrchardCore.Placements.Controllers
 
         private IActionResult RedirectToReturnUrlOrIndex(string returnUrl)
         {
-            if ((String.IsNullOrEmpty(returnUrl) == false) && (Url.IsLocalUrl(returnUrl)))
+            if ((string.IsNullOrEmpty(returnUrl) == false) && (Url.IsLocalUrl(returnUrl)))
             {
                 return this.Redirect(returnUrl, true);
             }
@@ -287,24 +287,24 @@ namespace OrchardCore.Placements.Controllers
 
         private static bool ShouldCreateNode(IEnumerable<PlacementNode> nodes, string displayType, string contentType, string contentPart, string differentiator)
         {
-            if (String.IsNullOrEmpty(displayType) && String.IsNullOrEmpty(differentiator))
+            if (string.IsNullOrEmpty(displayType) && string.IsNullOrEmpty(differentiator))
             {
                 return false;
             }
             else
             {
                 return !nodes.Any(node =>
-                    (String.IsNullOrEmpty(displayType) || node.DisplayType == displayType) &&
-                    (String.IsNullOrEmpty(contentType) || (node.Filters.ContainsKey("contentType") && FilterEquals(node.Filters["contentType"], contentType))) &&
-                    (String.IsNullOrEmpty(contentPart) || (node.Filters.ContainsKey("contentPart") && FilterEquals(node.Filters["contentPart"], contentPart))) &&
-                    (String.IsNullOrEmpty(differentiator) || node.Differentiator == differentiator));
+                    (string.IsNullOrEmpty(displayType) || node.DisplayType == displayType) &&
+                    (string.IsNullOrEmpty(contentType) || (node.Filters.ContainsKey("contentType") && FilterEquals(node.Filters["contentType"], contentType))) &&
+                    (string.IsNullOrEmpty(contentPart) || (node.Filters.ContainsKey("contentPart") && FilterEquals(node.Filters["contentPart"], contentPart))) &&
+                    (string.IsNullOrEmpty(differentiator) || node.Differentiator == differentiator));
             }
         }
 
         private static bool IsEmpty(PlacementNode node)
         {
-            return String.IsNullOrEmpty(node.Location)
-                && String.IsNullOrEmpty(node.ShapeType)
+            return string.IsNullOrEmpty(node.Location)
+                && string.IsNullOrEmpty(node.ShapeType)
                 && (node.Alternates == null || node.Alternates.Length == 0)
                 && (node.Wrappers == null || node.Wrappers.Length == 0);
         }

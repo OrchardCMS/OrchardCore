@@ -51,7 +51,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         {
             output.SuppressOutput();
 
-            if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
+            if (string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(Src))
             {
                 // Include custom style
                 var setting = _resourceManager.RegisterUrl("stylesheet", Src, DebugSrc);
@@ -70,7 +70,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.AtLocation(ResourceLocation.Head);
                 }
 
-                if (!String.IsNullOrEmpty(Condition))
+                if (!string.IsNullOrEmpty(Condition))
                 {
                     setting.UseCondition(Condition);
                 }
@@ -85,12 +85,12 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseDebugMode(Debug.Value);
                 }
 
-                if (!String.IsNullOrEmpty(Culture))
+                if (!string.IsNullOrEmpty(Culture))
                 {
                     setting.UseCulture(Culture);
                 }
 
-                if (!String.IsNullOrEmpty(DependsOn))
+                if (!string.IsNullOrEmpty(DependsOn))
                 {
                     setting.SetDependencies(DependsOn.Split(_splitSeparators, StringSplitOptions.RemoveEmptyEntries));
                 }
@@ -102,7 +102,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     output.Content.AppendHtml(sw.ToString());
                 }
             }
-            else if (!String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
+            else if (!string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Src))
             {
                 // Resource required
 
@@ -127,7 +127,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseCdn(UseCdn.Value);
                 }
 
-                if (!String.IsNullOrEmpty(Condition))
+                if (!string.IsNullOrEmpty(Condition))
                 {
                     setting.UseCondition(Condition);
                 }
@@ -137,7 +137,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseDebugMode(Debug.Value);
                 }
 
-                if (!String.IsNullOrEmpty(Culture))
+                if (!string.IsNullOrEmpty(Culture))
                 {
                     setting.UseCulture(Culture);
                 }
@@ -147,13 +147,13 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.ShouldAppendVersion(AppendVersion);
                 }
 
-                if (!String.IsNullOrEmpty(Version))
+                if (!string.IsNullOrEmpty(Version))
                 {
                     setting.UseVersion(Version);
                 }
 
                 // This allows additions to the pre registered style dependencies.
-                if (!String.IsNullOrEmpty(DependsOn))
+                if (!string.IsNullOrEmpty(DependsOn))
                 {
                     setting.SetDependencies(DependsOn.Split(_splitSeparators, StringSplitOptions.RemoveEmptyEntries));
                 }
@@ -173,7 +173,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     output.Content.AppendHtml(sw.ToString());
                 }
             }
-            else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
+            else if (!string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(Src))
             {
                 // Inline declaration
 
@@ -185,22 +185,22 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     definition.SetAttribute(attribute.Name, attribute.Value.ToString());
                 }
 
-                if (!String.IsNullOrEmpty(Version))
+                if (!string.IsNullOrEmpty(Version))
                 {
                     definition.SetVersion(Version);
                 }
 
-                if (!String.IsNullOrEmpty(CdnSrc))
+                if (!string.IsNullOrEmpty(CdnSrc))
                 {
                     definition.SetCdn(CdnSrc, DebugCdnSrc);
                 }
 
-                if (!String.IsNullOrEmpty(Culture))
+                if (!string.IsNullOrEmpty(Culture))
                 {
                     definition.SetCultures(Culture.Split(',', StringSplitOptions.RemoveEmptyEntries));
                 }
 
-                if (!String.IsNullOrEmpty(DependsOn))
+                if (!string.IsNullOrEmpty(DependsOn))
                 {
                     definition.SetDependencies(DependsOn.Split(',', StringSplitOptions.RemoveEmptyEntries));
                 }
@@ -213,7 +213,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseCdn(UseCdn.Value);
                 }
 
-                if (!String.IsNullOrEmpty(Condition))
+                if (!string.IsNullOrEmpty(Condition))
                 {
                     setting.UseCondition(Condition);
                 }
@@ -223,7 +223,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseDebugMode(Debug.Value);
                 }
 
-                if (!String.IsNullOrEmpty(Culture))
+                if (!string.IsNullOrEmpty(Culture))
                 {
                     setting.UseCulture(Culture);
                 }
@@ -244,7 +244,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     output.Content.AppendHtml(sw.ToString());
                 }
             }
-            else if (String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
+            else if (string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Src))
             {
                 // Custom style content
 

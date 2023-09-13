@@ -46,7 +46,7 @@ namespace OrchardCore.Lists.AdminNodes
         {
             _node = menuItem as ListsAdminNode;
 
-            if (_node == null || !_node.Enabled || String.IsNullOrEmpty(_node.ContentType))
+            if (_node == null || !_node.Enabled || string.IsNullOrEmpty(_node.ContentType))
             {
                 return;
             }

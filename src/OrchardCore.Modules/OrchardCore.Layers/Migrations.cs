@@ -59,7 +59,7 @@ namespace OrchardCore.Layers
 #pragma warning disable 0618
                 _ruleMigrator.Migrate(layer.Rule, layer.LayerRule);
 
-                layer.Rule = String.Empty;
+                layer.Rule = string.Empty;
 #pragma warning restore 0618
             }
 

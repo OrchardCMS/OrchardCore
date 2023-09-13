@@ -13,7 +13,7 @@
                 <input asp-for="Value" type="time" class="form-control content-preview-select" step="@settings.Step" required="@settings.Required" />
             </div>
         </div>
-        @if (!String.IsNullOrEmpty(settings.Hint))
+        @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
         }

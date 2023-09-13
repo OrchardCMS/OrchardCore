@@ -53,7 +53,7 @@ namespace OrchardCore.Contents.Sitemaps
             {
                 var typesToIndex = _routeableContentTypeCoordinator
                     .ListRoutableTypeDefinitions()
-                    .Where(ctd => source.ContentTypes.Any(s => String.Equals(ctd.Name, s.ContentTypeName)))
+                    .Where(ctd => source.ContentTypes.Any(s => string.Equals(ctd.Name, s.ContentTypeName)))
                     .Select(ctd => ctd.Name);
 
                 // This is an estimate, so doesn't take into account Take/Skip values.

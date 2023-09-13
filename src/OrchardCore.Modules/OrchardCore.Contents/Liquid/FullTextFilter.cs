@@ -52,7 +52,7 @@ namespace OrchardCore.Contents.Liquid
                 }
 
                 // When returning segments separate them so multiple segments are indexed individually.
-                return new ArrayValue(aspects.SelectMany(x => x.Segments).Where(x => !String.IsNullOrEmpty(x)).Select(x => new StringValue(x + ' ')));
+                return new ArrayValue(aspects.SelectMany(x => x.Segments).Where(x => !string.IsNullOrEmpty(x)).Select(x => new StringValue(x + ' ')));
             }
             else
             {
@@ -66,7 +66,7 @@ namespace OrchardCore.Contents.Liquid
                 var fullTextAspect = await _contentManager.PopulateAspectAsync<FullTextAspect>(contentItem);
 
                 // Remove empty strings as display text is often unused in contained content items.
-                return new ArrayValue(fullTextAspect.Segments.Where(x => !String.IsNullOrEmpty(x)).Select(x => new StringValue(x)));
+                return new ArrayValue(fullTextAspect.Segments.Where(x => !string.IsNullOrEmpty(x)).Select(x => new StringValue(x)));
             }
         }
 

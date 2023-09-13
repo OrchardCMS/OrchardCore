@@ -104,7 +104,7 @@ namespace OrchardCore.Html
                 {
                     var body = content["BodyPart"]?["Body"]?.Value<string>();
 
-                    if (!String.IsNullOrWhiteSpace(body))
+                    if (!string.IsNullOrWhiteSpace(body))
                     {
                         content["HtmlBodyPart"] = new JObject(new JProperty("Html", body));
                         changed = true;

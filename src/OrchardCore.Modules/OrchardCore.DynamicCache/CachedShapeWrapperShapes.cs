@@ -21,8 +21,8 @@ namespace OrchardCore.DynamicCache
 
             contentBuilder.AppendLine();
             contentBuilder.AppendHtmlLine($"<!-- CACHED SHAPE: {cache.CacheId} ({Guid.NewGuid()})");
-            contentBuilder.AppendHtmlLine($"          VARY BY: {String.Join(", ", cache.Contexts)}");
-            contentBuilder.AppendHtmlLine($"     DEPENDENCIES: {String.Join(", ", cache.Tags)}");
+            contentBuilder.AppendHtmlLine($"          VARY BY: {string.Join(", ", cache.Contexts)}");
+            contentBuilder.AppendHtmlLine($"     DEPENDENCIES: {string.Join(", ", cache.Tags)}");
             contentBuilder.AppendHtmlLine($"       EXPIRES ON: {cache.ExpiresOn}");
             contentBuilder.AppendHtmlLine($"    EXPIRES AFTER: {cache.ExpiresAfter}");
             contentBuilder.AppendHtmlLine($"  EXPIRES SLIDING: {cache.ExpiresSliding}");

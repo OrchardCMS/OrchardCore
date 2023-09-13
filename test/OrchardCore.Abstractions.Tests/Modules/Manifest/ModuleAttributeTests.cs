@@ -57,7 +57,7 @@ namespace OrchardCore.Modules.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="ModuleAttribute(String, String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>
+        /// Verify the <see cref="ModuleAttribute(string, string, string, string, string, string, string, bool, bool, bool)"/>
         /// ctor, arguments
         /// <c>id, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -67,7 +67,7 @@ namespace OrchardCore.Modules.Manifest
             var id = LoremWords(1);
             var description = LoremWords(7);
             var author = LoremWords(2);
-            var semVer = String.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
+            var semVer = string.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
             var website = LoremWebsiteUrl();
             var deps = LoremWords(5).Split(' ');
             var tags = LoremWords(5).Split(' ');
@@ -75,9 +75,9 @@ namespace OrchardCore.Modules.Manifest
             const bool alwaysEnabled = default;
             const bool enabledByDependencyOnly = default;
 
-            var priString = String.Empty;
-            var depString = String.Join(';', deps);
-            var tagString = String.Join(';', tags);
+            var priString = string.Empty;
+            var depString = string.Join(';', deps);
+            var tagString = string.Join(';', tags);
 
             ReportKeyValuePairs(
                 new RenderKeyValuePair(nameof(id), id),
@@ -124,7 +124,7 @@ namespace OrchardCore.Modules.Manifest
 
         // TODO: TBD: add the ArgumentException path for the bool (object) variations...
         /// <summary>
-        /// Verify the <see cref="ModuleAttribute(String, String, String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>
+        /// Verify the <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, bool, bool, bool)"/>
         /// ctor, arguments
         /// <c>id, name, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -135,7 +135,7 @@ namespace OrchardCore.Modules.Manifest
             var name = LoremWords(1);
             var description = LoremWords(7);
             var author = LoremWords(2);
-            var semVer = String.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
+            var semVer = string.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
             var website = LoremWebsiteUrl();
             var deps = LoremWords(5).Split(' ');
             var tags = LoremWords(5).Split(' ');
@@ -143,9 +143,9 @@ namespace OrchardCore.Modules.Manifest
             const bool alwaysEnabled = default;
             const bool enabledByDependencyOnly = default;
 
-            var priString = String.Empty;
-            var depString = String.Join(';', deps);
-            var tagString = String.Join(';', tags);
+            var priString = string.Empty;
+            var depString = string.Join(';', deps);
+            var tagString = string.Join(';', tags);
 
             ReportKeyValuePairs(
                 new RenderKeyValuePair(nameof(id), id),
@@ -192,7 +192,7 @@ namespace OrchardCore.Modules.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="ModuleAttribute(String, String, String, String, String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>
+        /// Verify the <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, string, string, bool, bool, bool)"/>
         /// ctor, arguments
         /// <c>id, name, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -205,7 +205,7 @@ namespace OrchardCore.Modules.Manifest
             var priority = DefaultPriority + 1;
             var description = LoremWords(7);
             var author = LoremWords(2);
-            var semVer = String.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
+            var semVer = string.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
             var website = LoremWebsiteUrl();
             var deps = LoremWords(5).Split(' ');
             var tags = LoremWords(5).Split(' ');
@@ -214,8 +214,8 @@ namespace OrchardCore.Modules.Manifest
             const bool enabledByDependencyOnly = default;
 
             var priString = $"{priority}";
-            var depString = String.Join(';', deps);
-            var tagString = String.Join(';', tags);
+            var depString = string.Join(';', deps);
+            var tagString = string.Join(';', tags);
 
             ReportKeyValuePairs(
                 new RenderKeyValuePair(nameof(id), id),
@@ -262,7 +262,7 @@ namespace OrchardCore.Modules.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="ModuleAttribute(String, String, String, String, String, String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>
+        /// Verify the <see cref="ModuleAttribute(string, string, string, string, string, string, string, string, string, string, string, bool, bool, bool)"/>
         /// ctor, arguments
         /// <c>id, name, type, category, priority, description, author, semVer, featureDependencies, websiteUrl, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -276,7 +276,7 @@ namespace OrchardCore.Modules.Manifest
             var priority = DefaultPriority + 1;
             var description = LoremWords(7);
             var author = LoremWords(2);
-            var semVer = String.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
+            var semVer = string.Join('.', GetValues(1, 2, 3, 4).Select(_ => $"{_}"));
             var website = LoremWebsiteUrl();
             var deps = LoremWords(5).Split(' ');
             var tags = LoremWords(5).Split(' ');
@@ -285,8 +285,8 @@ namespace OrchardCore.Modules.Manifest
             const bool enabledByDependencyOnly = default;
 
             var priString = $"{priority}";
-            var depString = String.Join(';', deps);
-            var tagString = String.Join(';', tags);
+            var depString = string.Join(';', deps);
+            var tagString = string.Join(';', tags);
 
             ReportKeyValuePairs(
                 new RenderKeyValuePair(nameof(id), id),
@@ -368,9 +368,9 @@ namespace OrchardCore.Modules.Manifest
             const bool alwaysEnabled = true;
             const bool enabledByDependencyOnly = default;
 
-            var priString = String.Empty;
-            var depString = String.Join(';', deps);
-            var tagString = String.Join(';', tags);
+            var priString = string.Empty;
+            var depString = string.Join(';', deps);
+            var tagString = string.Join(';', tags);
 
             ReportKeyValuePairs(
                 new RenderKeyValuePair(nameof(id), id),
@@ -439,9 +439,9 @@ namespace OrchardCore.Modules.Manifest
             const bool alwaysEnabled = true;
             const bool enabledByDependencyOnly = default;
 
-            var priString = String.Empty;
-            var depString = String.Join(';', deps);
-            var tagString = String.Join(';', tags);
+            var priString = string.Empty;
+            var depString = string.Join(';', deps);
+            var tagString = string.Join(';', tags);
 
             ReportKeyValuePairs(
                 new RenderKeyValuePair(nameof(id), id),
@@ -513,8 +513,8 @@ namespace OrchardCore.Modules.Manifest
             const bool enabledByDependencyOnly = default;
 
             var priString = $"{priority}";
-            var depString = String.Join(';', deps);
-            var tagString = String.Join(';', tags);
+            var depString = string.Join(';', deps);
+            var tagString = string.Join(';', tags);
 
             ReportKeyValuePairs(
                 new RenderKeyValuePair(nameof(id), id),
@@ -642,7 +642,7 @@ namespace OrchardCore.Modules.Manifest
              * should contain 'two' in the following shapes:
              */
             Assert.Contains(features, _ =>
-                _.Id == String.Join(".", baseId, One) &&
+                _.Id == string.Join(".", baseId, One) &&
                 _.Name == _.Id &&
                 _.Category == Two.ToLower() &&
                 _.InternalPriority == _3 &&
@@ -653,7 +653,7 @@ namespace OrchardCore.Modules.Manifest
             );
 
             Assert.Contains(features, _ =>
-                _.Id == String.Join(".", baseId, Two) &&
+                _.Id == string.Join(".", baseId, Two) &&
                 _.Name == _.Id &&
                 _.Category == three &&
                 _.InternalPriority == _4 &&
