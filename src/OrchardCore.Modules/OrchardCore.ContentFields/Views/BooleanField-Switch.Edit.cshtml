@@ -9,8 +9,8 @@
     <div class="@Orchard.GetEndCssClasses(true)">
         <div class="form-check form-switch">
             <input asp-for="Value" type="checkbox" class="form-check-input content-preview-select" checked="@Model.Value" />
-            <label asp-for="Value" class="form-check-label">@(String.IsNullOrEmpty(settings.Label) ? Model.PartFieldDefinition.DisplayName() : settings.Label)</label>
-            @if (!String.IsNullOrEmpty(settings.Hint))
+            <label asp-for="Value" class="form-check-label">@(string.IsNullOrEmpty(settings.Label) ? Model.PartFieldDefinition.DisplayName() : settings.Label)</label>
+            @if (!string.IsNullOrEmpty(settings.Hint))
             {
                 <span class="hint dashed">@settings.Hint</span>
             }

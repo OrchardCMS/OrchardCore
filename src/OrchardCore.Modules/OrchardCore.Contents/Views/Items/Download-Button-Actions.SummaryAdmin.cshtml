@@ -13,7 +13,7 @@
 @if (hasDraft)
 {
     <a asp-action="Display" asp-controller="Download" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" asp-route-latest="true" class="dropdown-item btn btn-primary btn-sm">@T["View Draft as JSON"]</a>
-    <a id="@exportDraftId" asp-action="Download" asp-controller="Download" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-latest="@Boolean.TrueString" class="dropdown-item btn btn-primary btn-sm" data-url-af="UnsafeUrl">@T["Download Draft as JSON"]</a>
+    <a id="@exportDraftId" asp-action="Download" asp-controller="Download" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-latest="@bool.TrueString" class="dropdown-item btn btn-primary btn-sm" data-url-af="UnsafeUrl">@T["Download Draft as JSON"]</a>
 
     if (hasPublished)
     {

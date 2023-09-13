@@ -15,7 +15,7 @@
     <div class="@Orchard.GetEndCssClasses()">
         @await DisplayAsync(await New.ShortcodeModal())
         <input asp-for="Markdown" class="form-control content-preview-text shortcode-modal-input" dir="@culture.GetLanguageDirection()" />
-        @if (!String.IsNullOrEmpty(settings.Hint))
+        @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
         }
