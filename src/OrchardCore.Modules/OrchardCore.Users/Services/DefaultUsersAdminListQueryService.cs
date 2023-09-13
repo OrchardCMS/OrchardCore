@@ -41,7 +41,7 @@ public class DefaultUsersAdminListQueryService : IUsersAdminListQueryService
     {
         var defaultTermNode = options.FilterResult.OfType<DefaultTermNode>().FirstOrDefault();
         var defaultOperator = defaultTermNode?.Operation;
-        var defaultTermName = String.IsNullOrEmpty(_userAdminListFilterOptions.TermName)
+        var defaultTermName = string.IsNullOrEmpty(_userAdminListFilterOptions.TermName)
             ? UsersAdminListFilterOptions.DefaultTermName
             : _userAdminListFilterOptions.TermName;
 

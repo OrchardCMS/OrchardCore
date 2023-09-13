@@ -92,7 +92,7 @@ namespace OrchardCore.DisplayManagement
                 tagName = valueString;
             }
 
-            if (!String.IsNullOrEmpty(shape.TagName))
+            if (!string.IsNullOrEmpty(shape.TagName))
             {
                 tagName = shape.TagName;
             }
@@ -112,7 +112,7 @@ namespace OrchardCore.DisplayManagement
                 }
             }
 
-            if (!String.IsNullOrWhiteSpace(shape.Id))
+            if (!string.IsNullOrWhiteSpace(shape.Id))
             {
                 tagBuilder.Attributes["id"] = shape.Id;
             }

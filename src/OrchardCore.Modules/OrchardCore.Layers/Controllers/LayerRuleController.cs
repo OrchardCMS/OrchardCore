@@ -58,7 +58,7 @@ namespace OrchardCore.Layers.Controllers
             }
 
             var layers = await _layerService.GetLayersAsync();
-            var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, name));
+            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name));
 
             if (layer == null)
             {
@@ -99,7 +99,7 @@ namespace OrchardCore.Layers.Controllers
             }
 
             var layers = await _layerService.LoadLayersAsync();
-            var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, model.Name));
+            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, model.Name));
 
             if (layer == null)
             {
@@ -145,7 +145,7 @@ namespace OrchardCore.Layers.Controllers
             }
 
             var layers = await _layerService.GetLayersAsync();
-            var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, name));
+            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name));
 
             if (layer == null)
             {
@@ -177,7 +177,7 @@ namespace OrchardCore.Layers.Controllers
             }
 
             var layers = await _layerService.LoadLayersAsync();
-            var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, model.Name));
+            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, model.Name));
 
             if (layer == null)
             {
@@ -216,7 +216,7 @@ namespace OrchardCore.Layers.Controllers
             }
 
             var layers = await _layerService.LoadLayersAsync();
-            var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, name));
+            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name));
 
             if (layer == null)
             {
@@ -247,7 +247,7 @@ namespace OrchardCore.Layers.Controllers
             }
 
             var layers = await _layerService.LoadLayersAsync();
-            var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, name));
+            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name));
 
             if (layer == null)
             {
@@ -273,7 +273,7 @@ namespace OrchardCore.Layers.Controllers
 
         private Condition FindCondition(Condition condition, string conditionId)
         {
-            if (String.Equals(condition.ConditionId, conditionId, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(condition.ConditionId, conditionId, StringComparison.OrdinalIgnoreCase))
             {
                 return condition;
             }
@@ -306,7 +306,7 @@ namespace OrchardCore.Layers.Controllers
 
         private ConditionGroup FindConditionGroup(ConditionGroup condition, string groupconditionId)
         {
-            if (String.Equals(condition.ConditionId, groupconditionId, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(condition.ConditionId, groupconditionId, StringComparison.OrdinalIgnoreCase))
             {
                 return condition;
             }
@@ -338,7 +338,7 @@ namespace OrchardCore.Layers.Controllers
 
             foreach (var nestedCondition in condition.Conditions)
             {
-                if (String.Equals(nestedCondition.ConditionId, conditionId, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(nestedCondition.ConditionId, conditionId, StringComparison.OrdinalIgnoreCase))
                 {
                     return condition;
                 }

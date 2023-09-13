@@ -30,7 +30,7 @@ namespace OrchardCore.Layers.Services
                 {
                     var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
                     var requestPath = httpContext.Request.Path.Value;
-                    return requestPath == "/" || String.IsNullOrEmpty(requestPath);
+                    return requestPath == "/" || string.IsNullOrEmpty(requestPath);
                 }),
             };
 
@@ -83,14 +83,14 @@ namespace OrchardCore.Layers.Services
 
                     // Tenant home page could have an empty string as a request path, where
                     // the default tenant does not.
-                    if (String.IsNullOrEmpty(requestPath))
+                    if (string.IsNullOrEmpty(requestPath))
                     {
                         requestPath = "/";
                     }
 
                     return url.EndsWith('*')
                         ? requestPath.StartsWith(url.TrimEnd('*'), StringComparison.OrdinalIgnoreCase)
-                        : String.Equals(requestPath, url, StringComparison.OrdinalIgnoreCase);
+                        : string.Equals(requestPath, url, StringComparison.OrdinalIgnoreCase);
                 }),
             };
 
@@ -101,8 +101,8 @@ namespace OrchardCore.Layers.Services
                 {
                     var currentCulture = CultureInfo.CurrentCulture;
 
-                    return String.Equals(culture, currentCulture.Name, StringComparison.OrdinalIgnoreCase) ||
-                        String.Equals(culture, currentCulture.Parent.Name, StringComparison.OrdinalIgnoreCase);
+                    return string.Equals(culture, currentCulture.Name, StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(culture, currentCulture.Parent.Name, StringComparison.OrdinalIgnoreCase);
                 }),
             };
 

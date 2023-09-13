@@ -10,7 +10,7 @@ namespace OrchardCore.Modules.Manifest
     {
         public ModuleNameAttribute(string name)
         {
-            Name = name ?? String.Empty;
+            Name = name ?? string.Empty;
         }
 
         /// <Summary>

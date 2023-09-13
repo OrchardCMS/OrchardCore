@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Contents.ViewModels
+namespace OrchardCore.Contents.ViewModels
 {
     public class CommonPartSettingsViewModel
     {

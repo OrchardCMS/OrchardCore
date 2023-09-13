@@ -62,11 +62,11 @@ namespace OrchardCore.Email.Services
             try
             {
                 // Set the MailMessage.From, to avoid the confusion between _options.DefaultSender (Author) and submitter (Sender)
-                var senderAddress = String.IsNullOrWhiteSpace(message.From)
+                var senderAddress = string.IsNullOrWhiteSpace(message.From)
                     ? _options.DefaultSender
                     : message.From;
 
-                if (!String.IsNullOrWhiteSpace(senderAddress))
+                if (!string.IsNullOrWhiteSpace(senderAddress))
                 {
                     message.From = senderAddress;
                 }
@@ -111,13 +111,13 @@ namespace OrchardCore.Email.Services
 
         private MimeMessage FromMailMessage(MailMessage message, IList<LocalizedString> errors)
         {
-            var submitterAddress = String.IsNullOrWhiteSpace(message.Sender)
+            var submitterAddress = string.IsNullOrWhiteSpace(message.Sender)
                 ? _options.DefaultSender
                 : message.Sender;
 
             var mimeMessage = new MimeMessage();
 
-            if (!String.IsNullOrEmpty(submitterAddress))
+            if (!string.IsNullOrEmpty(submitterAddress))
             {
                 if (MailboxAddress.TryParse(submitterAddress, out var mailBox))
                 {
@@ -130,7 +130,7 @@ namespace OrchardCore.Email.Services
                 }
             }
 
-            if (!String.IsNullOrWhiteSpace(message.From))
+            if (!string.IsNullOrWhiteSpace(message.From))
             {
                 foreach (var address in message.From.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
                 {
@@ -145,7 +145,7 @@ namespace OrchardCore.Email.Services
                 }
             }
 
-            if (!String.IsNullOrWhiteSpace(message.To))
+            if (!string.IsNullOrWhiteSpace(message.To))
             {
                 foreach (var address in message.To.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
                 {
@@ -160,7 +160,7 @@ namespace OrchardCore.Email.Services
                 }
             }
 
-            if (!String.IsNullOrWhiteSpace(message.Cc))
+            if (!string.IsNullOrWhiteSpace(message.Cc))
             {
                 foreach (var address in message.Cc.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
                 {
@@ -175,7 +175,7 @@ namespace OrchardCore.Email.Services
                 }
             }
 
-            if (!String.IsNullOrWhiteSpace(message.Bcc))
+            if (!string.IsNullOrWhiteSpace(message.Bcc))
             {
                 foreach (var address in message.Bcc.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
                 {
@@ -190,7 +190,7 @@ namespace OrchardCore.Email.Services
                 }
             }
 
-            if (String.IsNullOrWhiteSpace(message.ReplyTo))
+            if (string.IsNullOrWhiteSpace(message.ReplyTo))
             {
                 foreach (var address in mimeMessage.From)
                 {
@@ -298,15 +298,15 @@ namespace OrchardCore.Email.Services
                 if (_options.UseDefaultCredentials)
                 {
                     // There's no notion of 'UseDefaultCredentials' in MailKit, so empty credentials is passed in
-                    await client.AuthenticateAsync(String.Empty, String.Empty);
+                    await client.AuthenticateAsync(string.Empty, string.Empty);
                 }
-                else if (!String.IsNullOrWhiteSpace(_options.UserName))
+                else if (!string.IsNullOrWhiteSpace(_options.UserName))
                 {
                     await client.AuthenticateAsync(_options.UserName, _options.Password);
                 }
             }
 
-            if (!String.IsNullOrEmpty(_options.ProxyHost))
+            if (!string.IsNullOrEmpty(_options.ProxyHost))
             {
                 client.ProxyClient = new Socks5Client(_options.ProxyHost, _options.ProxyPort);
             }

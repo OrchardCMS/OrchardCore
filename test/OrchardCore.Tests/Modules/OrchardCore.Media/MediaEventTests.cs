@@ -16,7 +16,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
 
             Stream originalStream = null;
 
-            var path = String.Empty;
+            var path = string.Empty;
 
             // This stream will be disposed by the creating stream, or the finally block.
             Stream inputStream = null;

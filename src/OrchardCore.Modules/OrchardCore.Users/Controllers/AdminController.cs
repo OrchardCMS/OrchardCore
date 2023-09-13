@@ -170,12 +170,12 @@ namespace OrchardCore.Users.Controllers
 
             options.UserRoleFilters = new List<SelectListItem>()
             {
-                new SelectListItem() { Text = S["All roles"], Value = String.Empty, Selected = (options.SelectedRole == String.Empty) },
-                new SelectListItem() { Text = S["Authenticated (no roles)"], Value = "Authenticated", Selected = String.Equals(options.SelectedRole, "Authenticated", StringComparison.OrdinalIgnoreCase) }
+                new SelectListItem() { Text = S["All roles"], Value = string.Empty, Selected = (options.SelectedRole == string.Empty) },
+                new SelectListItem() { Text = S["Authenticated (no roles)"], Value = "Authenticated", Selected = string.Equals(options.SelectedRole, "Authenticated", StringComparison.OrdinalIgnoreCase) }
             };
 
             // TODO Candidate for dynamic localization.
-            options.UserRoleFilters.AddRange(allRoles.Select(x => new SelectListItem { Text = x, Value = x, Selected = String.Equals(options.SelectedRole, x, StringComparison.OrdinalIgnoreCase) }));
+            options.UserRoleFilters.AddRange(allRoles.Select(x => new SelectListItem { Text = x, Value = x, Selected = string.Equals(options.SelectedRole, x, StringComparison.OrdinalIgnoreCase) }));
 
             // Populate options pager summary values.
             var startIndex = (pagerShape.Page - 1) * (pagerShape.PageSize) + 1;
@@ -184,7 +184,7 @@ namespace OrchardCore.Users.Controllers
             options.UsersCount = userEntries.Count;
             options.TotalItemCount = pagerShape.TotalItemCount;
 
-            var header = await _userOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, String.Empty, String.Empty);
+            var header = await _userOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
             var shapeViewModel = await _shapeFactory.CreateAsync<UsersIndexViewModel>("UsersAdminList", viewModel =>
             {
@@ -202,13 +202,13 @@ namespace OrchardCore.Users.Controllers
         public async Task<ActionResult> IndexFilterPOST(UserIndexOptions options)
         {
             // When the user has typed something into the search input no further evaluation of the form post is required.
-            if (!String.Equals(options.SearchText, options.OriginalSearchText, StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(options.SearchText, options.OriginalSearchText, StringComparison.OrdinalIgnoreCase))
             {
                 return RedirectToAction(nameof(Index), new RouteValueDictionary { { "q", options.SearchText } });
             }
 
             // Evaluate the values provided in the form post and map them to the filter result and route values.
-            await _userOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false, String.Empty, String.Empty);
+            await _userOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
             // The route value must always be added after the editors have updated the models.
             options.RouteValues.TryAdd("q", options.FilterResult.ToString());
@@ -288,7 +288,7 @@ namespace OrchardCore.Users.Controllers
                 return Forbid();
             }
 
-            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true, String.Empty, String.Empty);
+            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true, string.Empty, string.Empty);
 
             return View(shape);
         }
@@ -304,7 +304,7 @@ namespace OrchardCore.Users.Controllers
                 return Forbid();
             }
 
-            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true, String.Empty, String.Empty);
+            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true, string.Empty, string.Empty);
 
             if (!ModelState.IsValid)
             {
@@ -327,7 +327,7 @@ namespace OrchardCore.Users.Controllers
         {
             // When no id is provided we assume the user is trying to edit their own profile.
             var editingOwnUser = false;
-            if (String.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(id))
             {
                 id = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditOwnUser))
@@ -347,7 +347,7 @@ namespace OrchardCore.Users.Controllers
                 return Forbid();
             }
 
-            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false, String.Empty, String.Empty);
+            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false, string.Empty, string.Empty);
 
             ViewData["ReturnUrl"] = returnUrl;
 
@@ -360,7 +360,7 @@ namespace OrchardCore.Users.Controllers
         {
             // When no id is provided we assume the user is trying to edit their own profile.
             var editingOwnUser = false;
-            if (String.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(id))
             {
                 editingOwnUser = true;
                 id = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -380,7 +380,7 @@ namespace OrchardCore.Users.Controllers
                 return Forbid();
             }
 
-            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false, String.Empty, String.Empty);
+            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false, string.Empty, string.Empty);
 
             if (!ModelState.IsValid)
             {
@@ -391,7 +391,7 @@ namespace OrchardCore.Users.Controllers
 
             foreach (var error in result.Errors)
             {
-                ModelState.AddModelError(String.Empty, error.Description);
+                ModelState.AddModelError(string.Empty, error.Description);
             }
 
             if (!ModelState.IsValid)
@@ -408,7 +408,7 @@ namespace OrchardCore.Users.Controllers
 
             if (editingOwnUser)
             {
-                if (!String.IsNullOrEmpty(returnUrl))
+                if (!string.IsNullOrEmpty(returnUrl))
                 {
                     return this.LocalRedirect(returnUrl, true);
                 }
@@ -416,7 +416,7 @@ namespace OrchardCore.Users.Controllers
                 return RedirectToAction(nameof(Edit));
             }
 
-            if (!String.IsNullOrEmpty(returnUrl))
+            if (!string.IsNullOrEmpty(returnUrl))
             {
                 return this.LocalRedirect(returnUrl, true);
             }

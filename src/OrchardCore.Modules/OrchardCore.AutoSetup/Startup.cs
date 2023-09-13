@@ -106,7 +106,7 @@ namespace OrchardCore.AutoSetup
 
                     _logger.LogError("AutoSetup did not start, configuration has following errors: {errors}", stringBuilder.ToString());
                 }
-                else if (String.IsNullOrWhiteSpace(options.AutoSetupPath))
+                else if (string.IsNullOrWhiteSpace(options.AutoSetupPath))
                 {
                     app.UseMiddleware<AutoSetupMiddleware>();
                 }

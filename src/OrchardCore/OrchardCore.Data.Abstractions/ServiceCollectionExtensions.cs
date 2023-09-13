@@ -27,7 +27,7 @@ namespace OrchardCore.Data
                 if (entry.ImplementationInstance != null)
                 {
                     var databaseProvider = entry.ImplementationInstance as DatabaseProvider;
-                    if (databaseProvider != null && String.Equals(databaseProvider.Name, name, StringComparison.OrdinalIgnoreCase))
+                    if (databaseProvider != null && string.Equals(databaseProvider.Name, name, StringComparison.OrdinalIgnoreCase))
                     {
                         services.RemoveAt(i);
                     }

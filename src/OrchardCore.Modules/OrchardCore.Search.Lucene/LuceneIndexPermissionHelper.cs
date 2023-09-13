@@ -14,7 +14,7 @@ public class LuceneIndexPermissionHelper
 
     public static Permission GetLuceneIndexPermission(string indexName)
     {
-        if (String.IsNullOrEmpty(indexName))
+        if (string.IsNullOrEmpty(indexName))
         {
             throw new ArgumentException($"{nameof(indexName)} cannot be null or empty");
         }
@@ -22,8 +22,8 @@ public class LuceneIndexPermissionHelper
         if (!_permissions.TryGetValue(indexName, out var permission))
         {
             permission = new Permission(
-                String.Format(_indexPermissionTemplate.Name, indexName),
-                String.Format(_indexPermissionTemplate.Description, indexName),
+                string.Format(_indexPermissionTemplate.Name, indexName),
+                string.Format(_indexPermissionTemplate.Description, indexName),
                 _indexPermissionTemplate.ImpliedBy
             );
 

@@ -95,7 +95,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                 }
                 else
                 {
-                    throw new Exception($"Failed to parse liquid file {path}: {String.Join(System.Environment.NewLine, errors)}");
+                    throw new Exception($"Failed to parse liquid file {path}: {string.Join(System.Environment.NewLine, errors)}");
                 }
             });
         }

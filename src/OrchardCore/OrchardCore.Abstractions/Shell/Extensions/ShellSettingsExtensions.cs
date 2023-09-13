@@ -45,9 +45,9 @@ public static class ShellSettingsExtensions
     /// </summary>
     public static bool HasUrlPrefix(this ShellSettings settings, string urlPrefix) =>
         settings is not null &&
-        String.Equals(
-            settings.RequestUrlPrefix ?? String.Empty,
-            urlPrefix?.Trim(' ', '/') ?? String.Empty,
+        string.Equals(
+            settings.RequestUrlPrefix ?? string.Empty,
+            urlPrefix?.Trim(' ', '/') ?? string.Empty,
             StringComparison.OrdinalIgnoreCase);
 
     /// <summary>

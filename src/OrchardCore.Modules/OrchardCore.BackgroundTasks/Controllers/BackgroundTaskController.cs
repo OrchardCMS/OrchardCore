@@ -86,18 +86,18 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 };
             });
 
-            if (!String.IsNullOrWhiteSpace(options.Search))
+            if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 items = items.Where(entry => entry.Title != null && entry.Title.Contains(options.Search, StringComparison.OrdinalIgnoreCase)
                     || (entry.Description != null && entry.Description.Contains(options.Search, StringComparison.OrdinalIgnoreCase))
                 );
             }
 
-            if (String.Equals(options.Status, "enabled", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(options.Status, "enabled", StringComparison.OrdinalIgnoreCase))
             {
                 items = items.Where(entry => entry.Enable);
             }
-            else if (String.Equals(options.Status, "disabled", StringComparison.OrdinalIgnoreCase))
+            else if (string.Equals(options.Status, "disabled", StringComparison.OrdinalIgnoreCase))
             {
                 items = items.Where(entry => !entry.Enable);
             }

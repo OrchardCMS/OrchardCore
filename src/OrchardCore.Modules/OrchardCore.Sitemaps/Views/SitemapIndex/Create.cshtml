@@ -2,7 +2,7 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Create Sitemap Index"])</h1></zone>
 
-@if (String.IsNullOrEmpty(Site.BaseUrl))
+@if (string.IsNullOrEmpty(Site.BaseUrl))
 {
     <p class="alert alert-warning">@T["The site settings 'Base url' property is empty, but is required to generate sitemaps."]</p>
 }
@@ -19,7 +19,7 @@
     <div class="mb-3" asp-validation-class-for="Path">
         <label asp-for="Path">@T["Permalink"]</label>
         <div class="input-group">
-            @if (!String.IsNullOrWhiteSpace(Site.BaseUrl))
+            @if (!string.IsNullOrWhiteSpace(Site.BaseUrl))
             {
                 <span class="input-group-text">@Site.BaseUrl</span>
             }

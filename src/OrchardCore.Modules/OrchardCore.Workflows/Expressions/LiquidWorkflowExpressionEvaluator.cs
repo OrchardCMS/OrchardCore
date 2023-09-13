@@ -47,7 +47,7 @@ namespace OrchardCore.Workflows.Expressions
                 new Dictionary<string, FluidValue>() { ["Workflow"] = new ObjectValue(workflowContext) }
                 );
 
-            return String.IsNullOrWhiteSpace(result) ? default : (T)Convert.ChangeType(result, typeof(T));
+            return string.IsNullOrWhiteSpace(result) ? default : (T)Convert.ChangeType(result, typeof(T));
         }
 
         public static Task<FluidValue> ToFluidValue(IDictionary<string, object> dictionary, string key, TemplateContext context)

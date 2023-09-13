@@ -26,7 +26,7 @@ namespace OrchardCore.Layers.Drivers
         protected override void BuildPrefix(ContentItem model, string htmlFieldPrefix)
         {
             base.BuildPrefix(model, htmlFieldPrefix);
-            if (String.IsNullOrWhiteSpace(htmlFieldPrefix))
+            if (string.IsNullOrWhiteSpace(htmlFieldPrefix))
             {
                 Prefix = "LayerMetadata";
             }
@@ -42,7 +42,7 @@ namespace OrchardCore.Layers.Drivers
 
                 // Are we loading an editor that requires layer metadata?
                 if (await context.Updater.TryUpdateModelAsync(layerMetadata, Prefix, m => m.Zone, m => m.Position)
-                    && !String.IsNullOrEmpty(layerMetadata.Zone))
+                    && !string.IsNullOrEmpty(layerMetadata.Zone))
                 {
                     model.Weld(layerMetadata);
                 }
@@ -72,12 +72,12 @@ namespace OrchardCore.Layers.Drivers
                 return null;
             }
 
-            if (String.IsNullOrEmpty(viewModel.LayerMetadata.Zone))
+            if (string.IsNullOrEmpty(viewModel.LayerMetadata.Zone))
             {
                 context.Updater.ModelState.AddModelError(Prefix, "LayerMetadata.Zone", S["Zone is missing"]);
             }
 
-            if (String.IsNullOrEmpty(viewModel.LayerMetadata.Layer))
+            if (string.IsNullOrEmpty(viewModel.LayerMetadata.Layer))
             {
                 context.Updater.ModelState.AddModelError(Prefix, "LayerMetadata.Layer", S["Layer is missing"]);
             }

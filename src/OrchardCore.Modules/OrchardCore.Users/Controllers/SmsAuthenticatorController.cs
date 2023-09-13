@@ -85,7 +85,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         {
             PhoneNumber = currentPhoneNumber,
             AllowChangingPhoneNumber = settings.AllowChangingPhoneNumber
-            || String.IsNullOrEmpty(currentPhoneNumber)
+            || string.IsNullOrEmpty(currentPhoneNumber)
             || !_phoneFormatValidator.IsValid(currentPhoneNumber),
         };
 
@@ -106,7 +106,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         var currentPhoneNumber = await UserManager.GetPhoneNumberAsync(user);
 
         var canSetNewPhone = settings.AllowChangingPhoneNumber
-            || String.IsNullOrEmpty(currentPhoneNumber)
+            || string.IsNullOrEmpty(currentPhoneNumber)
             || !_phoneFormatValidator.IsValid(currentPhoneNumber);
 
         model.AllowChangingPhoneNumber = canSetNewPhone;
@@ -179,7 +179,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
             return UserNotFound();
         }
 
-        if (String.IsNullOrWhiteSpace(model.PhoneNumber))
+        if (string.IsNullOrWhiteSpace(model.PhoneNumber))
         {
             await Notifier.ErrorAsync(H["Unable to find a phone number."]);
 
@@ -240,7 +240,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
 
     private Task<string> GetBodyAsync(SmsAuthenticatorLoginSettings settings, IUser user, string code)
     {
-        var message = String.IsNullOrWhiteSpace(settings.Body)
+        var message = string.IsNullOrWhiteSpace(settings.Body)
         ? EmailAuthenticatorLoginSettings.DefaultBody
         : settings.Body;
 

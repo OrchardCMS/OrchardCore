@@ -187,7 +187,7 @@ namespace OrchardCore.Layers.Controllers
 
             var layers = await _layerService.GetLayersAsync();
 
-            var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, name));
+            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name));
 
             if (layer == null)
             {
@@ -232,7 +232,7 @@ namespace OrchardCore.Layers.Controllers
 
             if (ModelState.IsValid)
             {
-                var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, model.Name));
+                var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, model.Name));
 
                 if (layer == null)
                 {
@@ -260,7 +260,7 @@ namespace OrchardCore.Layers.Controllers
 
             var layers = await _layerService.LoadLayersAsync();
 
-            var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, name));
+            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name));
 
             if (layer == null)
             {
@@ -269,7 +269,7 @@ namespace OrchardCore.Layers.Controllers
 
             var widgets = await _layerService.GetLayerWidgetsMetadataAsync(c => c.Latest == true);
 
-            if (!widgets.Any(x => String.Equals(x.Layer, name, StringComparison.OrdinalIgnoreCase)))
+            if (!widgets.Any(x => string.Equals(x.Layer, name, StringComparison.OrdinalIgnoreCase)))
             {
                 layers.Layers.Remove(layer);
                 await _layerService.UpdateAsync(layers);
@@ -351,11 +351,11 @@ namespace OrchardCore.Layers.Controllers
 
         private void ValidateViewModel(LayerEditViewModel model, LayersDocument layers, bool isNew)
         {
-            if (String.IsNullOrWhiteSpace(model.Name))
+            if (string.IsNullOrWhiteSpace(model.Name))
             {
                 ModelState.AddModelError(nameof(LayerEditViewModel.Name), S["The layer name is required."]);
             }
-            else if (isNew && layers.Layers.Any(x => String.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
+            else if (isNew && layers.Layers.Any(x => string.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError(nameof(LayerEditViewModel.Name), S["The layer name already exists."]);
             }

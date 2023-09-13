@@ -200,7 +200,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
 
     private static string CalculateHash(params string[] parts)
     {
-        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(String.Join(String.Empty, parts)));
+        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(string.Join(string.Empty, parts)));
 
         return Convert.ToHexString(hash);
     }

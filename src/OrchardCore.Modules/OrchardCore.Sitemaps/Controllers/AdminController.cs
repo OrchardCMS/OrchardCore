@@ -77,7 +77,7 @@ namespace OrchardCore.Sitemaps.Controllers
             var sitemaps = (await _sitemapManager.GetSitemapsAsync())
                 .OfType<Sitemap>();
 
-            if (!String.IsNullOrWhiteSpace(options.Search))
+            if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 sitemaps = sitemaps.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase));
             }
@@ -184,7 +184,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrEmpty(model.Path))
+                if (string.IsNullOrEmpty(model.Path))
                 {
                     model.Path = _sitemapService.GetSitemapSlug(model.Name);
                 }
@@ -253,7 +253,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrEmpty(model.Path))
+                if (string.IsNullOrEmpty(model.Path))
                 {
                     model.Path = _sitemapService.GetSitemapSlug(model.Name);
                 }

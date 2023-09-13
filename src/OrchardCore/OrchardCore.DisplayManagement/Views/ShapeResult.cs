@@ -54,7 +54,7 @@ namespace OrchardCore.DisplayManagement.Views
         private async Task ApplyImplementationAsync(BuildShapeContext context, string displayType)
         {
             // If no location is set from the driver, use the one from the context.
-            if (String.IsNullOrEmpty(_defaultLocation))
+            if (string.IsNullOrEmpty(_defaultLocation))
             {
                 _defaultLocation = context.DefaultZone;
             }
@@ -82,7 +82,7 @@ namespace OrchardCore.DisplayManagement.Views
             placement.DefaultPosition ??= context.DefaultPosition;
 
             // If there are no placement or it's explicitly noop then stop rendering execution.
-            if (String.IsNullOrEmpty(placement.Location) || placement.Location == "-")
+            if (string.IsNullOrEmpty(placement.Location) || placement.Location == "-")
             {
                 return;
             }
@@ -91,7 +91,7 @@ namespace OrchardCore.DisplayManagement.Views
             _groupId = placement.GetGroup() ?? _groupId;
 
             // If the shape's group doesn't match the currently rendered one, return.
-            if (!String.Equals(context.GroupId ?? "", _groupId ?? "", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.GroupId ?? "", _groupId ?? "", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -134,13 +134,13 @@ namespace OrchardCore.DisplayManagement.Views
             }
 
             // Apply cache settings
-            if (!String.IsNullOrEmpty(_cacheId) && _cache != null)
+            if (!string.IsNullOrEmpty(_cacheId) && _cache != null)
             {
                 _cache(newShapeMetadata.Cache(_cacheId));
             }
 
             // If a specific shape is provided, remove all previous alternates and wrappers.
-            if (!String.IsNullOrEmpty(placement.ShapeType))
+            if (!string.IsNullOrEmpty(placement.ShapeType))
             {
                 newShapeMetadata.Type = placement.ShapeType;
                 newShapeMetadata.Alternates.Clear();
@@ -189,7 +189,7 @@ namespace OrchardCore.DisplayManagement.Views
                 }
             }
 
-            position = !String.IsNullOrEmpty(position) ? position : null;
+            position = !string.IsNullOrEmpty(position) ? position : null;
 
             if (parentShape is Shape shape)
             {

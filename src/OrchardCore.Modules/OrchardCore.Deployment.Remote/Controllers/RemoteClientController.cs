@@ -66,7 +66,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             var remoteClients = (await _remoteClientService.GetRemoteClientListAsync()).RemoteClients;
 
-            if (!String.IsNullOrWhiteSpace(options.Search))
+            if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 remoteClients = remoteClients.Where(x => x.ClientName.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
@@ -256,12 +256,12 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
         private void ValidateViewModel(EditRemoteClientViewModel model)
         {
-            if (String.IsNullOrWhiteSpace(model.ClientName))
+            if (string.IsNullOrWhiteSpace(model.ClientName))
             {
                 ModelState.AddModelError(nameof(EditRemoteClientViewModel.ClientName), S["The client name is mandatory."]);
             }
 
-            if (String.IsNullOrWhiteSpace(model.ApiKey))
+            if (string.IsNullOrWhiteSpace(model.ApiKey))
             {
                 ModelState.AddModelError(nameof(EditRemoteClientViewModel.ApiKey), S["The api key is mandatory."]);
             }

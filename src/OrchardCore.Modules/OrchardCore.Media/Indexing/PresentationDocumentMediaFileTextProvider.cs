@@ -20,7 +20,7 @@ public class PresentationDocumentMediaFileTextProvider : IMediaFileTextProvider
             var slideIds = document.PresentationPart?.Presentation?.SlideIdList?.ChildElements.Cast<SlideId>();
             if (slideIds is null || !slideIds.Any())
             {
-                return Task.FromResult(String.Empty);
+                return Task.FromResult(string.Empty);
             }
 
             using var stringBuilder = ZString.CreateStringBuilder();
@@ -43,7 +43,7 @@ public class PresentationDocumentMediaFileTextProvider : IMediaFileTextProvider
         }
         catch
         {
-            return Task.FromResult(String.Empty);
+            return Task.FromResult(string.Empty);
         }
     }
 

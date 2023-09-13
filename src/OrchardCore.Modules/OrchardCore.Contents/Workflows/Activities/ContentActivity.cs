@@ -73,7 +73,7 @@ namespace OrchardCore.Contents.Workflows.Activities
             IContent content;
 
             // Try to evaluate a content item from the Content expression, if provided.
-            if (!String.IsNullOrWhiteSpace(Content.Expression))
+            if (!string.IsNullOrWhiteSpace(Content.Expression))
             {
                 var expression = new WorkflowExpression<object> { Expression = Content.Expression };
                 var result = await ScriptEvaluator.EvaluateAsync(expression, workflowContext);

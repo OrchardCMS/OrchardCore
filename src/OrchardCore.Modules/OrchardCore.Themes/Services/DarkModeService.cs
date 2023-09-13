@@ -36,7 +36,7 @@ namespace OrchardCore.Themes.Services
 
             if (adminSettings.DisplayDarkMode)
             {
-                if (!String.IsNullOrWhiteSpace(_httpContextAccessor.HttpContext.Request.Cookies[cookieName]))
+                if (!string.IsNullOrWhiteSpace(_httpContextAccessor.HttpContext.Request.Cookies[cookieName]))
                 {
                     var adminPreferences = JsonDocument.Parse(_httpContextAccessor.HttpContext.Request.Cookies[cookieName]);
 
