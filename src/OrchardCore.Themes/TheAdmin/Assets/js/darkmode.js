@@ -47,7 +47,7 @@
         }
     }
 
-    const themeSwitcher = document.querySelector('#btn-darkmode')
+    const themeSwitcher = document.getElementById('btn-darkmode')
 
     setPreferred(themeSwitcher, getPreferredTheme())
 

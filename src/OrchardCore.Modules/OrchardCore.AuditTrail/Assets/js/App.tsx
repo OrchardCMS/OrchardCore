@@ -52,6 +52,7 @@ class DiffViewer extends React.Component<{}, DiffViewerState> {
     componentDidMount() {
         const mountId = document.getElementById('diffapp');
         const oldText = mountId.getAttribute('data-old-text') + ' - ' + mountId.getAttribute('data-old-time');
+        const theme = document.documentElement.getAttribute('data-bs-theme');
 
         this.setState({
             old: mountId.getAttribute('data-old'),
@@ -59,7 +60,7 @@ class DiffViewer extends React.Component<{}, DiffViewerState> {
             oldText: oldText,
             leftText: oldText,
             newText: mountId.getAttribute('data-new-text') + ' - ' + mountId.getAttribute('data-new-time'),
-            useDarkMode: document.documentElement.getAttribute('data-bs-theme') == 'dark',
+            useDarkMode: theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches),
             splitText: mountId.getAttribute('data-split'),
             unifiedText: mountId.getAttribute('data-unified'),
         });
