@@ -128,7 +128,7 @@ namespace OrchardCore.Mvc
 
             // If the file is not in the current server, set cache so no further checks are done.
             cacheEntryOptions.SetSize(0);
-            _cache.Set(cacheKey, String.Empty, cacheEntryOptions);
+            _cache.Set(cacheKey, string.Empty, cacheEntryOptions);
             return path;
         }
 

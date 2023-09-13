@@ -37,7 +37,7 @@ public class SiteSettingsRobotsProvider : IRobotsProvider
             content.AppendLine($"Disallow: /{_adminOptions.AdminUrlPrefix}");
         }
 
-        if (!String.IsNullOrEmpty(settings.AdditionalRules))
+        if (!string.IsNullOrEmpty(settings.AdditionalRules))
         {
             content.AppendLine(settings.AdditionalRules.Trim());
         }

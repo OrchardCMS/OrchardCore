@@ -61,7 +61,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             var remoteInstances = (await _service.GetRemoteInstanceListAsync()).RemoteInstances;
 
-            if (!String.IsNullOrWhiteSpace(options.Search))
+            if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 remoteInstances = remoteInstances.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
@@ -254,22 +254,22 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
         private void ValidateViewModel(EditRemoteInstanceViewModel model)
         {
-            if (String.IsNullOrWhiteSpace(model.Name))
+            if (string.IsNullOrWhiteSpace(model.Name))
             {
                 ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.Name), S["The name is mandatory."]);
             }
 
-            if (String.IsNullOrWhiteSpace(model.ClientName))
+            if (string.IsNullOrWhiteSpace(model.ClientName))
             {
                 ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.ClientName), S["The client name is mandatory."]);
             }
 
-            if (String.IsNullOrWhiteSpace(model.ApiKey) && String.IsNullOrWhiteSpace(model.ApiKeySecret))
+            if (string.IsNullOrWhiteSpace(model.ApiKey) && string.IsNullOrWhiteSpace(model.ApiKeySecret))
             {
                 ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.ApiKey), S["The api key is mandatory."]);
             }
 
-            if (String.IsNullOrWhiteSpace(model.Url))
+            if (string.IsNullOrWhiteSpace(model.Url))
             {
                 ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.Url), S["The url is mandatory."]);
             }

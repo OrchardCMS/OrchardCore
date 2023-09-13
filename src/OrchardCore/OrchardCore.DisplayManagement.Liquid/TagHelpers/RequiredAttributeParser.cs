@@ -49,7 +49,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
             public void AddRequiredAttributes(TagMatchingRuleDescriptorBuilder ruleBuilder)
             {
-                if (String.IsNullOrEmpty(_requiredAttributes))
+                if (string.IsNullOrEmpty(_requiredAttributes))
                 {
                     return;
                 }

@@ -129,7 +129,7 @@ public class AdminController : Controller, IUpdateModel
         options.NotficationsItemsCount = notificationSummaries.Count;
         options.TotalItemCount = pagerShape.TotalItemCount;
 
-        var header = await _notificationOptionsDisplayManager.BuildEditorAsync(options, this, false, String.Empty, String.Empty);
+        var header = await _notificationOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
 
         var shapeViewModel = await _shapeFactory.CreateAsync<ListNotificationsViewModel>("NotificationsAdminList", viewModel =>
         {
@@ -147,13 +147,13 @@ public class AdminController : Controller, IUpdateModel
     public async Task<ActionResult> ListFilterPOST(ListNotificationOptions options)
     {
         // When the user has typed something into the search input, no further evaluation of the form post is required.
-        if (!String.Equals(options.SearchText, options.OriginalSearchText, StringComparison.OrdinalIgnoreCase))
+        if (!string.Equals(options.SearchText, options.OriginalSearchText, StringComparison.OrdinalIgnoreCase))
         {
             return RedirectToAction(nameof(List), new RouteValueDictionary { { "q", options.SearchText } });
         }
 
         // Evaluate the values provided in the form post and map them to the filter result and route values.
-        await _notificationOptionsDisplayManager.UpdateEditorAsync(options, this, false, String.Empty, String.Empty);
+        await _notificationOptionsDisplayManager.UpdateEditorAsync(options, this, false, string.Empty, string.Empty);
 
         // The route value must always be added after the editors have updated the models.
         options.RouteValues.TryAdd("q", options.FilterResult.ToString());
@@ -271,7 +271,7 @@ public class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
-        if (!String.IsNullOrWhiteSpace(notificationId))
+        if (!string.IsNullOrWhiteSpace(notificationId))
         {
             var notification = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId == notificationId && x.IsRead != markAsRead, collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync();
 
@@ -306,7 +306,7 @@ public class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
-        if (!String.IsNullOrWhiteSpace(notificationId))
+        if (!string.IsNullOrWhiteSpace(notificationId))
         {
             var notification = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId == notificationId, collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync();
 
@@ -321,7 +321,7 @@ public class AdminController : Controller, IUpdateModel
 
     private IActionResult RedirectTo(string returnUrl)
     {
-        return !String.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
+        return !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
     }
 
     private string CurrentUserId()

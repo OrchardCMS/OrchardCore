@@ -75,7 +75,7 @@ namespace OrchardCore.Recipes
 
             public Task RecipeStepExecutedAsync(RecipeExecutionContext context)
             {
-                if (String.Equals(context.Name, "Content", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(context.Name, "Content", StringComparison.OrdinalIgnoreCase))
                 {
                     Context = context;
                 }

@@ -17,7 +17,7 @@ namespace OrchardCore.Environment.Cache.CacheContextProviders
 
         public Task PopulateContextEntriesAsync(IEnumerable<string> contexts, List<CacheContextEntry> entries)
         {
-            if (contexts.Any(ctx => String.Equals(ctx, "user", StringComparison.OrdinalIgnoreCase)))
+            if (contexts.Any(ctx => string.Equals(ctx, "user", StringComparison.OrdinalIgnoreCase)))
             {
                 var httpContext = _httpContextAccessor.HttpContext;
                 if (httpContext.User?.Identity?.IsAuthenticated ?? false)

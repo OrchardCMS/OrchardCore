@@ -23,7 +23,7 @@ namespace OrchardCore.Contents.ViewComponents
 
             var contentTypes = ContentTypeSelection.Build(_contentDefinitionManager, selectedContentTypes);
 
-            if (!String.IsNullOrEmpty(stereotype))
+            if (!string.IsNullOrEmpty(stereotype))
             {
                 contentTypes = contentTypes
                     .Where(x => x.ContentTypeDefinition.GetStereotype() == stereotype)

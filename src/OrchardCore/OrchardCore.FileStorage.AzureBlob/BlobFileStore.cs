@@ -53,7 +53,7 @@ namespace OrchardCore.FileStorage.AzureBlob
 
             _blobContainer = new BlobContainerClient(_options.ConnectionString, _options.ContainerName);
 
-            if (!String.IsNullOrEmpty(_options.BasePath))
+            if (!string.IsNullOrEmpty(_options.BasePath))
             {
                 _basePrefix = NormalizePrefix(_options.BasePath);
             }
@@ -84,7 +84,7 @@ namespace OrchardCore.FileStorage.AzureBlob
         {
             try
             {
-                if (path == String.Empty)
+                if (path == string.Empty)
                 {
                     return new BlobDirectory(path, _clock.UtcNow);
                 }
@@ -135,7 +135,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                 if (blob.IsPrefix)
                 {
                     var folderPath = blob.Prefix;
-                    if (!String.IsNullOrEmpty(_basePrefix))
+                    if (!string.IsNullOrEmpty(_basePrefix))
                     {
                         folderPath = folderPath[(_basePrefix.Length - 1)..];
                     }
@@ -176,15 +176,15 @@ namespace OrchardCore.FileStorage.AzureBlob
                 var directory = Path.GetDirectoryName(name);
 
                 // Strip base folder from directory name.
-                if (!String.IsNullOrEmpty(_basePrefix))
+                if (!string.IsNullOrEmpty(_basePrefix))
                 {
                     directory = directory[(_basePrefix.Length - 1)..];
                 }
 
                 // Do not include root folder, or current path, or multiple folders in folder listing.
-                if (!String.IsNullOrEmpty(directory) &&
+                if (!string.IsNullOrEmpty(directory) &&
                     !directories.Contains(directory) &&
-                    (String.IsNullOrEmpty(path) ||
+                    (string.IsNullOrEmpty(path) ||
                     !directory.EndsWith(path)))
                 {
                     directories.Add(directory);
@@ -194,7 +194,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                 // Ignore directory marker files.
                 if (!name.EndsWith(DirectoryMarkerFileName))
                 {
-                    if (!String.IsNullOrEmpty(_basePrefix))
+                    if (!string.IsNullOrEmpty(_basePrefix))
                     {
                         name = name[(_basePrefix.Length - 1)..];
                     }
@@ -253,7 +253,7 @@ namespace OrchardCore.FileStorage.AzureBlob
         {
             try
             {
-                if (String.IsNullOrEmpty(path))
+                if (string.IsNullOrEmpty(path))
                 {
                     throw new FileStoreException("Cannot delete the root directory.");
                 }
@@ -451,7 +451,7 @@ namespace OrchardCore.FileStorage.AzureBlob
             prefix = prefix.Trim('/') + '/';
             if (prefix.Length == 1)
             {
-                return String.Empty;
+                return string.Empty;
             }
             else
             {

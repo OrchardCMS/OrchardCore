@@ -22,9 +22,9 @@ namespace OrchardCore.Settings.Services
         {
             // Updating site settings.
             var siteSettings = await _siteService.LoadSiteSettingsAsync();
-            siteSettings.SiteName = context.Properties.TryGetValue(SetupConstants.SiteName, out var siteName) ? siteName?.ToString() : String.Empty;
-            siteSettings.SuperUser = context.Properties.TryGetValue(SetupConstants.AdminUserId, out var adminUserId) ? adminUserId?.ToString() : String.Empty;
-            siteSettings.TimeZoneId = context.Properties.TryGetValue(SetupConstants.SiteTimeZone, out var siteTimeZone) ? siteTimeZone?.ToString() : String.Empty;
+            siteSettings.SiteName = context.Properties.TryGetValue(SetupConstants.SiteName, out var siteName) ? siteName?.ToString() : string.Empty;
+            siteSettings.SuperUser = context.Properties.TryGetValue(SetupConstants.AdminUserId, out var adminUserId) ? adminUserId?.ToString() : string.Empty;
+            siteSettings.TimeZoneId = context.Properties.TryGetValue(SetupConstants.SiteTimeZone, out var siteTimeZone) ? siteTimeZone?.ToString() : string.Empty;
 
             await _siteService.UpdateSiteSettingsAsync(siteSettings);
 

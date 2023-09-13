@@ -87,7 +87,7 @@ namespace OrchardCore.Users.Services
 
             var newUserId = newUser.UserId;
 
-            if (String.IsNullOrEmpty(newUserId))
+            if (string.IsNullOrEmpty(newUserId))
             {
                 // Due to database collation we normalize the userId to lower invariant.
                 newUserId = _userIdGenerator.GenerateUniqueId(user).ToLowerInvariant();
@@ -472,7 +472,7 @@ namespace OrchardCore.Users.Services
                 var roleNames = await _roleService.GetRoleNamesAsync();
 
                 var roleName = roleNames.FirstOrDefault(r => NormalizeKey(r) == normalizedRoleName);
-                if (String.IsNullOrEmpty(roleName))
+                if (string.IsNullOrEmpty(roleName))
                 {
                     throw new InvalidOperationException($"Role {normalizedRoleName} does not exist.");
                 }
@@ -493,7 +493,7 @@ namespace OrchardCore.Users.Services
                 var roleNames = await _roleService.GetRoleNamesAsync();
 
                 var roleName = roleNames.FirstOrDefault(r => NormalizeKey(r) == normalizedRoleName);
-                if (String.IsNullOrEmpty(roleName))
+                if (string.IsNullOrEmpty(roleName))
                 {
                     throw new InvalidOperationException($"Role {normalizedRoleName} does not exist.");
                 }
@@ -524,7 +524,7 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            if (String.IsNullOrWhiteSpace(normalizedRoleName))
+            if (string.IsNullOrWhiteSpace(normalizedRoleName))
             {
                 throw new ArgumentException("Value cannot be null or empty.", nameof(normalizedRoleName));
             }
@@ -539,7 +539,7 @@ namespace OrchardCore.Users.Services
 
         public async Task<IList<IUser>> GetUsersInRoleAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
-            if (String.IsNullOrEmpty(normalizedRoleName))
+            if (string.IsNullOrEmpty(normalizedRoleName))
             {
                 throw new ArgumentNullException(nameof(normalizedRoleName));
             }
@@ -735,12 +735,12 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            if (String.IsNullOrEmpty(loginProvider))
+            if (string.IsNullOrEmpty(loginProvider))
             {
                 throw new ArgumentException("The login provider cannot be null or empty.", nameof(loginProvider));
             }
 
-            if (String.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 throw new ArgumentException("The name cannot be null or empty.", nameof(name));
             }
@@ -763,12 +763,12 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            if (String.IsNullOrEmpty(loginProvider))
+            if (string.IsNullOrEmpty(loginProvider))
             {
                 throw new ArgumentException("The login provider cannot be null or empty.", nameof(loginProvider));
             }
 
-            if (String.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 throw new ArgumentException("The name cannot be null or empty.", nameof(name));
             }
@@ -789,17 +789,17 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            if (String.IsNullOrEmpty(loginProvider))
+            if (string.IsNullOrEmpty(loginProvider))
             {
                 throw new ArgumentException("The login provider cannot be null or empty.", nameof(loginProvider));
             }
 
-            if (String.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 throw new ArgumentException("The name cannot be null or empty.", nameof(name));
             }
 
-            if (String.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(value))
             {
                 throw new ArgumentException("The value cannot be null or empty.", nameof(value));
             }
@@ -991,7 +991,7 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(recoveryCodes));
             }
 
-            var mergedCodes = String.Join(";", recoveryCodes);
+            var mergedCodes = string.Join(";", recoveryCodes);
 
             return SetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, mergedCodes, cancellationToken);
         }
@@ -1003,12 +1003,12 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            if (String.IsNullOrWhiteSpace(code))
+            if (string.IsNullOrWhiteSpace(code))
             {
                 throw new ArgumentException($"{nameof(code)} cannot be null or empty.");
             }
 
-            var mergedCodes = await GetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, cancellationToken).ConfigureAwait(false) ?? String.Empty;
+            var mergedCodes = await GetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, cancellationToken).ConfigureAwait(false) ?? string.Empty;
             var splitCodes = mergedCodes.Split(';');
             if (splitCodes.Contains(code))
             {

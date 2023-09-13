@@ -33,7 +33,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
         public Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
         {
             var node = menuItem as LinkAdminNode;
-            if (node == null || String.IsNullOrEmpty(node.LinkText) || !node.Enabled)
+            if (node == null || string.IsNullOrEmpty(node.LinkText) || !node.Enabled)
             {
                 return Task.CompletedTask;
             }
@@ -41,7 +41,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
             return builder.AddAsync(new LocalizedString(node.LinkText, node.LinkText), async itemBuilder =>
             {
                 var nodeLinkUrl = node.LinkUrl;
-                if (!String.IsNullOrEmpty(nodeLinkUrl) && nodeLinkUrl[0] != '/' && !nodeLinkUrl.Contains("://"))
+                if (!string.IsNullOrEmpty(nodeLinkUrl) && nodeLinkUrl[0] != '/' && !nodeLinkUrl.Contains("://"))
                 {
                     if (nodeLinkUrl.StartsWith("~/", StringComparison.Ordinal))
                     {

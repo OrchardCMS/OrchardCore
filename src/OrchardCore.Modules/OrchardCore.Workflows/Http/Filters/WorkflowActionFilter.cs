@@ -86,7 +86,7 @@ namespace OrchardCore.Workflows.Http.Filters
                 foreach (var entry in workflowEntries)
                 {
                     if (workflows.TryGetValue(entry.WorkflowId, out var workflow) &&
-                        (String.IsNullOrWhiteSpace(correlationId) ||
+                        (string.IsNullOrWhiteSpace(correlationId) ||
                         workflow.CorrelationId == correlationId))
                     {
                         // If atomic, try to acquire a lock per workflow instance.
@@ -100,7 +100,7 @@ namespace OrchardCore.Workflows.Http.Filters
 
                         // If atomic, check if the workflow still exists and is still correlated.
                         var haltedWorkflow = workflow.IsAtomic ? await _workflowStore.GetAsync(workflow.Id) : workflow;
-                        if (haltedWorkflow == null || (!String.IsNullOrWhiteSpace(correlationId) && haltedWorkflow.CorrelationId != correlationId))
+                        if (haltedWorkflow == null || (!string.IsNullOrWhiteSpace(correlationId) && haltedWorkflow.CorrelationId != correlationId))
                         {
                             continue;
                         }

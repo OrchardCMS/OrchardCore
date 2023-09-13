@@ -122,7 +122,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
             var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null))?.Trim();
 
-            if (String.IsNullOrWhiteSpace(tenantName))
+            if (string.IsNullOrWhiteSpace(tenantName))
             {
                 return Outcomes("Failed");
             }
@@ -146,12 +146,12 @@ namespace OrchardCore.Tenants.Workflows.Activities
             var adminUsername = (await ExpressionEvaluator.EvaluateAsync(AdminUsername, workflowContext, null))?.Trim();
             var adminEmail = (await ExpressionEvaluator.EvaluateAsync(AdminEmail, workflowContext, null))?.Trim();
 
-            if (String.IsNullOrEmpty(adminUsername) || adminUsername.Any(c => !_identityOptions.User.AllowedUserNameCharacters.Contains(c)))
+            if (string.IsNullOrEmpty(adminUsername) || adminUsername.Any(c => !_identityOptions.User.AllowedUserNameCharacters.Contains(c)))
             {
                 return Outcomes("Failed");
             }
 
-            if (String.IsNullOrEmpty(adminEmail) || !_emailAddressValidator.Validate(adminEmail))
+            if (string.IsNullOrEmpty(adminEmail) || !_emailAddressValidator.Validate(adminEmail))
             {
                 return Outcomes("Failed");
             }
@@ -164,27 +164,27 @@ namespace OrchardCore.Tenants.Workflows.Activities
             var databaseSchema = (await ExpressionEvaluator.EvaluateAsync(DatabaseSchema, workflowContext, null))?.Trim();
             var recipeName = (await ExpressionEvaluator.EvaluateAsync(RecipeName, workflowContext, null))?.Trim();
 
-            if (String.IsNullOrEmpty(databaseProvider))
+            if (string.IsNullOrEmpty(databaseProvider))
             {
                 databaseProvider = shellSettings["DatabaseProvider"];
             }
 
-            if (String.IsNullOrEmpty(databaseConnectionString))
+            if (string.IsNullOrEmpty(databaseConnectionString))
             {
                 databaseConnectionString = shellSettings["ConnectionString"];
             }
 
-            if (String.IsNullOrEmpty(databaseTablePrefix))
+            if (string.IsNullOrEmpty(databaseTablePrefix))
             {
                 databaseTablePrefix = shellSettings["TablePrefix"];
             }
 
-            if (String.IsNullOrWhiteSpace(databaseSchema))
+            if (string.IsNullOrWhiteSpace(databaseSchema))
             {
                 databaseSchema = shellSettings["Schema"];
             }
 
-            if (String.IsNullOrEmpty(recipeName))
+            if (string.IsNullOrEmpty(recipeName))
             {
                 recipeName = shellSettings["RecipeName"];
             }

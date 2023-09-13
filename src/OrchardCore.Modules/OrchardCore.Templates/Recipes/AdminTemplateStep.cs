@@ -22,7 +22,7 @@ namespace OrchardCore.Templates.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "AdminTemplates", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "AdminTemplates", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

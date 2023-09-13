@@ -126,7 +126,7 @@ namespace OrchardCore.Autoroute.Core.Indexes
                     var partRemoved = _partRemoved.Contains(contentItem.ContentItemId);
 
                     var part = contentItem.As<AutoroutePart>();
-                    if (!partRemoved && String.IsNullOrEmpty(part?.Path))
+                    if (!partRemoved && string.IsNullOrEmpty(part?.Path))
                     {
                         return null;
                     }

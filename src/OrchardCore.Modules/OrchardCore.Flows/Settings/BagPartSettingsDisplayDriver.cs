@@ -37,7 +37,7 @@ namespace OrchardCore.Flows.Settings
                 model.DisplayType = model.BagPartSettings.DisplayType;
                 model.ContentTypes = new NameValueCollection();
                 model.Source = settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0 ? BagPartSettingType.Stereotypes : BagPartSettingType.ContentTypes;
-                model.Stereotypes = String.Join(',', settings.ContainedStereotypes ?? Array.Empty<string>());
+                model.Stereotypes = string.Join(',', settings.ContainedStereotypes ?? Array.Empty<string>());
                 foreach (var contentTypeDefinition in _contentDefinitionManager.ListTypeDefinitions())
                 {
                     model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
@@ -69,7 +69,7 @@ namespace OrchardCore.Flows.Settings
 
         private void SetStereoTypes(UpdateTypePartEditorContext context, BagPartSettingsViewModel model)
         {
-            if (String.IsNullOrEmpty(model.Stereotypes))
+            if (string.IsNullOrEmpty(model.Stereotypes))
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.Stereotypes), S["Please provide a Stereotype."]);
 

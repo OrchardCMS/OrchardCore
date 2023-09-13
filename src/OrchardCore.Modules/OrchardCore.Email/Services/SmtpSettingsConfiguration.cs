@@ -45,12 +45,12 @@ namespace OrchardCore.Email.Services
             options.UseDefaultCredentials = settings.UseDefaultCredentials;
             options.UserName = settings.UserName;
 
-            if (!String.IsNullOrEmpty(settings.PasswordSecret))
+            if (!string.IsNullOrEmpty(settings.PasswordSecret))
             {
                 options.PasswordSecret = settings.PasswordSecret;
                 options.Password = _secretService.GetSecretAsync<TextSecret>(settings.PasswordSecret).GetAwaiter().GetResult()?.Text;
             }
-            else if (!String.IsNullOrWhiteSpace(settings.Password))
+            else if (!string.IsNullOrWhiteSpace(settings.Password))
             {
                 try
                 {

@@ -20,7 +20,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps
 
         public Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "DeleteContentDefinition", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "DeleteContentDefinition", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }

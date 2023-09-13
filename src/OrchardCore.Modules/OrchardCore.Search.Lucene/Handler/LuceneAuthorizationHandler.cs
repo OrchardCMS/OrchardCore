@@ -46,7 +46,7 @@ public class LuceneAuthorizationHandler : AuthorizationHandler<PermissionRequire
 
         var indexName = await GetIndexNameAsync(parameters);
 
-        if (!String.IsNullOrEmpty(indexName))
+        if (!string.IsNullOrEmpty(indexName))
         {
             _authorizationService ??= _serviceProvider?.GetService<IAuthorizationService>();
 
@@ -63,7 +63,7 @@ public class LuceneAuthorizationHandler : AuthorizationHandler<PermissionRequire
 
     private async Task<string> GetIndexNameAsync(SearchPermissionParameters parameters)
     {
-        if (!String.IsNullOrWhiteSpace(parameters.IndexName))
+        if (!string.IsNullOrWhiteSpace(parameters.IndexName))
         {
             return parameters.IndexName.Trim();
         }

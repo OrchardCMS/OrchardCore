@@ -130,7 +130,7 @@ namespace OrchardCore.OpenId.Services
                     }));
                 }
 
-                if (!String.IsNullOrEmpty(settings.Authority.Query) || !String.IsNullOrEmpty(settings.Authority.Fragment))
+                if (!string.IsNullOrEmpty(settings.Authority.Query) || !string.IsNullOrEmpty(settings.Authority.Fragment))
                 {
                     results.Add(new ValidationResult(S["The authority cannot contain a query string or a fragment."], new[]
                     {
@@ -142,7 +142,7 @@ namespace OrchardCore.OpenId.Services
             if (String.IsNullOrEmpty(settings.SigningRsaSecret) &&
                 settings.SigningCertificateStoreLocation != null &&
                 settings.SigningCertificateStoreName != null &&
-                !String.IsNullOrEmpty(settings.SigningCertificateThumbprint))
+                !string.IsNullOrEmpty(settings.SigningCertificateThumbprint))
             {
                 var certificate = GetCertificate(
                     settings.SigningCertificateStoreLocation.Value,
@@ -316,7 +316,7 @@ namespace OrchardCore.OpenId.Services
             // instead of using the fallback managed certificates logic.
             else if (settings.EncryptionCertificateStoreLocation != null &&
                 settings.EncryptionCertificateStoreName != null &&
-                !String.IsNullOrEmpty(settings.EncryptionCertificateThumbprint))
+                !string.IsNullOrEmpty(settings.EncryptionCertificateThumbprint))
             {
                 var certificate = GetCertificate(
                     settings.EncryptionCertificateStoreLocation.Value,
@@ -412,7 +412,7 @@ namespace OrchardCore.OpenId.Services
             // instead of using the fallback managed certificates logic.
             else if (settings.SigningCertificateStoreLocation != null &&
                 settings.SigningCertificateStoreName != null &&
-                !String.IsNullOrEmpty(settings.SigningCertificateThumbprint))
+                !string.IsNullOrEmpty(settings.SigningCertificateThumbprint))
             {
                 var certificate = GetCertificate(
                     settings.SigningCertificateStoreLocation.Value,

@@ -3,9 +3,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -42,7 +40,7 @@ public class NotificationResultFilter : IAsyncResultFilter
 
     public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
     {
-        if (context.Result is not (ViewResult or PageResult)
+        if (!context.IsViewOrPageResult()
             || !await _authorizationService.AuthorizeAsync(context.HttpContext.User, NotificationPermissions.ManageNotifications))
         {
             await next();
