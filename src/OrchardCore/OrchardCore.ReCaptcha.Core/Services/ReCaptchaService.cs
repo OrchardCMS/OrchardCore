@@ -81,7 +81,7 @@ namespace OrchardCore.ReCaptcha.Services
             }
 
             // We use the header value as default if it's passed
-            var reCaptchaResponse = _httpContextAccessor.HttpContext.Request.Headers[Constants.ReCaptchaServerResponseHeaderName];
+            var reCaptchaResponse = _httpContextAccessor.HttpContext?.Request.Headers[Constants.ReCaptchaServerResponseHeaderName];
 
             // If this is a standard form post we get the token from the form values if not affected previously in the header.
             if (string.IsNullOrEmpty(reCaptchaResponse) && (_httpContextAccessor.HttpContext?.Request.HasFormContentType ?? false))
