@@ -71,7 +71,8 @@ namespace OrchardCore.ReCaptcha.Services
         /// <returns></returns>
         public async Task<bool> VerifyCaptchaResponseAsync(string reCaptchaResponse)
         {
-            return !string.IsNullOrWhiteSpace(reCaptchaResponse) && await _reCaptchaClient.VerifyAsync(reCaptchaResponse, _settings.SecretKey);
+            return !string.IsNullOrWhiteSpace(reCaptchaResponse) &&
+                await _reCaptchaClient.VerifyAsync(reCaptchaResponse);
         }
 
         /// <summary>
