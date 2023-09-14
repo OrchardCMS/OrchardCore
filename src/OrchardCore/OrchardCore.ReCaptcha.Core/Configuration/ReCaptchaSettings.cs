@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.ReCaptcha.Configuration
 {
     public class ReCaptchaSettings
@@ -19,7 +17,9 @@ namespace OrchardCore.ReCaptcha.Configuration
 
         public bool IsValid()
         {
-            return !string.IsNullOrWhiteSpace(SiteKey) && !string.IsNullOrWhiteSpace(SecretKey);
+            return !string.IsNullOrWhiteSpace(SiteKey)
+                && !string.IsNullOrWhiteSpace(SecretKey)
+                && !string.IsNullOrWhiteSpace(ReCaptchaApiUri);
         }
     }
 }

@@ -31,12 +31,7 @@ namespace OrchardCore.ReCaptcha.Services
         /// <returns>A boolean indicating if the token is valid.</returns>
         public async Task<bool> VerifyAsync(string responseToken)
         {
-            if (string.IsNullOrWhiteSpace(responseToken))
-            {
-                return false;
-            }
-
-            if (!_reCaptchaSettings.IsValid() || string.IsNullOrEmpty(_reCaptchaSettings.ReCaptchaApiUri))
+            if (string.IsNullOrWhiteSpace(responseToken) || !_reCaptchaSettings.IsValid())
             {
                 return false;
             }
