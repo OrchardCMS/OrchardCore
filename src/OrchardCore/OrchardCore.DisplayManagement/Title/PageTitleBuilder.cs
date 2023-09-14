@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Zones;
-using OrchardCore.DisplayManagement.Extensions;
 
 namespace OrchardCore.DisplayManagement.Title
 {
@@ -11,7 +10,7 @@ namespace OrchardCore.DisplayManagement.Title
         private readonly static HtmlString _defaultTitleSeparator = new(" - ");
 
         private readonly List<PositionalTitlePart> _titleParts;
-        private IHtmlContent _title;
+        private HtmlContentBuilder _title;
         private IHtmlContent _fixedTitle;
 
         public PageTitleBuilder()
@@ -50,7 +49,7 @@ namespace OrchardCore.DisplayManagement.Title
                 return _fixedTitle;
             }
 
-            if (_title != null && string.Empty != _title.GetString())
+            if (_title is { Count: > 0 })
             {
                 return _title;
             }

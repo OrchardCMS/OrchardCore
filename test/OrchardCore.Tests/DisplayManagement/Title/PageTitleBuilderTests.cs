@@ -1,4 +1,4 @@
-using OrchardCore.DisplayManagement.Extensions;
+using Cysharp.Text;
 
 namespace OrchardCore.DisplayManagement.Title
 {
@@ -25,8 +25,8 @@ namespace OrchardCore.DisplayManagement.Title
         public void GenerateTitleEmpty()
         {
             var pageTitleBuilder = _serviceProvider.GetService<IPageTitleBuilder>();
-            
-            Assert.Equal(String.Empty, pageTitleBuilder.GenerateTitle().GetString());
+
+            Assert.Equal(string.Empty, ToString(pageTitleBuilder.GenerateTitle()));
         }
 
         [Fact]
@@ -35,7 +35,7 @@ namespace OrchardCore.DisplayManagement.Title
             var pageTitleBuilder = _serviceProvider.GetService<IPageTitleBuilder>();
             pageTitleBuilder.SetFixedTitle(new HtmlString(SimpleTitle));
 
-            Assert.Equal(SimpleTitle, pageTitleBuilder.GenerateTitle().GetString());
+            Assert.Equal(SimpleTitle, ToString(pageTitleBuilder.GenerateTitle()));
         }
 
         [Fact]
@@ -45,7 +45,7 @@ namespace OrchardCore.DisplayManagement.Title
             pageTitleBuilder.SetFixedTitle(new HtmlString(SimpleTitle));
             pageTitleBuilder.Clear();
 
-            Assert.Equal(String.Empty, pageTitleBuilder.GenerateTitle().GetString());
+            Assert.Equal(string.Empty, ToString(pageTitleBuilder.GenerateTitle()));
         }
 
         [Fact]
@@ -56,7 +56,7 @@ namespace OrchardCore.DisplayManagement.Title
 
             pageTitleBuilder.AddSegment(new HtmlString("you don't see me"));
 
-            Assert.Equal(SimpleTitle, pageTitleBuilder.GenerateTitle().GetString());
+            Assert.Equal(SimpleTitle, ToString(pageTitleBuilder.GenerateTitle()));
         }
 
 
@@ -68,7 +68,7 @@ namespace OrchardCore.DisplayManagement.Title
 
             pageTitleBuilder.AddSegment(new HtmlString(SimpleTitle), "after");
 
-            Assert.Equal(SimpleTitle, pageTitleBuilder.GenerateTitle().GetString());
+            Assert.Equal(SimpleTitle, ToString(pageTitleBuilder.GenerateTitle()));
         }
 
         [Fact]
@@ -79,11 +79,11 @@ namespace OrchardCore.DisplayManagement.Title
 
             pageTitleBuilder.AddSegment(new HtmlString(FirstPartTitle), "after");
 
-            Assert.Equal(FirstPartTitle, pageTitleBuilder.GenerateTitle(new HtmlString(Separator)).GetString());
+            Assert.Equal(FirstPartTitle, ToString(pageTitleBuilder.GenerateTitle(new HtmlString(Separator))));
 
             pageTitleBuilder.AddSegment(new HtmlString(SecondPartTitle), "after");
 
-            Assert.Equal($"{FirstPartTitle}{Separator}{SecondPartTitle}", pageTitleBuilder.GenerateTitle(new HtmlString(Separator)).GetString());
+            Assert.Equal($"{FirstPartTitle}{Separator}{SecondPartTitle}", ToString(pageTitleBuilder.GenerateTitle(new HtmlString(Separator))));
         }
 
         [Fact]
@@ -94,11 +94,11 @@ namespace OrchardCore.DisplayManagement.Title
 
             pageTitleBuilder.AddSegment(new HtmlString(FirstPartTitle), "after");
 
-            Assert.Equal(FirstPartTitle, pageTitleBuilder.GenerateTitle(new HtmlString(Separator)).GetString());
+            Assert.Equal(FirstPartTitle, ToString(pageTitleBuilder.GenerateTitle(new HtmlString(Separator))));
 
             pageTitleBuilder.Clear();
 
-            Assert.Equal(String.Empty, pageTitleBuilder.GenerateTitle(new HtmlString(Separator)).GetString());
+            Assert.Equal(string.Empty, ToString(pageTitleBuilder.GenerateTitle(new HtmlString(Separator))));
         }
 
         [Fact]
@@ -109,8 +109,8 @@ namespace OrchardCore.DisplayManagement.Title
 
             pageTitleBuilder.AddSegment(new HtmlString(FirstPartTitle), "after");
 
-            Assert.Equal(FirstPartTitle, pageTitleBuilder.GenerateTitle(new HtmlString(Separator)).GetString());
-            Assert.Equal(FirstPartTitle, pageTitleBuilder.GenerateTitle(new HtmlString(Separator)).GetString());
+            Assert.Equal(FirstPartTitle, ToString(pageTitleBuilder.GenerateTitle(new HtmlString(Separator))));
+            Assert.Equal(FirstPartTitle, ToString(pageTitleBuilder.GenerateTitle(new HtmlString(Separator))));
         }
 
         [Fact]
@@ -126,7 +126,16 @@ namespace OrchardCore.DisplayManagement.Title
             };
             pageTitleBuilder.AddSegments(elements, "after");
 
-            Assert.Equal($"{FirstPartTitle}{Separator}{SecondPartTitle}", pageTitleBuilder.GenerateTitle(new HtmlString(Separator)).GetString());
+            Assert.Equal($"{FirstPartTitle}{Separator}{SecondPartTitle}", ToString(pageTitleBuilder.GenerateTitle(new HtmlString(Separator))));
+        }
+
+
+        private static string ToString(IHtmlContent content)
+        {
+            using var writer = new ZStringWriter();
+            content.WriteTo(writer, HtmlEncoder.Default);
+
+            return writer.ToString();
         }
     }
 }
