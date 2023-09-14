@@ -21,6 +21,5 @@ namespace OrchardCore.ReCaptcha.Configuration
             => _isValid ??= !string.IsNullOrWhiteSpace(SiteKey)
             && !string.IsNullOrWhiteSpace(SecretKey)
             && !string.IsNullOrWhiteSpace(ReCaptchaApiUri);
-
     }
 }
