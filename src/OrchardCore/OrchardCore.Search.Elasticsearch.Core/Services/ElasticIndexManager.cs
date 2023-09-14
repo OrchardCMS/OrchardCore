@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
     /// <summary>
     /// Provides methods to manage Elasticsearch indices.
     /// </summary>
-    public class ElasticIndexManager : IDisposable
+    public sealed class ElasticIndexManager : IDisposable
     {
         private readonly IElasticClient _elasticClient;
         private readonly ShellSettings _shellSettings;
@@ -62,7 +63,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         };
 
         private string _indexPrefix;
-        private bool _disposing;
+        private bool _disposed;
 
         public ElasticIndexManager(
             IElasticClient elasticClient,
@@ -81,13 +82,13 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         /// <summary>
         /// <para>Creates an Elasticsearch index with _source mapping.</para>
-        /// <para><see href="https://www.elastic.co/guide/en/elasticsearch/reference/8.3/mapping-source-field.html#disable-source-field"/></para>
-        /// <para>Specify an analyzer for an index based on the ElasticsearchIndexSettings
-        /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/specify-analyzer.html#specify-index-time-default-analyzer"/>
-        /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-analyzers.html"/>
+        /// <para><see href="https://www.elastic.co/guide/en/elasticsearch/reference/8.3/mapping-source-field.html#disable-source-field"/>.</para>
+        /// <para>Specify an analyzer for an index based on the ElasticsearchIndexSettings.
+        /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/specify-analyzer.html#specify-index-time-default-analyzer"/>,
+        /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-analyzers.html"/>.
         /// </para>
         /// </summary>
-        /// <returns><see cref="Boolean"/></returns>
+        /// <returns><see cref="bool"/>.</returns>
         public async Task<bool> CreateIndexAsync(ElasticIndexSettings elasticIndexSettings)
         {
             //Get Index name scoped by ShellName
@@ -113,7 +114,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 indexSettingsDescriptor.Analysis(an => analysisDescriptor);
             }
 
-            // Custom metadata to store the last indexing task id
+            // Custom metadata to store the last indexing task id.
             var IndexingState = new FluentDictionary<string, object>() {
                     { _lastTaskId, 0 }
                 };
@@ -146,7 +147,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     )
                 ));
 
-            // ContainedPart mappings
+            // ContainedPart mappings.
             await _elasticClient.MapAsync<ContainedPartModel>(p => p
                 .Index(fullIndexName)
                 .Properties(p => p
@@ -213,12 +214,12 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                 foreach (var analyzerProperty in analyzerProperties)
                 {
-                    if (analyzerProperty.Value == null || String.Equals(analyzerProperty.Key, "type", StringComparison.OrdinalIgnoreCase))
+                    if (analyzerProperty.Value == null || string.Equals(analyzerProperty.Key, "type", StringComparison.OrdinalIgnoreCase))
                     {
                         continue;
                     }
 
-                    var key = analyzerProperty.Key.Replace("_", String.Empty);
+                    var key = analyzerProperty.Key.Replace("_", string.Empty);
 
                     var property = properties.FirstOrDefault(p => p.Name.Equals(key, StringComparison.OrdinalIgnoreCase));
 
@@ -283,9 +284,9 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// <summary>
         /// Store a last_task_id in the Elasticsearch index _meta mappings.
         /// This allows storing the last indexing task id executed on the Elasticsearch index.
-        /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-meta-field.html"/>
+        /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-meta-field.html"/>.
         /// </summary>
-        public async Task SetLastTaskId(string indexName, int lastTaskId)
+        public async Task SetLastTaskId(string indexName, long lastTaskId)
         {
             var IndexingState = new FluentDictionary<string, object>() {
                 { _lastTaskId, lastTaskId }
@@ -303,16 +304,16 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// Get a last_task_id in the Elasticsearch index _meta mappings.
         /// This allows retrieving the last indexing task id executed on the index.
         /// </summary>
-        public async Task<int> GetLastTaskId(string indexName)
+        public async Task<long> GetLastTaskId(string indexName)
         {
             var jsonDocument = JsonDocument.Parse(await GetIndexMappings(indexName));
             jsonDocument.RootElement.TryGetProperty(GetFullIndexName(indexName), out var jsonElement);
             jsonElement.TryGetProperty("mappings", out var mappings);
             mappings.TryGetProperty("_meta", out var meta);
             meta.TryGetProperty(_lastTaskId, out var lastTaskId);
-            lastTaskId.TryGetInt32(out var intValue);
+            lastTaskId.TryGetInt64(out var longValue);
 
-            return intValue;
+            return longValue;
         }
 
         public async Task<bool> DeleteDocumentsAsync(string indexName, IEnumerable<string> contentItemIds)
@@ -373,7 +374,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// </summary>
         public async Task<bool> Exists(string indexName)
         {
-            if (String.IsNullOrWhiteSpace(indexName))
+            if (string.IsNullOrWhiteSpace(indexName))
             {
                 return false;
             }
@@ -385,7 +386,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         /// <summary>
         /// Makes sure that the index names are compliant with Elasticsearch specifications.
-        /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html#indices-create-api-path-params"/>
+        /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html#indices-create-api-path-params"/>.
         /// </summary>
         public static string ToSafeIndexName(string indexName)
         {
@@ -396,7 +397,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 indexName = indexName.Remove(0, 1);
             }
 
-            _charsToRemove.ForEach(c => indexName = indexName.Replace(c.ToString(), String.Empty));
+            _charsToRemove.ForEach(c => indexName = indexName.Replace(c.ToString(), string.Empty));
 
             return indexName;
         }
@@ -440,7 +441,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// <param name="sort"></param>
         /// <param name="from"></param>
         /// <param name="size"></param>
-        /// <returns><see cref="ElasticTopDocs"/></returns>
+        /// <returns><see cref="ElasticTopDocs"/>.</returns>
         public async Task<ElasticTopDocs> SearchAsync(string indexName, QueryContainer query, List<ISort> sort, int from, int size)
         {
             var elasticTopDocs = new ElasticTopDocs();
@@ -464,10 +465,10 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     elasticTopDocs.Count = searchResponse.Hits.Count;
 
                     var topDocs = new List<Dictionary<string, object>>();
-                    
+
                     var documents = searchResponse.Documents.GetEnumerator();
                     var hits = searchResponse.Hits.GetEnumerator();
-                    
+
                     while (documents.MoveNext() && hits.MoveNext())
                     {
                         var document = documents.Current;
@@ -521,8 +522,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
             foreach (var entry in documentIndex.Entries)
             {
-                if (entries.ContainsKey(entry.Name)
-                    || Array.Exists(_ignoredFields, x => entry.Name.Contains(x)))
+                if (Array.Exists(_ignoredFields, x => entry.Name.Contains(x)))
                 {
                     continue;
                 }
@@ -530,28 +530,29 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 switch (entry.Type)
                 {
                     case DocumentIndex.Types.Boolean:
-                        // store "true"/"false" for booleans
-                        entries.Add(entry.Name, (bool)(entry.Value));
-                        break;
-
-                    case DocumentIndex.Types.DateTime:
-                        if (entry.Value != null)
+                        if (entry.Value is bool boolValue)
                         {
-                            if (entry.Value is DateTimeOffset)
-                            {
-                                entries.Add(entry.Name, ((DateTimeOffset)(entry.Value)).UtcDateTime);
-                            }
-                            else
-                            {
-                                entries.Add(entry.Name, ((DateTime)(entry.Value)).ToUniversalTime());
-                            }
+                            AddValue(entries, entry.Name, boolValue);
                         }
                         break;
 
-                    case DocumentIndex.Types.Integer:
-                        if (entry.Value != null && Int64.TryParse(entry.Value.ToString(), out var value))
+                    case DocumentIndex.Types.DateTime:
+
+                        if (entry.Value is DateTimeOffset offsetValue)
                         {
-                            entries.Add(entry.Name, value);
+                            AddValue(entries, entry.Name, offsetValue);
+                        }
+                        else if (entry.Value is DateTime dateTimeValue)
+                        {
+                            AddValue(entries, entry.Name, dateTimeValue.ToUniversalTime());
+                        }
+
+                        break;
+
+                    case DocumentIndex.Types.Integer:
+                        if (entry.Value != null && long.TryParse(entry.Value.ToString(), out var value))
+                        {
+                            AddValue(entries, entry.Name, value);
                         }
 
                         break;
@@ -559,14 +560,19 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     case DocumentIndex.Types.Number:
                         if (entry.Value != null)
                         {
-                            entries.Add(entry.Name, Convert.ToDouble(entry.Value));
+                            AddValue(entries, entry.Name, Convert.ToDouble(entry.Value));
                         }
                         break;
 
                     case DocumentIndex.Types.Text:
-                        if (entry.Value != null && !String.IsNullOrEmpty(Convert.ToString(entry.Value)))
+                        if (entry.Value != null)
                         {
-                            entries.Add(entry.Name, Convert.ToString(entry.Value));
+                            var stringValue = Convert.ToString(entry.Value);
+
+                            if (!string.IsNullOrEmpty(stringValue))
+                            {
+                                AddValue(entries, entry.Name, stringValue);
+                            }
                         }
                         break;
                 }
@@ -577,12 +583,39 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         public string GetFullIndexName(string indexName)
         {
-            if (String.IsNullOrEmpty(indexName))
+            if (string.IsNullOrEmpty(indexName))
             {
                 throw new ArgumentException($"{nameof(indexName)} cannot be null or empty.");
             }
 
             return GetIndexPrefix() + "_" + indexName;
+        }
+
+        private static void AddValue(Dictionary<string, object> entries, string key, object value)
+        {
+            if (entries.TryAdd(key, value))
+            {
+                return;
+            }
+
+            // At this point, we know that a value already exists.
+            if (entries[key] is List<object> list)
+            {
+                list.Add(value);
+
+                entries[key] = list;
+
+                return;
+            }
+
+            // Convert the existing value to a list of values.
+            var values = new List<object>()
+            {
+                entries[key],
+                value,
+            };
+
+            entries[key] = values;
         }
 
         private string GetIndexPrefix()
@@ -591,14 +624,14 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             {
                 var parts = new List<string>();
 
-                if (!String.IsNullOrWhiteSpace(_elasticsearchOptions.IndexPrefix))
+                if (!string.IsNullOrWhiteSpace(_elasticsearchOptions.IndexPrefix))
                 {
                     parts.Add(_elasticsearchOptions.IndexPrefix.ToLowerInvariant());
                 }
 
                 parts.Add(_shellSettings.Name.ToLowerInvariant());
 
-                _indexPrefix = String.Join("_", parts);
+                _indexPrefix = string.Join("_", parts);
             }
 
             return _indexPrefix;
@@ -606,17 +639,12 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         public void Dispose()
         {
-            if (_disposing)
+            if (_disposed)
             {
                 return;
             }
 
-            _disposing = true;
-        }
-
-        ~ElasticIndexManager()
-        {
-            Dispose();
+            _disposed = true;
         }
     }
 }

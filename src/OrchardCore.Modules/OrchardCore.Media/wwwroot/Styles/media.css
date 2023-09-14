@@ -1028,7 +1028,7 @@
   margin-left: 1.9em;
 }
 :root[data-theme=darkmode] ol.media-items-grid li .inline-media-button {
-  color: #495057;
+  color: rgb(181, 175, 166);
   opacity: 0;
   position: absolute;
   top: 0px;
@@ -1086,7 +1086,7 @@
   padding: 20px;
 }
 :root[data-theme=darkmode] .media-items-table .header-row th {
-  color: #495057;
+  color: rgb(181, 175, 166);
   font-size: 0.8125rem;
   user-select: none;
 }
@@ -1305,7 +1305,7 @@
   display: inline-block;
 }
 :root[data-theme=darkmode] #breadcrumb .breadcrumb-path .breadcrumb-item a {
-  color: #495057;
+  color: rgb(181, 175, 166);
 }
 :root[data-theme=darkmode] #breadcrumb .breadcrumb-buttons {
   justify-content: flex-start;
@@ -1315,7 +1315,7 @@
   margin-top: -5px;
 }
 :root[data-theme=darkmode] #breadcrumb .breadcrumb-buttons a {
-  color: #495057;
+  color: rgb(181, 175, 166);
 }
 [dir]:root[data-theme=darkmode] #breadcrumb .breadcrumb-buttons a {
   border-radius: 0px !important;
@@ -1328,7 +1328,7 @@
   margin-top: -5px;
 }
 :root[data-theme=darkmode] .visibility-buttons button {
-  color: #495057;
+  color: rgb(181, 175, 166);
 }
 [dir]:root[data-theme=darkmode] .visibility-buttons button {
   border-radius: 0px !important;
@@ -1389,7 +1389,7 @@
   height: 100%;
 }
 :root[data-theme=darkmode] #folder-tree div a {
-  color: #495057;
+  color: rgb(181, 175, 166);
   text-decoration: none;
 }
 [dir=ltr]:root[data-theme=darkmode] #folder-tree ol {

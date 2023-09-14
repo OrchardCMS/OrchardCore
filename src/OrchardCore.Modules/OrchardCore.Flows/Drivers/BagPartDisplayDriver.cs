@@ -32,7 +32,7 @@ namespace OrchardCore.Flows.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
         private readonly IAuthorizationService _authorizationService;
 
         public BagPartDisplayDriver(
@@ -66,8 +66,8 @@ namespace OrchardCore.Flows.Drivers
                 m.BuildPartDisplayContext = context;
                 m.Settings = context.TypePartDefinition.GetSettings<BagPartSettings>();
             })
-            .Location("Detail", "Content:5")
-            .Location("Summary", "Content:5");
+            .Location("Detail", "Content")
+            .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(BagPart bagPart, BuildPartEditorContext context)
@@ -78,7 +78,7 @@ namespace OrchardCore.Flows.Drivers
 
                 m.BagPart = bagPart;
                 m.Updater = context.Updater;
-                m.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(contentDefinitionManager, context.TypePartDefinition);
+                m.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(context.TypePartDefinition);
                 m.AccessibleWidgets = await GetAccessibleWidgetsAsync(bagPart.ContentItems, contentDefinitionManager);
             });
         }
@@ -103,7 +103,7 @@ namespace OrchardCore.Flows.Drivers
                 contentItem.Owner = GetCurrentOwner();
 
                 // Try to match the requested id with an existing id
-                var existingContentItem = part.ContentItems.FirstOrDefault(x => String.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
+                var existingContentItem = part.ContentItems.FirstOrDefault(x => string.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
 
                 if (existingContentItem == null && !await AuthorizeAsync(contentDefinitionManager, CommonPermissions.EditContent, contentItem))
                 {
@@ -230,7 +230,7 @@ namespace OrchardCore.Flows.Drivers
             return settings?.Securable ?? false;
         }
 
-        private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(IContentDefinitionManager contentDefinitionManager, ContentTypePartDefinition typePartDefinition)
+        private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ContentTypePartDefinition typePartDefinition)
         {
             var settings = typePartDefinition.GetSettings<BagPartSettings>();
             var contentTypes = Enumerable.Empty<ContentTypeDefinition>();

@@ -19,14 +19,11 @@ namespace OrchardCore.Contents.ViewComponents
 
         public IViewComponentResult Invoke(IEnumerable<string> selectedContentTypes, string htmlName, string stereotype)
         {
-            if (selectedContentTypes == null)
-            {
-                selectedContentTypes = Array.Empty<string>();
-            }
+            selectedContentTypes ??= Array.Empty<string>();
 
             var contentTypes = ContentTypeSelection.Build(_contentDefinitionManager, selectedContentTypes);
 
-            if (!String.IsNullOrEmpty(stereotype))
+            if (!string.IsNullOrEmpty(stereotype))
             {
                 contentTypes = contentTypes
                     .Where(x => x.ContentTypeDefinition.GetStereotype() == stereotype)

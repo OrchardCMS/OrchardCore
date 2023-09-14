@@ -24,7 +24,7 @@ namespace OrchardCore.Queries.Sql.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IStore _store;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly TemplateOptions _templateOptions;
 
         public AdminController(
@@ -44,7 +44,7 @@ namespace OrchardCore.Queries.Sql.Controllers
 
         public Task<IActionResult> Query(string query)
         {
-            query = String.IsNullOrWhiteSpace(query) ? "" : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query));
+            query = string.IsNullOrWhiteSpace(query) ? "" : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query));
             return Query(new AdminQueryViewModel
             {
                 DecodedQuery = query,
@@ -60,12 +60,12 @@ namespace OrchardCore.Queries.Sql.Controllers
                 return Forbid();
             }
 
-            if (String.IsNullOrWhiteSpace(model.DecodedQuery))
+            if (string.IsNullOrWhiteSpace(model.DecodedQuery))
             {
                 return View(model);
             }
 
-            if (String.IsNullOrEmpty(model.Parameters))
+            if (string.IsNullOrEmpty(model.Parameters))
             {
                 model.Parameters = "{ }";
             }

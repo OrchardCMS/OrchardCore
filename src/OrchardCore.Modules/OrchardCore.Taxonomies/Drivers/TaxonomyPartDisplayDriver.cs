@@ -24,7 +24,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 m.ContentItem = part.ContentItem;
                 m.TaxonomyPart = part;
             })
-            .Location("Detail", "Content:5");
+            .Location("Detail", "Content");
         }
 
         public override IDisplayResult Edit(TaxonomyPart part)
@@ -42,7 +42,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
             if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy, t => t.TermContentType))
             {
-                if (!String.IsNullOrWhiteSpace(model.Hierarchy))
+                if (!string.IsNullOrWhiteSpace(model.Hierarchy))
                 {
                     var originalTaxonomyItems = part.ContentItem.As<TaxonomyPart>();
 
@@ -67,7 +67,7 @@ namespace OrchardCore.Taxonomies.Drivers
         /// <summary>
         /// Clone the content items at the specific index.
         /// </summary>
-        private JObject GetTaxonomyItemAt(List<ContentItem> taxonomyItems, int[] indexes)
+        private static JObject GetTaxonomyItemAt(List<ContentItem> taxonomyItems, int[] indexes)
         {
             ContentItem taxonomyItem = null;
 

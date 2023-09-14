@@ -9,7 +9,7 @@ namespace OrchardCore.Tenants
     public class FeatureProfilesAdminMenu : INavigationProvider
     {
         private readonly ShellSettings _shellSettings;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public FeatureProfilesAdminMenu(IStringLocalizer<FeatureProfilesAdminMenu> localizer, ShellSettings shellSettings)
         {
@@ -19,7 +19,7 @@ namespace OrchardCore.Tenants
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }

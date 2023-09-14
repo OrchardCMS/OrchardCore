@@ -56,7 +56,7 @@ namespace OrchardCore.Workflows.Services
             return _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowTypeId.IsIn(workflowTypeIds)).ListAsync();
         }
 
-        public Task<Workflow> GetAsync(int id)
+        public Task<Workflow> GetAsync(long id)
         {
             return _session.GetAsync<Workflow>(id);
         }
@@ -71,7 +71,7 @@ namespace OrchardCore.Workflows.Services
             return _session.Query<Workflow, WorkflowBlockingActivitiesIndex>(x => x.WorkflowId.IsIn(workflowIds)).ListAsync();
         }
 
-        public Task<IEnumerable<Workflow>> GetAsync(IEnumerable<int> ids)
+        public Task<IEnumerable<Workflow>> GetAsync(IEnumerable<long> ids)
         {
             return _session.GetAsync<Workflow>(ids.ToArray());
         }
@@ -145,7 +145,7 @@ namespace OrchardCore.Workflows.Services
             return _handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger);
         }
 
-        private IQuery<Workflow, WorkflowIndex> FilterByWorkflowTypeId(IQuery<Workflow, WorkflowIndex> query, string workflowTypeId)
+        private static IQuery<Workflow, WorkflowIndex> FilterByWorkflowTypeId(IQuery<Workflow, WorkflowIndex> query, string workflowTypeId)
         {
             if (workflowTypeId != null)
             {

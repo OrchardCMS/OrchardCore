@@ -13,7 +13,7 @@ namespace OrchardCore.Workflows.Http.Activities
         public static string EventName => nameof(HttpRequestEvent);
 
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public HttpRequestEvent(
             IStringLocalizer<HttpRequestEvent> localizer,
@@ -56,7 +56,7 @@ namespace OrchardCore.Workflows.Http.Activities
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var httpRequest = httpContext.Request;
-            var isMatch = String.Equals(HttpMethod, httpRequest.Method, StringComparison.OrdinalIgnoreCase);
+            var isMatch = string.Equals(HttpMethod, httpRequest.Method, StringComparison.OrdinalIgnoreCase);
 
             return isMatch;
         }

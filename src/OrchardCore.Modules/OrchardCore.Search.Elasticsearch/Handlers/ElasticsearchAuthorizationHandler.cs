@@ -47,7 +47,7 @@ public class ElasticsearchAuthorizationHandler : AuthorizationHandler<Permission
 
         var indexName = await GetIndexNameAsync(parameters);
 
-        if (!String.IsNullOrEmpty(indexName))
+        if (!string.IsNullOrEmpty(indexName))
         {
             _authorizationService ??= _serviceProvider?.GetService<IAuthorizationService>();
 
@@ -64,7 +64,7 @@ public class ElasticsearchAuthorizationHandler : AuthorizationHandler<Permission
 
     private async Task<string> GetIndexNameAsync(SearchPermissionParameters parameters)
     {
-        if (!String.IsNullOrWhiteSpace(parameters.IndexName))
+        if (!string.IsNullOrWhiteSpace(parameters.IndexName))
         {
             return parameters.IndexName.Trim();
         }

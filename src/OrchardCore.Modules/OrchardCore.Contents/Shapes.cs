@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Utilities;
 
 namespace OrchardCore.Contents
 {
@@ -25,16 +26,18 @@ namespace OrchardCore.Contents
                         // BasicShapeTemplateHarvester.Adjust will then adjust the template name
 
                         // Content__[DisplayType] e.g. Content-Summary
-                        displaying.Shape.Metadata.Alternates.Add("Content_" + EncodeAlternateElement(displaying.Shape.Metadata.DisplayType));
+                        displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType.EncodeAlternateElement());
+
+                        var encodedContentType = contentItem.ContentType.EncodeAlternateElement();
 
                         // Content__[ContentType] e.g. Content-BlogPost,
-                        displaying.Shape.Metadata.Alternates.Add("Content__" + EncodeAlternateElement(contentItem.ContentType));
+                        displaying.Shape.Metadata.Alternates.Add("Content__" + encodedContentType);
 
                         // Content__[Id] e.g. Content-42,
                         displaying.Shape.Metadata.Alternates.Add("Content__" + contentItem.Id);
 
                         // Content_[DisplayType]__[ContentType] e.g. Content-BlogPost.Summary
-                        displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType + "__" + EncodeAlternateElement(contentItem.ContentType));
+                        displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType + "__" + encodedContentType);
 
                         // Content_[DisplayType]__[Id] e.g. Content-42.Summary
                         displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType + "__" + contentItem.Id);
@@ -50,11 +53,11 @@ namespace OrchardCore.Contents
                     var displayType = content.GetProperty<string>("DisplayType");
                     var alternate = content.GetProperty<string>("Alternate");
 
-                    if (String.IsNullOrEmpty(handle))
+                    if (string.IsNullOrEmpty(handle))
                     {
                         // This code is provided for backwards compatibility and can be removed in a future version.
                         handle = content.GetProperty<string>("Alias");
-                        if (String.IsNullOrEmpty(handle))
+                        if (string.IsNullOrEmpty(handle))
                         {
                             return;
                         }
@@ -67,7 +70,7 @@ namespace OrchardCore.Contents
 
                     var contentItemId = await handleManager.GetContentItemIdAsync(handle);
 
-                    if (String.IsNullOrEmpty(contentItemId))
+                    if (string.IsNullOrEmpty(contentItemId))
                     {
                         return;
                     }
@@ -83,23 +86,13 @@ namespace OrchardCore.Contents
 
                     var displayShape = await displayManager.BuildDisplayAsync(contentItem, updateModelAccessor.ModelUpdater, displayType);
 
-                    if (!String.IsNullOrEmpty(alternate))
+                    if (!string.IsNullOrEmpty(alternate))
                     {
                         displayShape.Metadata.Alternates.Add(alternate);
                     }
 
                     await context.Shape.AddAsync(displayShape, "");
                 });
-        }
-
-        /// <summary>
-        /// Encodes dashed and dots so that they don't conflict in filenames
-        /// </summary>
-        /// <param name="alternateElement"></param>
-        /// <returns></returns>
-        private static string EncodeAlternateElement(string alternateElement)
-        {
-            return alternateElement.Replace("-", "__").Replace('.', '_');
         }
     }
 }

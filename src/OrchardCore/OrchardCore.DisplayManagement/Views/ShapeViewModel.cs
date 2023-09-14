@@ -16,7 +16,7 @@ namespace OrchardCore.DisplayManagement.Views
 
         public ShapeViewModel(string shapeType)
         {
-            if (String.IsNullOrEmpty(shapeType))
+            if (string.IsNullOrEmpty(shapeType))
             {
                 throw new ArgumentException($"The {nameof(shapeType)} cannot be empty");
             }
@@ -25,7 +25,7 @@ namespace OrchardCore.DisplayManagement.Views
         }
 
         private ShapeMetadata _metadata;
-        public ShapeMetadata Metadata => _metadata = _metadata ?? new ShapeMetadata();
+        public ShapeMetadata Metadata => _metadata ??= new ShapeMetadata();
 
         public string Position
         {
@@ -78,11 +78,7 @@ namespace OrchardCore.DisplayManagement.Views
                 return new ValueTask<IShape>(this);
             }
 
-            if (position == null)
-            {
-                position = "";
-            }
-
+            position ??= "";
             _sorted = false;
 
             if (item is IHtmlContent)

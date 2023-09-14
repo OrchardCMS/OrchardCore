@@ -14,7 +14,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
     {
         private readonly string _indexPrefix;
         private readonly IElasticClient _elasticClient;
-        private readonly ILogger<ElasticQueryService> _logger;
+        private readonly ILogger _logger;
 
         public ElasticQueryService(
             IElasticClient elasticClient,

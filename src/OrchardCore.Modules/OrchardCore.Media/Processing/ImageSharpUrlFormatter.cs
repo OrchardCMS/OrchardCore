@@ -37,10 +37,7 @@ namespace OrchardCore.Media.Processing
                 return path;
             }
 
-            if (queryStringParams == null)
-            {
-                queryStringParams = new Dictionary<string, string>();
-            }
+            queryStringParams ??= new Dictionary<string, string>();
 
             if (width.HasValue)
             {
@@ -74,7 +71,7 @@ namespace OrchardCore.Media.Processing
                 queryStringParams["rxy"] = anchor.X.ToString(CultureInfo.InvariantCulture) + ',' + anchor.Y.ToString(CultureInfo.InvariantCulture);
             }
 
-            if (!String.IsNullOrEmpty(bgcolor))
+            if (!string.IsNullOrEmpty(bgcolor))
             {
                 queryStringParams["bgcolor"] = bgcolor;
             }

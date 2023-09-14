@@ -15,7 +15,8 @@ namespace OrchardCore.Resources.Liquid
 {
     public class StyleBlock
     {
-        private static readonly char[] Separators = new[] { ',', ' ' };
+        private static readonly char[] _separators = new[] { ',', ' ' };
+
         public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             var services = ((LiquidTemplateContext)context).Services;
@@ -45,7 +46,7 @@ namespace OrchardCore.Resources.Liquid
                 }
             }
 
-            if (!String.IsNullOrEmpty(name))
+            if (!string.IsNullOrEmpty(name))
             {
                 // Resource required
 
@@ -68,7 +69,7 @@ namespace OrchardCore.Resources.Liquid
                     setting.AtLocation(ResourceLocation.Head);
                 }
 
-                if (!String.IsNullOrEmpty(condition))
+                if (!string.IsNullOrEmpty(condition))
                 {
                     setting.UseCondition(condition);
                 }
@@ -78,20 +79,20 @@ namespace OrchardCore.Resources.Liquid
                     setting.UseDebugMode(debug.Value);
                 }
 
-                if (!String.IsNullOrEmpty(culture))
+                if (!string.IsNullOrEmpty(culture))
                 {
                     setting.UseCulture(culture);
                 }
 
-                if (!String.IsNullOrEmpty(version))
+                if (!string.IsNullOrEmpty(version))
                 {
                     setting.UseVersion(version);
                 }
 
                 // This allows additions to the pre registered style dependencies.
-                if (!String.IsNullOrEmpty(dependsOn))
+                if (!string.IsNullOrEmpty(dependsOn))
                 {
-                    setting.SetDependencies(dependsOn.Split(Separators, StringSplitOptions.RemoveEmptyEntries));
+                    setting.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 var content = "";
@@ -109,7 +110,7 @@ namespace OrchardCore.Resources.Liquid
                     content = sw.ToString();
                 }
 
-                if (!String.IsNullOrWhiteSpace(content))
+                if (!string.IsNullOrWhiteSpace(content))
                 {
                     // Inline named style definition
                     resourceManager.InlineManifest.DefineStyle(name).SetInnerContent(content);

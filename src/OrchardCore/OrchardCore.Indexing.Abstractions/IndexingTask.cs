@@ -13,7 +13,7 @@ namespace OrchardCore.Indexing
         /// <summary>
         /// The unique identifier of the <see cref="IndexingTask"/>.
         /// </summary>
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// The id of the content item that is represented by the <see cref="IndexingTask"/> instance.

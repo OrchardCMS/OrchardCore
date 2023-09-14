@@ -6,17 +6,20 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Liquid;
 using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentFields.Settings
 {
     public class ContentPickerFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<ContentPickerField>
     {
-        private readonly IStringLocalizer S;
+        private readonly ILiquidTemplateManager _templateManager;
+        protected readonly IStringLocalizer S;
 
-        public ContentPickerFieldSettingsDriver(IStringLocalizer<ContentPickerFieldSettingsDriver> stringLocalizer)
+        public ContentPickerFieldSettingsDriver(ILiquidTemplateManager templateManager, IStringLocalizer<ContentPickerFieldSettingsDriver> localizer)
         {
-            S = stringLocalizer;
+            _templateManager = templateManager;
+            S = localizer;
         }
 
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
@@ -29,7 +32,8 @@ namespace OrchardCore.ContentFields.Settings
                 model.Multiple = settings.Multiple;
                 model.Source = GetSource(settings);
                 model.DisplayedContentTypes = settings.DisplayedContentTypes;
-                model.Stereotypes = String.Join(',', settings.DisplayedStereotypes ?? Array.Empty<string>());
+                model.TitlePattern = settings.TitlePattern;
+                model.Stereotypes = string.Join(',', settings.DisplayedStereotypes ?? Array.Empty<string>());
             }).Location("Content");
         }
 
@@ -43,7 +47,8 @@ namespace OrchardCore.ContentFields.Settings
                 {
                     Hint = model.Hint,
                     Required = model.Required,
-                    Multiple = model.Multiple
+                    Multiple = model.Multiple,
+                    TitlePattern = model.TitlePattern,
                 };
 
                 switch (model.Source)
@@ -59,15 +64,29 @@ namespace OrchardCore.ContentFields.Settings
                         break;
                 }
 
-                context.Builder.WithSettings(settings);
+                if (IsValidTitlePattern(context, model))
+                {
+                    context.Builder.WithSettings(settings);
+                }
             }
 
             return Edit(partFieldDefinition);
         }
 
+        private bool IsValidTitlePattern(UpdatePartFieldEditorContext context, ContentPickerFieldSettingsViewModel model)
+        {
+            if (!string.IsNullOrEmpty(model.TitlePattern) && !_templateManager.Validate(model.TitlePattern, out var titleErrors))
+            {
+                context.Updater.ModelState.AddModelError(nameof(model.TitlePattern), S["Title Pattern does not contain a valid Liquid expression. Details: {0}", string.Join(" ", titleErrors)]);
+                return false;
+            }
+
+            return true;
+        }
+
         private void SetStereoTypes(IUpdateModel updater, string stereotypes, ContentPickerFieldSettings settings)
         {
-            if (String.IsNullOrEmpty(stereotypes))
+            if (string.IsNullOrEmpty(stereotypes))
             {
                 updater.ModelState.AddModelError(Prefix, nameof(ContentPickerFieldSettingsViewModel.Stereotypes), S["Please provide a Stereotype."]);
 

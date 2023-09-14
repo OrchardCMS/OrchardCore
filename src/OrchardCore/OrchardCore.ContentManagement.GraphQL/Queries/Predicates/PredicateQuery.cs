@@ -86,7 +86,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
             var values = propertyPath.Split('.', 2);
 
             // if empty prefix, use default (empty alias)
-            var aliasPath = values.Length == 1 ? String.Empty : values[0];
+            var aliasPath = values.Length == 1 ? string.Empty : values[0];
 
             // get the actual index from the alias
             if (_aliases.TryGetValue(aliasPath, out alias))
@@ -130,7 +130,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
             var values = propertyPath.Split('.', 2);
 
             // if empty prefix, use default (empty alias)
-            var aliasPath = values.Length == 1 ? String.Empty : values[0];
+            var aliasPath = values.Length == 1 ? string.Empty : values[0];
 
             // get the actual index from the alias
             if (_aliases.TryGetValue(aliasPath, out alias))

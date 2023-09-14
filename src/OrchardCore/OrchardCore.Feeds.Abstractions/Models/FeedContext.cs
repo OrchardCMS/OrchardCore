@@ -1,4 +1,4 @@
-﻿using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.ModelBinding;
 
 namespace OrchardCore.Feeds.Models
 {

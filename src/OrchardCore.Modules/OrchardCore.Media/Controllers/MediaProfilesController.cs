@@ -29,9 +29,9 @@ namespace OrchardCore.Media.Controllers
         private readonly MediaOptions _mediaOptions;
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-        private readonly dynamic New;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
+        protected readonly dynamic New;
 
         public MediaProfilesController(
             IAuthorizationService authorizationService,
@@ -125,7 +125,7 @@ namespace OrchardCore.Media.Controllers
 
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrWhiteSpace(model.Name))
+                if (string.IsNullOrWhiteSpace(model.Name))
                 {
                     ModelState.AddModelError(nameof(MediaProfileViewModel.Name), S["The name is mandatory."]);
                 }
@@ -229,7 +229,7 @@ namespace OrchardCore.Media.Controllers
 
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrWhiteSpace(model.Name))
+                if (string.IsNullOrWhiteSpace(model.Name))
                 {
                     ModelState.AddModelError(nameof(MediaProfileViewModel.Name), S["The name is mandatory."]);
                 }
@@ -263,6 +263,9 @@ namespace OrchardCore.Media.Controllers
 
             // If we got this far, something failed, redisplay form
             BuildViewModel(model);
+
+            // If the name was changed or removed, prevent a 404 or a failure on the next post.
+            model.Name = sourceName;
 
             return View(model);
         }
@@ -314,7 +317,7 @@ namespace OrchardCore.Media.Controllers
                         await _notifier.SuccessAsync(H["Media profiles successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
 

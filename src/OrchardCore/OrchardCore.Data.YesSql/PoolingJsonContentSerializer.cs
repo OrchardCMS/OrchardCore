@@ -11,7 +11,7 @@ namespace OrchardCore.Data
     /// </summary>
     internal sealed class PoolingJsonContentSerializer : IContentSerializer
     {
-        private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
+        private static readonly JsonSerializerSettings _jsonSettings = new()
         {
             TypeNameHandling = TypeNameHandling.Auto,
             DateTimeZoneHandling = DateTimeZoneHandling.Utc,

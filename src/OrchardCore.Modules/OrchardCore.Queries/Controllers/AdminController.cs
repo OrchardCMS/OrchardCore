@@ -27,9 +27,9 @@ namespace OrchardCore.Queries.Controllers
         private readonly IEnumerable<IQuerySource> _querySources;
         private readonly IDisplayManager<Query> _displayManager;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-        private readonly dynamic New;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
+        protected readonly dynamic New;
 
         public AdminController(
             IDisplayManager<Query> displayManager,
@@ -69,7 +69,7 @@ namespace OrchardCore.Queries.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                queries = queries.Where(q => q.Name.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) >= 0);
+                queries = queries.Where(q => q.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase));
             }
 
             var results = queries
@@ -273,7 +273,7 @@ namespace OrchardCore.Queries.Controllers
                         await _notifier.SuccessAsync(H["Queries successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
 

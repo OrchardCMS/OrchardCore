@@ -33,16 +33,8 @@ namespace OrchardCore.Modules
             return _clock.ConvertToTimeZone(_clock.UtcNow, await GetLocalTimeZoneAsync());
         }
 
-        public async Task<ITimeZone> GetLocalTimeZoneAsync()
-        {
-            // Caching the result per request
-            if (_timeZone == null)
-            {
-                _timeZone = await LoadLocalTimeZoneAsync();
-            }
-
-            return _timeZone;
-        }
+        // Caching the result per request.
+        public async Task<ITimeZone> GetLocalTimeZoneAsync() => _timeZone ??= await LoadLocalTimeZoneAsync();
 
         public async Task<DateTimeOffset> ConvertToLocalAsync(DateTimeOffset dateTimeOffSet)
         {
@@ -89,7 +81,7 @@ namespace OrchardCore.Modules
             {
                 var value = await result.TimeZoneId();
 
-                if (!String.IsNullOrEmpty(value))
+                if (!string.IsNullOrEmpty(value))
                 {
                     return _clock.GetTimeZone(value);
                 }

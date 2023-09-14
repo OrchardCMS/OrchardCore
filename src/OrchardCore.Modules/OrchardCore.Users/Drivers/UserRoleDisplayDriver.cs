@@ -19,7 +19,7 @@ namespace OrchardCore.Users.Drivers
 {
     public class UserRoleDisplayDriver : DisplayDriver<User>
     {
-        private const string _administratorRole = "Administrator";
+        private const string AdministratorRole = "Administrator";
 
         private readonly UserManager<IUser> _userManager;
         private readonly IRoleService _roleService;
@@ -27,7 +27,7 @@ namespace OrchardCore.Users.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
 
         public UserRoleDisplayDriver(
             UserManager<IUser> userManager,
@@ -142,9 +142,9 @@ namespace OrchardCore.Users.Drivers
 
                     foreach (var role in rolesToRemove)
                     {
-                        if (String.Equals(role, _administratorRole, StringComparison.OrdinalIgnoreCase))
+                        if (string.Equals(role, AdministratorRole, StringComparison.OrdinalIgnoreCase))
                         {
-                            var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(_administratorRole))
+                            var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole))
                                 .Cast<User>()
                                 .Where(user => user.IsEnabled)
                                 .ToList();
@@ -152,7 +152,7 @@ namespace OrchardCore.Users.Drivers
                             // Make sure we always have at least one enabled administrator account.
                             if (enabledUsersOfAdminRole.Count == 1 && user.UserId == enabledUsersOfAdminRole.First().UserId)
                             {
-                                await _notifier.WarningAsync(H[$"Cannot remove {_administratorRole} role from the only enabled administrator."]);
+                                await _notifier.WarningAsync(H[$"Cannot remove {AdministratorRole} role from the only enabled administrator."]);
 
                                 continue;
                             }

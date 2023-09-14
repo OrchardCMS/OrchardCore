@@ -29,7 +29,7 @@ namespace OrchardCore.ContentFields.Controllers
 
         public async Task<IActionResult> SearchContentItems(string part, string field, string query)
         {
-            if (String.IsNullOrWhiteSpace(part) || String.IsNullOrWhiteSpace(field))
+            if (string.IsNullOrWhiteSpace(part) || string.IsNullOrWhiteSpace(field))
             {
                 return BadRequest("Part and field are required parameters");
             }
@@ -72,7 +72,7 @@ namespace OrchardCore.ContentFields.Controllers
                 Query = query,
                 DisplayAllContentTypes = fieldSettings.DisplayAllContentTypes,
                 ContentTypes = contentTypes,
-                PartFieldDefinition = partFieldDefinition
+                PartFieldDefinition = partFieldDefinition,
             });
 
             return new ObjectResult(results.Select(r => new VueMultiselectItemViewModel() { Id = r.ContentItemId, DisplayText = r.DisplayText, HasPublished = r.HasPublished }));

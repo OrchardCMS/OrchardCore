@@ -25,7 +25,7 @@ namespace OrchardCore.Recipes.Services
         private readonly IEnumerable<IRecipeEventHandler> _recipeEventHandlers;
         private readonly ILogger _logger;
 
-        private readonly Dictionary<string, List<IGlobalMethodProvider>> _methodProviders = new Dictionary<string, List<IGlobalMethodProvider>>();
+        private readonly Dictionary<string, List<IGlobalMethodProvider>> _methodProviders = new();
 
         public RecipeExecutor(
             IShellHost shellHost,
@@ -59,24 +59,24 @@ namespace OrchardCore.Recipes.Services
                     using var reader = new JsonTextReader(file);
 
                     // Go to Steps, then iterate.
-                    while (await reader.ReadAsync())
+                    while (await reader.ReadAsync(cancellationToken))
                     {
                         if (reader.Path == "variables")
                         {
-                            await reader.ReadAsync();
+                            await reader.ReadAsync(cancellationToken);
 
-                            var variables = await JObject.LoadAsync(reader);
+                            var variables = await JObject.LoadAsync(reader, cancellationToken);
 
                             methodProviders.Add(new VariablesMethodProvider(variables, methodProviders));
                         }
 
                         if (reader.Path == "steps" && reader.TokenType == JsonToken.StartArray)
                         {
-                            while (await reader.ReadAsync() && reader.Depth > 1)
+                            while (await reader.ReadAsync(cancellationToken) && reader.Depth > 1)
                             {
                                 if (reader.Depth == 2)
                                 {
-                                    var child = await JObject.LoadAsync(reader);
+                                    var child = await JObject.LoadAsync(reader, cancellationToken);
 
                                     var recipeStep = new RecipeExecutionContext
                                     {
@@ -125,6 +125,7 @@ namespace OrchardCore.Recipes.Services
                                         foreach (var descriptor in recipeStep.InnerRecipes)
                                         {
                                             var innerExecutionId = Guid.NewGuid().ToString();
+                                            descriptor.RequireNewScope = recipeDescriptor.RequireNewScope;
                                             await ExecuteAsync(innerExecutionId, descriptor, environment, cancellationToken);
                                         }
                                     }
@@ -161,7 +162,7 @@ namespace OrchardCore.Recipes.Services
                 var recipeStepHandlers = scope.ServiceProvider.GetServices<IRecipeStepHandler>();
                 var scriptingManager = scope.ServiceProvider.GetRequiredService<IScriptingManager>();
 
-                // Substitutes the script elements by their actual values
+                // Substitutes the script elements by their actual values.
                 EvaluateJsonTree(scriptingManager, recipeStep, recipeStep.Step);
 
                 if (_logger.IsEnabled(LogLevel.Information))
@@ -211,12 +212,13 @@ namespace OrchardCore.Recipes.Services
                     const char scriptSeparator = ':';
                     var value = node.Value<string>();
 
-                    // Evaluate the expression while the result is another expression
+                    // Evaluate the expression while the result is another expression.
                     while (value.StartsWith('[') && value.EndsWith(']'))
                     {
                         var scriptSeparatorIndex = value.IndexOf(scriptSeparator);
-                        // Only remove brackets if this is a valid script expression, e.g. '[js:xxx]', or '[file:xxx]'
-                        if (!(scriptSeparatorIndex > -1 && value[1..scriptSeparatorIndex].All(c => Char.IsLetter(c))))
+
+                        // Only remove brackets if this is a valid script expression, e.g. '[js:xxx]', or '[file:xxx]'.
+                        if (!(scriptSeparatorIndex > -1 && value[1..scriptSeparatorIndex].All(c => char.IsLetter(c))))
                         {
                             break;
                         }

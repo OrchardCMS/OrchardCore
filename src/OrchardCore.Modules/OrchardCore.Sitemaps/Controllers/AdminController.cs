@@ -33,9 +33,9 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly PagerOptions _pagerOptions;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly INotifier _notifier;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-        private readonly dynamic New;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
+        protected readonly dynamic New;
 
         public AdminController(
             ISitemapHelperService sitemapService,
@@ -184,7 +184,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrEmpty(model.Path))
+                if (string.IsNullOrEmpty(model.Path))
                 {
                     model.Path = _sitemapService.GetSitemapSlug(model.Name);
                 }
@@ -253,7 +253,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrEmpty(model.Path))
+                if (string.IsNullOrEmpty(model.Path))
                 {
                     model.Path = _sitemapService.GetSitemapSlug(model.Name);
                 }
@@ -349,7 +349,7 @@ namespace OrchardCore.Sitemaps.Controllers
                         await _notifier.SuccessAsync(H["Sitemaps successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
 

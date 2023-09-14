@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -14,7 +13,6 @@ using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.AuditTrail.Settings;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Settings;
@@ -32,6 +30,7 @@ namespace OrchardCore.AuditTrail.Services
         private readonly ILookupNormalizer _keyNormalizer;
         private readonly IAuditTrailIdGenerator _auditTrailIdGenerator;
         private readonly IEnumerable<IAuditTrailEventHandler> _auditTrailEventHandlers;
+        private readonly IClientIPAddressAccessor _clientIPAddressAccessor;
         private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
@@ -43,6 +42,7 @@ namespace OrchardCore.AuditTrail.Services
             IHttpContextAccessor httpContextAccessor,
             ILookupNormalizer keyNormalizer,
             IEnumerable<IAuditTrailEventHandler> auditTrailEventHandlers,
+            IClientIPAddressAccessor clientIPAddressAccessor,
             IAuditTrailIdGenerator auditTrailIdGenerator,
             ShellSettings shellSettings,
             ILogger<AuditTrailManager> logger)
@@ -54,6 +54,7 @@ namespace OrchardCore.AuditTrail.Services
             _httpContextAccessor = httpContextAccessor;
             _keyNormalizer = keyNormalizer;
             _auditTrailEventHandlers = auditTrailEventHandlers;
+            _clientIPAddressAccessor = clientIPAddressAccessor;
             _auditTrailIdGenerator = auditTrailIdGenerator;
             _shellSettings = shellSettings;
             _logger = logger;
@@ -61,7 +62,7 @@ namespace OrchardCore.AuditTrail.Services
 
         public async Task RecordEventAsync<TEvent>(AuditTrailContext<TEvent> context) where TEvent : class, new()
         {
-            if (_shellSettings.State == TenantState.Initializing && String.IsNullOrEmpty(context.UserName))
+            if (_shellSettings.IsInitializing() && string.IsNullOrEmpty(context.UserName))
             {
                 var feature = _httpContextAccessor.HttpContext.Features.Get<RecipeEnvironmentFeature>();
                 if (feature != null && feature.Properties.TryGetValue(SetupConstants.AdminUsername, out var adminUsername))
@@ -95,8 +96,8 @@ namespace OrchardCore.AuditTrail.Services
                 CorrelationId = createContext.CorrelationId,
                 UserId = createContext.UserId,
                 UserName = createContext.UserName ?? "",
-                NormalizedUserName = String.IsNullOrEmpty(createContext.UserName) ? "" : _keyNormalizer.NormalizeName(createContext.UserName),
-                ClientIpAddress = String.IsNullOrEmpty(createContext.ClientIpAddress)
+                NormalizedUserName = string.IsNullOrEmpty(createContext.UserName) ? "" : _keyNormalizer.NormalizeName(createContext.UserName),
+                ClientIpAddress = string.IsNullOrEmpty(createContext.ClientIpAddress)
                     ? await GetClientIpAddressAsync()
                     : createContext.ClientIpAddress,
                 CreatedUtc = createContext.CreatedUtc ?? _clock.UtcNow
@@ -164,16 +165,7 @@ namespace OrchardCore.AuditTrail.Services
                 return null;
             }
 
-            var address = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress;
-            if (address != null)
-            {
-                if (IPAddress.IsLoopback(address))
-                {
-                    address = IPAddress.Loopback;
-                }
-            }
-
-            return address?.ToString();
+            return (await _clientIPAddressAccessor.GetIPAddressAsync())?.ToString();
         }
 
         private async Task<AuditTrailSettings> GetAuditTrailSettingsAsync() =>

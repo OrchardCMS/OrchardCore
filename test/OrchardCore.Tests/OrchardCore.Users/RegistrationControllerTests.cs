@@ -52,8 +52,8 @@ namespace OrchardCore.Tests.OrchardCore.Users
             var controller = SetupRegistrationController();
 
             // Act
-            var result = await controller.Register(new RegisterViewModel { UserName = "SuperAdmin", Email = "admin@orchardcore.net" });
-            result = await controller.Register(new RegisterViewModel { UserName = "Admin", Email = "admin@orchardcore.net" });
+            _ = await controller.Register(new RegisterViewModel { UserName = "SuperAdmin", Email = "admin@orchardcore.net" });
+            var result = await controller.Register(new RegisterViewModel { UserName = "Admin", Email = "admin@orchardcore.net" });
 
             // Assert
             Assert.IsType<ViewResult>(result);
@@ -170,9 +170,10 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 Mock.Of<INotifier>(),
                 Mock.Of<ILogger<RegistrationController>>(),
                 Mock.Of<IHtmlLocalizer<RegistrationController>>(),
-                mockStringLocalizer.Object);
-
-            controller.Url = urlHelperMock.Object;
+                mockStringLocalizer.Object)
+            {
+                Url = urlHelperMock.Object
+            };
 
             var mockServiceProvider = new Mock<IServiceProvider>();
 

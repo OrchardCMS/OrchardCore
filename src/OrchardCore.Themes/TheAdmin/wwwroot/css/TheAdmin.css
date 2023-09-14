@@ -1,4 +1,5 @@
 @charset "UTF-8";
+/* modal's z-index should be heigher than the z-index for the top-navbar (i.e, $zindex-sticky + 100) and the side menu (i.e, $zindex-sticky + 50) */
 html[data-theme=default] {
   /*!
    * Bootstrap v5.1.3 (https://getbootstrap.com/)
@@ -1026,51 +1027,51 @@ html[data-theme=default] .gy-5 {
     margin-right: 91.66666667%;
   }
   html[data-theme=default] .g-sm-0,
-html[data-theme=default] .gx-sm-0 {
+  html[data-theme=default] .gx-sm-0 {
     --bs-gutter-x: 0;
   }
   html[data-theme=default] .g-sm-0,
-html[data-theme=default] .gy-sm-0 {
+  html[data-theme=default] .gy-sm-0 {
     --bs-gutter-y: 0;
   }
   html[data-theme=default] .g-sm-1,
-html[data-theme=default] .gx-sm-1 {
+  html[data-theme=default] .gx-sm-1 {
     --bs-gutter-x: 0.25rem;
   }
   html[data-theme=default] .g-sm-1,
-html[data-theme=default] .gy-sm-1 {
+  html[data-theme=default] .gy-sm-1 {
     --bs-gutter-y: 0.25rem;
   }
   html[data-theme=default] .g-sm-2,
-html[data-theme=default] .gx-sm-2 {
+  html[data-theme=default] .gx-sm-2 {
     --bs-gutter-x: 0.5rem;
   }
   html[data-theme=default] .g-sm-2,
-html[data-theme=default] .gy-sm-2 {
+  html[data-theme=default] .gy-sm-2 {
     --bs-gutter-y: 0.5rem;
   }
   html[data-theme=default] .g-sm-3,
-html[data-theme=default] .gx-sm-3 {
+  html[data-theme=default] .gx-sm-3 {
     --bs-gutter-x: 1rem;
   }
   html[data-theme=default] .g-sm-3,
-html[data-theme=default] .gy-sm-3 {
+  html[data-theme=default] .gy-sm-3 {
     --bs-gutter-y: 1rem;
   }
   html[data-theme=default] .g-sm-4,
-html[data-theme=default] .gx-sm-4 {
+  html[data-theme=default] .gx-sm-4 {
     --bs-gutter-x: 1.5rem;
   }
   html[data-theme=default] .g-sm-4,
-html[data-theme=default] .gy-sm-4 {
+  html[data-theme=default] .gy-sm-4 {
     --bs-gutter-y: 1.5rem;
   }
   html[data-theme=default] .g-sm-5,
-html[data-theme=default] .gx-sm-5 {
+  html[data-theme=default] .gx-sm-5 {
     --bs-gutter-x: 3rem;
   }
   html[data-theme=default] .g-sm-5,
-html[data-theme=default] .gy-sm-5 {
+  html[data-theme=default] .gy-sm-5 {
     --bs-gutter-y: 3rem;
   }
 }
@@ -1231,51 +1232,51 @@ html[data-theme=default] .gy-sm-5 {
     margin-right: 91.66666667%;
   }
   html[data-theme=default] .g-md-0,
-html[data-theme=default] .gx-md-0 {
+  html[data-theme=default] .gx-md-0 {
     --bs-gutter-x: 0;
   }
   html[data-theme=default] .g-md-0,
-html[data-theme=default] .gy-md-0 {
+  html[data-theme=default] .gy-md-0 {
     --bs-gutter-y: 0;
   }
   html[data-theme=default] .g-md-1,
-html[data-theme=default] .gx-md-1 {
+  html[data-theme=default] .gx-md-1 {
     --bs-gutter-x: 0.25rem;
   }
   html[data-theme=default] .g-md-1,
-html[data-theme=default] .gy-md-1 {
+  html[data-theme=default] .gy-md-1 {
     --bs-gutter-y: 0.25rem;
   }
   html[data-theme=default] .g-md-2,
-html[data-theme=default] .gx-md-2 {
+  html[data-theme=default] .gx-md-2 {
     --bs-gutter-x: 0.5rem;
   }
   html[data-theme=default] .g-md-2,
-html[data-theme=default] .gy-md-2 {
+  html[data-theme=default] .gy-md-2 {
     --bs-gutter-y: 0.5rem;
   }
   html[data-theme=default] .g-md-3,
-html[data-theme=default] .gx-md-3 {
+  html[data-theme=default] .gx-md-3 {
     --bs-gutter-x: 1rem;
   }
   html[data-theme=default] .g-md-3,
-html[data-theme=default] .gy-md-3 {
+  html[data-theme=default] .gy-md-3 {
     --bs-gutter-y: 1rem;
   }
   html[data-theme=default] .g-md-4,
-html[data-theme=default] .gx-md-4 {
+  html[data-theme=default] .gx-md-4 {
     --bs-gutter-x: 1.5rem;
   }
   html[data-theme=default] .g-md-4,
-html[data-theme=default] .gy-md-4 {
+  html[data-theme=default] .gy-md-4 {
     --bs-gutter-y: 1.5rem;
   }
   html[data-theme=default] .g-md-5,
-html[data-theme=default] .gx-md-5 {
+  html[data-theme=default] .gx-md-5 {
     --bs-gutter-x: 3rem;
   }
   html[data-theme=default] .g-md-5,
-html[data-theme=default] .gy-md-5 {
+  html[data-theme=default] .gy-md-5 {
     --bs-gutter-y: 3rem;
   }
 }
@@ -1436,51 +1437,51 @@ html[data-theme=default] .gy-md-5 {
     margin-right: 91.66666667%;
   }
   html[data-theme=default] .g-lg-0,
-html[data-theme=default] .gx-lg-0 {
+  html[data-theme=default] .gx-lg-0 {
     --bs-gutter-x: 0;
   }
   html[data-theme=default] .g-lg-0,
-html[data-theme=default] .gy-lg-0 {
+  html[data-theme=default] .gy-lg-0 {
     --bs-gutter-y: 0;
   }
   html[data-theme=default] .g-lg-1,
-html[data-theme=default] .gx-lg-1 {
+  html[data-theme=default] .gx-lg-1 {
     --bs-gutter-x: 0.25rem;
   }
   html[data-theme=default] .g-lg-1,
-html[data-theme=default] .gy-lg-1 {
+  html[data-theme=default] .gy-lg-1 {
     --bs-gutter-y: 0.25rem;
   }
   html[data-theme=default] .g-lg-2,
-html[data-theme=default] .gx-lg-2 {
+  html[data-theme=default] .gx-lg-2 {
     --bs-gutter-x: 0.5rem;
   }
   html[data-theme=default] .g-lg-2,
-html[data-theme=default] .gy-lg-2 {
+  html[data-theme=default] .gy-lg-2 {
     --bs-gutter-y: 0.5rem;
   }
   html[data-theme=default] .g-lg-3,
-html[data-theme=default] .gx-lg-3 {
+  html[data-theme=default] .gx-lg-3 {
     --bs-gutter-x: 1rem;
   }
   html[data-theme=default] .g-lg-3,
-html[data-theme=default] .gy-lg-3 {
+  html[data-theme=default] .gy-lg-3 {
     --bs-gutter-y: 1rem;
   }
   html[data-theme=default] .g-lg-4,
-html[data-theme=default] .gx-lg-4 {
+  html[data-theme=default] .gx-lg-4 {
     --bs-gutter-x: 1.5rem;
   }
   html[data-theme=default] .g-lg-4,
-html[data-theme=default] .gy-lg-4 {
+  html[data-theme=default] .gy-lg-4 {
     --bs-gutter-y: 1.5rem;
   }
   html[data-theme=default] .g-lg-5,
-html[data-theme=default] .gx-lg-5 {
+  html[data-theme=default] .gx-lg-5 {
     --bs-gutter-x: 3rem;
   }
   html[data-theme=default] .g-lg-5,
-html[data-theme=default] .gy-lg-5 {
+  html[data-theme=default] .gy-lg-5 {
     --bs-gutter-y: 3rem;
   }
 }
@@ -1641,51 +1642,51 @@ html[data-theme=default] .gy-lg-5 {
     margin-right: 91.66666667%;
   }
   html[data-theme=default] .g-xl-0,
-html[data-theme=default] .gx-xl-0 {
+  html[data-theme=default] .gx-xl-0 {
     --bs-gutter-x: 0;
   }
   html[data-theme=default] .g-xl-0,
-html[data-theme=default] .gy-xl-0 {
+  html[data-theme=default] .gy-xl-0 {
     --bs-gutter-y: 0;
   }
   html[data-theme=default] .g-xl-1,
-html[data-theme=default] .gx-xl-1 {
+  html[data-theme=default] .gx-xl-1 {
     --bs-gutter-x: 0.25rem;
   }
   html[data-theme=default] .g-xl-1,
-html[data-theme=default] .gy-xl-1 {
+  html[data-theme=default] .gy-xl-1 {
     --bs-gutter-y: 0.25rem;
   }
   html[data-theme=default] .g-xl-2,
-html[data-theme=default] .gx-xl-2 {
+  html[data-theme=default] .gx-xl-2 {
     --bs-gutter-x: 0.5rem;
   }
   html[data-theme=default] .g-xl-2,
-html[data-theme=default] .gy-xl-2 {
+  html[data-theme=default] .gy-xl-2 {
     --bs-gutter-y: 0.5rem;
   }
   html[data-theme=default] .g-xl-3,
-html[data-theme=default] .gx-xl-3 {
+  html[data-theme=default] .gx-xl-3 {
     --bs-gutter-x: 1rem;
   }
   html[data-theme=default] .g-xl-3,
-html[data-theme=default] .gy-xl-3 {
+  html[data-theme=default] .gy-xl-3 {
     --bs-gutter-y: 1rem;
   }
   html[data-theme=default] .g-xl-4,
-html[data-theme=default] .gx-xl-4 {
+  html[data-theme=default] .gx-xl-4 {
     --bs-gutter-x: 1.5rem;
   }
   html[data-theme=default] .g-xl-4,
-html[data-theme=default] .gy-xl-4 {
+  html[data-theme=default] .gy-xl-4 {
     --bs-gutter-y: 1.5rem;
   }
   html[data-theme=default] .g-xl-5,
-html[data-theme=default] .gx-xl-5 {
+  html[data-theme=default] .gx-xl-5 {
     --bs-gutter-x: 3rem;
   }
   html[data-theme=default] .g-xl-5,
-html[data-theme=default] .gy-xl-5 {
+  html[data-theme=default] .gy-xl-5 {
     --bs-gutter-y: 3rem;
   }
 }
@@ -1846,51 +1847,51 @@ html[data-theme=default] .gy-xl-5 {
     margin-right: 91.66666667%;
   }
   html[data-theme=default] .g-xxl-0,
-html[data-theme=default] .gx-xxl-0 {
+  html[data-theme=default] .gx-xxl-0 {
     --bs-gutter-x: 0;
   }
   html[data-theme=default] .g-xxl-0,
-html[data-theme=default] .gy-xxl-0 {
+  html[data-theme=default] .gy-xxl-0 {
     --bs-gutter-y: 0;
   }
   html[data-theme=default] .g-xxl-1,
-html[data-theme=default] .gx-xxl-1 {
+  html[data-theme=default] .gx-xxl-1 {
     --bs-gutter-x: 0.25rem;
   }
   html[data-theme=default] .g-xxl-1,
-html[data-theme=default] .gy-xxl-1 {
+  html[data-theme=default] .gy-xxl-1 {
     --bs-gutter-y: 0.25rem;
   }
   html[data-theme=default] .g-xxl-2,
-html[data-theme=default] .gx-xxl-2 {
+  html[data-theme=default] .gx-xxl-2 {
     --bs-gutter-x: 0.5rem;
   }
   html[data-theme=default] .g-xxl-2,
-html[data-theme=default] .gy-xxl-2 {
+  html[data-theme=default] .gy-xxl-2 {
     --bs-gutter-y: 0.5rem;
   }
   html[data-theme=default] .g-xxl-3,
-html[data-theme=default] .gx-xxl-3 {
+  html[data-theme=default] .gx-xxl-3 {
     --bs-gutter-x: 1rem;
   }
   html[data-theme=default] .g-xxl-3,
-html[data-theme=default] .gy-xxl-3 {
+  html[data-theme=default] .gy-xxl-3 {
     --bs-gutter-y: 1rem;
   }
   html[data-theme=default] .g-xxl-4,
-html[data-theme=default] .gx-xxl-4 {
+  html[data-theme=default] .gx-xxl-4 {
     --bs-gutter-x: 1.5rem;
   }
   html[data-theme=default] .g-xxl-4,
-html[data-theme=default] .gy-xxl-4 {
+  html[data-theme=default] .gy-xxl-4 {
     --bs-gutter-y: 1.5rem;
   }
   html[data-theme=default] .g-xxl-5,
-html[data-theme=default] .gx-xxl-5 {
+  html[data-theme=default] .gx-xxl-5 {
     --bs-gutter-x: 3rem;
   }
   html[data-theme=default] .g-xxl-5,
-html[data-theme=default] .gy-xxl-5 {
+  html[data-theme=default] .gy-xxl-5 {
     --bs-gutter-y: 3rem;
   }
 }
@@ -2534,7 +2535,7 @@ html[data-theme=default] .btn-check {
   clip: rect(0, 0, 0, 0);
   pointer-events: none;
 }
-html[data-theme=default] .btn-check[disabled] + .btn, html[data-theme=default] html[data-theme=darkmode] .btn-check[disabled] + .button, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-check[disabled] + .close, html[data-theme=default] .btn-check[disabled] + .button, html[data-theme=default] .bootstrap-select .popover-header .btn-check[disabled] + .close, html[data-theme=default] .btn-check:disabled + .btn, html[data-theme=default] html[data-theme=darkmode] .btn-check:disabled + .button, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-check:disabled + .close, html[data-theme=default] .btn-check:disabled + .button, html[data-theme=default] .bootstrap-select .popover-header .btn-check:disabled + .close {
+html[data-theme=default] .btn-check[disabled] + .btn, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-check[disabled] + .close, html[data-theme=default] .btn-check[disabled] + .button, html[data-theme=default] .bootstrap-select .popover-header .btn-check[disabled] + .close, html[data-theme=default] .btn-check:disabled + .btn, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-check:disabled + .close, html[data-theme=default] .btn-check:disabled + .button, html[data-theme=default] .bootstrap-select .popover-header .btn-check:disabled + .close {
   pointer-events: none;
   filter: none;
   opacity: 0.65;
@@ -2745,13 +2746,12 @@ html[data-theme=default] .input-group-lg > .form-control,
 html[data-theme=default] .input-group-lg > .form-select,
 html[data-theme=default] .input-group-lg > .input-group-text,
 html[data-theme=default] .input-group-lg > .btn,
-html[data-theme=default] html[data-theme=darkmode] .input-group-lg > .button,
 html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .input-group-lg > .close,
 html[data-theme=default] .input-group-lg > .button,
 html[data-theme=default] .bootstrap-select .popover-header .input-group-lg > .close {
   font-size: 1.25rem;
 }
-html[dir][data-theme=default] .input-group-lg > .form-control, html[dir][data-theme=default] .input-group-lg > .form-select, html[dir][data-theme=default] .input-group-lg > .input-group-text, html[dir][data-theme=default] .input-group-lg > .btn, html[dir][data-theme=default] html[data-theme=darkmode] .input-group-lg > .button, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .input-group-lg > .close, html[dir][data-theme=default] .input-group-lg > .button, html[dir][data-theme=default] .bootstrap-select .popover-header .input-group-lg > .close {
+html[dir][data-theme=default] .input-group-lg > .form-control, html[dir][data-theme=default] .input-group-lg > .form-select, html[dir][data-theme=default] .input-group-lg > .input-group-text, html[dir][data-theme=default] .input-group-lg > .btn, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .input-group-lg > .close, html[dir][data-theme=default] .input-group-lg > .button, html[dir][data-theme=default] .bootstrap-select .popover-header .input-group-lg > .close {
   padding: 0.5rem 1rem;
   border-radius: 0.3rem;
 }
@@ -2759,13 +2759,12 @@ html[data-theme=default] .input-group-sm > .form-control,
 html[data-theme=default] .input-group-sm > .form-select,
 html[data-theme=default] .input-group-sm > .input-group-text,
 html[data-theme=default] .input-group-sm > .btn,
-html[data-theme=default] html[data-theme=darkmode] .input-group-sm > .button,
 html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .input-group-sm > .close,
 html[data-theme=default] .input-group-sm > .button,
 html[data-theme=default] .bootstrap-select .popover-header .input-group-sm > .close {
   font-size: 0.875rem;
 }
-html[dir][data-theme=default] .input-group-sm > .form-control, html[dir][data-theme=default] .input-group-sm > .form-select, html[dir][data-theme=default] .input-group-sm > .input-group-text, html[dir][data-theme=default] .input-group-sm > .btn, html[dir][data-theme=default] html[data-theme=darkmode] .input-group-sm > .button, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .input-group-sm > .close, html[dir][data-theme=default] .input-group-sm > .button, html[dir][data-theme=default] .bootstrap-select .popover-header .input-group-sm > .close {
+html[dir][data-theme=default] .input-group-sm > .form-control, html[dir][data-theme=default] .input-group-sm > .form-select, html[dir][data-theme=default] .input-group-sm > .input-group-text, html[dir][data-theme=default] .input-group-sm > .btn, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .input-group-sm > .close, html[dir][data-theme=default] .input-group-sm > .button, html[dir][data-theme=default] .bootstrap-select .popover-header .input-group-sm > .close {
   padding: 0.25rem 0.5rem;
   border-radius: 0.2rem;
 }
@@ -2990,7 +2989,7 @@ html[data-theme=default] html[data-theme=default].input-validation-error ~ .inva
 [dir] .was-validated html[data-theme=default] .form-check-input:invalid:focus, html[dir][data-theme=default] .form-check-input.is-invalid:focus, html[dir][data-theme=default] .form-check-input.has-validation-error:focus, html[dir][data-theme=default] .form-check-input.input-validation-error:focus {
   box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
 }
-.was-validated html[data-theme=default] .form-check-input:invalid ~ .form-check-label, html[data-theme=default] .form-check-input.is-invalid ~ .form-check-label, html[data-theme=default] html[data-theme=darkmode] .form-check-input.has-validation-error ~ .form-check-label, html[data-theme=default] html[data-theme=darkmode] .form-check-input.input-validation-error ~ .form-check-label, html[data-theme=default] .form-check-input.has-validation-error ~ .form-check-label, html[data-theme=default] .form-check-input.input-validation-error ~ .form-check-label {
+.was-validated html[data-theme=default] .form-check-input:invalid ~ .form-check-label, html[data-theme=default] .form-check-input.is-invalid ~ .form-check-label, html[data-theme=default] .form-check-input.has-validation-error ~ .form-check-label, html[data-theme=default] .form-check-input.input-validation-error ~ .form-check-label {
   color: #dc3545;
 }
 html[dir=ltr][data-theme=default] .form-check-inline .form-check-input ~ .invalid-feedback {
@@ -3629,17 +3628,17 @@ html[data-theme=default] .btn-link:hover {
 html[data-theme=default] .btn-link:disabled, html[data-theme=default] .btn-link.disabled {
   color: #6c757d;
 }
-html[data-theme=default] .btn-lg, html[data-theme=default] html[data-theme=darkmode] .btn-group-lg > .btn, html[data-theme=default] html[data-theme=darkmode] .btn-group-lg > .button, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-lg > .close, html[data-theme=default] .btn-group-lg > .btn, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-lg > .close, html[data-theme=default] .btn-group-lg > .button, html[data-theme=default] .bootstrap-select .popover-header .btn-group-lg > .close {
+html[data-theme=default] .btn-lg, html[data-theme=default] .btn-group-lg > .btn, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-lg > .close, html[data-theme=default] .btn-group-lg > .button, html[data-theme=default] .bootstrap-select .popover-header .btn-group-lg > .close {
   font-size: 1.25rem;
 }
-html[dir][data-theme=default] .btn-lg, html[dir][data-theme=default] html[data-theme=darkmode] .btn-group-lg > .btn, html[dir][data-theme=default] html[data-theme=darkmode] .btn-group-lg > .button, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-lg > .close, html[dir][data-theme=default] .btn-group-lg > .btn, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-lg > .close, html[dir][data-theme=default] .btn-group-lg > .button, html[dir][data-theme=default] .bootstrap-select .popover-header .btn-group-lg > .close {
+html[dir][data-theme=default] .btn-lg, html[dir][data-theme=default] .btn-group-lg > .btn, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-lg > .close, html[dir][data-theme=default] .btn-group-lg > .button, html[dir][data-theme=default] .bootstrap-select .popover-header .btn-group-lg > .close {
   padding: 0.5rem 1rem;
   border-radius: 0.3rem;
 }
-html[data-theme=default] .btn-sm, html[data-theme=default] html[data-theme=darkmode] .btn-group-sm > .btn, html[data-theme=default] html[data-theme=darkmode] .btn-group-sm > .button, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-sm > .close, html[data-theme=default] .btn-group-sm > .btn, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-sm > .close, html[data-theme=default] .btn-group-sm > .button, html[data-theme=default] .bootstrap-select .popover-header .btn-group-sm > .close {
+html[data-theme=default] .btn-sm, html[data-theme=default] .btn-group-sm > .btn, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-sm > .close, html[data-theme=default] .btn-group-sm > .button, html[data-theme=default] .bootstrap-select .popover-header .btn-group-sm > .close {
   font-size: 0.875rem;
 }
-html[dir][data-theme=default] .btn-sm, html[dir][data-theme=default] html[data-theme=darkmode] .btn-group-sm > .btn, html[dir][data-theme=default] html[data-theme=darkmode] .btn-group-sm > .button, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-sm > .close, html[dir][data-theme=default] .btn-group-sm > .btn, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-sm > .close, html[dir][data-theme=default] .btn-group-sm > .button, html[dir][data-theme=default] .bootstrap-select .popover-header .btn-group-sm > .close {
+html[dir][data-theme=default] .btn-sm, html[dir][data-theme=default] .btn-group-sm > .btn, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-sm > .close, html[dir][data-theme=default] .btn-group-sm > .button, html[dir][data-theme=default] .bootstrap-select .popover-header .btn-group-sm > .close {
   padding: 0.25rem 0.5rem;
   border-radius: 0.2rem;
 }
@@ -4124,9 +4123,8 @@ html[data-theme=default] .btn-group-vertical {
   display: inline-flex;
   vertical-align: middle;
 }
-html[data-theme=default] .btn-group > .btn, html[data-theme=default] html[data-theme=darkmode] .btn-group > .button, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close, html[data-theme=default] .btn-group > .button, html[data-theme=default] .bootstrap-select .popover-header .btn-group > .close,
+html[data-theme=default] .btn-group > .btn, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close, html[data-theme=default] .btn-group > .button, html[data-theme=default] .bootstrap-select .popover-header .btn-group > .close,
 html[data-theme=default] .btn-group-vertical > .btn,
-html[data-theme=default] html[data-theme=darkmode] .btn-group-vertical > .button,
 html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close,
 html[data-theme=default] .btn-group-vertical > .button,
 html[data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close {
@@ -4139,22 +4137,18 @@ html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=defa
 html[data-theme=default] .btn-group > .btn-check:focus + .button,
 html[data-theme=default] .bootstrap-select .popover-header .btn-group > .btn-check:focus + .close,
 html[data-theme=default] .btn-group > .btn:hover,
-html[data-theme=default] html[data-theme=darkmode] .btn-group > .button:hover,
 html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:hover,
 html[data-theme=default] .btn-group > .button:hover,
 html[data-theme=default] .bootstrap-select .popover-header .btn-group > .close:hover,
 html[data-theme=default] .btn-group > .btn:focus,
-html[data-theme=default] html[data-theme=darkmode] .btn-group > .button:focus,
 html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:focus,
 html[data-theme=default] .btn-group > .button:focus,
 html[data-theme=default] .bootstrap-select .popover-header .btn-group > .close:focus,
 html[data-theme=default] .btn-group > .btn:active,
-html[data-theme=default] html[data-theme=darkmode] .btn-group > .button:active,
 html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:active,
 html[data-theme=default] .btn-group > .button:active,
 html[data-theme=default] .bootstrap-select .popover-header .btn-group > .close:active,
 html[data-theme=default] .btn-group > .btn.active,
-html[data-theme=default] html[data-theme=darkmode] .btn-group > .active.button,
 html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .active.close,
 html[data-theme=default] .btn-group > .active.button,
 html[data-theme=default] .bootstrap-select .popover-header .btn-group > .active.close,
@@ -4167,22 +4161,18 @@ html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=defa
 html[data-theme=default] .btn-group-vertical > .btn-check:focus + .button,
 html[data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .btn-check:focus + .close,
 html[data-theme=default] .btn-group-vertical > .btn:hover,
-html[data-theme=default] html[data-theme=darkmode] .btn-group-vertical > .button:hover,
 html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close:hover,
 html[data-theme=default] .btn-group-vertical > .button:hover,
 html[data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close:hover,
 html[data-theme=default] .btn-group-vertical > .btn:focus,
-html[data-theme=default] html[data-theme=darkmode] .btn-group-vertical > .button:focus,
 html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close:focus,
 html[data-theme=default] .btn-group-vertical > .button:focus,
 html[data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close:focus,
 html[data-theme=default] .btn-group-vertical > .btn:active,
-html[data-theme=default] html[data-theme=darkmode] .btn-group-vertical > .button:active,
 html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close:active,
 html[data-theme=default] .btn-group-vertical > .button:active,
 html[data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close:active,
 html[data-theme=default] .btn-group-vertical > .btn.active,
-html[data-theme=default] html[data-theme=darkmode] .btn-group-vertical > .active.button,
 html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .active.close,
 html[data-theme=default] .btn-group-vertical > .active.button,
 html[data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .active.close {
@@ -4196,25 +4186,25 @@ html[data-theme=default] .btn-toolbar {
 html[data-theme=default] .btn-toolbar .input-group {
   width: auto;
 }
-html[dir=ltr][data-theme=default] .btn-group > .btn:not(:first-child), html[dir=ltr][data-theme=default] html[data-theme=darkmode] .btn-group > .button:not(:first-child), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:not(:first-child), html[dir=ltr][data-theme=default] .btn-group > .button:not(:first-child), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group > .close:not(:first-child), html[dir=ltr][data-theme=default] .btn-group > .btn-group:not(:first-child) {
+html[dir=ltr][data-theme=default] .btn-group > .btn:not(:first-child), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:not(:first-child), html[dir=ltr][data-theme=default] .btn-group > .button:not(:first-child), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group > .close:not(:first-child), html[dir=ltr][data-theme=default] .btn-group > .btn-group:not(:first-child) {
   margin-left: -1px;
 }
-html[dir=rtl][data-theme=default] .btn-group > .btn:not(:first-child), html[dir=rtl][data-theme=default] html[data-theme=darkmode] .btn-group > .button:not(:first-child), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:not(:first-child), html[dir=rtl][data-theme=default] .btn-group > .button:not(:first-child), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group > .close:not(:first-child), html[dir=rtl][data-theme=default] .btn-group > .btn-group:not(:first-child) {
+html[dir=rtl][data-theme=default] .btn-group > .btn:not(:first-child), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:not(:first-child), html[dir=rtl][data-theme=default] .btn-group > .button:not(:first-child), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group > .close:not(:first-child), html[dir=rtl][data-theme=default] .btn-group > .btn-group:not(:first-child) {
   margin-right: -1px;
 }
-html[dir=ltr][data-theme=default] .btn-group > .btn:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] html[data-theme=darkmode] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .btn-group > .btn-group:not(:last-child) > .btn, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .btn-group:not(:last-child) > .close, html[dir=ltr][data-theme=default] .btn-group > .btn-group:not(:last-child) > .button, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group > .btn-group:not(:last-child) > .close {
+html[dir=ltr][data-theme=default] .btn-group > .btn:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .btn-group > .btn-group:not(:last-child) > .btn, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .btn-group:not(:last-child) > .close, html[dir=ltr][data-theme=default] .btn-group > .btn-group:not(:last-child) > .button, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group > .btn-group:not(:last-child) > .close {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
-html[dir=rtl][data-theme=default] .btn-group > .btn:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] html[data-theme=darkmode] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .btn-group > .btn-group:not(:last-child) > .btn, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .btn-group:not(:last-child) > .close, html[dir=rtl][data-theme=default] .btn-group > .btn-group:not(:last-child) > .button, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group > .btn-group:not(:last-child) > .close {
+html[dir=rtl][data-theme=default] .btn-group > .btn:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .btn-group > .btn-group:not(:last-child) > .btn, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .btn-group:not(:last-child) > .close, html[dir=rtl][data-theme=default] .btn-group > .btn-group:not(:last-child) > .button, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group > .btn-group:not(:last-child) > .close {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
-html[dir=ltr][data-theme=default] .btn-group > .btn:nth-child(n+3), html[dir=ltr][data-theme=default] html[data-theme=darkmode] .btn-group > .button:nth-child(n+3), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:nth-child(n+3), html[dir=ltr][data-theme=default] .btn-group > .button:nth-child(n+3), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group > .close:nth-child(n+3), html[dir=ltr][data-theme=default] .btn-group > :not(.btn-check) + .btn, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > :not(.btn-check) + .close, html[dir=ltr][data-theme=default] .btn-group > :not(.btn-check) + .button, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group > :not(.btn-check) + .close, html[dir=ltr][data-theme=default] .btn-group > .btn-group:not(:first-child) > .btn, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .btn-group:not(:first-child) > .close, html[dir=ltr][data-theme=default] .btn-group > .btn-group:not(:first-child) > .button, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group > .btn-group:not(:first-child) > .close {
+html[dir=ltr][data-theme=default] .btn-group > .btn:nth-child(n+3), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:nth-child(n+3), html[dir=ltr][data-theme=default] .btn-group > .button:nth-child(n+3), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group > .close:nth-child(n+3), html[dir=ltr][data-theme=default] .btn-group > :not(.btn-check) + .btn, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > :not(.btn-check) + .close, html[dir=ltr][data-theme=default] .btn-group > :not(.btn-check) + .button, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group > :not(.btn-check) + .close, html[dir=ltr][data-theme=default] .btn-group > .btn-group:not(:first-child) > .btn, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .btn-group:not(:first-child) > .close, html[dir=ltr][data-theme=default] .btn-group > .btn-group:not(:first-child) > .button, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group > .btn-group:not(:first-child) > .close {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
-html[dir=rtl][data-theme=default] .btn-group > .btn:nth-child(n+3), html[dir=rtl][data-theme=default] html[data-theme=darkmode] .btn-group > .button:nth-child(n+3), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:nth-child(n+3), html[dir=rtl][data-theme=default] .btn-group > .button:nth-child(n+3), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group > .close:nth-child(n+3), html[dir=rtl][data-theme=default] .btn-group > :not(.btn-check) + .btn, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > :not(.btn-check) + .close, html[dir=rtl][data-theme=default] .btn-group > :not(.btn-check) + .button, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group > :not(.btn-check) + .close, html[dir=rtl][data-theme=default] .btn-group > .btn-group:not(:first-child) > .btn, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .btn-group:not(:first-child) > .close, html[dir=rtl][data-theme=default] .btn-group > .btn-group:not(:first-child) > .button, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group > .btn-group:not(:first-child) > .close {
+html[dir=rtl][data-theme=default] .btn-group > .btn:nth-child(n+3), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .close:nth-child(n+3), html[dir=rtl][data-theme=default] .btn-group > .button:nth-child(n+3), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group > .close:nth-child(n+3), html[dir=rtl][data-theme=default] .btn-group > :not(.btn-check) + .btn, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > :not(.btn-check) + .close, html[dir=rtl][data-theme=default] .btn-group > :not(.btn-check) + .button, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group > :not(.btn-check) + .close, html[dir=rtl][data-theme=default] .btn-group > .btn-group:not(:first-child) > .btn, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group > .btn-group:not(:first-child) > .close, html[dir=rtl][data-theme=default] .btn-group > .btn-group:not(:first-child) > .button, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group > .btn-group:not(:first-child) > .close {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
@@ -4259,18 +4249,18 @@ html[data-theme=default] .btn-group-vertical {
   align-items: flex-start;
   justify-content: center;
 }
-html[data-theme=default] .btn-group-vertical > .btn, html[data-theme=default] html[data-theme=darkmode] .btn-group-vertical > .button, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close, html[data-theme=default] .btn-group-vertical > .button, html[data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close,
+html[data-theme=default] .btn-group-vertical > .btn, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close, html[data-theme=default] .btn-group-vertical > .button, html[data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close,
 html[data-theme=default] .btn-group-vertical > .btn-group {
   width: 100%;
 }
-html[dir][data-theme=default] .btn-group-vertical > .btn:not(:first-child), html[dir][data-theme=default] html[data-theme=darkmode] .btn-group-vertical > .button:not(:first-child), html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close:not(:first-child), html[dir][data-theme=default] .btn-group-vertical > .button:not(:first-child), html[dir][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close:not(:first-child), html[dir][data-theme=default] .btn-group-vertical > .btn-group:not(:first-child) {
+html[dir][data-theme=default] .btn-group-vertical > .btn:not(:first-child), html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close:not(:first-child), html[dir][data-theme=default] .btn-group-vertical > .button:not(:first-child), html[dir][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close:not(:first-child), html[dir][data-theme=default] .btn-group-vertical > .btn-group:not(:first-child) {
   margin-top: -1px;
 }
-html[dir=ltr][data-theme=default] .btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] html[data-theme=darkmode] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .btn-group-vertical > .btn-group:not(:last-child) > .btn, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .btn-group:not(:last-child) > .close, html[dir=ltr][data-theme=default] .btn-group-vertical > .btn-group:not(:last-child) > .button, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .btn-group:not(:last-child) > .close {
+html[dir=ltr][data-theme=default] .btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .btn-group-vertical > .btn-group:not(:last-child) > .btn, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .btn-group:not(:last-child) > .close, html[dir=ltr][data-theme=default] .btn-group-vertical > .btn-group:not(:last-child) > .button, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .btn-group:not(:last-child) > .close {
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
-html[dir=rtl][data-theme=default] .btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] html[data-theme=darkmode] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .btn-group-vertical > .btn-group:not(:last-child) > .btn, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .btn-group:not(:last-child) > .close, html[dir=rtl][data-theme=default] .btn-group-vertical > .btn-group:not(:last-child) > .button, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .btn-group:not(:last-child) > .close {
+html[dir=rtl][data-theme=default] .btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .close:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .close:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .btn-group-vertical > .btn-group:not(:last-child) > .btn, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-vertical > .btn-group:not(:last-child) > .close, html[dir=rtl][data-theme=default] .btn-group-vertical > .btn-group:not(:last-child) > .button, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header .btn-group-vertical > .btn-group:not(:last-child) > .close {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }
@@ -4416,34 +4406,7 @@ html[dir][data-theme=default] .navbar, html[dir][data-theme=default] .ta-navbar-
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
 }
-html[data-theme=default] html[data-theme=darkmode] .navbar > .container, html[data-theme=default] html[data-theme=darkmode] .ta-navbar-top > .container, html[data-theme=darkmode] html[data-theme=default] .navbar .ta-navbar-top > .container, html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .ta-navbar-top > .container, html[data-theme=default] html[data-theme=darkmode] .navbar .ta-navbar-top > .container, html[data-theme=default] html[data-theme=darkmode] .ta-navbar-top .ta-navbar-top > .container,
-html[data-theme=default] html[data-theme=darkmode] .navbar > .container-fluid,
-html[data-theme=default] html[data-theme=darkmode] .ta-navbar-top > .container-fluid,
-html[data-theme=darkmode] html[data-theme=default] .navbar .ta-navbar-top > .container-fluid,
-html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .ta-navbar-top > .container-fluid,
-html[data-theme=default] html[data-theme=darkmode] .navbar .ta-navbar-top > .container-fluid,
-html[data-theme=default] html[data-theme=darkmode] .ta-navbar-top .ta-navbar-top > .container-fluid,
-html[data-theme=default] html[data-theme=darkmode] .navbar > .container-sm,
-html[data-theme=default] html[data-theme=darkmode] .ta-navbar-top > .container-sm,
-html[data-theme=default] html[data-theme=darkmode] .navbar > .container-md,
-html[data-theme=default] html[data-theme=darkmode] .ta-navbar-top > .container-md,
-html[data-theme=default] html[data-theme=darkmode] .navbar > .container-lg,
-html[data-theme=default] html[data-theme=darkmode] .ta-navbar-top > .container-lg,
-html[data-theme=default] html[data-theme=darkmode] .navbar > .container-xl,
-html[data-theme=default] html[data-theme=darkmode] .ta-navbar-top > .container-xl,
-html[data-theme=default] html[data-theme=darkmode] .navbar > .container-xxl,
-html[data-theme=default] html[data-theme=darkmode] .ta-navbar-top > .container-xxl, html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .navbar > .container,
-html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .navbar > .container-fluid,
-html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .navbar > .container-sm,
-html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .ta-navbar-top > .container-sm,
-html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .navbar > .container-md,
-html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .ta-navbar-top > .container-md,
-html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .navbar > .container-lg,
-html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .ta-navbar-top > .container-lg,
-html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .navbar > .container-xl,
-html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .ta-navbar-top > .container-xl,
-html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .navbar > .container-xxl,
-html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .ta-navbar-top > .container-xxl, html[data-theme=default] .navbar > .container, html[data-theme=default] .ta-navbar-top > .container,
+html[data-theme=default] .navbar > .container, html[data-theme=default] .ta-navbar-top > .container,
 html[data-theme=default] .navbar > .container-fluid,
 html[data-theme=default] .ta-navbar-top > .container-fluid,
 html[data-theme=default] .navbar > .container-sm,
@@ -4604,7 +4567,7 @@ html[data-theme=default] .navbar-nav-scroll {
     border-right: 0;
   }
   html[data-theme=default] .navbar-expand-sm .offcanvas-top,
-html[data-theme=default] .navbar-expand-sm .offcanvas-bottom {
+  html[data-theme=default] .navbar-expand-sm .offcanvas-bottom {
     height: auto;
   }
   html[dir][data-theme=default] .navbar-expand-sm .offcanvas-top, html[dir][data-theme=default] .navbar-expand-sm .offcanvas-bottom {
@@ -4673,8 +4636,8 @@ html[data-theme=default] .navbar-expand-sm .offcanvas-bottom {
     border-right: 0;
   }
   html[data-theme=default] .navbar-expand-md .offcanvas-top, html[data-theme=default] .ta-navbar-top .offcanvas-top,
-html[data-theme=default] .navbar-expand-md .offcanvas-bottom,
-html[data-theme=default] .ta-navbar-top .offcanvas-bottom {
+  html[data-theme=default] .navbar-expand-md .offcanvas-bottom,
+  html[data-theme=default] .ta-navbar-top .offcanvas-bottom {
     height: auto;
   }
   html[dir][data-theme=default] .navbar-expand-md .offcanvas-top, html[dir][data-theme=default] .ta-navbar-top .offcanvas-top, html[dir][data-theme=default] .navbar-expand-md .offcanvas-bottom, html[dir][data-theme=default] .ta-navbar-top .offcanvas-bottom {
@@ -4743,7 +4706,7 @@ html[data-theme=default] .ta-navbar-top .offcanvas-bottom {
     border-right: 0;
   }
   html[data-theme=default] .navbar-expand-lg .offcanvas-top,
-html[data-theme=default] .navbar-expand-lg .offcanvas-bottom {
+  html[data-theme=default] .navbar-expand-lg .offcanvas-bottom {
     height: auto;
   }
   html[dir][data-theme=default] .navbar-expand-lg .offcanvas-top, html[dir][data-theme=default] .navbar-expand-lg .offcanvas-bottom {
@@ -4812,7 +4775,7 @@ html[data-theme=default] .navbar-expand-lg .offcanvas-bottom {
     border-right: 0;
   }
   html[data-theme=default] .navbar-expand-xl .offcanvas-top,
-html[data-theme=default] .navbar-expand-xl .offcanvas-bottom {
+  html[data-theme=default] .navbar-expand-xl .offcanvas-bottom {
     height: auto;
   }
   html[dir][data-theme=default] .navbar-expand-xl .offcanvas-top, html[dir][data-theme=default] .navbar-expand-xl .offcanvas-bottom {
@@ -4881,7 +4844,7 @@ html[data-theme=default] .navbar-expand-xl .offcanvas-bottom {
     border-right: 0;
   }
   html[data-theme=default] .navbar-expand-xxl .offcanvas-top,
-html[data-theme=default] .navbar-expand-xxl .offcanvas-bottom {
+  html[data-theme=default] .navbar-expand-xxl .offcanvas-bottom {
     height: auto;
   }
   html[dir][data-theme=default] .navbar-expand-xxl .offcanvas-top, html[dir][data-theme=default] .navbar-expand-xxl .offcanvas-bottom {
@@ -6346,7 +6309,7 @@ html[dir][data-theme=default] .toast-body {
 html[data-theme=default] .modal {
   position: fixed;
   top: 0;
-  z-index: 1055;
+  z-index: 1150;
   display: none;
   width: 100%;
   height: 100%;
@@ -6517,7 +6480,7 @@ html[dir][data-theme=default] .modal-footer > * {
 }
 @media (min-width: 992px) {
   html[data-theme=default] .modal-lg,
-html[data-theme=default] .modal-xl {
+  html[data-theme=default] .modal-xl {
     max-width: 800px;
   }
 }
@@ -6859,67 +6822,67 @@ html[dir][data-theme=default] .popover .popover-arrow::before, html[dir][data-th
   border-color: transparent;
   border-style: solid;
 }
-html[data-theme=default] .bs-popover-top > .popover-arrow, html[data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow, html[data-theme=default] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow {
+html[data-theme=default] .bs-popover-top > .popover-arrow, html[data-theme=default] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow {
   bottom: calc(-0.5rem - 1px);
 }
-html[data-theme=default] .bs-popover-top > .popover-arrow::before, html[data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::before, html[data-theme=default] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::before {
+html[data-theme=default] .bs-popover-top > .popover-arrow::before, html[data-theme=default] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::before {
   bottom: 0;
 }
-html[dir][data-theme=default] .bs-popover-top > .popover-arrow::before, html[dir][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::before, html[dir][data-theme=default] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::before {
+html[dir][data-theme=default] .bs-popover-top > .popover-arrow::before, html[dir][data-theme=default] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::before {
   border-width: 0.5rem 0.5rem 0;
   border-top-color: rgba(0, 0, 0, 0.25);
 }
-html[data-theme=default] .bs-popover-top > .popover-arrow::after, html[data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::after, html[data-theme=default] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::after {
+html[data-theme=default] .bs-popover-top > .popover-arrow::after, html[data-theme=default] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::after {
   bottom: 1px;
 }
-html[dir][data-theme=default] .bs-popover-top > .popover-arrow::after, html[dir][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::after, html[dir][data-theme=default] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::after {
+html[dir][data-theme=default] .bs-popover-top > .popover-arrow::after, html[dir][data-theme=default] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::after {
   border-width: 0.5rem 0.5rem 0;
   border-top-color: #fff;
 }
-html[data-theme=default] .bs-popover-end > .popover-arrow, html[data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow, html[data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow {
+html[data-theme=default] .bs-popover-end > .popover-arrow, html[data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow {
   width: 0.5rem;
   height: 1rem;
 }
-html[dir=ltr][data-theme=default] .bs-popover-end > .popover-arrow, html[dir=ltr][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow, html[dir=ltr][data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow {
+html[dir=ltr][data-theme=default] .bs-popover-end > .popover-arrow, html[dir=ltr][data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow {
   left: calc(-0.5rem - 1px);
 }
-html[dir=rtl][data-theme=default] .bs-popover-end > .popover-arrow, html[dir=rtl][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow, html[dir=rtl][data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow {
+html[dir=rtl][data-theme=default] .bs-popover-end > .popover-arrow, html[dir=rtl][data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow {
   right: calc(-0.5rem - 1px);
 }
-html[dir=ltr][data-theme=default] .bs-popover-end > .popover-arrow::before, html[dir=ltr][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::before, html[dir=ltr][data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::before {
+html[dir=ltr][data-theme=default] .bs-popover-end > .popover-arrow::before, html[dir=ltr][data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::before {
   left: 0;
   border-width: 0.5rem 0.5rem 0.5rem 0;
   border-right-color: rgba(0, 0, 0, 0.25);
 }
-html[dir=rtl][data-theme=default] .bs-popover-end > .popover-arrow::before, html[dir=rtl][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::before, html[dir=rtl][data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::before {
+html[dir=rtl][data-theme=default] .bs-popover-end > .popover-arrow::before, html[dir=rtl][data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::before {
   right: 0;
   border-width: 0.5rem 0 0.5rem 0.5rem;
   border-left-color: rgba(0, 0, 0, 0.25);
 }
-html[dir=ltr][data-theme=default] .bs-popover-end > .popover-arrow::after, html[dir=ltr][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::after, html[dir=ltr][data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::after {
+html[dir=ltr][data-theme=default] .bs-popover-end > .popover-arrow::after, html[dir=ltr][data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::after {
   left: 1px;
   border-width: 0.5rem 0.5rem 0.5rem 0;
   border-right-color: #fff;
 }
-html[dir=rtl][data-theme=default] .bs-popover-end > .popover-arrow::after, html[dir=rtl][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::after, html[dir=rtl][data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::after {
+html[dir=rtl][data-theme=default] .bs-popover-end > .popover-arrow::after, html[dir=rtl][data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::after {
   right: 1px;
   border-width: 0.5rem 0 0.5rem 0.5rem;
   border-left-color: #fff;
 }
-html[data-theme=default] .bs-popover-bottom > .popover-arrow, html[data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow, html[data-theme=default] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow {
+html[data-theme=default] .bs-popover-bottom > .popover-arrow, html[data-theme=default] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow {
   top: calc(-0.5rem - 1px);
 }
-html[data-theme=default] .bs-popover-bottom > .popover-arrow::before, html[data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::before, html[data-theme=default] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::before {
+html[data-theme=default] .bs-popover-bottom > .popover-arrow::before, html[data-theme=default] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::before {
   top: 0;
 }
-html[dir][data-theme=default] .bs-popover-bottom > .popover-arrow::before, html[dir][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::before, html[dir][data-theme=default] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::before {
+html[dir][data-theme=default] .bs-popover-bottom > .popover-arrow::before, html[dir][data-theme=default] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::before {
   border-width: 0 0.5rem 0.5rem 0.5rem;
   border-bottom-color: rgba(0, 0, 0, 0.25);
 }
-html[data-theme=default] .bs-popover-bottom > .popover-arrow::after, html[data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::after, html[data-theme=default] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::after {
+html[data-theme=default] .bs-popover-bottom > .popover-arrow::after, html[data-theme=default] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::after {
   top: 1px;
 }
-html[dir][data-theme=default] .bs-popover-bottom > .popover-arrow::after, html[dir][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::after, html[dir][data-theme=default] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::after {
+html[dir][data-theme=default] .bs-popover-bottom > .popover-arrow::after, html[dir][data-theme=default] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::after {
   border-width: 0 0.5rem 0.5rem 0.5rem;
   border-bottom-color: #fff;
 }
@@ -6941,32 +6904,32 @@ html[dir=rtl][data-theme=default] .bs-popover-bottom .popover-header::before, ht
   right: 50%;
   margin-right: -0.5rem;
 }
-html[data-theme=default] .bs-popover-start > .popover-arrow, html[data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow, html[data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow {
+html[data-theme=default] .bs-popover-start > .popover-arrow, html[data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow {
   width: 0.5rem;
   height: 1rem;
 }
-html[dir=ltr][data-theme=default] .bs-popover-start > .popover-arrow, html[dir=ltr][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow, html[dir=ltr][data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow {
+html[dir=ltr][data-theme=default] .bs-popover-start > .popover-arrow, html[dir=ltr][data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow {
   right: calc(-0.5rem - 1px);
 }
-html[dir=rtl][data-theme=default] .bs-popover-start > .popover-arrow, html[dir=rtl][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow, html[dir=rtl][data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow {
+html[dir=rtl][data-theme=default] .bs-popover-start > .popover-arrow, html[dir=rtl][data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow {
   left: calc(-0.5rem - 1px);
 }
-html[dir=ltr][data-theme=default] .bs-popover-start > .popover-arrow::before, html[dir=ltr][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::before, html[dir=ltr][data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::before {
+html[dir=ltr][data-theme=default] .bs-popover-start > .popover-arrow::before, html[dir=ltr][data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::before {
   right: 0;
   border-width: 0.5rem 0 0.5rem 0.5rem;
   border-left-color: rgba(0, 0, 0, 0.25);
 }
-html[dir=rtl][data-theme=default] .bs-popover-start > .popover-arrow::before, html[dir=rtl][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::before, html[dir=rtl][data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::before {
+html[dir=rtl][data-theme=default] .bs-popover-start > .popover-arrow::before, html[dir=rtl][data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::before {
   left: 0;
   border-width: 0.5rem 0.5rem 0.5rem 0;
   border-right-color: rgba(0, 0, 0, 0.25);
 }
-html[dir=ltr][data-theme=default] .bs-popover-start > .popover-arrow::after, html[dir=ltr][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::after, html[dir=ltr][data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::after {
+html[dir=ltr][data-theme=default] .bs-popover-start > .popover-arrow::after, html[dir=ltr][data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::after {
   right: 1px;
   border-width: 0.5rem 0 0.5rem 0.5rem;
   border-left-color: #fff;
 }
-html[dir=rtl][data-theme=default] .bs-popover-start > .popover-arrow::after, html[dir=rtl][data-theme=default] html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::after, html[dir=rtl][data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::after {
+html[dir=rtl][data-theme=default] .bs-popover-start > .popover-arrow::after, html[dir=rtl][data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::after {
   left: 1px;
   border-width: 0.5rem 0.5rem 0.5rem 0;
   border-right-color: #fff;
@@ -7073,7 +7036,7 @@ html[data-theme=default] .carousel-fade .active.carousel-item-end {
 }
 @media (prefers-reduced-motion: reduce) {
   html[data-theme=default] .carousel-fade .active.carousel-item-start,
-html[data-theme=default] .carousel-fade .active.carousel-item-end {
+  html[data-theme=default] .carousel-fade .active.carousel-item-end {
     transition: none;
   }
 }
@@ -7099,7 +7062,7 @@ html[dir][data-theme=default] .carousel-control-prev, html[dir][data-theme=defau
 }
 @media (prefers-reduced-motion: reduce) {
   html[data-theme=default] .carousel-control-prev,
-html[data-theme=default] .carousel-control-next {
+  html[data-theme=default] .carousel-control-next {
     transition: none;
   }
 }
@@ -7605,41 +7568,41 @@ html[dir=rtl][data-theme=default] .fixed-bottom {
 html[data-theme=default] .sticky-top {
   position: sticky;
   top: 0;
-  z-index: 1020;
+  z-index: 1000;
 }
 @media (min-width: 576px) {
   html[data-theme=default] .sticky-sm-top {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
 }
 @media (min-width: 768px) {
   html[data-theme=default] .sticky-md-top {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
 }
 @media (min-width: 992px) {
   html[data-theme=default] .sticky-lg-top {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
 }
 @media (min-width: 1200px) {
   html[data-theme=default] .sticky-xl-top {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
 }
 @media (min-width: 1400px) {
   html[data-theme=default] .sticky-xxl-top {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
 }
 html[data-theme=default] .hstack {
@@ -12175,8 +12138,7 @@ html[data-theme=default] select.selectpicker {
   display: none !important;
 }
 html[data-theme=default] .bootstrap-select {
-  width: 220px \0 ;
-  /*IE9 and below*/
+  width: 220px \0 ; /*IE9 and below*/
   vertical-align: middle;
 }
 html[data-theme=default] .bootstrap-select > .dropdown-toggle {
@@ -12199,7 +12161,7 @@ html[dir][data-theme=default] .bootstrap-select > .dropdown-toggle:after {
 html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder:hover, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder:focus, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder:active {
   color: #999;
 }
-html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary, html[data-theme=default] html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.button, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.button, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary:hover, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary:focus, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary:active, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary:hover, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary:focus, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary:active, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success:hover, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success:focus, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success:active, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger:hover, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger:focus, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger:active, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info:hover, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info:focus, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info:active, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark:hover, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark:focus, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark:active {
+html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.button, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary:hover, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary:focus, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary:active, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary:hover, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary:focus, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary:active, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success:hover, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success:focus, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success:active, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger:hover, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger:focus, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger:active, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info:hover, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info:focus, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info:active, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark:hover, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark:focus, html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark:active {
   color: rgba(255, 255, 255, 0.5);
 }
 html[data-theme=default] .bootstrap-select > select {
@@ -12234,7 +12196,7 @@ html[dir=rtl][data-theme=default] .bootstrap-select > select.mobile-device {
   right: 0;
 }
 [dir] .has-error html[data-theme=default] .bootstrap-select .dropdown-toggle, [dir] .error html[data-theme=default] .bootstrap-select .dropdown-toggle, html[dir][data-theme=default] .bootstrap-select.is-invalid .dropdown-toggle, html[dir][data-theme=default] .bootstrap-select.has-validation-error .dropdown-toggle, html[dir][data-theme=default] .bootstrap-select.input-validation-error .dropdown-toggle, [dir] .was-validated html[data-theme=default] .bootstrap-select select:invalid + .dropdown-toggle {
-  border-color: #b94a48;
+  border-color: rgb(185, 74, 72);
 }
 html[dir][data-theme=default] .bootstrap-select.is-valid .dropdown-toggle, [dir] .was-validated html[data-theme=default] .bootstrap-select select:valid + .dropdown-toggle {
   border-color: #28a745;
@@ -12529,8 +12491,8 @@ html[data-theme=default] .bootstrap-select .dropdown-menu .notify {
 html[dir][data-theme=default] .bootstrap-select .dropdown-menu .notify {
   margin: 0 2%;
   padding: 3px 5px;
-  background: whitesmoke;
-  border: 1px solid #e3e3e3;
+  background: rgb(245, 245, 245);
+  border: 1px solid rgb(227, 227, 227);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
 }
 html[dir=ltr][data-theme=default] .bootstrap-select .dropdown-menu .notify.fadeOut {
@@ -27652,7 +27614,7 @@ html[data-theme=default] #ui-datepicker-div {
 }
 html[data-theme=default] div.editor-widget.find-widget .button.codicon {
   display: flex;
-  color: #616161;
+  color: rgb(97, 97, 97);
 }
 html[dir][data-theme=default] div.editor-widget.find-widget .button.codicon {
   background-color: transparent;
@@ -27730,18 +27692,14 @@ html[data-theme=default] body {
   --bs-body-bg: #fff;
 }
 html[data-theme=default] .ta-navbar-top {
-  z-index: 1030;
+  z-index: calc(1000 + 100);
+  height: 52px;
 }
 html[dir][data-theme=default] .ta-navbar-top {
   border-bottom: 1px solid #dedede;
-  padding: 0.3rem 1rem;
   box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
-}
-html[dir=ltr][data-theme=default] .ta-navbar-top {
-  padding-left: 0;
-}
-html[dir=rtl][data-theme=default] .ta-navbar-top {
-  padding-right: 0;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 html[data-theme=default] .ta-navbar-top h1, html[data-theme=default] .ta-navbar-top .h1 {
   font-size: 24px;
@@ -27757,9 +27715,6 @@ html[data-theme=default] .ta-navbar-top h1, html[data-theme=default] .ta-navbar-
     text-overflow: ellipsis;
     height: 32px;
   }
-}
-html[data-theme=default] .ta-navbar-top .nav-link {
-  font-size: 14px;
 }
 html[dir][data-theme=default] .ta-navbar-top .breadcrumb {
   background-color: transparent;
@@ -27790,46 +27745,35 @@ html[data-theme=default] .ta-navbar-top .btn.nav-link, html[data-theme=darkmode]
   }
 }
 html[data-theme=default] .ta-navbar-brand {
-  overflow: hidden;
-  height: 42px;
-  width: 259px;
   white-space: nowrap;
-  font-size: 14px;
   transition: width 0.2s ease-in-out;
 }
 html[dir][data-theme=default] .ta-navbar-brand {
-  padding-top: 10px;
+  padding: 0 5px;
 }
-html[dir=ltr][data-theme=default] .ta-navbar-brand {
-  margin-left: 5px;
-}
-html[dir=rtl][data-theme=default] .ta-navbar-brand {
-  margin-right: 5px;
+html[data-theme=default] .ta-navbar-brand span {
+  font-size: 14px;
 }
 html[dir=ltr][data-theme=default] .ta-navbar-brand span:first-child {
-  margin-left: 5px;
+  padding-left: 5px;
 }
 html[dir=rtl][data-theme=default] .ta-navbar-brand span:first-child {
-  margin-right: 5px;
+  padding-right: 5px;
 }
 html[data-theme=default] .ta-navbar-brand span:last-child {
   font-weight: bold;
   color: #fff;
 }
 html[data-theme=default] .ta-navbar-brand img {
-  width: 25px;
+  height: 32px;
 }
 html[dir=ltr][data-theme=default] .ta-navbar-brand img {
-  margin-left: 5px;
-  margin-right: 11px;
+  padding-right: 11px;
+  padding-left: 5px;
 }
 html[dir=rtl][data-theme=default] .ta-navbar-brand img {
-  margin-right: 5px;
-  margin-left: 11px;
-}
-html[data-theme=default] .left-sidebar-compact .ta-navbar-brand {
-  width: 47px;
-  height: 42px;
+  padding-left: 11px;
+  padding-right: 5px;
 }
 html[data-theme=default] .left-sidebar-compact .ta-navbar-brand span {
   display: none;
@@ -27840,15 +27784,21 @@ html[dir=ltr][data-theme=default] .left-sidebar-compact .ta-navbar-top h1, html[
 html[dir=rtl][data-theme=default] .left-sidebar-compact .ta-navbar-top h1, html[dir=rtl][data-theme=default] .left-sidebar-compact .ta-navbar-top .h1 {
   right: 63px;
 }
-html[dir=ltr][data-theme=default] .left-sidebar-compact .ta-navbar-top .nav-item {
-  margin-left: 10px;
-}
-html[dir=rtl][data-theme=default] .left-sidebar-compact .ta-navbar-top .nav-item {
-  margin-right: 10px;
-}
 html[data-theme=default] .action-bar {
   top: 3.3rem;
-  z-index: 1050;
+  z-index: calc(1000 + 50);
+}
+html[dir][data-theme=default] .user-top-navbar {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+html[dir=ltr][data-theme=default] .user-top-navbar .nav-item .nav-link {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+html[dir=rtl][data-theme=default] .user-top-navbar .nav-item .nav-link {
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
 }
 html[data-theme=default] .ta-navbar-top {
   color: #343a40;
@@ -28945,8 +28895,8 @@ html[data-theme=default] .leftbar-compactor:focus {
   outline: none;
 }
 html[data-theme=default] .leftbar-compactor:hover {
-  color: #0078d4;
-  color: var(#0078d4);
+  color: rgb(0, 120, 212);
+  color: var(rgb(0, 120, 212));
 }
 html[dir][data-theme=default] .leftbar-compactor:hover {
   text-shadow: 0 0 4px rgba(0, 120, 212, 0.5);
@@ -29255,16 +29205,16 @@ html[data-theme=darkmode] :root {
   --bs-cyan: #3498db;
   --bs-white: #fff;
   --bs-gray: #888;
-  --bs-gray-dark: #181a1b;
+  --bs-gray-dark: rgb(24, 26, 27);
   --bs-gray-100: #f8f9fa;
   --bs-gray-200: #ebebeb;
   --bs-gray-300: #dee2e6;
   --bs-gray-400: #ced4da;
-  --bs-gray-500: #2a2d2f;
+  --bs-gray-500: rgb(42, 45, 47);
   --bs-gray-600: #888;
   --bs-gray-700: rgba(140, 130, 115, 0.13);
-  --bs-gray-800: #181a1b;
-  --bs-gray-900: #181a1b;
+  --bs-gray-800: rgb(24, 26, 27);
+  --bs-gray-900: rgb(24, 26, 27);
   --bs-primary: #007bff;
   --bs-secondary: #6c757d;
   --bs-success: #28a745;
@@ -29272,7 +29222,7 @@ html[data-theme=darkmode] :root {
   --bs-warning: #f39c12;
   --bs-danger: #dc3545;
   --bs-light: #dee2e6;
-  --bs-dark: #181a1b;
+  --bs-dark: rgb(24, 26, 27);
   --bs-primary-rgb: 0, 123, 255;
   --bs-secondary-rgb: 108, 117, 125;
   --bs-success-rgb: 40, 167, 69;
@@ -29293,7 +29243,7 @@ html[data-theme=darkmode] :root {
   --bs-body-font-weight: 400;
   --bs-body-line-height: 1.5;
   --bs-body-color: #fff;
-  --bs-body-bg: #181a1b;
+  --bs-body-bg: rgb(24, 26, 27);
 }
 html[data-theme=darkmode] *,
 html[data-theme=darkmode] *::before,
@@ -29497,7 +29447,7 @@ html[data-theme=darkmode] kbd {
 }
 html[dir][data-theme=darkmode] kbd {
   padding: 0.2rem 0.4rem;
-  background-color: #181a1b;
+  background-color: rgb(24, 26, 27);
   border-radius: 0.2rem;
 }
 html[data-theme=darkmode] kbd kbd {
@@ -29793,7 +29743,7 @@ html[data-theme=darkmode] .img-thumbnail {
 }
 html[dir][data-theme=darkmode] .img-thumbnail {
   padding: 0.25rem;
-  background-color: #181a1b;
+  background-color: rgb(24, 26, 27);
   border: 1px solid #dee2e6;
   border-radius: 0.25rem;
 }
@@ -30243,51 +30193,51 @@ html[data-theme=darkmode] .gy-5 {
     margin-right: 91.66666667%;
   }
   html[data-theme=darkmode] .g-sm-0,
-html[data-theme=darkmode] .gx-sm-0 {
+  html[data-theme=darkmode] .gx-sm-0 {
     --bs-gutter-x: 0;
   }
   html[data-theme=darkmode] .g-sm-0,
-html[data-theme=darkmode] .gy-sm-0 {
+  html[data-theme=darkmode] .gy-sm-0 {
     --bs-gutter-y: 0;
   }
   html[data-theme=darkmode] .g-sm-1,
-html[data-theme=darkmode] .gx-sm-1 {
+  html[data-theme=darkmode] .gx-sm-1 {
     --bs-gutter-x: 0.25rem;
   }
   html[data-theme=darkmode] .g-sm-1,
-html[data-theme=darkmode] .gy-sm-1 {
+  html[data-theme=darkmode] .gy-sm-1 {
     --bs-gutter-y: 0.25rem;
   }
   html[data-theme=darkmode] .g-sm-2,
-html[data-theme=darkmode] .gx-sm-2 {
+  html[data-theme=darkmode] .gx-sm-2 {
     --bs-gutter-x: 0.5rem;
   }
   html[data-theme=darkmode] .g-sm-2,
-html[data-theme=darkmode] .gy-sm-2 {
+  html[data-theme=darkmode] .gy-sm-2 {
     --bs-gutter-y: 0.5rem;
   }
   html[data-theme=darkmode] .g-sm-3,
-html[data-theme=darkmode] .gx-sm-3 {
+  html[data-theme=darkmode] .gx-sm-3 {
     --bs-gutter-x: 1rem;
   }
   html[data-theme=darkmode] .g-sm-3,
-html[data-theme=darkmode] .gy-sm-3 {
+  html[data-theme=darkmode] .gy-sm-3 {
     --bs-gutter-y: 1rem;
   }
   html[data-theme=darkmode] .g-sm-4,
-html[data-theme=darkmode] .gx-sm-4 {
+  html[data-theme=darkmode] .gx-sm-4 {
     --bs-gutter-x: 1.5rem;
   }
   html[data-theme=darkmode] .g-sm-4,
-html[data-theme=darkmode] .gy-sm-4 {
+  html[data-theme=darkmode] .gy-sm-4 {
     --bs-gutter-y: 1.5rem;
   }
   html[data-theme=darkmode] .g-sm-5,
-html[data-theme=darkmode] .gx-sm-5 {
+  html[data-theme=darkmode] .gx-sm-5 {
     --bs-gutter-x: 3rem;
   }
   html[data-theme=darkmode] .g-sm-5,
-html[data-theme=darkmode] .gy-sm-5 {
+  html[data-theme=darkmode] .gy-sm-5 {
     --bs-gutter-y: 3rem;
   }
 }
@@ -30448,51 +30398,51 @@ html[data-theme=darkmode] .gy-sm-5 {
     margin-right: 91.66666667%;
   }
   html[data-theme=darkmode] .g-md-0,
-html[data-theme=darkmode] .gx-md-0 {
+  html[data-theme=darkmode] .gx-md-0 {
     --bs-gutter-x: 0;
   }
   html[data-theme=darkmode] .g-md-0,
-html[data-theme=darkmode] .gy-md-0 {
+  html[data-theme=darkmode] .gy-md-0 {
     --bs-gutter-y: 0;
   }
   html[data-theme=darkmode] .g-md-1,
-html[data-theme=darkmode] .gx-md-1 {
+  html[data-theme=darkmode] .gx-md-1 {
     --bs-gutter-x: 0.25rem;
   }
   html[data-theme=darkmode] .g-md-1,
-html[data-theme=darkmode] .gy-md-1 {
+  html[data-theme=darkmode] .gy-md-1 {
     --bs-gutter-y: 0.25rem;
   }
   html[data-theme=darkmode] .g-md-2,
-html[data-theme=darkmode] .gx-md-2 {
+  html[data-theme=darkmode] .gx-md-2 {
     --bs-gutter-x: 0.5rem;
   }
   html[data-theme=darkmode] .g-md-2,
-html[data-theme=darkmode] .gy-md-2 {
+  html[data-theme=darkmode] .gy-md-2 {
     --bs-gutter-y: 0.5rem;
   }
   html[data-theme=darkmode] .g-md-3,
-html[data-theme=darkmode] .gx-md-3 {
+  html[data-theme=darkmode] .gx-md-3 {
     --bs-gutter-x: 1rem;
   }
   html[data-theme=darkmode] .g-md-3,
-html[data-theme=darkmode] .gy-md-3 {
+  html[data-theme=darkmode] .gy-md-3 {
     --bs-gutter-y: 1rem;
   }
   html[data-theme=darkmode] .g-md-4,
-html[data-theme=darkmode] .gx-md-4 {
+  html[data-theme=darkmode] .gx-md-4 {
     --bs-gutter-x: 1.5rem;
   }
   html[data-theme=darkmode] .g-md-4,
-html[data-theme=darkmode] .gy-md-4 {
+  html[data-theme=darkmode] .gy-md-4 {
     --bs-gutter-y: 1.5rem;
   }
   html[data-theme=darkmode] .g-md-5,
-html[data-theme=darkmode] .gx-md-5 {
+  html[data-theme=darkmode] .gx-md-5 {
     --bs-gutter-x: 3rem;
   }
   html[data-theme=darkmode] .g-md-5,
-html[data-theme=darkmode] .gy-md-5 {
+  html[data-theme=darkmode] .gy-md-5 {
     --bs-gutter-y: 3rem;
   }
 }
@@ -30653,51 +30603,51 @@ html[data-theme=darkmode] .gy-md-5 {
     margin-right: 91.66666667%;
   }
   html[data-theme=darkmode] .g-lg-0,
-html[data-theme=darkmode] .gx-lg-0 {
+  html[data-theme=darkmode] .gx-lg-0 {
     --bs-gutter-x: 0;
   }
   html[data-theme=darkmode] .g-lg-0,
-html[data-theme=darkmode] .gy-lg-0 {
+  html[data-theme=darkmode] .gy-lg-0 {
     --bs-gutter-y: 0;
   }
   html[data-theme=darkmode] .g-lg-1,
-html[data-theme=darkmode] .gx-lg-1 {
+  html[data-theme=darkmode] .gx-lg-1 {
     --bs-gutter-x: 0.25rem;
   }
   html[data-theme=darkmode] .g-lg-1,
-html[data-theme=darkmode] .gy-lg-1 {
+  html[data-theme=darkmode] .gy-lg-1 {
     --bs-gutter-y: 0.25rem;
   }
   html[data-theme=darkmode] .g-lg-2,
-html[data-theme=darkmode] .gx-lg-2 {
+  html[data-theme=darkmode] .gx-lg-2 {
     --bs-gutter-x: 0.5rem;
   }
   html[data-theme=darkmode] .g-lg-2,
-html[data-theme=darkmode] .gy-lg-2 {
+  html[data-theme=darkmode] .gy-lg-2 {
     --bs-gutter-y: 0.5rem;
   }
   html[data-theme=darkmode] .g-lg-3,
-html[data-theme=darkmode] .gx-lg-3 {
+  html[data-theme=darkmode] .gx-lg-3 {
     --bs-gutter-x: 1rem;
   }
   html[data-theme=darkmode] .g-lg-3,
-html[data-theme=darkmode] .gy-lg-3 {
+  html[data-theme=darkmode] .gy-lg-3 {
     --bs-gutter-y: 1rem;
   }
   html[data-theme=darkmode] .g-lg-4,
-html[data-theme=darkmode] .gx-lg-4 {
+  html[data-theme=darkmode] .gx-lg-4 {
     --bs-gutter-x: 1.5rem;
   }
   html[data-theme=darkmode] .g-lg-4,
-html[data-theme=darkmode] .gy-lg-4 {
+  html[data-theme=darkmode] .gy-lg-4 {
     --bs-gutter-y: 1.5rem;
   }
   html[data-theme=darkmode] .g-lg-5,
-html[data-theme=darkmode] .gx-lg-5 {
+  html[data-theme=darkmode] .gx-lg-5 {
     --bs-gutter-x: 3rem;
   }
   html[data-theme=darkmode] .g-lg-5,
-html[data-theme=darkmode] .gy-lg-5 {
+  html[data-theme=darkmode] .gy-lg-5 {
     --bs-gutter-y: 3rem;
   }
 }
@@ -30858,51 +30808,51 @@ html[data-theme=darkmode] .gy-lg-5 {
     margin-right: 91.66666667%;
   }
   html[data-theme=darkmode] .g-xl-0,
-html[data-theme=darkmode] .gx-xl-0 {
+  html[data-theme=darkmode] .gx-xl-0 {
     --bs-gutter-x: 0;
   }
   html[data-theme=darkmode] .g-xl-0,
-html[data-theme=darkmode] .gy-xl-0 {
+  html[data-theme=darkmode] .gy-xl-0 {
     --bs-gutter-y: 0;
   }
   html[data-theme=darkmode] .g-xl-1,
-html[data-theme=darkmode] .gx-xl-1 {
+  html[data-theme=darkmode] .gx-xl-1 {
     --bs-gutter-x: 0.25rem;
   }
   html[data-theme=darkmode] .g-xl-1,
-html[data-theme=darkmode] .gy-xl-1 {
+  html[data-theme=darkmode] .gy-xl-1 {
     --bs-gutter-y: 0.25rem;
   }
   html[data-theme=darkmode] .g-xl-2,
-html[data-theme=darkmode] .gx-xl-2 {
+  html[data-theme=darkmode] .gx-xl-2 {
     --bs-gutter-x: 0.5rem;
   }
   html[data-theme=darkmode] .g-xl-2,
-html[data-theme=darkmode] .gy-xl-2 {
+  html[data-theme=darkmode] .gy-xl-2 {
     --bs-gutter-y: 0.5rem;
   }
   html[data-theme=darkmode] .g-xl-3,
-html[data-theme=darkmode] .gx-xl-3 {
+  html[data-theme=darkmode] .gx-xl-3 {
     --bs-gutter-x: 1rem;
   }
   html[data-theme=darkmode] .g-xl-3,
-html[data-theme=darkmode] .gy-xl-3 {
+  html[data-theme=darkmode] .gy-xl-3 {
     --bs-gutter-y: 1rem;
   }
   html[data-theme=darkmode] .g-xl-4,
-html[data-theme=darkmode] .gx-xl-4 {
+  html[data-theme=darkmode] .gx-xl-4 {
     --bs-gutter-x: 1.5rem;
   }
   html[data-theme=darkmode] .g-xl-4,
-html[data-theme=darkmode] .gy-xl-4 {
+  html[data-theme=darkmode] .gy-xl-4 {
     --bs-gutter-y: 1.5rem;
   }
   html[data-theme=darkmode] .g-xl-5,
-html[data-theme=darkmode] .gx-xl-5 {
+  html[data-theme=darkmode] .gx-xl-5 {
     --bs-gutter-x: 3rem;
   }
   html[data-theme=darkmode] .g-xl-5,
-html[data-theme=darkmode] .gy-xl-5 {
+  html[data-theme=darkmode] .gy-xl-5 {
     --bs-gutter-y: 3rem;
   }
 }
@@ -31063,56 +31013,56 @@ html[data-theme=darkmode] .gy-xl-5 {
     margin-right: 91.66666667%;
   }
   html[data-theme=darkmode] .g-xxl-0,
-html[data-theme=darkmode] .gx-xxl-0 {
+  html[data-theme=darkmode] .gx-xxl-0 {
     --bs-gutter-x: 0;
   }
   html[data-theme=darkmode] .g-xxl-0,
-html[data-theme=darkmode] .gy-xxl-0 {
+  html[data-theme=darkmode] .gy-xxl-0 {
     --bs-gutter-y: 0;
   }
   html[data-theme=darkmode] .g-xxl-1,
-html[data-theme=darkmode] .gx-xxl-1 {
+  html[data-theme=darkmode] .gx-xxl-1 {
     --bs-gutter-x: 0.25rem;
   }
   html[data-theme=darkmode] .g-xxl-1,
-html[data-theme=darkmode] .gy-xxl-1 {
+  html[data-theme=darkmode] .gy-xxl-1 {
     --bs-gutter-y: 0.25rem;
   }
   html[data-theme=darkmode] .g-xxl-2,
-html[data-theme=darkmode] .gx-xxl-2 {
+  html[data-theme=darkmode] .gx-xxl-2 {
     --bs-gutter-x: 0.5rem;
   }
   html[data-theme=darkmode] .g-xxl-2,
-html[data-theme=darkmode] .gy-xxl-2 {
+  html[data-theme=darkmode] .gy-xxl-2 {
     --bs-gutter-y: 0.5rem;
   }
   html[data-theme=darkmode] .g-xxl-3,
-html[data-theme=darkmode] .gx-xxl-3 {
+  html[data-theme=darkmode] .gx-xxl-3 {
     --bs-gutter-x: 1rem;
   }
   html[data-theme=darkmode] .g-xxl-3,
-html[data-theme=darkmode] .gy-xxl-3 {
+  html[data-theme=darkmode] .gy-xxl-3 {
     --bs-gutter-y: 1rem;
   }
   html[data-theme=darkmode] .g-xxl-4,
-html[data-theme=darkmode] .gx-xxl-4 {
+  html[data-theme=darkmode] .gx-xxl-4 {
     --bs-gutter-x: 1.5rem;
   }
   html[data-theme=darkmode] .g-xxl-4,
-html[data-theme=darkmode] .gy-xxl-4 {
+  html[data-theme=darkmode] .gy-xxl-4 {
     --bs-gutter-y: 1.5rem;
   }
   html[data-theme=darkmode] .g-xxl-5,
-html[data-theme=darkmode] .gx-xxl-5 {
+  html[data-theme=darkmode] .gx-xxl-5 {
     --bs-gutter-x: 3rem;
   }
   html[data-theme=darkmode] .g-xxl-5,
-html[data-theme=darkmode] .gy-xxl-5 {
+  html[data-theme=darkmode] .gy-xxl-5 {
     --bs-gutter-y: 3rem;
   }
 }
 html[data-theme=darkmode] .table {
-  --bs-table-bg: #181a1b;
+  --bs-table-bg: rgb(24, 26, 27);
   --bs-table-accent-bg: rgba(255, 255, 255, 0.05);
   --bs-table-striped-color: #fff;
   --bs-table-striped-bg: rgba(0, 0, 0, 0.05);
@@ -31265,7 +31215,7 @@ html[dir][data-theme=darkmode] .table-light {
   border-color: #c8cbcf;
 }
 html[data-theme=darkmode] .table-dark {
-  --bs-table-bg: #181a1b;
+  --bs-table-bg: rgb(24, 26, 27);
   --bs-table-striped-bg: #242526;
   --bs-table-striped-color: #fff;
   --bs-table-active-bg: #2f3132;
@@ -31356,9 +31306,9 @@ html[data-theme=darkmode] .form-control {
 }
 html[dir][data-theme=darkmode] .form-control {
   padding: 0.375rem 0.75rem;
-  background-color: #181a1b;
+  background-color: rgb(24, 26, 27);
   background-clip: padding-box;
-  border: 1px solid #3c4144;
+  border: 1px solid rgb(60, 65, 68);
   border-radius: 0.25rem;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -31377,7 +31327,7 @@ html[data-theme=darkmode] .form-control:focus {
   outline: 0;
 }
 html[dir][data-theme=darkmode] .form-control:focus {
-  background-color: #181a1b;
+  background-color: rgb(24, 26, 27);
   border-color: #80bdff;
   box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
 }
@@ -31392,7 +31342,7 @@ html[data-theme=darkmode] .form-control:disabled, html[data-theme=darkmode] .for
   opacity: 1;
 }
 html[dir][data-theme=darkmode] .form-control:disabled, html[dir][data-theme=darkmode] .form-control[readonly] {
-  background-color: #232628;
+  background-color: rgb(35, 38, 40);
 }
 html[data-theme=darkmode] .form-control::file-selector-button {
   margin-inline-end: 0.75rem;
@@ -31550,11 +31500,11 @@ html[data-theme=darkmode] .form-select {
   appearance: none;
 }
 html[dir][data-theme=darkmode] .form-select {
-  background-color: #181a1b;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23181a1b' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+  background-color: rgb(24, 26, 27);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgb%2824, 26, 27%29' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-size: 16px 12px;
-  border: 1px solid #3c4144;
+  border: 1px solid rgb(60, 65, 68);
   border-radius: 0.25rem;
 }
 html[dir=ltr][data-theme=darkmode] .form-select {
@@ -31751,7 +31701,7 @@ html[data-theme=darkmode] .btn-check {
   clip: rect(0, 0, 0, 0);
   pointer-events: none;
 }
-html[data-theme=darkmode] .btn-check[disabled] + .btn, html[data-theme=darkmode] .btn-check[disabled] + .button, html[data-theme=darkmode] .bootstrap-select .popover-header .btn-check[disabled] + .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-check[disabled] + .close, html[data-theme=darkmode] html[data-theme=default] .btn-check[disabled] + .button, html[data-theme=darkmode] .btn-check:disabled + .btn, html[data-theme=darkmode] .btn-check:disabled + .button, html[data-theme=darkmode] .bootstrap-select .popover-header .btn-check:disabled + .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-check:disabled + .close, html[data-theme=darkmode] html[data-theme=default] .btn-check:disabled + .button {
+html[data-theme=darkmode] .btn-check[disabled] + .btn, html[data-theme=darkmode] .btn-check[disabled] + .button, html[data-theme=darkmode] .bootstrap-select .popover-header .btn-check[disabled] + .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-check[disabled] + .close, html[data-theme=darkmode] .btn-check:disabled + .btn, html[data-theme=darkmode] .btn-check:disabled + .button, html[data-theme=darkmode] .bootstrap-select .popover-header .btn-check:disabled + .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-check:disabled + .close {
   pointer-events: none;
   filter: none;
   opacity: 0.65;
@@ -31769,10 +31719,10 @@ html[data-theme=darkmode] .form-range:focus {
   outline: 0;
 }
 html[dir][data-theme=darkmode] .form-range:focus::-webkit-slider-thumb {
-  box-shadow: 0 0 0 1px #181a1b, 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 0 1px rgb(24, 26, 27), 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
 }
 html[dir][data-theme=darkmode] .form-range:focus::-moz-range-thumb {
-  box-shadow: 0 0 0 1px #181a1b, 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 0 1px rgb(24, 26, 27), 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
 }
 html[dir][data-theme=darkmode] .form-range::-moz-focus-outer {
   border: 0;
@@ -31842,10 +31792,10 @@ html[data-theme=darkmode] .form-range:disabled {
   pointer-events: none;
 }
 html[dir][data-theme=darkmode] .form-range:disabled::-webkit-slider-thumb {
-  background-color: #2a2d2f;
+  background-color: rgb(42, 45, 47);
 }
 html[dir][data-theme=darkmode] .form-range:disabled::-moz-range-thumb {
-  background-color: #2a2d2f;
+  background-color: rgb(42, 45, 47);
 }
 html[data-theme=darkmode] .form-floating {
   position: relative;
@@ -31955,7 +31905,7 @@ html[dir][data-theme=darkmode] .input-group-text {
   padding: 0.375rem 0.75rem;
   text-align: center;
   background-color: rgba(140, 130, 115, 0.13);
-  border: 1px solid #3c4144;
+  border: 1px solid rgb(60, 65, 68);
   border-radius: 0.25rem;
 }
 html[data-theme=darkmode] .input-group-lg > .form-control,
@@ -31964,11 +31914,10 @@ html[data-theme=darkmode] .input-group-lg > .input-group-text,
 html[data-theme=darkmode] .input-group-lg > .btn,
 html[data-theme=darkmode] .input-group-lg > .button,
 html[data-theme=darkmode] .bootstrap-select .popover-header .input-group-lg > .close,
-html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .input-group-lg > .close,
-html[data-theme=darkmode] html[data-theme=default] .input-group-lg > .button {
+html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .input-group-lg > .close {
   font-size: 1.25rem;
 }
-html[dir][data-theme=darkmode] .input-group-lg > .form-control, html[dir][data-theme=darkmode] .input-group-lg > .form-select, html[dir][data-theme=darkmode] .input-group-lg > .input-group-text, html[dir][data-theme=darkmode] .input-group-lg > .btn, html[dir][data-theme=darkmode] .input-group-lg > .button, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .input-group-lg > .close, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .input-group-lg > .close, html[dir][data-theme=darkmode] html[data-theme=default] .input-group-lg > .button {
+html[dir][data-theme=darkmode] .input-group-lg > .form-control, html[dir][data-theme=darkmode] .input-group-lg > .form-select, html[dir][data-theme=darkmode] .input-group-lg > .input-group-text, html[dir][data-theme=darkmode] .input-group-lg > .btn, html[dir][data-theme=darkmode] .input-group-lg > .button, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .input-group-lg > .close, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .input-group-lg > .close {
   padding: 0.5rem 1rem;
   border-radius: 0.3rem;
 }
@@ -31978,11 +31927,10 @@ html[data-theme=darkmode] .input-group-sm > .input-group-text,
 html[data-theme=darkmode] .input-group-sm > .btn,
 html[data-theme=darkmode] .input-group-sm > .button,
 html[data-theme=darkmode] .bootstrap-select .popover-header .input-group-sm > .close,
-html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .input-group-sm > .close,
-html[data-theme=darkmode] html[data-theme=default] .input-group-sm > .button {
+html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .input-group-sm > .close {
   font-size: 0.875rem;
 }
-html[dir][data-theme=darkmode] .input-group-sm > .form-control, html[dir][data-theme=darkmode] .input-group-sm > .form-select, html[dir][data-theme=darkmode] .input-group-sm > .input-group-text, html[dir][data-theme=darkmode] .input-group-sm > .btn, html[dir][data-theme=darkmode] .input-group-sm > .button, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .input-group-sm > .close, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .input-group-sm > .close, html[dir][data-theme=darkmode] html[data-theme=default] .input-group-sm > .button {
+html[dir][data-theme=darkmode] .input-group-sm > .form-control, html[dir][data-theme=darkmode] .input-group-sm > .form-select, html[dir][data-theme=darkmode] .input-group-sm > .input-group-text, html[dir][data-theme=darkmode] .input-group-sm > .btn, html[dir][data-theme=darkmode] .input-group-sm > .button, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .input-group-sm > .close, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .input-group-sm > .close {
   padding: 0.25rem 0.5rem;
   border-radius: 0.2rem;
 }
@@ -32077,7 +32025,7 @@ html[data-theme=darkmode].is-valid ~ .valid-tooltip {
   border-color: #28a745;
 }
 [dir] .was-validated html[data-theme=darkmode] .form-select:valid:not([multiple]):not([size]), [dir] .was-validated html[data-theme=darkmode] .form-select:valid:not([multiple])[size="1"], html[dir][data-theme=darkmode] .form-select.is-valid:not([multiple]):not([size]), html[dir][data-theme=darkmode] .form-select.is-valid:not([multiple])[size="1"] {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23181a1b' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e"), url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgb%2824, 26, 27%29' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e"), url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
   background-size: 16px 12px, calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
 }
 [dir=ltr] .was-validated html[data-theme=darkmode] .form-select:valid:not([multiple]):not([size]), [dir=ltr] .was-validated html[data-theme=darkmode] .form-select:valid:not([multiple])[size="1"], html[dir=ltr][data-theme=darkmode] .form-select.is-valid:not([multiple]):not([size]), html[dir=ltr][data-theme=darkmode] .form-select.is-valid:not([multiple])[size="1"] {
@@ -32183,7 +32131,7 @@ html[data-theme=default] html[data-theme=darkmode].has-validation-error ~ .inval
   border-color: #dc3545;
 }
 [dir] .was-validated html[data-theme=darkmode] .form-select:invalid:not([multiple]):not([size]), [dir] .was-validated html[data-theme=darkmode] .form-select:invalid:not([multiple])[size="1"], html[dir][data-theme=darkmode] .form-select.is-invalid:not([multiple]):not([size]), html[dir][data-theme=darkmode] .form-select.has-validation-error:not([multiple]):not([size]), html[dir][data-theme=darkmode] .form-select.input-validation-error:not([multiple]):not([size]), html[dir][data-theme=darkmode] .form-select.is-invalid:not([multiple])[size="1"], html[dir][data-theme=darkmode] .form-select.has-validation-error:not([multiple])[size="1"], html[dir][data-theme=darkmode] .form-select.input-validation-error:not([multiple])[size="1"] {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23181a1b' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e"), url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgb%2824, 26, 27%29' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e"), url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
   background-size: 16px 12px, calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
 }
 [dir=ltr] .was-validated html[data-theme=darkmode] .form-select:invalid:not([multiple]):not([size]), [dir=ltr] .was-validated html[data-theme=darkmode] .form-select:invalid:not([multiple])[size="1"], html[dir=ltr][data-theme=darkmode] .form-select.is-invalid:not([multiple]):not([size]), html[dir=ltr][data-theme=darkmode] .form-select.has-validation-error:not([multiple]):not([size]), html[dir=ltr][data-theme=darkmode] .form-select.input-validation-error:not([multiple]):not([size]), html[dir=ltr][data-theme=darkmode] .form-select.is-invalid:not([multiple])[size="1"], html[dir=ltr][data-theme=darkmode] .form-select.has-validation-error:not([multiple])[size="1"], html[dir=ltr][data-theme=darkmode] .form-select.input-validation-error:not([multiple])[size="1"] {
@@ -32207,7 +32155,7 @@ html[data-theme=default] html[data-theme=darkmode].has-validation-error ~ .inval
 [dir] .was-validated html[data-theme=darkmode] .form-check-input:invalid:focus, html[dir][data-theme=darkmode] .form-check-input.is-invalid:focus, html[dir][data-theme=darkmode] .form-check-input.has-validation-error:focus, html[dir][data-theme=darkmode] .form-check-input.input-validation-error:focus {
   box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
 }
-.was-validated html[data-theme=darkmode] .form-check-input:invalid ~ .form-check-label, html[data-theme=darkmode] .form-check-input.is-invalid ~ .form-check-label, html[data-theme=darkmode] .form-check-input.has-validation-error ~ .form-check-label, html[data-theme=darkmode] .form-check-input.input-validation-error ~ .form-check-label, html[data-theme=darkmode] html[data-theme=default] .form-check-input.input-validation-error ~ .form-check-label, html[data-theme=darkmode] html[data-theme=default] .form-check-input.has-validation-error ~ .form-check-label {
+.was-validated html[data-theme=darkmode] .form-check-input:invalid ~ .form-check-label, html[data-theme=darkmode] .form-check-input.is-invalid ~ .form-check-label, html[data-theme=darkmode] .form-check-input.has-validation-error ~ .form-check-label, html[data-theme=darkmode] .form-check-input.input-validation-error ~ .form-check-label {
   color: #dc3545;
 }
 html[dir=ltr][data-theme=darkmode] .form-check-inline .form-check-input ~ .invalid-feedback {
@@ -32544,8 +32492,8 @@ html[data-theme=darkmode] .btn-dark {
   color: #fff;
 }
 html[dir][data-theme=darkmode] .btn-dark {
-  background-color: #181a1b;
-  border-color: #181a1b;
+  background-color: rgb(24, 26, 27);
+  border-color: rgb(24, 26, 27);
 }
 html[data-theme=darkmode] .btn-dark:hover {
   color: #fff;
@@ -32576,8 +32524,8 @@ html[data-theme=darkmode] .btn-dark:disabled, html[data-theme=darkmode] .btn-dar
   color: #fff;
 }
 html[dir][data-theme=darkmode] .btn-dark:disabled, html[dir][data-theme=darkmode] .btn-dark.disabled {
-  background-color: #181a1b;
-  border-color: #181a1b;
+  background-color: rgb(24, 26, 27);
+  border-color: rgb(24, 26, 27);
 }
 html[data-theme=darkmode] .btn-outline-primary {
   color: #007bff;
@@ -32804,17 +32752,17 @@ html[dir][data-theme=darkmode] .btn-outline-light:disabled, html[dir][data-theme
   background-color: transparent;
 }
 html[data-theme=darkmode] .btn-outline-dark {
-  color: #181a1b;
+  color: rgb(24, 26, 27);
 }
 html[dir][data-theme=darkmode] .btn-outline-dark {
-  border-color: #181a1b;
+  border-color: rgb(24, 26, 27);
 }
 html[data-theme=darkmode] .btn-outline-dark:hover {
   color: #fff;
 }
 html[dir][data-theme=darkmode] .btn-outline-dark:hover {
-  background-color: #181a1b;
-  border-color: #181a1b;
+  background-color: rgb(24, 26, 27);
+  border-color: rgb(24, 26, 27);
 }
 [dir] .btn-check:focus + html[data-theme=darkmode] .btn-outline-dark, html[dir][data-theme=darkmode] .btn-outline-dark:focus {
   box-shadow: 0 0 0 0.25rem rgba(24, 26, 27, 0.5);
@@ -32823,14 +32771,14 @@ html[dir][data-theme=darkmode] .btn-outline-dark:hover {
   color: #fff;
 }
 [dir] .btn-check:checked + html[data-theme=darkmode] .btn-outline-dark, [dir] .btn-check:active + html[data-theme=darkmode] .btn-outline-dark, html[dir][data-theme=darkmode] .btn-outline-dark:active, html[dir][data-theme=darkmode] .btn-outline-dark.active, html[dir][data-theme=darkmode] .btn-outline-dark.dropdown-toggle.show {
-  background-color: #181a1b;
-  border-color: #181a1b;
+  background-color: rgb(24, 26, 27);
+  border-color: rgb(24, 26, 27);
 }
 [dir] .btn-check:checked + html[data-theme=darkmode] .btn-outline-dark:focus, [dir] .btn-check:active + html[data-theme=darkmode] .btn-outline-dark:focus, html[dir][data-theme=darkmode] .btn-outline-dark:active:focus, html[dir][data-theme=darkmode] .btn-outline-dark.active:focus, html[dir][data-theme=darkmode] .btn-outline-dark.dropdown-toggle.show:focus {
   box-shadow: 0 0 0 0.25rem rgba(24, 26, 27, 0.5);
 }
 html[data-theme=darkmode] .btn-outline-dark:disabled, html[data-theme=darkmode] .btn-outline-dark.disabled {
-  color: #181a1b;
+  color: rgb(24, 26, 27);
 }
 html[dir][data-theme=darkmode] .btn-outline-dark:disabled, html[dir][data-theme=darkmode] .btn-outline-dark.disabled {
   background-color: transparent;
@@ -32846,17 +32794,17 @@ html[data-theme=darkmode] .btn-link:hover {
 html[data-theme=darkmode] .btn-link:disabled, html[data-theme=darkmode] .btn-link.disabled {
   color: #888;
 }
-html[data-theme=darkmode] .btn-lg, html[data-theme=darkmode] .btn-group-lg > .btn, html[data-theme=darkmode] .btn-group-lg > .button, html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group-lg > .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-lg > .close, html[data-theme=darkmode] html[data-theme=default] .btn-group-lg > .button, html[data-theme=darkmode] html[data-theme=default] .btn-group-lg > .btn, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-lg > .close {
+html[data-theme=darkmode] .btn-lg, html[data-theme=darkmode] .btn-group-lg > .btn, html[data-theme=darkmode] .btn-group-lg > .button, html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group-lg > .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-lg > .close {
   font-size: 1.25rem;
 }
-html[dir][data-theme=darkmode] .btn-lg, html[dir][data-theme=darkmode] .btn-group-lg > .btn, html[dir][data-theme=darkmode] .btn-group-lg > .button, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-lg > .close, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-lg > .close, html[dir][data-theme=darkmode] html[data-theme=default] .btn-group-lg > .button, html[dir][data-theme=darkmode] html[data-theme=default] .btn-group-lg > .btn, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-lg > .close {
+html[dir][data-theme=darkmode] .btn-lg, html[dir][data-theme=darkmode] .btn-group-lg > .btn, html[dir][data-theme=darkmode] .btn-group-lg > .button, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-lg > .close, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-lg > .close {
   padding: 0.5rem 1rem;
   border-radius: 0.3rem;
 }
-html[data-theme=darkmode] .btn-sm, html[data-theme=darkmode] .btn-group-sm > .btn, html[data-theme=darkmode] .btn-group-sm > .button, html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group-sm > .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-sm > .close, html[data-theme=darkmode] html[data-theme=default] .btn-group-sm > .button, html[data-theme=darkmode] html[data-theme=default] .btn-group-sm > .btn, html[data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-sm > .close {
+html[data-theme=darkmode] .btn-sm, html[data-theme=darkmode] .btn-group-sm > .btn, html[data-theme=darkmode] .btn-group-sm > .button, html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group-sm > .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-sm > .close {
   font-size: 0.875rem;
 }
-html[dir][data-theme=darkmode] .btn-sm, html[dir][data-theme=darkmode] .btn-group-sm > .btn, html[dir][data-theme=darkmode] .btn-group-sm > .button, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-sm > .close, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-sm > .close, html[dir][data-theme=darkmode] html[data-theme=default] .btn-group-sm > .button, html[dir][data-theme=darkmode] html[data-theme=default] .btn-group-sm > .btn, html[dir][data-theme=darkmode] .bootstrap-select .popover-header html[data-theme=default] .btn-group-sm > .close {
+html[dir][data-theme=darkmode] .btn-sm, html[dir][data-theme=darkmode] .btn-group-sm > .btn, html[dir][data-theme=darkmode] .btn-group-sm > .button, html[dir][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-sm > .close, html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-sm > .close {
   padding: 0.25rem 0.5rem;
   border-radius: 0.2rem;
 }
@@ -32940,7 +32888,7 @@ html[data-theme=darkmode] .dropdown-menu {
 html[dir][data-theme=darkmode] .dropdown-menu {
   padding: 0.5rem 0;
   margin: 0;
-  background-color: #181a1b;
+  background-color: rgb(24, 26, 27);
   background-clip: padding-box;
   border: 1px solid rgba(140, 130, 115, 0.13);
   border-radius: 0.25rem;
@@ -33275,7 +33223,7 @@ html[dir][data-theme=darkmode] .dropdown-item.active, html[dir][data-theme=darkm
   background-color: #007bff;
 }
 html[data-theme=darkmode] .dropdown-item.disabled, html[data-theme=darkmode] .dropdown-item:disabled {
-  color: #2a2d2f;
+  color: rgb(42, 45, 47);
   pointer-events: none;
 }
 html[dir][data-theme=darkmode] .dropdown-item.disabled, html[dir][data-theme=darkmode] .dropdown-item:disabled {
@@ -33305,7 +33253,7 @@ html[data-theme=darkmode] .dropdown-menu-dark {
   color: #dee2e6;
 }
 html[dir][data-theme=darkmode] .dropdown-menu-dark {
-  background-color: #181a1b;
+  background-color: rgb(24, 26, 27);
   border-color: rgba(140, 130, 115, 0.13);
 }
 html[data-theme=darkmode] .dropdown-menu-dark .dropdown-item {
@@ -33324,7 +33272,7 @@ html[dir][data-theme=darkmode] .dropdown-menu-dark .dropdown-item.active, html[d
   background-color: #007bff;
 }
 html[data-theme=darkmode] .dropdown-menu-dark .dropdown-item.disabled, html[data-theme=darkmode] .dropdown-menu-dark .dropdown-item:disabled {
-  color: #2a2d2f;
+  color: rgb(42, 45, 47);
 }
 html[dir][data-theme=darkmode] .dropdown-menu-dark .dropdown-divider {
   border-color: rgba(140, 130, 115, 0.13);
@@ -33333,7 +33281,7 @@ html[data-theme=darkmode] .dropdown-menu-dark .dropdown-item-text {
   color: #dee2e6;
 }
 html[data-theme=darkmode] .dropdown-menu-dark .dropdown-header {
-  color: #2a2d2f;
+  color: rgb(42, 45, 47);
 }
 html[data-theme=darkmode] .btn-group,
 html[data-theme=darkmode] .btn-group-vertical {
@@ -33341,12 +33289,11 @@ html[data-theme=darkmode] .btn-group-vertical {
   display: inline-flex;
   vertical-align: middle;
 }
-html[data-theme=darkmode] .btn-group > .btn, html[data-theme=darkmode] .btn-group > .button, html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close, html[data-theme=darkmode] html[data-theme=default] .btn-group > .button,
+html[data-theme=darkmode] .btn-group > .btn, html[data-theme=darkmode] .btn-group > .button, html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close,
 html[data-theme=darkmode] .btn-group-vertical > .btn,
 html[data-theme=darkmode] .btn-group-vertical > .button,
 html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close,
-html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close,
-html[data-theme=darkmode] html[data-theme=default] .btn-group-vertical > .button {
+html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close {
   position: relative;
   flex: 1 1 auto;
 }
@@ -33359,22 +33306,18 @@ html[data-theme=darkmode] .btn-group > .btn:hover,
 html[data-theme=darkmode] .btn-group > .button:hover,
 html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:hover,
 html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:hover,
-html[data-theme=darkmode] html[data-theme=default] .btn-group > .button:hover,
 html[data-theme=darkmode] .btn-group > .btn:focus,
 html[data-theme=darkmode] .btn-group > .button:focus,
 html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:focus,
 html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:focus,
-html[data-theme=darkmode] html[data-theme=default] .btn-group > .button:focus,
 html[data-theme=darkmode] .btn-group > .btn:active,
 html[data-theme=darkmode] .btn-group > .button:active,
 html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:active,
 html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:active,
-html[data-theme=darkmode] html[data-theme=default] .btn-group > .button:active,
 html[data-theme=darkmode] .btn-group > .btn.active,
 html[data-theme=darkmode] .btn-group > .active.button,
 html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .active.close,
 html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .active.close,
-html[data-theme=darkmode] html[data-theme=default] .btn-group > .active.button,
 html[data-theme=darkmode] .btn-group-vertical > .btn-check:checked + .btn,
 html[data-theme=darkmode] .btn-group-vertical > .btn-check:checked + .button,
 html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .btn-check:checked + .close,
@@ -33387,22 +33330,18 @@ html[data-theme=darkmode] .btn-group-vertical > .btn:hover,
 html[data-theme=darkmode] .btn-group-vertical > .button:hover,
 html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close:hover,
 html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close:hover,
-html[data-theme=darkmode] html[data-theme=default] .btn-group-vertical > .button:hover,
 html[data-theme=darkmode] .btn-group-vertical > .btn:focus,
 html[data-theme=darkmode] .btn-group-vertical > .button:focus,
 html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close:focus,
 html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close:focus,
-html[data-theme=darkmode] html[data-theme=default] .btn-group-vertical > .button:focus,
 html[data-theme=darkmode] .btn-group-vertical > .btn:active,
 html[data-theme=darkmode] .btn-group-vertical > .button:active,
 html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close:active,
 html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close:active,
-html[data-theme=darkmode] html[data-theme=default] .btn-group-vertical > .button:active,
 html[data-theme=darkmode] .btn-group-vertical > .btn.active,
 html[data-theme=darkmode] .btn-group-vertical > .active.button,
 html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .active.close,
-html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .active.close,
-html[data-theme=darkmode] html[data-theme=default] .btn-group-vertical > .active.button {
+html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .active.close {
   z-index: 1;
 }
 html[data-theme=darkmode] .btn-toolbar {
@@ -33413,25 +33352,25 @@ html[data-theme=darkmode] .btn-toolbar {
 html[data-theme=darkmode] .btn-toolbar .input-group {
   width: auto;
 }
-html[dir=ltr][data-theme=darkmode] .btn-group > .btn:not(:first-child), html[dir=ltr][data-theme=darkmode] .btn-group > .button:not(:first-child), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:not(:first-child), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:not(:first-child), html[dir=ltr][data-theme=darkmode] html[data-theme=default] .btn-group > .button:not(:first-child), html[dir=ltr][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) {
+html[dir=ltr][data-theme=darkmode] .btn-group > .btn:not(:first-child), html[dir=ltr][data-theme=darkmode] .btn-group > .button:not(:first-child), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:not(:first-child), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:not(:first-child), html[dir=ltr][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) {
   margin-left: -1px;
 }
-html[dir=rtl][data-theme=darkmode] .btn-group > .btn:not(:first-child), html[dir=rtl][data-theme=darkmode] .btn-group > .button:not(:first-child), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:not(:first-child), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:not(:first-child), html[dir=rtl][data-theme=darkmode] html[data-theme=default] .btn-group > .button:not(:first-child), html[dir=rtl][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) {
+html[dir=rtl][data-theme=darkmode] .btn-group > .btn:not(:first-child), html[dir=rtl][data-theme=darkmode] .btn-group > .button:not(:first-child), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:not(:first-child), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:not(:first-child), html[dir=rtl][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) {
   margin-right: -1px;
 }
-html[dir=ltr][data-theme=darkmode] .btn-group > .btn:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] html[data-theme=default] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .btn-group > .btn-group:not(:last-child) > .btn, html[dir=ltr][data-theme=darkmode] .btn-group > .btn-group:not(:last-child) > .button, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .btn-group:not(:last-child) > .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .btn-group:not(:last-child) > .close {
+html[dir=ltr][data-theme=darkmode] .btn-group > .btn:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .btn-group > .btn-group:not(:last-child) > .btn, html[dir=ltr][data-theme=darkmode] .btn-group > .btn-group:not(:last-child) > .button, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .btn-group:not(:last-child) > .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .btn-group:not(:last-child) > .close {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
-html[dir=rtl][data-theme=darkmode] .btn-group > .btn:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] html[data-theme=default] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .btn-group > .btn-group:not(:last-child) > .btn, html[dir=rtl][data-theme=darkmode] .btn-group > .btn-group:not(:last-child) > .button, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .btn-group:not(:last-child) > .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .btn-group:not(:last-child) > .close {
+html[dir=rtl][data-theme=darkmode] .btn-group > .btn:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .btn-group > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .btn-group > .btn-group:not(:last-child) > .btn, html[dir=rtl][data-theme=darkmode] .btn-group > .btn-group:not(:last-child) > .button, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .btn-group:not(:last-child) > .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .btn-group:not(:last-child) > .close {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
-html[dir=ltr][data-theme=darkmode] .btn-group > .btn:nth-child(n+3), html[dir=ltr][data-theme=darkmode] .btn-group > .button:nth-child(n+3), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:nth-child(n+3), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:nth-child(n+3), html[dir=ltr][data-theme=darkmode] html[data-theme=default] .btn-group > .button:nth-child(n+3), html[dir=ltr][data-theme=darkmode] .btn-group > :not(.btn-check) + .btn, html[dir=ltr][data-theme=darkmode] .btn-group > :not(.btn-check) + .button, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > :not(.btn-check) + .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > :not(.btn-check) + .close, html[dir=ltr][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) > .btn, html[dir=ltr][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) > .button, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .btn-group:not(:first-child) > .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .btn-group:not(:first-child) > .close {
+html[dir=ltr][data-theme=darkmode] .btn-group > .btn:nth-child(n+3), html[dir=ltr][data-theme=darkmode] .btn-group > .button:nth-child(n+3), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:nth-child(n+3), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:nth-child(n+3), html[dir=ltr][data-theme=darkmode] .btn-group > :not(.btn-check) + .btn, html[dir=ltr][data-theme=darkmode] .btn-group > :not(.btn-check) + .button, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > :not(.btn-check) + .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > :not(.btn-check) + .close, html[dir=ltr][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) > .btn, html[dir=ltr][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) > .button, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .btn-group:not(:first-child) > .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .btn-group:not(:first-child) > .close {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
-html[dir=rtl][data-theme=darkmode] .btn-group > .btn:nth-child(n+3), html[dir=rtl][data-theme=darkmode] .btn-group > .button:nth-child(n+3), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:nth-child(n+3), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:nth-child(n+3), html[dir=rtl][data-theme=darkmode] html[data-theme=default] .btn-group > .button:nth-child(n+3), html[dir=rtl][data-theme=darkmode] .btn-group > :not(.btn-check) + .btn, html[dir=rtl][data-theme=darkmode] .btn-group > :not(.btn-check) + .button, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > :not(.btn-check) + .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > :not(.btn-check) + .close, html[dir=rtl][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) > .btn, html[dir=rtl][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) > .button, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .btn-group:not(:first-child) > .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .btn-group:not(:first-child) > .close {
+html[dir=rtl][data-theme=darkmode] .btn-group > .btn:nth-child(n+3), html[dir=rtl][data-theme=darkmode] .btn-group > .button:nth-child(n+3), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .close:nth-child(n+3), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .close:nth-child(n+3), html[dir=rtl][data-theme=darkmode] .btn-group > :not(.btn-check) + .btn, html[dir=rtl][data-theme=darkmode] .btn-group > :not(.btn-check) + .button, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > :not(.btn-check) + .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > :not(.btn-check) + .close, html[dir=rtl][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) > .btn, html[dir=rtl][data-theme=darkmode] .btn-group > .btn-group:not(:first-child) > .button, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group > .btn-group:not(:first-child) > .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group > .btn-group:not(:first-child) > .close {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
@@ -33476,18 +33415,18 @@ html[data-theme=darkmode] .btn-group-vertical {
   align-items: flex-start;
   justify-content: center;
 }
-html[data-theme=darkmode] .btn-group-vertical > .btn, html[data-theme=darkmode] .btn-group-vertical > .button, html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close, html[data-theme=darkmode] html[data-theme=default] .btn-group-vertical > .button,
+html[data-theme=darkmode] .btn-group-vertical > .btn, html[data-theme=darkmode] .btn-group-vertical > .button, html[data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close, html[data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close,
 html[data-theme=darkmode] .btn-group-vertical > .btn-group {
   width: 100%;
 }
-html[dir][data-theme=darkmode] .btn-group-vertical > .btn:not(:first-child), html[dir][data-theme=darkmode] .btn-group-vertical > .button:not(:first-child), html[dir][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close:not(:first-child), html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close:not(:first-child), html[dir][data-theme=darkmode] html[data-theme=default] .btn-group-vertical > .button:not(:first-child), html[dir][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:first-child) {
+html[dir][data-theme=darkmode] .btn-group-vertical > .btn:not(:first-child), html[dir][data-theme=darkmode] .btn-group-vertical > .button:not(:first-child), html[dir][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close:not(:first-child), html[dir][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close:not(:first-child), html[dir][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:first-child) {
   margin-top: -1px;
 }
-html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] html[data-theme=default] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:last-child) > .btn, html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:last-child) > .button, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .btn-group:not(:last-child) > .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .btn-group:not(:last-child) > .close {
+html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close:not(:last-child):not(.dropdown-toggle), html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:last-child) > .btn, html[dir=ltr][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:last-child) > .button, html[dir=ltr][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .btn-group:not(:last-child) > .close, html[dir=ltr][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .btn-group:not(:last-child) > .close {
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
-html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] html[data-theme=default] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:last-child) > .btn, html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:last-child) > .button, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .btn-group:not(:last-child) > .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .btn-group:not(:last-child) > .close {
+html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .button:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .close:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .close:not(:last-child):not(.dropdown-toggle), html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:last-child) > .btn, html[dir=rtl][data-theme=darkmode] .btn-group-vertical > .btn-group:not(:last-child) > .button, html[dir=rtl][data-theme=darkmode] .bootstrap-select .popover-header .btn-group-vertical > .btn-group:not(:last-child) > .close, html[dir=rtl][data-theme=default] .bootstrap-select .popover-header html[data-theme=darkmode] .btn-group-vertical > .btn-group:not(:last-child) > .close {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }
@@ -33531,7 +33470,7 @@ html[data-theme=darkmode] .nav-link:hover, html[data-theme=darkmode] .nav-link:f
   color: #0062cc;
 }
 html[data-theme=darkmode] .nav-link.disabled {
-  color: #2a2d2f;
+  color: rgb(42, 45, 47);
   pointer-events: none;
 }
 html[dir][data-theme=darkmode] .nav-link.disabled {
@@ -33560,7 +33499,7 @@ html[dir][data-theme=darkmode] .nav-tabs .nav-link:hover, html[dir][data-theme=d
   border-color: rgba(140, 130, 115, 0.13) rgba(140, 130, 115, 0.13) transparent;
 }
 html[data-theme=darkmode] .nav-tabs .nav-link.disabled {
-  color: #2a2d2f;
+  color: rgb(42, 45, 47);
 }
 html[dir][data-theme=darkmode] .nav-tabs .nav-link.disabled {
   background-color: transparent;
@@ -33571,7 +33510,7 @@ html[data-theme=darkmode] .nav-tabs .nav-item.show .nav-link {
   color: #fff;
 }
 html[dir][data-theme=darkmode] .nav-tabs .nav-link.active, html[dir][data-theme=darkmode] .nav-tabs .nav-item.show .nav-link {
-  background-color: #181a1b;
+  background-color: rgb(24, 26, 27);
   border-color: rgba(140, 130, 115, 0.13) rgba(140, 130, 115, 0.13) transparent;
 }
 html[dir][data-theme=darkmode] .nav-tabs .dropdown-menu {
@@ -34042,7 +33981,7 @@ html[data-theme=darkmode] .navbar-nav-scroll {
     border-right: 0;
   }
   html[data-theme=darkmode] .navbar-expand-sm .offcanvas-top,
-html[data-theme=darkmode] .navbar-expand-sm .offcanvas-bottom {
+  html[data-theme=darkmode] .navbar-expand-sm .offcanvas-bottom {
     height: auto;
   }
   html[dir][data-theme=darkmode] .navbar-expand-sm .offcanvas-top, html[dir][data-theme=darkmode] .navbar-expand-sm .offcanvas-bottom {
@@ -34111,8 +34050,8 @@ html[data-theme=darkmode] .navbar-expand-sm .offcanvas-bottom {
     border-right: 0;
   }
   html[data-theme=darkmode] .navbar-expand-md .offcanvas-top, html[data-theme=darkmode] .ta-navbar-top .offcanvas-top,
-html[data-theme=darkmode] .navbar-expand-md .offcanvas-bottom,
-html[data-theme=darkmode] .ta-navbar-top .offcanvas-bottom {
+  html[data-theme=darkmode] .navbar-expand-md .offcanvas-bottom,
+  html[data-theme=darkmode] .ta-navbar-top .offcanvas-bottom {
     height: auto;
   }
   html[dir][data-theme=darkmode] .navbar-expand-md .offcanvas-top, html[dir][data-theme=darkmode] .ta-navbar-top .offcanvas-top, html[dir][data-theme=darkmode] .navbar-expand-md .offcanvas-bottom, html[dir][data-theme=darkmode] .ta-navbar-top .offcanvas-bottom {
@@ -34181,7 +34120,7 @@ html[data-theme=darkmode] .ta-navbar-top .offcanvas-bottom {
     border-right: 0;
   }
   html[data-theme=darkmode] .navbar-expand-lg .offcanvas-top,
-html[data-theme=darkmode] .navbar-expand-lg .offcanvas-bottom {
+  html[data-theme=darkmode] .navbar-expand-lg .offcanvas-bottom {
     height: auto;
   }
   html[dir][data-theme=darkmode] .navbar-expand-lg .offcanvas-top, html[dir][data-theme=darkmode] .navbar-expand-lg .offcanvas-bottom {
@@ -34250,7 +34189,7 @@ html[data-theme=darkmode] .navbar-expand-lg .offcanvas-bottom {
     border-right: 0;
   }
   html[data-theme=darkmode] .navbar-expand-xl .offcanvas-top,
-html[data-theme=darkmode] .navbar-expand-xl .offcanvas-bottom {
+  html[data-theme=darkmode] .navbar-expand-xl .offcanvas-bottom {
     height: auto;
   }
   html[dir][data-theme=darkmode] .navbar-expand-xl .offcanvas-top, html[dir][data-theme=darkmode] .navbar-expand-xl .offcanvas-bottom {
@@ -34319,7 +34258,7 @@ html[data-theme=darkmode] .navbar-expand-xl .offcanvas-bottom {
     border-right: 0;
   }
   html[data-theme=darkmode] .navbar-expand-xxl .offcanvas-top,
-html[data-theme=darkmode] .navbar-expand-xxl .offcanvas-bottom {
+  html[data-theme=darkmode] .navbar-expand-xxl .offcanvas-bottom {
     height: auto;
   }
   html[dir][data-theme=darkmode] .navbar-expand-xxl .offcanvas-top, html[dir][data-theme=darkmode] .navbar-expand-xxl .offcanvas-bottom {
@@ -34403,16 +34342,16 @@ html[dir][data-theme=darkmode] .navbar-expand .offcanvas-body {
   padding: 0;
 }
 html[data-theme=darkmode] .navbar-light .navbar-brand, html[data-theme=darkmode] .navbar-light .ta-navbar-brand, html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .navbar-brand, html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .ta-navbar-brand, html[data-theme=default] html[data-theme=darkmode] .ta-navbar-top .navbar-brand, html[data-theme=default] html[data-theme=darkmode] .ta-navbar-top .ta-navbar-brand {
-  color: #181a1b;
+  color: rgb(24, 26, 27);
 }
 html[data-theme=darkmode] .navbar-light .navbar-brand:hover, html[data-theme=darkmode] .navbar-light .ta-navbar-brand:hover, html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .navbar-brand:hover, html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .ta-navbar-brand:hover, html[data-theme=default] html[data-theme=darkmode] .ta-navbar-top .navbar-brand:hover, html[data-theme=default] html[data-theme=darkmode] .ta-navbar-top .ta-navbar-brand:hover, html[data-theme=darkmode] .navbar-light .navbar-brand:focus, html[data-theme=darkmode] .navbar-light .ta-navbar-brand:focus, html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .navbar-brand:focus, html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .ta-navbar-brand:focus, html[data-theme=default] html[data-theme=darkmode] .ta-navbar-top .navbar-brand:focus, html[data-theme=default] html[data-theme=darkmode] .ta-navbar-top .ta-navbar-brand:focus {
-  color: #181a1b;
+  color: rgb(24, 26, 27);
 }
 html[data-theme=darkmode] .navbar-light .navbar-nav .nav-link, html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .navbar-nav .nav-link, html[data-theme=default] html[data-theme=darkmode] .ta-navbar-top .navbar-nav .nav-link {
   color: rgba(248, 249, 250, 0.7);
 }
 html[data-theme=darkmode] .navbar-light .navbar-nav .nav-link:hover, html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .navbar-nav .nav-link:hover, html[data-theme=default] html[data-theme=darkmode] .ta-navbar-top .navbar-nav .nav-link:hover, html[data-theme=darkmode] .navbar-light .navbar-nav .nav-link:focus, html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .navbar-nav .nav-link:focus, html[data-theme=default] html[data-theme=darkmode] .ta-navbar-top .navbar-nav .nav-link:focus {
-  color: #181a1b;
+  color: rgb(24, 26, 27);
 }
 html[data-theme=darkmode] .navbar-light .navbar-nav .nav-link.disabled, html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .navbar-nav .nav-link.disabled, html[data-theme=default] html[data-theme=darkmode] .ta-navbar-top .navbar-nav .nav-link.disabled {
   color: rgba(0, 0, 0, 0.3);
@@ -34421,7 +34360,7 @@ html[data-theme=darkmode] .navbar-light .navbar-nav .show > .nav-link, html[data
 html[data-theme=darkmode] .navbar-light .navbar-nav .nav-link.active,
 html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .navbar-nav .nav-link.active,
 html[data-theme=default] html[data-theme=darkmode] .ta-navbar-top .navbar-nav .nav-link.active {
-  color: #181a1b;
+  color: rgb(24, 26, 27);
 }
 html[data-theme=darkmode] .navbar-light .navbar-toggler, html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .navbar-toggler, html[data-theme=default] html[data-theme=darkmode] .ta-navbar-top .navbar-toggler {
   color: rgba(248, 249, 250, 0.7);
@@ -34438,7 +34377,7 @@ html[data-theme=darkmode] .navbar-light .navbar-text, html[data-theme=darkmode] 
 html[data-theme=darkmode] .navbar-light .navbar-text a, html[data-theme=darkmode] html[data-theme=default] .ta-navbar-top .navbar-text a, html[data-theme=default] html[data-theme=darkmode] .ta-navbar-top .navbar-text a,
 html[data-theme=darkmode] .navbar-light .navbar-text a:hover,
 html[data-theme=darkmode] .navbar-light .navbar-text a:focus {
-  color: #181a1b;
+  color: rgb(24, 26, 27);
 }
 html[data-theme=darkmode] .navbar-dark .navbar-brand, html[data-theme=darkmode] .ta-navbar-top .navbar-brand, html[data-theme=darkmode] .navbar-dark .ta-navbar-brand, html[data-theme=darkmode] .ta-navbar-top .ta-navbar-brand {
   color: #fff;
@@ -34485,7 +34424,7 @@ html[data-theme=darkmode] .card {
   word-wrap: break-word;
 }
 html[dir][data-theme=darkmode] .card {
-  background-color: #181a1b;
+  background-color: rgb(24, 26, 27);
   background-clip: border-box;
   border: 1px solid rgba(140, 130, 115, 0.13);
   border-radius: 0.25rem;
@@ -34699,7 +34638,7 @@ html[data-theme=darkmode] .accordion-button {
 }
 html[dir][data-theme=darkmode] .accordion-button {
   padding: 1rem 1.25rem;
-  background-color: #181a1b;
+  background-color: rgb(24, 26, 27);
   border: 0;
   border-radius: 0;
 }
@@ -34768,7 +34707,7 @@ html[dir][data-theme=darkmode] .accordion-header {
   margin-bottom: 0;
 }
 html[dir][data-theme=darkmode] .accordion-item {
-  background-color: #181a1b;
+  background-color: rgb(24, 26, 27);
   border: 1px solid rgba(0, 0, 0, 0.125);
 }
 html[dir=ltr][data-theme=darkmode] .accordion-item:first-of-type {
@@ -34890,7 +34829,7 @@ html[data-theme=darkmode] .page-link, html[data-theme=darkmode] ul.pager li a, h
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 html[dir][data-theme=darkmode] .page-link, html[dir][data-theme=darkmode] ul.pager li a, html[dir][data-theme=default] ul.pager li html[data-theme=darkmode] a {
-  background-color: #181a1b;
+  background-color: rgb(24, 26, 27);
   border: 1px solid rgba(140, 130, 115, 0.13);
 }
 @media (prefers-reduced-motion: reduce) {
@@ -35243,7 +35182,7 @@ html[data-theme=darkmode] .list-group-item {
 }
 html[dir][data-theme=darkmode] .list-group-item {
   padding: 0.5rem 1rem;
-  background-color: #181a1b;
+  background-color: rgb(24, 26, 27);
   border: 1px solid rgba(140, 130, 115, 0.13);
 }
 html[dir=ltr][data-theme=darkmode] .list-group-item:first-child {
@@ -35267,7 +35206,7 @@ html[data-theme=darkmode] .list-group-item.disabled, html[data-theme=darkmode] .
   pointer-events: none;
 }
 html[dir][data-theme=darkmode] .list-group-item.disabled, html[dir][data-theme=darkmode] .list-group-item:disabled {
-  background-color: #181a1b;
+  background-color: rgb(24, 26, 27);
 }
 html[data-theme=darkmode] .list-group-item.active {
   z-index: 2;
@@ -35756,7 +35695,7 @@ html[data-theme=darkmode] .toast-header {
 }
 html[dir][data-theme=darkmode] .toast-header {
   padding: 0.5rem 0.75rem;
-  background-color: #181a1b;
+  background-color: rgb(24, 26, 27);
   background-clip: padding-box;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
@@ -35785,7 +35724,7 @@ html[dir][data-theme=darkmode] .toast-body {
 html[data-theme=darkmode] .modal {
   position: fixed;
   top: 0;
-  z-index: 1055;
+  z-index: 1150;
   display: none;
   width: 100%;
   height: 100%;
@@ -35848,7 +35787,7 @@ html[data-theme=darkmode] .modal-content {
   outline: 0;
 }
 html[dir][data-theme=darkmode] .modal-content {
-  background-color: #181a1b;
+  background-color: rgb(24, 26, 27);
   background-clip: padding-box;
   border: 1px solid rgba(140, 130, 115, 0.13);
   border-radius: 0.3rem;
@@ -35956,7 +35895,7 @@ html[dir][data-theme=darkmode] .modal-footer > * {
 }
 @media (min-width: 992px) {
   html[data-theme=darkmode] .modal-lg,
-html[data-theme=darkmode] .modal-xl {
+  html[data-theme=darkmode] .modal-xl {
     max-width: 800px;
   }
 }
@@ -36272,7 +36211,7 @@ html[data-theme=darkmode] .popover {
 html[dir][data-theme=darkmode] .popover {
   text-align: start;
   text-shadow: none;
-  background-color: #181a1b;
+  background-color: rgb(24, 26, 27);
   background-clip: padding-box;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 0.3rem;
@@ -36298,69 +36237,69 @@ html[dir][data-theme=darkmode] .popover .popover-arrow::before, html[dir][data-t
   border-color: transparent;
   border-style: solid;
 }
-html[data-theme=darkmode] .bs-popover-top > .popover-arrow, html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow, html[data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow {
+html[data-theme=darkmode] .bs-popover-top > .popover-arrow, html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow {
   bottom: calc(-0.5rem - 1px);
 }
-html[data-theme=darkmode] .bs-popover-top > .popover-arrow::before, html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::before, html[data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::before {
+html[data-theme=darkmode] .bs-popover-top > .popover-arrow::before, html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::before {
   bottom: 0;
 }
-html[dir][data-theme=darkmode] .bs-popover-top > .popover-arrow::before, html[dir][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::before, html[dir][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::before {
+html[dir][data-theme=darkmode] .bs-popover-top > .popover-arrow::before, html[dir][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::before {
   border-width: 0.5rem 0.5rem 0;
   border-top-color: rgba(0, 0, 0, 0.25);
 }
-html[data-theme=darkmode] .bs-popover-top > .popover-arrow::after, html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::after, html[data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::after {
+html[data-theme=darkmode] .bs-popover-top > .popover-arrow::after, html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::after {
   bottom: 1px;
 }
-html[dir][data-theme=darkmode] .bs-popover-top > .popover-arrow::after, html[dir][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::after, html[dir][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::after {
+html[dir][data-theme=darkmode] .bs-popover-top > .popover-arrow::after, html[dir][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=top] > .popover-arrow::after {
   border-width: 0.5rem 0.5rem 0;
-  border-top-color: #181a1b;
+  border-top-color: rgb(24, 26, 27);
 }
-html[data-theme=darkmode] .bs-popover-end > .popover-arrow, html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow, html[data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow {
+html[data-theme=darkmode] .bs-popover-end > .popover-arrow, html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow {
   width: 0.5rem;
   height: 1rem;
 }
-html[dir=ltr][data-theme=darkmode] .bs-popover-end > .popover-arrow, html[dir=ltr][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow, html[dir=ltr][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow {
+html[dir=ltr][data-theme=darkmode] .bs-popover-end > .popover-arrow, html[dir=ltr][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow {
   left: calc(-0.5rem - 1px);
 }
-html[dir=rtl][data-theme=darkmode] .bs-popover-end > .popover-arrow, html[dir=rtl][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow, html[dir=rtl][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow {
+html[dir=rtl][data-theme=darkmode] .bs-popover-end > .popover-arrow, html[dir=rtl][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow {
   right: calc(-0.5rem - 1px);
 }
-html[dir=ltr][data-theme=darkmode] .bs-popover-end > .popover-arrow::before, html[dir=ltr][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::before, html[dir=ltr][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::before {
+html[dir=ltr][data-theme=darkmode] .bs-popover-end > .popover-arrow::before, html[dir=ltr][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::before {
   left: 0;
   border-width: 0.5rem 0.5rem 0.5rem 0;
   border-right-color: rgba(0, 0, 0, 0.25);
 }
-html[dir=rtl][data-theme=darkmode] .bs-popover-end > .popover-arrow::before, html[dir=rtl][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::before, html[dir=rtl][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::before {
+html[dir=rtl][data-theme=darkmode] .bs-popover-end > .popover-arrow::before, html[dir=rtl][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::before {
   right: 0;
   border-width: 0.5rem 0 0.5rem 0.5rem;
   border-left-color: rgba(0, 0, 0, 0.25);
 }
-html[dir=ltr][data-theme=darkmode] .bs-popover-end > .popover-arrow::after, html[dir=ltr][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::after, html[dir=ltr][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::after {
+html[dir=ltr][data-theme=darkmode] .bs-popover-end > .popover-arrow::after, html[dir=ltr][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::after {
   left: 1px;
   border-width: 0.5rem 0.5rem 0.5rem 0;
-  border-right-color: #181a1b;
+  border-right-color: rgb(24, 26, 27);
 }
-html[dir=rtl][data-theme=darkmode] .bs-popover-end > .popover-arrow::after, html[dir=rtl][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::after, html[dir=rtl][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::after {
+html[dir=rtl][data-theme=darkmode] .bs-popover-end > .popover-arrow::after, html[dir=rtl][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=right] > .popover-arrow::after {
   right: 1px;
   border-width: 0.5rem 0 0.5rem 0.5rem;
-  border-left-color: #181a1b;
+  border-left-color: rgb(24, 26, 27);
 }
-html[data-theme=darkmode] .bs-popover-bottom > .popover-arrow, html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow, html[data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow {
+html[data-theme=darkmode] .bs-popover-bottom > .popover-arrow, html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow {
   top: calc(-0.5rem - 1px);
 }
-html[data-theme=darkmode] .bs-popover-bottom > .popover-arrow::before, html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::before, html[data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::before {
+html[data-theme=darkmode] .bs-popover-bottom > .popover-arrow::before, html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::before {
   top: 0;
 }
-html[dir][data-theme=darkmode] .bs-popover-bottom > .popover-arrow::before, html[dir][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::before, html[dir][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::before {
+html[dir][data-theme=darkmode] .bs-popover-bottom > .popover-arrow::before, html[dir][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::before {
   border-width: 0 0.5rem 0.5rem 0.5rem;
   border-bottom-color: rgba(0, 0, 0, 0.25);
 }
-html[data-theme=darkmode] .bs-popover-bottom > .popover-arrow::after, html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::after, html[data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::after {
+html[data-theme=darkmode] .bs-popover-bottom > .popover-arrow::after, html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::after {
   top: 1px;
 }
-html[dir][data-theme=darkmode] .bs-popover-bottom > .popover-arrow::after, html[dir][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::after, html[dir][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::after {
+html[dir][data-theme=darkmode] .bs-popover-bottom > .popover-arrow::after, html[dir][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=bottom] > .popover-arrow::after {
   border-width: 0 0.5rem 0.5rem 0.5rem;
-  border-bottom-color: #181a1b;
+  border-bottom-color: rgb(24, 26, 27);
 }
 html[data-theme=darkmode] .bs-popover-bottom .popover-header::before, html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=bottom] .popover-header::before {
   position: absolute;
@@ -36380,35 +36319,35 @@ html[dir=rtl][data-theme=darkmode] .bs-popover-bottom .popover-header::before, h
   right: 50%;
   margin-right: -0.5rem;
 }
-html[data-theme=darkmode] .bs-popover-start > .popover-arrow, html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow, html[data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow {
+html[data-theme=darkmode] .bs-popover-start > .popover-arrow, html[data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow {
   width: 0.5rem;
   height: 1rem;
 }
-html[dir=ltr][data-theme=darkmode] .bs-popover-start > .popover-arrow, html[dir=ltr][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow, html[dir=ltr][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow {
+html[dir=ltr][data-theme=darkmode] .bs-popover-start > .popover-arrow, html[dir=ltr][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow {
   right: calc(-0.5rem - 1px);
 }
-html[dir=rtl][data-theme=darkmode] .bs-popover-start > .popover-arrow, html[dir=rtl][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow, html[dir=rtl][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow {
+html[dir=rtl][data-theme=darkmode] .bs-popover-start > .popover-arrow, html[dir=rtl][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow {
   left: calc(-0.5rem - 1px);
 }
-html[dir=ltr][data-theme=darkmode] .bs-popover-start > .popover-arrow::before, html[dir=ltr][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::before, html[dir=ltr][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::before {
+html[dir=ltr][data-theme=darkmode] .bs-popover-start > .popover-arrow::before, html[dir=ltr][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::before {
   right: 0;
   border-width: 0.5rem 0 0.5rem 0.5rem;
   border-left-color: rgba(0, 0, 0, 0.25);
 }
-html[dir=rtl][data-theme=darkmode] .bs-popover-start > .popover-arrow::before, html[dir=rtl][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::before, html[dir=rtl][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::before {
+html[dir=rtl][data-theme=darkmode] .bs-popover-start > .popover-arrow::before, html[dir=rtl][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::before {
   left: 0;
   border-width: 0.5rem 0.5rem 0.5rem 0;
   border-right-color: rgba(0, 0, 0, 0.25);
 }
-html[dir=ltr][data-theme=darkmode] .bs-popover-start > .popover-arrow::after, html[dir=ltr][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::after, html[dir=ltr][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::after {
+html[dir=ltr][data-theme=darkmode] .bs-popover-start > .popover-arrow::after, html[dir=ltr][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::after {
   right: 1px;
   border-width: 0.5rem 0 0.5rem 0.5rem;
-  border-left-color: #181a1b;
+  border-left-color: rgb(24, 26, 27);
 }
-html[dir=rtl][data-theme=darkmode] .bs-popover-start > .popover-arrow::after, html[dir=rtl][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::after, html[dir=rtl][data-theme=darkmode] html[data-theme=default] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::after {
+html[dir=rtl][data-theme=darkmode] .bs-popover-start > .popover-arrow::after, html[dir=rtl][data-theme=darkmode] .bs-popover-auto[data-popper-placement^=left] > .popover-arrow::after {
   left: 1px;
   border-width: 0.5rem 0.5rem 0.5rem 0;
-  border-right-color: #181a1b;
+  border-right-color: rgb(24, 26, 27);
 }
 html[data-theme=darkmode] .popover-header {
   font-size: 1rem;
@@ -36512,7 +36451,7 @@ html[data-theme=darkmode] .carousel-fade .active.carousel-item-end {
 }
 @media (prefers-reduced-motion: reduce) {
   html[data-theme=darkmode] .carousel-fade .active.carousel-item-start,
-html[data-theme=darkmode] .carousel-fade .active.carousel-item-end {
+  html[data-theme=darkmode] .carousel-fade .active.carousel-item-end {
     transition: none;
   }
 }
@@ -36538,7 +36477,7 @@ html[dir][data-theme=darkmode] .carousel-control-prev, html[dir][data-theme=dark
 }
 @media (prefers-reduced-motion: reduce) {
   html[data-theme=darkmode] .carousel-control-prev,
-html[data-theme=darkmode] .carousel-control-next {
+  html[data-theme=darkmode] .carousel-control-next {
     transition: none;
   }
 }
@@ -36750,7 +36689,7 @@ html[data-theme=darkmode] .offcanvas {
   transition: transform 0.3s ease-in-out;
 }
 html[dir][data-theme=darkmode] .offcanvas {
-  background-color: #181a1b;
+  background-color: rgb(24, 26, 27);
   background-clip: padding-box;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -36975,7 +36914,7 @@ html[data-theme=darkmode] .link-light:hover, html[data-theme=darkmode] .link-lig
   color: #e5e8eb;
 }
 html[data-theme=darkmode] .link-dark {
-  color: #181a1b;
+  color: rgb(24, 26, 27);
 }
 html[data-theme=darkmode] .link-dark:hover, html[data-theme=darkmode] .link-dark:focus {
   color: #131516;
@@ -37044,41 +36983,41 @@ html[dir=rtl][data-theme=darkmode] .fixed-bottom {
 html[data-theme=darkmode] .sticky-top {
   position: sticky;
   top: 0;
-  z-index: 1020;
+  z-index: 1000;
 }
 @media (min-width: 576px) {
   html[data-theme=darkmode] .sticky-sm-top {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
 }
 @media (min-width: 768px) {
   html[data-theme=darkmode] .sticky-md-top {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
 }
 @media (min-width: 992px) {
   html[data-theme=darkmode] .sticky-lg-top {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
 }
 @media (min-width: 1200px) {
   html[data-theme=darkmode] .sticky-xl-top {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
 }
 @media (min-width: 1400px) {
   html[data-theme=darkmode] .sticky-xxl-top {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
 }
 html[data-theme=darkmode] .hstack {
@@ -37387,7 +37326,7 @@ html[dir][data-theme=darkmode] .border-light {
   border-color: #dee2e6 !important;
 }
 html[dir][data-theme=darkmode] .border-dark {
-  border-color: #181a1b !important;
+  border-color: rgb(24, 26, 27) !important;
 }
 html[dir][data-theme=darkmode] .border-white {
   border-color: #fff !important;
@@ -41614,8 +41553,7 @@ html[data-theme=darkmode] select.selectpicker {
   display: none !important;
 }
 html[data-theme=darkmode] .bootstrap-select {
-  width: 220px \0 ;
-  /*IE9 and below*/
+  width: 220px \0 ; /*IE9 and below*/
   vertical-align: middle;
 }
 html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle {
@@ -41638,7 +41576,7 @@ html[dir][data-theme=darkmode] .bootstrap-select > .dropdown-toggle:after {
 html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder:hover, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder:focus, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder:active {
   color: #999;
 }
-html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.button, html[data-theme=darkmode] html[data-theme=default] .bootstrap-select > .dropdown-toggle.bs-placeholder.button, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary:hover, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary:focus, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary:active, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary:hover, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary:focus, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary:active, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success:hover, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success:focus, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success:active, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger:hover, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger:focus, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger:active, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info:hover, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info:focus, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info:active, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark:hover, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark:focus, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark:active {
+html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.button, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary:hover, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary:focus, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-primary:active, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary:hover, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary:focus, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-secondary:active, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success:hover, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success:focus, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-success:active, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger:hover, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger:focus, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-danger:active, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info:hover, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info:focus, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-info:active, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark:hover, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark:focus, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder.btn-dark:active {
   color: rgba(255, 255, 255, 0.5);
 }
 html[data-theme=darkmode] .bootstrap-select > select {
@@ -41673,7 +41611,7 @@ html[dir=rtl][data-theme=darkmode] .bootstrap-select > select.mobile-device {
   right: 0;
 }
 [dir] .has-error html[data-theme=darkmode] .bootstrap-select .dropdown-toggle, [dir] .error html[data-theme=darkmode] .bootstrap-select .dropdown-toggle, html[dir][data-theme=darkmode] .bootstrap-select.is-invalid .dropdown-toggle, html[dir][data-theme=darkmode] .bootstrap-select.has-validation-error .dropdown-toggle, html[dir][data-theme=darkmode] .bootstrap-select.input-validation-error .dropdown-toggle, [dir] .was-validated html[data-theme=darkmode] .bootstrap-select select:invalid + .dropdown-toggle {
-  border-color: #b94a48;
+  border-color: rgb(185, 74, 72);
 }
 html[dir][data-theme=darkmode] .bootstrap-select.is-valid .dropdown-toggle, [dir] .was-validated html[data-theme=darkmode] .bootstrap-select select:valid + .dropdown-toggle {
   border-color: #28a745;
@@ -41968,8 +41906,8 @@ html[data-theme=darkmode] .bootstrap-select .dropdown-menu .notify {
 html[dir][data-theme=darkmode] .bootstrap-select .dropdown-menu .notify {
   margin: 0 2%;
   padding: 3px 5px;
-  background: whitesmoke;
-  border: 1px solid #e3e3e3;
+  background: rgb(245, 245, 245);
+  border: 1px solid rgb(227, 227, 227);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
 }
 html[dir=ltr][data-theme=darkmode] .bootstrap-select .dropdown-menu .notify.fadeOut {
@@ -57005,7 +56943,7 @@ html[dir][data-theme=darkmode] .nav-tabs .nav-link:hover {
   background-color: #757575;
 }
 html[data-theme=darkmode] .nav-tabs .nav-link.active {
-  color: #181a1b;
+  color: rgb(24, 26, 27);
 }
 html[dir][data-theme=darkmode] .nav-tabs .nav-link.active {
   border-top: 1px solid rgba(140, 130, 115, 0.13);
@@ -57091,7 +57029,7 @@ html[data-theme=darkmode] #ui-datepicker-div {
 }
 html[data-theme=darkmode] div.editor-widget.find-widget .button.codicon {
   display: flex;
-  color: #616161;
+  color: rgb(97, 97, 97);
 }
 html[dir][data-theme=darkmode] div.editor-widget.find-widget .button.codicon {
   background-color: transparent;
@@ -57131,16 +57069,16 @@ html[data-theme=darkmode] body {
   --bs-cyan: #3498db;
   --bs-white: #fff;
   --bs-gray: #888;
-  --bs-gray-dark: #181a1b;
+  --bs-gray-dark: rgb(24, 26, 27);
   --bs-gray-100: #f8f9fa;
   --bs-gray-200: #ebebeb;
   --bs-gray-300: #dee2e6;
   --bs-gray-400: #ced4da;
-  --bs-gray-500: #2a2d2f;
+  --bs-gray-500: rgb(42, 45, 47);
   --bs-gray-600: #888;
   --bs-gray-700: rgba(140, 130, 115, 0.13);
-  --bs-gray-800: #181a1b;
-  --bs-gray-900: #181a1b;
+  --bs-gray-800: rgb(24, 26, 27);
+  --bs-gray-900: rgb(24, 26, 27);
   --bs-primary: #007bff;
   --bs-secondary: #6c757d;
   --bs-success: #28a745;
@@ -57148,7 +57086,7 @@ html[data-theme=darkmode] body {
   --bs-warning: #f39c12;
   --bs-danger: #dc3545;
   --bs-light: #dee2e6;
-  --bs-dark: #181a1b;
+  --bs-dark: rgb(24, 26, 27);
   --bs-primary-rgb: 0, 123, 255;
   --bs-secondary-rgb: 108, 117, 125;
   --bs-success-rgb: 40, 167, 69;
@@ -57169,21 +57107,17 @@ html[data-theme=darkmode] body {
   --bs-body-font-weight: 400;
   --bs-body-line-height: 1.5;
   --bs-body-color: #fff;
-  --bs-body-bg: #181a1b;
+  --bs-body-bg: rgb(24, 26, 27);
 }
 html[data-theme=darkmode] .ta-navbar-top {
-  z-index: 1030;
+  z-index: calc(1000 + 100);
+  height: 52px;
 }
 html[dir][data-theme=darkmode] .ta-navbar-top {
-  border-bottom: 1px solid #393e40;
-  padding: 0.3rem 1rem;
+  border-bottom: 1px solid rgb(57, 62, 64);
   box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
-}
-html[dir=ltr][data-theme=darkmode] .ta-navbar-top {
-  padding-left: 0;
-}
-html[dir=rtl][data-theme=darkmode] .ta-navbar-top {
-  padding-right: 0;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 html[data-theme=darkmode] .ta-navbar-top h1, html[data-theme=darkmode] .ta-navbar-top .h1 {
   font-size: 24px;
@@ -57199,9 +57133,6 @@ html[data-theme=darkmode] .ta-navbar-top h1, html[data-theme=darkmode] .ta-navba
     text-overflow: ellipsis;
     height: 32px;
   }
-}
-html[data-theme=darkmode] .ta-navbar-top .nav-link {
-  font-size: 14px;
 }
 html[dir][data-theme=darkmode] .ta-navbar-top .breadcrumb {
   background-color: transparent;
@@ -57232,46 +57163,35 @@ html[data-theme=darkmode] .ta-navbar-top .btn.nav-link, html[data-theme=darkmode
   }
 }
 html[data-theme=darkmode] .ta-navbar-brand {
-  overflow: hidden;
-  height: 42px;
-  width: 259px;
   white-space: nowrap;
-  font-size: 14px;
   transition: width 0.2s ease-in-out;
 }
 html[dir][data-theme=darkmode] .ta-navbar-brand {
-  padding-top: 10px;
+  padding: 0 5px;
 }
-html[dir=ltr][data-theme=darkmode] .ta-navbar-brand {
-  margin-left: 5px;
-}
-html[dir=rtl][data-theme=darkmode] .ta-navbar-brand {
-  margin-right: 5px;
+html[data-theme=darkmode] .ta-navbar-brand span {
+  font-size: 14px;
 }
 html[dir=ltr][data-theme=darkmode] .ta-navbar-brand span:first-child {
-  margin-left: 5px;
+  padding-left: 5px;
 }
 html[dir=rtl][data-theme=darkmode] .ta-navbar-brand span:first-child {
-  margin-right: 5px;
+  padding-right: 5px;
 }
 html[data-theme=darkmode] .ta-navbar-brand span:last-child {
   font-weight: bold;
   color: #fff;
 }
 html[data-theme=darkmode] .ta-navbar-brand img {
-  width: 25px;
+  height: 32px;
 }
 html[dir=ltr][data-theme=darkmode] .ta-navbar-brand img {
-  margin-left: 5px;
-  margin-right: 11px;
+  padding-right: 11px;
+  padding-left: 5px;
 }
 html[dir=rtl][data-theme=darkmode] .ta-navbar-brand img {
-  margin-right: 5px;
-  margin-left: 11px;
-}
-html[data-theme=darkmode] .left-sidebar-compact .ta-navbar-brand {
-  width: 47px;
-  height: 42px;
+  padding-left: 11px;
+  padding-right: 5px;
 }
 html[data-theme=darkmode] .left-sidebar-compact .ta-navbar-brand span {
   display: none;
@@ -57282,15 +57202,21 @@ html[dir=ltr][data-theme=darkmode] .left-sidebar-compact .ta-navbar-top h1, html
 html[dir=rtl][data-theme=darkmode] .left-sidebar-compact .ta-navbar-top h1, html[dir=rtl][data-theme=darkmode] .left-sidebar-compact .ta-navbar-top .h1 {
   right: 63px;
 }
-html[dir=ltr][data-theme=darkmode] .left-sidebar-compact .ta-navbar-top .nav-item {
-  margin-left: 10px;
-}
-html[dir=rtl][data-theme=darkmode] .left-sidebar-compact .ta-navbar-top .nav-item {
-  margin-right: 10px;
-}
 html[data-theme=darkmode] .action-bar {
   top: 3.3rem;
-  z-index: 1050;
+  z-index: calc(1000 + 50);
+}
+html[dir][data-theme=darkmode] .user-top-navbar {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+html[dir=ltr][data-theme=darkmode] .user-top-navbar .nav-item .nav-link {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+html[dir=rtl][data-theme=darkmode] .user-top-navbar .nav-item .nav-link {
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
 }
 html[data-theme=darkmode] .ta-navbar-top {
   color: #dee2e6;
@@ -57307,7 +57233,7 @@ html[data-theme=darkmode] .ta-navbar-brand span:last-child {
   color: #dee2e6;
 }
 html[dir][data-theme=darkmode] .list-group li:hover {
-  background-color: #1b1e1f;
+  background-color: rgb(27, 30, 31);
 }
 html[dir][data-theme=darkmode] .list-group-item.first-child-visible {
   border-top-width: 1px !important;
@@ -57334,19 +57260,19 @@ html[data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar {
   top: 52px;
   bottom: 0;
   width: 260px;
-  color: #b5afa6;
+  color: rgb(181, 175, 166);
 }
 html[dir][data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar {
-  background-color: #242728;
+  background-color: rgb(36, 39, 40);
 }
 html[dir=ltr][data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar {
   left: 0px;
-  border-right: 1px solid #393e40;
+  border-right: 1px solid rgb(57, 62, 64);
   transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
 }
 html[dir=rtl][data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar {
   right: 0px;
-  border-left: 1px solid #393e40;
+  border-left: 1px solid rgb(57, 62, 64);
   transition: right 0.2s ease-in-out, width 0.2s ease-in-out;
 }
 html[data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar ::-webkit-scrollbar {
@@ -57433,7 +57359,7 @@ html[data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar #left
   transition: width 0.2s ease-in-out;
 }
 html[dir][data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li {
-  background-color: #242728;
+  background-color: rgb(36, 39, 40);
 }
 html[data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li > figure > ul > li {
   line-height: 2.5em;
@@ -57469,7 +57395,7 @@ html[data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar #left
   overflow-x: hidden;
   height: 100%;
   scrollbar-width: thin;
-  scrollbar-color: #495057 #242728;
+  scrollbar-color: #495057 rgb(36, 39, 40);
 }
 html[dir][data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin {
   margin-bottom: 40px;
@@ -57511,7 +57437,7 @@ html[data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar #left
 html[data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li a:hover,
 html[data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li a:active,
 html[data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li a:visited {
-  color: #bdb7af;
+  color: rgb(189, 183, 175);
   text-decoration: none;
 }
 html[dir=ltr][data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav ul li .item-label, html[dir=ltr][data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li a:hover, html[dir=ltr][data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li a:active, html[dir=ltr][data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li a:visited {
@@ -57654,7 +57580,7 @@ html[dir=rtl][data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-side
 }
 html[data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar li ul > li > .item-label,
 html[data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar li ul > li > figure > figcaption > .item-label {
-  color: #bdb7af !important;
+  color: rgb(189, 183, 175) !important;
 }
 html[dir][data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar li ul > li > .item-label, html[dir][data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar li ul > li > figure > figcaption > .item-label {
   background: rgba(0, 0, 0, 0.05);
@@ -57702,7 +57628,7 @@ html[data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar .foot
   z-index: 1;
 }
 html[dir][data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar .footer {
-  background-color: #242728 !important;
+  background-color: rgb(36, 39, 40) !important;
 }
 html[data-theme=darkmode] body:not(.left-sidebar-compact) #ta-left-sidebar .footer:before {
   content: "";
@@ -57725,20 +57651,20 @@ html[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar {
   top: 52px;
   bottom: 0;
   width: 48px;
-  color: #b5afa6;
+  color: rgb(181, 175, 166);
   font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 html[dir][data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar {
-  background-color: #242728;
+  background-color: rgb(36, 39, 40);
 }
 html[dir=ltr][data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar {
   left: 0px;
-  border-right: 1px solid #393e40;
+  border-right: 1px solid rgb(57, 62, 64);
   transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
 }
 html[dir=rtl][data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar {
   right: 0px;
-  border-left: 1px solid #393e40;
+  border-left: 1px solid rgb(57, 62, 64);
   transition: right 0.2s ease-in-out, width 0.2s ease-in-out;
 }
 html[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar ::-webkit-scrollbar {
@@ -57785,7 +57711,7 @@ html[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav {
   overflow-x: hidden;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: #495057 #242728;
+  scrollbar-color: #495057 rgb(36, 39, 40);
 }
 html[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav ul {
   white-space: nowrap;
@@ -57793,7 +57719,7 @@ html[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav ul {
 html[dir][data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav ul {
   margin: 0;
   padding: 0;
-  background-color: #1b1e1f;
+  background-color: rgb(27, 30, 31);
 }
 html[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav > ul li {
   position: relative;
@@ -57814,7 +57740,7 @@ html[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav > ul 
   transition: width 0.2s ease-in-out;
 }
 html[dir][data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li {
-  background-color: #242728;
+  background-color: rgb(36, 39, 40);
 }
 html[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li:first-child > span.title:after {
   content: "";
@@ -57876,7 +57802,7 @@ html[dir][data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav 
   background-color: rgba(0, 0, 0, 0.1);
 }
 html[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label .title:hover {
-  color: #b5afa6;
+  color: rgb(181, 175, 166);
 }
 html[dir][data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label .title:hover {
   background-color: rgba(0, 0, 0, 0.1);
@@ -57904,18 +57830,18 @@ html[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav > ul 
   z-index: 9999;
 }
 html[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li .item-label:hover:not(:first-child) {
-  color: #b5afa6;
+  color: rgb(181, 175, 166);
 }
 html[dir][data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li .item-label:hover:not(:first-child) {
   background-color: rgba(0, 0, 0, 0.1);
 }
 html[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label > span.icon {
   display: inline-block !important;
-  color: #bdb7af;
+  color: rgb(189, 183, 175);
   width: 48px;
 }
 html[dir][data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label > span.icon {
-  background-color: #242728;
+  background-color: rgb(36, 39, 40);
 }
 html[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.has-items.active > figure > figcaption > .item-label::before {
   bottom: 0;
@@ -57974,7 +57900,7 @@ html[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav > ul 
   overflow-x: hidden;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: #495057 #242728;
+  scrollbar-color: #495057 rgb(36, 39, 40);
 }
 html[dir][data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > ul {
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
@@ -57989,11 +57915,11 @@ html[dir][data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav 
   background-color: rgba(0, 0, 0, 0.05);
 }
 html[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label {
-  color: #bdb7af;
+  color: rgb(189, 183, 175);
   display: flex;
 }
 html[dir][data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label {
-  background-color: #1b1e1f;
+  background-color: rgb(27, 30, 31);
 }
 html[dir=ltr][data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label {
   padding-left: 0px !important;
@@ -58005,10 +57931,10 @@ html[dir][data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav 
   padding: 0 20px;
 }
 html[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label .title:hover {
-  color: #bdb7af;
+  color: rgb(189, 183, 175);
 }
 html[dir][data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label .title:hover {
-  background-color: #1b1e1f !important;
+  background-color: rgb(27, 30, 31) !important;
 }
 html[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label > span.icon {
   flex-shrink: 0;
@@ -58232,10 +58158,10 @@ html[dir=rtl][data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar li .ac
   right: 0;
 }
 html[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar li > figure ul > li > figure .item-label {
-  color: #bdb7af !important;
+  color: rgb(189, 183, 175) !important;
 }
 html[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar li > .item-label {
-  color: #bdb7af !important;
+  color: rgb(189, 183, 175) !important;
 }
 html[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar li.active > figure ul > li > figure > figcaption > .item-label::before {
   bottom: 0;
@@ -58276,7 +58202,7 @@ html[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar .footer {
   z-index: 1;
 }
 html[dir][data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar .footer {
-  background-color: #242728 !important;
+  background-color: rgb(36, 39, 40) !important;
 }
 html[data-theme=darkmode] .left-sidebar-compact #ta-left-sidebar .footer:before {
   content: "";
@@ -58334,7 +58260,7 @@ html[data-theme=darkmode] .left-sidebar-compact.scroll #ta-left-sidebar #left-na
   overflow-x: hidden;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: #495057 #242728;
+  scrollbar-color: #495057 rgb(36, 39, 40);
   top: 0px;
 }
 html[dir][data-theme=darkmode] .left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li > figure > ul {
@@ -58362,7 +58288,7 @@ html[data-theme=darkmode] .leftbar-compactor {
   display: block;
   width: 48px;
   height: 50px;
-  color: #b5afa6;
+  color: rgb(181, 175, 166);
   font-size: 20px;
   display: block;
 }
@@ -58384,8 +58310,8 @@ html[data-theme=darkmode] .leftbar-compactor:focus {
   outline: none;
 }
 html[data-theme=darkmode] .leftbar-compactor:hover {
-  color: #0078d4;
-  color: var(#0078d4);
+  color: rgb(0, 120, 212);
+  color: var(rgb(0, 120, 212));
 }
 html[dir][data-theme=darkmode] .leftbar-compactor:hover {
   text-shadow: 0 0 4px rgba(0, 120, 212, 0.5);
@@ -58548,10 +58474,10 @@ html[data-theme=darkmode] .unset {
   all: unset;
 }
 html[dir][data-theme=darkmode] .bg-primary {
-  background-color: #1b1e1f !important;
+  background-color: rgb(27, 30, 31) !important;
 }
 html[dir][data-theme=darkmode] #mediaApp {
-  background-color: #181a1b;
+  background-color: rgb(24, 26, 27);
 }
 html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder:hover, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder:focus, html[data-theme=darkmode] .bootstrap-select > .dropdown-toggle.bs-placeholder:active {
   color: #fff !important;
@@ -58572,7 +58498,7 @@ html[dir][data-theme=darkmode] .table-light, html[dir][data-theme=darkmode] .tab
   background-color: #dee2e6;
 }
 html[dir][data-theme=darkmode] .table-dark, html[dir][data-theme=darkmode] .table-dark > th, html[dir][data-theme=darkmode] .table-dark > td {
-  background-color: #181a1b;
+  background-color: rgb(24, 26, 27);
 }
 html[dir][data-theme=darkmode] .table-success, html[dir][data-theme=darkmode] .table-success > th, html[dir][data-theme=darkmode] .table-success > td {
   background-color: #28a745;
@@ -58764,7 +58690,7 @@ html[dir][data-theme=darkmode] .alert-light {
   background-color: #dee2e6;
 }
 html[dir][data-theme=darkmode] .alert-dark {
-  background-color: #181a1b;
+  background-color: rgb(24, 26, 27);
 }
 html[dir][data-theme=darkmode] .card-header {
   background-color: #1b1e1f;

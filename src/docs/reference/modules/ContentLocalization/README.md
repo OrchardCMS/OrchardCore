@@ -12,7 +12,7 @@ Attach this part to a content type to manage multiple localized versions of a co
 
 The `ContentCulturePicker` feature helps you manage cultures for the frontend.
 
-Enabling this module results in
+Enabling this feature results in
 
 - A `ContentRequestCultureProvider` being added as the first method used to determine the current thread culture.
     This Provider will set the thread culture based on the ContentItem that matches the current url.

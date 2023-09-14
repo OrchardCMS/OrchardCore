@@ -30,19 +30,11 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var contentItemId = await GetContentItemIdAsync(workflowContext);
+            var contentItemId = (await GetContentItemIdAsync(workflowContext))
+                ?? throw new InvalidOperationException($"The '{nameof(RetrieveContentTask)}' failed to evaluate the 'ContentItemId'.");
 
-            if (contentItemId == null)
-            {
-                throw new InvalidOperationException($"The '{nameof(RetrieveContentTask)}' failed to evaluate the 'ContentItemId'.");
-            }
-
-            var contentItem = await ContentManager.GetAsync(contentItemId, VersionOptions.Latest);
-
-            if (contentItem == null)
-            {
-                throw new InvalidOperationException($"The '{nameof(RetrieveContentTask)}' failed to retrieve the content item.");
-            }
+            var contentItem = (await ContentManager.GetAsync(contentItemId, VersionOptions.Latest))
+                ?? throw new InvalidOperationException($"The '{nameof(RetrieveContentTask)}' failed to retrieve the content item.");
 
             workflowContext.CorrelationId = contentItem.ContentItemId;
             workflowContext.Properties[ContentEventConstants.ContentItemInputKey] = contentItem;
