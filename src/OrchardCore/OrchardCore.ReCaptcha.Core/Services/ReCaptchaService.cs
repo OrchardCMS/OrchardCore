@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -14,16 +15,14 @@ namespace OrchardCore.ReCaptcha.Services
 {
     public class ReCaptchaService
     {
-        private readonly ReCaptchaClient _reCaptchaClient;
         private readonly ReCaptchaSettings _settings;
         private readonly IEnumerable<IDetectRobots> _robotDetectors;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
         protected readonly IStringLocalizer S;
 
-        public ReCaptchaService(ReCaptchaClient reCaptchaClient, IOptions<ReCaptchaSettings> optionsAccessor, IEnumerable<IDetectRobots> robotDetectors, IHttpContextAccessor httpContextAccessor, ILogger<ReCaptchaService> logger, IStringLocalizer<ReCaptchaService> stringLocalizer)
+        public ReCaptchaService(IOptions<ReCaptchaSettings> optionsAccessor, IEnumerable<IDetectRobots> robotDetectors, IHttpContextAccessor httpContextAccessor, ILogger<ReCaptchaService> logger, IStringLocalizer<ReCaptchaService> stringLocalizer)
         {
-            _reCaptchaClient = reCaptchaClient;
             _settings = optionsAccessor.Value;
             _robotDetectors = robotDetectors;
             _httpContextAccessor = httpContextAccessor;
@@ -65,7 +64,8 @@ namespace OrchardCore.ReCaptcha.Services
         /// <returns></returns>
         public async Task<bool> VerifyCaptchaResponseAsync(string reCaptchaResponse)
         {
-            return !string.IsNullOrWhiteSpace(reCaptchaResponse) && await _reCaptchaClient.VerifyAsync(reCaptchaResponse, _settings.SecretKey);
+            var client = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<ReCaptchaClient>();
+            return !string.IsNullOrWhiteSpace(reCaptchaResponse) && await client.VerifyAsync(reCaptchaResponse, _settings.SecretKey);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace OrchardCore.ReCaptcha.Services
             }
 
             // We use the header value as default if it's passed
-            var reCaptchaResponse = _httpContextAccessor.HttpContext?.Request.Headers[Constants.ReCaptchaServerResponseHeaderName];
+            var reCaptchaResponse = _httpContextAccessor.HttpContext.Request.Headers[Constants.ReCaptchaServerResponseHeaderName];
 
             // If this is a standard form post we get the token from the form values if not affected previously in the header.
             if (string.IsNullOrEmpty(reCaptchaResponse) && (_httpContextAccessor.HttpContext?.Request.HasFormContentType ?? false))
