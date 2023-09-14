@@ -101,195 +101,6 @@
   });
 }(jQuery);
 /* ===========================================================
- * trumbowyg.cleanpaste.js v1.0
- * Font Clean paste plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Authors : Eric Radin
- *           Todd Graham (slackwalker)
- *
- * This plugin will perform a "cleaning" on any paste, in particular
- * it will clean pasted content of microsoft word document tags and classes.
- */
-
-(function ($) {
-  'use strict';
-
-  function checkValidTags(snippet) {
-    var theString = snippet;
-
-    // Replace uppercase element names with lowercase
-    theString = theString.replace(/<[^> ]*/g, function (match) {
-      return match.toLowerCase();
-    });
-
-    // Replace uppercase attribute names with lowercase
-    theString = theString.replace(/<[^>]*>/g, function (match) {
-      match = match.replace(/ [^=]+=/g, function (match2) {
-        return match2.toLowerCase();
-      });
-      return match;
-    });
-
-    // Put quotes around unquoted attributes
-    theString = theString.replace(/<[^>]*>/g, function (match) {
-      match = match.replace(/( [^=]+=)([^"][^ >]*)/g, '$1\"$2\"');
-      return match;
-    });
-    return theString;
-  }
-  function cleanIt(html) {
-    // first make sure all tags and attributes are made valid
-    html = checkValidTags(html);
-
-    // Replace opening bold tags with strong
-    html = html.replace(/<b(\s+|>)/g, '<strong$1');
-    // Replace closing bold tags with closing strong
-    html = html.replace(/<\/b(\s+|>)/g, '</strong$1');
-
-    // Replace italic tags with em
-    html = html.replace(/<i(\s+|>)/g, '<em$1');
-    // Replace closing italic tags with closing em
-    html = html.replace(/<\/i(\s+|>)/g, '</em$1');
-
-    // strip out comments -cgCraft
-    html = html.replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, '');
-
-    // strip out &nbsp; -cgCraft
-    html = html.replace(/&nbsp;/gi, ' ');
-    // strip out extra spaces -cgCraft
-    html = html.replace(/ <\//gi, '</');
-
-    // Remove multiple spaces
-    html.replace(/\s+/g, ' ');
-
-    // strip &nbsp; -cgCraft
-    html = html.replace(/^\s*|\s*$/g, '');
-
-    // Strip out unaccepted attributes
-    html = html.replace(/<[^>]*>/g, function (match) {
-      match = match.replace(/ ([^=]+)="[^"]*"/g, function (match2, attributeName) {
-        if (['alt', 'href', 'src', 'title'].indexOf(attributeName) !== -1) {
-          return match2;
-        }
-        return '';
-      });
-      return match;
-    });
-
-    // Final clean out for MS Word crud
-    html = html.replace(/<\?xml[^>]*>/g, '');
-    html = html.replace(/<[^ >]+:[^>]*>/g, '');
-    html = html.replace(/<\/[^ >]+:[^>]*>/g, '');
-
-    // remove unwanted tags
-    html = html.replace(/<(div|span|style|meta|link).*?>/gi, '');
-    return html;
-  }
-
-  // clean editor
-  // this will clean the inserted contents
-  // it does a compare, before and after paste to determine the
-  // pasted contents
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      cleanPaste: {
-        init: function init(trumbowyg) {
-          trumbowyg.pasteHandlers.push(function (pasteEvent) {
-            setTimeout(function () {
-              try {
-                trumbowyg.saveRange();
-                var clipboardData = (pasteEvent.originalEvent || pasteEvent).clipboardData,
-                  pastedData = clipboardData.getData('Text'),
-                  node = trumbowyg.doc.getSelection().focusNode,
-                  range = trumbowyg.doc.createRange(),
-                  cleanedPaste = cleanIt(pastedData.trim()),
-                  newNode = $(cleanedPaste)[0] || trumbowyg.doc.createTextNode(cleanedPaste);
-                if (trumbowyg.$ed.html() === '') {
-                  // simply append if there is no content in editor
-                  trumbowyg.$ed[0].appendChild(newNode);
-                } else {
-                  // insert pasted content behind last focused node
-                  range.setStartAfter(node);
-                  range.setEndAfter(node);
-                  trumbowyg.doc.getSelection().removeAllRanges();
-                  trumbowyg.doc.getSelection().addRange(range);
-                  trumbowyg.range.insertNode(newNode);
-                }
-
-                // now set cursor right after pasted content
-                range = trumbowyg.doc.createRange();
-                range.setStartAfter(newNode);
-                range.setEndAfter(newNode);
-                trumbowyg.doc.getSelection().removeAllRanges();
-                trumbowyg.doc.getSelection().addRange(range);
-
-                // prevent defaults
-                pasteEvent.stopPropagation();
-                pasteEvent.preventDefault();
-
-                // save new node as focused node
-                trumbowyg.saveRange();
-                trumbowyg.syncCode();
-                trumbowyg.$c.trigger('tbwchange');
-              } catch (c) {}
-            }, 0);
-          });
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.cleanpaste.js v1.0
- * Font Clean paste plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Authors : Eric Radin
- *           Todd Graham (slackwalker)
- *
- * This plugin will perform a "cleaning" on any paste, in particular
- * it will clean pasted content of microsoft word document tags and classes.
- */
-!function (e) {
-  "use strict";
-
-  e.extend(!0, e.trumbowyg, {
-    plugins: {
-      cleanPaste: {
-        init: function init(t) {
-          t.pasteHandlers.push(function (r) {
-            setTimeout(function () {
-              try {
-                t.saveRange();
-                var a = (r.originalEvent || r).clipboardData.getData("Text"),
-                  n = t.doc.getSelection().focusNode,
-                  c = t.doc.createRange(),
-                  g = ((l = (l = (l = (l = (l = (l = (l = (l = (l = a.trim()).replace(/<[^> ]*/g, function (e) {
-                    return e.toLowerCase();
-                  }).replace(/<[^>]*>/g, function (e) {
-                    return e.replace(/ [^=]+=/g, function (e) {
-                      return e.toLowerCase();
-                    });
-                  }).replace(/<[^>]*>/g, function (e) {
-                    return e.replace(/( [^=]+=)([^"][^ >]*)/g, '$1"$2"');
-                  })).replace(/<b(\s+|>)/g, "<strong$1")).replace(/<\/b(\s+|>)/g, "</strong$1")).replace(/<i(\s+|>)/g, "<em$1")).replace(/<\/i(\s+|>)/g, "</em$1")).replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, "")).replace(/&nbsp;/gi, " ")).replace(/ <\//gi, "</")).replace(/\s+/g, " "), (l = (l = (l = (l = (l = l.replace(/^\s*|\s*$/g, "")).replace(/<[^>]*>/g, function (e) {
-                    return e.replace(/ ([^=]+)="[^"]*"/g, function (e, t) {
-                      return -1 !== ["alt", "href", "src", "title"].indexOf(t) ? e : "";
-                    });
-                  })).replace(/<\?xml[^>]*>/g, "")).replace(/<[^ >]+:[^>]*>/g, "")).replace(/<\/[^ >]+:[^>]*>/g, "")).replace(/<(div|span|style|meta|link).*?>/gi, "")),
-                  o = e(g)[0] || t.doc.createTextNode(g);
-                "" === t.$ed.html() ? t.$ed[0].appendChild(o) : (c.setStartAfter(n), c.setEndAfter(n), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), t.range.insertNode(o)), (c = t.doc.createRange()).setStartAfter(o), c.setEndAfter(o), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), r.stopPropagation(), r.preventDefault(), t.saveRange(), t.syncCode(), t.$c.trigger("tbwchange");
-              } catch (e) {}
-              var l;
-            }, 0);
-          });
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
  * trumbowyg.base64.js v1.0
  * Base64 plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -609,6 +420,195 @@
             }
           };
           r.addBtnDef("base64", i);
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.cleanpaste.js v1.0
+ * Font Clean paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Authors : Eric Radin
+ *           Todd Graham (slackwalker)
+ *
+ * This plugin will perform a "cleaning" on any paste, in particular
+ * it will clean pasted content of microsoft word document tags and classes.
+ */
+
+(function ($) {
+  'use strict';
+
+  function checkValidTags(snippet) {
+    var theString = snippet;
+
+    // Replace uppercase element names with lowercase
+    theString = theString.replace(/<[^> ]*/g, function (match) {
+      return match.toLowerCase();
+    });
+
+    // Replace uppercase attribute names with lowercase
+    theString = theString.replace(/<[^>]*>/g, function (match) {
+      match = match.replace(/ [^=]+=/g, function (match2) {
+        return match2.toLowerCase();
+      });
+      return match;
+    });
+
+    // Put quotes around unquoted attributes
+    theString = theString.replace(/<[^>]*>/g, function (match) {
+      match = match.replace(/( [^=]+=)([^"][^ >]*)/g, '$1\"$2\"');
+      return match;
+    });
+    return theString;
+  }
+  function cleanIt(html) {
+    // first make sure all tags and attributes are made valid
+    html = checkValidTags(html);
+
+    // Replace opening bold tags with strong
+    html = html.replace(/<b(\s+|>)/g, '<strong$1');
+    // Replace closing bold tags with closing strong
+    html = html.replace(/<\/b(\s+|>)/g, '</strong$1');
+
+    // Replace italic tags with em
+    html = html.replace(/<i(\s+|>)/g, '<em$1');
+    // Replace closing italic tags with closing em
+    html = html.replace(/<\/i(\s+|>)/g, '</em$1');
+
+    // strip out comments -cgCraft
+    html = html.replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, '');
+
+    // strip out &nbsp; -cgCraft
+    html = html.replace(/&nbsp;/gi, ' ');
+    // strip out extra spaces -cgCraft
+    html = html.replace(/ <\//gi, '</');
+
+    // Remove multiple spaces
+    html.replace(/\s+/g, ' ');
+
+    // strip &nbsp; -cgCraft
+    html = html.replace(/^\s*|\s*$/g, '');
+
+    // Strip out unaccepted attributes
+    html = html.replace(/<[^>]*>/g, function (match) {
+      match = match.replace(/ ([^=]+)="[^"]*"/g, function (match2, attributeName) {
+        if (['alt', 'href', 'src', 'title'].indexOf(attributeName) !== -1) {
+          return match2;
+        }
+        return '';
+      });
+      return match;
+    });
+
+    // Final clean out for MS Word crud
+    html = html.replace(/<\?xml[^>]*>/g, '');
+    html = html.replace(/<[^ >]+:[^>]*>/g, '');
+    html = html.replace(/<\/[^ >]+:[^>]*>/g, '');
+
+    // remove unwanted tags
+    html = html.replace(/<(div|span|style|meta|link).*?>/gi, '');
+    return html;
+  }
+
+  // clean editor
+  // this will clean the inserted contents
+  // it does a compare, before and after paste to determine the
+  // pasted contents
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      cleanPaste: {
+        init: function init(trumbowyg) {
+          trumbowyg.pasteHandlers.push(function (pasteEvent) {
+            setTimeout(function () {
+              try {
+                trumbowyg.saveRange();
+                var clipboardData = (pasteEvent.originalEvent || pasteEvent).clipboardData,
+                  pastedData = clipboardData.getData('Text'),
+                  node = trumbowyg.doc.getSelection().focusNode,
+                  range = trumbowyg.doc.createRange(),
+                  cleanedPaste = cleanIt(pastedData.trim()),
+                  newNode = $(cleanedPaste)[0] || trumbowyg.doc.createTextNode(cleanedPaste);
+                if (trumbowyg.$ed.html() === '') {
+                  // simply append if there is no content in editor
+                  trumbowyg.$ed[0].appendChild(newNode);
+                } else {
+                  // insert pasted content behind last focused node
+                  range.setStartAfter(node);
+                  range.setEndAfter(node);
+                  trumbowyg.doc.getSelection().removeAllRanges();
+                  trumbowyg.doc.getSelection().addRange(range);
+                  trumbowyg.range.insertNode(newNode);
+                }
+
+                // now set cursor right after pasted content
+                range = trumbowyg.doc.createRange();
+                range.setStartAfter(newNode);
+                range.setEndAfter(newNode);
+                trumbowyg.doc.getSelection().removeAllRanges();
+                trumbowyg.doc.getSelection().addRange(range);
+
+                // prevent defaults
+                pasteEvent.stopPropagation();
+                pasteEvent.preventDefault();
+
+                // save new node as focused node
+                trumbowyg.saveRange();
+                trumbowyg.syncCode();
+                trumbowyg.$c.trigger('tbwchange');
+              } catch (c) {}
+            }, 0);
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.cleanpaste.js v1.0
+ * Font Clean paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Authors : Eric Radin
+ *           Todd Graham (slackwalker)
+ *
+ * This plugin will perform a "cleaning" on any paste, in particular
+ * it will clean pasted content of microsoft word document tags and classes.
+ */
+!function (e) {
+  "use strict";
+
+  e.extend(!0, e.trumbowyg, {
+    plugins: {
+      cleanPaste: {
+        init: function init(t) {
+          t.pasteHandlers.push(function (r) {
+            setTimeout(function () {
+              try {
+                t.saveRange();
+                var a = (r.originalEvent || r).clipboardData.getData("Text"),
+                  n = t.doc.getSelection().focusNode,
+                  c = t.doc.createRange(),
+                  g = ((l = (l = (l = (l = (l = (l = (l = (l = (l = a.trim()).replace(/<[^> ]*/g, function (e) {
+                    return e.toLowerCase();
+                  }).replace(/<[^>]*>/g, function (e) {
+                    return e.replace(/ [^=]+=/g, function (e) {
+                      return e.toLowerCase();
+                    });
+                  }).replace(/<[^>]*>/g, function (e) {
+                    return e.replace(/( [^=]+=)([^"][^ >]*)/g, '$1"$2"');
+                  })).replace(/<b(\s+|>)/g, "<strong$1")).replace(/<\/b(\s+|>)/g, "</strong$1")).replace(/<i(\s+|>)/g, "<em$1")).replace(/<\/i(\s+|>)/g, "</em$1")).replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, "")).replace(/&nbsp;/gi, " ")).replace(/ <\//gi, "</")).replace(/\s+/g, " "), (l = (l = (l = (l = (l = l.replace(/^\s*|\s*$/g, "")).replace(/<[^>]*>/g, function (e) {
+                    return e.replace(/ ([^=]+)="[^"]*"/g, function (e, t) {
+                      return -1 !== ["alt", "href", "src", "title"].indexOf(t) ? e : "";
+                    });
+                  })).replace(/<\?xml[^>]*>/g, "")).replace(/<[^ >]+:[^>]*>/g, "")).replace(/<\/[^ >]+:[^>]*>/g, "")).replace(/<(div|span|style|meta|link).*?>/gi, "")),
+                  o = e(g)[0] || t.doc.createTextNode(g);
+                "" === t.$ed.html() ? t.$ed[0].appendChild(o) : (c.setStartAfter(n), c.setEndAfter(n), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), t.range.insertNode(o)), (c = t.doc.createRange()).setStartAfter(o), c.setEndAfter(o), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), r.stopPropagation(), r.preventDefault(), t.saveRange(), t.syncCode(), t.$c.trigger("tbwchange");
+              } catch (e) {}
+              var l;
+            }, 0);
+          });
         }
       }
     }
@@ -2905,380 +2905,6 @@
     }
   });
 }(jQuery);
-/*/* ===========================================================
- * trumbowyg.insertaudio.js v1.0
- * InsertAudio plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Adam Hess (AdamHess)
- */
-
-(function ($) {
-  'use strict';
-
-  var insertAudioOptions = {
-    src: {
-      label: 'URL',
-      required: true
-    },
-    autoplay: {
-      label: 'AutoPlay',
-      required: false,
-      type: 'checkbox'
-    },
-    muted: {
-      label: 'Muted',
-      required: false,
-      type: 'checkbox'
-    },
-    preload: {
-      label: 'preload options',
-      required: false
-    }
-  };
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        insertAudio: 'Insert Audio'
-      },
-      az: {
-        insertAudio: 'Səs yerləşdir'
-      },
-      by: {
-        insertAudio: 'Уставіць аўдыё'
-      },
-      ca: {
-        insertAudio: 'Inserir Audio'
-      },
-      da: {
-        insertAudio: 'Indsæt lyd'
-      },
-      es: {
-        insertAudio: 'Insertar Audio'
-      },
-      et: {
-        insertAudio: 'Lisa helifail'
-      },
-      fr: {
-        insertAudio: 'Insérer un son'
-      },
-      hu: {
-        insertAudio: 'Audio beszúrás'
-      },
-      ja: {
-        insertAudio: '音声の挿入'
-      },
-      ko: {
-        insertAudio: '소리 넣기'
-      },
-      pt_br: {
-        insertAudio: 'Inserir áudio'
-      },
-      ru: {
-        insertAudio: 'Вставить аудио'
-      },
-      sl: {
-        insertAudio: 'Vstavi zvočno datoteko'
-      },
-      tr: {
-        insertAudio: 'Ses Ekle'
-      }
-      // jshint camelcase:true
-    },
-
-    plugins: {
-      insertAudio: {
-        init: function init(trumbowyg) {
-          var btnDef = {
-            fn: function fn() {
-              var insertAudioCallback = function insertAudioCallback(v) {
-                // controls should always be show otherwise the audio will
-                // be invisible defeating the point of a wysiwyg
-                var html = '<audio controls';
-                if (v.src) {
-                  html += ' src=\'' + v.src + '\'';
-                }
-                if (v.autoplay) {
-                  html += ' autoplay';
-                }
-                if (v.muted) {
-                  html += ' muted';
-                }
-                if (v.preload) {
-                  html += ' preload=\'' + v + '\'';
-                }
-                html += '></audio>';
-                var node = $(html)[0];
-                trumbowyg.range.deleteContents();
-                trumbowyg.range.insertNode(node);
-                return true;
-              };
-              trumbowyg.openModalInsert(trumbowyg.lang.insertAudio, insertAudioOptions, insertAudioCallback);
-            }
-          };
-          trumbowyg.addBtnDef('insertAudio', btnDef);
-        }
-      }
-    }
-  });
-})(jQuery);
-/*/* ===========================================================
- * trumbowyg.insertaudio.js v1.0
- * InsertAudio plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Adam Hess (AdamHess)
- */
-!function (e) {
-  "use strict";
-
-  var i = {
-    src: {
-      label: "URL",
-      required: !0
-    },
-    autoplay: {
-      label: "AutoPlay",
-      required: !1,
-      type: "checkbox"
-    },
-    muted: {
-      label: "Muted",
-      required: !1,
-      type: "checkbox"
-    },
-    preload: {
-      label: "preload options",
-      required: !1
-    }
-  };
-  e.extend(!0, e.trumbowyg, {
-    langs: {
-      en: {
-        insertAudio: "Insert Audio"
-      },
-      az: {
-        insertAudio: "Səs yerləşdir"
-      },
-      by: {
-        insertAudio: "Уставіць аўдыё"
-      },
-      ca: {
-        insertAudio: "Inserir Audio"
-      },
-      da: {
-        insertAudio: "Indsæt lyd"
-      },
-      es: {
-        insertAudio: "Insertar Audio"
-      },
-      et: {
-        insertAudio: "Lisa helifail"
-      },
-      fr: {
-        insertAudio: "Insérer un son"
-      },
-      hu: {
-        insertAudio: "Audio beszúrás"
-      },
-      ja: {
-        insertAudio: "音声の挿入"
-      },
-      ko: {
-        insertAudio: "소리 넣기"
-      },
-      pt_br: {
-        insertAudio: "Inserir áudio"
-      },
-      ru: {
-        insertAudio: "Вставить аудио"
-      },
-      sl: {
-        insertAudio: "Vstavi zvočno datoteko"
-      },
-      tr: {
-        insertAudio: "Ses Ekle"
-      }
-    },
-    plugins: {
-      insertAudio: {
-        init: function init(r) {
-          var t = {
-            fn: function fn() {
-              r.openModalInsert(r.lang.insertAudio, i, function (i) {
-                var t = "<audio controls";
-                i.src && (t += " src='" + i.src + "'"), i.autoplay && (t += " autoplay"), i.muted && (t += " muted"), i.preload && (t += " preload='" + i + "'");
-                var o = e(t += "></audio>")[0];
-                return r.range.deleteContents(), r.range.insertNode(o), !0;
-              });
-            }
-          };
-          r.addBtnDef("insertAudio", t);
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.indent.js v1.0
- * Indent or Outdent plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Fabacks
- *          Website : https://github.com/Fabacks
- */
-
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        indent: 'Indent',
-        outdent: 'Outdent'
-      },
-      az: {
-        indent: 'Girinti',
-        outdent: 'Çıxıntı'
-      },
-      by: {
-        indent: 'Водступ',
-        outdent: 'Выступ'
-      },
-      et: {
-        indent: 'Taande suurendamine',
-        outdent: 'Taande vähendamine'
-      },
-      fr: {
-        indent: 'Augmenter le retrait',
-        outdent: 'Diminuer le retrait'
-      },
-      pt_br: {
-        indent: 'Aumentar Recuo',
-        outdent: 'Diminuir Recuo'
-      },
-      ru: {
-        indent: 'Отступ',
-        outdent: 'Выступ'
-      },
-      sl: {
-        indent: 'Povečaj zamik',
-        outdent: 'Zmanjšaj zamik'
-      },
-      tr: {
-        indent: 'Girinti',
-        outdent: 'Çıkıntı'
-      }
-      // jshint camelcase:true
-    }
-  });
-
-  // Adds the extra button definition
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      paragraph: {
-        init: function init(trumbowyg) {
-          var indentBtnDef = {
-            fn: 'indent',
-            title: trumbowyg.lang.indent,
-            isSupported: function isSupported() {
-              return !!document.queryCommandSupported && !!document.queryCommandSupported('indent');
-            },
-            ico: 'indent'
-          };
-          var outdentBtnDef = {
-            fn: 'outdent',
-            title: trumbowyg.lang.outdent,
-            isSupported: function isSupported() {
-              return !!document.queryCommandSupported && !!document.queryCommandSupported('outdent');
-            },
-            ico: 'outdent'
-          };
-          trumbowyg.addBtnDef('indent', indentBtnDef);
-          trumbowyg.addBtnDef('outdent', outdentBtnDef);
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.indent.js v1.0
- * Indent or Outdent plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Fabacks
- *          Website : https://github.com/Fabacks
- */
-!function (n) {
-  "use strict";
-
-  n.extend(!0, n.trumbowyg, {
-    langs: {
-      en: {
-        indent: "Indent",
-        outdent: "Outdent"
-      },
-      az: {
-        indent: "Girinti",
-        outdent: "Çıxıntı"
-      },
-      by: {
-        indent: "Водступ",
-        outdent: "Выступ"
-      },
-      et: {
-        indent: "Taande suurendamine",
-        outdent: "Taande vähendamine"
-      },
-      fr: {
-        indent: "Augmenter le retrait",
-        outdent: "Diminuer le retrait"
-      },
-      pt_br: {
-        indent: "Aumentar Recuo",
-        outdent: "Diminuir Recuo"
-      },
-      ru: {
-        indent: "Отступ",
-        outdent: "Выступ"
-      },
-      sl: {
-        indent: "Povečaj zamik",
-        outdent: "Zmanjšaj zamik"
-      },
-      tr: {
-        indent: "Girinti",
-        outdent: "Çıkıntı"
-      }
-    }
-  }), n.extend(!0, n.trumbowyg, {
-    plugins: {
-      paragraph: {
-        init: function init(n) {
-          var t = {
-              fn: "indent",
-              title: n.lang.indent,
-              isSupported: function isSupported() {
-                return !!document.queryCommandSupported && !!document.queryCommandSupported("indent");
-              },
-              ico: "indent"
-            },
-            e = {
-              fn: "outdent",
-              title: n.lang.outdent,
-              isSupported: function isSupported() {
-                return !!document.queryCommandSupported && !!document.queryCommandSupported("outdent");
-              },
-              ico: "outdent"
-            };
-          n.addBtnDef("indent", t), n.addBtnDef("outdent", e);
-        }
-      }
-    }
-  });
-}(jQuery);
 (function ($) {
   'use strict';
 
@@ -3660,215 +3286,375 @@
     }
   });
 }(jQuery);
-/* ===========================================================
- * trumbowyg.mention.js v0.1
- * Mention plugin for Trumbowyg
+/*/* ===========================================================
+ * trumbowyg.insertaudio.js v1.0
+ * InsertAudio plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
  * ===========================================================
- * Author : Viper
- *          Github: https://github.com/Globulopolis
- *          Website: http://киноархив.com
+ * Author : Adam Hess (AdamHess)
  */
 
 (function ($) {
   'use strict';
 
-  var defaultOptions = {
-    source: [],
-    formatDropdownItem: formatDropdownItem,
-    formatResult: formatResult
+  var insertAudioOptions = {
+    src: {
+      label: 'URL',
+      required: true
+    },
+    autoplay: {
+      label: 'AutoPlay',
+      required: false,
+      type: 'checkbox'
+    },
+    muted: {
+      label: 'Muted',
+      required: false,
+      type: 'checkbox'
+    },
+    preload: {
+      label: 'preload options',
+      required: false
+    }
   };
   $.extend(true, $.trumbowyg, {
     langs: {
       // jshint camelcase:false
       en: {
-        mention: 'Mention'
+        insertAudio: 'Insert Audio'
       },
       az: {
-        mention: 'Bildirmək'
+        insertAudio: 'Səs yerləşdir'
       },
       by: {
-        mention: 'Згадаць'
+        insertAudio: 'Уставіць аўдыё'
+      },
+      ca: {
+        insertAudio: 'Inserir Audio'
       },
       da: {
-        mention: 'Nævn'
+        insertAudio: 'Indsæt lyd'
+      },
+      es: {
+        insertAudio: 'Insertar Audio'
       },
       et: {
-        mention: 'Maini'
+        insertAudio: 'Lisa helifail'
       },
       fr: {
-        mention: 'Mentionner'
+        insertAudio: 'Insérer un son'
       },
       hu: {
-        mention: 'Említ'
+        insertAudio: 'Audio beszúrás'
+      },
+      ja: {
+        insertAudio: '音声の挿入'
       },
       ko: {
-        mention: '언급'
+        insertAudio: '소리 넣기'
       },
       pt_br: {
-        mention: 'Menção'
+        insertAudio: 'Inserir áudio'
       },
       ru: {
-        mention: 'Упомянуть'
+        insertAudio: 'Вставить аудио'
       },
       sl: {
-        mention: 'Omeni'
+        insertAudio: 'Vstavi zvočno datoteko'
       },
       tr: {
-        mention: 'Bahset'
-      },
-      zh_tw: {
-        mention: '標記'
+        insertAudio: 'Ses Ekle'
       }
       // jshint camelcase:true
     },
 
     plugins: {
-      mention: {
+      insertAudio: {
         init: function init(trumbowyg) {
-          trumbowyg.o.plugins.mention = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.mention || {});
           var btnDef = {
-            dropdown: buildDropdown(trumbowyg.o.plugins.mention.source, trumbowyg)
+            fn: function fn() {
+              var insertAudioCallback = function insertAudioCallback(v) {
+                // controls should always be show otherwise the audio will
+                // be invisible defeating the point of a wysiwyg
+                var html = '<audio controls';
+                if (v.src) {
+                  html += ' src=\'' + v.src + '\'';
+                }
+                if (v.autoplay) {
+                  html += ' autoplay';
+                }
+                if (v.muted) {
+                  html += ' muted';
+                }
+                if (v.preload) {
+                  html += ' preload=\'' + v + '\'';
+                }
+                html += '></audio>';
+                var node = $(html)[0];
+                trumbowyg.range.deleteContents();
+                trumbowyg.range.insertNode(node);
+                return true;
+              };
+              trumbowyg.openModalInsert(trumbowyg.lang.insertAudio, insertAudioOptions, insertAudioCallback);
+            }
           };
-          trumbowyg.addBtnDef('mention', btnDef);
+          trumbowyg.addBtnDef('insertAudio', btnDef);
         }
       }
     }
   });
-
-  /**
-   * Build dropdown list
-   *
-   * @param {Array}   items      Items
-   * @param {object}  trumbowyg  Editor
-   *
-   * @return {Array}
-   */
-  function buildDropdown(items, trumbowyg) {
-    var dropdown = [];
-    $.each(items, function (i, item) {
-      var btn = 'mention-' + i,
-        btnDef = {
-          hasIcon: false,
-          text: trumbowyg.o.plugins.mention.formatDropdownItem(item),
-          fn: function fn() {
-            trumbowyg.execCmd('insertHTML', trumbowyg.o.plugins.mention.formatResult(item));
-            return true;
-          }
-        };
-      trumbowyg.addBtnDef(btn, btnDef);
-      dropdown.push(btn);
-    });
-    return dropdown;
-  }
-
-  /**
-   * Format item in dropdown.
-   *
-   * @param   {object}  item  Item object.
-   *
-   * @return  {string}
-   */
-  function formatDropdownItem(item) {
-    return item.login;
-  }
-
-  /**
-   * Format result pasted in editor.
-   *
-   * @param   {object}  item  Item object.
-   *
-   * @return  {string}
-   */
-  function formatResult(item) {
-    return '@' + item.login + ' ';
-  }
 })(jQuery);
-/* ===========================================================
- * trumbowyg.mention.js v0.1
- * Mention plugin for Trumbowyg
+/*/* ===========================================================
+ * trumbowyg.insertaudio.js v1.0
+ * InsertAudio plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
  * ===========================================================
- * Author : Viper
- *          Github: https://github.com/Globulopolis
- *          Website: http://киноархив.com
+ * Author : Adam Hess (AdamHess)
+ */
+!function (e) {
+  "use strict";
+
+  var i = {
+    src: {
+      label: "URL",
+      required: !0
+    },
+    autoplay: {
+      label: "AutoPlay",
+      required: !1,
+      type: "checkbox"
+    },
+    muted: {
+      label: "Muted",
+      required: !1,
+      type: "checkbox"
+    },
+    preload: {
+      label: "preload options",
+      required: !1
+    }
+  };
+  e.extend(!0, e.trumbowyg, {
+    langs: {
+      en: {
+        insertAudio: "Insert Audio"
+      },
+      az: {
+        insertAudio: "Səs yerləşdir"
+      },
+      by: {
+        insertAudio: "Уставіць аўдыё"
+      },
+      ca: {
+        insertAudio: "Inserir Audio"
+      },
+      da: {
+        insertAudio: "Indsæt lyd"
+      },
+      es: {
+        insertAudio: "Insertar Audio"
+      },
+      et: {
+        insertAudio: "Lisa helifail"
+      },
+      fr: {
+        insertAudio: "Insérer un son"
+      },
+      hu: {
+        insertAudio: "Audio beszúrás"
+      },
+      ja: {
+        insertAudio: "音声の挿入"
+      },
+      ko: {
+        insertAudio: "소리 넣기"
+      },
+      pt_br: {
+        insertAudio: "Inserir áudio"
+      },
+      ru: {
+        insertAudio: "Вставить аудио"
+      },
+      sl: {
+        insertAudio: "Vstavi zvočno datoteko"
+      },
+      tr: {
+        insertAudio: "Ses Ekle"
+      }
+    },
+    plugins: {
+      insertAudio: {
+        init: function init(r) {
+          var t = {
+            fn: function fn() {
+              r.openModalInsert(r.lang.insertAudio, i, function (i) {
+                var t = "<audio controls";
+                i.src && (t += " src='" + i.src + "'"), i.autoplay && (t += " autoplay"), i.muted && (t += " muted"), i.preload && (t += " preload='" + i + "'");
+                var o = e(t += "></audio>")[0];
+                return r.range.deleteContents(), r.range.insertNode(o), !0;
+              });
+            }
+          };
+          r.addBtnDef("insertAudio", t);
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.indent.js v1.0
+ * Indent or Outdent plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Fabacks
+ *          Website : https://github.com/Fabacks
+ */
+
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        indent: 'Indent',
+        outdent: 'Outdent'
+      },
+      az: {
+        indent: 'Girinti',
+        outdent: 'Çıxıntı'
+      },
+      by: {
+        indent: 'Водступ',
+        outdent: 'Выступ'
+      },
+      et: {
+        indent: 'Taande suurendamine',
+        outdent: 'Taande vähendamine'
+      },
+      fr: {
+        indent: 'Augmenter le retrait',
+        outdent: 'Diminuer le retrait'
+      },
+      pt_br: {
+        indent: 'Aumentar Recuo',
+        outdent: 'Diminuir Recuo'
+      },
+      ru: {
+        indent: 'Отступ',
+        outdent: 'Выступ'
+      },
+      sl: {
+        indent: 'Povečaj zamik',
+        outdent: 'Zmanjšaj zamik'
+      },
+      tr: {
+        indent: 'Girinti',
+        outdent: 'Çıkıntı'
+      }
+      // jshint camelcase:true
+    }
+  });
+
+  // Adds the extra button definition
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      paragraph: {
+        init: function init(trumbowyg) {
+          var indentBtnDef = {
+            fn: 'indent',
+            title: trumbowyg.lang.indent,
+            isSupported: function isSupported() {
+              return !!document.queryCommandSupported && !!document.queryCommandSupported('indent');
+            },
+            ico: 'indent'
+          };
+          var outdentBtnDef = {
+            fn: 'outdent',
+            title: trumbowyg.lang.outdent,
+            isSupported: function isSupported() {
+              return !!document.queryCommandSupported && !!document.queryCommandSupported('outdent');
+            },
+            ico: 'outdent'
+          };
+          trumbowyg.addBtnDef('indent', indentBtnDef);
+          trumbowyg.addBtnDef('outdent', outdentBtnDef);
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.indent.js v1.0
+ * Indent or Outdent plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Fabacks
+ *          Website : https://github.com/Fabacks
  */
 !function (n) {
   "use strict";
 
-  var t = {
-    source: [],
-    formatDropdownItem: function formatDropdownItem(n) {
-      return n.login;
-    },
-    formatResult: function formatResult(n) {
-      return "@" + n.login + " ";
-    }
-  };
-  function o(t, o) {
-    var e = [];
-    return n.each(t, function (n, t) {
-      var i = "mention-" + n,
-        m = {
-          hasIcon: !1,
-          text: o.o.plugins.mention.formatDropdownItem(t),
-          fn: function fn() {
-            return o.execCmd("insertHTML", o.o.plugins.mention.formatResult(t)), !0;
-          }
-        };
-      o.addBtnDef(i, m), e.push(i);
-    }), e;
-  }
   n.extend(!0, n.trumbowyg, {
     langs: {
       en: {
-        mention: "Mention"
+        indent: "Indent",
+        outdent: "Outdent"
       },
       az: {
-        mention: "Bildirmək"
+        indent: "Girinti",
+        outdent: "Çıxıntı"
       },
       by: {
-        mention: "Згадаць"
-      },
-      da: {
-        mention: "Nævn"
+        indent: "Водступ",
+        outdent: "Выступ"
       },
       et: {
-        mention: "Maini"
+        indent: "Taande suurendamine",
+        outdent: "Taande vähendamine"
       },
       fr: {
-        mention: "Mentionner"
-      },
-      hu: {
-        mention: "Említ"
-      },
-      ko: {
-        mention: "언급"
+        indent: "Augmenter le retrait",
+        outdent: "Diminuer le retrait"
       },
       pt_br: {
-        mention: "Menção"
+        indent: "Aumentar Recuo",
+        outdent: "Diminuir Recuo"
       },
       ru: {
-        mention: "Упомянуть"
+        indent: "Отступ",
+        outdent: "Выступ"
       },
       sl: {
-        mention: "Omeni"
+        indent: "Povečaj zamik",
+        outdent: "Zmanjšaj zamik"
       },
       tr: {
-        mention: "Bahset"
-      },
-      zh_tw: {
-        mention: "標記"
+        indent: "Girinti",
+        outdent: "Çıkıntı"
       }
-    },
+    }
+  }), n.extend(!0, n.trumbowyg, {
     plugins: {
-      mention: {
-        init: function init(e) {
-          e.o.plugins.mention = n.extend(!0, {}, t, e.o.plugins.mention || {});
-          var i = {
-            dropdown: o(e.o.plugins.mention.source, e)
-          };
-          e.addBtnDef("mention", i);
+      paragraph: {
+        init: function init(n) {
+          var t = {
+              fn: "indent",
+              title: n.lang.indent,
+              isSupported: function isSupported() {
+                return !!document.queryCommandSupported && !!document.queryCommandSupported("indent");
+              },
+              ico: "indent"
+            },
+            e = {
+              fn: "outdent",
+              title: n.lang.outdent,
+              isSupported: function isSupported() {
+                return !!document.queryCommandSupported && !!document.queryCommandSupported("outdent");
+              },
+              ico: "outdent"
+            };
+          n.addBtnDef("indent", t), n.addBtnDef("outdent", e);
         }
       }
     }
@@ -4407,6 +4193,220 @@
   });
 }(jQuery);
 /* ===========================================================
+ * trumbowyg.mention.js v0.1
+ * Mention plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Viper
+ *          Github: https://github.com/Globulopolis
+ *          Website: http://киноархив.com
+ */
+
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    source: [],
+    formatDropdownItem: formatDropdownItem,
+    formatResult: formatResult
+  };
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        mention: 'Mention'
+      },
+      az: {
+        mention: 'Bildirmək'
+      },
+      by: {
+        mention: 'Згадаць'
+      },
+      da: {
+        mention: 'Nævn'
+      },
+      et: {
+        mention: 'Maini'
+      },
+      fr: {
+        mention: 'Mentionner'
+      },
+      hu: {
+        mention: 'Említ'
+      },
+      ko: {
+        mention: '언급'
+      },
+      pt_br: {
+        mention: 'Menção'
+      },
+      ru: {
+        mention: 'Упомянуть'
+      },
+      sl: {
+        mention: 'Omeni'
+      },
+      tr: {
+        mention: 'Bahset'
+      },
+      zh_tw: {
+        mention: '標記'
+      }
+      // jshint camelcase:true
+    },
+
+    plugins: {
+      mention: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.mention = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.mention || {});
+          var btnDef = {
+            dropdown: buildDropdown(trumbowyg.o.plugins.mention.source, trumbowyg)
+          };
+          trumbowyg.addBtnDef('mention', btnDef);
+        }
+      }
+    }
+  });
+
+  /**
+   * Build dropdown list
+   *
+   * @param {Array}   items      Items
+   * @param {object}  trumbowyg  Editor
+   *
+   * @return {Array}
+   */
+  function buildDropdown(items, trumbowyg) {
+    var dropdown = [];
+    $.each(items, function (i, item) {
+      var btn = 'mention-' + i,
+        btnDef = {
+          hasIcon: false,
+          text: trumbowyg.o.plugins.mention.formatDropdownItem(item),
+          fn: function fn() {
+            trumbowyg.execCmd('insertHTML', trumbowyg.o.plugins.mention.formatResult(item));
+            return true;
+          }
+        };
+      trumbowyg.addBtnDef(btn, btnDef);
+      dropdown.push(btn);
+    });
+    return dropdown;
+  }
+
+  /**
+   * Format item in dropdown.
+   *
+   * @param   {object}  item  Item object.
+   *
+   * @return  {string}
+   */
+  function formatDropdownItem(item) {
+    return item.login;
+  }
+
+  /**
+   * Format result pasted in editor.
+   *
+   * @param   {object}  item  Item object.
+   *
+   * @return  {string}
+   */
+  function formatResult(item) {
+    return '@' + item.login + ' ';
+  }
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.mention.js v0.1
+ * Mention plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Viper
+ *          Github: https://github.com/Globulopolis
+ *          Website: http://киноархив.com
+ */
+!function (n) {
+  "use strict";
+
+  var t = {
+    source: [],
+    formatDropdownItem: function formatDropdownItem(n) {
+      return n.login;
+    },
+    formatResult: function formatResult(n) {
+      return "@" + n.login + " ";
+    }
+  };
+  function o(t, o) {
+    var e = [];
+    return n.each(t, function (n, t) {
+      var i = "mention-" + n,
+        m = {
+          hasIcon: !1,
+          text: o.o.plugins.mention.formatDropdownItem(t),
+          fn: function fn() {
+            return o.execCmd("insertHTML", o.o.plugins.mention.formatResult(t)), !0;
+          }
+        };
+      o.addBtnDef(i, m), e.push(i);
+    }), e;
+  }
+  n.extend(!0, n.trumbowyg, {
+    langs: {
+      en: {
+        mention: "Mention"
+      },
+      az: {
+        mention: "Bildirmək"
+      },
+      by: {
+        mention: "Згадаць"
+      },
+      da: {
+        mention: "Nævn"
+      },
+      et: {
+        mention: "Maini"
+      },
+      fr: {
+        mention: "Mentionner"
+      },
+      hu: {
+        mention: "Említ"
+      },
+      ko: {
+        mention: "언급"
+      },
+      pt_br: {
+        mention: "Menção"
+      },
+      ru: {
+        mention: "Упомянуть"
+      },
+      sl: {
+        mention: "Omeni"
+      },
+      tr: {
+        mention: "Bahset"
+      },
+      zh_tw: {
+        mention: "標記"
+      }
+    },
+    plugins: {
+      mention: {
+        init: function init(e) {
+          e.o.plugins.mention = n.extend(!0, {}, t, e.o.plugins.mention || {});
+          var i = {
+            dropdown: o(e.o.plugins.mention.source, e)
+          };
+          e.addBtnDef("mention", i);
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
  * trumbowyg.pasteembed.js v1.0
  * Url paste to iframe with noembed. Plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -4621,6 +4621,254 @@
               i && (t.stopPropagation(), t.preventDefault());
             } catch (e) {}
           });
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.preformatted.js v1.0
+ * Preformatted plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Casella Edoardo (Civile)
+ */
+
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        preformatted: 'Code sample <pre>'
+      },
+      az: {
+        preformatted: 'Kod nümunəsi <pre>'
+      },
+      by: {
+        preformatted: 'Прыклад кода <pre>'
+      },
+      da: {
+        preformatted: 'Præformateret <pre>'
+      },
+      et: {
+        preformatted: 'Eelvormindatud tekst <pre>'
+      },
+      fr: {
+        preformatted: 'Exemple de code <pre>'
+      },
+      hu: {
+        preformatted: 'Kód minta <pre>'
+      },
+      it: {
+        preformatted: 'Codice <pre>'
+      },
+      ja: {
+        preformatted: 'コードサンプル <pre>'
+      },
+      ko: {
+        preformatted: '코드 예제 <pre>'
+      },
+      pt_br: {
+        preformatted: 'Exemple de código <pre>'
+      },
+      ru: {
+        preformatted: 'Пример кода <pre>'
+      },
+      sl: {
+        preformatted: 'Vstavi neformatiran tekst <pre>'
+      },
+      tr: {
+        preformatted: 'Kod örneği <pre>'
+      },
+      zh_cn: {
+        preformatted: '代码示例 <pre>'
+      },
+      zh_tw: {
+        preformatted: '代碼範例 <pre>'
+      }
+    },
+    // jshint camelcase:true
+
+    plugins: {
+      preformatted: {
+        init: function init(trumbowyg) {
+          var btnDef = {
+            fn: function fn() {
+              trumbowyg.saveRange();
+              var text = trumbowyg.getRangeText();
+              if (text.replace(/\s/g, '') !== '') {
+                try {
+                  var curtag = getSelectionParentElement().tagName.toLowerCase();
+                  if (curtag === 'code' || curtag === 'pre') {
+                    return unwrapCode();
+                  } else {
+                    trumbowyg.execCmd('insertHTML', '<pre><code>' + strip(text) + '</code></pre>');
+                  }
+                } catch (e) {}
+              }
+            },
+            tag: 'pre'
+          };
+          trumbowyg.addBtnDef('preformatted', btnDef);
+        }
+      }
+    }
+  });
+
+  /*
+   * GetSelectionParentElement
+   */
+  function getSelectionParentElement() {
+    var parentEl = null,
+      selection;
+    if (window.getSelection) {
+      selection = window.getSelection();
+      if (selection.rangeCount) {
+        parentEl = selection.getRangeAt(0).commonAncestorContainer;
+        if (parentEl.nodeType !== 1) {
+          parentEl = parentEl.parentNode;
+        }
+      }
+    } else if ((selection = document.selection) && selection.type !== 'Control') {
+      parentEl = selection.createRange().parentElement();
+    }
+    return parentEl;
+  }
+
+  /*
+   * Strip
+   * returns a text without HTML tags
+   */
+  function strip(html) {
+    var tmp = document.createElement('DIV');
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || '';
+  }
+
+  /*
+   * UnwrapCode
+   * ADD/FIX: to improve, works but can be better
+   * "paranoic" solution
+   */
+  function unwrapCode() {
+    var container = null;
+    if (document.selection) {
+      //for IE
+      container = document.selection.createRange().parentElement();
+    } else {
+      var select = window.getSelection();
+      if (select.rangeCount > 0) {
+        container = select.getRangeAt(0).startContainer.parentNode;
+      }
+    }
+
+    //'paranoic' unwrap
+    var ispre = $(container).contents().closest('pre').length;
+    var iscode = $(container).contents().closest('code').length;
+    if (ispre && iscode) {
+      $(container).contents().unwrap('code').unwrap('pre');
+    } else if (ispre) {
+      $(container).contents().unwrap('pre');
+    } else if (iscode) {
+      $(container).contents().unwrap('code');
+    }
+  }
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.preformatted.js v1.0
+ * Preformatted plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Casella Edoardo (Civile)
+ */
+!function (e) {
+  "use strict";
+
+  e.extend(!0, e.trumbowyg, {
+    langs: {
+      en: {
+        preformatted: "Code sample <pre>"
+      },
+      az: {
+        preformatted: "Kod nümunəsi <pre>"
+      },
+      by: {
+        preformatted: "Прыклад кода <pre>"
+      },
+      da: {
+        preformatted: "Præformateret <pre>"
+      },
+      et: {
+        preformatted: "Eelvormindatud tekst <pre>"
+      },
+      fr: {
+        preformatted: "Exemple de code <pre>"
+      },
+      hu: {
+        preformatted: "Kód minta <pre>"
+      },
+      it: {
+        preformatted: "Codice <pre>"
+      },
+      ja: {
+        preformatted: "コードサンプル <pre>"
+      },
+      ko: {
+        preformatted: "코드 예제 <pre>"
+      },
+      pt_br: {
+        preformatted: "Exemple de código <pre>"
+      },
+      ru: {
+        preformatted: "Пример кода <pre>"
+      },
+      sl: {
+        preformatted: "Vstavi neformatiran tekst <pre>"
+      },
+      tr: {
+        preformatted: "Kod örneği <pre>"
+      },
+      zh_cn: {
+        preformatted: "代码示例 <pre>"
+      },
+      zh_tw: {
+        preformatted: "代碼範例 <pre>"
+      }
+    },
+    plugins: {
+      preformatted: {
+        init: function init(t) {
+          var r = {
+            fn: function fn() {
+              t.saveRange();
+              var r,
+                n,
+                o = t.getRangeText();
+              if ("" !== o.replace(/\s/g, "")) try {
+                var a = function () {
+                  var e,
+                    t = null;
+                  window.getSelection ? (e = window.getSelection()).rangeCount && 1 !== (t = e.getRangeAt(0).commonAncestorContainer).nodeType && (t = t.parentNode) : (e = document.selection) && "Control" !== e.type && (t = e.createRange().parentElement());
+                  return t;
+                }().tagName.toLowerCase();
+                if ("code" === a || "pre" === a) return function () {
+                  var t = null;
+                  if (document.selection) t = document.selection.createRange().parentElement();else {
+                    var r = window.getSelection();
+                    r.rangeCount > 0 && (t = r.getRangeAt(0).startContainer.parentNode);
+                  }
+                  var n = e(t).contents().closest("pre").length,
+                    o = e(t).contents().closest("code").length;
+                  n && o ? e(t).contents().unwrap("code").unwrap("pre") : n ? e(t).contents().unwrap("pre") : o && e(t).contents().unwrap("code");
+                }();
+                t.execCmd("insertHTML", "<pre><code>" + (r = o, (n = document.createElement("DIV")).innerHTML = r, (n.textContent || n.innerText || "") + "</code></pre>"));
+              } catch (e) {}
+            },
+            tag: "pre"
+          };
+          t.addBtnDef("preformatted", r);
         }
       }
     }
@@ -5171,254 +5419,6 @@
         },
         destroy: function destroy() {
           this.destroyResizable();
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.preformatted.js v1.0
- * Preformatted plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Casella Edoardo (Civile)
- */
-
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        preformatted: 'Code sample <pre>'
-      },
-      az: {
-        preformatted: 'Kod nümunəsi <pre>'
-      },
-      by: {
-        preformatted: 'Прыклад кода <pre>'
-      },
-      da: {
-        preformatted: 'Præformateret <pre>'
-      },
-      et: {
-        preformatted: 'Eelvormindatud tekst <pre>'
-      },
-      fr: {
-        preformatted: 'Exemple de code <pre>'
-      },
-      hu: {
-        preformatted: 'Kód minta <pre>'
-      },
-      it: {
-        preformatted: 'Codice <pre>'
-      },
-      ja: {
-        preformatted: 'コードサンプル <pre>'
-      },
-      ko: {
-        preformatted: '코드 예제 <pre>'
-      },
-      pt_br: {
-        preformatted: 'Exemple de código <pre>'
-      },
-      ru: {
-        preformatted: 'Пример кода <pre>'
-      },
-      sl: {
-        preformatted: 'Vstavi neformatiran tekst <pre>'
-      },
-      tr: {
-        preformatted: 'Kod örneği <pre>'
-      },
-      zh_cn: {
-        preformatted: '代码示例 <pre>'
-      },
-      zh_tw: {
-        preformatted: '代碼範例 <pre>'
-      }
-    },
-    // jshint camelcase:true
-
-    plugins: {
-      preformatted: {
-        init: function init(trumbowyg) {
-          var btnDef = {
-            fn: function fn() {
-              trumbowyg.saveRange();
-              var text = trumbowyg.getRangeText();
-              if (text.replace(/\s/g, '') !== '') {
-                try {
-                  var curtag = getSelectionParentElement().tagName.toLowerCase();
-                  if (curtag === 'code' || curtag === 'pre') {
-                    return unwrapCode();
-                  } else {
-                    trumbowyg.execCmd('insertHTML', '<pre><code>' + strip(text) + '</code></pre>');
-                  }
-                } catch (e) {}
-              }
-            },
-            tag: 'pre'
-          };
-          trumbowyg.addBtnDef('preformatted', btnDef);
-        }
-      }
-    }
-  });
-
-  /*
-   * GetSelectionParentElement
-   */
-  function getSelectionParentElement() {
-    var parentEl = null,
-      selection;
-    if (window.getSelection) {
-      selection = window.getSelection();
-      if (selection.rangeCount) {
-        parentEl = selection.getRangeAt(0).commonAncestorContainer;
-        if (parentEl.nodeType !== 1) {
-          parentEl = parentEl.parentNode;
-        }
-      }
-    } else if ((selection = document.selection) && selection.type !== 'Control') {
-      parentEl = selection.createRange().parentElement();
-    }
-    return parentEl;
-  }
-
-  /*
-   * Strip
-   * returns a text without HTML tags
-   */
-  function strip(html) {
-    var tmp = document.createElement('DIV');
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || '';
-  }
-
-  /*
-   * UnwrapCode
-   * ADD/FIX: to improve, works but can be better
-   * "paranoic" solution
-   */
-  function unwrapCode() {
-    var container = null;
-    if (document.selection) {
-      //for IE
-      container = document.selection.createRange().parentElement();
-    } else {
-      var select = window.getSelection();
-      if (select.rangeCount > 0) {
-        container = select.getRangeAt(0).startContainer.parentNode;
-      }
-    }
-
-    //'paranoic' unwrap
-    var ispre = $(container).contents().closest('pre').length;
-    var iscode = $(container).contents().closest('code').length;
-    if (ispre && iscode) {
-      $(container).contents().unwrap('code').unwrap('pre');
-    } else if (ispre) {
-      $(container).contents().unwrap('pre');
-    } else if (iscode) {
-      $(container).contents().unwrap('code');
-    }
-  }
-})(jQuery);
-/* ===========================================================
- * trumbowyg.preformatted.js v1.0
- * Preformatted plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Casella Edoardo (Civile)
- */
-!function (e) {
-  "use strict";
-
-  e.extend(!0, e.trumbowyg, {
-    langs: {
-      en: {
-        preformatted: "Code sample <pre>"
-      },
-      az: {
-        preformatted: "Kod nümunəsi <pre>"
-      },
-      by: {
-        preformatted: "Прыклад кода <pre>"
-      },
-      da: {
-        preformatted: "Præformateret <pre>"
-      },
-      et: {
-        preformatted: "Eelvormindatud tekst <pre>"
-      },
-      fr: {
-        preformatted: "Exemple de code <pre>"
-      },
-      hu: {
-        preformatted: "Kód minta <pre>"
-      },
-      it: {
-        preformatted: "Codice <pre>"
-      },
-      ja: {
-        preformatted: "コードサンプル <pre>"
-      },
-      ko: {
-        preformatted: "코드 예제 <pre>"
-      },
-      pt_br: {
-        preformatted: "Exemple de código <pre>"
-      },
-      ru: {
-        preformatted: "Пример кода <pre>"
-      },
-      sl: {
-        preformatted: "Vstavi neformatiran tekst <pre>"
-      },
-      tr: {
-        preformatted: "Kod örneği <pre>"
-      },
-      zh_cn: {
-        preformatted: "代码示例 <pre>"
-      },
-      zh_tw: {
-        preformatted: "代碼範例 <pre>"
-      }
-    },
-    plugins: {
-      preformatted: {
-        init: function init(t) {
-          var r = {
-            fn: function fn() {
-              t.saveRange();
-              var r,
-                n,
-                o = t.getRangeText();
-              if ("" !== o.replace(/\s/g, "")) try {
-                var a = function () {
-                  var e,
-                    t = null;
-                  window.getSelection ? (e = window.getSelection()).rangeCount && 1 !== (t = e.getRangeAt(0).commonAncestorContainer).nodeType && (t = t.parentNode) : (e = document.selection) && "Control" !== e.type && (t = e.createRange().parentElement());
-                  return t;
-                }().tagName.toLowerCase();
-                if ("code" === a || "pre" === a) return function () {
-                  var t = null;
-                  if (document.selection) t = document.selection.createRange().parentElement();else {
-                    var r = window.getSelection();
-                    r.rangeCount > 0 && (t = r.getRangeAt(0).startContainer.parentNode);
-                  }
-                  var n = e(t).contents().closest("pre").length,
-                    o = e(t).contents().closest("code").length;
-                  n && o ? e(t).contents().unwrap("code").unwrap("pre") : n ? e(t).contents().unwrap("pre") : o && e(t).contents().unwrap("code");
-                }();
-                t.execCmd("insertHTML", "<pre><code>" + (r = o, (n = document.createElement("DIV")).innerHTML = r, (n.textContent || n.innerText || "") + "</code></pre>"));
-              } catch (e) {}
-            },
-            tag: "pre"
-          };
-          t.addBtnDef("preformatted", r);
         }
       }
     }

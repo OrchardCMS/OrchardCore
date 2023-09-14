@@ -33,7 +33,7 @@ function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _ty
 function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 /*!
-  * Bootstrap v5.3.1 (https://getbootstrap.com/)
+  * Bootstrap v5.3.2 (https://getbootstrap.com/)
   * Copyright 2011-2023 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
   */
@@ -770,7 +770,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   /**
    * Constants
    */
-  var VERSION = '5.3.1';
+  var VERSION = '5.3.2';
 
   /**
    * Class definition
@@ -884,9 +884,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (hrefAttribute.includes('#') && !hrefAttribute.startsWith('#')) {
         hrefAttribute = "#".concat(hrefAttribute.split('#')[1]);
       }
-      selector = hrefAttribute && hrefAttribute !== '#' ? hrefAttribute.trim() : null;
+      selector = hrefAttribute && hrefAttribute !== '#' ? parseSelector(hrefAttribute.trim()) : null;
     }
-    return parseSelector(selector);
+    return selector;
   };
   var SelectorEngine = {
     find: function find(selector) {
@@ -4973,7 +4973,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var CLASS_DROPDOWN = 'dropdown';
   var SELECTOR_DROPDOWN_TOGGLE = '.dropdown-toggle';
   var SELECTOR_DROPDOWN_MENU = '.dropdown-menu';
-  var NOT_SELECTOR_DROPDOWN_TOGGLE = ':not(.dropdown-toggle)';
+  var NOT_SELECTOR_DROPDOWN_TOGGLE = ":not(".concat(SELECTOR_DROPDOWN_TOGGLE, ")");
   var SELECTOR_TAB_PANEL = '.list-group, .nav, [role="tablist"]';
   var SELECTOR_OUTER = '.nav-item, .list-group-item';
   var SELECTOR_INNER = ".nav-link".concat(NOT_SELECTOR_DROPDOWN_TOGGLE, ", .list-group-item").concat(NOT_SELECTOR_DROPDOWN_TOGGLE, ", [role=\"tab\"]").concat(NOT_SELECTOR_DROPDOWN_TOGGLE);

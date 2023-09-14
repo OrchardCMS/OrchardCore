@@ -179,24 +179,24 @@ namespace OrchardCore.Resources
                 .DefineScript("bootstrap")
                 .SetDependencies("popperjs")
                 .SetUrl("~/OrchardCore.Resources/Scripts/bootstrap.min.js", "~/OrchardCore.Resources/Scripts/bootstrap.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js", "https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.js")
-                .SetCdnIntegrity("sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa", "sha384-QxrwoUH4d7Wrt+fB3AlGg3JwZcpBYbMryqlOhMweIAEgZvT99mmlLSWgM5heOYx1")
-                .SetVersion("5.3.1");
+                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js", "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.js")
+                .SetCdnIntegrity("sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+", "sha384-0OXpCFnSQ8aVy03XgJ/CRB6pSELypcPWNcgqPnyguU/ADjPf/kx/dG4WfXjjU64D")
+                .SetVersion("5.3.2");
 
             manifest
                 .DefineScript("bootstrap-bundle")
                 .SetDependencies("jQuery")
                 .SetUrl("~/OrchardCore.Resources/Scripts/bootstrap.bundle.min.js", "~/OrchardCore.Resources/Scripts/bootstrap.bundle.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js", "https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.js")
-                .SetCdnIntegrity("sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm", "sha384-PI+w+S5NNazhZX0fqdfFf1mLY8W4RVWGG/lo2hUGi1kRnMHtRWL8RnDYDh/yQ81X")
-                .SetVersion("5.3.1");
+                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js", "https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.js")
+                .SetCdnIntegrity("sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL", "sha384-PI+w+S5NNazhZX0fqdfFf1mLY8W4RVWGG/lo2hUGi1kRnMHtRWL8RnDYDh/yQ81X")
+                .SetVersion("5.3.2");
 
             manifest
                 .DefineStyle("bootstrap")
                 .SetUrl("~/OrchardCore.Resources/Styles/bootstrap.min.css", "~/OrchardCore.Resources/Styles/bootstrap.css")
-                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css", "https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.css")
-                .SetCdnIntegrity("sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9", "sha384-apgwmwKRpy7AYJWhW5tiFM0F8egDkpneD3Jrkj66VVFOvuLaWhMJqByfz1QEUdxU")
-                .SetVersion("5.3.1");
+                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css", "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.css")
+                .SetCdnIntegrity("sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN", "sha384-8dbpXuP2nso7zrhApj0aSxeb0ZitbTeO0hTKxRcXavYE0vv4nhBEqvv+o+0X94A8")
+                .SetVersion("5.3.2");
 
             manifest
                 .DefineStyle("bootstrap-select")
