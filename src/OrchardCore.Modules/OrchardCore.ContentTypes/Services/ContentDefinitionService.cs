@@ -21,7 +21,7 @@ namespace OrchardCore.ContentTypes.Services
         private readonly IEnumerable<IContentDefinitionEventHandler> _contentDefinitionEventHandlers;
         private readonly IEnumerable<Type> _contentPartTypes;
         private readonly IEnumerable<Type> _contentFieldTypes;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly ILogger _logger;
 
         public ContentDefinitionService(
@@ -100,12 +100,12 @@ namespace OrchardCore.ContentTypes.Services
 
         public ContentTypeDefinition AddType(string name, string displayName)
         {
-            if (String.IsNullOrWhiteSpace(displayName))
+            if (string.IsNullOrWhiteSpace(displayName))
             {
-                throw new ArgumentException(nameof(displayName));
+                throw new ArgumentException("The 'displayName' can't be null or empty.", nameof(displayName));
             }
 
-            if (String.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(name))
             {
                 name = GenerateContentTypeNameFromDisplayName(displayName);
             }
@@ -113,11 +113,11 @@ namespace OrchardCore.ContentTypes.Services
             {
                 if (!name[0].IsLetter())
                 {
-                    throw new ArgumentException("Content type name must start with a letter", "name");
+                    throw new ArgumentException("Content type name must start with a letter", nameof(name));
                 }
-                if (!String.Equals(name, name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+                if (!string.Equals(name, name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
                 {
-                    throw new ArgumentException("Content type name contains invalid characters", "name");
+                    throw new ArgumentException("Content type name contains invalid characters", nameof(name));
                 }
             }
 
@@ -129,7 +129,8 @@ namespace OrchardCore.ContentTypes.Services
             var contentTypeDefinition = new ContentTypeDefinition(name, displayName);
 
             _contentDefinitionManager.StoreTypeDefinition(contentTypeDefinition);
-            // Ensure it has its own part
+
+            // Ensure it has its own part.
             _contentDefinitionManager.AlterTypeDefinition(name, builder => builder.WithPart(name));
             _contentDefinitionManager.AlterTypeDefinition(name, cfg => cfg.Creatable().Draftable().Versionable().Listable().Securable());
 
@@ -140,14 +141,14 @@ namespace OrchardCore.ContentTypes.Services
 
         public void RemoveType(string name, bool deleteContent)
         {
-            // first remove all attached parts
+            // First remove all attached parts.
             var typeDefinition = _contentDefinitionManager.LoadTypeDefinition(name);
             var partDefinitions = typeDefinition.Parts.ToArray();
             foreach (var partDefinition in partDefinitions)
             {
                 RemovePartFromType(partDefinition.PartDefinition.Name, name);
 
-                // delete the part if it's its own part
+                // Delete the part if it's its own part.
                 if (partDefinition.PartDefinition.Name == name)
                 {
                     RemovePart(name);
@@ -186,8 +187,8 @@ namespace OrchardCore.ContentTypes.Services
         {
             var typeNames = new HashSet<string>(LoadTypes().Select(ctd => ctd.Name));
 
-            // user-defined parts
-            // except for those parts with the same name as a type (implicit type's part or a mistake)
+            // User-defined parts.
+            // Except for those parts with the same name as a type (implicit type's part or a mistake).
             var userContentParts = _contentDefinitionManager.LoadPartDefinitions()
                 .Where(cpd => !typeNames.Contains(cpd.Name))
                 .Select(cpd => new EditPartViewModel(cpd))
@@ -195,7 +196,7 @@ namespace OrchardCore.ContentTypes.Services
                     k => k.Name,
                     v => v);
 
-            // code-defined parts
+            // Code-defined parts.
             var codeDefinedParts = metadataPartsOnly
                 ? Enumerable.Empty<EditPartViewModel>()
                 : _contentPartTypes
@@ -203,7 +204,7 @@ namespace OrchardCore.ContentTypes.Services
                         .Select(cpi => new EditPartViewModel { Name = cpi.Name, DisplayName = cpi.Name })
                     .ToList();
 
-            // Order by display name
+            // Order by display name.
             return codeDefinedParts
                 .Union(userContentParts.Values)
                 .OrderBy(m => m.DisplayName);
@@ -213,8 +214,8 @@ namespace OrchardCore.ContentTypes.Services
         {
             var typeNames = new HashSet<string>(GetTypes().Select(ctd => ctd.Name));
 
-            // user-defined parts
-            // except for those parts with the same name as a type (implicit type's part or a mistake)
+            // User-defined parts.
+            // Except for those parts with the same name as a type (implicit type's part or a mistake).
             var userContentParts = _contentDefinitionManager.ListPartDefinitions()
                 .Where(cpd => !typeNames.Contains(cpd.Name))
                 .Select(cpd => new EditPartViewModel(cpd))
@@ -222,7 +223,7 @@ namespace OrchardCore.ContentTypes.Services
                     k => k.Name,
                     v => v);
 
-            // code-defined parts
+            // Code-defined parts.
             var codeDefinedParts = metadataPartsOnly
                 ? Enumerable.Empty<EditPartViewModel>()
                 : _contentPartTypes
@@ -230,7 +231,7 @@ namespace OrchardCore.ContentTypes.Services
                         .Select(cpi => new EditPartViewModel { Name = cpi.Name, DisplayName = cpi.Name })
                     .ToList();
 
-            // Order by display name
+            // Order by display name.
             return codeDefinedParts
                 .Union(userContentParts.Values)
                 .OrderBy(m => m.DisplayName);
@@ -302,7 +303,7 @@ namespace OrchardCore.ContentTypes.Services
 
             if (partDefinition == null)
             {
-                // Couldn't find this named part, ignore it
+                // Couldn't find this named part, ignore it.
                 return;
             }
 
@@ -328,15 +329,15 @@ namespace OrchardCore.ContentTypes.Services
 
         public void AddFieldToPart(string fieldName, string displayName, string fieldTypeName, string partName)
         {
-            if (String.IsNullOrEmpty(fieldName))
+            if (string.IsNullOrEmpty(fieldName))
             {
-                throw new ArgumentException(nameof(fieldName));
+                throw new ArgumentException("The 'fieldName' can't be null or empty.", nameof(fieldName));
             }
 
             var partDefinition = _contentDefinitionManager.LoadPartDefinition(partName);
             var typeDefinition = _contentDefinitionManager.LoadTypeDefinition(partName);
 
-            // If the type exists ensure it has its own part
+            // If the type exists ensure it has its own part.
             if (typeDefinition != null)
             {
                 _contentDefinitionManager.AlterTypeDefinition(partName, builder => builder.WithPart(partName));
@@ -444,16 +445,12 @@ namespace OrchardCore.ContentTypes.Services
 
             if (part == null)
             {
-                var type = _contentDefinitionManager.LoadTypeDefinition(partName);
-
-                if (type == null)
-                {
-                    throw new ArgumentException("The part doesn't exist: " + partName);
-                }
+                var type = _contentDefinitionManager.LoadTypeDefinition(partName)
+                    ?? throw new ArgumentException("The part doesn't exist: " + partName);
 
                 var typePart = type.Parts.FirstOrDefault(x => x.PartDefinition.Name == partName);
 
-                // id passed in might be that of a type w/ no implicit field
+                // Id passed in might be that of a type w/ no implicit field.
                 if (typePart == null)
                 {
                     return displayName;
@@ -468,7 +465,7 @@ namespace OrchardCore.ContentTypes.Services
                 fieldDefinitions = part.Fields.ToArray();
             }
 
-            while (fieldDefinitions.Any(x => String.Equals(displayName.Trim(), x.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
+            while (fieldDefinitions.Any(x => string.Equals(displayName.Trim(), x.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
                 displayName = VersionName(displayName);
 
             return displayName;
@@ -482,7 +479,8 @@ namespace OrchardCore.ContentTypes.Services
             if (nameParts.Length > 1 && int.TryParse(nameParts.Last(), out version))
             {
                 version = version > 0 ? ++version : 2;
-                //this could unintentionally chomp something that looks like a version
+
+                // This could unintentionally chomp something that looks like a version.
                 name = string.Join("-", nameParts.Take(nameParts.Length - 1));
             }
             else

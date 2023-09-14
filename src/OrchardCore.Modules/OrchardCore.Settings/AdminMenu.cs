@@ -2,12 +2,13 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
+using OrchardCore.Settings.Drivers;
 
 namespace OrchardCore.Settings
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
@@ -16,7 +17,7 @@ namespace OrchardCore.Settings
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
@@ -28,11 +29,11 @@ namespace OrchardCore.Settings
                     .Add(S["Settings"], "1", settings => settings
                     .Add(S["General"], "1", entry => entry
                     .AddClass("general").Id("general")
-                        .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" })
+                        .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = DefaultSiteSettingsDisplayDriver.GroupId })
                         .Permission(Permissions.ManageGroupSettings)
                         .LocalNav()
-                    )
-                , priority: 1)
+                    ),
+                    priority: 1)
             );
 
             return Task.CompletedTask;

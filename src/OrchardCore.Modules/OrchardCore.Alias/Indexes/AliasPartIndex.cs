@@ -23,7 +23,7 @@ namespace OrchardCore.Alias.Indexes
     public class AliasPartIndexProvider : ContentHandlerBase, IIndexProvider, IScopedIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly HashSet<string> _partRemoved = new HashSet<string>();
+        private readonly HashSet<string> _partRemoved = new();
         private IContentDefinitionManager _contentDefinitionManager;
 
         public AliasPartIndexProvider(IServiceProvider serviceProvider)
@@ -71,7 +71,7 @@ namespace OrchardCore.Alias.Indexes
                     }
 
                     var part = contentItem.As<AliasPart>();
-                    if (part == null || String.IsNullOrEmpty(part.Alias))
+                    if (part == null || string.IsNullOrEmpty(part.Alias))
                     {
                         return null;
                     }

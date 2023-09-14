@@ -14,6 +14,7 @@ namespace OrchardCore.DisplayManagement.Shapes
     public class GroupShapes : IShapeAttributeProvider
     {
         [Shape]
+#pragma warning disable CA1822 // Mark members as static
         public IHtmlContent AdminTabs(IShape shape)
         {
             var tabsGrouping = shape.GetProperty<IList<IGrouping<string, object>>>("Tabs");
@@ -215,5 +216,6 @@ namespace OrchardCore.DisplayManagement.Shapes
 
             return displayAsync.ShapeExecuteAsync(shape);
         }
+#pragma warning restore CA1822 // Mark members as static
     }
 }

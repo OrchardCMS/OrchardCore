@@ -16,7 +16,7 @@ namespace OrchardCore.Workflows.Http.Activities
 {
     public class HttpRequestTask : TaskActivity
     {
-        private static readonly Dictionary<int, string> HttpStatusCodeDictionary = new Dictionary<int, string>
+        private static readonly Dictionary<int, string> _httpStatusCodeDictionary = new()
         {
             { 100, "Continue" },
             { 101, " Switching Protocols" },
@@ -83,9 +83,9 @@ namespace OrchardCore.Workflows.Http.Activities
             { 599 , "Network Connect Timeout Error" }
         };
 
-        private static readonly HttpClient _httpClient = new HttpClient();
+        private static readonly HttpClient _httpClient = new();
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly UrlEncoder _urlEncoder;
 
         public HttpRequestTask(
@@ -148,7 +148,7 @@ namespace OrchardCore.Workflows.Http.Activities
                 {
                     var status = int.Parse(x.Trim());
 
-                    var description = HttpStatusCodeDictionary.TryGetValue(status, out var text)
+                    var description = _httpStatusCodeDictionary.TryGetValue(status, out var text)
                         ? $"{status} {text}"
                         : status.ToString()
                         ;
@@ -189,15 +189,15 @@ namespace OrchardCore.Workflows.Http.Activities
             {
                 Body = await response.Content.ReadAsStringAsync(),
                 Headers = response.Headers.ToDictionary(x => x.Key),
-                StatusCode = response.StatusCode,
-                ReasonPhrase = response.ReasonPhrase,
-                IsSuccessStatusCode = response.IsSuccessStatusCode
+                response.StatusCode,
+                response.ReasonPhrase,
+                response.IsSuccessStatusCode
             };
 
             return Outcomes(outcome != 0 ? outcome.ToString() : "UnhandledHttpStatus");
         }
 
-        private IEnumerable<KeyValuePair<string, string>> ParseHeaders(string text)
+        private static IEnumerable<KeyValuePair<string, string>> ParseHeaders(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return Enumerable.Empty<KeyValuePair<string, string>>();
@@ -209,7 +209,7 @@ namespace OrchardCore.Workflows.Http.Activities
                 select new KeyValuePair<string, string>(pair[0], pair[1]);
         }
 
-        private IEnumerable<int> ParseResponseCodes(string text)
+        private static IEnumerable<int> ParseResponseCodes(string text)
         {
             return
                 from code in text.Split(',', StringSplitOptions.RemoveEmptyEntries)

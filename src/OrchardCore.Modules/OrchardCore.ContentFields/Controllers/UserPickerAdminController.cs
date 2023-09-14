@@ -40,7 +40,7 @@ namespace OrchardCore.ContentFields.Controllers
 
         public async Task<IActionResult> SearchUsers(string part, string field, string contentType, string query)
         {
-            if (string.IsNullOrWhiteSpace(part) || String.IsNullOrWhiteSpace(field) || string.IsNullOrWhiteSpace(contentType))
+            if (string.IsNullOrWhiteSpace(part) || string.IsNullOrWhiteSpace(field) || string.IsNullOrWhiteSpace(contentType))
             {
                 return BadRequest("Part, field and contentType are required parameters");
             }

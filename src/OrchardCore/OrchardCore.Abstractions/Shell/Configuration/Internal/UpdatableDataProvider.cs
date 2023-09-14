@@ -11,7 +11,7 @@ namespace OrchardCore.Environment.Shell.Configuration.Internal
 {
     internal class UpdatableDataProvider : IConfigurationProvider, IEnumerable<KeyValuePair<string, string>>
     {
-        private ConfigurationReloadToken _reloadToken = new ConfigurationReloadToken();
+        private ConfigurationReloadToken _reloadToken = new();
 
         public UpdatableDataProvider(IEnumerable<KeyValuePair<string, string>> initialData)
         {
@@ -48,7 +48,7 @@ namespace OrchardCore.Environment.Shell.Configuration.Internal
         private static string Segment(string key, int prefixLength)
         {
             var indexOf = key.IndexOf(ConfigurationPath.KeyDelimiter, prefixLength, StringComparison.OrdinalIgnoreCase);
-            return indexOf < 0 ? key.Substring(prefixLength) : key.Substring(prefixLength, indexOf - prefixLength);
+            return indexOf < 0 ? key[prefixLength..] : key[prefixLength..indexOf];
         }
 
         public IChangeToken GetReloadToken()

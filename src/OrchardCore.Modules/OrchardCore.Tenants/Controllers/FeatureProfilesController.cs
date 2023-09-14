@@ -31,9 +31,9 @@ namespace OrchardCore.Tenants.Controllers
         private readonly FeatureProfilesManager _featureProfilesManager;
         private readonly INotifier _notifier;
         private readonly PagerOptions _pagerOptions;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-        private readonly dynamic New;
+        protected readonly IStringLocalizer S;
+        protected readonly dynamic New;
+        protected readonly IHtmlLocalizer H;
 
         public FeatureProfilesController(
             IAuthorizationService authorizationService,
@@ -66,7 +66,7 @@ namespace OrchardCore.Tenants.Controllers
 
             var featureProfiles = featureProfilesDocument.FeatureProfiles.ToList();
 
-            if (!String.IsNullOrWhiteSpace(options.Search))
+            if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 featureProfiles = featureProfiles.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }

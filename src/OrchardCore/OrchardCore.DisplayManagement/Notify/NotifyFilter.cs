@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.Layout;
-using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.DisplayManagement.Notify
 {
@@ -25,7 +24,6 @@ namespace OrchardCore.DisplayManagement.Notify
 
         private NotifyEntry[] _existingEntries = Array.Empty<NotifyEntry>();
         private bool _shouldDeleteCookie;
-        private string _tenantPath;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly ILogger _logger;
 
@@ -33,7 +31,6 @@ namespace OrchardCore.DisplayManagement.Notify
             INotifier notifier,
             ILayoutAccessor layoutAccessor,
             IShapeFactory shapeFactory,
-            ShellSettings shellSettings,
             IDataProtectionProvider dataProtectionProvider,
             HtmlEncoder htmlEncoder,
             ILogger<NotifyFilter> logger)
@@ -45,14 +42,12 @@ namespace OrchardCore.DisplayManagement.Notify
             _layoutAccessor = layoutAccessor;
             _notifier = notifier;
             _shapeFactory = shapeFactory;
-
-            _tenantPath = "/" + shellSettings.RequestUrlPrefix;
         }
 
         private void OnHandlerExecuting(FilterContext filterContext)
         {
             var messages = Convert.ToString(filterContext.HttpContext.Request.Cookies[CookiePrefix]);
-            if (String.IsNullOrEmpty(messages))
+            if (string.IsNullOrEmpty(messages))
             {
                 return;
             }
@@ -61,7 +56,7 @@ namespace OrchardCore.DisplayManagement.Notify
 
             if (messageEntries == null)
             {
-                // An error occurred during deserialization
+                // An error occurred during deserialization.
                 _shouldDeleteCookie = true;
                 return;
             }
@@ -94,7 +89,7 @@ namespace OrchardCore.DisplayManagement.Notify
             // String data type used instead of complex array to be session-friendly.
             if (result is not ViewResult && result is not PageResult && _existingEntries.Length > 0)
             {
-                filterContext.HttpContext.Response.Cookies.Append(CookiePrefix, SerializeNotifyEntry(_existingEntries), new CookieOptions { HttpOnly = true, Path = _tenantPath });
+                filterContext.HttpContext.Response.Cookies.Append(CookiePrefix, SerializeNotifyEntry(_existingEntries), GetCookieOptions(filterContext.HttpContext));
             }
         }
 
@@ -136,7 +131,7 @@ namespace OrchardCore.DisplayManagement.Notify
                 return;
             }
 
-            if (filterContext.Result is not ViewResult && filterContext.Result is not PageResult)
+            if (!filterContext.IsViewOrPageResult())
             {
                 await next();
                 return;
@@ -166,9 +161,9 @@ namespace OrchardCore.DisplayManagement.Notify
             await next();
         }
 
-        private void DeleteCookies(ResultExecutingContext filterContext)
+        private static void DeleteCookies(ResultExecutingContext filterContext)
         {
-            filterContext.HttpContext.Response.Cookies.Delete(CookiePrefix, new CookieOptions { Path = _tenantPath });
+            filterContext.HttpContext.Response.Cookies.Delete(CookiePrefix, GetCookieOptions(filterContext.HttpContext));
         }
 
         private string SerializeNotifyEntry(NotifyEntry[] notifyEntries)
@@ -205,6 +200,21 @@ namespace OrchardCore.DisplayManagement.Notify
 
                 _logger.LogWarning("The notification entries could not be decrypted");
             }
+        }
+
+        private static CookieOptions GetCookieOptions(HttpContext httpContext)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true
+            };
+
+            if (httpContext.Request.PathBase.HasValue)
+            {
+                cookieOptions.Path = httpContext.Request.PathBase;
+            }
+
+            return cookieOptions;
         }
     }
 }

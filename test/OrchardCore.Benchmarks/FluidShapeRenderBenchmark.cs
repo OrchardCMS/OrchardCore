@@ -72,6 +72,7 @@ namespace OrchardCore.Benchmark
         //|      ShapeRenderWithResolver | 3.701 us | 0.2977 us | 0.0163 us |  0.69 |    0.03 | 1.0910 | 0.0229 |     - |      9 KB |
 
         [Benchmark(Baseline = true)]
+#pragma warning disable CA1822 // Mark members as static
         public async Task OriginalShapeRenderDynamic()
         {
             var templateContext = new LiquidTemplateContext(_serviceProvider, new TemplateOptions());
@@ -98,12 +99,13 @@ namespace OrchardCore.Benchmark
 
         [Benchmark]
         public async Task ShapeRenderWithResolver()
+#pragma warning restore CA1822 // Mark members as static
         {
             var templateContext = new LiquidTemplateContext(_serviceProvider, new TemplateOptions());
             await _liquidFilterDelegateResolver.ResolveAsync(_input, _filterArguments, templateContext);
         }
 
-        private static async ValueTask<FluidValue> OriginalShapeRenderDynamic(FluidValue input, FilterArguments arguments, TemplateContext context)
+        private static async ValueTask<FluidValue> OriginalShapeRenderDynamic(FluidValue input, FilterArguments _, TemplateContext context)
         {
             if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
             {
@@ -121,7 +123,7 @@ namespace OrchardCore.Benchmark
             return NilValue.Instance;
         }
 
-        private static ValueTask<FluidValue> ShapeRenderWithAmbientValues(FluidValue input, FilterArguments arguments, TemplateContext context)
+        private static ValueTask<FluidValue> ShapeRenderWithAmbientValues(FluidValue input, FilterArguments _, TemplateContext context)
         {
             static async ValueTask<FluidValue> Awaited(Task<IHtmlContent> task)
             {
@@ -130,7 +132,7 @@ namespace OrchardCore.Benchmark
 
             if (input.ToObjectValue() is IShape shape)
             {
-                if (!context.AmbientValues.TryGetValue("DisplayHelper", out var item) || !(item is IDisplayHelper displayHelper))
+                if (!context.AmbientValues.TryGetValue("DisplayHelper", out var item) || item is not IDisplayHelper displayHelper)
                 {
                     return ThrowArgumentException<ValueTask<FluidValue>>("DisplayHelper missing while invoking 'shape_render'");
                 }
@@ -146,7 +148,7 @@ namespace OrchardCore.Benchmark
             return new ValueTask<FluidValue>(NilValue.Instance);
         }
 
-        private static ValueTask<FluidValue> ShapeRenderStatic(FluidValue input, FilterArguments arguments, TemplateContext context)
+        private static ValueTask<FluidValue> ShapeRenderStatic(FluidValue input, FilterArguments _, TemplateContext context)
         {
             static async ValueTask<FluidValue> Awaited(Task<IHtmlContent> task)
             {

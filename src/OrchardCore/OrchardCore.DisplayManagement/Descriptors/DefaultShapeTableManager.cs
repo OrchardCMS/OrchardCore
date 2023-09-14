@@ -18,8 +18,8 @@ namespace OrchardCore.DisplayManagement.Descriptors
     /// </summary>
     public class DefaultShapeTableManager : IShapeTableManager
     {
-        private static ConcurrentDictionary<string, FeatureShapeDescriptor> _shapeDescriptors = new ConcurrentDictionary<string, FeatureShapeDescriptor>();
-        private static readonly object _syncLock = new object();
+        private static readonly ConcurrentDictionary<string, FeatureShapeDescriptor> _shapeDescriptors = new();
+        private static readonly object _syncLock = new();
 
         private readonly IHostEnvironment _hostingEnvironment;
         private readonly IEnumerable<IShapeTableProvider> _bindingStrategies;
@@ -131,7 +131,10 @@ namespace OrchardCore.DisplayManagement.Descriptors
             return shapeTable;
         }
 
-        private void BuildDescriptors(IShapeTableProvider bindingStrategy, IEnumerable<ShapeAlteration> builtAlterations, Dictionary<string, FeatureShapeDescriptor> shapeDescriptors)
+        private static void BuildDescriptors(
+            IShapeTableProvider bindingStrategy,
+            IEnumerable<ShapeAlteration> builtAlterations,
+            Dictionary<string, FeatureShapeDescriptor> shapeDescriptors)
         {
             var alterationSets = builtAlterations.GroupBy(a => a.Feature.Id + a.ShapeType);
 

@@ -17,7 +17,7 @@ namespace OrchardCore.Facebook.Widgets.Drivers
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILiquidTemplateManager _liquidTemplatemanager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public FacebookPluginPartDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,
@@ -33,9 +33,9 @@ namespace OrchardCore.Facebook.Widgets.Drivers
         {
             return Combine(
                 Initialize<FacebookPluginPartViewModel>("FacebookPluginPart", m => BuildViewModel(m, part))
-                    .Location("Detail", "Content:10"),
+                    .Location("Detail", "Content"),
                 Initialize<FacebookPluginPartViewModel>("FacebookPluginPart_Summary", m => BuildViewModel(m, part))
-                    .Location("Summary", "Content:10")
+                    .Location("Summary", "Content")
             );
         }
 
@@ -70,7 +70,7 @@ namespace OrchardCore.Facebook.Widgets.Drivers
             }
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(FacebookPluginPart)));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(FacebookPluginPart)));
             return contentTypePartDefinition.GetSettings<FacebookPluginPartSettings>();
         }
 

@@ -2699,6 +2699,87 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "0liver",
+      "name": "0liver",
+      "avatar_url": "https://avatars.githubusercontent.com/u/164360?v=4",
+      "profile": "https://github.com/0liver",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "al3xjohnson",
+      "name": "Alex Johnson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5759745?v=4",
+      "profile": "https://github.com/al3xjohnson",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "derandre84",
+      "name": "André Göpel",
+      "avatar_url": "https://avatars.githubusercontent.com/u/22834588?v=4",
+      "profile": "https://github.com/derandre84",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "wAsnk",
+      "name": "Krisztián Németh",
+      "avatar_url": "https://avatars.githubusercontent.com/u/19938236?v=4",
+      "profile": "https://github.com/wAsnk",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "BinderDyn",
+      "name": "Marvin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/43495737?v=4",
+      "profile": "https://github.com/BinderDyn",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "dministro",
+      "name": "József Horváth",
+      "avatar_url": "https://avatars.githubusercontent.com/u/15349881?v=4",
+      "profile": "https://github.com/dministro",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "brutoledo",
+      "name": "Bruno Toledo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5890282?v=4",
+      "profile": "https://github.com/brutoledo",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "dannyd89",
+      "name": "Daniel Draghici",
+      "avatar_url": "https://avatars.githubusercontent.com/u/15252548?v=4",
+      "profile": "https://github.com/dannyd89",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ludovic-th",
+      "name": "ludovic-th",
+      "avatar_url": "https://avatars.githubusercontent.com/u/65158865?v=4",
+      "profile": "https://github.com/ludovic-th",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true

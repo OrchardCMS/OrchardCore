@@ -5,7 +5,9 @@ using OrchardCore;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Routing;
 
+#pragma warning disable CA1050 // Declare types in namespaces
 public static class AutoroutePartRazorHelperExtensions
+#pragma warning restore CA1050 // Declare types in namespaces
 {
     /// <summary>
     /// Returns a content item id by its slug.
@@ -16,7 +18,7 @@ public static class AutoroutePartRazorHelperExtensions
     /// <returns>A content item id or <c>null</c> if it was not found.</returns>
     public static async Task<string> GetContentItemIdBySlugAsync(this IOrchardHelper orchardHelper, string slug)
     {
-        if (String.IsNullOrEmpty(slug))
+        if (string.IsNullOrEmpty(slug))
         {
             return null;
         }
@@ -24,7 +26,7 @@ public static class AutoroutePartRazorHelperExtensions
         // Provided for backwards compatability and avoiding confusion.
         if (slug.StartsWith("slug:", StringComparison.OrdinalIgnoreCase))
         {
-            slug = slug.Substring(5);
+            slug = slug[5..];
         }
 
         if (!slug.StartsWith('/'))

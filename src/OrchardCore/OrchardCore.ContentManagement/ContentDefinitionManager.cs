@@ -40,7 +40,7 @@ namespace OrchardCore.ContentManagement
 
         public ContentTypeDefinition LoadTypeDefinition(string name)
         {
-            if (String.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 throw new ArgumentException("Argument cannot be null or empty", nameof(name));
             }
@@ -49,7 +49,7 @@ namespace OrchardCore.ContentManagement
             {
                 var contentTypeDefinitionRecord = LoadContentDefinitionRecord()
                     .ContentTypeDefinitionRecords
-                    .FirstOrDefault(x => String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+                    .FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
                 _scopedTypeDefinitions[name] = typeDefinition = Build(contentTypeDefinitionRecord, LoadContentDefinitionRecord().ContentPartDefinitionRecords);
             };
@@ -59,7 +59,7 @@ namespace OrchardCore.ContentManagement
 
         public ContentTypeDefinition GetTypeDefinition(string name)
         {
-            if (String.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 throw new ArgumentException("Argument cannot be null or empty", nameof(name));
             }
@@ -71,7 +71,7 @@ namespace OrchardCore.ContentManagement
             {
                 var contentTypeDefinitionRecord = document
                     .ContentTypeDefinitionRecords
-                    .FirstOrDefault(x => String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+                    .FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
                 return Build(contentTypeDefinitionRecord, GetContentDefinitionRecord().ContentPartDefinitionRecords);
             });
@@ -83,7 +83,7 @@ namespace OrchardCore.ContentManagement
             {
                 _scopedPartDefinitions[name] = partDefinition = Build(LoadContentDefinitionRecord()
                     .ContentPartDefinitionRecords
-                    .FirstOrDefault(x => String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase)));
+                    .FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase)));
             };
 
             return partDefinition;
@@ -98,7 +98,7 @@ namespace OrchardCore.ContentManagement
             {
                 return Build(document
                     .ContentPartDefinitionRecords
-                    .FirstOrDefault(x => String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase)));
+                    .FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase)));
             });
         }
 
@@ -136,7 +136,7 @@ namespace OrchardCore.ContentManagement
 
         public void DeleteTypeDefinition(string name)
         {
-            var record = LoadContentDefinitionRecord().ContentTypeDefinitionRecords.FirstOrDefault(x => String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+            var record = LoadContentDefinitionRecord().ContentTypeDefinitionRecords.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
             // deletes the content type record associated
             if (record != null)
@@ -149,7 +149,7 @@ namespace OrchardCore.ContentManagement
         public void DeletePartDefinition(string name)
         {
             // remove parts from current types
-            var typesWithPart = LoadTypeDefinitions().Where(typeDefinition => typeDefinition.Parts.Any(part => String.Equals(part.PartDefinition.Name, name, StringComparison.OrdinalIgnoreCase)));
+            var typesWithPart = LoadTypeDefinitions().Where(typeDefinition => typeDefinition.Parts.Any(part => string.Equals(part.PartDefinition.Name, name, StringComparison.OrdinalIgnoreCase)));
 
             foreach (var typeDefinition in typesWithPart)
             {
@@ -157,7 +157,7 @@ namespace OrchardCore.ContentManagement
             }
 
             // delete part
-            var record = LoadContentDefinitionRecord().ContentPartDefinitionRecords.FirstOrDefault(x => String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+            var record = LoadContentDefinitionRecord().ContentPartDefinitionRecords.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
             if (record != null)
             {
@@ -168,7 +168,7 @@ namespace OrchardCore.ContentManagement
 
         private ContentTypeDefinitionRecord Acquire(ContentTypeDefinition contentTypeDefinition)
         {
-            var result = LoadContentDefinitionRecord().ContentTypeDefinitionRecords.FirstOrDefault(x => String.Equals(x.Name, contentTypeDefinition.Name, StringComparison.OrdinalIgnoreCase));
+            var result = LoadContentDefinitionRecord().ContentTypeDefinitionRecords.FirstOrDefault(x => string.Equals(x.Name, contentTypeDefinition.Name, StringComparison.OrdinalIgnoreCase));
             if (result == null)
             {
                 result = new ContentTypeDefinitionRecord { Name = contentTypeDefinition.Name, DisplayName = contentTypeDefinition.DisplayName };
@@ -179,7 +179,7 @@ namespace OrchardCore.ContentManagement
 
         private ContentPartDefinitionRecord Acquire(ContentPartDefinition contentPartDefinition)
         {
-            var result = LoadContentDefinitionRecord().ContentPartDefinitionRecords.FirstOrDefault(x => String.Equals(x.Name, contentPartDefinition.Name, StringComparison.OrdinalIgnoreCase));
+            var result = LoadContentDefinitionRecord().ContentPartDefinitionRecords.FirstOrDefault(x => string.Equals(x.Name, contentPartDefinition.Name, StringComparison.OrdinalIgnoreCase));
             if (result == null)
             {
                 result = new ContentPartDefinitionRecord { Name = contentPartDefinition.Name, };
@@ -194,7 +194,7 @@ namespace OrchardCore.ContentManagement
             record.Settings = model.Settings;
 
             var toRemove = record.ContentTypePartDefinitionRecords
-                .Where(typePartDefinitionRecord => !model.Parts.Any(part => String.Equals(typePartDefinitionRecord.Name, part.Name, StringComparison.OrdinalIgnoreCase)))
+                .Where(typePartDefinitionRecord => !model.Parts.Any(part => string.Equals(typePartDefinitionRecord.Name, part.Name, StringComparison.OrdinalIgnoreCase)))
                 .ToList();
 
             foreach (var remove in toRemove)
@@ -204,7 +204,7 @@ namespace OrchardCore.ContentManagement
 
             foreach (var part in model.Parts)
             {
-                var typePartRecord = record.ContentTypePartDefinitionRecords.FirstOrDefault(r => String.Equals(r.Name, part.Name, StringComparison.OrdinalIgnoreCase));
+                var typePartRecord = record.ContentTypePartDefinitionRecords.FirstOrDefault(r => string.Equals(r.Name, part.Name, StringComparison.OrdinalIgnoreCase));
                 if (typePartRecord == null)
                 {
                     typePartRecord = new ContentTypePartDefinitionRecord
@@ -230,7 +230,7 @@ namespace OrchardCore.ContentManagement
             record.Settings = model.Settings;
 
             var toRemove = record.ContentPartFieldDefinitionRecords
-                .Where(partFieldDefinitionRecord => !model.Fields.Any(partField => String.Equals(partFieldDefinitionRecord.Name, partField.Name, StringComparison.OrdinalIgnoreCase)))
+                .Where(partFieldDefinitionRecord => !model.Fields.Any(partField => string.Equals(partFieldDefinitionRecord.Name, partField.Name, StringComparison.OrdinalIgnoreCase)))
                 .ToList();
 
             foreach (var remove in toRemove)
@@ -241,7 +241,7 @@ namespace OrchardCore.ContentManagement
             foreach (var field in model.Fields)
             {
                 var fieldName = field.Name;
-                var partFieldRecord = record.ContentPartFieldDefinitionRecords.FirstOrDefault(r => String.Equals(r.Name, fieldName, StringComparison.OrdinalIgnoreCase));
+                var partFieldRecord = record.ContentPartFieldDefinitionRecords.FirstOrDefault(r => string.Equals(r.Name, fieldName, StringComparison.OrdinalIgnoreCase));
                 if (partFieldRecord == null)
                 {
                     partFieldRecord = new ContentPartFieldDefinitionRecord
@@ -270,7 +270,7 @@ namespace OrchardCore.ContentManagement
             var contentTypeDefinition = new ContentTypeDefinition(
                 source.Name,
                 source.DisplayName,
-                source.ContentTypePartDefinitionRecords.Select(tp => Build(tp, partDefinitionRecords.FirstOrDefault(p => String.Equals(p.Name, tp.PartName, StringComparison.OrdinalIgnoreCase)))),
+                source.ContentTypePartDefinitionRecords.Select(tp => Build(tp, partDefinitionRecords.FirstOrDefault(p => string.Equals(p.Name, tp.PartName, StringComparison.OrdinalIgnoreCase)))),
                 source.Settings);
 
             return contentTypeDefinition;

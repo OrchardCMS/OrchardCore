@@ -52,7 +52,7 @@ namespace OrchardCore.Setup
             var ignoreSystemSettings = serviceProvider.GetService<IOptions<CultureOptions>>().Value.IgnoreSystemSettings;
 
             var localizationOptionsUpdater = new LocalizationOptionsUpdater(localizationOptions, ignoreSystemSettings);
-            if (!String.IsNullOrEmpty(_defaultCulture))
+            if (!string.IsNullOrEmpty(_defaultCulture))
             {
                 localizationOptionsUpdater.SetDefaultCulture(_defaultCulture);
                 _supportedCultures = _supportedCultures.Union(new[] { _defaultCulture }).ToArray();

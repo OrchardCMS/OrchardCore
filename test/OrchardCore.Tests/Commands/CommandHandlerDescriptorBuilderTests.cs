@@ -27,6 +27,7 @@ namespace OrchardCore.Tests.Commands
             {
             }
 
+#pragma warning disable CA1822 // Mark members as static
             public void FooBar()
             {
             }
@@ -45,6 +46,7 @@ namespace OrchardCore.Tests.Commands
             public void Foo_Bar3()
             {
             }
+#pragma warning restore CA1822 // Mark members as static
         }
 
         [Fact]
@@ -58,35 +60,40 @@ namespace OrchardCore.Tests.Commands
         }
 
 #pragma warning disable 660,661
-
         public class PublicMethodsOnly
         {
 #pragma warning restore 660,661
-            public bool Bar { get; set; }   // no accessors
-            public bool Field = true;       // no field
+            public bool Bar { get; set; }   // No accessors.
+            public bool Field = true;       // No field.
 
-            // no private method
+            // No private method.
+#pragma warning disable CA1822 // Mark members as static
+#pragma warning disable IDE0051 // Remove unused private members
             private void Blah()
+#pragma warning restore IDE0051 // Remove unused private members
+#pragma warning restore CA1822 // Mark members as static
             {
             }
 
-            // no private method
+            // No private method.
             public static void Foo()
             {
             }
 
-            // no operator
-            public static bool operator ==(PublicMethodsOnly a, PublicMethodsOnly b)
+            // No operator.
+            public static bool operator ==(PublicMethodsOnly _1, PublicMethodsOnly _2)
             {
                 return false;
             }
 
-            public static bool operator !=(PublicMethodsOnly a, PublicMethodsOnly b)
+            public static bool operator !=(PublicMethodsOnly _1, PublicMethodsOnly _2)
             {
                 return false;
             }
 
+#pragma warning disable CA1822 // Mark members as static
             public void Method()
+#pragma warning restore CA1822 // Mark members as static
             {
             }
         }

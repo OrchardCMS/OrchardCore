@@ -37,15 +37,15 @@ namespace OrchardCore.Environment.Shell.Builders
             var describedContext = await CreateDescribedContextAsync(settings, new ShellDescriptor());
 
             ShellDescriptor currentDescriptor = null;
-            await describedContext.CreateScope().UsingServiceScopeAsync(async scope =>
+            await (await describedContext.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
             {
                 var shellDescriptorManager = scope.ServiceProvider.GetService<IShellDescriptorManager>();
                 currentDescriptor = await shellDescriptorManager.GetShellDescriptorAsync();
             });
 
-            if (currentDescriptor != null)
+            if (currentDescriptor is not null)
             {
-                describedContext.Dispose();
+                await describedContext.DisposeAsync();
                 return await CreateDescribedContextAsync(settings, currentDescriptor);
             }
 
@@ -74,7 +74,7 @@ namespace OrchardCore.Environment.Shell.Builders
             await settings.EnsureConfigurationAsync();
 
             var blueprint = await _compositionStrategy.ComposeAsync(settings, shellDescriptor);
-            var provider = _shellContainerFactory.CreateContainer(settings, blueprint);
+            var provider = await _shellContainerFactory.CreateContainerAsync(settings, blueprint);
 
             var options = provider.GetService<IOptions<ShellContainerOptions>>().Value;
             foreach (var initializeAsync in options.Initializers)

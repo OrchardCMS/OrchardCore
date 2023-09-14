@@ -32,10 +32,10 @@ namespace OrchardCore.Shortcodes.Controllers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
+        protected readonly dynamic New;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
-        private readonly dynamic New;
 
         public AdminController(
             IAuthorizationService authorizationService,
@@ -72,7 +72,7 @@ namespace OrchardCore.Shortcodes.Controllers
 
             var shortcodeTemplates = shortcodeTemplatesDocument.ShortcodeTemplates.ToList();
 
-            if (!String.IsNullOrWhiteSpace(options.Search))
+            if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 shortcodeTemplates = shortcodeTemplates.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
@@ -108,7 +108,7 @@ namespace OrchardCore.Shortcodes.Controllers
             });
         }
 
-        public async Task<IActionResult> Create(ShortcodeTemplateViewModel model)
+        public async Task<IActionResult> Create()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
             {
@@ -128,7 +128,7 @@ namespace OrchardCore.Shortcodes.Controllers
 
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrWhiteSpace(model.Name))
+                if (string.IsNullOrWhiteSpace(model.Name))
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name is mandatory."]);
                 }
@@ -146,13 +146,13 @@ namespace OrchardCore.Shortcodes.Controllers
                     }
                 }
 
-                if (String.IsNullOrEmpty(model.Content))
+                if (string.IsNullOrEmpty(model.Content))
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template content is mandatory."]);
                 }
                 else if (!_liquidTemplateManager.Validate(model.Content, out var errors))
                 {
-                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", String.Join(" ", errors)]);
+                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
                 }
             }
 
@@ -229,7 +229,7 @@ namespace OrchardCore.Shortcodes.Controllers
 
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrWhiteSpace(model.Name))
+                if (string.IsNullOrWhiteSpace(model.Name))
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name is mandatory."]);
                 }
@@ -237,19 +237,19 @@ namespace OrchardCore.Shortcodes.Controllers
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name contains invalid characters."]);
                 }
-                else if (!String.Equals(model.Name, sourceName, StringComparison.OrdinalIgnoreCase)
+                else if (!string.Equals(model.Name, sourceName, StringComparison.OrdinalIgnoreCase)
                     && shortcodeTemplatesDocument.ShortcodeTemplates.ContainsKey(model.Name))
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["A template with the same name already exists."]);
                 }
 
-                if (String.IsNullOrEmpty(model.Content))
+                if (string.IsNullOrEmpty(model.Content))
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template content is mandatory."]);
                 }
                 else if (!_liquidTemplateManager.Validate(model.Content, out var errors))
                 {
-                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", String.Join(" ", errors)]);
+                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
                 }
             }
 
@@ -279,6 +279,10 @@ namespace OrchardCore.Shortcodes.Controllers
             }
 
             // If we got this far, something failed, redisplay form
+
+            // If the name was changed or removed, prevent a 404 or a failure on the next post.
+            model.Name = sourceName;
+
             return View(model);
         }
 
@@ -329,7 +333,7 @@ namespace OrchardCore.Shortcodes.Controllers
                         await _notifier.SuccessAsync(H["Shortcode templates successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
 

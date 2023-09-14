@@ -13,7 +13,7 @@ namespace OrchardCore.ResourceManagement
 {
     public class ResourceManager : IResourceManager
     {
-        private readonly Dictionary<ResourceTypeName, RequireSettings> _required = new Dictionary<ResourceTypeName, RequireSettings>();
+        private readonly Dictionary<ResourceTypeName, RequireSettings> _required = new();
         private readonly Dictionary<string, ResourceRequiredContext[]> _builtResources;
         private readonly IFileVersionProvider _fileVersionProvider;
         private ResourceManifest _dynamicManifest;
@@ -78,16 +78,16 @@ namespace OrchardCore.ResourceManagement
                 return ThrowArgumentNullException<RequireSettings>(nameof(resourcePath));
             }
 
-            // ~/ ==> convert to absolute path (e.g. /orchard/..)
+            // ~/ ==> convert to absolute path (e.g. /orchard/..).
 
             if (resourcePath.StartsWith("~/", StringComparison.Ordinal))
             {
-                resourcePath = _options.ContentBasePath + resourcePath.Substring(1);
+                resourcePath = string.Concat(_options.ContentBasePath, resourcePath.AsSpan(1));
             }
 
             if (resourceDebugPath != null && resourceDebugPath.StartsWith("~/", StringComparison.Ordinal))
             {
-                resourceDebugPath = _options.ContentBasePath + resourceDebugPath.Substring(1);
+                resourceDebugPath = string.Concat(_options.ContentBasePath, resourceDebugPath.AsSpan(1));
             }
 
             return RegisterResource(
@@ -97,30 +97,21 @@ namespace OrchardCore.ResourceManagement
 
         public void RegisterHeadScript(IHtmlContent script)
         {
-            if (_headScripts == null)
-            {
-                _headScripts = new List<IHtmlContent>();
-            }
+            _headScripts ??= new List<IHtmlContent>();
 
             _headScripts.Add(script);
         }
 
         public void RegisterFootScript(IHtmlContent script)
         {
-            if (_footScripts == null)
-            {
-                _footScripts = new List<IHtmlContent>();
-            }
+            _footScripts ??= new List<IHtmlContent>();
 
             _footScripts.Add(script);
         }
 
         public void RegisterStyle(IHtmlContent style)
         {
-            if (_styles == null)
-            {
-                _styles = new List<IHtmlContent>();
-            }
+            _styles ??= new List<IHtmlContent>();
 
             _styles.Add(style);
         }
@@ -151,7 +142,7 @@ namespace OrchardCore.ResourceManagement
 
         private ResourceDefinition FindResource(RequireSettings settings, bool resolveInlineDefinitions)
         {
-            // find the resource with the given type and name
+            // Find the resource with the given type and name
             // that has at least the given version number. If multiple,
             // return the resource with the greatest version number.
             // If not found and an inlineDefinition is given, define the resource on the fly
@@ -174,7 +165,7 @@ namespace OrchardCore.ResourceManagement
                 // defined by a Define() from a RequireSettings somewhere.
                 if (ResolveInlineDefinitions(settings.Type))
                 {
-                    // if any were defined, now try to find it
+                    // If any were defined, now try to find it.
                     resource = FindResource(settings, false);
                 }
             }
@@ -182,16 +173,16 @@ namespace OrchardCore.ResourceManagement
             return resource;
         }
 
-        private ResourceDefinition FindMatchingResource(
+        private static ResourceDefinition FindMatchingResource(
             IEnumerable<KeyValuePair<string, IList<ResourceDefinition>>> stream,
             RequireSettings settings,
             string name)
         {
             Version lower = null;
             Version upper = null;
-            if (!String.IsNullOrEmpty(settings.Version))
+            if (!string.IsNullOrEmpty(settings.Version))
             {
-                // Specific version, filter
+                // Specific version, filter.
                 lower = GetLowerBoundVersion(settings.Version);
                 upper = GetUpperBoundVersion(settings.Version);
             }
@@ -199,7 +190,7 @@ namespace OrchardCore.ResourceManagement
             ResourceDefinition resource = null;
             foreach (var r in stream)
             {
-                if (String.Equals(r.Key, name, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(r.Key, name, StringComparison.OrdinalIgnoreCase))
                 {
                     foreach (var resourceDefinition in r.Value)
                     {
@@ -215,7 +206,7 @@ namespace OrchardCore.ResourceManagement
                             }
                         }
 
-                        // Use the highest version of all matches
+                        // Use the highest version of all matches.
                         if (resource == null
                             || (resourceDefinition.Version != null && new Version(resource.Version) < version))
                         {
@@ -232,12 +223,12 @@ namespace OrchardCore.ResourceManagement
         /// Returns the upper bound value of a required version number.
         /// For instance, 3.1.0 returns 3.1.1, 4 returns 5.0.0, 6.1 returns 6.2.0
         /// </summary>
-        private Version GetUpperBoundVersion(string minimumVersion)
+        private static Version GetUpperBoundVersion(string minimumVersion)
         {
             if (!Version.TryParse(minimumVersion, out var version))
             {
                 // Is is a single number?
-                if (Int32.TryParse(minimumVersion, out var major))
+                if (int.TryParse(minimumVersion, out var major))
                 {
                     return new Version(major + 1, 0, 0);
                 }
@@ -260,12 +251,12 @@ namespace OrchardCore.ResourceManagement
         /// Returns the lower bound value of a required version number.
         /// For instance, 3.1.0 returns 3.1.0, 4 returns 4.0.0, 6.1 returns 6.1.0
         /// </summary>
-        private Version GetLowerBoundVersion(string minimumVersion)
+        private static Version GetLowerBoundVersion(string minimumVersion)
         {
             if (!Version.TryParse(minimumVersion, out var version))
             {
                 // Is is a single number?
-                if (Int32.TryParse(minimumVersion, out var major))
+                if (int.TryParse(minimumVersion, out var major))
                 {
                     return new Version(major, 0, 0);
                 }
@@ -284,11 +275,11 @@ namespace OrchardCore.ResourceManagement
                     continue;
                 }
 
-                // defining it on the fly
+                // Defining it on the fly.
                 var resource = FindResource(settings, false);
                 if (resource == null)
                 {
-                    // does not already exist, so define it
+                    // Does not already exist, so define it.
                     resource = InlineManifest.DefineResource(resourceType, settings.Name).SetBasePath(settings.BasePath);
                     anyWereDefined = true;
                 }
@@ -357,11 +348,8 @@ namespace OrchardCore.ResourceManagement
             var allResources = new ResourceDictionary();
             foreach (var settings in ResolveRequiredResources(resourceType))
             {
-                var resource = FindResource(settings);
-                if (resource == null)
-                {
-                    throw new InvalidOperationException($"Could not find a resource of type '{settings.Type}' named '{settings.Name}' with version '{settings.Version ?? "any"}'.");
-                }
+                var resource = FindResource(settings)
+                    ?? throw new InvalidOperationException($"Could not find a resource of type '{settings.Type}' named '{settings.Name}' with version '{settings.Version ?? "any"}'.");
 
                 ExpandDependencies(resource, settings, allResources);
             }
@@ -425,7 +413,7 @@ namespace OrchardCore.ResourceManagement
             // Settings is given so they can cascade down into dependencies. For example, if Foo depends on Bar, and Foo's required
             // location is Head, so too should Bar's location, similarly, if Foo is First positioned, Bar dependency should be too.
             //
-            // forge the effective require settings for this resource
+            // Forge the effective require settings for this resource.
             // (1) If a require exists for the resource, combine with it. Last settings in gets preference for its specified values.
             // (2) If no require already exists, form a new settings object based on the given one but with its own type/name.
 
@@ -443,7 +431,7 @@ namespace OrchardCore.ResourceManagement
 
             if (dependencies != null)
             {
-                // share search instance
+                // Share search instance.
                 var tempSettings = new RequireSettings();
 
                 for (var i = 0; i < dependencies.Count; i++)
@@ -454,7 +442,7 @@ namespace OrchardCore.ResourceManagement
                     string version = null;
                     if (idx != -1)
                     {
-                        name = d.Substring(0, idx);
+                        name = d[..idx];
                         version = d[(idx + 1)..];
                     }
 
@@ -478,16 +466,13 @@ namespace OrchardCore.ResourceManagement
 
         public void RegisterLink(LinkEntry link)
         {
-            if (_links == null)
-            {
-                _links = new List<LinkEntry>();
-            }
+            _links ??= new List<LinkEntry>();
 
             var href = link.Href;
 
             if (href != null && href.StartsWith("~/", StringComparison.Ordinal))
             {
-                link.Href = _options.ContentBasePath + href.Substring(1);
+                link.Href = string.Concat(_options.ContentBasePath, href.AsSpan(1));
             }
 
             if (link.AppendVersion)
@@ -505,10 +490,7 @@ namespace OrchardCore.ResourceManagement
                 return;
             }
 
-            if (_metas == null)
-            {
-                _metas = new Dictionary<string, MetaEntry>();
-            }
+            _metas ??= new Dictionary<string, MetaEntry>();
 
             var index = meta.Name ?? meta.Property ?? meta.HttpEquiv ?? "charset";
 
@@ -524,15 +506,12 @@ namespace OrchardCore.ResourceManagement
 
             var index = meta.Name ?? meta.Property ?? meta.HttpEquiv;
 
-            if (String.IsNullOrEmpty(index))
+            if (string.IsNullOrEmpty(index))
             {
                 return;
             }
 
-            if (_metas == null)
-            {
-                _metas = new Dictionary<string, MetaEntry>();
-            }
+            _metas ??= new Dictionary<string, MetaEntry>();
 
             if (_metas.TryGetValue(index, out var existingMeta))
             {
@@ -761,11 +740,13 @@ namespace OrchardCore.ResourceManagement
             }
 
             public override string ToString() => "(" + Type + ", " + Name + ")";
+
+            public override bool Equals(object obj) => obj is ResourceTypeName && Equals((ResourceTypeName)obj);
         }
 
         private string GetResourceKey(string releasePath, string debugPath)
         {
-            if (_options.DebugMode && !String.IsNullOrWhiteSpace(debugPath))
+            if (_options.DebugMode && !string.IsNullOrWhiteSpace(debugPath))
             {
                 return debugPath;
             }
@@ -777,12 +758,12 @@ namespace OrchardCore.ResourceManagement
 
         private static class EmptyList<T>
         {
-            public static readonly List<T> Instance = new List<T>();
+            public static readonly List<T> Instance = new();
         }
 
         private static class EmptyValueCollection<T>
         {
-            public static readonly Dictionary<string, T>.ValueCollection Instance = new Dictionary<string, T>.ValueCollection(new Dictionary<string, T>());
+            public static readonly Dictionary<string, T>.ValueCollection Instance = new(new Dictionary<string, T>());
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]

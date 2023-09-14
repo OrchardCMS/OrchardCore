@@ -1,0 +1,33 @@
+@using OrchardCore.Sms.ViewModels
+
+@model SmsSettingsViewModel
+
+<div class="mb-3" asp-validation-class-for="DefaultProvider">
+    <label asp-for="DefaultProvider">@T["Default SMS provider"]</label>
+    <select asp-for="DefaultProvider" class="form-select" asp-items="Model.Providers">
+        <option value="">@T["Select a provider"]</option>
+    </select>
+    <span asp-validation-for="DefaultProvider"></span>
+</div>
+
+<script at="Foot" asp-name="sms-settings-providers">
+    document.addEventListener('DOMContentLoaded', () => {
+
+        let menu = document.getElementById('@Html.IdFor(m => m.DefaultProvider)');
+        let settingContainers = document.getElementsByClassName('sms-settings-container');
+
+        menu.addEventListener('change', (e) => {
+
+            for (let i = 0; i < settingContainers.length; i++) {
+                let container = settingContainers[i];
+                if (container.getAttribute('data-provider-name') == e.target.value) {
+                    container.classList.remove('d-none');
+                } else {
+                    container.classList.add('d-none');
+                }
+            }
+        });
+
+        menu.dispatchEvent(new Event('change'));
+    });
+</script>

@@ -12,9 +12,9 @@ namespace OrchardCore.Media.Shortcodes
 {
     public class ImageShortcodeProvider : IShortcodeProvider
     {
-        private static ValueTask<string> Null => new ValueTask<string>((string)null);
-        private static ValueTask<string> ImageShortcode => new ValueTask<string>("[image]");
-        private static readonly HashSet<string> Shortcodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        private static ValueTask<string> Null => new((string)null);
+        private static ValueTask<string> ImageShortcode => new("[image]");
+        private static readonly HashSet<string> _shortcodes = new(StringComparer.OrdinalIgnoreCase)
         {
             "image",
             "media" // [media] is a deprecated shortcode, and can be removed in a future release.
@@ -39,16 +39,16 @@ namespace OrchardCore.Media.Shortcodes
 
         public ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content, Context context)
         {
-            if (!Shortcodes.Contains(identifier))
+            if (!_shortcodes.Contains(identifier))
             {
                 return Null;
             }
 
             // Handle self closing shortcodes.
-            if (String.IsNullOrEmpty(content))
+            if (string.IsNullOrEmpty(content))
             {
                 content = arguments.NamedOrDefault("src");
-                if (String.IsNullOrEmpty(content))
+                if (string.IsNullOrEmpty(content))
                 {
                     // Do not handle the deprecated media shortcode in this edge case.
                     return ImageShortcode;
@@ -60,8 +60,8 @@ namespace OrchardCore.Media.Shortcodes
                 // Serve static files from virtual path.
                 if (content.StartsWith("~/", StringComparison.Ordinal))
                 {
-                    content = _httpContextAccessor.HttpContext.Request.PathBase.Add(content.Substring(1)).Value;
-                    if (!String.IsNullOrEmpty(_options.CdnBaseUrl))
+                    content = _httpContextAccessor.HttpContext.Request.PathBase.Add(content[1..]).Value;
+                    if (!string.IsNullOrEmpty(_options.CdnBaseUrl))
                     {
                         content = _options.CdnBaseUrl + content;
                     }

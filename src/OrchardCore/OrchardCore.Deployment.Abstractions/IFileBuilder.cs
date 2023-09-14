@@ -12,10 +12,8 @@ namespace OrchardCore.Deployment
     {
         public static async Task SetFileAsync(this IFileBuilder fileBuilder, string subpath, byte[] content)
         {
-            using (var stream = new MemoryStream(content))
-            {
-                await fileBuilder.SetFileAsync(subpath, stream);
-            }
+            using var stream = new MemoryStream(content);
+            await fileBuilder.SetFileAsync(subpath, stream);
         }
     }
 }

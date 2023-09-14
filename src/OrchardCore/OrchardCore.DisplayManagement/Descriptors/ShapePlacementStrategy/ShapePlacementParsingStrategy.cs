@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement.Shapes;
@@ -25,7 +24,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
         public ShapePlacementParsingStrategy(
             IHostEnvironment hostingEnvironment,
             IShellFeaturesManager shellFeaturesManager,
-            ILogger<ShapePlacementParsingStrategy> logger,
             IEnumerable<IPlacementNodeFilterProvider> placementParseMatchProviders)
         {
             _hostingEnvironment = hostingEnvironment;
@@ -53,20 +51,15 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
             if (virtualFileInfo.Exists)
             {
-                using (var stream = virtualFileInfo.CreateReadStream())
+                using var stream = virtualFileInfo.CreateReadStream();
+                using var reader = new StreamReader(stream);
+                using var jtr = new JsonTextReader(reader);
+
+                var serializer = new JsonSerializer();
+                var placementFile = serializer.Deserialize<PlacementFile>(jtr);
+                if (placementFile != null)
                 {
-                    using (var reader = new StreamReader(stream))
-                    {
-                        using (var jtr = new JsonTextReader(reader))
-                        {
-                            JsonSerializer serializer = new JsonSerializer();
-                            var placementFile = serializer.Deserialize<PlacementFile>(jtr);
-                            if (placementFile != null)
-                            {
-                                ProcessPlacementFile(builder, featureDescriptor, placementFile);
-                            }
-                        }
-                    }
+                    ProcessPlacementFile(builder, featureDescriptor, placementFile);
                 }
             }
         }
@@ -88,9 +81,11 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
                         predicate = matches.Aggregate(predicate, BuildPredicate);
                     }
 
-                    var placement = new PlacementInfo();
+                    var placement = new PlacementInfo
+                    {
+                        Location = filter.Location,
+                    };
 
-                    placement.Location = filter.Location;
                     if (filter.Alternates?.Length > 0)
                     {
                         placement.Alternates = new AlternatesCollection(filter.Alternates);
@@ -112,12 +107,12 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
         public static bool CheckFilter(ShapePlacementContext ctx, PlacementNode filter)
         {
-            if (!String.IsNullOrEmpty(filter.DisplayType) && filter.DisplayType != ctx.DisplayType)
+            if (!string.IsNullOrEmpty(filter.DisplayType) && filter.DisplayType != ctx.DisplayType)
             {
                 return false;
             }
 
-            if (!String.IsNullOrEmpty(filter.Differentiator) && filter.Differentiator != ctx.Differentiator)
+            if (!string.IsNullOrEmpty(filter.Differentiator) && filter.Differentiator != ctx.Differentiator)
             {
                 return false;
             }

@@ -27,7 +27,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
             }
             else
             {
-                _shapeType = shapeType.Substring(0, delimiterIndex);
+                _shapeType = shapeType[..delimiterIndex];
             }
         }
 
@@ -45,18 +45,17 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
         public ShapeAlterationBuilder BoundAs(string bindingSource, Func<DisplayContext, Task<IHtmlContent>> bindingDelegate)
         {
-            // schedule the configuration
+            // Schedule the configuration.
             return Configure(descriptor =>
             {
                 var binding = new ShapeBinding
                 {
                     BindingName = _bindingName,
                     BindingSource = bindingSource,
+                    BindingAsync = bindingDelegate,
                 };
 
-                binding.BindingAsync = bindingDelegate;
-
-                // ShapeDescriptor.Bindings is a case insensitive dictionary
+                // ShapeDescriptor.Bindings is a case insensitive dictionary.
                 descriptor.Bindings[_bindingName] = binding;
                 descriptor.BindingSources.Add(bindingSource);
             });

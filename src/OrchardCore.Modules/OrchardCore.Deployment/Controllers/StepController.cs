@@ -23,8 +23,8 @@ namespace OrchardCore.Deployment.Controllers
         private readonly ISession _session;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IHtmlLocalizer H;
-        private readonly dynamic New;
+        protected readonly IHtmlLocalizer H;
+        protected readonly dynamic New;
 
         public StepController(
             IAuthorizationService authorizationService,
@@ -46,7 +46,7 @@ namespace OrchardCore.Deployment.Controllers
             H = htmlLocalizer;
         }
 
-        public async Task<IActionResult> Create(int id, string type)
+        public async Task<IActionResult> Create(long id, string type)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
@@ -124,7 +124,7 @@ namespace OrchardCore.Deployment.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Edit(int id, string stepId)
+        public async Task<IActionResult> Edit(long id, string stepId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
@@ -138,7 +138,7 @@ namespace OrchardCore.Deployment.Controllers
                 return NotFound();
             }
 
-            var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => String.Equals(x.Id, stepId, StringComparison.OrdinalIgnoreCase));
+            var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => string.Equals(x.Id, stepId, StringComparison.OrdinalIgnoreCase));
 
             if (step == null)
             {
@@ -174,7 +174,7 @@ namespace OrchardCore.Deployment.Controllers
                 return NotFound();
             }
 
-            var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => String.Equals(x.Id, model.DeploymentStepId, StringComparison.OrdinalIgnoreCase));
+            var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => string.Equals(x.Id, model.DeploymentStepId, StringComparison.OrdinalIgnoreCase));
 
             if (step == null)
             {
@@ -199,7 +199,7 @@ namespace OrchardCore.Deployment.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(int id, string stepId)
+        public async Task<IActionResult> Delete(long id, string stepId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
@@ -213,7 +213,7 @@ namespace OrchardCore.Deployment.Controllers
                 return NotFound();
             }
 
-            var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => String.Equals(x.Id, stepId, StringComparison.OrdinalIgnoreCase));
+            var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => string.Equals(x.Id, stepId, StringComparison.OrdinalIgnoreCase));
 
             if (step == null)
             {
@@ -229,7 +229,7 @@ namespace OrchardCore.Deployment.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateOrder(int id, int oldIndex, int newIndex)
+        public async Task<IActionResult> UpdateOrder(long id, int oldIndex, int newIndex)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {

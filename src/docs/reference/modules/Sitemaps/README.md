@@ -120,6 +120,10 @@ The cache is automatically cleared when content items are published.
 
 To clear the cache manually use the _Configuration -> SEO -> Sitemaps Cache_ feature.
 
+## `robots.txt` File.
+
+When both `SEO` and `Sitemaps` features are enabled and no `robots.txt` file is found on the filesystem, the sitemap indexes and sitemaps are added to the `robots.txt` file by default. This can be changed by navigating to **Configuration** >> **Settings** >> **SEO**.
+
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/fG_rFD0wffw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

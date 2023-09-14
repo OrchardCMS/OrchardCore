@@ -16,7 +16,7 @@ namespace OrchardCore.Shortcodes.Services
         private readonly HtmlEncoder _htmlEncoder;
 
         private ShortcodeTemplatesDocument _shortcodeTemplatesDocument;
-        private readonly HashSet<string> _identifiers = new HashSet<string>();
+        private readonly HashSet<string> _identifiers = new();
 
         public TemplateShortcodeProvider(
             ShortcodeTemplatesManager shortcodeTemplatesManager,
@@ -50,7 +50,7 @@ namespace OrchardCore.Shortcodes.Services
             {
                 Args = arguments,
                 Content = content,
-                Context = context
+                Context = context,
             };
 
             var parameters = new Dictionary<string, FluidValue>

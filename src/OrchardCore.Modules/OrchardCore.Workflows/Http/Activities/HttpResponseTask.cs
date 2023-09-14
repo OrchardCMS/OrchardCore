@@ -17,7 +17,7 @@ namespace OrchardCore.Workflows.Http.Activities
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly UrlEncoder _urlEncoder;
 
         public HttpResponseTask(
@@ -80,7 +80,7 @@ namespace OrchardCore.Workflows.Http.Activities
 
             foreach (var header in headers)
             {
-                response.Headers.Add(header);
+                response.Headers.Append(header.Key, header.Value);
             }
 
             if (!string.IsNullOrWhiteSpace(contentType))
@@ -97,7 +97,7 @@ namespace OrchardCore.Workflows.Http.Activities
             return Outcomes("Done");
         }
 
-        private IEnumerable<KeyValuePair<string, StringValues>> ParseHeaders(string text)
+        private static IEnumerable<KeyValuePair<string, StringValues>> ParseHeaders(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return Enumerable.Empty<KeyValuePair<string, StringValues>>();

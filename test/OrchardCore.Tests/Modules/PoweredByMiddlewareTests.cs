@@ -21,7 +21,7 @@ namespace OrchardCore.Tests.Modules
             optionsMock.SetupGet(o => o.Enabled).Returns(true);
             optionsMock.SetupGet(o => o.HeaderName).Returns(key);
             optionsMock.SetupGet(o => o.HeaderValue).Returns(value);
-            RequestDelegate requestDelegate = (context) => Task.CompletedTask;
+            static Task requestDelegate(HttpContext context) => Task.CompletedTask;
             var middleware = new PoweredByMiddleware(next: requestDelegate, options: optionsMock.Object);
 
             // Act
@@ -51,7 +51,7 @@ namespace OrchardCore.Tests.Modules
             optionsMock.SetupGet(o => o.Enabled).Returns(false);
             optionsMock.SetupGet(o => o.HeaderName).Returns(key);
             optionsMock.SetupGet(o => o.HeaderValue).Returns(value);
-            RequestDelegate requestDelegate = (context) => Task.CompletedTask;
+            static Task requestDelegate(HttpContext context) => Task.CompletedTask;
             var middleware = new PoweredByMiddleware(next: requestDelegate, options: optionsMock.Object);
 
             // Act

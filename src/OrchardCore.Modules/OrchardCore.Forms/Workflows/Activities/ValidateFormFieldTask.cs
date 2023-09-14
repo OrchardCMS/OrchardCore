@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -13,7 +14,7 @@ namespace OrchardCore.Forms.Workflows.Activities
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public ValidateFormFieldTask(
             IHttpContextAccessor httpContextAccessor,
@@ -60,10 +61,7 @@ namespace OrchardCore.Forms.Workflows.Activities
             {
                 var updater = _updateModelAccessor.ModelUpdater;
 
-                if (updater != null)
-                {
-                    updater.ModelState.TryAddModelError(FieldName, ErrorMessage);
-                }
+                updater?.ModelState.TryAddModelError(FieldName, ErrorMessage);
             }
 
             return Outcomes("Done", outcome);

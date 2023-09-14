@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -5,9 +6,8 @@ namespace OrchardCore.Apis.GraphQL.Client
 {
     public class ContentTypeCreateResourceBuilder
     {
-        private IDictionary<string, object> _values = new Dictionary<string, object>();
-
-        private List<ContentPartBuilder> contentPartBuilders = new List<ContentPartBuilder>();
+        private readonly Dictionary<string, object> _values = new();
+        private readonly List<ContentPartBuilder> _contentPartBuilders = new();
 
         private string ContentType { get; set; }
 
@@ -19,7 +19,7 @@ namespace OrchardCore.Apis.GraphQL.Client
         public ContentPartBuilder WithContentPart(string contentPartName)
         {
             var builder = new ContentPartBuilder(contentPartName.ToGraphQLStringFormat());
-            contentPartBuilders.Add(builder);
+            _contentPartBuilders.Add(builder);
             return builder;
         }
 
@@ -54,9 +54,9 @@ namespace OrchardCore.Apis.GraphQL.Client
                 }
             }
 
-            for (var i = 0; i < contentPartBuilders.Count; i++)
+            for (var i = 0; i < _contentPartBuilders.Count; i++)
             {
-                sbo.Append(contentPartBuilders[i].Build()).AppendLine((i == (contentPartBuilders.Count - 1)) ? "" : ",");
+                sbo.Append(_contentPartBuilders[i].Build()).AppendLine((i == (_contentPartBuilders.Count - 1)) ? string.Empty : ",");
             }
 
             sbo.Append('}').AppendLine();

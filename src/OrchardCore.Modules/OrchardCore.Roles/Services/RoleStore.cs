@@ -19,7 +19,7 @@ namespace OrchardCore.Roles.Services
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IDocumentManager<RolesDocument> _documentManager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly ILogger _logger;
 
         private bool _updating;
@@ -90,8 +90,8 @@ namespace OrchardCore.Roles.Services
 
             var roleToRemove = (Role)role;
 
-            if (String.Equals(roleToRemove.NormalizedRoleName, "ANONYMOUS") ||
-                String.Equals(roleToRemove.NormalizedRoleName, "AUTHENTICATED"))
+            if (string.Equals(roleToRemove.NormalizedRoleName, "ANONYMOUS") ||
+                string.Equals(roleToRemove.NormalizedRoleName, "AUTHENTICATED"))
             {
                 return IdentityResult.Failed(new IdentityError { Description = S["Can't delete system roles."] });
             }
@@ -215,7 +215,7 @@ namespace OrchardCore.Roles.Services
 
         #region IRoleClaimStore<IRole>
 
-        public Task AddClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        public Task AddClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken = default)
         {
             if (role == null)
             {
@@ -232,7 +232,7 @@ namespace OrchardCore.Roles.Services
             return Task.CompletedTask;
         }
 
-        public Task<IList<Claim>> GetClaimsAsync(IRole role, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<IList<Claim>> GetClaimsAsync(IRole role, CancellationToken cancellationToken = default)
         {
             if (role == null)
             {
@@ -242,7 +242,7 @@ namespace OrchardCore.Roles.Services
             return Task.FromResult<IList<Claim>>(((Role)role).RoleClaims.Select(x => x.ToClaim()).ToList());
         }
 
-        public Task RemoveClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
+        public Task RemoveClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken = default)
         {
             if (role == null)
             {

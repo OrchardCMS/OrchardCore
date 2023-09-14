@@ -29,7 +29,7 @@ namespace OrchardCore.Settings.Services
 
             var site = await _siteService.GetSiteSettingsAsync();
 
-            if (String.Equals(userId, site.SuperUser, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(userId, site.SuperUser, StringComparison.OrdinalIgnoreCase))
             {
                 SucceedAllRequirements(context);
             }

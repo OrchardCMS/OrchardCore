@@ -8,19 +8,19 @@ namespace OrchardCore.OpenId
     public class Permissions : IPermissionProvider
     {
         public static readonly Permission ManageApplications
-            = new Permission(nameof(ManageApplications), "View, add, edit and remove the OpenID Connect applications.");
+            = new(nameof(ManageApplications), "View, add, edit and remove the OpenID Connect applications.");
 
         public static readonly Permission ManageScopes
-            = new Permission(nameof(ManageScopes), "View, add, edit and remove the OpenID Connect scopes.");
+            = new(nameof(ManageScopes), "View, add, edit and remove the OpenID Connect scopes.");
 
         public static readonly Permission ManageClientSettings
-            = new Permission(nameof(ManageClientSettings), "View and edit the OpenID Connect client settings.");
+            = new(nameof(ManageClientSettings), "View and edit the OpenID Connect client settings.");
 
         public static readonly Permission ManageServerSettings
-            = new Permission(nameof(ManageServerSettings), "View and edit the OpenID Connect server settings.");
+            = new(nameof(ManageServerSettings), "View and edit the OpenID Connect server settings.");
 
         public static readonly Permission ManageValidationSettings
-            = new Permission(nameof(ManageValidationSettings), "View and edit the OpenID Connect validation settings.");
+            = new(nameof(ManageValidationSettings), "View and edit the OpenID Connect validation settings.");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
@@ -30,7 +30,7 @@ namespace OrchardCore.OpenId
                 ManageScopes,
                 ManageClientSettings,
                 ManageServerSettings,
-                ManageValidationSettings
+                ManageValidationSettings,
             }
             .AsEnumerable());
         }
@@ -46,7 +46,7 @@ namespace OrchardCore.OpenId
                     ManageScopes,
                     ManageClientSettings,
                     ManageServerSettings,
-                    ManageValidationSettings
+                    ManageValidationSettings,
                 }
             };
         }

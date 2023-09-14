@@ -2,7 +2,7 @@
     var returnUrl = Context.Request.Query["returnUrl"];
 }
 
-@if (String.IsNullOrWhiteSpace(returnUrl))
+@if (string.IsNullOrWhiteSpace(returnUrl))
 {
     <button class="primaryAction btn btn-primary draft" type="submit" name="submit.Save" value="submit.Save">@T["Save Draft"]</button>
 }

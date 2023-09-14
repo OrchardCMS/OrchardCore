@@ -20,7 +20,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
     public class ElasticQueryFieldTypeProvider : ISchemaBuilder
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ILogger<ElasticQueryFieldTypeProvider> _logger;
+        private readonly ILogger _logger;
 
         public ElasticQueryFieldTypeProvider(IHttpContextAccessor httpContextAccessor, ILogger<ElasticQueryFieldTypeProvider> logger)
         {
@@ -42,7 +42,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
 
             foreach (var query in queries.OfType<ElasticQuery>())
             {
-                if (String.IsNullOrWhiteSpace(query.Schema))
+                if (string.IsNullOrWhiteSpace(query.Schema))
                     continue;
 
                 var name = query.Name;
@@ -83,7 +83,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
             }
         }
 
-        private FieldType BuildSchemaBasedFieldType(ElasticQuery query, JToken querySchema, string fieldTypeName)
+        private static FieldType BuildSchemaBasedFieldType(ElasticQuery query, JToken querySchema, string fieldTypeName)
         {
             var properties = querySchema["properties"];
 
@@ -97,7 +97,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
                 Name = fieldTypeName
             };
 
-            foreach (JProperty child in properties.Children())
+            foreach (var child in properties.Children().Cast<JProperty>())
             {
                 var name = child.Name;
                 var nameLower = name.Replace('.', '_');
@@ -161,7 +161,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
             return fieldType;
         }
 
-        private FieldType BuildContentTypeFieldType(ISchema schema, string contentType, ElasticQuery query, string fieldTypeName)
+        private static FieldType BuildContentTypeFieldType(ISchema schema, string contentType, ElasticQuery query, string fieldTypeName)
         {
             var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
@@ -53,7 +54,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             throw new ArgumentNullException(nameof(context));
         }
 
-        if (String.IsNullOrWhiteSpace(context.DatabaseProvider))
+        if (string.IsNullOrWhiteSpace(context.DatabaseProvider))
         {
             return DbConnectionValidatorResult.NoProvider;
         }
@@ -75,7 +76,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             connectionString = SqliteHelper.GetConnectionString(_sqliteOptions, _shellOptions, context.ShellName);
         }
 
-        if (String.IsNullOrWhiteSpace(connectionString))
+        if (string.IsNullOrWhiteSpace(connectionString))
         {
             return DbConnectionValidatorResult.InvalidConnection;
         }
@@ -83,6 +84,14 @@ public class DbConnectionValidator : IDbConnectionValidator
         var factory = GetFactory(context.DatabaseProvider, connectionString);
 
         using var connection = factory.CreateConnection();
+
+        // Prevent from creating an empty locked 'Sqlite' file.
+        if (provider.Value == DatabaseProviderValue.Sqlite &&
+            connection is SqliteConnection sqliteConnection &&
+            !File.Exists(sqliteConnection.DataSource))
+        {
+            return DbConnectionValidatorResult.DocumentTableNotFound;
+        }
 
         try
         {
@@ -112,7 +121,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             selectCommand.CommandText = GetSelectBuilderForDocumentTable(sqlBuilder, documentName, context.Schema).ToSqlString();
 
             using var result = await selectCommand.ExecuteReaderAsync();
-            if (context.ShellName != ShellHelper.DefaultShellName)
+            if (!context.ShellName.IsDefaultShellName())
             {
                 // The 'Document' table exists.
                 return DbConnectionValidatorResult.DocumentTableFound;
@@ -202,8 +211,8 @@ public class DbConnectionValidator : IDbConnectionValidator
 
     private static ISqlBuilder GetSqlBuilder(ISqlDialect sqlDialect, string tablePrefix, string tableNameSeparator)
     {
-        var prefix = String.Empty;
-        if (!String.IsNullOrWhiteSpace(tablePrefix))
+        var prefix = string.Empty;
+        if (!string.IsNullOrWhiteSpace(tablePrefix))
         {
             prefix = tablePrefix.Trim() + tableNameSeparator;
         }

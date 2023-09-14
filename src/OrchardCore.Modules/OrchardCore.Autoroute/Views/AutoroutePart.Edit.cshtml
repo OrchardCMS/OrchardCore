@@ -26,23 +26,23 @@
     </div>
 }
 
-<div class="autoroute-disabled" style="@(Model.Disabled ? "display: none" : String.Empty)">
+<div class="autoroute-disabled" style="@(Model.Disabled ? "display: none" : string.Empty)">
     <div class="@Orchard.GetWrapperCssClasses()" asp-validation-class-for="Path">
         <label asp-for="Path" class="@Orchard.GetLabelCssClasses()">@T["Permalink"]</label>
         <div class="@Orchard.GetEndCssClasses()">
             <div class="input-group">
-                @if (!String.IsNullOrWhiteSpace(site.BaseUrl))
+                @if (!string.IsNullOrWhiteSpace(site.BaseUrl))
                 {
                     <div class="input-group-text">@site.BaseUrl</div>
                 }
                 <input asp-for="Path" class="form-control" disabled="@(!Model.Settings.AllowCustomPath)" />
                 @if (hasPublished)
                 {
-                    <div class="input-group-text"><a display-for="@contentItem" class="text-info" target="_blank"><i class="fa fa-external-link" aria-hidden="true"></i></a></div>
+                    <div class="input-group-text"><a display-for="@contentItem" class="text-info" target="_blank"><i class="fa-solid fa-external-link" aria-hidden="true"></i></a></div>
                 }
                 <span asp-validation-for="Path"></span>
             </div>
-            @if (!String.IsNullOrWhiteSpace(Model.Settings.Pattern) && Model.Settings.AllowCustomPath)
+            @if (!string.IsNullOrWhiteSpace(Model.Settings.Pattern) && Model.Settings.AllowCustomPath)
             {
                 <span class="hint">@T["The url of the content item. Leave empty to auto-generate it."]</span>
             }

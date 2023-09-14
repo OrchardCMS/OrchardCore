@@ -29,9 +29,9 @@ public class SearchController : Controller
     private readonly ISiteService _siteService;
     private readonly ISession _session;
     private readonly IServiceProvider _serviceProvider;
-    private readonly dynamic New;
     private readonly INotifier _notifier;
-    private readonly IHtmlLocalizer H;
+    protected readonly dynamic New;
+    protected readonly IHtmlLocalizer H;
     private readonly IEnumerable<ISearchHandler> _searchHandlers;
     private readonly ILogger _logger;
 
@@ -75,7 +75,7 @@ public class SearchController : Controller
         var searchSettings = siteSettings.As<SearchSettings>();
         ISearchService searchService = null;
 
-        if (!String.IsNullOrEmpty(searchSettings.ProviderName))
+        if (!string.IsNullOrEmpty(searchSettings.ProviderName))
         {
             searchService = searchServices.FirstOrDefault(service => service.Name == searchSettings.ProviderName);
         }
@@ -87,7 +87,7 @@ public class SearchController : Controller
             return this.ChallengeOrForbid();
         }
 
-        if (String.IsNullOrWhiteSpace(viewModel.Terms))
+        if (string.IsNullOrWhiteSpace(viewModel.Terms))
         {
             return View(new SearchIndexViewModel()
             {

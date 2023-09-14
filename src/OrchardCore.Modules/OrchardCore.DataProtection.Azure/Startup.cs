@@ -20,8 +20,8 @@ namespace OrchardCore.DataProtection.Azure
         private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
-        // Local instance since it can be discarded once the startup is over
-        private readonly FluidParser _fluidParser = new FluidParser();
+        // Local instance since it can be discarded once the startup is over.
+        private readonly FluidParser _fluidParser = new();
 
         public Startup(
             IShellConfiguration configuration,
@@ -65,7 +65,7 @@ namespace OrchardCore.DataProtection.Azure
 
                 // container name must be lowercase
                 containerName = template.Render(templateContext, NullEncoder.Default).ToLower();
-                containerName = containerName.Replace("\r", String.Empty).Replace("\n", String.Empty);
+                containerName = containerName.Replace("\r", string.Empty).Replace("\n", string.Empty);
             }
             catch (Exception e)
             {
@@ -98,7 +98,7 @@ namespace OrchardCore.DataProtection.Azure
         {
             var blobName = _configuration.GetValue<string>("OrchardCore_DataProtection_Azure:BlobName");
 
-            if (String.IsNullOrEmpty(blobName))
+            if (string.IsNullOrEmpty(blobName))
             {
                 blobName = $"{_shellOptions.ShellsContainerName}/{_shellSettings.Name}/DataProtectionKeys.xml";
             }
@@ -115,7 +115,7 @@ namespace OrchardCore.DataProtection.Azure
                     var template = _fluidParser.Parse(blobName);
 
                     blobName = template.Render(templateContext, NullEncoder.Default);
-                    blobName = blobName.Replace("\r", String.Empty).Replace("\n", String.Empty);
+                    blobName = blobName.Replace("\r", string.Empty).Replace("\n", string.Empty);
                 }
                 catch (Exception e)
                 {
