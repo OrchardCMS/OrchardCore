@@ -1,6 +1,9 @@
 using System;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -31,6 +34,8 @@ public static class HttpBackgroundJob
         {
             return Task.CompletedTask;
         }
+        //records the current login user
+        var userPrincipal = httpContextAccessor.HttpContext.User.Clone();
 
         // Fire and forget in an isolated child scope.
         _ = ShellScope.UsingChildScopeAsync(async scope =>
@@ -76,6 +81,10 @@ public static class HttpBackgroundJob
                 var logger = scope.ServiceProvider.GetRequiredService<ILogger<ShellScope>>();
                 try
                 {
+                    var nextHttp = scope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
+                    //Restore user credentials
+                    nextHttp.HttpContext.User = userPrincipal;
+
                     await job(scope);
                 }
                 catch (Exception ex)
