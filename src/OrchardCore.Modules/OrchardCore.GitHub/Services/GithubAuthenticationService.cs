@@ -59,12 +59,12 @@ namespace OrchardCore.GitHub.Services
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            if (String.IsNullOrWhiteSpace(settings.ClientID))
+            if (string.IsNullOrWhiteSpace(settings.ClientID))
             {
                 yield return new ValidationResult(S["ClientID is required"], new string[] { nameof(settings.ClientID) });
             }
 
-            if (String.IsNullOrWhiteSpace(settings.ClientSecret))
+            if (string.IsNullOrWhiteSpace(settings.ClientSecret))
             {
                 yield return new ValidationResult(S["ClientSecret is required"], new string[] { nameof(settings.ClientSecret) });
             }

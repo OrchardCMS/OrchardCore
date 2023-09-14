@@ -21,7 +21,7 @@ public static class ServiceCollectionExtensions
         {
             var settings = serviceProvider.GetRequiredService<IOptions<SmsSettings>>().Value;
 
-            if (!String.IsNullOrEmpty(settings.DefaultProviderName))
+            if (!string.IsNullOrEmpty(settings.DefaultProviderName))
             {
                 var smsProviderOptions = serviceProvider.GetRequiredService<IOptions<SmsProviderOptions>>().Value;
 

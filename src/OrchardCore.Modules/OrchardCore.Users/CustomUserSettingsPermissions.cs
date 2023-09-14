@@ -29,8 +29,8 @@ namespace OrchardCore.Users
 
         public static Permission CreatePermissionForType(ContentTypeDefinition type) =>
             new(
-                String.Format(_manageOwnCustomUserSettings.Name, type.Name),
-                String.Format(_manageOwnCustomUserSettings.Description, type.DisplayName),
+                string.Format(_manageOwnCustomUserSettings.Name, type.Name),
+                string.Format(_manageOwnCustomUserSettings.Description, type.DisplayName),
                 _manageOwnCustomUserSettings.ImpliedBy
             );
     }

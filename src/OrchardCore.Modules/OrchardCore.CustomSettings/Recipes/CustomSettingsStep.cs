@@ -21,7 +21,7 @@ namespace OrchardCore.CustomSettings.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "custom-settings", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "custom-settings", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

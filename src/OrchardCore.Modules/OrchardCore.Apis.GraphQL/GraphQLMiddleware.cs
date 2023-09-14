@@ -127,7 +127,7 @@ namespace OrchardCore.Apis.GraphQL
 
             var queryToExecute = request.Query;
 
-            if (!String.IsNullOrEmpty(request.NamedQuery))
+            if (!string.IsNullOrEmpty(request.NamedQuery))
             {
                 var namedQueries = context.RequestServices.GetServices<INamedQueryProvider>();
 

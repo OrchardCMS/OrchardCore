@@ -32,7 +32,7 @@ namespace OrchardCore.ContentPreview.Handlers
         private string GetPattern(PreviewPart part)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "PreviewPart"));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "PreviewPart"));
             var pattern = contentTypePartDefinition.GetSettings<PreviewPartSettings>().Pattern;
 
             return pattern;
@@ -42,7 +42,7 @@ namespace OrchardCore.ContentPreview.Handlers
         {
             var pattern = GetPattern(part);
 
-            if (!String.IsNullOrEmpty(pattern))
+            if (!string.IsNullOrEmpty(pattern))
             {
                 await context.ForAsync<PreviewAspect>(async previewAspect =>
                 {
@@ -55,7 +55,7 @@ namespace OrchardCore.ContentPreview.Handlers
                     previewAspect.PreviewUrl = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
                         new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
 
-                    previewAspect.PreviewUrl = previewAspect.PreviewUrl.Replace("\r", String.Empty).Replace("\n", String.Empty);
+                    previewAspect.PreviewUrl = previewAspect.PreviewUrl.Replace("\r", string.Empty).Replace("\n", string.Empty);
                 });
             }
 

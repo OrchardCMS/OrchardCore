@@ -71,7 +71,7 @@ namespace OrchardCore.Alias.Indexes
                     }
 
                     var part = contentItem.As<AliasPart>();
-                    if (part == null || String.IsNullOrEmpty(part.Alias))
+                    if (part == null || string.IsNullOrEmpty(part.Alias))
                     {
                         return null;
                     }

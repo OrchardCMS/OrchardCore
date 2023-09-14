@@ -46,7 +46,7 @@ namespace OrchardCore.Configuration.KeyVault.Extensions
                 var keyVaultName = builtConfig["OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName"];
 
                 TimeSpan? reloadInterval = null;
-                if (Double.TryParse(builtConfig["OrchardCore:OrchardCore_KeyVault_Azure:ReloadInterval"], out var interval))
+                if (double.TryParse(builtConfig["OrchardCore:OrchardCore_KeyVault_Azure:ReloadInterval"], out var interval))
                 {
                     reloadInterval = TimeSpan.FromSeconds(interval);
                 }

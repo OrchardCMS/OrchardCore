@@ -38,7 +38,7 @@ namespace OrchardCore.Tenants.Services
         {
             var errors = new List<ModelError>();
 
-            if (String.IsNullOrWhiteSpace(model.Name))
+            if (string.IsNullOrWhiteSpace(model.Name))
             {
                 errors.Add(new ModelError(nameof(model.Name), S["The tenant name is mandatory."]));
             }
@@ -56,14 +56,14 @@ namespace OrchardCore.Tenants.Services
                 }
             }
 
-            if (!String.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
+            if (!string.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
             {
                 errors.Add(new ModelError(nameof(model.Name), S["Invalid tenant name. Must contain characters only and no spaces."]));
             }
 
             _ = _shellHost.TryGetSettings(model.Name, out var existingShellSettings);
 
-            if (!String.IsNullOrWhiteSpace(model.RequestUrlPrefix) && model.RequestUrlPrefix.Contains('/'))
+            if (!string.IsNullOrWhiteSpace(model.RequestUrlPrefix) && model.RequestUrlPrefix.Contains('/'))
             {
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["The url prefix can not contain more than one segment."]));
             }
@@ -133,7 +133,7 @@ namespace OrchardCore.Tenants.Services
                     if (validationContext.DatabaseProvider == DatabaseProviderValue.Sqlite)
                     {
                         errors.Add(new ModelError(
-                            String.Empty,
+                            string.Empty,
                             S["The related database file is already in use."]));
                         break;
                     }

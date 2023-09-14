@@ -88,7 +88,7 @@
                         <th scope="row">@(row++)</th>
                         @foreach (var name in fieldNames)
                         {
-                            <td>@(document.GetValueOrDefault(name)?.ToString()?? String.Empty)</td>
+                            <td>@(document.GetValueOrDefault(name)?.ToString()?? string.Empty)</td>
                         }
                     </tr>
                 }
@@ -131,7 +131,7 @@
                             if (hitValues != null)
                             {
                                 var value = hitValues.First();
-                                var item = !String.IsNullOrEmpty(value) ? value : "NULL";
+                                var item = !string.IsNullOrEmpty(value) ? value : "NULL";
 
                                 <td>
                                     @item

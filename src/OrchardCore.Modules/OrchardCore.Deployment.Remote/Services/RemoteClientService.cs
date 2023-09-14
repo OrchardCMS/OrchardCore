@@ -45,7 +45,7 @@ namespace OrchardCore.Deployment.Remote.Services
         public async Task<RemoteClient> GetRemoteClientAsync(string id)
         {
             var remoteClientList = await GetRemoteClientListAsync();
-            return remoteClientList.RemoteClients.FirstOrDefault(x => String.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
+            return remoteClientList.RemoteClients.FirstOrDefault(x => string.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
         }
 
         public async Task DeleteRemoteClientAsync(string id)

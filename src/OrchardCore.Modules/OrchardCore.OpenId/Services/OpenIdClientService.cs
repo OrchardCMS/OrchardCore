@@ -71,7 +71,7 @@ namespace OrchardCore.OpenId.Services
                     nameof(settings.Authority)
                 }));
             }
-            else if (!String.IsNullOrEmpty(settings.Authority.Query) || !String.IsNullOrEmpty(settings.Authority.Fragment))
+            else if (!string.IsNullOrEmpty(settings.Authority.Query) || !string.IsNullOrEmpty(settings.Authority.Fragment))
             {
                 results.Add(new ValidationResult(S["The authority cannot contain a query string or a fragment."], new[]
                 {
@@ -79,7 +79,7 @@ namespace OrchardCore.OpenId.Services
                 }));
             }
 
-            if (String.IsNullOrEmpty(settings.ResponseType))
+            if (string.IsNullOrEmpty(settings.ResponseType))
             {
                 results.Add(new ValidationResult(S["The response type cannot be null or empty."], new[]
                 {
@@ -96,7 +96,7 @@ namespace OrchardCore.OpenId.Services
                 }));
             }
 
-            if (String.IsNullOrEmpty(settings.ResponseMode))
+            if (string.IsNullOrEmpty(settings.ResponseMode))
             {
                 results.Add(new ValidationResult(S["The response mode cannot be null or empty."], new[]
                 {

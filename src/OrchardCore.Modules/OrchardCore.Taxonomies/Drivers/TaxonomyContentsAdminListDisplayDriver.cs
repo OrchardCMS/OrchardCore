@@ -52,7 +52,7 @@ namespace OrchardCore.Taxonomies.Drivers
             }
 
             var taxonomyContentItemIds = settings.TaxonomyContentItemIds;
-            if (!String.IsNullOrEmpty(model.SelectedContentType))
+            if (!string.IsNullOrEmpty(model.SelectedContentType))
             {
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.SelectedContentType);
                 var fieldDefinitions = contentTypeDefinition
@@ -122,7 +122,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 var viewModel = new TaxonomyContentsAdminFilterViewModel();
                 if (await updater.TryUpdateModelAsync(viewModel, "Taxonomy" + contentItemId))
                 {
-                    if (!String.IsNullOrEmpty(viewModel.SelectedContentItemId))
+                    if (!string.IsNullOrEmpty(viewModel.SelectedContentItemId))
                     {
                         model.RouteValues.TryAdd("Taxonomy" + contentItemId + ".SelectedContentItemId", viewModel.SelectedContentItemId);
                     }

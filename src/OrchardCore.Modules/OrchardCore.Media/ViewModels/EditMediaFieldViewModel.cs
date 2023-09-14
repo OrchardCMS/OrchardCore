@@ -46,7 +46,7 @@ namespace OrchardCore.Media.ViewModels
         public bool IsRemoved { get; set; }
 
         // Alt text is an option that maybe applied to a media field through settings.
-        public string MediaText { get; set; } = String.Empty;
+        public string MediaText { get; set; } = string.Empty;
         public Anchor Anchor { get; set; } = new Anchor();
     }
 }

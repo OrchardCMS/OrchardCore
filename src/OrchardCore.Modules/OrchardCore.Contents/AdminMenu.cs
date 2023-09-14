@@ -50,7 +50,7 @@ namespace OrchardCore.Contents
         {
             var context = _httpContextAccessor.HttpContext;
 
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

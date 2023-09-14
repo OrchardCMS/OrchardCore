@@ -27,7 +27,7 @@ public class NotificationFilterEngineModelBinder : IModelBinder
 
         if (valueProviderResult == ValueProviderResult.None)
         {
-            bindingContext.Result = ModelBindingResult.Success(_parser.Parse(String.Empty));
+            bindingContext.Result = ModelBindingResult.Success(_parser.Parse(string.Empty));
 
             return Task.CompletedTask;
         }

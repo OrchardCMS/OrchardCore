@@ -81,7 +81,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
 
         var currentProvider = GetProvider(providers, user, provider, next);
 
-        if (String.IsNullOrEmpty(currentProvider))
+        if (string.IsNullOrEmpty(currentProvider))
         {
             await Notifier.ErrorAsync(H["Unable to find an active two-factor provider."]);
 
@@ -116,7 +116,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
 
         var currentProvider = GetProvider(providers, user, model.CurrentProvider, false);
 
-        if (String.IsNullOrEmpty(currentProvider))
+        if (string.IsNullOrEmpty(currentProvider))
         {
             await Notifier.ErrorAsync(H["Unable to find an active two-factor provider."]);
 
@@ -141,13 +141,13 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
             if (result.IsLockedOut)
             {
                 _logger.LogWarning("User account locked out.");
-                ModelState.AddModelError(String.Empty, S["The account is locked out."]);
+                ModelState.AddModelError(string.Empty, S["The account is locked out."]);
                 await _accountEvents.InvokeAsync((e, user) => e.IsLockedOutAsync(user), user, _logger);
 
                 return RedirectToAccountLogin();
             }
 
-            ModelState.AddModelError(String.Empty, S["Invalid verification code."]);
+            ModelState.AddModelError(string.Empty, S["Invalid verification code."]);
 
             // Login failed with a known user.
             await _accountEvents.InvokeAsync((e, user) => e.LoggingInFailedAsync(user), user, _logger);
@@ -187,7 +187,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
                 return RedirectToAccountLogin();
             }
 
-            var recoveryCode = model.RecoveryCode.Replace(" ", String.Empty);
+            var recoveryCode = model.RecoveryCode.Replace(" ", string.Empty);
 
             var result = await SignInManager.TwoFactorRecoveryCodeSignInAsync(recoveryCode);
 
@@ -202,14 +202,14 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
             {
                 _logger.LogWarning("User account locked out.");
 
-                ModelState.AddModelError(String.Empty, S["The account is locked out"]);
+                ModelState.AddModelError(string.Empty, S["The account is locked out"]);
                 await _accountEvents.InvokeAsync((e, user) => e.IsLockedOutAsync(user), user, _logger);
 
                 return RedirectToAccountLogin();
             }
 
             _logger.LogWarning("Invalid recovery code entered for user.");
-            ModelState.AddModelError(String.Empty, S["Invalid recovery code entered."]);
+            ModelState.AddModelError(string.Empty, S["Invalid recovery code entered."]);
         }
 
         return View(model);
@@ -446,7 +446,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
 
     private static string GetProvider(IList<string> providers, IUser user, string provider = null, bool next = false)
     {
-        var validProviderRequested = !String.IsNullOrEmpty(provider) && providers.Contains(provider);
+        var validProviderRequested = !string.IsNullOrEmpty(provider) && providers.Contains(provider);
         var defaultProvider = validProviderRequested ? provider : providers.FirstOrDefault();
 
         if (!validProviderRequested && user is User u)
@@ -454,7 +454,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
             // At this point, no or invalid provider was given. Check the user preference and load the default provider if available.
             var preferences = u.As<TwoFactorPreference>();
 
-            if (!String.IsNullOrEmpty(preferences.DefaultProvider) && providers.Contains(preferences.DefaultProvider))
+            if (!string.IsNullOrEmpty(preferences.DefaultProvider) && providers.Contains(preferences.DefaultProvider))
             {
                 defaultProvider = preferences.DefaultProvider;
             }

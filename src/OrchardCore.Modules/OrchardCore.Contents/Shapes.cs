@@ -53,11 +53,11 @@ namespace OrchardCore.Contents
                     var displayType = content.GetProperty<string>("DisplayType");
                     var alternate = content.GetProperty<string>("Alternate");
 
-                    if (String.IsNullOrEmpty(handle))
+                    if (string.IsNullOrEmpty(handle))
                     {
                         // This code is provided for backwards compatibility and can be removed in a future version.
                         handle = content.GetProperty<string>("Alias");
-                        if (String.IsNullOrEmpty(handle))
+                        if (string.IsNullOrEmpty(handle))
                         {
                             return;
                         }
@@ -70,7 +70,7 @@ namespace OrchardCore.Contents
 
                     var contentItemId = await handleManager.GetContentItemIdAsync(handle);
 
-                    if (String.IsNullOrEmpty(contentItemId))
+                    if (string.IsNullOrEmpty(contentItemId))
                     {
                         return;
                     }
@@ -86,7 +86,7 @@ namespace OrchardCore.Contents
 
                     var displayShape = await displayManager.BuildDisplayAsync(contentItem, updateModelAccessor.ModelUpdater, displayType);
 
-                    if (!String.IsNullOrEmpty(alternate))
+                    if (!string.IsNullOrEmpty(alternate))
                     {
                         displayShape.Metadata.Alternates.Add(alternate);
                     }

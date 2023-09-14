@@ -80,7 +80,7 @@
                         <th scope="row">@(row++)</th>
                         @foreach (var name in fieldNames)
                         {
-                            <td>@(document.GetField(name)?.GetStringValue() ?? String.Empty)</td>
+                            <td>@(document.GetField(name)?.GetStringValue() ?? string.Empty)</td>
                         }
                     </tr>
                 }

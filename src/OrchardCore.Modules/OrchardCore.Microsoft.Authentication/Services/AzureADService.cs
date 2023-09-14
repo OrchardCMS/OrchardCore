@@ -60,17 +60,17 @@ namespace OrchardCore.Microsoft.Authentication.Services
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            if (String.IsNullOrWhiteSpace(settings.DisplayName))
+            if (string.IsNullOrWhiteSpace(settings.DisplayName))
             {
                 yield return new ValidationResult(S["DisplayName is required"], new string[] { nameof(settings.DisplayName) });
             }
 
-            if (String.IsNullOrWhiteSpace(settings.AppId))
+            if (string.IsNullOrWhiteSpace(settings.AppId))
             {
                 yield return new ValidationResult(S["AppId is required"], new string[] { nameof(settings.AppId) });
             }
 
-            if (String.IsNullOrWhiteSpace(settings.TenantId))
+            if (string.IsNullOrWhiteSpace(settings.TenantId))
             {
                 yield return new ValidationResult(S["TenantId is required"], new string[] { nameof(settings.TenantId) });
             }

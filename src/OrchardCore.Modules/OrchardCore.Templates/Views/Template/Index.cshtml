@@ -77,7 +77,7 @@ else
                             <a asp-action="Delete" asp-route-name="@entry.Name" asp-route-admintemplates="@Model.Options.AdminTemplates" asp-route-returnUrl="@FullRequestPath" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>
                         <a asp-action="Edit" asp-route-name="@entry.Name" asp-route-admintemplates="@Model.Options.AdminTemplates" asp-route-returnUrl="@FullRequestPath">@entry.Name</a>
-                        @if (!String.IsNullOrWhiteSpace(entry.Template.Description))
+                        @if (!string.IsNullOrWhiteSpace(entry.Template.Description))
                         {
                             <span class="hint dashed">@entry.Template.Description</span>
                         }

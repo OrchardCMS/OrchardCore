@@ -27,7 +27,7 @@ namespace OrchardCore.Html.Settings
             return Initialize<MonacoSettingsViewModel>("HtmlBodyPartMonacoSettings_Edit", model =>
             {
                 var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartMonacoEditorSettings>();
-                if (String.IsNullOrWhiteSpace(settings.Options))
+                if (string.IsNullOrWhiteSpace(settings.Options))
                 {
                     settings.Options = JsonConvert.SerializeObject(new { automaticLayout = true, language = "html" }, Formatting.Indented);
                 }

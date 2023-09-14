@@ -56,7 +56,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             var shapeMetadata = shape.Metadata;
 
             // Can't really cope with a shape that has no type information.
-            if (shapeMetadata == null || String.IsNullOrEmpty(shapeMetadata.Type))
+            if (shapeMetadata == null || string.IsNullOrEmpty(shapeMetadata.Type))
             {
                 return new HtmlContentString(context.Value.ToString());
             }

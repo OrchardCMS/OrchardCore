@@ -142,7 +142,7 @@ namespace OrchardCore.Users.Drivers
 
                     foreach (var role in rolesToRemove)
                     {
-                        if (String.Equals(role, AdministratorRole, StringComparison.OrdinalIgnoreCase))
+                        if (string.Equals(role, AdministratorRole, StringComparison.OrdinalIgnoreCase))
                         {
                             var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole))
                                 .Cast<User>()

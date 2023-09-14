@@ -131,7 +131,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
                     return layout.Metadata.Type;
                 }
 
-                return String.Empty;
+                return string.Empty;
             }
 
             set

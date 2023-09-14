@@ -55,12 +55,12 @@ public class TwilioSmsProvider : ISmsProvider
             throw new ArgumentNullException(nameof(message));
         }
 
-        if (String.IsNullOrEmpty(message.To))
+        if (string.IsNullOrEmpty(message.To))
         {
             throw new ArgumentException("A phone number is required in order to send a message.");
         }
 
-        if (String.IsNullOrEmpty(message.Body))
+        if (string.IsNullOrEmpty(message.Body))
         {
             throw new ArgumentException("A message body is required in order to send a message.");
         }
@@ -82,8 +82,8 @@ public class TwilioSmsProvider : ISmsProvider
             {
                 var result = await response.Content.ReadFromJsonAsync<TwilioMessageResponse>(_jsonSerializerOptions);
 
-                if (String.Equals(result.Status, "sent", StringComparison.OrdinalIgnoreCase) ||
-                    String.Equals(result.Status, "queued", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(result.Status, "sent", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(result.Status, "queued", StringComparison.OrdinalIgnoreCase))
                 {
                     return SmsResult.Success;
                 }

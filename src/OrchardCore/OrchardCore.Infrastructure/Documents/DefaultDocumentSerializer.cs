@@ -25,7 +25,7 @@ namespace OrchardCore.Documents
         {
         }
 
-        public Task<byte[]> SerializeAsync<TDocument>(TDocument document, int compressThreshold = Int32.MaxValue) where TDocument : class, IDocument, new()
+        public Task<byte[]> SerializeAsync<TDocument>(TDocument document, int compressThreshold = int.MaxValue) where TDocument : class, IDocument, new()
         {
             var data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(document, _jsonSettings));
 

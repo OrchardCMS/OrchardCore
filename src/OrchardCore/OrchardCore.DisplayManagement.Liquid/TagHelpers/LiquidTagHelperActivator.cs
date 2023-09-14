@@ -167,8 +167,8 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             foreach (var name in arguments.Names)
             {
                 var propertyName = name.ToPascalCaseUnderscore();
-                var dictionaryName = String.Empty;
-                var dictionaryKey = String.Empty;
+                var dictionaryName = string.Empty;
+                var dictionaryKey = string.Empty;
 
                 if (!_setters.TryGetValue(propertyName, out var setter))
                 {

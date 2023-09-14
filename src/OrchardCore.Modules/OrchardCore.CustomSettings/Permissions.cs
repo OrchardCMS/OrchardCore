@@ -33,14 +33,14 @@ namespace OrchardCore.CustomSettings
 
         public static string CreatePermissionName(string name)
         {
-            return String.Format(_manageCustomSettings.Name, name);
+            return string.Format(_manageCustomSettings.Name, name);
         }
 
         public static Permission CreatePermissionForType(ContentTypeDefinition type)
         {
             return new Permission(
                     CreatePermissionName(type.Name),
-                    String.Format(_manageCustomSettings.Description, type.DisplayName),
+                    string.Format(_manageCustomSettings.Description, type.DisplayName),
                     _manageCustomSettings.ImpliedBy
                 );
         }
