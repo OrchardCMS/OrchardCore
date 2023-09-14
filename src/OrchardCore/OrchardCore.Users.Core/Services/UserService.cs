@@ -253,43 +253,43 @@ namespace OrchardCore.Users.Services
                 switch (error.Code)
                 {
                     // Password.
-                    case "PasswordRequiresDigit":
+                    case IdentityErrorCode.PasswordRequiresDigit:
                         reportError("Password", S["Passwords must have at least one digit character ('0'-'9')."]);
                         break;
-                    case "PasswordRequiresLower":
+                    case IdentityErrorCode.PasswordRequiresLower:
                         reportError("Password", S["Passwords must have at least one lowercase character ('a'-'z')."]);
                         break;
-                    case "PasswordRequiresUpper":
+                    case IdentityErrorCode.PasswordRequiresUpper:
                         reportError("Password", S["Passwords must have at least one uppercase character ('A'-'Z')."]);
                         break;
-                    case "PasswordRequiresNonAlphanumeric":
+                    case IdentityErrorCode.PasswordRequiresNonAlphanumeric:
                         reportError("Password", S["Passwords must have at least one non letter or digit character."]);
                         break;
-                    case "PasswordTooShort":
+                    case IdentityErrorCode.PasswordTooShort:
                         reportError("Password", S["Passwords must be at least {0} characters.", _identityOptions.Value.Password.RequiredLength]);
                         break;
-                    case "PasswordRequiresUniqueChars":
+                    case IdentityErrorCode.PasswordRequiresUniqueChars:
                         reportError("Password", S["Passwords must contain at least {0} unique characters.", _identityOptions.Value.Password.RequiredUniqueChars]);
                         break;
 
                     // CurrentPassword.
-                    case "PasswordMismatch":
+                    case IdentityErrorCode.PasswordMismatch:
                         reportError("CurrentPassword", S["Incorrect password."]);
                         break;
 
                     // User name.
-                    case "InvalidUserName":
+                    case IdentityErrorCode.InvalidUserName:
                         reportError("UserName", S["User name '{0}' is invalid, can only contain letters or digits.", user.UserName]);
                         break;
-                    case "DuplicateUserName":
+                    case IdentityErrorCode.DuplicateUserName:
                         reportError("UserName", S["User name '{0}' is already used.", user.UserName]);
                         break;
 
                     // Email.
-                    case "DuplicateEmail":
+                    case IdentityErrorCode.DuplicateEmail:
                         reportError("Email", S["Email '{0}' is already used.", user.Email]);
                         break;
-                    case "InvalidEmail":
+                    case IdentityErrorCode.InvalidEmail:
                         reportError("Email", S["Email '{0}' is invalid.", user.Email]);
                         break;
 
