@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -14,23 +17,28 @@ namespace OrchardCore.ReCaptcha.Services
 {
     public class ReCaptchaService
     {
-        private readonly ReCaptchaClient _reCaptchaClient;
-        private readonly ReCaptchaSettings _settings;
+        private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
+        {
+            PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance,
+        };
+
+        private readonly ReCaptchaSettings _reCaptchaSettings;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly IEnumerable<IDetectRobots> _robotDetectors;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
         protected readonly IStringLocalizer S;
 
         public ReCaptchaService(
-            ReCaptchaClient reCaptchaClient,
+            IHttpClientFactory httpClientFactory,
             IOptions<ReCaptchaSettings> optionsAccessor,
             IEnumerable<IDetectRobots> robotDetectors,
             IHttpContextAccessor httpContextAccessor,
             ILogger<ReCaptchaService> logger,
             IStringLocalizer<ReCaptchaService> stringLocalizer)
         {
-            _reCaptchaClient = reCaptchaClient;
-            _settings = optionsAccessor.Value;
+            _reCaptchaSettings = optionsAccessor.Value;
+            _httpClientFactory = httpClientFactory;
             _robotDetectors = robotDetectors;
             _httpContextAccessor = httpContextAccessor;
             _logger = logger;
@@ -71,8 +79,9 @@ namespace OrchardCore.ReCaptcha.Services
         /// <returns></returns>
         public async Task<bool> VerifyCaptchaResponseAsync(string reCaptchaResponse)
         {
-            return !string.IsNullOrWhiteSpace(reCaptchaResponse) &&
-                await _reCaptchaClient.VerifyAsync(reCaptchaResponse);
+            return !string.IsNullOrWhiteSpace(reCaptchaResponse)
+                && _reCaptchaSettings.IsValid()
+                && await VerifyAsync(reCaptchaResponse);
         }
 
         /// <summary>
@@ -81,7 +90,7 @@ namespace OrchardCore.ReCaptcha.Services
         /// <param name="reportError">Lambda for reporting errors.</param>
         public async Task<bool> ValidateCaptchaAsync(Action<string, string> reportError)
         {
-            if (!_settings.IsValid())
+            if (!_reCaptchaSettings.IsValid())
             {
                 _logger.LogWarning("The ReCaptcha settings are not valid");
                 return false;
@@ -96,7 +105,7 @@ namespace OrchardCore.ReCaptcha.Services
                 reCaptchaResponse = _httpContextAccessor.HttpContext.Request.Form[Constants.ReCaptchaServerResponseHeaderName].ToString();
             }
 
-            var isValid = !string.IsNullOrEmpty(reCaptchaResponse) && await VerifyCaptchaResponseAsync(reCaptchaResponse);
+            var isValid = await VerifyCaptchaResponseAsync(reCaptchaResponse);
 
             if (!isValid)
             {
@@ -104,6 +113,36 @@ namespace OrchardCore.ReCaptcha.Services
             }
 
             return isValid;
+        }
+
+        /// <summary>
+        /// Verifies the supplied token with ReCaptcha Api.
+        /// </summary>
+        /// <param name="responseToken">Token received from the ReCaptcha UI.</param>
+        /// <returns>A boolean indicating if the token is valid.</returns>
+        private async Task<bool> VerifyAsync(string responseToken)
+        {
+            try
+            {
+                var content = new FormUrlEncodedContent(new Dictionary<string, string>
+                {
+                    { "secret", _reCaptchaSettings.SecretKey },
+                    { "response", responseToken }
+                });
+
+                var client = _httpClientFactory.CreateClient(nameof(ReCaptchaService));
+                var response = await client.PostAsync("siteverify", content);
+                response.EnsureSuccessStatusCode();
+                var result = await response.Content.ReadFromJsonAsync<ReCaptchaResponse>(_jsonSerializerOptions);
+
+                return result.Success;
+            }
+            catch (HttpRequestException e)
+            {
+                _logger.LogError(e, "Could not contact Google to verify captcha.");
+            }
+
+            return false;
         }
     }
 }
