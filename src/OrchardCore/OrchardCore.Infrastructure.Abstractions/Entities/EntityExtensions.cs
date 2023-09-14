@@ -26,14 +26,28 @@ namespace OrchardCore.Entities
         /// <returns>A new instance of the requested type if the property was not found.</returns>
         public static T As<T>(this IEntity entity, string name) where T : new()
         {
-            JToken value;
+            var entityCache = entity as ICacheableEntity;
 
-            if (entity.Properties.TryGetValue(name, out value))
+            if (entityCache != null
+                && entityCache.TryGetValue<T>(name, out var cachedValue))
             {
-                return value.ToObject<T>();
+                return cachedValue;
             }
 
-            return new T();
+            T final;
+
+            if (entity.Properties.TryGetValue(name, out var value))
+            {
+                final = value.ToObject<T>();
+            }
+            else
+            {
+                final = new T();
+            }
+
+            entityCache?.Set(name, final);
+
+            return final;
         }
 
         /// <summary>
@@ -45,6 +59,7 @@ namespace OrchardCore.Entities
         public static bool Has<T>(this IEntity entity)
         {
             var typeName = typeof(T).Name;
+
             return entity.Has(typeName);
         }
 
@@ -67,6 +82,12 @@ namespace OrchardCore.Entities
         public static IEntity Put(this IEntity entity, string name, object property)
         {
             entity.Properties[name] = JObject.FromObject(property);
+
+            if (entity is ICacheableEntity entityCache)
+            {
+                entityCache.Set(name, property);
+            }
+
             return entity;
         }
 
