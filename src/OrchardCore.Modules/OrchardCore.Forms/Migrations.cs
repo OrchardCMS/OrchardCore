@@ -37,6 +37,16 @@ namespace OrchardCore.Forms
             _contentDefinitionManager.AlterPartDefinition("FormElementPart", part => part
                 .WithDescription("Provides attributes common to all form elements."));
 
+            _contentDefinitionManager.AlterPartDefinition("FormElementLabelPart", part => part
+                .Attachable()
+                .WithDescription("Provides a way to capture element's label.")
+            );
+
+            _contentDefinitionManager.AlterPartDefinition("FormElementValidationPart", part => part
+                .Attachable()
+                .WithDescription("Provides validation options to form elements.")
+            );
+
             // FormInputElement
             _contentDefinitionManager.AlterPartDefinition("FormInputElementPart", part => part
                 .WithDescription("Provides attributes common to all input form elements."));
@@ -58,9 +68,21 @@ namespace OrchardCore.Forms
                 .WithDescription("Provides input field properties."));
 
             _contentDefinitionManager.AlterTypeDefinition("Input", type => type
-                .WithPart("FormInputElementPart")
-                .WithPart("FormElementPart")
-                .WithPart("InputPart")
+                .WithPart("FormInputElementPart", part => part
+                    .WithPosition("1")
+                )
+                .WithPart("FormElementPart", part => part
+                    .WithPosition("2")
+                )
+                .WithPart("FormElementLabelPart", part => part
+                    .WithPosition("3")
+                )
+                .WithPart("InputPart", part => part
+                    .WithPosition("4")
+                )
+                .WithPart("FormElementValidationPart", part => part
+                    .WithPosition("5")
+                )
                 .Stereotype("Widget"));
 
             // TextArea
@@ -68,9 +90,21 @@ namespace OrchardCore.Forms
                 .WithDescription("Provides text area properties."));
 
             _contentDefinitionManager.AlterTypeDefinition("TextArea", type => type
-                .WithPart("FormInputElementPart")
-                .WithPart("FormElementPart")
-                .WithPart("TextAreaPart")
+                .WithPart("FormInputElementPart", part => part
+                    .WithPosition("1")
+                )
+                .WithPart("FormElementPart", part => part
+                    .WithPosition("2")
+                )
+                .WithPart("FormElementLabelPart", part => part
+                    .WithPosition("3")
+                )
+                .WithPart("TextAreaPart", part => part
+                    .WithPosition("4")
+                )
+                .WithPart("FormElementValidationPart", part => part
+                    .WithPosition("5")
+                )
                 .Stereotype("Widget"));
 
             // Select
@@ -78,9 +112,21 @@ namespace OrchardCore.Forms
                 .WithDescription("Provides select field properties."));
 
             _contentDefinitionManager.AlterTypeDefinition("Select", type => type
-                .WithPart("FormInputElementPart")
-                .WithPart("FormElementPart")
-                .WithPart("SelectPart")
+                .WithPart("FormInputElementPart", part => part
+                    .WithPosition("1")
+                )
+                .WithPart("FormElementPart", part => part
+                    .WithPosition("2")
+                )
+                .WithPart("FormElementLabelPart", part => part
+                    .WithPosition("3")
+                )
+                .WithPart("SelectPart", part => part
+                    .WithPosition("4")
+                )
+                .WithPart("FormElementValidationPart", part => part
+                    .WithPosition("5")
+                )
                 .Stereotype("Widget"));
 
             // Button
@@ -110,7 +156,7 @@ namespace OrchardCore.Forms
                 .Stereotype("Widget"));
 
             // Shortcut other migration steps on new content definition schemas.
-            return 3;
+            return 4;
         }
 
         // This code can be removed in a later version.
@@ -142,17 +188,17 @@ namespace OrchardCore.Forms
             return 3;
         }
 
+        // This code can be removed in a later version.
         public int UpdateFrom3()
         {
             _contentDefinitionManager.AlterPartDefinition("FormElementLabelPart", part => part
                 .Attachable()
-                .WithDisplayName("Form Element Label Part")
                 .WithDescription("Provides a way to capture element's label.")
             );
 
             _contentDefinitionManager.AlterPartDefinition("FormElementValidationPart", part => part
                 .Attachable()
-                .WithDisplayName("Form Element Validation Part")
+                .WithDescription("Provides validation options to form elements.")
             );
 
             _contentDefinitionManager.AlterTypeDefinition("Select", type => type
