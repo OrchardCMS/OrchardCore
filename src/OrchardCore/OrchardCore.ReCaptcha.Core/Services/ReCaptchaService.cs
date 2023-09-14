@@ -21,7 +21,13 @@ namespace OrchardCore.ReCaptcha.Services
         private readonly ILogger _logger;
         protected readonly IStringLocalizer S;
 
-        public ReCaptchaService(ReCaptchaClient reCaptchaClient, IOptions<ReCaptchaSettings> optionsAccessor, IEnumerable<IDetectRobots> robotDetectors, IHttpContextAccessor httpContextAccessor, ILogger<ReCaptchaService> logger, IStringLocalizer<ReCaptchaService> stringLocalizer)
+        public ReCaptchaService(
+            ReCaptchaClient reCaptchaClient,
+            IOptions<ReCaptchaSettings> optionsAccessor,
+            IEnumerable<IDetectRobots> robotDetectors,
+            IHttpContextAccessor httpContextAccessor,
+            ILogger<ReCaptchaService> logger,
+            IStringLocalizer<ReCaptchaService> stringLocalizer)
         {
             _reCaptchaClient = reCaptchaClient;
             _settings = optionsAccessor.Value;

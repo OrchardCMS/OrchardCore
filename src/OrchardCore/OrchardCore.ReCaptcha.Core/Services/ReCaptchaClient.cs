@@ -1,24 +1,23 @@
-using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
-using OrchardCore.ReCaptcha.Configuration;
 
 namespace OrchardCore.ReCaptcha.Services
 {
     public class ReCaptchaClient
     {
-        private readonly HttpClient _httpClient;
+        public const string Name = "ReCaptcha";
+
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger _logger;
 
-        public ReCaptchaClient(HttpClient httpClient, IOptions<ReCaptchaSettings> optionsAccessor, ILogger<ReCaptchaClient> logger)
+        public ReCaptchaClient(
+            IHttpClientFactory httpClientFactory,
+            ILogger<ReCaptchaClient> logger)
         {
-            var options = optionsAccessor.Value;
-            _httpClient = httpClient;
-            _httpClient.BaseAddress = new Uri(options.ReCaptchaApiUri);
+            _httpClientFactory = httpClientFactory;
             _logger = logger;
         }
 
@@ -42,7 +41,9 @@ namespace OrchardCore.ReCaptcha.Services
             });
             try
             {
-                var response = await _httpClient.PostAsync("siteverify", content);
+                var client = _httpClientFactory.CreateClient(Name);
+
+                var response = await client.PostAsync("siteverify", content);
                 response.EnsureSuccessStatusCode();
                 var responseJson = await response.Content.ReadAsStringAsync();
                 var responseModel = JObject.Parse(responseJson);
