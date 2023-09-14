@@ -34,20 +34,20 @@ namespace OrchardCore.Entities
                 return cachedValue;
             }
 
-            T final;
+            T value;
 
-            if (entity.Properties.TryGetValue(name, out var value))
+            if (entity.Properties.TryGetValue(name, out var existingValue))
             {
-                final = value.ToObject<T>();
+                value = existingValue.ToObject<T>();
             }
             else
             {
-                final = new T();
+                value = new T();
             }
 
-            entityCache?.Set(name, final);
+            entityCache?.Set(name, value);
 
-            return final;
+            return value;
         }
 
         /// <summary>

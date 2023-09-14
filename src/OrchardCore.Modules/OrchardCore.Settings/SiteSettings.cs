@@ -43,7 +43,6 @@ namespace OrchardCore.Settings
             }
         }
 
-
         public void Forget(string key)
         {
             AssertNotNull(key);
