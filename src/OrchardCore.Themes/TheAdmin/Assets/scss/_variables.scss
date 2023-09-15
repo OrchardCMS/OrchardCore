@@ -8,9 +8,6 @@
 $link-decoration: none;
 $link-hover-decoration: underline;
 
-$zindex-sticky: 1000;
-$zindex-modal: 1150; /* modal's z-index should be heigher than the z-index for the top-navbar (i.e, $zindex-sticky + 100) and the side menu (i.e, $zindex-sticky + 50) */
-
 // Custom variables.
 $top-nav-height: 52px !default;
 $footer-height: 40px !default;

@@ -1,7 +1,14 @@
 // bootstrap-select customizations
+@import "../../../node_modules/bootstrap-select/sass/bootstrap-select";
 
 .multiselect__content-wrapper ul {
     padding-left: unset;
+}
+
+.bootstrap-select .popover-header {
+    padding: .5rem 1rem;
+    margin-bottom: 0;
+    @extend .border-bottom;
 }
 
 .bootstrap-select {

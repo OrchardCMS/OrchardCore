@@ -1,4 +1,3 @@
-/* modal's z-index should be heigher than the z-index for the top-navbar (i.e, $zindex-sticky + 100) and the side menu (i.e, $zindex-sticky + 50) */
 :root {
   --oc-border-content: 1px solid #dedede;
   --oc-admin-menu-bg-color: #eaeaea;

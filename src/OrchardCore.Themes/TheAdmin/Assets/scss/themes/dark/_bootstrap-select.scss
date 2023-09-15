@@ -1,4 +1,7 @@
-.bootstrap-select > .dropdown-toggle.bs-placeholder, .bootstrap-select > .dropdown-toggle.bs-placeholder:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder:active {
+.bootstrap-select > .dropdown-toggle.bs-placeholder,
+.bootstrap-select > .dropdown-toggle.bs-placeholder:hover,
+.bootstrap-select > .dropdown-toggle.bs-placeholder:focus,
+.bootstrap-select > .dropdown-toggle.bs-placeholder:active {
     color: var(--bs-white) !important;
 }
 
@@ -6,4 +9,8 @@
 html[dir="rtl"] .bootstrap-select .bs-ok-default:after {
     border-width: 0 0.26em 0.26em 0 !important;
     transform: rotate(45deg) !important;
+}
+
+.bootstrap-select .popover-header {
+    background-color: var(--bs-secondary-bg);
 }

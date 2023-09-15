@@ -1,6 +1,5 @@
 @charset "UTF-8";
 /* Import _variables before Bootstrap to allow overriding Bootstrap variables */
-/* modal's z-index should be heigher than the z-index for the top-navbar (i.e, $zindex-sticky + 100) and the side menu (i.e, $zindex-sticky + 50) */
 :root {
   --oc-border-content: 1px solid #dedede;
   --oc-admin-menu-bg-color: #eaeaea;
@@ -5463,7 +5462,7 @@ textarea.form-control-lg {
 }
 
 .modal {
-  --bs-modal-zindex: 1150;
+  --bs-modal-zindex: 1055;
   --bs-modal-width: 500px;
   --bs-modal-padding: 1rem;
   --bs-modal-margin: 0.5rem;
@@ -7045,73 +7044,73 @@ textarea.form-control-lg {
 .sticky-top {
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 1020;
 }
 
 .sticky-bottom {
   position: sticky;
   bottom: 0;
-  z-index: 1000;
+  z-index: 1020;
 }
 
 @media (min-width: 576px) {
   .sticky-sm-top {
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 1020;
   }
   .sticky-sm-bottom {
     position: sticky;
     bottom: 0;
-    z-index: 1000;
+    z-index: 1020;
   }
 }
 @media (min-width: 768px) {
   .sticky-md-top {
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 1020;
   }
   .sticky-md-bottom {
     position: sticky;
     bottom: 0;
-    z-index: 1000;
+    z-index: 1020;
   }
 }
 @media (min-width: 992px) {
   .sticky-lg-top {
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 1020;
   }
   .sticky-lg-bottom {
     position: sticky;
     bottom: 0;
-    z-index: 1000;
+    z-index: 1020;
   }
 }
 @media (min-width: 1200px) {
   .sticky-xl-top {
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 1020;
   }
   .sticky-xl-bottom {
     position: sticky;
     bottom: 0;
-    z-index: 1000;
+    z-index: 1020;
   }
 }
 @media (min-width: 1400px) {
   .sticky-xxl-top {
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 1020;
   }
   .sticky-xxl-bottom {
     position: sticky;
     bottom: 0;
-    z-index: 1000;
+    z-index: 1020;
   }
 }
 .hstack {
@@ -7465,7 +7464,7 @@ textarea.form-control-lg {
   transform: translateY(-50%) !important;
 }
 
-.border, [data-bs-theme=dark] .ta-badge, [data-bs-theme=light] .ta-badge {
+.border, [data-bs-theme=dark] .ta-badge, [data-bs-theme=light] .ta-badge, .ta-badge {
   border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
 }
 
@@ -7489,7 +7488,7 @@ textarea.form-control-lg {
   border-right: 0 !important;
 }
 
-.border-bottom {
+.border-bottom, .bootstrap-select .popover-header {
   border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
 }
 
@@ -8929,7 +8928,7 @@ textarea.form-control-lg {
   border-radius: 50% !important;
 }
 
-.rounded-pill, [data-bs-theme=dark] .ta-badge, [data-bs-theme=light] .ta-badge {
+.rounded-pill, [data-bs-theme=dark] .ta-badge, [data-bs-theme=light] .ta-badge, .ta-badge {
   border-radius: var(--bs-border-radius-pill) !important;
 }
 
@@ -11940,7 +11939,6 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
-/* modal's z-index should be heigher than the z-index for the top-navbar (i.e, $zindex-sticky + 100) and the side menu (i.e, $zindex-sticky + 50) */
 :root {
   --oc-border-content: 1px solid #dedede;
   --oc-admin-menu-bg-color: #eaeaea;
@@ -12027,7 +12025,6 @@ svg {
   all: unset;
 }
 
-/* modal's z-index should be heigher than the z-index for the top-navbar (i.e, $zindex-sticky + 100) and the side menu (i.e, $zindex-sticky + 50) */
 :root {
   --oc-border-content: 1px solid #dedede;
   --oc-admin-menu-bg-color: #eaeaea;
@@ -12471,6 +12468,11 @@ select.selectpicker {
   padding-left: unset;
 }
 
+.bootstrap-select .popover-header {
+  padding: 0.5rem 1rem;
+  margin-bottom: 0;
+}
+
 .bootstrap-select .popover-header .close {
   padding-top: 0px;
   padding-right: 0px;
@@ -12570,7 +12572,6 @@ select.selectpicker {
     }
 }
 */
-/* modal's z-index should be heigher than the z-index for the top-navbar (i.e, $zindex-sticky + 100) and the side menu (i.e, $zindex-sticky + 50) */
 :root {
   --oc-border-content: 1px solid #dedede;
   --oc-admin-menu-bg-color: #eaeaea;
@@ -20209,7 +20210,6 @@ ul.pager {
   justify-content: center;
 }
 
-/* modal's z-index should be heigher than the z-index for the top-navbar (i.e, $zindex-sticky + 100) and the side menu (i.e, $zindex-sticky + 50) */
 :root {
   --oc-border-content: 1px solid #dedede;
   --oc-admin-menu-bg-color: #eaeaea;
@@ -20983,7 +20983,6 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
   transform: scale(-2, 1);
 }
 
-/* modal's z-index should be heigher than the z-index for the top-navbar (i.e, $zindex-sticky + 100) and the side menu (i.e, $zindex-sticky + 50) */
 :root {
   --oc-border-content: 1px solid #dedede;
   --oc-admin-menu-bg-color: #eaeaea;
@@ -21078,7 +21077,6 @@ span.field-validation-error {
 }
 
 /* Include themes */
-/* modal's z-index should be heigher than the z-index for the top-navbar (i.e, $zindex-sticky + 100) and the side menu (i.e, $zindex-sticky + 50) */
 :root {
   --oc-border-content: 1px solid #dedede;
   --oc-admin-menu-bg-color: #eaeaea;
@@ -21125,8 +21123,14 @@ span.field-validation-error {
 [data-bs-theme=light] .bootstrap-select > .dropdown-toggle.bs-placeholder:active {
   color: var(--bs-white) !important;
 }
-[data-bs-theme=light] .bootstrap-select > .dropdown-toggle.bs-placeholder, [data-bs-theme=light] .bootstrap-select > .dropdown-toggle.bs-placeholder:hover, [data-bs-theme=light] .bootstrap-select > .dropdown-toggle.bs-placeholder:focus, [data-bs-theme=light] .bootstrap-select > .dropdown-toggle.bs-placeholder:active {
+[data-bs-theme=light] .bootstrap-select > .dropdown-toggle.bs-placeholder,
+[data-bs-theme=light] .bootstrap-select > .dropdown-toggle.bs-placeholder:hover,
+[data-bs-theme=light] .bootstrap-select > .dropdown-toggle.bs-placeholder:focus,
+[data-bs-theme=light] .bootstrap-select > .dropdown-toggle.bs-placeholder:active {
   color: var(--bs-gray-900) !important;
+}
+[data-bs-theme=light] .bootstrap-select .popover-header {
+  background-color: var(--bs-secondary-bg);
 }
 [data-bs-theme=light] .card {
   --bs-card-bg: var(--bs-white);
@@ -21135,7 +21139,6 @@ span.field-validation-error {
   --bs-modal-bg: var(--bs-white);
 }
 
-/* modal's z-index should be heigher than the z-index for the top-navbar (i.e, $zindex-sticky + 100) and the side menu (i.e, $zindex-sticky + 50) */
 :root {
   --oc-border-content: 1px solid #dedede;
   --oc-admin-menu-bg-color: #eaeaea;
@@ -21159,7 +21162,7 @@ span.field-validation-error {
 
 [data-bs-theme=dark] {
   --oc-border-content: 1px solid rgb(57, 62, 64);
-  --oc-link-padding-left: 16px !default;
+  --oc-link-padding-left: 16px;
   --oc-admin-menu-bg-color: rgb(36, 39, 40);
   --oc-admin-menu-font-color: rgb(181, 175, 166);
   --oc-admin-menu-font-color-hover: rgb(181, 175, 166);

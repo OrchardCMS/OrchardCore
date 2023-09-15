@@ -3,7 +3,7 @@
 
 @include color-mode(dark) {
     --oc-border-content: 1px solid rgb(57, 62, 64);
-    --oc-link-padding-left: 16px !default;
+    --oc-link-padding-left: 16px;
     --oc-admin-menu-bg-color: rgb(36, 39, 40);
     --oc-admin-menu-font-color: rgb(181, 175, 166);
     --oc-admin-menu-font-color-hover: rgb(181, 175, 166);
