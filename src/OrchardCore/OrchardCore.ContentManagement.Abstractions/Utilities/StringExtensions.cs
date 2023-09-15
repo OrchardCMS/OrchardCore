@@ -51,18 +51,19 @@ namespace OrchardCore.ContentManagement.Utilities
             return sb.ToString();
         }
 
-        public static string Ellipsize(this string text, int characterCount)
-        {
-            return text.Ellipsize(characterCount, "\u00A0\u2026");
-        }
+        public static string Ellipsize(this string text, int characterCount) => text.Ellipsize(characterCount, "\u00A0\u2026");
 
         public static string Ellipsize(this string text, int characterCount, string ellipsis, bool wordBoundary = false)
         {
             if (String.IsNullOrWhiteSpace(text))
-                return "";
+            {
+                return String.Empty;
+            }
 
             if (characterCount < 0 || text.Length <= characterCount)
+            {
                 return text;
+            }
 
             // search beginning of word
             var backup = characterCount;
@@ -84,6 +85,7 @@ namespace OrchardCore.ContentManagement.Utilities
             }
 
             var trimmed = text[..characterCount];
+
             return trimmed + ellipsis;
         }
 
@@ -192,15 +194,7 @@ namespace OrchardCore.ContentManagement.Utilities
             return name;
         }
 
-        public static bool IsReservedContentName(this string name)
-        {
-            if (_reservedNames.Contains(name))
-            {
-                return true;
-            }
-
-            return false;
-        }
+        public static bool IsReservedContentName(this string name) => _reservedNames.Contains(name);
 
         /// <summary>
         /// Whether the char is a letter between A and Z or not
@@ -223,22 +217,22 @@ namespace OrchardCore.ContentManagement.Utilities
                 }
             }
 
-            return (sb.ToString().Normalize(NormalizationForm.FormC));
+            return sb.ToString().Normalize(NormalizationForm.FormC);
         }
 
-        public static string Strip(this string subject, params char[] stripped)
+        public static string Strip(this string source, params char[] stripped)
         {
-            if (stripped == null || stripped.Length == 0 || String.IsNullOrEmpty(subject))
+            if (stripped == null || stripped.Length == 0 || String.IsNullOrEmpty(source))
             {
-                return subject;
+                return source;
             }
 
-            var result = new char[subject.Length];
+            var result = new char[source.Length];
 
             var cursor = 0;
-            for (var i = 0; i < subject.Length; i++)
+            for (var i = 0; i < source.Length; i++)
             {
-                var current = subject[i];
+                var current = source[i];
                 if (Array.IndexOf(stripped, current) < 0)
                 {
                     result[cursor++] = current;
@@ -248,14 +242,14 @@ namespace OrchardCore.ContentManagement.Utilities
             return new string(result, 0, cursor);
         }
 
-        public static string Strip(this string subject, Func<char, bool> predicate)
+        public static string Strip(this string source, Func<char, bool> predicate)
         {
-            var result = new char[subject.Length];
+            var result = new char[source.Length];
 
             var cursor = 0;
-            for (var i = 0; i < subject.Length; i++)
+            for (var i = 0; i < source.Length; i++)
             {
-                var current = subject[i];
+                var current = source[i];
                 if (!predicate(current))
                 {
                     result[cursor++] = current;
@@ -265,16 +259,16 @@ namespace OrchardCore.ContentManagement.Utilities
             return new string(result, 0, cursor);
         }
 
-        public static bool Any(this string subject, params char[] chars)
+        public static bool Any(this string source, params char[] chars)
         {
-            if (String.IsNullOrEmpty(subject) || chars == null || chars.Length == 0)
+            if (String.IsNullOrEmpty(source) || chars == null || chars.Length == 0)
             {
                 return false;
             }
 
-            for (var i = 0; i < subject.Length; i++)
+            for (var i = 0; i < source.Length; i++)
             {
-                var current = subject[i];
+                var current = source[i];
                 if (Array.IndexOf(chars, current) >= 0)
                 {
                     return true;
@@ -284,21 +278,16 @@ namespace OrchardCore.ContentManagement.Utilities
             return false;
         }
 
-        public static bool All(this string subject, params char[] chars)
+        public static bool All(this string source, params char[] chars)
         {
-            if (String.IsNullOrEmpty(subject))
-            {
-                return true;
-            }
-
-            if (chars == null || chars.Length == 0)
+            if (String.IsNullOrEmpty(source) || chars == null || chars.Length == 0)
             {
                 return false;
             }
 
-            for (var i = 0; i < subject.Length; i++)
+            for (var i = 0; i < source.Length; i++)
             {
-                var current = subject[i];
+                var current = source[i];
                 if (Array.IndexOf(chars, current) < 0)
                 {
                     return false;
@@ -361,23 +350,22 @@ namespace OrchardCore.ContentManagement.Utilities
             return Regex.Replace(original, pattern, match => replacements[match.Value]);
         }
 
-        public static string TrimEnd(this string rough, string trim = "")
+        public static string TrimEnd(this string source, string trimValue = "") => source.TrimEnd(trimValue.ToCharArray());
+
+        public static string ReplaceLastOccurrence(this string source, string searchedValue, string replacedValue)
         {
-            if (rough == null)
+            if (searchedValue is null || replacedValue is null)
             {
-                return null;
+                return source;
             }
 
-            return rough.EndsWith(trim, StringComparison.Ordinal)
-                       ? rough[..^trim.Length]
-                       : rough;
-        }
+            var lastIndex = source.LastIndexOf(searchedValue, StringComparison.Ordinal);
+            if (lastIndex == -1)
+            {
+                return source;
+            }
 
-        public static string ReplaceLastOccurrence(this string source, string find, string replace)
-        {
-            var place = source.LastIndexOf(find, StringComparison.Ordinal);
-
-            return source.Remove(place, find.Length).Insert(place, replace);
+            return source.Remove(lastIndex, searchedValue.Length).Insert(lastIndex, replacedValue);
         }
     }
 }

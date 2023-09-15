@@ -88,4 +88,91 @@ public class StringExtensionsTests
         // Assert
         Assert.Equal(expected, result);
     }
+
+    [Theory]
+    [InlineData(null, new [] {'i', 'o', 'n'}, null)]
+    [InlineData("", new [] {'i', 'o', 'n'}, "")]
+    [InlineData("Orchard", null, "Orchard")]
+    [InlineData("Orchard", new char[] {}, "Orchard")]
+    [InlineData("Orchardion", new [] {'i', 'o', 'n'}, "Orchard")]
+    public void ShouldStripCharactersFromString(string text, char[] strippedChars, string expected)
+    {
+        // Arrange & Act
+        var result = StringExtensions.Strip(text, strippedChars);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void ShouldStripCharactersFromStringByPredicate()
+    {
+        // Arrange
+        var text = "$Welcome$ to Orchard Core$";
+        var expected = "Welcome to Orchard Core";
+
+        //Act
+        var result = StringExtensions.Strip(text, p => p == '$');
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Theory]
+    [InlineData(null, new [] {'a', 'e', 'i', 'o', 'u'}, false)]
+    [InlineData("", new [] {'a', 'e', 'i', 'o', 'u'}, false)]
+    [InlineData("Orchard Core", new char[] {}, false)]
+    [InlineData("Orchard Core", new [] {'a', 'e', 'i', 'o', 'u'}, true)]
+    [InlineData("Orchard Core", new [] {'i', 'u'}, false)]
+    public void ShouldMatchAnyCharacterInString(string text, char[] chars, bool expected)
+    {
+        // Arrange & Act
+        var result = StringExtensions.Any(text, chars);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Theory]
+    [InlineData(null, new [] {'a', 'e', 'i', 'o', 'u'}, false)]
+    [InlineData("", new [] {'a', 'e', 'i', 'o', 'u'}, false)]
+    [InlineData("Orchard Core", new char[] {}, false)]
+    [InlineData("Orchard Core", new [] {'a', 'e', 'i', 'o', 'u'}, false)]
+    [InlineData("Orchard Core", new [] {'a', 'e'}, false)]
+    public void ShouldMatchAllCharactersInString(string text, char[] chars, bool expected)
+    {
+        // Arrange & Act
+        var result = StringExtensions.All(text, chars);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Theory]
+    [InlineData("Orchard Core", null, "CMS", "Orchard Core")]
+    [InlineData("Orchard Core", "Core", null, "Orchard Core")]
+    [InlineData("Orchid Core", "Orchid", "Orchard", "Orchard Core")]
+    [InlineData("OrCHid .. Orchid Core", "Orchid", "Orchard", "OrCHid .. Orchard Core")]
+    [InlineData("Orchid .. OrCHid Core", "Orchid", "Orchard", "Orchard .. OrCHid Core")]
+    public void ShouldReplaceLastOccuranceInString(string text, string searchedText, string replacedText, string expected)
+    {
+        // Arrange & Act
+        var result = StringExtensions.ReplaceLastOccurrence(text, searchedText, replacedText);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Theory]
+    [InlineData("Hisham Bin Ateya", "Hisham Bin Ateya")]
+    [InlineData("Sébastien Ros", "Sebastien Ros")]
+    [InlineData("Zoltán Lehóczky", "Zoltan Lehoczky")]
+    public void ShouldRemoveDiacriticsFromString(string text, string expected)
+    {
+        // Arrange & Act
+        var result = StringExtensions.RemoveDiacritics(text);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
 }
