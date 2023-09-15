@@ -43,16 +43,16 @@ namespace OrchardCore.Settings
             }
         }
 
-        public void Forget(string key)
+        public void Remove(string key)
         {
-            AssertNotNull(key);
+            ArgumentException.ThrowIfNullOrEmpty(key, nameof(key));
 
             _cache.Remove(key);
         }
 
         public object Get(string key)
         {
-            AssertNotNull(key);
+            ArgumentException.ThrowIfNullOrEmpty(key, nameof(key));
 
             if (_cache.TryGetValue(key, out var value))
             {
@@ -64,22 +64,14 @@ namespace OrchardCore.Settings
 
         public void Set(string key, object value)
         {
-            AssertNotNull(key);
+            ArgumentException.ThrowIfNullOrEmpty(key, nameof(key));
 
-            if (value == null)
+            if (value is null)
             {
                 return;
             }
 
             _cache[key] = value;
-        }
-
-        private static void AssertNotNull(string key)
-        {
-            if (string.IsNullOrEmpty(key))
-            {
-                throw new ArgumentException($"{nameof(key)} cannot be null or empty.");
-            }
         }
     }
 }

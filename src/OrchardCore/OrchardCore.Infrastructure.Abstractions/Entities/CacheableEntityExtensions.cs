@@ -1,6 +1,6 @@
 namespace OrchardCore.Entities;
 
-public static class ICacheableEntityExtensions
+public static class CacheableEntityExtensions
 {
     public static bool TryGetValue(this ICacheableEntity cache, string key, out object value)
     {
