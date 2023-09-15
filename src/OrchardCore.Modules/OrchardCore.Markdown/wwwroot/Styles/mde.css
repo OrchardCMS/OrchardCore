@@ -51,14 +51,14 @@
 
 .EasyMDEContainer .CodeMirror-fullscreen {
   position: fixed !important;
-  top: 50px !important;
+  top: var(--oc-top-nav-height, 50px) !important;
   bottom: 0;
   height: auto;
-  z-index: 1031;
+  z-index: var(--bs-modal-zindex, 1150);
 }
 
 [dir] .EasyMDEContainer .CodeMirror-fullscreen {
-  background: #fff;
+  background: var(--bs-white, #fff);
 }
 
 [dir=ltr] .EasyMDEContainer .CodeMirror-fullscreen {
@@ -155,7 +155,7 @@
   position: fixed;
   top: 0;
   opacity: 1;
-  z-index: 1031;
+  z-index: var(--bs-modal-zindex, 1150);
 }
 
 [dir] .editor-toolbar.fullscreen {
@@ -392,7 +392,7 @@
   bottom: 0;
   width: 50%;
   top: 50px;
-  z-index: 1031;
+  z-index: var(--bs-modal-zindex, 1150);
   overflow: auto;
   display: none;
   box-sizing: border-box;

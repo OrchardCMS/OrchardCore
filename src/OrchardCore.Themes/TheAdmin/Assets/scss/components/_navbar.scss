@@ -1,12 +1,10 @@
 @import '../../../node_modules/bootstrap/scss/mixins/_breakpoints';
-@import '../../../node_modules/bootstrap/scss/_variables';
-@import '../_variables';
 
 .ta-navbar-top {
     @extend .navbar, .navbar-expand-md, .fixed-top;
     border-bottom: var(--oc-border-content);
-    z-index: calc(#{$zindex-sticky} + 100); // The left menu z-index is calc(#{$zindex-sticky} + 50). Here we ensure that the navbar top is always visible.
-    height: #{$top-nav-height};
+    z-index: var(--oc-top-nav-zindex);
+    height: var(--oc-top-nav-height);
     box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
     padding-top: 0;
     padding-bottom: 0;
@@ -52,6 +50,7 @@
         left: calc(var(--oc-start-navigation-width-when-compact) + 15px);
     }
 }
+
 .brand-wrapper-title > h1 {
     margin-bottom: 0;
 }

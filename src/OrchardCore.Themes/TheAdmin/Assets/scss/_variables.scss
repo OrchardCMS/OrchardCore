@@ -8,6 +8,9 @@
 $link-decoration: none;
 $link-hover-decoration: underline;
 
+$zindex-sticky: 1000;
+$zindex-modal: 1150; /* modal's z-index should be heigher than the z-index for the top-navbar (i.e, $zindex-sticky + 100) and the side menu (i.e, $zindex-sticky + 50) */
+
 // Custom variables.
 $top-nav-height: 52px !default;
 $footer-height: 40px !default;
@@ -27,9 +30,11 @@ $link-padding-left: 16px !default;
     --oc-li-hover-bg-color: #{$gray-100};
     --oc-zindex-dropdown: #{$zindex-dropdown};
     --oc-top-nav-height: #{$top-nav-height};
+    --oc-top-nav-zindex: calc(#{$zindex-fixed} + 5);
     --oc-footer-height: #{$footer-height};
     --oc-start-navigation-width: #{$left-navigation-width};
     --oc-start-navigation-width-when-compact: #{$left-navigation-width-when-compact};
+    --oc-start-navigation-zindex: calc(#{$zindex-fixed} + 3);
     --oc-link-padding-left: 1#{$link-padding-left};
     --bs-dropdown-zindex: #{$zindex-dropdown};
 }

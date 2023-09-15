@@ -7,12 +7,12 @@
 body:not(.left-sidebar-compact) {
     #ta-left-sidebar {
         background-color: var(--oc-admin-menu-bg-color);
-        z-index: calc(#{$zindex-sticky} + 50);
+        z-index: var(--oc-start-navigation-zindex);
         position: fixed;
-        top: $top-nav-height;
+        top: var(--oc-top-nav-height);
         bottom: 0;
         left: 0px;
-        width: $left-navigation-width;
+        width: var(--oc-start-navigation-width);
         color: var(--oc-admin-menu-font-color);
         border-right: var(--oc-border-content);
         transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
@@ -90,7 +90,7 @@ body:not(.left-sidebar-compact) {
 
                 > li {
                     line-height: 3em;
-                    width: $left-navigation-width;
+                    width: var(--oc-start-navigation-width);
                     transition: width 0.2s ease-in-out;
                     background-color: var(--oc-admin-menu-bg-color);
                 }
@@ -136,7 +136,7 @@ body:not(.left-sidebar-compact) {
                             padding: 0 5px;
                             flex-shrink: 0;
                             font-size: 22px;
-                            width: $left-navigation-width-when-compact;
+                            width: var(--oc-start-navigation-width-when-compact);
 
                             svg {
                                 width: 35px;
@@ -333,12 +333,12 @@ body:not(.left-sidebar-compact) {
 .left-sidebar-compact {
     #ta-left-sidebar {
         background-color: var(--oc-admin-menu-bg-color);
-        z-index: calc(#{$zindex-sticky} + 50);
+        z-index: var(--oc-start-navigation-zindex);
         position: fixed;
-        top: $top-nav-height;
+        top: var(--oc-top-nav-height);
         bottom: 0;
         left: 0px;
-        width: $left-navigation-width-when-compact;
+        width: var(--oc-start-navigation-width-when-compact);
         color: var(--oc-admin-menu-font-color);
         border-right: var(--oc-border-content);
         transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
@@ -415,7 +415,7 @@ body:not(.left-sidebar-compact) {
                 > li {
                     height: 48px;
                     line-height: 3em;
-                    width: $left-navigation-width-when-compact - 1;
+                    width: calc(var(--oc-start-navigation-width-when-compact) - 1);
                     transition: width 0.2s ease-in-out;
                     background-color: var(--oc-admin-menu-bg-color);
 
@@ -517,7 +517,7 @@ body:not(.left-sidebar-compact) {
                     display: inline-block !important;
                     color: var(--oc-admin-menu-item-font-color);
                     background-color: var(--oc-admin-menu-bg-color);
-                    width: $left-navigation-width-when-compact;
+                    width: var(--oc-start-navigation-width-when-compact);
                 }
 
                 > li.has-items.active > figure > figcaption > .item-label::before {
@@ -551,7 +551,7 @@ body:not(.left-sidebar-compact) {
 
                 > li.visible {
                     overflow: visible;
-                    width: $left-navigation-width-when-compact + $left-navigation-width;
+                    width: calc(var(--oc-start-navigation-width-when-compact) + var(--oc-start-navigation-width));
                     transition: none;
                     position: static;
 
@@ -568,8 +568,8 @@ body:not(.left-sidebar-compact) {
 
                 > li > figure > ul {
                     position: absolute;
-                    left: $left-navigation-width-when-compact;
-                    width: $left-navigation-width;
+                    left: var(--oc-start-navigation-width-when-compact);
+                    width: var(--oc-start-navigation-width);
                     -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
                     -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
                     box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
@@ -604,7 +604,7 @@ body:not(.left-sidebar-compact) {
                         padding: 0 5px;
                         flex-shrink: 0;
                         font-size: 22px;
-                        width: $left-navigation-width-when-compact;
+                        width: var(--oc-start-navigation-width-when-compact);
 
                         svg {
                             width: 35px;
@@ -845,8 +845,8 @@ body:not(.left-sidebar-compact) {
 
                 > li > figure > ul {
                     position: absolute;
-                    left: $left-navigation-width-when-compact;
-                    width: $left-navigation-width;
+                    left: var(--oc-start-navigation-width-when-compact);
+                    width: var(--oc-start-navigation-width);
                     -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
                     -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
                     box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
@@ -885,7 +885,7 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
 // -----------------------------------
 .leftbar-compactor {
     display: block;
-    width: $left-navigation-width-when-compact;
+    width: var(--oc-start-navigation-width-when-compact);
     height: 50px;
     padding: 10px;
     border: none;

@@ -1,3 +1,4 @@
+/* modal's z-index should be heigher than the z-index for the top-navbar (i.e, $zindex-sticky + 100) and the side menu (i.e, $zindex-sticky + 50) */
 :root {
   --oc-border-content: 1px solid #dedede;
   --oc-admin-menu-bg-color: #eaeaea;
@@ -10,9 +11,11 @@
   --oc-li-hover-bg-color: #f8f9fa;
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
+  --oc-top-nav-zindex: calc(1030 + 5);
   --oc-footer-height: 40px;
   --oc-start-navigation-width: 260px;
   --oc-start-navigation-width-when-compact: 48px;
+  --oc-start-navigation-zindex: calc(1030 + 3);
   --oc-link-padding-left: 116px;
   --bs-dropdown-zindex: 1000;
 }

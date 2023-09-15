@@ -37,14 +37,14 @@
 }
 
 .EasyMDEContainer .CodeMirror-fullscreen {
-    background: #fff;
+    background: var(--bs-white, #fff);
     position: fixed !important;
-    top: 50px !important;
+    top: var(--oc-top-nav-height, 50px) !important;
     left: 0;
     right: 0;
     bottom: 0;
     height: auto;
-    z-index: 1031;
+    z-index: var(--bs-modal-zindex, 1150);
     border-right: none !important;
     border-bottom-right-radius: 0 !important;
 }
@@ -114,7 +114,7 @@
     top: 0;
     left: 0;
     opacity: 1;
-    z-index: 1031;
+    z-index: var(--bs-modal-zindex, 1150);
 }
 
 .editor-toolbar.fullscreen::before {
@@ -272,7 +272,7 @@
     width: 50%;
     top: 50px;
     right: 0;
-    z-index: 1031;
+    z-index: var(--bs-modal-zindex, 1150);
     overflow: auto;
     display: none;
     box-sizing: border-box;

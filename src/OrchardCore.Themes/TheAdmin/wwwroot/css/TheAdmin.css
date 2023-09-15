@@ -1,5 +1,6 @@
 @charset "UTF-8";
 /* Import _variables before Bootstrap to allow overriding Bootstrap variables */
+/* modal's z-index should be heigher than the z-index for the top-navbar (i.e, $zindex-sticky + 100) and the side menu (i.e, $zindex-sticky + 50) */
 :root {
   --oc-border-content: 1px solid #dedede;
   --oc-admin-menu-bg-color: #eaeaea;
@@ -12,9 +13,11 @@
   --oc-li-hover-bg-color: #f8f9fa;
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
+  --oc-top-nav-zindex: calc(1030 + 5);
   --oc-footer-height: 40px;
   --oc-start-navigation-width: 260px;
   --oc-start-navigation-width-when-compact: 48px;
+  --oc-start-navigation-zindex: calc(1030 + 3);
   --oc-link-padding-left: 116px;
   --bs-dropdown-zindex: 1000;
 }
@@ -5460,7 +5463,7 @@ textarea.form-control-lg {
 }
 
 .modal {
-  --bs-modal-zindex: 1055;
+  --bs-modal-zindex: 1150;
   --bs-modal-width: 500px;
   --bs-modal-padding: 1rem;
   --bs-modal-margin: 0.5rem;
@@ -7042,73 +7045,73 @@ textarea.form-control-lg {
 .sticky-top {
   position: sticky;
   top: 0;
-  z-index: 1020;
+  z-index: 1000;
 }
 
 .sticky-bottom {
   position: sticky;
   bottom: 0;
-  z-index: 1020;
+  z-index: 1000;
 }
 
 @media (min-width: 576px) {
   .sticky-sm-top {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
   .sticky-sm-bottom {
     position: sticky;
     bottom: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
 }
 @media (min-width: 768px) {
   .sticky-md-top {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
   .sticky-md-bottom {
     position: sticky;
     bottom: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
 }
 @media (min-width: 992px) {
   .sticky-lg-top {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
   .sticky-lg-bottom {
     position: sticky;
     bottom: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
 }
 @media (min-width: 1200px) {
   .sticky-xl-top {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
   .sticky-xl-bottom {
     position: sticky;
     bottom: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
 }
 @media (min-width: 1400px) {
   .sticky-xxl-top {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
   .sticky-xxl-bottom {
     position: sticky;
     bottom: 0;
-    z-index: 1020;
+    z-index: 1000;
   }
 }
 .hstack {
@@ -11937,6 +11940,7 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
+/* modal's z-index should be heigher than the z-index for the top-navbar (i.e, $zindex-sticky + 100) and the side menu (i.e, $zindex-sticky + 50) */
 :root {
   --oc-border-content: 1px solid #dedede;
   --oc-admin-menu-bg-color: #eaeaea;
@@ -11949,9 +11953,11 @@ textarea.form-control-lg {
   --oc-li-hover-bg-color: #f8f9fa;
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
+  --oc-top-nav-zindex: calc(1030 + 5);
   --oc-footer-height: 40px;
   --oc-start-navigation-width: 260px;
   --oc-start-navigation-width-when-compact: 48px;
+  --oc-start-navigation-zindex: calc(1030 + 3);
   --oc-link-padding-left: 116px;
   --bs-dropdown-zindex: 1000;
 }
@@ -12021,6 +12027,7 @@ svg {
   all: unset;
 }
 
+/* modal's z-index should be heigher than the z-index for the top-navbar (i.e, $zindex-sticky + 100) and the side menu (i.e, $zindex-sticky + 50) */
 :root {
   --oc-border-content: 1px solid #dedede;
   --oc-admin-menu-bg-color: #eaeaea;
@@ -12033,9 +12040,11 @@ svg {
   --oc-li-hover-bg-color: #f8f9fa;
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
+  --oc-top-nav-zindex: calc(1030 + 5);
   --oc-footer-height: 40px;
   --oc-start-navigation-width: 260px;
   --oc-start-navigation-width-when-compact: 48px;
+  --oc-start-navigation-zindex: calc(1030 + 3);
   --oc-link-padding-left: 116px;
   --bs-dropdown-zindex: 1000;
 }
@@ -12474,8 +12483,16 @@ select.selectpicker {
 }
 
 .CodeMirror-fullscreen {
-  z-index: 1000;
-  top: 0px !important;
+  background: var(--bs-white, #fff);
+  position: fixed !important;
+  top: var(--oc-top-nav-height, 50px) !important;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: auto;
+  z-index: var(--bs-modal-zindex, 1150);
+  border-right: none !important;
+  border-bottom-right-radius: 0 !important;
 }
 
 .CodeMirror pre {
@@ -12553,6 +12570,7 @@ select.selectpicker {
     }
 }
 */
+/* modal's z-index should be heigher than the z-index for the top-navbar (i.e, $zindex-sticky + 100) and the side menu (i.e, $zindex-sticky + 50) */
 :root {
   --oc-border-content: 1px solid #dedede;
   --oc-admin-menu-bg-color: #eaeaea;
@@ -12565,9 +12583,11 @@ select.selectpicker {
   --oc-li-hover-bg-color: #f8f9fa;
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
+  --oc-top-nav-zindex: calc(1030 + 5);
   --oc-footer-height: 40px;
   --oc-start-navigation-width: 260px;
   --oc-start-navigation-width-when-compact: 48px;
+  --oc-start-navigation-zindex: calc(1030 + 3);
   --oc-link-padding-left: 116px;
   --bs-dropdown-zindex: 1000;
 }
@@ -19751,29 +19771,10 @@ div.editor-widget.find-widget .button.codicon:active {
   border-color: transparent;
 }
 
-:root {
-  --oc-border-content: 1px solid #dedede;
-  --oc-admin-menu-bg-color: #eaeaea;
-  --oc-scrollbar-color: #495057;
-  --oc-admin-menu-font-color: #343a40;
-  --oc-admin-menu-font-color-hover: #f8f9fa;
-  --oc-admin-menu-item-bg-color: #f8f9fa;
-  --oc-admin-menu-item-font-color: #495057;
-  --oc-admin-menu-item-font-color-active: #000;
-  --oc-li-hover-bg-color: #f8f9fa;
-  --oc-zindex-dropdown: 1000;
-  --oc-top-nav-height: 52px;
-  --oc-footer-height: 40px;
-  --oc-start-navigation-width: 260px;
-  --oc-start-navigation-width-when-compact: 48px;
-  --oc-link-padding-left: 116px;
-  --bs-dropdown-zindex: 1000;
-}
-
 .ta-navbar-top {
   border-bottom: var(--oc-border-content);
-  z-index: calc(1020 + 100);
-  height: 52px;
+  z-index: var(--oc-top-nav-zindex);
+  height: var(--oc-top-nav-height);
   box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03);
   padding-top: 0;
   padding-bottom: 0;
@@ -20208,6 +20209,7 @@ ul.pager {
   justify-content: center;
 }
 
+/* modal's z-index should be heigher than the z-index for the top-navbar (i.e, $zindex-sticky + 100) and the side menu (i.e, $zindex-sticky + 50) */
 :root {
   --oc-border-content: 1px solid #dedede;
   --oc-admin-menu-bg-color: #eaeaea;
@@ -20220,21 +20222,23 @@ ul.pager {
   --oc-li-hover-bg-color: #f8f9fa;
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
+  --oc-top-nav-zindex: calc(1030 + 5);
   --oc-footer-height: 40px;
   --oc-start-navigation-width: 260px;
   --oc-start-navigation-width-when-compact: 48px;
+  --oc-start-navigation-zindex: calc(1030 + 3);
   --oc-link-padding-left: 116px;
   --bs-dropdown-zindex: 1000;
 }
 
 body:not(.left-sidebar-compact) #ta-left-sidebar {
   background-color: var(--oc-admin-menu-bg-color);
-  z-index: calc(1020 + 50);
+  z-index: var(--oc-start-navigation-zindex);
   position: fixed;
-  top: 52px;
+  top: var(--oc-top-nav-height);
   bottom: 0;
   left: 0px;
-  width: 260px;
+  width: var(--oc-start-navigation-width);
   color: var(--oc-admin-menu-font-color);
   border-right: var(--oc-border-content);
   transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
@@ -20300,7 +20304,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul li .item-label {
 }
 body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li {
   line-height: 3em;
-  width: 260px;
+  width: var(--oc-start-navigation-width);
   transition: width 0.2s ease-in-out;
   background-color: var(--oc-admin-menu-bg-color);
 }
@@ -20340,7 +20344,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin .item
   padding: 0 5px;
   flex-shrink: 0;
   font-size: 22px;
-  width: 48px;
+  width: var(--oc-start-navigation-width-when-compact);
 }
 body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin .item-label > span.icon svg {
   width: 35px;
@@ -20499,12 +20503,12 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
 
 .left-sidebar-compact #ta-left-sidebar {
   background-color: var(--oc-admin-menu-bg-color);
-  z-index: calc(1020 + 50);
+  z-index: var(--oc-start-navigation-zindex);
   position: fixed;
-  top: 52px;
+  top: var(--oc-top-nav-height);
   bottom: 0;
   left: 0px;
-  width: 48px;
+  width: var(--oc-start-navigation-width-when-compact);
   color: var(--oc-admin-menu-font-color);
   border-right: var(--oc-border-content);
   transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
@@ -20567,7 +20571,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
 .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li {
   height: 48px;
   line-height: 3em;
-  width: 47px;
+  width: calc(var(--oc-start-navigation-width-when-compact) - 1);
   transition: width 0.2s ease-in-out;
   background-color: var(--oc-admin-menu-bg-color);
 }
@@ -20648,7 +20652,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
   display: inline-block !important;
   color: var(--oc-admin-menu-item-font-color);
   background-color: var(--oc-admin-menu-bg-color);
-  width: 48px;
+  width: var(--oc-start-navigation-width-when-compact);
 }
 .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.has-items.active > figure > figcaption > .item-label::before {
   border-left: 3px solid;
@@ -20676,7 +20680,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
 }
 .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.visible {
   overflow: visible;
-  width: 308px;
+  width: calc(var(--oc-start-navigation-width-when-compact) + var(--oc-start-navigation-width));
   transition: none;
   position: static;
 }
@@ -20690,8 +20694,8 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
 }
 .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > ul {
   position: absolute;
-  left: 48px;
-  width: 260px;
+  left: var(--oc-start-navigation-width-when-compact);
+  width: var(--oc-start-navigation-width);
   -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
   -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
@@ -20722,7 +20726,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
   padding: 0 5px;
   flex-shrink: 0;
   font-size: 22px;
-  width: 48px;
+  width: var(--oc-start-navigation-width-when-compact);
 }
 .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label > span.icon svg {
   width: 35px;
@@ -20922,8 +20926,8 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
 }
 .left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li > figure > ul {
   position: absolute;
-  left: 48px;
-  width: 260px;
+  left: var(--oc-start-navigation-width-when-compact);
+  width: var(--oc-start-navigation-width);
   -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
   -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
@@ -20949,7 +20953,7 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
 
 .leftbar-compactor {
   display: block;
-  width: 48px;
+  width: var(--oc-start-navigation-width-when-compact);
   height: 50px;
   padding: 10px;
   border: none;
@@ -20979,6 +20983,7 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
   transform: scale(-2, 1);
 }
 
+/* modal's z-index should be heigher than the z-index for the top-navbar (i.e, $zindex-sticky + 100) and the side menu (i.e, $zindex-sticky + 50) */
 :root {
   --oc-border-content: 1px solid #dedede;
   --oc-admin-menu-bg-color: #eaeaea;
@@ -20991,9 +20996,11 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
   --oc-li-hover-bg-color: #f8f9fa;
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
+  --oc-top-nav-zindex: calc(1030 + 5);
   --oc-footer-height: 40px;
   --oc-start-navigation-width: 260px;
   --oc-start-navigation-width-when-compact: 48px;
+  --oc-start-navigation-zindex: calc(1030 + 3);
   --oc-link-padding-left: 116px;
   --bs-dropdown-zindex: 1000;
 }
@@ -21071,6 +21078,7 @@ span.field-validation-error {
 }
 
 /* Include themes */
+/* modal's z-index should be heigher than the z-index for the top-navbar (i.e, $zindex-sticky + 100) and the side menu (i.e, $zindex-sticky + 50) */
 :root {
   --oc-border-content: 1px solid #dedede;
   --oc-admin-menu-bg-color: #eaeaea;
@@ -21083,9 +21091,11 @@ span.field-validation-error {
   --oc-li-hover-bg-color: #f8f9fa;
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
+  --oc-top-nav-zindex: calc(1030 + 5);
   --oc-footer-height: 40px;
   --oc-start-navigation-width: 260px;
   --oc-start-navigation-width-when-compact: 48px;
+  --oc-start-navigation-zindex: calc(1030 + 3);
   --oc-link-padding-left: 116px;
   --bs-dropdown-zindex: 1000;
 }
@@ -21125,6 +21135,7 @@ span.field-validation-error {
   --bs-modal-bg: var(--bs-white);
 }
 
+/* modal's z-index should be heigher than the z-index for the top-navbar (i.e, $zindex-sticky + 100) and the side menu (i.e, $zindex-sticky + 50) */
 :root {
   --oc-border-content: 1px solid #dedede;
   --oc-admin-menu-bg-color: #eaeaea;
@@ -21137,9 +21148,11 @@ span.field-validation-error {
   --oc-li-hover-bg-color: #f8f9fa;
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
+  --oc-top-nav-zindex: calc(1030 + 5);
   --oc-footer-height: 40px;
   --oc-start-navigation-width: 260px;
   --oc-start-navigation-width-when-compact: 48px;
+  --oc-start-navigation-zindex: calc(1030 + 3);
   --oc-link-padding-left: 116px;
   --bs-dropdown-zindex: 1000;
 }
