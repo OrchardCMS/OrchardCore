@@ -80,7 +80,7 @@ input[type="password"]::-ms-clear {
 .has-search .form-control-feedback {
     position: absolute;
     left: 1.75rem;
-    z-index: 4;
+    z-index: 10;
     display: block;
     width: 1rem;
     height: 2rem;
