@@ -5,10 +5,16 @@
     padding-left: unset;
 }
 
+// needs to be fixed in bootstrap-select repository
+html[dir="rtl"] .bootstrap-select .bs-ok-default:after {
+    border-width: 0 0.26em 0.26em 0 !important;
+    transform: rotate(45deg) !important;
+}
+
 .bootstrap-select .popover-header {
-    padding: .5rem 1rem;
+    padding: 0.5rem 1rem;
     margin-bottom: 0;
-    @extend .border-bottom;
+    border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
 }
 
 .bootstrap-select {

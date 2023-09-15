@@ -1,53 +1,21 @@
-@import "../../../../OrchardCore.Themes/TheAdmin/Assets/scss/_variables";
-@import "../../node_modules/bootstrap/scss/_functions";
-@import "../../node_modules/bootstrap/scss/_variables";
-@import '../../node_modules/bootstrap/scss/mixins/_color-mode';
+@import "fontawesome-iconpicker";
 
-@include color-mode(light) {
-    #iconPickerModal {
+#iconPickerModal {
 
-        .iconpicker-popover.popover {
-            width: 100%;
-            border: none;
-        }
-
-        .iconpicker-items {
-            min-height: 258px;
-        }
-
-        .iconpicker-item {
-            background-color: $body-bg;
-        }
+    .iconpicker-item {
+        background-color: var(--bs-body, #fff);
     }
 
-    .remove-icon, .sample-icon {
-        width: 40px;
+    .iconpicker-popover.popover {
+        width: 100%;
+        border: none;
     }
 
-    @import "fontawesome-iconpicker.scss";
+    .iconpicker-items {
+        min-height: 258px;
+    }
 }
 
-@include color-mode(dark) {
-
-    #iconPickerModal {
-
-        .iconpicker-popover.popover {
-            width: 100%;
-            border: none;
-        }
-
-        .iconpicker-items {
-            min-height: 258px;
-        }
-
-        .iconpicker-item {
-            background-color: $body-bg;
-        }
-    }
-
-    .remove-icon, .sample-icon {
-        width: 40px;
-    }
-
-    @import "fontawesome-iconpicker.scss";
+.remove-icon, .sample-icon {
+    width: 40px;
 }

@@ -1,6 +1,4 @@
 .ta-badge {
-    @extend .rounded-pill;
-    @extend .border;
-    @extend .bg-light;
+    background-color: var(--bs-light);
     color: var(--bs-secondary-color);
 }

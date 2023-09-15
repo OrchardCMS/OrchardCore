@@ -1,15 +1,15 @@
 @charset "UTF-8";
 /* Import _variables before Bootstrap to allow overriding Bootstrap variables */
 :root {
-  --oc-border-content: 1px solid #dedede;
-  --oc-admin-menu-bg-color: #eaeaea;
-  --oc-scrollbar-color: #495057;
-  --oc-admin-menu-font-color: #343a40;
-  --oc-admin-menu-font-color-hover: #f8f9fa;
-  --oc-admin-menu-item-bg-color: #f8f9fa;
-  --oc-admin-menu-item-font-color: #495057;
-  --oc-admin-menu-item-font-color-active: #000;
-  --oc-li-hover-bg-color: #f8f9fa;
+  --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
+  --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
+  --oc-scrollbar-color: #CDCDCD;
+  --oc-admin-menu-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
+  --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
+  --oc-admin-menu-item-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
+  --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
   --oc-top-nav-zindex: calc(1030 + 5);
@@ -7464,7 +7464,7 @@ textarea.form-control-lg {
   transform: translateY(-50%) !important;
 }
 
-.border, [data-bs-theme=dark] .ta-badge, [data-bs-theme=light] .ta-badge, .ta-badge {
+.border {
   border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
 }
 
@@ -7488,7 +7488,7 @@ textarea.form-control-lg {
   border-right: 0 !important;
 }
 
-.border-bottom, .bootstrap-select .popover-header {
+.border-bottom {
   border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
 }
 
@@ -8460,7 +8460,7 @@ textarea.form-control-lg {
   color: rgba(var(--bs-primary-rgb), var(--bs-text-opacity)) !important;
 }
 
-.text-secondary, [data-bs-theme=dark] .ta-badge {
+.text-secondary {
   --bs-text-opacity: 1;
   color: rgba(var(--bs-secondary-rgb), var(--bs-text-opacity)) !important;
 }
@@ -8780,12 +8780,12 @@ textarea.form-control-lg {
   background-color: rgba(var(--bs-danger-rgb), var(--bs-bg-opacity)) !important;
 }
 
-.bg-light, [data-bs-theme=light] .ta-badge {
+.bg-light {
   --bs-bg-opacity: 1;
   background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important;
 }
 
-.bg-dark, [data-bs-theme=dark] .ta-badge {
+.bg-dark {
   --bs-bg-opacity: 1;
   background-color: rgba(var(--bs-dark-rgb), var(--bs-bg-opacity)) !important;
 }
@@ -8928,7 +8928,7 @@ textarea.form-control-lg {
   border-radius: 50% !important;
 }
 
-.rounded-pill, [data-bs-theme=dark] .ta-badge, [data-bs-theme=light] .ta-badge, .ta-badge {
+.rounded-pill {
   border-radius: var(--bs-border-radius-pill) !important;
 }
 
@@ -11940,15 +11940,15 @@ textarea.form-control-lg {
   }
 }
 :root {
-  --oc-border-content: 1px solid #dedede;
-  --oc-admin-menu-bg-color: #eaeaea;
-  --oc-scrollbar-color: #495057;
-  --oc-admin-menu-font-color: #343a40;
-  --oc-admin-menu-font-color-hover: #f8f9fa;
-  --oc-admin-menu-item-bg-color: #f8f9fa;
-  --oc-admin-menu-item-font-color: #495057;
-  --oc-admin-menu-item-font-color-active: #000;
-  --oc-li-hover-bg-color: #f8f9fa;
+  --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
+  --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
+  --oc-scrollbar-color: #CDCDCD;
+  --oc-admin-menu-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
+  --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
+  --oc-admin-menu-item-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
+  --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
   --oc-top-nav-zindex: calc(1030 + 5);
@@ -12026,15 +12026,15 @@ svg {
 }
 
 :root {
-  --oc-border-content: 1px solid #dedede;
-  --oc-admin-menu-bg-color: #eaeaea;
-  --oc-scrollbar-color: #495057;
-  --oc-admin-menu-font-color: #343a40;
-  --oc-admin-menu-font-color-hover: #f8f9fa;
-  --oc-admin-menu-item-bg-color: #f8f9fa;
-  --oc-admin-menu-item-font-color: #495057;
-  --oc-admin-menu-item-font-color-active: #000;
-  --oc-li-hover-bg-color: #f8f9fa;
+  --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
+  --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
+  --oc-scrollbar-color: #CDCDCD;
+  --oc-admin-menu-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
+  --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
+  --oc-admin-menu-item-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
+  --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
   --oc-top-nav-zindex: calc(1030 + 5);
@@ -12054,6 +12054,11 @@ svg {
 
 .second-action-bar {
   z-index: calc(var(--bs-dropdown-zindex, 1000) - 10);
+}
+
+.ta-badge {
+  border-radius: var(--bs-border-radius-pill) !important;
+  border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
 }
 
 @keyframes bs-notify-fadeOut {
@@ -12468,9 +12473,15 @@ select.selectpicker {
   padding-left: unset;
 }
 
+html[dir=rtl] .bootstrap-select .bs-ok-default:after {
+  border-width: 0 0.26em 0.26em 0 !important;
+  transform: rotate(45deg) !important;
+}
+
 .bootstrap-select .popover-header {
   padding: 0.5rem 1rem;
   margin-bottom: 0;
+  border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
 }
 
 .bootstrap-select .popover-header .close {
@@ -12573,15 +12584,15 @@ select.selectpicker {
 }
 */
 :root {
-  --oc-border-content: 1px solid #dedede;
-  --oc-admin-menu-bg-color: #eaeaea;
-  --oc-scrollbar-color: #495057;
-  --oc-admin-menu-font-color: #343a40;
-  --oc-admin-menu-font-color-hover: #f8f9fa;
-  --oc-admin-menu-item-bg-color: #f8f9fa;
-  --oc-admin-menu-item-font-color: #495057;
-  --oc-admin-menu-item-font-color-active: #000;
-  --oc-li-hover-bg-color: #f8f9fa;
+  --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
+  --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
+  --oc-scrollbar-color: #CDCDCD;
+  --oc-admin-menu-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
+  --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
+  --oc-admin-menu-item-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
+  --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
   --oc-top-nav-zindex: calc(1030 + 5);
@@ -20211,15 +20222,15 @@ ul.pager {
 }
 
 :root {
-  --oc-border-content: 1px solid #dedede;
-  --oc-admin-menu-bg-color: #eaeaea;
-  --oc-scrollbar-color: #495057;
-  --oc-admin-menu-font-color: #343a40;
-  --oc-admin-menu-font-color-hover: #f8f9fa;
-  --oc-admin-menu-item-bg-color: #f8f9fa;
-  --oc-admin-menu-item-font-color: #495057;
-  --oc-admin-menu-item-font-color-active: #000;
-  --oc-li-hover-bg-color: #f8f9fa;
+  --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
+  --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
+  --oc-scrollbar-color: #CDCDCD;
+  --oc-admin-menu-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
+  --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
+  --oc-admin-menu-item-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
+  --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
   --oc-top-nav-zindex: calc(1030 + 5);
@@ -20984,15 +20995,15 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
 }
 
 :root {
-  --oc-border-content: 1px solid #dedede;
-  --oc-admin-menu-bg-color: #eaeaea;
-  --oc-scrollbar-color: #495057;
-  --oc-admin-menu-font-color: #343a40;
-  --oc-admin-menu-font-color-hover: #f8f9fa;
-  --oc-admin-menu-item-bg-color: #f8f9fa;
-  --oc-admin-menu-item-font-color: #495057;
-  --oc-admin-menu-item-font-color-active: #000;
-  --oc-li-hover-bg-color: #f8f9fa;
+  --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
+  --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
+  --oc-scrollbar-color: #CDCDCD;
+  --oc-admin-menu-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
+  --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
+  --oc-admin-menu-item-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
+  --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
   --oc-top-nav-zindex: calc(1030 + 5);
@@ -21076,17 +21087,44 @@ span.field-validation-error {
   width: 100%;
 }
 
+.vue-multiselect {
+  color: var(--bs-body-color) !important;
+  background-color: var(--bs-body-bg) !important;
+}
+
+.multiselect__tags, .multiselect__content-wrapper {
+  border: var(--bs-border-width) solid var(--bs-border-color) !important;
+}
+
+.multiselect__tags {
+  border-radius: var(--bs-border-radius) !important;
+}
+
+.multiselect__tags, .multiselect__content-wrapper, .multiselect__input {
+  background-color: var(--bs-body-bg) !important;
+}
+
+.multiselect--active {
+  z-index: var(--oc-zindex-dropdown, 1000) !important;
+  color: var(--bs-body-color) !important;
+  background-color: var(--bs-body-bg) !important;
+}
+
+.multiselect__spinner {
+  background-color: var(--bs-body-bg) !important;
+}
+
 /* Include themes */
 :root {
-  --oc-border-content: 1px solid #dedede;
-  --oc-admin-menu-bg-color: #eaeaea;
-  --oc-scrollbar-color: #495057;
-  --oc-admin-menu-font-color: #343a40;
-  --oc-admin-menu-font-color-hover: #f8f9fa;
-  --oc-admin-menu-item-bg-color: #f8f9fa;
-  --oc-admin-menu-item-font-color: #495057;
-  --oc-admin-menu-item-font-color-active: #000;
-  --oc-li-hover-bg-color: #f8f9fa;
+  --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
+  --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
+  --oc-scrollbar-color: #CDCDCD;
+  --oc-admin-menu-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
+  --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
+  --oc-admin-menu-item-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
+  --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
   --oc-top-nav-zindex: calc(1030 + 5);
@@ -21112,6 +21150,7 @@ span.field-validation-error {
   background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity, 1)) !important;
 }
 [data-bs-theme=light] .ta-badge {
+  background-color: var(--bs-light);
   color: var(--bs-secondary-color);
 }
 [data-bs-theme=light] .bootstrap-select .popover-header .close {
@@ -21140,15 +21179,15 @@ span.field-validation-error {
 }
 
 :root {
-  --oc-border-content: 1px solid #dedede;
-  --oc-admin-menu-bg-color: #eaeaea;
-  --oc-scrollbar-color: #495057;
-  --oc-admin-menu-font-color: #343a40;
-  --oc-admin-menu-font-color-hover: #f8f9fa;
-  --oc-admin-menu-item-bg-color: #f8f9fa;
-  --oc-admin-menu-item-font-color: #495057;
-  --oc-admin-menu-item-font-color-active: #000;
-  --oc-li-hover-bg-color: #f8f9fa;
+  --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
+  --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
+  --oc-scrollbar-color: #CDCDCD;
+  --oc-admin-menu-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
+  --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
+  --oc-admin-menu-item-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
+  --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
   --oc-top-nav-zindex: calc(1030 + 5);
@@ -21161,6 +21200,7 @@ span.field-validation-error {
 }
 
 [data-bs-theme=dark] {
+  /*
   --oc-border-content: 1px solid rgb(57, 62, 64);
   --oc-link-padding-left: 16px;
   --oc-admin-menu-bg-color: rgb(36, 39, 40);
@@ -21170,8 +21210,24 @@ span.field-validation-error {
   --oc-admin-menu-item-font-color: rgb(189, 183, 175);
   --oc-admin-menu-item-font-color-active: rgba(232, 230, 227, 0.9);
   --oc-li-hover-bg-color: rgb(27, 30, 31);
-  --oc-scrollbar-color: #495057;
+
+      */
+  --oc-scrollbar-color: #76787A;
+  --oc-admin-menu-bg-color: var(--bs-body-bg);
+}
+[data-bs-theme=dark] .ta-badge {
+  background-color: var(--bs-dark);
+  color: var(--bs-secondary-color);
+}
+[data-bs-theme=dark] .bootstrap-select > .dropdown-toggle.bs-placeholder,
+[data-bs-theme=dark] .bootstrap-select > .dropdown-toggle.bs-placeholder:hover,
+[data-bs-theme=dark] .bootstrap-select > .dropdown-toggle.bs-placeholder:focus,
+[data-bs-theme=dark] .bootstrap-select > .dropdown-toggle.bs-placeholder:active {
+  color: var(--bs-white) !important;
+}
+[data-bs-theme=dark] .bootstrap-select .popover-header {
+  background-color: var(--bs-secondary-bg);
 }
 [data-bs-theme=dark] .card {
-  --bs-card-bg: #1C1C25;
+  --bs-card-bg: var(--bs-body);
 }

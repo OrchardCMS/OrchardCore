@@ -1,7 +1,0 @@
-.vue-multiselect .multiselect--active {
-  z-index: var(--oc-zindex-dropdown, 1000);
-}
-
-[v-cloak] {
-  display: none;
-}
