@@ -38,7 +38,7 @@ namespace OrchardCore.AutoSetup.Options
         /// <returns>The collection of errors.</returns>
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (!String.IsNullOrWhiteSpace(AutoSetupPath) && !AutoSetupPath.StartsWith("/"))
+            if (!string.IsNullOrWhiteSpace(AutoSetupPath) && !AutoSetupPath.StartsWith("/"))
             {
                 yield return new ValidationResult($"The field '{nameof(AutoSetupPath)}' should be empty or start with '/'.");
             }

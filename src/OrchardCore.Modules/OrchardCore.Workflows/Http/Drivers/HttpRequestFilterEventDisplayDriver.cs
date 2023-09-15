@@ -25,7 +25,7 @@ namespace OrchardCore.Workflows.Http.Drivers
 
         private static string NullIfEmpty(string s)
         {
-            return String.IsNullOrWhiteSpace(s) ? null : s.Trim();
+            return string.IsNullOrWhiteSpace(s) ? null : s.Trim();
         }
     }
 }

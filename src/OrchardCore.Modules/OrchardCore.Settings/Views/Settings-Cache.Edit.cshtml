@@ -1,0 +1,16 @@
+@model SiteSettingsViewModel
+
+<h5>@T["Settings for dynamic caches"]</h5>
+
+<div class="mb-3">
+    <div class="col-xl-6" asp-validation-class-for="CacheMode">
+        <label asp-for="CacheMode">@T["Cache Mode"]</label>
+        <select asp-for="CacheMode" class="form-select">
+            <option value="@CacheMode.FromConfiguration.ToString()">@T["From environment — enabled in <em>Production</em>, disabled otherwise"]</option>
+            <option value="@CacheMode.Enabled.ToString()">@T["Enabled"]</option>
+            <option value="@CacheMode.DebugEnabled.ToString()">@T["Enabled with cache debug mode"]</option>
+            <option value="@CacheMode.Disabled.ToString()">@T["Disabled"]</option>
+        </select>
+        <span class="hint">@T["Determines whether caches are enabled or disabled."]</span>
+    </div>
+</div>

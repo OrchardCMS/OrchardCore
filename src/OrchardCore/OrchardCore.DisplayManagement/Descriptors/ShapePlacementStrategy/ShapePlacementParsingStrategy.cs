@@ -107,12 +107,12 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
         public static bool CheckFilter(ShapePlacementContext ctx, PlacementNode filter)
         {
-            if (!String.IsNullOrEmpty(filter.DisplayType) && filter.DisplayType != ctx.DisplayType)
+            if (!string.IsNullOrEmpty(filter.DisplayType) && filter.DisplayType != ctx.DisplayType)
             {
                 return false;
             }
 
-            if (!String.IsNullOrEmpty(filter.Differentiator) && filter.Differentiator != ctx.Differentiator)
+            if (!string.IsNullOrEmpty(filter.Differentiator) && filter.Differentiator != ctx.Differentiator)
             {
                 return false;
             }

@@ -70,7 +70,7 @@ namespace OrchardCore.Media.TagHelpers
 
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
-            if (!ImageWidth.HasValue && !ImageHeight.HasValue && String.IsNullOrEmpty(ImageProfile))
+            if (!ImageWidth.HasValue && !ImageHeight.HasValue && string.IsNullOrEmpty(ImageProfile))
             {
                 return;
             }
@@ -84,7 +84,7 @@ namespace OrchardCore.Media.TagHelpers
 
             IDictionary<string, string> queryStringParams = null;
 
-            if (!String.IsNullOrEmpty(ImageProfile))
+            if (!string.IsNullOrEmpty(ImageProfile))
             {
                 queryStringParams = await _mediaProfileService.GetMediaProfileCommands(ImageProfile);
             }

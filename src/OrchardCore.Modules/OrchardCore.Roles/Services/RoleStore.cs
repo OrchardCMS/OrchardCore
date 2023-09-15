@@ -90,8 +90,8 @@ namespace OrchardCore.Roles.Services
 
             var roleToRemove = (Role)role;
 
-            if (String.Equals(roleToRemove.NormalizedRoleName, "ANONYMOUS") ||
-                String.Equals(roleToRemove.NormalizedRoleName, "AUTHENTICATED"))
+            if (string.Equals(roleToRemove.NormalizedRoleName, "ANONYMOUS") ||
+                string.Equals(roleToRemove.NormalizedRoleName, "AUTHENTICATED"))
             {
                 return IdentityResult.Failed(new IdentityError { Description = S["Can't delete system roles."] });
             }

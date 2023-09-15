@@ -20,7 +20,7 @@ namespace OrchardCore.OpenId.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, nameof(OpenIdServerSettings), StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, nameof(OpenIdServerSettings), StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -29,7 +29,7 @@ namespace OrchardCore.OpenId.Recipes
             var settings = await _serverService.LoadSettingsAsync();
 
             settings.AccessTokenFormat = model.AccessTokenFormat;
-            settings.Authority = !String.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
+            settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
 
             settings.EncryptionCertificateStoreLocation = model.EncryptionCertificateStoreLocation;
             settings.EncryptionCertificateStoreName = model.EncryptionCertificateStoreName;

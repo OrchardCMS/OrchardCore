@@ -49,7 +49,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
         public async Task<IActionResult> Create(string id, string taxonomyContentItemId, string taxonomyItemId)
         {
-            if (String.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(id))
             {
                 return NotFound();
             }
@@ -80,7 +80,7 @@ namespace OrchardCore.Taxonomies.Controllers
         [ActionName("Create")]
         public async Task<IActionResult> CreatePost(string id, string taxonomyContentItemId, string taxonomyItemId)
         {
-            if (String.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(id))
             {
                 return NotFound();
             }
@@ -160,7 +160,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
         public async Task<IActionResult> Edit(string taxonomyContentItemId, string taxonomyItemId)
         {
-            if (String.IsNullOrWhiteSpace(taxonomyContentItemId) || String.IsNullOrWhiteSpace(taxonomyItemId))
+            if (string.IsNullOrWhiteSpace(taxonomyContentItemId) || string.IsNullOrWhiteSpace(taxonomyItemId))
             {
                 return NotFound();
             }
@@ -202,7 +202,7 @@ namespace OrchardCore.Taxonomies.Controllers
         [ActionName("Edit")]
         public async Task<IActionResult> EditPost(string taxonomyContentItemId, string taxonomyItemId)
         {
-            if (String.IsNullOrWhiteSpace(taxonomyContentItemId) || String.IsNullOrWhiteSpace(taxonomyItemId))
+            if (string.IsNullOrWhiteSpace(taxonomyContentItemId) || string.IsNullOrWhiteSpace(taxonomyItemId))
             {
                 return NotFound();
             }
@@ -276,7 +276,7 @@ namespace OrchardCore.Taxonomies.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(string taxonomyContentItemId, string taxonomyItemId)
         {
-            if (String.IsNullOrWhiteSpace(taxonomyContentItemId) || String.IsNullOrWhiteSpace(taxonomyItemId))
+            if (string.IsNullOrWhiteSpace(taxonomyContentItemId) || string.IsNullOrWhiteSpace(taxonomyItemId))
             {
                 return NotFound();
             }

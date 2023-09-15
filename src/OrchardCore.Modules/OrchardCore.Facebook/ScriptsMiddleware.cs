@@ -41,16 +41,16 @@ namespace OrchardCore.Facebook
                 }
                 else if (Path.GetFileName(httpContext.Request.Path.Value) == "fb.js")
                 {
-                    if (!String.IsNullOrWhiteSpace(settings?.AppId))
+                    if (!string.IsNullOrWhiteSpace(settings?.AppId))
                     {
                         var options = $"{{ appId:'{settings.AppId}',version:'{settings.Version}'";
-                        if (String.IsNullOrWhiteSpace(settings.FBInitParams))
+                        if (string.IsNullOrWhiteSpace(settings.FBInitParams))
                         {
-                            options = String.Concat(options, "}");
+                            options = string.Concat(options, "}");
                         }
                         else
                         {
-                            options = String.Concat(options, ",", settings.FBInitParams, "}");
+                            options = string.Concat(options, ",", settings.FBInitParams, "}");
                         }
                         script = $"window.fbAsyncInit = function(){{ FB.init({options});}};";
                     }

@@ -17,7 +17,7 @@
     <label asp-for="Values" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndCssClasses()">
         <select class="form-select content-preview-select" asp-for="Values" asp-items="options" multiple></select>
-        @if (!String.IsNullOrEmpty(settings.Hint))
+        @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
         }

@@ -3,7 +3,7 @@
 
 @{
     ContentItem contentItem = null;
-    if (!String.IsNullOrEmpty(Model.Value.ContentItemId))
+    if (!string.IsNullOrEmpty(Model.Value.ContentItemId))
     {
         contentItem = await ContentManager.GetAsync(Model.Value.ContentItemId);
     }

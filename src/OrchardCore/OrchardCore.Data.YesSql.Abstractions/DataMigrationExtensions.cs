@@ -93,7 +93,7 @@ public static class DataMigrationExtensions
                 ? methodInfo.Name["UpdateFrom".Length..^"Async".Length]
                 : methodInfo.Name["UpdateFrom".Length..];
 
-            if (Int32.TryParse(version, out var versionValue))
+            if (int.TryParse(version, out var versionValue))
             {
                 return (versionValue, methodInfo);
             }

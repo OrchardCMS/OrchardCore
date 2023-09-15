@@ -12,7 +12,7 @@
             <span class="input-group-text">@@</span>
             <input asp-for="Text" class="form-control content-preview-text" type="email" />
         </div>
-        @if (!String.IsNullOrEmpty(settings.Hint))
+        @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
         }

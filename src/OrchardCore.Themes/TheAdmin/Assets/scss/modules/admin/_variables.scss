@@ -1,0 +1,6 @@
+// Global variables to override Bootstrap variables.
+// Because !default means that a variable is not assigned if it already contains a value,
+// we alter the variable before importing boostrap as _variables.scss will use !default
+
+$zindex-sticky: 1000;
+$zindex-modal: 1150; /* modal's z-index should be heigher than the z-index for the top-navbar (i.e, $zindex-sticky + 100) and the side menu (i.e, $zindex-sticky + 50) */

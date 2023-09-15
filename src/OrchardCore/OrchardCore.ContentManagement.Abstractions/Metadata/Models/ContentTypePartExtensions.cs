@@ -9,7 +9,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         {
             var displayName = typePart.GetSettings<ContentTypePartSettings>().DisplayName;
 
-            if (String.IsNullOrEmpty(displayName))
+            if (string.IsNullOrEmpty(displayName))
             {
                 // ContentType creates a same named ContentPart. As DisplayName is not stored in ContentPart,
                 // fetching it from the parent ContentType
@@ -28,7 +28,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         {
             var description = typePart.GetSettings<ContentTypePartSettings>().Description;
 
-            if (String.IsNullOrEmpty(description))
+            if (string.IsNullOrEmpty(description))
             {
                 description = typePart.PartDefinition.Description();
             }

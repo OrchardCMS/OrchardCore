@@ -23,7 +23,7 @@ using Polly;
 
 namespace OrchardCore.Twitter
 {
-    public class ModuleStartup : StartupBase
+    public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

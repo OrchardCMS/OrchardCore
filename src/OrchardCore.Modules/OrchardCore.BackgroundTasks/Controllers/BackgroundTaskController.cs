@@ -86,18 +86,18 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 };
             });
 
-            if (!String.IsNullOrWhiteSpace(options.Search))
+            if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 items = items.Where(entry => entry.Title != null && entry.Title.Contains(options.Search, StringComparison.OrdinalIgnoreCase)
                     || (entry.Description != null && entry.Description.Contains(options.Search, StringComparison.OrdinalIgnoreCase))
                 );
             }
 
-            if (String.Equals(options.Status, "enabled", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(options.Status, "enabled", StringComparison.OrdinalIgnoreCase))
             {
                 items = items.Where(entry => entry.Enable);
             }
-            else if (String.Equals(options.Status, "disabled", StringComparison.OrdinalIgnoreCase))
+            else if (string.Equals(options.Status, "disabled", StringComparison.OrdinalIgnoreCase))
             {
                 items = items.Where(entry => !entry.Enable);
             }
@@ -167,6 +167,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 Description = settings.Description,
                 LockTimeout = settings.LockTimeout,
                 LockExpiration = settings.LockExpiration,
+                UsePipeline = settings.UsePipeline,
             };
 
             return View(model);
@@ -201,6 +202,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 settings.Description = model.Description;
                 settings.LockTimeout = model.LockTimeout;
                 settings.LockExpiration = model.LockExpiration;
+                settings.UsePipeline = model.UsePipeline;
 
                 await _backgroundTaskManager.UpdateAsync(model.Name, settings);
 

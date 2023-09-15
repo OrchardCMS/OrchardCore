@@ -100,7 +100,7 @@ namespace OrchardCore.Seo.Drivers
                     part.Canonical = partViewModel.Canonical;
                     part.MetaRobots = partViewModel.MetaRobots;
 
-                    part.CustomMetaTags = String.IsNullOrWhiteSpace(partViewModel.CustomMetaTags)
+                    part.CustomMetaTags = string.IsNullOrWhiteSpace(partViewModel.CustomMetaTags)
                         ? Array.Empty<MetaEntry>()
                         : JsonConvert.DeserializeObject<MetaEntry[]>(partViewModel.CustomMetaTags);
 
@@ -137,7 +137,7 @@ namespace OrchardCore.Seo.Drivers
             if (await updater.TryUpdateModelAsync(googleSchemaModel, Prefix))
             {
                 part.GoogleSchema = googleSchemaModel.GoogleSchema;
-                if (!String.IsNullOrWhiteSpace(googleSchemaModel.GoogleSchema) && !googleSchemaModel.GoogleSchema.IsJson())
+                if (!string.IsNullOrWhiteSpace(googleSchemaModel.GoogleSchema) && !googleSchemaModel.GoogleSchema.IsJson())
                 {
                     updater.ModelState.AddModelError(Prefix, S["The google schema is written in an incorrect format."]);
                 }

@@ -27,7 +27,7 @@ public class EmailNotificationProvider : INotificationMethodProvider
     {
         var user = notify as User;
 
-        if (String.IsNullOrEmpty(user?.Email))
+        if (string.IsNullOrEmpty(user?.Email))
         {
             return false;
         }
@@ -38,7 +38,7 @@ public class EmailNotificationProvider : INotificationMethodProvider
             Subject = message.Summary,
         };
 
-        if (message.IsHtmlPreferred && !String.IsNullOrWhiteSpace(message.HtmlBody))
+        if (message.IsHtmlPreferred && !string.IsNullOrWhiteSpace(message.HtmlBody))
         {
             mailMessage.Body = message.HtmlBody;
             mailMessage.IsHtmlBody = true;

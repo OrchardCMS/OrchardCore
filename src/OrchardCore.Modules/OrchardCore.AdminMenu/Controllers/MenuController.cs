@@ -63,7 +63,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
             var adminMenuList = (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu;
 
-            if (!String.IsNullOrWhiteSpace(options.Search))
+            if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 adminMenuList = adminMenuList.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
@@ -254,7 +254,7 @@ namespace OrchardCore.AdminMenu.Controllers
                     case ContentsBulkAction.Remove:
                         foreach (var item in checkedContentItems)
                         {
-                            var adminMenu = adminMenuList.FirstOrDefault(x => String.Equals(x.Id, item.Id, StringComparison.OrdinalIgnoreCase));
+                            var adminMenu = adminMenuList.FirstOrDefault(x => string.Equals(x.Id, item.Id, StringComparison.OrdinalIgnoreCase));
                             await _adminMenuService.DeleteAsync(adminMenu);
                         }
                         await _notifier.SuccessAsync(H["Admin menus successfully removed."]);

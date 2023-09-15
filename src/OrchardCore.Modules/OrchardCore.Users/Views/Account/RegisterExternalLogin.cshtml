@@ -13,7 +13,7 @@
     <hr />
     <div asp-validation-summary="ModelOnly"></div>
 
-    @if (!Model.NoUsername || String.IsNullOrWhiteSpace(Model.UserName) || ViewData.ModelState.GetFieldValidationState("UserName") == ModelValidationState.Invalid)
+    @if (!Model.NoUsername || string.IsNullOrWhiteSpace(Model.UserName) || ViewData.ModelState.GetFieldValidationState("UserName") == ModelValidationState.Invalid)
     {
         <div class="mb-3">
             <label asp-for="UserName" class="col-md-3 control-label">@T["Username"]</label>
@@ -24,7 +24,7 @@
         </div>
     }
 
-    @if (!Model.NoEmail || String.IsNullOrWhiteSpace(Model.Email) || ViewData.ModelState.GetFieldValidationState("Email") == ModelValidationState.Invalid)
+    @if (!Model.NoEmail || string.IsNullOrWhiteSpace(Model.Email) || ViewData.ModelState.GetFieldValidationState("Email") == ModelValidationState.Invalid)
     {
         <div class="mb-3">
             <label asp-for="Email" class="col-md-3 control-label">@T["Email"]</label>

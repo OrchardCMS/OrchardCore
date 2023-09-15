@@ -39,7 +39,7 @@ namespace OrchardCore.AdminMenu.Services
         // todo: use a public constant for the string
         public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "adminMenu", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "adminMenu", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

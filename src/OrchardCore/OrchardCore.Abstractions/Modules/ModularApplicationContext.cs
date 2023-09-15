@@ -6,11 +6,6 @@ using Microsoft.Extensions.Hosting;
 
 namespace OrchardCore.Modules
 {
-    public interface IApplicationContext
-    {
-        Application Application { get; }
-    }
-
     public class ModularApplicationContext : IApplicationContext
     {
         private readonly IHostEnvironment _environment;

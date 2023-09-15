@@ -215,7 +215,7 @@ namespace OrchardCore.Tenants
         }
     }
 
-    [RequireFeatures("OrchardCore.Tenants", "OrchardCore.Features")]
+    [RequireFeatures("OrchardCore.Features")]
     public class TenantFeatureProfilesStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)

@@ -45,7 +45,7 @@ namespace OrchardCore.Title.Handlers
         {
             var settings = context.ContentTypePartDefinition.GetSettings<TitlePartSettings>();
 
-            if (settings.Options == TitlePartOptions.EditableRequired && String.IsNullOrEmpty(part.Title))
+            if (settings.Options == TitlePartOptions.EditableRequired && string.IsNullOrEmpty(part.Title))
             {
                 context.Fail(S["A value is required for Title."], nameof(part.Title));
             }
@@ -67,7 +67,7 @@ namespace OrchardCore.Title.Handlers
             // Do not compute the title if the user can modify it.
             if (settings.Options == TitlePartOptions.Editable || settings.Options == TitlePartOptions.EditableRequired)
             {
-                if (String.IsNullOrWhiteSpace(part.ContentItem.DisplayText))
+                if (string.IsNullOrWhiteSpace(part.ContentItem.DisplayText))
                 {
                     // UpdatedAsync event is called from non-UI request like API, we update the DisplayText if it is not already set.
                     // When the displayText is not set, we set it to the value of title.
@@ -77,7 +77,7 @@ namespace OrchardCore.Title.Handlers
                 return;
             }
 
-            if (!String.IsNullOrEmpty(settings.Pattern))
+            if (!string.IsNullOrEmpty(settings.Pattern))
             {
                 var model = new TitlePartViewModel()
                 {
@@ -92,7 +92,7 @@ namespace OrchardCore.Title.Handlers
                         ["ContentItem"] = new ObjectValue(model.ContentItem)
                     });
 
-                title = title.Replace("\r", String.Empty).Replace("\n", String.Empty);
+                title = title.Replace("\r", string.Empty).Replace("\n", string.Empty);
 
                 part.Title = title;
                 part.ContentItem.DisplayText = title;
@@ -103,7 +103,7 @@ namespace OrchardCore.Title.Handlers
         private TitlePartSettings GetSettings(TitlePart part)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(TitlePart)));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(TitlePart)));
 
             return contentTypePartDefinition.GetSettings<TitlePartSettings>();
         }
