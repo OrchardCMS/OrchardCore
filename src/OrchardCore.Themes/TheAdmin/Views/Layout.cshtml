@@ -75,6 +75,7 @@
                                                     <span class="theme-icon"><i class="fa-solid fa-moon"></i></span> <span class="ps-2">@T["Dark"]</span>
                                                 </button>
                                             </li>
+                                            @await RenderSectionAsync("ToggleThemeItems", required: false)
                                             <li>
                                                 <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto" aria-pressed="false">
                                                     <span class="theme-icon"><i class="fa-solid fa-circle-half-stroke"></i></span> <span class="ps-2">@T["Auto"]</span>
