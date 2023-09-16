@@ -216,18 +216,6 @@
   padding: 0;
 }
 
-[data-bs-theme=light] {
-  --oc-media-border-content: 1px solid rgba(0, 0, 0, 0.1);
-  --oc-media-selected-background-color: lighten($primary, 45%);
-  --oc-media-color: #495057;
-}
-
-[data-bs-theme=dark] {
-  --oc-media-border-content: 1px solid rgba(140, 130, 115, 0.13);
-  --oc-media-selected-background-color: darken($gray-900, 10%);
-  --oc-media-color: rgb(181, 175, 166);
-}
-
 ol.media-items-grid {
   display: flex;
   flex-direction: row;
@@ -294,7 +282,7 @@ ol.media-items-grid li .inline-media-button {
   margin-left: 3.8rem;
 }
 [dir] ol.media-items-grid li.selected {
-  border: 1px solid #0d6efd;
+  border: 1px solid var(--bg-primary, blue);
 }
 ol.media-items-grid li.selected .inline-media-button, ol.media-items-grid li:hover .inline-media-button {
   opacity: 1;
@@ -310,22 +298,10 @@ ol.media-items-grid .thumb-container {
   justify-content: center;
 }
 [dir] ol.media-items-grid .thumb-container {
-  background: white;
+  background: var(--bs-body-bg, white);
 }
 [dir] ol.media-items-grid .thumb-container img {
-  background: repeating-conic-gradient(#e9ecef 0% 25%, transparent 0% 50%) 50%/10px 10px;
-}
-
-[data-bs-theme=light] {
-  --oc-media-border-content: 1px solid rgba(0, 0, 0, 0.1);
-  --oc-media-selected-background-color: lighten($primary, 45%);
-  --oc-media-color: #495057;
-}
-
-[data-bs-theme=dark] {
-  --oc-media-border-content: 1px solid rgba(140, 130, 115, 0.13);
-  --oc-media-selected-background-color: darken($gray-900, 10%);
-  --oc-media-color: rgb(181, 175, 166);
+  background: repeating-conic-gradient(var(--bs-gray-200, #ccc) 0% 25%, transparent 0% 50%) 50%/10px 10px;
 }
 
 .media-items-table {
@@ -390,7 +366,7 @@ ol.media-items-grid .thumb-container {
   max-height: 75px;
 }
 [dir] .media-items-table .thumbnail-column .img-wrapper img {
-  background: repeating-conic-gradient(#e9ecef 0% 25%, transparent 0% 50%) 50%/10px 10px;
+  background: repeating-conic-gradient(var(--bs-gray-200, #ccc) 0% 25%, transparent 0% 50%) 50%/10px 10px;
 }
 .media-items-table td {
   vertical-align: middle;
@@ -483,7 +459,7 @@ ol.media-items-grid .thumb-container {
   max-width: 80px;
 }
 [dir] .action-bar .media-filter .input-filter {
-  border-color: #ced4da;
+  border-color: var(--bs-border-color, #ccc);
 }
 [dir=ltr] .action-bar .media-filter .input-filter {
   border-right: none;
@@ -494,13 +470,13 @@ ol.media-items-grid .thumb-container {
   padding-right: 32px;
 }
 [dir] .action-bar .media-filter .input-filter:focus, [dir] .action-bar .media-filter .input-filter:focus + .input-group-append > button {
-  border-color: #495057;
+  border-color: var(--bs-border-color);
 }
 .action-bar .media-filter .input-group-append button {
   opacity: 1;
 }
 [dir] .action-bar .media-filter .input-group-append button {
-  border-color: #ced4da;
+  border-color: var(--bs-border-color, #ccc);
 }
 [dir=ltr] .action-bar .media-filter .input-group-append button {
   border-left: none;
@@ -516,7 +492,7 @@ ol.media-items-grid .thumb-container {
   top: 8px;
   z-index: 1030;
   pointer-events: none;
-  color: #6c757d;
+  color: var(--bs-gray-600, #ddd);
 }
 [dir=ltr] .action-bar .media-filter .icon-inside-input {
   left: 10px;
@@ -604,7 +580,7 @@ ol.media-items-grid .thumb-container {
   border-radius: 0px !important;
 }
 .visibility-buttons .selected {
-  color: #0d6efd;
+  color: var(--bs-primary, blue);
 }
 
 [data-bs-theme=light] {
@@ -911,26 +887,14 @@ ol.media-items-grid .thumb-container {
   display: none;
 }
 
-[data-bs-theme=light] {
-  --oc-media-border-content: 1px solid rgba(0, 0, 0, 0.1);
-  --oc-media-selected-background-color: lighten($primary, 45%);
-  --oc-media-color: #495057;
-}
-
-[data-bs-theme=dark] {
-  --oc-media-border-content: 1px solid rgba(140, 130, 115, 0.13);
-  --oc-media-selected-background-color: darken($gray-900, 10%);
-  --oc-media-color: rgb(181, 175, 166);
-}
-
 .media-container-main-item-title {
   position: relative;
   overflow: hidden;
 }
 
 [dir] .media-container-main-item-title {
-  border-top: solid 1px #dee2e6;
-  padding-top: 24px;
+  border-top: var(--bs-border-width, 1px) solid var(--bs-border-color, #ccc);
+  padding-top: 15px;
 }
 .media-container-main-item-title .media-filename {
   white-space: nowrap;

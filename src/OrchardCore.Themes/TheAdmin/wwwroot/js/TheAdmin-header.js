@@ -8,7 +8,7 @@
 // We need to apply the classes BEFORE the page is rendered. 
 // That is why we use a MutationObserver instead of document.Ready().
 var observer = new MutationObserver(function (mutations) {
-  var html = document.documentElement;
+  var html = document.documentElement || document.body;
   var tenant = html.getAttribute('data-tenant');
   var key = tenant + '-adminPreferences';
   var adminPreferences = JSON.parse(localStorage.getItem(key));
@@ -25,7 +25,7 @@ var observer = new MutationObserver(function (mutations) {
     }
   }
 });
-observer.observe(document.documentElement, {
+observer.observe(document.documentElement || document.body, {
   childList: true,
   subtree: true
 });

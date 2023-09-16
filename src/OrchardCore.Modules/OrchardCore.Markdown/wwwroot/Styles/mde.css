@@ -1,10 +1,10 @@
 @charset "UTF-8";
 .icon-shortcode {
   position: relative;
-  top: 8px;
+  color: var(--bs-body-color);
 }
 [dir] .icon-shortcode {
-  margin-bottom: -5px !important;
+  background-color: var(--bs-body-color);
 }
 
 .table {
@@ -28,11 +28,13 @@
   font: inherit;
   z-index: 0;
   word-wrap: break-word;
+  color: var(--bs-body-color, #fff);
 }
 
 [dir] .EasyMDEContainer .CodeMirror {
-  border: 1px solid #ddd;
+  border: var(--bs-border-width, 1px) solid var(--bs-border-color, #bbb);
   padding: 10px;
+  background: var(--bs-body-bg, #fff);
 }
 
 [dir=ltr] .EasyMDEContainer .CodeMirror {
@@ -58,7 +60,7 @@
 }
 
 [dir] .EasyMDEContainer .CodeMirror-fullscreen {
-  background: var(--bs-white, #fff);
+  background: var(--bs-body-bg, #fff);
 }
 
 [dir=ltr] .EasyMDEContainer .CodeMirror-fullscreen {
@@ -99,7 +101,7 @@
 }
 
 [dir] .EasyMDEContainer .CodeMirror-focused .CodeMirror-selected {
-  background: #d9d9d9;
+  background: var(--bs-secondary, #d9d9d9);
 }
 
 .editor-toolbar {
@@ -112,25 +114,25 @@
 
 [dir] .editor-toolbar {
   padding: 0 10px;
-  border-top: 1px solid #bbb;
-  background-color: #fff;
+  border-top: var(--bs-border-width, 1px) solid var(--bs-border-color, #bbb);
+  background-color: var(--bs-body-bg);
 }
 
 [dir=ltr] .editor-toolbar {
-  border-left: 1px solid #bbb;
-  border-right: 1px solid #bbb;
+  border-left: var(--bs-border-width, 1px) solid var(--bs-border-color, #bbb);
+  border-right: var(--bs-border-width, 1px) solid var(--bs-border-color, #bbb);
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
 }
 
 [dir=rtl] .editor-toolbar {
-  border-right: 1px solid #bbb;
-  border-left: 1px solid #bbb;
+  border-right: var(--bs-border-width, 1px) solid var(--bs-border-color, #bbb);
+  border-left: var(--bs-border-width, 1px) solid var(--bs-border-color, #bbb);
   border-top-right-radius: 4px;
   border-top-left-radius: 4px;
 }
 .editor-toolbar svg {
-  color: black;
+  color: var(--bs-body-color);
 }
 
 .editor-toolbar:after,
@@ -161,7 +163,7 @@
 [dir] .editor-toolbar.fullscreen {
   padding-top: 10px;
   padding-bottom: 10px;
-  background: #fff;
+  background: var(--bs-body-bg, #fff);
   border: 0;
 }
 
@@ -262,8 +264,8 @@
 }
 
 [dir] .editor-toolbar button.active, [dir] .editor-toolbar button:hover {
-  background: #fcfcfc;
-  border-color: #95a5a6;
+  background: var(--bs-secondary-bg, #fcfcfc);
+  border-color: var(--bs-border-color, #95a5a6);
 }
 
 .editor-toolbar i.separator {
@@ -278,13 +280,13 @@
 }
 
 [dir=ltr] .editor-toolbar i.separator {
-  border-left: 1px solid #d9d9d9;
-  border-right: 1px solid #fff;
+  border-left: var(--bs-border-width, 1px) solid var(--bs-border-color, #d9d9d9);
+  border-right: var(--bs-border-width, 1px) solid var(--bs-border-color, #fff);
 }
 
 [dir=rtl] .editor-toolbar i.separator {
-  border-right: 1px solid #d9d9d9;
-  border-left: 1px solid #fff;
+  border-right: var(--bs-border-width, 1px) solid var(--bs-border-color, #d9d9d9);
+  border-left: var(--bs-border-width, 1px) solid var(--bs-border-color, #fff);
 }
 
 .editor-toolbar button:after {
@@ -477,7 +479,7 @@
 }
 
 [dir] .cm-s-easymde .cm-comment {
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--bs-body-bg);
   border-radius: 2px;
 }
 
@@ -499,24 +501,13 @@
 }
 
 [dir] .editor-toolbar .easymde-dropdown {
+  background: var(--bs-body-bg);
   border-radius: 0;
   border: 1px solid #fff;
 }
 
-[dir=ltr] .editor-toolbar .easymde-dropdown {
-  background: linear-gradient(to bottom right, #fff 0%, #fff 84%, #333 50%, #333 100%);
-}
-
-[dir=rtl] .editor-toolbar .easymde-dropdown {
-  background: linear-gradient(to bottom left, #fff 0%, #fff 84%, #333 50%, #333 100%);
-}
-
-[dir=ltr] .editor-toolbar .easymde-dropdown:hover {
-  background: linear-gradient(to bottom right, #fff 0%, #fff 84%, #333 50%, #333 100%);
-}
-
-[dir=rtl] .editor-toolbar .easymde-dropdown:hover {
-  background: linear-gradient(to bottom left, #fff 0%, #fff 84%, #333 50%, #333 100%);
+[dir] .editor-toolbar .easymde-dropdown:hover {
+  background: var(--bs-body-bg);
 }
 
 .easymde-dropdown-content {

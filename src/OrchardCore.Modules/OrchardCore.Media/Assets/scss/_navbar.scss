@@ -7,18 +7,18 @@
         margin-top: 3px;
 
         .input-filter {
-            border-color: $gray-400;
+            border-color: var(--bs-border-color, #ccc);
             border-right: none;
             max-width: 80px;
             padding-left: 32px;
 
             &:focus, &:focus + .input-group-append > button {
-                border-color: $gray-700;
+                border-color: var(--bs-border-color);
             }
         }
 
         .input-group-append button {
-            border-color: $gray-400;
+            border-color: var(--bs-border-color, #ccc);
             opacity: 1;
             border-left: none;
         }
@@ -33,7 +33,7 @@
             left: 10px;
             z-index: $zindex-fixed;
             pointer-events: none;
-            color: $gray-600;
+            color: var(--bs-gray-600, #ddd);
         }
     }
     /* Upload button */
@@ -106,6 +106,6 @@
     }
 
     .selected {
-        color: $primary;
+        color: var(--bs-primary, blue);
     }
 }

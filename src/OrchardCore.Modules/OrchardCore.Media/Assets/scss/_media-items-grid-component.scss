@@ -1,5 +1,3 @@
-@import './_variables';
-
 ol.media-items-grid {
     display: flex;
     flex-direction: row;
@@ -38,7 +36,7 @@ ol.media-items-grid {
         }
 
         &.selected {
-            border: 1px solid $primary;
+            border: 1px solid var(--bg-primary, blue);
         }
 
         &.selected .inline-media-button, &:hover .inline-media-button {
@@ -53,10 +51,10 @@ ol.media-items-grid {
         display: flex;
         align-items: center;
         justify-content: center;
-        background: white;
+        background: var(--bs-body-bg, white);
 
         img {
-            background: repeating-conic-gradient($gray-200 0% 25%, transparent 0% 50%) 50% / 10px 10px;
+            background: repeating-conic-gradient(var(--bs-gray-200, #ccc) 0% 25%, transparent 0% 50%) 50% / 10px 10px;
         }
     }
 

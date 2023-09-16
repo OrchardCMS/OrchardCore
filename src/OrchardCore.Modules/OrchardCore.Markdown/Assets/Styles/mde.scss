@@ -1,8 +1,8 @@
 
 .icon-shortcode {
     position: relative;
-    top: 8px;
-    margin-bottom: -5px !important;
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-color);
 }
 
 .table {
@@ -23,13 +23,15 @@
 .EasyMDEContainer .CodeMirror {
     box-sizing: border-box;
     height: auto;
-    border: 1px solid #ddd;
+    border: var(--bs-border-width, 1px) solid var(--bs-border-color, #bbb);
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
     padding: 10px;
     font: inherit;
     z-index: 0;
     word-wrap: break-word;
+    background: var(--bs-body-bg, #fff);
+    color: var(--bs-body-color, #fff);
 }
 
 .EasyMDEContainer .CodeMirror-scroll {
@@ -37,7 +39,7 @@
 }
 
 .EasyMDEContainer .CodeMirror-fullscreen {
-    background: var(--bs-white, #fff);
+    background: var(--bs-body-bg, #fff);
     position: fixed !important;
     top: var(--oc-top-nav-height, 50px) !important;
     left: 0;
@@ -65,7 +67,7 @@
 }
 
 .EasyMDEContainer .CodeMirror-focused .CodeMirror-selected {
-    background: #d9d9d9;
+    background: var(--bs-secondary, #d9d9d9);
 }
 
 .editor-toolbar {
@@ -75,15 +77,15 @@
     -ms-user-select: none;
     user-select: none;
     padding: 0 10px;
-    border-top: 1px solid #bbb;
-    border-left: 1px solid #bbb;
-    border-right: 1px solid #bbb;
+    border-top: var(--bs-border-width, 1px) solid var(--bs-border-color, #bbb);
+    border-left: var(--bs-border-width, 1px) solid var(--bs-border-color, #bbb);
+    border-right: var(--bs-border-width, 1px) solid var(--bs-border-color, #bbb);
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
-    background-color: #fff;
+    background-color: var(--bs-body-bg);
 
     svg {
-        color: black;
+        color: var(--bs-body-color);
     }
 }
 
@@ -108,7 +110,7 @@
     padding-top: 10px;
     padding-bottom: 10px;
     box-sizing: border-box;
-    background: #fff;
+    background: var(--bs-body-bg, #fff);
     border: 0;
     position: fixed;
     top: 0;
@@ -172,15 +174,15 @@
 
 .editor-toolbar button.active,
 .editor-toolbar button:hover {
-    background: #fcfcfc;
-    border-color: #95a5a6;
+    background: var(--bs-secondary-bg, #fcfcfc);
+    border-color: var(--bs-border-color, #95a5a6);
 }
 
 .editor-toolbar i.separator {
     display: inline-block;
     width: 0;
-    border-left: 1px solid #d9d9d9;
-    border-right: 1px solid #fff;
+    border-left: var(--bs-border-width, 1px) solid var(--bs-border-color, #d9d9d9);
+    border-right: var(--bs-border-width, 1px) solid var(--bs-border-color, #fff);
     color: transparent;
     text-indent: -10px;
     margin: 0 6px;
@@ -347,7 +349,7 @@
 }
 
 .cm-s-easymde .cm-comment {
-    background: rgba(0, 0, 0, .05);
+    background: var(--bs-body-bg);
     border-radius: 2px;
 }
 
@@ -366,13 +368,13 @@
 
 .editor-toolbar .easymde-dropdown {
     position: relative;
-    background: linear-gradient(to bottom right, #fff 0%, #fff 84%, #333 50%, #333 100%);
+    background: var(--bs-body-bg);
     border-radius: 0;
     border: 1px solid #fff;
 }
 
 .editor-toolbar .easymde-dropdown:hover {
-    background: linear-gradient(to bottom right, #fff 0%, #fff 84%, #333 50%, #333 100%);
+    background: var(--bs-body-bg);
 }
 
 .easymde-dropdown-content {

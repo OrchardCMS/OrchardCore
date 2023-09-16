@@ -4,10 +4,10 @@
   --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
   --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
   --oc-scrollbar-color: #CDCDCD;
-  --oc-admin-menu-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-font-color: var(--bs-secondary-color);
   --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
   --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-admin-menu-item-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-item-font-color: var(--bs-secondary-color);
   --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
@@ -11943,10 +11943,10 @@ textarea.form-control-lg {
   --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
   --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
   --oc-scrollbar-color: #CDCDCD;
-  --oc-admin-menu-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-font-color: var(--bs-secondary-color);
   --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
   --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-admin-menu-item-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-item-font-color: var(--bs-secondary-color);
   --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
@@ -12029,10 +12029,10 @@ svg {
   --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
   --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
   --oc-scrollbar-color: #CDCDCD;
-  --oc-admin-menu-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-font-color: var(--bs-secondary-color);
   --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
   --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-admin-menu-item-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-item-font-color: var(--bs-secondary-color);
   --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
@@ -12587,10 +12587,10 @@ html[dir=rtl] .bootstrap-select .bs-ok-default:after {
   --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
   --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
   --oc-scrollbar-color: #CDCDCD;
-  --oc-admin-menu-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-font-color: var(--bs-secondary-color);
   --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
   --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-admin-menu-item-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-item-font-color: var(--bs-secondary-color);
   --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
@@ -20225,10 +20225,10 @@ ul.pager {
   --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
   --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
   --oc-scrollbar-color: #CDCDCD;
-  --oc-admin-menu-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-font-color: var(--bs-secondary-color);
   --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
   --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-admin-menu-item-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-item-font-color: var(--bs-secondary-color);
   --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
@@ -20998,10 +20998,10 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
   --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
   --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
   --oc-scrollbar-color: #CDCDCD;
-  --oc-admin-menu-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-font-color: var(--bs-secondary-color);
   --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
   --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-admin-menu-item-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-item-font-color: var(--bs-secondary-color);
   --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
@@ -21115,66 +21115,53 @@ span.field-validation-error {
 }
 
 /* Include themes */
-:root {
-  --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
-  --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-scrollbar-color: #CDCDCD;
-  --oc-admin-menu-font-color: var(--bs-secondary-text-emphasis);
-  --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
-  --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-admin-menu-item-font-color: var(--bs-secondary-text-emphasis);
-  --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
-  --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
-  --oc-zindex-dropdown: 1000;
-  --oc-top-nav-height: 52px;
-  --oc-top-nav-zindex: calc(1030 + 5);
-  --oc-footer-height: 40px;
-  --oc-start-navigation-width: 260px;
-  --oc-start-navigation-width-when-compact: 48px;
-  --oc-start-navigation-zindex: calc(1030 + 3);
-  --oc-link-padding-left: 116px;
-  --bs-dropdown-zindex: 1000;
+/* The light theme is also the default theme. */
+/* Do not wrap the these classes for the light theme specific. */
+.bg-theme {
+  background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity, 1));
 }
 
-[data-bs-theme=light] {
-  /* Here you may define variable for the light theme */
-}
-[data-bs-theme=light] .bg-theme {
-  background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity, 1)) !important;
-}
-[data-bs-theme=light] .text-theme {
+.text-theme {
   color: var(--bs-body-color);
 }
-[data-bs-theme=light] .text-bg-theme {
+
+.text-bg-theme {
   color: var(--bs-body-color);
-  background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity, 1)) !important;
+  background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity, 1));
 }
-[data-bs-theme=light] .ta-badge {
+
+.ta-badge {
   background-color: var(--bs-light);
   color: var(--bs-secondary-color);
 }
-[data-bs-theme=light] .bootstrap-select .popover-header .close {
+
+.bootstrap-select .popover-header .close {
   color: var(--bs-black);
 }
-[data-bs-theme=light] .bootstrap-select > .dropdown-toggle.bs-placeholder,
-[data-bs-theme=light] .bootstrap-select > .dropdown-toggle.bs-placeholder:hover,
-[data-bs-theme=light] .bootstrap-select > .dropdown-toggle.bs-placeholder:focus,
-[data-bs-theme=light] .bootstrap-select > .dropdown-toggle.bs-placeholder:active {
+
+.bootstrap-select > .dropdown-toggle.bs-placeholder,
+.bootstrap-select > .dropdown-toggle.bs-placeholder:hover,
+.bootstrap-select > .dropdown-toggle.bs-placeholder:focus,
+.bootstrap-select > .dropdown-toggle.bs-placeholder:active {
   color: var(--bs-white) !important;
 }
-[data-bs-theme=light] .bootstrap-select > .dropdown-toggle.bs-placeholder,
-[data-bs-theme=light] .bootstrap-select > .dropdown-toggle.bs-placeholder:hover,
-[data-bs-theme=light] .bootstrap-select > .dropdown-toggle.bs-placeholder:focus,
-[data-bs-theme=light] .bootstrap-select > .dropdown-toggle.bs-placeholder:active {
+
+.bootstrap-select > .dropdown-toggle.bs-placeholder,
+.bootstrap-select > .dropdown-toggle.bs-placeholder:hover,
+.bootstrap-select > .dropdown-toggle.bs-placeholder:focus,
+.bootstrap-select > .dropdown-toggle.bs-placeholder:active {
   color: var(--bs-gray-900) !important;
 }
-[data-bs-theme=light] .bootstrap-select .popover-header {
+
+.bootstrap-select .popover-header {
   background-color: var(--bs-secondary-bg);
 }
-[data-bs-theme=light] .card {
+
+.card {
   --bs-card-bg: var(--bs-white);
 }
-[data-bs-theme=light] .modal {
+
+.modal {
   --bs-modal-bg: var(--bs-white);
 }
 
@@ -21182,10 +21169,10 @@ span.field-validation-error {
   --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
   --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
   --oc-scrollbar-color: #CDCDCD;
-  --oc-admin-menu-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-font-color: var(--bs-secondary-color);
   --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
   --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-admin-menu-item-font-color: var(--bs-secondary-text-emphasis);
+  --oc-admin-menu-item-font-color: var(--bs-secondary-color);
   --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
@@ -21200,20 +21187,18 @@ span.field-validation-error {
 }
 
 [data-bs-theme=dark] {
-  /*
-  --oc-border-content: 1px solid rgb(57, 62, 64);
-  --oc-link-padding-left: 16px;
-  --oc-admin-menu-bg-color: rgb(36, 39, 40);
-  --oc-admin-menu-font-color: rgb(181, 175, 166);
-  --oc-admin-menu-font-color-hover: rgb(181, 175, 166);
-  --oc-admin-menu-item-bg-color: rgb(27, 30, 31);
-  --oc-admin-menu-item-font-color: rgb(189, 183, 175);
-  --oc-admin-menu-item-font-color-active: rgba(232, 230, 227, 0.9);
-  --oc-li-hover-bg-color: rgb(27, 30, 31);
-
-      */
   --oc-scrollbar-color: #76787A;
-  --oc-admin-menu-bg-color: var(--bs-body-bg);
+  --oc-admin-menu-bg-color: var(--bs-dark-bg);
+}
+[data-bs-theme=dark] .bg-theme {
+  background-color: rgba(var(--bs-dark-rgb), var(--bs-bg-opacity, 1));
+}
+[data-bs-theme=dark] .text-theme {
+  color: var(--bs-dark-color);
+}
+[data-bs-theme=dark] .text-bg-theme {
+  color: var(--bs-dark-color);
+  background-color: rgba(var(--bs-dark-rgb), var(--bs-bg-opacity, 1));
 }
 [data-bs-theme=dark] .ta-badge {
   background-color: var(--bs-dark);
@@ -21230,4 +21215,7 @@ span.field-validation-error {
 }
 [data-bs-theme=dark] .card {
   --bs-card-bg: var(--bs-body);
+}
+[data-bs-theme=dark] .modal {
+  --bs-modal-bg: var(--bs-dark);
 }

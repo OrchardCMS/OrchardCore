@@ -1,5 +1,3 @@
-@import './_variables';
-
 .media-items-table {
     padding: 20px;
     font-size: 0.875rem;
@@ -46,7 +44,7 @@
             img {
                 max-width: 75px;
                 max-height: 75px;
-                background: repeating-conic-gradient($gray-200 0% 25%, transparent 0% 50%) 50% / 10px 10px;
+                background: repeating-conic-gradient(var(--bs-gray-200, #ccc) 0% 25%, transparent 0% 50%) 50% / 10px 10px;
             }
         }
     }

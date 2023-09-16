@@ -1,24 +1,20 @@
-@import '../../_variables';
-@import '../../../../node_modules/bootstrap/scss/mixins/_color-mode';
+/* The light theme is also the default theme. */
+/* Do not wrap the these classes for the light theme specific. */
 
-@include color-mode(light) {
-    /* Here you may define variable for the light theme */
-
-    .bg-theme {
-        background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity, 1)) !important;
-    }
-
-    .text-theme {
-        color: var(--bs-body-color);
-    }
-
-    .text-bg-theme {
-        color: var(--bs-body-color);
-        background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity, 1)) !important;
-    }
-
-    @import "badge";
-    @import "bootstrap-select";
-    @import "card";
-    @import "modal";
+.bg-theme {
+    background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity, 1));
 }
+
+.text-theme {
+    color: var(--bs-body-color);
+}
+
+.text-bg-theme {
+    color: var(--bs-body-color);
+    background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity, 1));
+}
+
+@import "badge";
+@import "bootstrap-select";
+@import "card";
+@import "modal";

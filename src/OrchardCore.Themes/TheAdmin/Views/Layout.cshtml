@@ -59,18 +59,29 @@
                             @if (adminSettings.DisplayDarkMode)
                             {
                                 <li class="nav-item">
-                                    <a id="btn-darkmode"
-                                       class="nav-link"
-                                       data-bs-toggle="tooltip"
-                                       data-bs-placement="bottom"
-                                       title="@(darkMode ? T["Light mode"] : T["Dark mode"])"
-                                       role="button"
-                                       data-theme-name-dark="@T["Dark mode"]"
-                                       data-theme-name-light="@T["Light mode"]"
-                                       data-theme-icon-dark="fa-solid fa-moon"
-                                       data-theme-icon-light="fa-solid fa-sun">
-                                        <i class="fa-solid @(darkMode ? "fa-sun" : "fa-moon")" aria-hidden="true"></i>
-                                    </a>
+                                    <div class="dropdown">
+                                        <button class="btn btn-link nav-link dropdown-toggle d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static" aria-label="@T["Toggle theme"]">
+                                            <span class="theme-icon-active"><i class="fa-solid fa-circle-half-stroke"></i></span>
+                                            <span class="d-none" id="bd-theme-text">@T["Toggle theme"]</span>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
+                                            <li>
+                                                <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="light" aria-pressed="true">
+                                                    <span class="theme-icon"><i class="fa-solid fa-sun"></i></span> <span class="ps-2">@T["Light"]</span>
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
+                                                    <span class="theme-icon"><i class="fa-solid fa-moon"></i></span> <span class="ps-2">@T["Dark"]</span>
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto" aria-pressed="false">
+                                                    <span class="theme-icon"><i class="fa-solid fa-circle-half-stroke"></i></span> <span class="ps-2">@T["Auto"]</span>
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </li>
                             }
                             <li class="nav-item">

@@ -7307,6 +7307,50 @@ $('body').on('submit', 'form.no-multisubmit', function (e) {
  * Licensed under the Creative Commons Attribution 3.0 Unported License.
  */
 
+var darkThemeName = 'dark';
+var defaultThemeName = 'light';
+var setTheme = function setTheme(theme) {
+  if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    document.documentElement.setAttribute('data-bs-theme', darkThemeName);
+  } else {
+    document.documentElement.setAttribute('data-bs-theme', theme);
+  }
+};
+
+// We add some classes to the body tag to restore the sidebar to the state is was before reload.
+// That state was saved to localstorage by userPreferencesPersistor.js
+// We need to apply the classes BEFORE the page is rendered. 
+// That is why we use a MutationObserver instead of document.Ready().
+var themeObserver = new MutationObserver(function (mutations) {
+  var html = document.documentElement || document.body;
+  var tenant = html.getAttribute('data-tenant');
+  var key = tenant + '-adminPreferences';
+  var adminPreferences = JSON.parse(localStorage.getItem(key));
+  for (var i = 0; i < mutations.length; i++) {
+    for (var j = 0; j < mutations[i].addedNodes.length; j++) {
+      if (mutations[i].addedNodes[j].tagName == 'BODY') {
+        var body = mutations[i].addedNodes[j];
+        if (adminPreferences != null && adminPreferences.darkMode) {
+          setTheme(darkThemeName);
+          console.log('showing the dark theme');
+        } else {
+          body.classList.add('no-admin-preferences');
+          var preferredTheme = getPreferredTheme();
+          setTheme(preferredTheme);
+          console.log('showing the prefered theme: ' + preferredTheme);
+        }
+
+        // we're done: 
+        themeObserver.disconnect();
+      }
+      ;
+    }
+  }
+});
+themeObserver.observe(document.documentElement || document.body, {
+  childList: true,
+  subtree: true
+});
 (function () {
   'use strict';
 
@@ -7316,56 +7360,59 @@ $('body').on('submit', 'form.no-multisubmit', function (e) {
   var setStoredTheme = function setStoredTheme(theme) {
     return localStorage.setItem('theme', theme);
   };
-  var setPreferred = function setPreferred(selector, theme) {
-    var iconName = '';
-    var iconTitle = '';
-    if (theme == 'dark') {
-      iconName = selector.getAttribute('data-theme-icon-light');
-      iconTitle = selector.getAttribute('data-theme-name-light');
-    } else {
-      iconName = selector.getAttribute('data-theme-icon-dark');
-      iconTitle = selector.getAttribute('data-theme-name-dark');
-    }
-    selector.innerHTML = "<i class=\"".concat(iconName, "\" aria-hidden=\"true\"></i>");
-    selector.setAttribute('title', iconTitle);
-    selector.setAttribute('data-bs-original-title', iconTitle);
-    selector.setAttribute('aria-label', iconTitle);
-    setStoredTheme(theme);
-    setTheme(theme);
-    persistAdminPreferences(theme);
-  };
   var getPreferredTheme = function getPreferredTheme() {
     var storedTheme = getStoredTheme();
     if (storedTheme) {
       return storedTheme;
     }
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? darkThemeName : defaultThemeName;
   };
-  var setTheme = function setTheme(theme) {
-    if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      document.documentElement.setAttribute('data-bs-theme', 'dark');
-    } else {
-      document.documentElement.setAttribute('data-bs-theme', theme);
+
+  //setTheme(getPreferredTheme())
+
+  var showActiveTheme = function showActiveTheme(theme) {
+    var focus = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+    var themeSwitcher = document.querySelector('#bd-theme');
+    if (!themeSwitcher) {
+      return;
+    }
+    var themeSwitcherText = document.querySelector('#bd-theme-text');
+    var activeThemeIcon = document.querySelector('.theme-icon-active');
+    var btnToActive = document.querySelector("[data-bs-theme-value=\"".concat(theme, "\"]"));
+    var svgOfActiveBtn = btnToActive.querySelector('.theme-icon');
+    btnToActive.classList.add('active');
+    btnToActive.setAttribute('aria-pressed', 'true');
+    activeThemeIcon.innerHTML = svgOfActiveBtn.innerHTML;
+    var themeSwitcherLabel = "".concat(themeSwitcherText.textContent, " (").concat(btnToActive.dataset.bsThemeValue, ")");
+    themeSwitcher.setAttribute('aria-label', themeSwitcherLabel);
+    var btnsToInactive = document.querySelectorAll("[data-bs-theme-value]:not([data-bs-theme-value=\"".concat(theme, "\"])"));
+    for (var i = 0; i < btnsToInactive.length; i++) {
+      btnsToInactive[i].classList.remove('active');
+      btnsToInactive[i].setAttribute('aria-pressed', 'false');
+    }
+    if (focus) {
+      themeSwitcher.focus();
     }
   };
-  var themeSwitcher = document.getElementById('btn-darkmode');
-  setPreferred(themeSwitcher, getPreferredTheme());
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
     var storedTheme = getStoredTheme();
-    if (storedTheme !== 'light' && storedTheme !== 'dark') {
+    if (storedTheme !== defaultThemeName && storedTheme !== darkThemeName) {
       setTheme(getPreferredTheme());
     }
   });
-  if (themeSwitcher) {
-    themeSwitcher.addEventListener('click', function () {
-      var currentTheme = getStoredTheme();
-      if (currentTheme == 'dark') {
-        setPreferred(themeSwitcher, 'light');
-      } else {
-        setPreferred(themeSwitcher, 'dark');
-      }
+  window.addEventListener('DOMContentLoaded', function () {
+    console.log('page loaded');
+    showActiveTheme(getPreferredTheme());
+    document.querySelectorAll('[data-bs-theme-value]').forEach(function (toggle) {
+      toggle.addEventListener('click', function () {
+        var theme = toggle.getAttribute('data-bs-theme-value');
+        setStoredTheme(theme);
+        setTheme(theme);
+        showActiveTheme(theme, true);
+        persistAdminPreferences(theme);
+      });
     });
-  }
+  });
 })();
 // When we load compact status from preferences we need to do some other tasks besides adding the class to the body.
 // UserPreferencesLoader has already added the needed class.
