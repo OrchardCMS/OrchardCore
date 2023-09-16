@@ -11,13 +11,14 @@ public static class CacheableEntityExtensions
 
     public static bool TryGetValue<T>(this ICacheableEntity cache, string key, out T value)
     {
-        var obj = cache.Get(key);
-
-        if (obj is T castedValue)
+        if (cache.TryGetValue(key, out object result))
         {
-            value = castedValue;
+            if (result is T castedValue)
+            {
+                value = castedValue;
 
-            return true;
+                return true;
+            }
         }
 
         value = default;
