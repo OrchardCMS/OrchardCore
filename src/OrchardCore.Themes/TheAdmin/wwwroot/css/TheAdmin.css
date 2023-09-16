@@ -19,6 +19,7 @@
   --oc-start-navigation-zindex: calc(1030 + 3);
   --oc-link-padding-left: 116px;
   --bs-dropdown-zindex: 1000;
+  --bs-zindex-fixed: 1030;
 }
 
 /*!
@@ -11958,6 +11959,7 @@ textarea.form-control-lg {
   --oc-start-navigation-zindex: calc(1030 + 3);
   --oc-link-padding-left: 116px;
   --bs-dropdown-zindex: 1000;
+  --bs-zindex-fixed: 1030;
 }
 
 body {
@@ -12044,6 +12046,7 @@ svg {
   --oc-start-navigation-zindex: calc(1030 + 3);
   --oc-link-padding-left: 116px;
   --bs-dropdown-zindex: 1000;
+  --bs-zindex-fixed: 1030;
 }
 
 /* Action bar should always be less than dropdown menu */
@@ -12602,6 +12605,7 @@ html[dir=rtl] .bootstrap-select .bs-ok-default:after {
   --oc-start-navigation-zindex: calc(1030 + 3);
   --oc-link-padding-left: 116px;
   --bs-dropdown-zindex: 1000;
+  --bs-zindex-fixed: 1030;
 }
 
 .hint {
@@ -20240,6 +20244,7 @@ ul.pager {
   --oc-start-navigation-zindex: calc(1030 + 3);
   --oc-link-padding-left: 116px;
   --bs-dropdown-zindex: 1000;
+  --bs-zindex-fixed: 1030;
 }
 
 body:not(.left-sidebar-compact) #ta-left-sidebar {
@@ -21013,6 +21018,7 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
   --oc-start-navigation-zindex: calc(1030 + 3);
   --oc-link-padding-left: 116px;
   --bs-dropdown-zindex: 1000;
+  --bs-zindex-fixed: 1030;
 }
 
 .tab-pane {
@@ -21184,6 +21190,7 @@ span.field-validation-error {
   --oc-start-navigation-zindex: calc(1030 + 3);
   --oc-link-padding-left: 116px;
   --bs-dropdown-zindex: 1000;
+  --bs-zindex-fixed: 1030;
 }
 
 [data-bs-theme=dark] {

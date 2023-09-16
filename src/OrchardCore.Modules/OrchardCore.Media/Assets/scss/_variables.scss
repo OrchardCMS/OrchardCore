@@ -1,15 +1,5 @@
-@import "../../node_modules/bootstrap/scss/_functions";
-@import "../../node_modules/bootstrap/scss/_variables";
-@import "../../node_modules/bootstrap/scss/mixins/_color-mode";
-
-@include color-mode(light) {
-    --oc-media-border-content: 1px solid rgba(0, 0, 0, 0.1);
-    --oc-media-selected-background-color: lighten($primary, 45%);
-    --oc-media-color: #{$gray-700};
-}
-
-@include color-mode(dark) {
-    --oc-media-border-content: 1px solid rgba(140, 130, 115, 0.13);
-    --oc-media-selected-background-color: darken($gray-900, 10%);
-    --oc-media-color: rgb(181, 175, 166);
+:root {
+    --oc-media-border-content: var(--bs-border-width, 1px) solid var(--bs-border-color, #ccc);
+    --oc-media-selected-background-color: var(--bs-primary);
+    --oc-media-color: var(--bs-body-color);
 }

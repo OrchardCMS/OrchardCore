@@ -34,4 +34,5 @@ $link-padding-left: 16px !default;
     --oc-start-navigation-zindex: calc(#{$zindex-fixed} + 3);
     --oc-link-padding-left: 1#{$link-padding-left};
     --bs-dropdown-zindex: #{$zindex-dropdown};
+    --bs-zindex-fixed: #{$zindex-fixed};
 }

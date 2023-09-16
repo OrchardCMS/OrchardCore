@@ -1,5 +1,3 @@
-@import './_variables';
-
 .action-bar {
     border-bottom: var(--oc-media-border-content);
 
@@ -31,7 +29,7 @@
             position: absolute;
             top: 8px;
             left: 10px;
-            z-index: $zindex-fixed;
+            z-index: var(--bs-zindex-fixed, 1030);
             pointer-events: none;
             color: var(--bs-gray-600, #ddd);
         }
