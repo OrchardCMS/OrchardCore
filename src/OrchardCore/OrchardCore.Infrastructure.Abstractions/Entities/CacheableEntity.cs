@@ -25,14 +25,14 @@ public class CacheableEntity : ICacheableEntity
 
     public void Remove(string key)
     {
-        ArgumentException.ThrowIfNullOrEmpty(key, nameof(key));
+        AssertNotNull(key);
 
         _cache.Remove(key);
     }
 
     public object Get(string key)
     {
-        ArgumentException.ThrowIfNullOrEmpty(key, nameof(key));
+        AssertNotNull(key);
 
         if (_cache.TryGetValue(key, out var value))
         {
@@ -44,7 +44,7 @@ public class CacheableEntity : ICacheableEntity
 
     public void Set(string key, object value)
     {
-        ArgumentException.ThrowIfNullOrEmpty(key, nameof(key));
+        AssertNotNull(key);
 
         if (value is null)
         {
@@ -52,5 +52,13 @@ public class CacheableEntity : ICacheableEntity
         }
 
         _cache[key] = value;
+    }
+
+    private static void AssertNotNull(string key)
+    {
+        if (string.IsNullOrEmpty(key))
+        {
+            throw new ArgumentException($"{nameof(key)} cannot be null or empty.");
+        }
     }
 }
