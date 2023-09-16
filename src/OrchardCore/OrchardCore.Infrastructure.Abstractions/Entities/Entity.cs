@@ -4,5 +4,5 @@ namespace OrchardCore.Entities;
 
 public class Entity : IEntity
 {
-    public JObject Properties { get; set; } = new JObject();
+    public JObject Properties { get; set; } = new();
 }

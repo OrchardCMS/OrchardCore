@@ -6,19 +6,18 @@ namespace OrchardCore.Entities;
 
 public class CacheableEntity : ICacheableEntity
 {
-    private JObject _properties = new();
+    private static readonly JObject _defaultProperties = new();
 
-    private Dictionary<string, object> _cache { get; } = new Dictionary<string, object>();
+    private readonly Dictionary<string, object> _cache = new();
+
+    private JObject _properties;
 
     public JObject Properties
     {
-        get
-        {
-            return _properties;
-        }
+        get => _properties ?? _defaultProperties;
         set
         {
-            _properties = value ?? new JObject();
+            _properties = value ?? _defaultProperties;
             _cache.Clear();
         }
     }
@@ -34,12 +33,7 @@ public class CacheableEntity : ICacheableEntity
     {
         AssertNotNull(key);
 
-        if (_cache.TryGetValue(key, out var value))
-        {
-            return value;
-        }
-
-        return null;
+        return _cache.TryGetValue(key, out var value) ? value : null;
     }
 
     public void Set(string key, object value)
