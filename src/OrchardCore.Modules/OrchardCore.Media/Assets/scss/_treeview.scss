@@ -35,7 +35,7 @@
     }
 
     li div:not(.treeroot) a:hover, .folderhovered {
-        background-color: var(--oc-media-selected-background-color);
+        background-color: var(--bs-list-group-action-hover-bg, var(--bs-secondary-bg, lightgray));
     }
 
     li div {
@@ -106,6 +106,7 @@
                 display: flex;
                 align-items: center;
                 background-color: var(--oc-media-selected-background-color);
+                color: var(--bs-white, #fff)
             }
         }
     }

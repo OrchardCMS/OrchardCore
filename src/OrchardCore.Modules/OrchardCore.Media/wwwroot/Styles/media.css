@@ -607,7 +607,7 @@ ol.media-items-grid .thumb-container {
   background-color: var(--oc-media-selected-background-color);
 }
 [dir] #folder-tree li div:not(.treeroot) a:hover, [dir] #folder-tree .folderhovered {
-  background-color: var(--oc-media-selected-background-color);
+  background-color: var(--bs-list-group-action-hover-bg, var(--bs-secondary-bg, lightgray));
 }
 #folder-tree li div {
   min-height: 40px;
@@ -676,6 +676,7 @@ ol.media-items-grid .thumb-container {
 #folder-tree .folder-menu-item .folder-actions a.btn {
   display: flex;
   align-items: center;
+  color: var(--bs-white, #fff);
 }
 [dir] #folder-tree .folder-menu-item .folder-actions a.btn {
   background-color: var(--oc-media-selected-background-color);
