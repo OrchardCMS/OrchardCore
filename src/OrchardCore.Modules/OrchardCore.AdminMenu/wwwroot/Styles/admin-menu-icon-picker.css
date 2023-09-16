@@ -15,7 +15,8 @@
   padding: 1px;
   text-align: left;
   width: 234px;
-  background: #f7f7f7;
+  background: var(--bs-body-bg, #f7f7f7);
+  color: var(--bs-body-color, #000);
   z-index: 9;
 }
 
@@ -79,8 +80,9 @@
   padding: 12px;
   font-size: 13px;
   line-height: 15px;
-  border-bottom: 1px solid #ebebeb;
-  background-color: #f7f7f7;
+  border-bottom: var(--bs-border-width, 1px) solid var(--bs-border-color, #ebebeb);
+  background-color: var(--bs-body-bg, #f7f7f7);
+  color: var(--bs-body-color, #000);
 }
 
 .iconpicker-popover.popover .popover-title input[type=search].iconpicker-search {
@@ -102,8 +104,9 @@
   padding: 12px;
   text-align: right;
   margin: 0;
-  border-top: 1px solid #ebebeb;
-  background-color: #f7f7f7;
+  border-top: var(--bs-border-width, 1px) solid var(--bs-border-color, #ebebeb);
+  background-color: var(--bs-body-bg, #f7f7f7);
+  color: var(--bs-body-color, #000);
 }
 
 .iconpicker-popover .popover-footer:before,
@@ -122,7 +125,7 @@
 
 .iconpicker-popover .popover-footer input[type=search].iconpicker-search {
   /*width:auto;
-    float:left;*/
+  float:left;*/
   margin-bottom: 12px;
 }
 
@@ -305,7 +308,8 @@
   clear: both;
   float: none;
   padding: 12px 0 0 12px;
-  background: #fff;
+  background-color: var(--bs-body-bg, #f7f7f7);
+  color: var(--bs-body-color, #000);
   margin: 0;
   overflow: hidden;
   overflow-y: auto;
@@ -333,14 +337,14 @@
   cursor: pointer;
   border-radius: 3px;
   font-size: 14px;
-  box-shadow: 0 0 0 1px #ddd;
-  color: inherit;
+  box-shadow: 0 0 0 1px var(--bs-border-color);
+  color: var(--bs-body-color, inherit);
   /*&:nth-child(4n+4) {
-        margin-right: 0;
-    }
-    &:nth-last-child(-n+4) {
-        margin-bottom: 0;
-    }*/
+      margin-right: 0;
+  }
+  &:nth-last-child(-n+4) {
+      margin-bottom: 0;
+  }*/
 }
 
 .iconpicker .iconpicker-item:hover:not(.iconpicker-selected) {
@@ -349,8 +353,8 @@
 
 .iconpicker .iconpicker-item.iconpicker-selected {
   box-shadow: none;
-  color: #fff;
-  background: #000;
+  background-color: var(--bs-body-bg, #f7f7f7);
+  color: var(--bs-body-color, #000);
 }
 
 .iconpicker-component {
@@ -358,7 +362,7 @@
 }
 
 #iconPickerModal .iconpicker-item {
-  background-color: var(--bs-body, #fff);
+  background-color: var(--bs-body-bg, #fff);
 }
 #iconPickerModal .iconpicker-popover.popover {
   width: 100%;
