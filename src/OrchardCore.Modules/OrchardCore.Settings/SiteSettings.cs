@@ -46,10 +46,7 @@ namespace OrchardCore.Settings
 
         public void Remove(string key)
         {
-            if (string.IsNullOrEmpty(key))
-            {
-                throw new ArgumentException($"{nameof(key)} cannot be null or empty.");
-            }
+            AssertNotNull(key);
 
             _cache.Remove(key, out _);
         }
@@ -58,6 +55,19 @@ namespace OrchardCore.Settings
             ? value
             : default;
 
-        public void Set(string key, object value) => _cache.TryAdd(key, value);
+        public void Set(string key, object value)
+        {
+            AssertNotNull(key);
+
+            _cache[key] = value;
+        }
+
+        private static void AssertNotNull(string key)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentException($"{nameof(key)} cannot be null or empty.");
+            }
+        }
     }
 }
