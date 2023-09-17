@@ -134,7 +134,6 @@ namespace Microsoft.Extensions.Http
 
             var entry = _activeHandlers.GetOrAdd(name, _entryFactory).Value;
 
-            // OC: Only if an entry was created;
             StartHandlerEntryTimer(entry);
 
             return entry.Handler;
@@ -179,9 +178,6 @@ namespace Microsoft.Extensions.Http
                 // timer) and then dispose it without ever creating a client. That would be bad. It's unlikely
                 // this would happen, but we want to be sure.
                 var entry = new ActiveHandlerTrackingEntry(name, handler, scope, options.HandlerLifetime);
-
-                // OC: Only if an entry was created;
-                // StartHandlerEntryTimer(entry);
 
                 return entry;
 
