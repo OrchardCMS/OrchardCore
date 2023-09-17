@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -331,6 +332,12 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     collection.Remove(descriptor);
                 }
+
+                // Override 'IHttpClientFactory' knowing that 'AddHttpClient()' uses 'TryAddSingleton()'.
+                collection.AddSingleton<TenantHttpClientFactory>();
+                collection.AddSingleton<IHttpClientFactory>(serviceProvider => serviceProvider.GetRequiredService<TenantHttpClientFactory>());
+                collection.AddSingleton<IHttpMessageHandlerFactory>(serviceProvider => serviceProvider.GetRequiredService<TenantHttpClientFactory>());
+
             },
             order: int.MinValue + 100);
         }
