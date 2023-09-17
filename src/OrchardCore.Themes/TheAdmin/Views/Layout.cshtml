@@ -66,6 +66,11 @@
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
                                             <li>
+                                                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto" aria-pressed="false">
+                                                    <span class="theme-icon"><i class="fa-solid fa-circle-half-stroke"></i></span> <span class="ps-2">@T["Auto"]</span>
+                                                </button>
+                                            </li>
+                                            <li>
                                                 <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="light" aria-pressed="true">
                                                     <span class="theme-icon"><i class="fa-solid fa-sun"></i></span> <span class="ps-2">@T["Light"]</span>
                                                 </button>
@@ -76,11 +81,6 @@
                                                 </button>
                                             </li>
                                             @await RenderSectionAsync("ToggleThemeItems", required: false)
-                                            <li>
-                                                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto" aria-pressed="false">
-                                                    <span class="theme-icon"><i class="fa-solid fa-circle-half-stroke"></i></span> <span class="ps-2">@T["Auto"]</span>
-                                                </button>
-                                            </li>
                                         </ul>
                                     </div>
                                 </li>

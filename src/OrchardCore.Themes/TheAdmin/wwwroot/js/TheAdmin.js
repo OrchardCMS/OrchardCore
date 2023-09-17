@@ -7347,7 +7347,7 @@ var themeObserver = new MutationObserver(function (mutations) {
     }
   }
 });
-themeObserver.observe(document.documentElement || document.body, {
+themeObserver.observe(document.documentElement, {
   childList: true,
   subtree: true
 });
