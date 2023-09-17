@@ -13,8 +13,9 @@
   {
     "generateSourceMaps": false,
     "inputs": [
-      "node_modules/@popperjs/core/dist/umd/popper.js",
-      "node_modules/bootstrap/dist/js/bootstrap.js",
+      "Assets/js/*.js"
+    ],
+    "watch": [
       "Assets/js/*.js"
     ],
     "output": "wwwroot/js/TheAdmin.js"
@@ -22,7 +23,10 @@
   {
     "generateSourceMaps": false,
     "inputs": [
-      "Assets/js/header/userPreferencesLoader.js"
+      "Assets/js/header/*.js"
+    ],
+    "watch": [
+      "Assets/js/header/*.js"
     ],
     "output": "wwwroot/js/TheAdmin-header.js"
   },

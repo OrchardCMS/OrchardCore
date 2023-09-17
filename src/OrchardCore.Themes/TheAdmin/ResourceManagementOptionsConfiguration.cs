@@ -20,7 +20,7 @@ namespace OrchardCore.Themes.TheAdmin
 
             _manifest
                 .DefineScript("admin")
-                .SetDependencies("jQuery")
+                .SetDependencies("bootstrap", "jQuery")
                 .SetUrl("~/TheAdmin/js/TheAdmin.min.js", "~/TheAdmin/js/TheAdmin.js")
                 .SetVersion("1.0.0");
 

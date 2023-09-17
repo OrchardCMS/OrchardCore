@@ -3,6 +3,61 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
+var darkThemeName = 'dark';
+var lightThemeName = 'light';
+var getStoredTheme = function getStoredTheme() {
+  return localStorage.getItem('theme');
+};
+var setStoredTheme = function setStoredTheme(theme) {
+  return localStorage.setItem('theme', theme);
+};
+var getPreferredTheme = function getPreferredTheme() {
+  var storedTheme = getStoredTheme();
+  if (storedTheme) {
+    return storedTheme;
+  }
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? darkThemeName : lightThemeName;
+};
+var setTheme = function setTheme(theme) {
+  if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    document.documentElement.setAttribute('data-bs-theme', darkThemeName);
+  } else {
+    document.documentElement.setAttribute('data-bs-theme', theme);
+  }
+};
+
+// We add some classes to the body tag to restore the sidebar to the state is was before reload.
+// That state was saved to localstorage by userPreferencesPersistor.js
+// We need to apply the classes BEFORE the page is rendered. 
+// That is why we use a MutationObserver instead of document.Ready().
+var themeObserver = new MutationObserver(function (mutations) {
+  var html = document.documentElement || document.body;
+  var tenant = html.getAttribute('data-tenant');
+  var key = tenant + '-adminPreferences';
+  var adminPreferences = JSON.parse(localStorage.getItem(key));
+  for (var i = 0; i < mutations.length; i++) {
+    for (var j = 0; j < mutations[i].addedNodes.length; j++) {
+      if (mutations[i].addedNodes[j].tagName == 'BODY') {
+        var body = mutations[i].addedNodes[j];
+        if (adminPreferences != null && adminPreferences.darkMode) {
+          setTheme(darkThemeName);
+        } else {
+          body.classList.add('no-admin-preferences');
+          var preferredTheme = getPreferredTheme();
+          setTheme(preferredTheme);
+        }
+
+        // we're done: 
+        themeObserver.disconnect();
+      }
+      ;
+    }
+  }
+});
+themeObserver.observe(document.documentElement, {
+  childList: true,
+  subtree: true
+});
 // We add some classes to the body tag to restore the sidebar to the state is was before reload.
 // That state was saved to localstorage by userPreferencesPersistor.js
 // We need to apply the classes BEFORE the page is rendered. 
