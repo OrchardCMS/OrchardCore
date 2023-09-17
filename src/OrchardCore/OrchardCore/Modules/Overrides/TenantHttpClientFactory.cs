@@ -280,7 +280,7 @@ namespace Microsoft.Extensions.Http
                 //
                 // If we end up in that position, just make sure the timer gets started again. It should be cheap
                 // to run a 'no-op' cleanup.
-
+                //
                 // OC: May also happen if called while disposing.
                 StartCleanupTimer();
 
