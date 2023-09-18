@@ -13,7 +13,7 @@ public static class ContentPartFieldDefinitionExtensions
         ContentItem contentItem)
         where TField : ContentField
     {
-        if (((JObject)contentItem.Content)[fieldDefinition.PartDefinition.Name] is not JObject jPart ||
+        if (((JObject)contentItem.Content)[fieldDefinition.ContentTypePartDefinition.Name] is not JObject jPart ||
             jPart[fieldDefinition.Name] is not JObject jField)
         {
             return null;
