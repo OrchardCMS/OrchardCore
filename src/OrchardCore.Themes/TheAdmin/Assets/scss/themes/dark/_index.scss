@@ -6,16 +6,20 @@
     --oc-admin-menu-bg-color: var(--bs-dark-bg);
 
     .bg-theme {
-        background-color: rgba(var(--bs-dark-rgb), var(--bs-bg-opacity, 1));
+        background-color: rgba(var(--bs-body-bg-rgb), var(--bs-bg-opacity, 1));
     }
 
     .text-theme {
-        color: var(--bs-dark-color);
+        color: var(--bs-body-color);
     }
 
     .text-bg-theme {
-        color: var(--bs-dark-color);
-        background-color: rgba(var(--bs-dark-rgb), var(--bs-bg-opacity, 1));
+        color: var(--bs-body-color);
+        background-color: rgba(var(--bs-body-bg-rgb), var(--bs-bg-opacity, 1));
+    }
+
+    .btn-theme {
+        @extend .btn-dark;
     }
 
     @import "badge";

@@ -31,21 +31,16 @@ var setTheme = function setTheme(theme) {
 // We need to apply the classes BEFORE the page is rendered. 
 // That is why we use a MutationObserver instead of document.Ready().
 var themeObserver = new MutationObserver(function (mutations) {
-  var html = document.documentElement || document.body;
-  var tenant = html.getAttribute('data-tenant');
-  var key = tenant + '-adminPreferences';
-  var adminPreferences = JSON.parse(localStorage.getItem(key));
+  //const html = document.documentElement || document.body;
+  //const tenant = html.getAttribute('data-tenant');
+
   for (var i = 0; i < mutations.length; i++) {
     for (var j = 0; j < mutations[i].addedNodes.length; j++) {
       if (mutations[i].addedNodes[j].tagName == 'BODY') {
         var body = mutations[i].addedNodes[j];
-        if (adminPreferences != null && adminPreferences.darkMode) {
-          setTheme(darkThemeName);
-        } else {
-          body.classList.add('no-admin-preferences');
-          var preferredTheme = getPreferredTheme();
-          setTheme(preferredTheme);
-        }
+        body.classList.add('no-admin-preferences');
+        var preferredTheme = getPreferredTheme();
+        setTheme(preferredTheme);
 
         // we're done: 
         themeObserver.disconnect();
