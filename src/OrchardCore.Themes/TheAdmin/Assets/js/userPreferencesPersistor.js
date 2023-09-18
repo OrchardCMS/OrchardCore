@@ -3,13 +3,10 @@
 // restore the sidebar to the previous state.
 function persistAdminPreferences(theme) {
     setTimeout(function () {
-        var tenant = document.documentElement.getAttribute('data-tenant');
-        var key = tenant + '-adminPreferences';
         var adminPreferences = {};
         adminPreferences.leftSidebarCompact = document.body.classList.contains('left-sidebar-compact') ? true : false;
         adminPreferences.isCompactExplicit = isCompactExplicit;
-        adminPreferences.darkMode = (theme || document.documentElement.getAttribute('data-bs-theme')) === 'dark' ? true : false;
-        localStorage.setItem(key, JSON.stringify(adminPreferences));
-        Cookies.set(key, JSON.stringify(adminPreferences), { expires: 360 });
+        adminPreferences.darkMode = (theme || document.documentElement.getAttribute('data-bs-theme')) === darkThemeName ? true : false;
+        setAdminPreferences(adminPreferences);
     }, 200);
 }

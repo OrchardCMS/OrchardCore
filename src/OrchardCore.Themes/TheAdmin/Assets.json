@@ -23,26 +23,12 @@
   {
     "generateSourceMaps": false,
     "inputs": [
+      "Assets/js/header/global/*.js",
       "Assets/js/header/*.js"
     ],
     "watch": [
-      "Assets/js/header/*.js"
+      "Assets/js/header/**/*.js"
     ],
     "output": "wwwroot/js/TheAdmin-header.js"
-  },
-  {
-    "generateSourceMaps": false,
-    "inputs": [
-      "node_modules/material-icons/iconfont/material-icons.scss"
-    ],
-    "output": "wwwroot/fonts/material-icons/material-icons.css"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/material-icons/iconfont/*.woff",
-      "node_modules/material-icons/iconfont/*.woff2"
-    ],
-    "output": "wwwroot/fonts/material-icons/@"
   }
 ]

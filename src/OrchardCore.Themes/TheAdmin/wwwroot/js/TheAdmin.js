@@ -58,11 +58,12 @@ function confirmDialog(_ref) {
     confirmModal.hide();
   });
 }
-
-// Prevents page flickering while downloading css
-$(window).on('load', function () {
-  $('body').removeClass('preload');
-});
+(function () {
+  // Prevents page flickering while downloading css
+  document.addEventListener('DOMContentLoaded', function () {
+    document.body.classList.remove('preload');
+  });
+})();
 $(function () {
   $('body').on('click', '[data-url-af~="RemoveUrl"], a[itemprop~="RemoveUrl"]', function () {
     var _this = $(this);
@@ -562,40 +563,39 @@ function removeDiacritics(str) {
 // Right now it is only used to compact the lefbar when resizing under 768px
 // In the future maybe this is useful to do other things on resizing.
 
-$(function () {
-  lastWidth = $(this).width(); //this = window
+(function () {
   var breakPoint = 768;
-  lastDirection = "";
-  var lastDirectionManaged = "";
-  BreakpointChangeManaged = false;
-  $(window).on('resize', function () {
-    var width = $(this).width();
-    var breakPoint = 768;
+  var lastDirection = '';
+  var lastDirectionManaged = '';
+  var breakpointChangeManaged = false;
+  var lastWidth = document.body.clientWidth;
+  window.addEventListener('resize', function () {
+    var width = document.body.clientWidth;
     var direction = width < lastWidth ? 'reducing' : 'increasing';
     if (direction !== lastDirection) {
-      BreakpointChangeManaged = false; // need to listen for breakpoint            
+      breakpointChangeManaged = false; // need to listen for breakpoint            
     }
 
-    if (BreakpointChangeManaged == false && direction != lastDirectionManaged) {
-      if (direction == "reducing" && width < breakPoint) {
+    if (breakpointChangeManaged == false && direction != lastDirectionManaged) {
+      if (direction == 'reducing' && width < breakPoint) {
         // breakpoint reached while going down
         setCompactStatus();
         lastDirectionManaged = direction;
-        BreakpointChangeManaged = true;
+        breakpointChangeManaged = true;
       }
-      if (direction == "increasing" && width > breakPoint) {
+      if (direction == 'increasing' && width > breakPoint) {
         // breakpoint reached while going up
         if (isCompactExplicit == false) {
           unSetCompactStatus();
         }
         lastDirectionManaged = direction;
-        BreakpointChangeManaged = true;
+        breakpointChangeManaged = true;
       }
     }
     lastDirection = direction;
     lastWidth = width;
   });
-});
+})();
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 /**!
  * Sortable
@@ -1590,12 +1590,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   Sortable.version = '1.4.2';
   return Sortable;
 });
-/*!
- * Color mode toggler for Bootstrap's docs (https://getbootstrap.com/)
- * Copyright 2011-2023 The Bootstrap Authors
- * Licensed under the Creative Commons Attribution 3.0 Unported License.
- */
-
 (function () {
   'use strict';
 
@@ -1647,15 +1641,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 // restore the sidebar to the previous state.
 function persistAdminPreferences(theme) {
   setTimeout(function () {
-    var tenant = document.documentElement.getAttribute('data-tenant');
-    var key = tenant + '-adminPreferences';
     var adminPreferences = {};
     adminPreferences.leftSidebarCompact = document.body.classList.contains('left-sidebar-compact') ? true : false;
     adminPreferences.isCompactExplicit = isCompactExplicit;
-    adminPreferences.darkMode = (theme || document.documentElement.getAttribute('data-bs-theme')) === 'dark' ? true : false;
-    localStorage.setItem(key, JSON.stringify(adminPreferences));
-    Cookies.set(key, JSON.stringify(adminPreferences), {
-      expires: 360
-    });
+    adminPreferences.darkMode = (theme || document.documentElement.getAttribute('data-bs-theme')) === darkThemeName ? true : false;
+    setAdminPreferences(adminPreferences);
   }, 200);
 }
