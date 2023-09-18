@@ -91,7 +91,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                                 ContentItemId = contentItem.ContentItemId,
                                 ContentItemVersionId = contentItem.ContentItemVersionId,
                                 ContentType = contentItem.ContentType,
-                                ContentPart = pair.Definition.PartDefinition.Name,
+                                ContentPart = pair.Definition.ContentTypePartDefinition.Name,
                                 ContentField = pair.Definition.Name,
                                 Url = pair.Field.Url?[..Math.Min(pair.Field.Url.Length, LinkFieldIndex.MaxUrlSize)],
                                 BigUrl = pair.Field.Url,
