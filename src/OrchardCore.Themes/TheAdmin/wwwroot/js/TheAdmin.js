@@ -213,7 +213,6 @@ $(document).on("click", function (event) {
     $('#left-nav li.has-items').removeClass("visible");
   }
 });
-var isCompactExplicit = isCompactExplicit === undefined ? false : isCompactExplicit;
 var subMenuArray = new Array();
 function setCompactStatus(explicit) {
   // This if is to avoid that when sliding from expanded to compact the 
