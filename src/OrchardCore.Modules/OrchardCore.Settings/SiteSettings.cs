@@ -56,11 +56,11 @@ namespace OrchardCore.Settings
             return settings;
         }
 
-        public ISite Put<T>(T aspect) where T : new()
+        public ISite Put<T>(T settings) where T : new()
         {
             var name = typeof(T).Name;
 
-            this.Put(name, aspect);
+            this.Put(name, settings);
 
             _cache.Remove(name);
 
