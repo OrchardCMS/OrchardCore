@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
@@ -7,18 +6,16 @@ namespace OrchardCore.Entities;
 
 public class CacheableEntity : ICacheableEntity
 {
-    private static readonly JObject _defaultProperties = new();
+    private readonly Dictionary<string, object> _cache = new();
 
-    private readonly ConcurrentDictionary<string, object> _cache = new();
-
-    private JObject _properties;
+    private JObject _properties = new();
 
     public JObject Properties
     {
-        get => _properties ?? _defaultProperties;
+        get => _properties;
         set
         {
-            _properties = value ?? _defaultProperties;
+            _properties = value ?? new JObject();
             _cache.Clear();
         }
     }
@@ -30,9 +27,8 @@ public class CacheableEntity : ICacheableEntity
         _cache.Remove(key, out _);
     }
 
-    public object Get(string key) => _cache.TryGetValue(key, out var value)
-        ? value
-        : default;
+    public object Get(string key)
+        => _cache.TryGetValue(key, out var value) ? value : default;
 
     public void Set(string key, object value)
     {
