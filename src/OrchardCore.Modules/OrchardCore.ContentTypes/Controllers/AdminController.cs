@@ -93,30 +93,30 @@ namespace OrchardCore.ContentTypes.Controllers
                 return Forbid();
             }
 
-            viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? String.Empty;
-            viewModel.Name ??= String.Empty;
+            viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? string.Empty;
+            viewModel.Name ??= string.Empty;
 
-            if (String.IsNullOrWhiteSpace(viewModel.DisplayName))
+            if (string.IsNullOrWhiteSpace(viewModel.DisplayName))
             {
                 ModelState.AddModelError("DisplayName", S["The Display Name can't be empty."]);
             }
 
-            if (_contentDefinitionService.LoadTypes().Any(t => String.Equals(t.DisplayName.Trim(), viewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase)))
+            if (_contentDefinitionService.LoadTypes().Any(t => string.Equals(t.DisplayName.Trim(), viewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError("DisplayName", S["A type with the same Display Name already exists."]);
             }
 
-            if (String.IsNullOrWhiteSpace(viewModel.Name))
+            if (string.IsNullOrWhiteSpace(viewModel.Name))
             {
                 ModelState.AddModelError("Name", S["The Technical Name can't be empty."]);
             }
 
-            if (!String.IsNullOrWhiteSpace(viewModel.Name) && !viewModel.Name[0].IsLetter())
+            if (!string.IsNullOrWhiteSpace(viewModel.Name) && !viewModel.Name[0].IsLetter())
             {
                 ModelState.AddModelError("Name", S["The Technical Name must start with a letter."]);
             }
 
-            if (!String.Equals(viewModel.Name, viewModel.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(viewModel.Name, viewModel.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError("Name", S["The Technical Name contains invalid characters."]);
             }
@@ -126,7 +126,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 ModelState.AddModelError("Name", S["The Technical Name is reserved for internal use."]);
             }
 
-            if (_contentDefinitionService.LoadTypes().Any(t => String.Equals(t.Name.Trim(), viewModel.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
+            if (_contentDefinitionService.LoadTypes().Any(t => string.Equals(t.Name.Trim(), viewModel.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError("Name", S["A type with the same Technical Name already exists."]);
             }
@@ -346,25 +346,25 @@ namespace OrchardCore.ContentTypes.Controllers
                 return await AddReusablePartTo(id);
             }
 
-            viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? String.Empty;
-            viewModel.Name ??= String.Empty;
+            viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? string.Empty;
+            viewModel.Name ??= string.Empty;
 
-            if (String.IsNullOrWhiteSpace(viewModel.DisplayName))
+            if (string.IsNullOrWhiteSpace(viewModel.DisplayName))
             {
                 ModelState.AddModelError("DisplayName", S["The Display Name can't be empty."]);
             }
 
-            if (typeViewModel.TypeDefinition.Parts.Any(f => String.Equals(f.DisplayName().Trim(), viewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase)))
+            if (typeViewModel.TypeDefinition.Parts.Any(f => string.Equals(f.DisplayName().Trim(), viewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError("DisplayName", S["A part with the same Display Name already exists."]);
             }
 
-            if (!String.IsNullOrWhiteSpace(viewModel.Name) && !viewModel.Name[0].IsLetter())
+            if (!string.IsNullOrWhiteSpace(viewModel.Name) && !viewModel.Name[0].IsLetter())
             {
                 ModelState.AddModelError("Name", S["The Technical Name must start with a letter."]);
             }
 
-            if (!String.Equals(viewModel.Name, viewModel.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(viewModel.Name, viewModel.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError("Name", S["The Technical Name contains invalid characters."]);
             }
@@ -374,12 +374,12 @@ namespace OrchardCore.ContentTypes.Controllers
                 ModelState.AddModelError("Name", S["The Technical Name is reserved for internal use."]);
             }
 
-            if (String.IsNullOrWhiteSpace(viewModel.Name))
+            if (string.IsNullOrWhiteSpace(viewModel.Name))
             {
                 ModelState.AddModelError("Name", S["The Technical Name can't be empty."]);
             }
 
-            if (typeViewModel.TypeDefinition.Parts.Any(f => String.Equals(f.Name.Trim(), viewModel.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
+            if (typeViewModel.TypeDefinition.Parts.Any(f => string.Equals(f.Name.Trim(), viewModel.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError("Name", S["A part with the same Technical Name already exists."]);
             }
@@ -409,7 +409,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var typeViewModel = _contentDefinitionService.LoadType(id);
 
-            if (typeViewModel == null || !typeViewModel.TypeDefinition.Parts.Any(p => String.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase)))
+            if (typeViewModel == null || !typeViewModel.TypeDefinition.Parts.Any(p => string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase)))
             {
                 return NotFound();
             }
@@ -457,24 +457,24 @@ namespace OrchardCore.ContentTypes.Controllers
                 return Forbid();
             }
 
-            viewModel.Name ??= String.Empty;
+            viewModel.Name ??= string.Empty;
 
-            if (String.IsNullOrWhiteSpace(viewModel.Name))
+            if (string.IsNullOrWhiteSpace(viewModel.Name))
             {
                 ModelState.AddModelError("Name", S["The Technical Name can't be empty."]);
             }
 
-            if (_contentDefinitionService.LoadParts(false).Any(p => String.Equals(p.Name.Trim(), viewModel.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
+            if (_contentDefinitionService.LoadParts(false).Any(p => string.Equals(p.Name.Trim(), viewModel.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError("Name", S["A part with the same Technical Name already exists."]);
             }
 
-            if (!String.IsNullOrWhiteSpace(viewModel.Name) && !viewModel.Name[0].IsLetter())
+            if (!string.IsNullOrWhiteSpace(viewModel.Name) && !viewModel.Name[0].IsLetter())
             {
                 ModelState.AddModelError("Name", S["The Technical Name must start with a letter."]);
             }
 
-            if (!String.Equals(viewModel.Name, viewModel.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(viewModel.Name, viewModel.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError("Name", S["The Technical Name contains invalid characters."]);
             }
@@ -632,42 +632,42 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var fields = _contentDefinitionService.GetFields().ToList();
 
-            if (!fields.Any(field => String.Equals(field.Name, viewModel.FieldTypeName, StringComparison.OrdinalIgnoreCase)))
+            if (!fields.Any(field => string.Equals(field.Name, viewModel.FieldTypeName, StringComparison.OrdinalIgnoreCase)))
             {
                 return NotFound();
             }
 
             var partDefinition = partViewModel.PartDefinition;
 
-            viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? String.Empty;
-            viewModel.Name ??= String.Empty;
+            viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? string.Empty;
+            viewModel.Name ??= string.Empty;
 
-            if (String.IsNullOrWhiteSpace(viewModel.DisplayName))
+            if (string.IsNullOrWhiteSpace(viewModel.DisplayName))
             {
                 ModelState.AddModelError("DisplayName", S["The Display Name can't be empty."]);
             }
 
-            if (partDefinition.Fields.Any(f => String.Equals(f.DisplayName().Trim(), viewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase)))
+            if (partDefinition.Fields.Any(f => string.Equals(f.DisplayName().Trim(), viewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError("DisplayName", S["A field with the same Display Name already exists."]);
             }
 
-            if (String.IsNullOrWhiteSpace(viewModel.Name))
+            if (string.IsNullOrWhiteSpace(viewModel.Name))
             {
                 ModelState.AddModelError("Name", S["The Technical Name can't be empty."]);
             }
 
-            if (partDefinition.Fields.Any(f => String.Equals(f.Name.Trim(), viewModel.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
+            if (partDefinition.Fields.Any(f => string.Equals(f.Name.Trim(), viewModel.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError("Name", S["A field with the same Technical Name already exists."]);
             }
 
-            if (!String.IsNullOrWhiteSpace(viewModel.Name) && !viewModel.Name[0].IsLetter())
+            if (!string.IsNullOrWhiteSpace(viewModel.Name) && !viewModel.Name[0].IsLetter())
             {
                 ModelState.AddModelError("Name", S["The Technical Name must start with a letter."]);
             }
 
-            if (!String.Equals(viewModel.Name, viewModel.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(viewModel.Name, viewModel.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError("Name", S["The Technical Name contains invalid characters."]);
             }
@@ -687,7 +687,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             await _notifier.SuccessAsync(H["The field \"{0}\" has been added.", viewModel.DisplayName]);
 
-            if (!String.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
                 return this.Redirect(returnUrl, true);
             }
@@ -711,10 +711,10 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var partFieldDefinition = partViewModel.PartDefinition.Fields.FirstOrDefault(x => String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+            var partFieldDefinition = partViewModel.PartDefinition.Fields.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
             if (partFieldDefinition?.FieldDefinition?.Name == null
-                || !_contentDefinitionService.GetFields().Any(field => String.Equals(field.Name, partFieldDefinition.FieldDefinition.Name, StringComparison.OrdinalIgnoreCase)))
+                || !_contentDefinitionService.GetFields().Any(field => string.Equals(field.Name, partFieldDefinition.FieldDefinition.Name, StringComparison.OrdinalIgnoreCase)))
             {
                 return NotFound();
             }
@@ -754,7 +754,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var field = _contentDefinitionManager.LoadPartDefinition(id).Fields.FirstOrDefault(x => String.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase));
+            var field = _contentDefinitionManager.LoadPartDefinition(id).Fields.FirstOrDefault(x => string.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase));
 
             if (field == null)
             {
@@ -766,14 +766,14 @@ namespace OrchardCore.ContentTypes.Controllers
             if (field.DisplayName() != viewModel.DisplayName)
             {
                 // prevent null reference exception in validation
-                viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? String.Empty;
+                viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? string.Empty;
 
-                if (String.IsNullOrWhiteSpace(viewModel.DisplayName))
+                if (string.IsNullOrWhiteSpace(viewModel.DisplayName))
                 {
                     ModelState.AddModelError("DisplayName", S["The Display Name can't be empty."]);
                 }
 
-                if (_contentDefinitionService.LoadPart(partViewModel.Name).PartDefinition.Fields.Any(t => t.Name != viewModel.Name && String.Equals(t.DisplayName().Trim(), viewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase)))
+                if (_contentDefinitionService.LoadPart(partViewModel.Name).PartDefinition.Fields.Any(t => t.Name != viewModel.Name && string.Equals(t.DisplayName().Trim(), viewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase)))
                 {
                     ModelState.AddModelError("DisplayName", S["A field with the same Display Name already exists."]);
                 }
@@ -794,7 +794,7 @@ namespace OrchardCore.ContentTypes.Controllers
             _contentDefinitionService.AlterField(partViewModel, viewModel);
 
             // Refresh the local field variable in case it has been altered
-            field = _contentDefinitionManager.LoadPartDefinition(id).Fields.FirstOrDefault(x => String.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase));
+            field = _contentDefinitionManager.LoadPartDefinition(id).Fields.FirstOrDefault(x => string.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase));
 
             viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, _updateModelAccessor.ModelUpdater);
 
@@ -810,7 +810,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 await _notifier.SuccessAsync(H["The \"{0}\" field settings have been saved.", field.DisplayName()]);
             }
 
-            if (!String.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
                 return this.Redirect(returnUrl, true);
             }
@@ -842,7 +842,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var field = partViewModel.PartDefinition.Fields.FirstOrDefault(x => String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+            var field = partViewModel.PartDefinition.Fields.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
             if (field == null)
             {
@@ -879,7 +879,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var typePartDefinition = typeDefinition.Parts.FirstOrDefault(x => String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+            var typePartDefinition = typeDefinition.Parts.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
             if (typePartDefinition == null)
             {
@@ -921,7 +921,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var part = typeDefinition.Parts.FirstOrDefault(x => String.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase));
+            var part = typeDefinition.Parts.FirstOrDefault(x => string.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase));
 
             if (part == null)
             {
@@ -935,14 +935,14 @@ namespace OrchardCore.ContentTypes.Controllers
                 if (part.DisplayName() != viewModel.DisplayName)
                 {
                     // Prevent null reference exception in validation
-                    viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? String.Empty;
+                    viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? string.Empty;
 
-                    if (String.IsNullOrWhiteSpace(viewModel.DisplayName))
+                    if (string.IsNullOrWhiteSpace(viewModel.DisplayName))
                     {
                         ModelState.AddModelError("DisplayName", S["The Display Name can't be empty."]);
                     }
 
-                    if (typeDefinition.Parts.Any(t => t.Name != viewModel.Name && String.Equals(t.DisplayName()?.Trim(), viewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase)))
+                    if (typeDefinition.Parts.Any(t => t.Name != viewModel.Name && string.Equals(t.DisplayName()?.Trim(), viewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase)))
                     {
                         ModelState.AddModelError("DisplayName", S["A part with the same Display Name already exists."]);
                     }
@@ -959,7 +959,7 @@ namespace OrchardCore.ContentTypes.Controllers
             _contentDefinitionService.AlterTypePart(viewModel);
 
             // Refresh the local part variable in case it has been altered
-            part = _contentDefinitionManager.LoadTypeDefinition(id).Parts.FirstOrDefault(x => String.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase));
+            part = _contentDefinitionManager.LoadTypeDefinition(id).Parts.FirstOrDefault(x => string.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase));
 
             viewModel.Shape = await _contentDefinitionDisplayManager.UpdateTypePartEditorAsync(part, _updateModelAccessor.ModelUpdater);
 

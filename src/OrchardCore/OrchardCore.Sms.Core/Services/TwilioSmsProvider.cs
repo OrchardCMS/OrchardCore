@@ -32,7 +32,6 @@ public class TwilioSmsProvider : ISmsProvider
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ILogger<TwilioSmsProvider> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
-    private readonly HashSet<string> _successStatuses = new(StringComparer.OrdinalIgnoreCase) { "sent", "queued" };
     protected readonly IStringLocalizer S;
 
     public TwilioSmsProvider(
@@ -56,12 +55,12 @@ public class TwilioSmsProvider : ISmsProvider
             throw new ArgumentNullException(nameof(message));
         }
 
-        if (String.IsNullOrEmpty(message.To))
+        if (string.IsNullOrEmpty(message.To))
         {
             throw new ArgumentException("A phone number is required in order to send a message.");
         }
 
-        if (String.IsNullOrEmpty(message.Body))
+        if (string.IsNullOrEmpty(message.Body))
         {
             throw new ArgumentException("A message body is required in order to send a message.");
         }
@@ -83,19 +82,20 @@ public class TwilioSmsProvider : ISmsProvider
             {
                 var result = await response.Content.ReadFromJsonAsync<TwilioMessageResponse>(_jsonSerializerOptions);
 
-                if (result.Status != null && _successStatuses.Contains(result.Status))
+                if (string.Equals(result.Status, "sent", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(result.Status, "queued", StringComparison.OrdinalIgnoreCase))
                 {
                     return SmsResult.Success;
                 }
 
-                _logger.LogError("Twilio service is unable to send SMS messages. Error, code: {errorCode}, message: {errorMessage}", result.ErrorCode, result.ErrorMessage);
+                _logger.LogError("Twilio service was unable to send SMS messages. Error, code: {errorCode}, message: {errorMessage}", result.ErrorCode, result.ErrorMessage);
             }
 
             return SmsResult.Failed(S["SMS message was not send."]);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Twilio service is unable to send SMS messages.");
+            _logger.LogError(ex, "Twilio service was unable to send SMS messages.");
 
             return SmsResult.Failed(S["SMS message was not send. Error: {0}", ex.Message]);
         }

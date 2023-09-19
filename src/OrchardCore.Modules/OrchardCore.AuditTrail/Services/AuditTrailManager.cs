@@ -62,7 +62,7 @@ namespace OrchardCore.AuditTrail.Services
 
         public async Task RecordEventAsync<TEvent>(AuditTrailContext<TEvent> context) where TEvent : class, new()
         {
-            if (_shellSettings.IsInitializing() && String.IsNullOrEmpty(context.UserName))
+            if (_shellSettings.IsInitializing() && string.IsNullOrEmpty(context.UserName))
             {
                 var feature = _httpContextAccessor.HttpContext.Features.Get<RecipeEnvironmentFeature>();
                 if (feature != null && feature.Properties.TryGetValue(SetupConstants.AdminUsername, out var adminUsername))
@@ -96,8 +96,8 @@ namespace OrchardCore.AuditTrail.Services
                 CorrelationId = createContext.CorrelationId,
                 UserId = createContext.UserId,
                 UserName = createContext.UserName ?? "",
-                NormalizedUserName = String.IsNullOrEmpty(createContext.UserName) ? "" : _keyNormalizer.NormalizeName(createContext.UserName),
-                ClientIpAddress = String.IsNullOrEmpty(createContext.ClientIpAddress)
+                NormalizedUserName = string.IsNullOrEmpty(createContext.UserName) ? "" : _keyNormalizer.NormalizeName(createContext.UserName),
+                ClientIpAddress = string.IsNullOrEmpty(createContext.ClientIpAddress)
                     ? await GetClientIpAddressAsync()
                     : createContext.ClientIpAddress,
                 CreatedUtc = createContext.CreatedUtc ?? _clock.UtcNow

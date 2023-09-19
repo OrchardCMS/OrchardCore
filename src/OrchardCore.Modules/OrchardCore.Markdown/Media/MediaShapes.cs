@@ -1,8 +1,9 @@
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Markdown.Media
 {
+    [RequireFeatures("OrchardCore.Media")]
     public class MediaShapes : IShapeTableProvider
     {
         public void Discover(ShapeTableBuilder builder)
@@ -10,7 +11,7 @@ namespace OrchardCore.Markdown.Media
             builder.Describe("MarkdownBodyPart_Edit")
                 .OnDisplaying(displaying =>
                 {
-                    IShape editor = displaying.Shape;
+                    var editor = displaying.Shape;
 
                     if (editor.Metadata.Type == "MarkdownBodyPart_Edit__Wysiwyg")
                     {
@@ -21,7 +22,7 @@ namespace OrchardCore.Markdown.Media
             builder.Describe("MarkdownField_Edit")
                 .OnDisplaying(displaying =>
                 {
-                    IShape editor = displaying.Shape;
+                    var editor = displaying.Shape;
 
                     if (editor.Metadata.Type == "MarkdownField_Edit__Wysiwyg")
                     {

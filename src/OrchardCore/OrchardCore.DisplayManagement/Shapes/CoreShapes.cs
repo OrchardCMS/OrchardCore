@@ -54,7 +54,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
             var listTagBuilder = shape.GetTagBuilder("ul");
 
-            var itemTagName = String.IsNullOrEmpty(ItemTagName) ? "li" : ItemTagName;
+            var itemTagName = string.IsNullOrEmpty(ItemTagName) ? "li" : ItemTagName;
 
             var index = 0;
 

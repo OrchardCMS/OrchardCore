@@ -15,6 +15,7 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Workflows.Helpers;
@@ -39,6 +40,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        protected readonly dynamic New;
         protected readonly IHtmlLocalizer H;
         protected readonly IStringLocalizer S;
 
@@ -70,8 +72,6 @@ namespace OrchardCore.Workflows.Controllers
             S = stringLocalizer;
         }
 
-        private dynamic New { get; }
-
         public async Task<IActionResult> Index(long workflowTypeId, WorkflowIndexViewModel model, PagerParameters pagerParameters, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
@@ -81,7 +81,7 @@ namespace OrchardCore.Workflows.Controllers
 
             if (!Url.IsLocalUrl(returnUrl))
             {
-                returnUrl = Url.Action(nameof(Index), "WorkflowType");
+                returnUrl = Url.Action(nameof(WorkflowTypeController.Index), typeof(WorkflowTypeController).ControllerName());
             }
 
             var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
@@ -89,22 +89,15 @@ namespace OrchardCore.Workflows.Controllers
             var query = _session.QueryIndex<WorkflowIndex>()
                 .Where(x => x.WorkflowTypeId == workflowType.WorkflowTypeId);
 
-            switch (model.Options.Filter)
+            query = model.Options.Filter switch
             {
-                case WorkflowFilter.Finished:
-                    query = query.Where(x => x.WorkflowStatus == (int)WorkflowStatus.Finished);
-                    break;
-                case WorkflowFilter.Faulted:
-                    query = query.Where(x => x.WorkflowStatus == (int)WorkflowStatus.Faulted);
-                    break;
-                case WorkflowFilter.All:
-                default:
-                    break;
-            }
+                WorkflowFilter.Finished => query.Where(x => x.WorkflowStatus == (int)WorkflowStatus.Finished),
+                WorkflowFilter.Faulted => query.Where(x => x.WorkflowStatus == (int)WorkflowStatus.Faulted),
+                _ => query,
+            };
 
             query = model.Options.OrderBy switch
             {
-                WorkflowOrder.CreatedDesc => query.OrderByDescending(x => x.CreatedUtc),
                 WorkflowOrder.Created => query.OrderBy(x => x.CreatedUtc),
                 _ => query.OrderByDescending(x => x.CreatedUtc),
             };
@@ -118,8 +111,15 @@ namespace OrchardCore.Workflows.Controllers
             var pageOfItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
 
             var workflowIds = pageOfItems.Select(item => item.WorkflowId);
-            var workflows = await _session.Query<Workflow, WorkflowIndex>(item => item.WorkflowId.IsIn(workflowIds))
-                .ListAsync();
+            var workflowsQuery = _session.Query<Workflow, WorkflowIndex>(item => item.WorkflowId.IsIn(workflowIds));
+
+            workflowsQuery = model.Options.OrderBy switch
+            {
+                WorkflowOrder.Created => workflowsQuery.OrderBy(i => i.CreatedUtc),
+                _ => workflowsQuery.OrderByDescending(i => i.CreatedUtc),
+            };
+
+            var workflows = await workflowsQuery.ListAsync();
 
             var viewModel = new WorkflowIndexViewModel
             {
@@ -151,7 +151,7 @@ namespace OrchardCore.Workflows.Controllers
             return View(viewModel);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(WorkflowIndexViewModel model)
         {

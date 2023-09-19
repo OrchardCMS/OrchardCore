@@ -66,13 +66,13 @@ namespace OrchardCore.Seo.Drivers
                 // Logic is this happens last after the part settings.
                 // so if values are not set it is responsible for settings them.
 
-                string defaultImage = (metaSettings.Content.SocialMetaSettings?.DefaultSocialImage?.Paths as JArray)?.Count > 0 ? metaSettings.Content.SocialMetaSettings.DefaultSocialImage.Paths[0].ToString() : String.Empty;
-                string openGraphImage = (metaSettings.Content.SocialMetaSettings?.OpenGraphImage?.Paths as JArray)?.Count > 0 ? metaSettings.Content.SocialMetaSettings?.OpenGraphImage?.Paths[0]?.ToString() : String.Empty;
-                string twitterImage = (metaSettings.Content.SocialMetaSettings?.TwitterImage?.Paths as JArray)?.Count > 0 ? metaSettings.Content.SocialMetaSettings?.TwitterImage?.Paths[0]?.ToString() : String.Empty;
+                string defaultImage = (metaSettings.Content.SocialMetaSettings?.DefaultSocialImage?.Paths as JArray)?.Count > 0 ? metaSettings.Content.SocialMetaSettings.DefaultSocialImage.Paths[0].ToString() : string.Empty;
+                string openGraphImage = (metaSettings.Content.SocialMetaSettings?.OpenGraphImage?.Paths as JArray)?.Count > 0 ? metaSettings.Content.SocialMetaSettings?.OpenGraphImage?.Paths[0]?.ToString() : string.Empty;
+                string twitterImage = (metaSettings.Content.SocialMetaSettings?.TwitterImage?.Paths as JArray)?.Count > 0 ? metaSettings.Content.SocialMetaSettings?.TwitterImage?.Paths[0]?.ToString() : string.Empty;
 
-                string defaultAltText = (metaSettings.Content.SocialMetaSettings?.DefaultSocialImage?.MediaTexts as JArray)?.Count > 0 ? metaSettings.Content.SocialMetaSettings.DefaultSocialImage.MediaTexts[0].ToString() : String.Empty;
-                string openGraphAltText = (metaSettings.Content.SocialMetaSettings?.OpenGraphImage?.MediaTexts as JArray)?.Count > 0 ? metaSettings.Content.SocialMetaSettings?.OpenGraphImage?.MediaTexts[0]?.ToString() : String.Empty;
-                string twitterAltText = (metaSettings.Content.SocialMetaSettings?.TwitterImage?.MediaTexts as JArray)?.Count > 0 ? metaSettings.Content.SocialMetaSettings?.TwitterImage?.MediaTexts[0]?.ToString() : String.Empty;
+                string defaultAltText = (metaSettings.Content.SocialMetaSettings?.DefaultSocialImage?.MediaTexts as JArray)?.Count > 0 ? metaSettings.Content.SocialMetaSettings.DefaultSocialImage.MediaTexts[0].ToString() : string.Empty;
+                string openGraphAltText = (metaSettings.Content.SocialMetaSettings?.OpenGraphImage?.MediaTexts as JArray)?.Count > 0 ? metaSettings.Content.SocialMetaSettings?.OpenGraphImage?.MediaTexts[0]?.ToString() : string.Empty;
+                string twitterAltText = (metaSettings.Content.SocialMetaSettings?.TwitterImage?.MediaTexts as JArray)?.Count > 0 ? metaSettings.Content.SocialMetaSettings?.TwitterImage?.MediaTexts[0]?.ToString() : string.Empty;
 
                 string twitterCard = metaSettings.Content.SocialMetaSettings?.TwitterCard?.Text?.ToString();
                 string twitterCreator = metaSettings.Content.SocialMetaSettings?.TwitterCreator?.Text?.ToString();
@@ -82,7 +82,7 @@ namespace OrchardCore.Seo.Drivers
 
                 // Meta
 
-                if (String.IsNullOrEmpty(aspect.MetaDescription))
+                if (string.IsNullOrEmpty(aspect.MetaDescription))
                 {
                     aspect.MetaDescription = metaSettings.Content.SocialMetaSettings?.DefaultMetaDescription?.Text?.ToString();
                 }
@@ -91,40 +91,40 @@ namespace OrchardCore.Seo.Drivers
 
                 aspect.OpenGraphUrl = aspect.Canonical ??= absoluteUrl;
 
-                if (String.IsNullOrEmpty(aspect.OpenGraphType))
+                if (string.IsNullOrEmpty(aspect.OpenGraphType))
                 {
                     aspect.OpenGraphType = metaSettings.Content.SocialMetaSettings?.OpenGraphType?.Text?.ToString();
                 }
 
-                if (String.IsNullOrEmpty(aspect.OpenGraphTitle))
+                if (string.IsNullOrEmpty(aspect.OpenGraphTitle))
                 {
                     aspect.OpenGraphTitle = context.ContentItem.DisplayText;
                 }
 
-                if (String.IsNullOrEmpty(aspect.OpenGraphDescription))
+                if (string.IsNullOrEmpty(aspect.OpenGraphDescription))
                 {
                     aspect.OpenGraphDescription = metaSettings.Content.SocialMetaSettings?.DefaultOpenGraphDescription?.Text?.ToString();
                 }
 
-                if (String.IsNullOrEmpty(aspect.OpenGraphSiteName))
+                if (string.IsNullOrEmpty(aspect.OpenGraphSiteName))
                 {
                     aspect.OpenGraphSiteName = metaSettings.Content.SocialMetaSettings?.OpenGraphSiteName?.Text.ToString();
-                    if (String.IsNullOrEmpty(aspect.OpenGraphSiteName))
+                    if (string.IsNullOrEmpty(aspect.OpenGraphSiteName))
                     {
                         aspect.OpenGraphSiteName = siteSettings.SiteName;
                     }
                 }
 
-                if (String.IsNullOrEmpty(aspect.OpenGraphAppId))
+                if (string.IsNullOrEmpty(aspect.OpenGraphAppId))
                 {
                     aspect.OpenGraphAppId = metaSettings.Content.SocialMetaSettings?.OpenGraphAppId?.Text.ToString();
                 }
 
-                if (String.IsNullOrEmpty(aspect.OpenGraphImage))
+                if (string.IsNullOrEmpty(aspect.OpenGraphImage))
                 {
-                    if (String.IsNullOrEmpty(openGraphImage))
+                    if (string.IsNullOrEmpty(openGraphImage))
                     {
-                        if (!String.IsNullOrEmpty(defaultImage))
+                        if (!string.IsNullOrEmpty(defaultImage))
                         {
                             aspect.OpenGraphImage = urlHelper.ToAbsoluteUrl(_mediaFileStore.MapPathToPublicUrl(defaultImage));
                         }
@@ -135,9 +135,9 @@ namespace OrchardCore.Seo.Drivers
                     }
                 }
 
-                if (String.IsNullOrEmpty(aspect.OpenGraphImageAlt))
+                if (string.IsNullOrEmpty(aspect.OpenGraphImageAlt))
                 {
-                    if (String.IsNullOrEmpty(openGraphAltText))
+                    if (string.IsNullOrEmpty(openGraphAltText))
                     {
                         aspect.OpenGraphImageAlt = defaultAltText;
                     }
@@ -150,36 +150,36 @@ namespace OrchardCore.Seo.Drivers
                 // Twitter
                 aspect.TwitterUrl = aspect.Canonical ??= absoluteUrl;
 
-                if (String.IsNullOrEmpty(aspect.TwitterTitle))
+                if (string.IsNullOrEmpty(aspect.TwitterTitle))
                 {
                     aspect.TwitterTitle = context.ContentItem.DisplayText;
                 }
 
-                if (String.IsNullOrEmpty(aspect.TwitterDescription))
+                if (string.IsNullOrEmpty(aspect.TwitterDescription))
                 {
                     aspect.TwitterDescription = metaSettings.Content.SocialMetaSettings?.DefaultTwitterDescription?.Text?.ToString();
                 }
 
-                if (String.IsNullOrEmpty(aspect.TwitterCard))
+                if (string.IsNullOrEmpty(aspect.TwitterCard))
                 {
                     aspect.TwitterCard = twitterCard;
                 }
 
-                if (String.IsNullOrEmpty(aspect.TwitterSite))
+                if (string.IsNullOrEmpty(aspect.TwitterSite))
                 {
                     aspect.TwitterSite = twitterSite;
                 }
 
-                if (String.IsNullOrEmpty(aspect.TwitterCreator))
+                if (string.IsNullOrEmpty(aspect.TwitterCreator))
                 {
                     aspect.TwitterCreator = twitterCreator;
                 }
 
-                if (String.IsNullOrEmpty(aspect.TwitterImage))
+                if (string.IsNullOrEmpty(aspect.TwitterImage))
                 {
-                    if (String.IsNullOrEmpty(twitterImage))
+                    if (string.IsNullOrEmpty(twitterImage))
                     {
-                        if (!String.IsNullOrEmpty(defaultImage))
+                        if (!string.IsNullOrEmpty(defaultImage))
                         {
                             aspect.TwitterImage = urlHelper.ToAbsoluteUrl(_mediaFileStore.MapPathToPublicUrl(defaultImage));
                         }
@@ -190,9 +190,9 @@ namespace OrchardCore.Seo.Drivers
                     }
                 }
 
-                if (String.IsNullOrEmpty(aspect.TwitterImageAlt))
+                if (string.IsNullOrEmpty(aspect.TwitterImageAlt))
                 {
-                    if (String.IsNullOrEmpty(twitterAltText))
+                    if (string.IsNullOrEmpty(twitterAltText))
                     {
                         aspect.TwitterImageAlt = defaultAltText;
                     }
@@ -202,7 +202,7 @@ namespace OrchardCore.Seo.Drivers
                     }
                 }
 
-                if (String.IsNullOrEmpty(aspect.GoogleSchema))
+                if (string.IsNullOrEmpty(aspect.GoogleSchema))
                 {
                     aspect.GoogleSchema = googleSchema;
                 }

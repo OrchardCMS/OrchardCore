@@ -44,12 +44,12 @@ namespace OrchardCore.OpenId.Deployment
 
                 // The recipe step only reads these flags, and uses constants for the paths.
                 // Conversely, we export true for endpoints with a path, false for those without.
-                EnableAuthorizationEndpoint = !String.IsNullOrWhiteSpace(settings.AuthorizationEndpointPath),
-                EnableLogoutEndpoint = !String.IsNullOrWhiteSpace(settings.LogoutEndpointPath),
-                EnableTokenEndpoint = !String.IsNullOrWhiteSpace(settings.TokenEndpointPath),
-                EnableUserInfoEndpoint = !String.IsNullOrWhiteSpace(settings.UserinfoEndpointPath),
-                EnableIntrospectionEndpoint = !String.IsNullOrWhiteSpace(settings.IntrospectionEndpointPath),
-                EnableRevocationEndpoint = !String.IsNullOrWhiteSpace(settings.RevocationEndpointPath),
+                EnableAuthorizationEndpoint = !string.IsNullOrWhiteSpace(settings.AuthorizationEndpointPath),
+                EnableLogoutEndpoint = !string.IsNullOrWhiteSpace(settings.LogoutEndpointPath),
+                EnableTokenEndpoint = !string.IsNullOrWhiteSpace(settings.TokenEndpointPath),
+                EnableUserInfoEndpoint = !string.IsNullOrWhiteSpace(settings.UserinfoEndpointPath),
+                EnableIntrospectionEndpoint = !string.IsNullOrWhiteSpace(settings.IntrospectionEndpointPath),
+                EnableRevocationEndpoint = !string.IsNullOrWhiteSpace(settings.RevocationEndpointPath),
 
                 AllowAuthorizationCodeFlow = settings.AllowAuthorizationCodeFlow,
                 AllowClientCredentialsFlow = settings.AllowClientCredentialsFlow,

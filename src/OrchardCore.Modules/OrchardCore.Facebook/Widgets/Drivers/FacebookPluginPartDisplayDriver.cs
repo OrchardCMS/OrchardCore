@@ -33,9 +33,9 @@ namespace OrchardCore.Facebook.Widgets.Drivers
         {
             return Combine(
                 Initialize<FacebookPluginPartViewModel>("FacebookPluginPart", m => BuildViewModel(m, part))
-                    .Location("Detail", "Content:10"),
+                    .Location("Detail", "Content"),
                 Initialize<FacebookPluginPartViewModel>("FacebookPluginPart_Summary", m => BuildViewModel(m, part))
-                    .Location("Summary", "Content:10")
+                    .Location("Summary", "Content")
             );
         }
 
@@ -58,7 +58,7 @@ namespace OrchardCore.Facebook.Widgets.Drivers
             {
                 model.Settings = GetFacebookPluginPartSettings(part);
                 model.FacebookPluginPart = part;
-                model.Liquid = String.IsNullOrWhiteSpace(part.Liquid) ? model.Settings.Liquid : part.Liquid;
+                model.Liquid = string.IsNullOrWhiteSpace(part.Liquid) ? model.Settings.Liquid : part.Liquid;
             });
         }
 
@@ -70,7 +70,7 @@ namespace OrchardCore.Facebook.Widgets.Drivers
             }
 
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(FacebookPluginPart)));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(FacebookPluginPart)));
             return contentTypePartDefinition.GetSettings<FacebookPluginPartSettings>();
         }
 
@@ -80,9 +80,9 @@ namespace OrchardCore.Facebook.Widgets.Drivers
 
             if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid))
             {
-                if (!String.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplatemanager.Validate(viewModel.Liquid, out var errors))
+                if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplatemanager.Validate(viewModel.Liquid, out var errors))
                 {
-                    updater.ModelState.AddModelError(nameof(model.Liquid), S["The FaceBook Body doesn't contain a valid Liquid expression. Details: {0}", String.Join(" ", errors)]);
+                    updater.ModelState.AddModelError(nameof(model.Liquid), S["The FaceBook Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
                 }
                 else
                 {

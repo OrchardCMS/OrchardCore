@@ -29,7 +29,7 @@ namespace OrchardCore.Modules
         /// <param name="isApplication">Whether the Module may be considered to be the &quot;Application&quot;.</param>
         public Module(string assemblyName, bool isApplication = false)
         {
-            if (!String.IsNullOrWhiteSpace(assemblyName))
+            if (!string.IsNullOrWhiteSpace(assemblyName))
             {
                 Assembly = Assembly.Load(new AssemblyName(assemblyName));
 
@@ -98,7 +98,7 @@ namespace OrchardCore.Modules
             }
             else
             {
-                Name = Root = SubPath = String.Empty;
+                Name = Root = SubPath = string.Empty;
                 Assets = Enumerable.Empty<Asset>();
                 AssetPaths = Enumerable.Empty<string>();
                 ModuleInfo = new ModuleAttribute();
@@ -107,7 +107,7 @@ namespace OrchardCore.Modules
             _baseNamespace = Name + '.';
             _lastModified = DateTimeOffset.UtcNow;
 
-            if (!String.IsNullOrEmpty(Assembly?.Location))
+            if (!string.IsNullOrEmpty(Assembly?.Location))
             {
                 try
                 {

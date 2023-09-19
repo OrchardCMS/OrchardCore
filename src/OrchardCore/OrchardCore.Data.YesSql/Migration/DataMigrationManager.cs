@@ -292,7 +292,7 @@ namespace OrchardCore.Data.Migration
                     ? methodInfo.Name.Substring(updateFromPrefix.Length, methodInfo.Name.Length - updateFromPrefix.Length - asyncSuffix.Length)
                     : methodInfo.Name[updateFromPrefix.Length..];
 
-                if (Int32.TryParse(version, out var versionValue))
+                if (int.TryParse(version, out var versionValue))
                 {
                     return new Tuple<int, MethodInfo>(versionValue, methodInfo);
                 }

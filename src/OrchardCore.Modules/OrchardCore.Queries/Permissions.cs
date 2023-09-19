@@ -50,8 +50,8 @@ namespace OrchardCore.Queries
         public static Permission CreatePermissionForQuery(string name)
         {
             return new Permission(
-                    String.Format(_executeApi.Name, name),
-                    String.Format(_executeApi.Description, name),
+                    string.Format(_executeApi.Name, name),
+                    string.Format(_executeApi.Description, name),
                     _executeApi.ImpliedBy
                 );
         }

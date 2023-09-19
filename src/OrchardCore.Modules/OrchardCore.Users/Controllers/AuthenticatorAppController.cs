@@ -25,7 +25,7 @@ namespace OrchardCore.Users.Controllers;
 [Authorize, Admin, Feature(UserConstants.Features.AuthenticatorApp)]
 public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
 {
-    private const string _authenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&digits={3}&issuer={0}";
+    private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&digits={3}&issuer={0}";
 
     private readonly UrlEncoder _urlEncoder;
     private readonly ShellSettings _shellSettings;
@@ -147,7 +147,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
         // Load the authenticator key & QR code URI to display on the form.
         var unformattedKey = await UserManager.GetAuthenticatorKeyAsync(user);
 
-        if (String.IsNullOrEmpty(unformattedKey))
+        if (string.IsNullOrEmpty(unformattedKey))
         {
             await UserManager.ResetAuthenticatorKeyAsync(user);
             unformattedKey = await UserManager.GetAuthenticatorKeyAsync(user);
@@ -186,11 +186,11 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
     {
         var site = await SiteService.GetSiteSettingsAsync();
 
-        var issuer = String.IsNullOrWhiteSpace(site.SiteName) ? _shellSettings.Name : site.SiteName.Trim();
+        var issuer = string.IsNullOrWhiteSpace(site.SiteName) ? _shellSettings.Name : site.SiteName.Trim();
 
-        return String.Format(
+        return string.Format(
             CultureInfo.InvariantCulture,
-            _authenticatorUriFormat,
+            AuthenticatorUriFormat,
             _urlEncoder.Encode(issuer),
             _urlEncoder.Encode(displayName),
             unformattedKey,

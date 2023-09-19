@@ -25,7 +25,7 @@ namespace OrchardCore.Search.Lucene.QueryProviders
             {
                 var fieldWeightArray = field.Split('^', 2);
 
-                if (fieldWeightArray.Length > 1 && Single.TryParse(fieldWeightArray[1], out weight))
+                if (fieldWeightArray.Length > 1 && float.TryParse(fieldWeightArray[1], out weight))
                 {
                     weights.Remove(field);
                     weights.Add(fieldWeightArray[0], weight);

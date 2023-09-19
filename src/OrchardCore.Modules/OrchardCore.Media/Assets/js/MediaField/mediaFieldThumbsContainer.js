@@ -21,7 +21,7 @@ Vue.component('mediaFieldThumbsContainer', {
                             :src="buildMediaUrl(media.url, thumbSize)" \
                             :data-mime="media.mime"\
                             :style="{maxHeight: thumbSize + \'px\' , maxWidth: thumbSize + \'px\'}"/>\
-                            <i v-else class="fa-solid fa-file-o fa-lg" :data-mime="media.mime"></i>\
+                            <i v-else class="fa-regular fa-file display-1" :data-mime="media.mime"></i>\
                          </div>\
                          <div class="media-container-main-item-title card-body">\
                                 <a href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button delete-button"\
@@ -67,7 +67,7 @@ Vue.component('mediaFieldThumbsContainer', {
         self.T.noImages = $('#t-no-images').val();
     },
     methods: {
-        selectAndDeleteMedia: function (media) {            
+        selectAndDeleteMedia: function (media) {
             this.$parent.$emit('selectAndDeleteMediaRequested', media);
         },
         selectMedia: function (media) {

@@ -33,7 +33,7 @@ namespace OrchardCore.ContentFields.Settings
                 model.Source = GetSource(settings);
                 model.DisplayedContentTypes = settings.DisplayedContentTypes;
                 model.TitlePattern = settings.TitlePattern;
-                model.Stereotypes = String.Join(',', settings.DisplayedStereotypes ?? Array.Empty<string>());
+                model.Stereotypes = string.Join(',', settings.DisplayedStereotypes ?? Array.Empty<string>());
             }).Location("Content");
         }
 
@@ -86,7 +86,7 @@ namespace OrchardCore.ContentFields.Settings
 
         private void SetStereoTypes(IUpdateModel updater, string stereotypes, ContentPickerFieldSettings settings)
         {
-            if (String.IsNullOrEmpty(stereotypes))
+            if (string.IsNullOrEmpty(stereotypes))
             {
                 updater.ModelState.AddModelError(Prefix, nameof(ContentPickerFieldSettingsViewModel.Stereotypes), S["Please provide a Stereotype."]);
 

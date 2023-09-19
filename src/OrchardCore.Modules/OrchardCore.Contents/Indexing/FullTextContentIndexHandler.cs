@@ -27,7 +27,7 @@ namespace OrchardCore.Contents.Indexing
                 stringBuilder.Append(segment + " ");
             }
 
-            if (!String.IsNullOrEmpty(stringBuilder.ToString()))
+            if (!string.IsNullOrEmpty(stringBuilder.ToString()))
             {
                 context.DocumentIndex.Set(
                     IndexingConstants.FullTextKey,

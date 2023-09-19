@@ -51,7 +51,7 @@ namespace OrchardCore.Forms.Drivers
                 try
                 {
                     part.Editor = viewModel.Editor;
-                    part.Options = String.IsNullOrWhiteSpace(viewModel.Options)
+                    part.Options = string.IsNullOrWhiteSpace(viewModel.Options)
                         ? Array.Empty<SelectOption>()
                         : JsonConvert.DeserializeObject<SelectOption[]>(viewModel.Options);
                 }

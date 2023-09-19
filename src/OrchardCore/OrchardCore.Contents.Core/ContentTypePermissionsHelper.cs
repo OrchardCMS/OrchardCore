@@ -71,8 +71,8 @@ namespace OrchardCore.Contents.Security
             }
 
             return new Permission(
-                String.Format(template.Name, typeDefinition.Name),
-                String.Format(template.Description, typeDefinition.DisplayName),
+                string.Format(template.Name, typeDefinition.Name),
+                string.Format(template.Description, typeDefinition.DisplayName),
                 (template.ImpliedBy ?? Array.Empty<Permission>()).Where(t => t != null).Select(t => CreateDynamicPermission(t, typeDefinition))
             )
             {
@@ -98,8 +98,8 @@ namespace OrchardCore.Contents.Security
             }
 
             permission = new Permission(
-                String.Format(template.Name, contentType),
-                String.Format(template.Description, contentType),
+                string.Format(template.Name, contentType),
+                string.Format(template.Description, contentType),
                 (template.ImpliedBy ?? Array.Empty<Permission>()).Select(t => CreateDynamicPermission(t, contentType))
             );
 

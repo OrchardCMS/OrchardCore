@@ -118,7 +118,7 @@
                 <ul class="list-group">
                     @for (int i = 0; i < Model.LimitedContentTypes.Length; i++)
                     {
-                        var checkd = String.Equals(Model.LimitedContentTypes[i].ContentTypeName, Model.LimitedContentType);
+                        var checkd = string.Equals(Model.LimitedContentTypes[i].ContentTypeName, Model.LimitedContentType);
                         var notChecked = !checkd;
                         <li class="list-group-item d-flex row px-0">
                             @* Select content types *@

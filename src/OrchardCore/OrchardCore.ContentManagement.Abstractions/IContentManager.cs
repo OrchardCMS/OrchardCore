@@ -237,7 +237,7 @@ namespace OrchardCore.ContentManagement
             var contentItem = await contentManager.GetAsync(id, options);
 
             // It represents a contained content item
-            if (!String.IsNullOrEmpty(jsonPath))
+            if (!string.IsNullOrEmpty(jsonPath))
             {
                 var root = contentItem.Content as JObject;
                 contentItem = root.SelectToken(jsonPath)?.ToObject<ContentItem>();

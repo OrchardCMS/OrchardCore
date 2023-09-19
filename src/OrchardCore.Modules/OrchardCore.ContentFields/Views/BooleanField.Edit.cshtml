@@ -12,7 +12,7 @@
             <input asp-for="Value" type="checkbox" class="form-check-input content-preview-select" checked="@Model.Value" />
             <label class="form-check-label" asp-for="Value">
                 @(string.IsNullOrEmpty(settings.Label) ? Model.PartFieldDefinition.DisplayName() : settings.Label)
-                @if (!String.IsNullOrEmpty(settings.Hint))
+                @if (!string.IsNullOrEmpty(settings.Hint))
                 {
                     <span class="hint dashed">@settings.Hint</span>
                 }

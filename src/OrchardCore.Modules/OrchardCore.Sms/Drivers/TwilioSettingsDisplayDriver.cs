@@ -51,7 +51,7 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
         {
             model.PhoneNumber = settings.PhoneNumber;
             model.AccountSID = settings.AccountSID;
-            model.HasAuthToken = !String.IsNullOrEmpty(settings.AuthToken);
+            model.HasAuthToken = !string.IsNullOrEmpty(settings.AuthToken);
         }).Location("Content:5")
         .OnGroup(SmsSettings.GroupId);
     }
@@ -70,7 +70,7 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
 
         if (await context.Updater.TryUpdateModelAsync(model, Prefix) && model.DefaultProvider == TwilioSmsProvider.TechnicalName)
         {
-            if (String.IsNullOrWhiteSpace(model.PhoneNumber))
+            if (string.IsNullOrWhiteSpace(model.PhoneNumber))
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.PhoneNumber), S["Phone number requires a value."]);
             }
@@ -79,12 +79,12 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.PhoneNumber), S["Please provide a valid phone number."]);
             }
 
-            if (String.IsNullOrWhiteSpace(model.AccountSID))
+            if (string.IsNullOrWhiteSpace(model.AccountSID))
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.AccountSID), S["Account SID requires a value."]);
             }
 
-            if (settings.AuthToken == null && String.IsNullOrWhiteSpace(model.AuthToken))
+            if (settings.AuthToken == null && string.IsNullOrWhiteSpace(model.AuthToken))
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.AuthToken), S["Auth Token required a value."]);
             }
@@ -92,7 +92,7 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
             settings.PhoneNumber = model.PhoneNumber;
             settings.AccountSID = model.AccountSID;
 
-            if (!String.IsNullOrWhiteSpace(model.AuthToken))
+            if (!string.IsNullOrWhiteSpace(model.AuthToken))
             {
                 var protector = _dataProtectionProvider.CreateProtector(TwilioSmsProvider.ProtectorName);
 

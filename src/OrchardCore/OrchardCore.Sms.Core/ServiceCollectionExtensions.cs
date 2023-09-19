@@ -21,7 +21,7 @@ public static class ServiceCollectionExtensions
         {
             var settings = serviceProvider.GetRequiredService<IOptions<SmsSettings>>().Value;
 
-            if (!String.IsNullOrEmpty(settings.DefaultProviderName))
+            if (!string.IsNullOrEmpty(settings.DefaultProviderName))
             {
                 var smsProviderOptions = serviceProvider.GetRequiredService<IOptions<SmsProviderOptions>>().Value;
 
@@ -57,8 +57,8 @@ public static class ServiceCollectionExtensions
         return services.AddSmsProvider<TwilioSmsProvider>(TwilioSmsProvider.TechnicalName);
     }
 
-    public static IServiceCollection AddConsoleSmsProvider(this IServiceCollection services)
+    public static IServiceCollection AddLogSmsProvider(this IServiceCollection services)
     {
-        return services.AddSmsProvider<ConsoleSmsProvider>(ConsoleSmsProvider.TechnicalName);
+        return services.AddSmsProvider<LogSmsProvider>(LogSmsProvider.TechnicalName);
     }
 }
