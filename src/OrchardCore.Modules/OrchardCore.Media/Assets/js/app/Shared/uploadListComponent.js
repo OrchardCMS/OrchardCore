@@ -50,10 +50,10 @@ Vue.component('uploadList', {
         var self = this;
         var uploadInput = document.getElementById(self.uploadInputId ?? 'fileupload');
         $(uploadInput).bind('fileuploadadd', function (e, data) {
-            if (!data.files) { 
+            if (!data.files) {
                 return;
             }
-            data.files.forEach(function (newFile) {                
+            data.files.forEach(function (newFile) {
                 var alreadyInList = self.files.some(function (f) {
                     return f.name == newFile.name;
                 });
@@ -62,8 +62,8 @@ Vue.component('uploadList', {
                     self.files.push({ name: newFile.name, percentage: 0, errorMessage: '' });
                 } else {
                     console.error('A file with the same name is already on the queue:' + newFile.name);
-                }         
-            });            
+                }
+            });
         });
 
         bus.$on('removalRequest', function (fileUpload) {
@@ -88,7 +88,7 @@ Vue.component('uploadList', {
                 this.expanded = false;
             }
         },
-        clearErrors: function () {            
+        clearErrors: function () {
             this.files = this.files.filter(function (item) {
                 return item.errorMessage == '';
             });

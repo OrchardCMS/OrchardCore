@@ -1,5 +1,5 @@
 $(document).on('mediaApp:ready', function () {
-    var chunkedFileUploadId = crypto.randomUUID();
+    var chunkedFileUploadId = randomUUID();
 
     $('#fileupload')
         .fileupload({
@@ -54,5 +54,5 @@ $(document).bind('dragover', function (e) {
             window.dropZoneTimeout = null;
             dropZone.removeClass('in');
         }, 100);
-    }    
+    }
 });
