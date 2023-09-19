@@ -1,6 +1,7 @@
 using OrchardCore.Media;
 using OrchardCore.Media.Processing;
 using OrchardCore.Settings;
+using OrchardCore.Tests.Utilities;
 using SixLabors.ImageSharp.Web.Processors;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media
@@ -71,15 +72,13 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
         {
             var services = new ServiceCollection();
 
-            var mockSiteService = Mock.Of<ISiteService>(ss =>
-                ss.GetSiteSettingsAsync() == Task.FromResult(
-                    Mock.Of<ISite>(s => s.Properties == JObject.FromObject(new { MediaTokenSettings = _mediaTokenSettings }))
-                )
-            );
+            var mockSite = SiteMockHelper.GetSite(_mediaTokenSettings);
+
+            var mockSiteService = Mock.Of<ISiteService>(ss => ss.GetSiteSettingsAsync() == Task.FromResult(mockSite.Object));
 
             services.AddMemoryCache();
 
-            services.AddSingleton<ISiteService>(mockSiteService);
+            services.AddSingleton(mockSiteService);
             services.AddSingleton<IImageWebProcessor, TokenCommandProcessor>();
             services.AddSingleton<IImageWebProcessor, TokenCommandProcessor>();
             services.AddSingleton<IImageWebProcessor, ResizeWebProcessor>();
