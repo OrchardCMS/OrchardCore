@@ -25,6 +25,11 @@ html[dir="rtl"] .bootstrap-select .bs-ok-default:after {
             @extend .btn-close;
             @extend .float-end;
                 */
+            border: 0;
+            background: none;
+            box-shadow: none;
+            border-radius: 0;
+            float: right !important;
             padding-top: 0px;
             padding-right: 0px;
             background: unset;
