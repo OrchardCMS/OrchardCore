@@ -8,6 +8,18 @@ namespace OrchardCore.Settings
     // When updating class also update SiteSettingsDeploymentSource and SettingsStep.
     public class SiteSettings : DocumentEntity, ISite
     {
+        private JObject _properties = new();
+
+        public new JObject Properties
+        {
+            get => _properties;
+            set
+            {
+                _properties = value ?? new JObject();
+                _cache.Clear();
+            }
+        }
+
         public string BaseUrl { get; set; }
 
         public string Calendar { get; set; }
