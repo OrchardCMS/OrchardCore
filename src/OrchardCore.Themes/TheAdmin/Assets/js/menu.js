@@ -33,7 +33,6 @@ $(document).on("click", function (event) {
     }
 });
 
-var isCompactExplicit = (isCompactExplicit === undefined) ? false : isCompactExplicit;
 var subMenuArray = new Array();
 
 function setCompactStatus(explicit) {

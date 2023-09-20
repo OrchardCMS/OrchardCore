@@ -66,15 +66,18 @@ themeObserver.observe(document.documentElement, {
 // That state was saved to localstorage by userPreferencesPersistor.js
 // We need to apply the classes BEFORE the page is rendered.
 // That is why we use a MutationObserver instead of document.Ready().
+var isCompactExplicit = false;
 var observer = new MutationObserver(function (mutations) {
   for (var i = 0; i < mutations.length; i++) {
     for (var j = 0; j < mutations[i].addedNodes.length; j++) {
       if (mutations[i].addedNodes[j].tagName == 'BODY') {
         var body = mutations[i].addedNodes[j];
         var adminPreferences = getAdminPreferences();
-        isCompactExplicit = adminPreferences.isCompactExplicit;
-        if (adminPreferences != null && adminPreferences.leftSidebarCompact == true) {
-          body.classList.add('left-sidebar-compact');
+        if (adminPreferences) {
+          isCompactExplicit = adminPreferences.isCompactExplicit;
+          if (adminPreferences != null && adminPreferences.leftSidebarCompact == true) {
+            body.classList.add('left-sidebar-compact');
+          }
         }
         observer.disconnect();
       }
