@@ -3,7 +3,8 @@
 @import '../_variables';
 
 .hint {
-    @extend .small, .text-muted;
+    font-size: 0.875em;
+    color: #6c757d !important;
     @include word-wrap;
 }
 
@@ -13,7 +14,7 @@
         content: '\2014\00a0';
     }
 }
-
+/*
 .validation-summary-errors {
     @extend .alert, .alert-danger;
 
@@ -21,11 +22,13 @@
         margin-bottom: 0px;
     }
 }
+*/
 
 .field-validation-error {
-    @extend small;
+    color: #6c757d !important;
 }
 
+/*
 .input-validation-error {
     @extend .is-invalid;
 }
@@ -37,6 +40,7 @@
 .inline-form {
     display: inline;
 }
+*/
 
 .code,
 .form-control.code {

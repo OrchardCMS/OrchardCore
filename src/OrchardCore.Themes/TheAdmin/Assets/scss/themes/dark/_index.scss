@@ -5,25 +5,9 @@
     --oc-scrollbar-color: #76787A;
     --oc-admin-menu-bg-color: var(--bs-dark-bg);
 
-    .bg-theme {
-        background-color: rgba(var(--bs-body-bg-rgb), var(--bs-bg-opacity, 1));
-    }
-
-    .text-theme {
-        color: var(--bs-body-color);
-    }
-
-    .text-bg-theme {
-        color: var(--bs-body-color);
-        background-color: rgba(var(--bs-body-bg-rgb), var(--bs-bg-opacity, 1));
-    }
-
-    .btn-theme {
-        @extend .btn-dark;
-    }
-
     @import "badge";
     @import "bootstrap-select";
     @import "card";
     @import "modal";
+    @import "theme_helpers";
 }

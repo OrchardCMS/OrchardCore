@@ -1,7 +1,5 @@
 /* Import _variables before Bootstrap to allow overriding Bootstrap variables */
 @import 'variables';
-@import '../../node_modules/bootstrap/scss/bootstrap';
-
 
 @import 'components/layout';
 @import 'components/action-bar';

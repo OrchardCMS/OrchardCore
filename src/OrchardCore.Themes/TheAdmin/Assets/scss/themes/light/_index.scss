@@ -1,24 +1,8 @@
 /* The light theme is also the default theme. */
 /* Do not wrap the these classes for the light theme specific. */
 
-.bg-theme {
-    background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity, 1));
-}
-
-.text-theme {
-    color: var(--bs-body-color);
-}
-
-.text-bg-theme {
-    color: var(--bs-body-color);
-    background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity, 1));
-}
-
-.btn-theme {
-    @extend .btn-light;
-}
-
 @import "badge";
 @import "bootstrap-select";
 @import "card";
 @import "modal";
+@import "theme_helpers";

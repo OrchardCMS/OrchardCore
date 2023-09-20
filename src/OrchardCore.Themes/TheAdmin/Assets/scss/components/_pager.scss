@@ -1,9 +1,13 @@
 // Pager ========================
+ul.pager {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    justify-content: center;
+}
+/*
 
 ul.pager {
     @extend .pagination;
-    margin-top: 1rem;
-    justify-content: center;
 }
 
 ul.pager li {
@@ -13,3 +17,4 @@ ul.pager li {
 ul.pager li a {
     @extend .page-link;
 }
+    */

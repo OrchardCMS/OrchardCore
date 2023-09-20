@@ -2,12 +2,10 @@
 @import '../mixins/_cursors';
 @import '../../../node_modules/bootstrap/scss/mixins/_breakpoints';
 
-
 body {
     margin-bottom: var(--oc-footer-height);
-    cursor: default;
     height: 100%;
-    font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    /*font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";*/
 }
 
 @include cursor-class(move);

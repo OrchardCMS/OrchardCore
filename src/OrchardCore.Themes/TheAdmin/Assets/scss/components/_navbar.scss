@@ -1,7 +1,6 @@
 @import '../../../node_modules/bootstrap/scss/mixins/_breakpoints';
 
 .ta-navbar-top {
-    @extend .navbar, .navbar-expand-md, .fixed-top;
     border-bottom: var(--oc-border-content);
     z-index: var(--oc-top-nav-zindex);
     height: var(--oc-top-nav-height);
@@ -56,7 +55,6 @@
 }
 
 .ta-navbar-brand {
-    @extend .navbar-brand;
     white-space: nowrap;
     transition: width 0.2s ease-in-out;
 

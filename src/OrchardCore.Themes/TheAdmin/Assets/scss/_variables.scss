@@ -1,6 +1,5 @@
 // Global variables to override Bootstrap variables.
-// Because !default means that a variable is not assigned if it already contains a value,
-// we alter the variable before importing boostrap as _variables.scss will use !default
+/* IMPORTANT: Never import Bootstrap directly into the theme. TheAdmin.css will depend on Bootstrap, but we never want to compile it. */
 @import '../../node_modules/bootstrap/scss/_functions';
 @import '../../node_modules/bootstrap/scss/_variables';
 

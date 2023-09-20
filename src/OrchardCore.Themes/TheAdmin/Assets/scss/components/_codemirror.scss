@@ -1,6 +1,6 @@
 .CodeMirror {
     height: auto;
-    border: 1px solid #ddd;
+    border: var(--bs-border-width, 1px) var(--bs-border-style, solid) var(--bs-border-color, #ccc);
 }
 
 .CodeMirror-fullscreen {
