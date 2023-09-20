@@ -2,9 +2,6 @@
 // That state was saved to localstorage by userPreferencesPersistor.js
 // We need to apply the classes BEFORE the page is rendered.
 // That is why we use a MutationObserver instead of document.Ready().
-
-let isCompactExplicit = false;
-
 const observer = new MutationObserver(function (mutations) {
     for (let i = 0; i < mutations.length; i++) {
         for (let j = 0; j < mutations[i].addedNodes.length; j++) {
@@ -13,8 +10,7 @@ const observer = new MutationObserver(function (mutations) {
                 let body = mutations[i].addedNodes[j];
                 let adminPreferences = getAdminPreferences();
 
-                isCompactExplicit = adminPreferences.isCompactExplicit == true;
-
+                isCompactExplicit = adminPreferences.isCompactExplicit;
                 if (adminPreferences != null && adminPreferences.leftSidebarCompact == true) {
                     body.classList.add('left-sidebar-compact');
                 }

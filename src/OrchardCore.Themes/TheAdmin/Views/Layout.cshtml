@@ -4,18 +4,17 @@
 @using OrchardCore.Themes.Services
 @using OrchardCore.Users.Models
 
-@inject DarkModeService DarkModeService
+@inject ThemeTogglerService ThemeTogglerService
 @inject IDisplayManager<UserMenu> DisplayManager
 @inject IUpdateModelAccessor UpdateModelAccessor
 @{
     var adminSettings = Site.As<AdminSettings>();
-    var darkMode = await DarkModeService.IsDarkModeAsync();
 
     // Branding is pre-rendered to allow resource injection
     var brandingHtml = await DisplayAsync(await New.AdminBranding());
 }
 <!DOCTYPE html>
-<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="@DarkModeService.CurrentTheme" data-tenant="@DarkModeService.CurrentTenant" data-darkmode="@adminSettings.DisplayDarkMode">
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="@await ThemeTogglerService.CurrentTheme()" data-tenant="@ThemeTogglerService.CurrentTenant">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
@@ -54,7 +53,7 @@
                     <div class="d-flex align-items-end">
                         <ul class="navbar-nav user-top-navbar flex-row">
                             @await RenderSectionAsync("NavbarTop", required: false)
-                            @if (adminSettings.DisplayDarkMode)
+                            @if (adminSettings.DisplayThemeToggler)
                             {
                                 <li class="nav-item">
                                     <div class="dropdown">

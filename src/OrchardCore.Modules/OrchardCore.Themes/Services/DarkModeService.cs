@@ -9,6 +9,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Themes.Services
 {
+    [Obsolete("This class is obsolete and should no longer be used. Instead you may use ThemeTogglerService")]
     public class DarkModeService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -34,7 +35,7 @@ namespace OrchardCore.Themes.Services
             var adminSettings = (await _siteService.GetSiteSettingsAsync()).As<AdminSettings>();
             var cookieName = $"{CurrentTenant}-adminPreferences";
 
-            if (adminSettings.DisplayDarkMode)
+            if (adminSettings.DisplayThemeToggler)
             {
                 if (!string.IsNullOrWhiteSpace(_httpContextAccessor.HttpContext.Request.Cookies[cookieName]))
                 {
