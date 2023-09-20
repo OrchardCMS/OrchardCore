@@ -49,13 +49,6 @@ body {
     -o-transition: none !important;
 }
 
-/* Is .auth-wrapper still needed? */
-.auth-wrapper {
-    width: 100%;
-    max-width: 800px;
-    margin: auto;
-}
-
 // END OF LAYOUT
 
 // Sortable
@@ -64,11 +57,6 @@ body {
     min-height: $font-size-base;
 }
 
-/*
-svg {
-    vertical-align: -.125em;
-}
-    */
 .unset {
     all: unset;
 }

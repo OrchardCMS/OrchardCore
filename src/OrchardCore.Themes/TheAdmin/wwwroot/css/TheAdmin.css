@@ -90,22 +90,10 @@ body {
   -o-transition: none !important;
 }
 
-/* Is .auth-wrapper still needed? */
-.auth-wrapper {
-  width: 100%;
-  max-width: 800px;
-  margin: auto;
-}
-
 .ui-sortable {
   min-height: 1rem;
 }
 
-/*
-svg {
-    vertical-align: -.125em;
-}
-    */
 .unset {
   all: unset;
 }
@@ -722,32 +710,10 @@ html[dir=rtl] .bootstrap-select .bs-ok-default:after {
   content: "— ";
 }
 
-/*
-.validation-summary-errors {
-    @extend .alert, .alert-danger;
-
-    ul {
-        margin-bottom: 0px;
-    }
-}
-*/
 .field-validation-error {
   color: #6c757d !important;
 }
 
-/*
-.input-validation-error {
-    @extend .is-invalid;
-}
-
-.has-validation-error {
-    @extend .is-invalid;
-}
-
-.inline-form {
-    display: inline;
-}
-*/
 .code,
 .form-control.code {
   font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -813,27 +779,6 @@ input[type=password]::-ms-clear {
   border-color: var(--bs-border-color) !important;
 }
 
-/*
-.col-xsmall {
-    @extend .col-8, .col-sm-4, .col-md-3, .col-lg-2, .col-xl-1;
-}
-
-.col-small {
-    @extend .col-12, .col-sm-9, .col-md-6, .col-lg-3, .col-xl-3;
-}
-
-.col-medium {
-    @extend .col-12, .col-sm-12, .col-md-10, .col-lg-8, .col-xl-6;
-}
-
-.col-large {
-    @extend .col-12, .col-sm-12, .col-md-12, .col-lg-12, .col-xl-9;
-}
-
-.col-xlarge {
-    @extend .col-12, .col-sm-12, .col-md-12, .col-lg-12, .col-xl-12;
-}
-*/
 .ta-col-grouping.col-xs .col-xs {
   flex: 0 0 100%;
   max-width: 100%;
@@ -7899,40 +7844,11 @@ input[type=password]::-ms-clear {
   border-top-width: 0;
 }
 
-.ta-content-login {
-  margin-left: 0 !important;
-}
-
-.auth-form label {
-  display: block;
-}
-
-/*
-.message {
-    @extend .alert;
-}
-
-.message-success {
-    @extend .alert-success;
-}
-
-.message-information {
-    @extend .alert-info;
-}
-
-.message-warning {
-    @extend .alert-warning;
-}
-
-.message-error {
-    @extend .alert-danger;
-}
-    */
 div.editor-widget.find-widget .button.codicon {
   background-color: transparent;
   border-color: transparent;
   display: flex;
-  color: rgb(97, 97, 97); /* TODO make this a variable */
+  /*color: rgb(97,97,97);*/
   box-shadow: none;
 }
 div.editor-widget.find-widget .button.codicon:focus {
@@ -8383,20 +8299,6 @@ ul.pager {
   justify-content: center;
 }
 
-/*
-
-ul.pager {
-    @extend .pagination;
-}
-
-ul.pager li {
-    @extend .page-item;
-}
-
-ul.pager li a {
-    @extend .page-link;
-}
-    */
 /* IMPORTANT: Never import Bootstrap directly into the theme. TheAdmin.css will depend on Bootstrap, but we never want to compile it. */
 :root {
   --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
@@ -9263,11 +9165,6 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
   z-index: 1050;
 }
 
-/*
-.field-validation-error, .has-validation-error {
-    @extend .text-danger;
-}
-    */
 span.field-validation-error {
   width: 100%;
 }

@@ -90,7 +90,7 @@
                             var showEnable = !feature.Descriptor.EnabledByDependencyOnly && !missingDependencies.Any() && featureId != "OrchardCore.Setup" && featureId != "OrchardCore.AutoSetup";
 
                             <li class="list-group-item" data-filter-value="@categoryName @dependenciesNames @featureName">
-                                <div class="row  d-flex align-items-center">
+                                <div class="row g-0 d-flex align-items-center">
                                     <div class="col-md-11">
                                         @* Display the checkbox ?*@
                                         @if ((showEnable && !feature.IsEnabled) || (showDisable && feature.IsEnabled))

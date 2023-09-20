@@ -2,9 +2,7 @@
 @using OrchardCore.Themes.Services;
 
 @inject ThemeTogglerService ThemeTogglerService
-@{
-    var adminSettings = Site.As<AdminSettings>();
-}
+
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="@await ThemeTogglerService.CurrentTheme()" data-tenant="@ThemeTogglerService.CurrentTenant">
 <head>
@@ -14,16 +12,30 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <link type="image/x-icon" rel="shortcut icon" href="~/TheAdmin/favicon.ico" />
 
+    <!-- This script can't wait till the footer -->
+    <script asp-name="admin-head" version="1" at="Head"></script>
+
     <!-- Bootstrap CSS -->
-    <style asp-name="admin" version="1"></style>
+    <style asp-name="bootstrap" version="5"></style>
 
     <script asp-name="font-awesome" at="Foot" version="6"></script>
-    <script asp-name="font-awesome-v4-shims" at="Foot" version="6"></script>
 
     <resources type="Header" />
+    @await RenderSectionAsync("HeadMeta", required: false)
+    <style>
+        body, html {
+            height: 100%;
+        }
+
+        .auth-wrapper {
+            width: 100%;
+            max-width: 800px;
+            margin: auto;
+        }
+    </style>
 </head>
 <body>
-    <div class="ta-content ta-content-login">
+    <div class="d-flex align-items-center justify-content-center h-100">
         @await RenderSectionAsync("Header", required: false)
         @await RenderSectionAsync("Messages", required: false)
 

@@ -14,33 +14,10 @@
         content: '\2014\00a0';
     }
 }
-/*
-.validation-summary-errors {
-    @extend .alert, .alert-danger;
-
-    ul {
-        margin-bottom: 0px;
-    }
-}
-*/
 
 .field-validation-error {
     color: #6c757d !important;
 }
-
-/*
-.input-validation-error {
-    @extend .is-invalid;
-}
-
-.has-validation-error {
-    @extend .is-invalid;
-}
-
-.inline-form {
-    display: inline;
-}
-*/
 
 .code,
 .form-control.code {
