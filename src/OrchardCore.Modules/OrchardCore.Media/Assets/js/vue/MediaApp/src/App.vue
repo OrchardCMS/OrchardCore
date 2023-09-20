@@ -461,7 +461,7 @@ export default {
 
             let urlValue = this.basePath + this.$props.uploadFilesUrl;
 
-            return urlValue + (urlValue.indexOf('?') == -1 ? '?' : '&') + "path=" + encodeURIComponent(this.selectedFolder.path) + '&extensions=jpg';
+            return urlValue + (urlValue.indexOf('?') == -1 ? '?' : '&') + "path=" + encodeURIComponent(this.selectedFolder.path);
         },
         selectRoot: function () {
             this.selectedFolder = this.root;
