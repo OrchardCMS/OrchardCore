@@ -14,15 +14,20 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 /* import specific icons */
 import { fas } from '@fortawesome/free-solid-svg-icons'
+import { createVfm } from 'vue-final-modal'
+import 'vue-final-modal/style.css'
 
 const emitter = mitt();
 const mountEl = document.querySelector("#mediaApp") as HTMLElement | null;
+const vfm = createVfm();
 
 /* add icons to the library */
-library.add(fas)
+library.add(fas);
 
-const app = createApp(App, { ...mountEl?.dataset })
-app.component('fa-icon', FontAwesomeIcon)
+const app = createApp(App, { ...mountEl?.dataset });
+app.component('fa-icon', FontAwesomeIcon);
 app.config.globalProperties.emitter = emitter;
 
-app.mount('#mediaApp')
+app.use(vfm);
+app.mount('#mediaApp');
+export default emitter

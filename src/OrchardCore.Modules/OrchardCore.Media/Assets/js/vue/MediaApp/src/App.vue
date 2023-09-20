@@ -14,7 +14,8 @@
         <div id="mediaContainer" class="align-items-stretch">
             <div id="navigationApp" class="media-container-navigation m-0 p-0" v-cloak>
                 <ol id="folder-tree">
-                    <folder :model="root" :base-path="basePath" ref="rootFolder" :selected-in-media-app="selectedFolder" :level="1">
+                    <folder :model="root" :t="t" :base-path="basePath" ref="rootFolder" :selected-in-media-app="selectedFolder"
+                        :level="1">
                     </folder>
                 </ol>
             </div>
@@ -134,6 +135,9 @@ import MediaItemsGridComponent from './components/mediaItemsGridComponent.vue';
 import MediaItemsTableComponent from './components/mediaItemsTableComponent.vue';
 import PagerComponent from './components/pagerComponent.vue';
 import DragDropThumbnail from './assets/drag-thumbnail.png';
+import { ModalsContainer, useModal } from 'vue-final-modal'
+import ModalConfirm from './components/ModalConfirm.vue'
+
 import "bootstrap/dist/css/bootstrap.min.css" // TODO remove
 
 const debug = dbg("oc:media-app");
@@ -145,6 +149,7 @@ export default {
         MediaItemsGrid: MediaItemsGridComponent,
         MediaItemsTable: MediaItemsTableComponent,
         Pager: PagerComponent,
+        ModalsContainer: ModalsContainer,
     },
     name: "mediaApp",
     props: {
@@ -387,10 +392,6 @@ export default {
     mounted: function () {
         this.$refs.rootFolder.toggle();
 
-
-
-
-
         var chunkedFileUploadId = crypto.randomUUID();
 
         $('#fileupload')
@@ -527,7 +528,7 @@ export default {
                 return;
             }
 
-            confirmDialog({
+            this.confirmDialog({
                 ...$("#deleteFolder").data(), callback: function (resp) {
                     if (resp) {
                         $.ajax({
@@ -548,18 +549,39 @@ export default {
             });
         },
         createFolder: function () {
-            document.getElementById('createFolderModal-errors').textContent = "";
+            //document.getElementById('createFolderModal-errors').empty();
             //modal.show();
             let createFolderModalInput = document.querySelector('#createFolderModal .modal-body input');
             createFolderModalInput.value = "";
             createFolderModalInput.focus();
         },
-        renameMedia: function (media) {
-            $('#renameMediaModal-errors').empty();
-            let modal = bootstrap.Modal.getOrCreateInstance($('#renameMediaModal'));
-            modal.show();
-            $('#old-item-name').val(media.name);
-            $('#renameMediaModal .modal-body input').val(media.name).focus();
+        renameMedia: function (element) {
+            $('#renameMediaModal-errors').empty(); // TODO use a slot
+
+            let self = this;
+            let newName = element.newName;
+            let media = element.media;
+
+            debug("Rename media", newName, newName);
+
+            let oldPath = media.url.replace('/media/', ''); // TODO make this better
+            let newPath = oldPath.replace(media.name, newName);
+
+            axios({
+                method: 'post',
+                headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                url: self.$props.basePath + self.$props.renameMediaUrl + "?oldPath=" + encodeURIComponent(oldPath) + "&newPath=" + encodeURIComponent(newPath),
+            })
+                .then((response) => {
+                    this.emitter.emit('mediaRenamed', { newName, newPath, oldPath });
+                })
+                .catch((error) => {
+                    $('#renameMediaModal-errors').empty();
+                    $('<div class="alert alert-danger" role="alert"></div>').text(error.message).appendTo($('#renameMediaModal-errors'));
+                });
+
+            $('#old-item-name').val(media.name); // TODO remove probably
+            $('#renameMediaModal .modal-body input').val(media.name).focus(); // TODO remove probably
         },
         selectAndDeleteMedia: function (media) {
             //this.deleteMedia();
@@ -572,7 +594,7 @@ export default {
                 return;
             }
 
-            confirmDialog({
+            this.confirmDialog({
                 ...$("#deleteMedia").data(), callback: function (resp) {
                     if (resp) {
                         let paths = [];
@@ -608,33 +630,28 @@ export default {
         deleteMediaItem: function (media) {
             let self = this;
             if (!media) {
+                debug("Cannot delete null media item", media);
                 return;
             }
 
-            this.confirmDialog({
-                ...$("#deleteMedia").data(), callback: function (resp) {
-                    if (resp) {
-                        $.ajax({
-                            url: self.$props.basePath + self.$props.deleteMediaUrl + "?path=" + encodeURIComponent(media.mediaPath),
-                            method: 'POST',
-                            data: {
-                                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
-                            },
-                            success: function (data) {
-                                let index = self.mediaItems && self.mediaItems.indexOf(media)
-                                if (index > -1) {
-                                    self.mediaItems.splice(index, 1);
-                                    self.emitter.emit('mediaDeleted', media)
-                                }
-                                //self.selectedMedia = null;
-                            },
-                            error: function (error) {
-                                console.error(error.responseText);
-                            }
-                        });
+            debug("delete media item", media);
+
+            axios({
+                method: 'post',
+                headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                url: self.$props.basePath + self.$props.deleteMediaUrl + "?path=" + encodeURIComponent(media.mediaPath)
+            })
+                .then((response) => {
+                    let index = self.mediaItems && self.mediaItems.indexOf(media)
+                    if (index > -1) {
+                        self.mediaItems.splice(index, 1);
+                        self.emitter.emit('mediaDeleted', media)
                     }
-                }
-            });
+                })
+                .catch((e) => {
+                    debug('deleteMediaItem: error deleting media item:', media, e);
+                    console.error(e);
+                });
         },
         handleDragStart: function (media, e) {
             // first part of move media to folder:
@@ -672,7 +689,7 @@ export default {
                 this.sortBy = newSort;
             }
         },
-        confirmDialog: function ({callback, ...options}) {
+        confirmDialog: function ({ callback, ...options }) {
             const defaultOptions = $('#confirmRemoveModalMetadata').data();
             const { title, message, okText, cancelText, okClass, cancelClass } = $.extend({}, defaultOptions, options);
 

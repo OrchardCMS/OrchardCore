@@ -33,9 +33,13 @@ public class MediaJSLocalizer: IJSLocalizer
             dictionary.Add("DeleteFolderTitle", S["Delete media folder"].Value);
             dictionary.Add("DeleteFolderMessage", S["Are you sure you want to delete this folder?"].Value);
             dictionary.Add("DeleteMediaTitle", S["Delete media"].Value);
-            dictionary.Add("DeleteMediaMessage", S["Are you sure you want to delete these media items?"].Value);
+            dictionary.Add("DeleteMediaMessage", S["Are you sure you want to delete this/these media item(s)?"].Value);
+            dictionary.Add("RenameMediaTitle", S["Rename item"].Value);
+            dictionary.Add("RenameMediaMessage", S["New name"].Value);
             dictionary.Add("MoveMediaTitle", S["Move media"].Value);
             dictionary.Add("MoveMediaMessage", S["Are you sure you want to move the selected media to this folder?"].Value);
+            dictionary.Add("CreateFolderTitle", S["Create folder"].Value);
+            dictionary.Add("CreateFolderMessage", S["Folder name"].Value);
             dictionary.Add("SameFolderMessage", S["The media is already on this folder"].Value);
             dictionary.Add("EditButton", S["Edit"].Value);
             dictionary.Add("DeleteButton", S["Delete"].Value);

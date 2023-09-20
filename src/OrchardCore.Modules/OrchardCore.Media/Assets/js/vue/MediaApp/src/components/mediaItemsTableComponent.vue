@@ -44,10 +44,24 @@
                         <span class="break-word"> {{ media.name }} </span>
                         <div class="buttons-container">
                             <a href="javascript:;" class="btn btn-link btn-sm me-1 edit-button"
-                                v-on:click.stop="renameMedia(media)"> {{ t.EditButton }} </a>
+                                @click="() => openModal(media, 'rename')"> {{ t.EditButton }}
+                                <ModalRenameConfirm :modal-name="getModalName(media.name, 'rename')" :file-name="media.name"
+                                    :title="t.RenameMediaTitle" @confirm="(fileName) => confirm(media, 'rename', fileName)">
+                                    <div>
+                                        <label>{{ t.RenameMediaMessage }}</label>
+                                    </div>
+                                </ModalRenameConfirm>
+                            </a>
                             <a href="javascript:;" class="btn btn-link btn-sm delete-button"
-                                v-on:click.stop="deleteMedia(media)"> {{ t.DeleteButton }} </a>
-                            <a :href="basePath + media.url" target="_blank" class="btn btn-link btn-sm view-button"> {{ t.ViewButton }}
+                                @click="() => openModal(media, 'delete')"> {{ t.DeleteButton }}
+                                <ModalConfirm :modal-name="getModalName(media.name, 'delete')" :title="t.DeleteMediaTitle"
+                                    @confirm="() => confirm(media, 'delete', '')">
+                                    <p>{{ t.DeleteMediaMessage }}</p>
+                                    <p>{{ media.name }}</p>
+                                </ModalConfirm>
+                            </a>
+                            <a :href="basePath + media.url" target="_blank" class="btn btn-link btn-sm view-button"> {{
+                                t.ViewButton }}
                             </a>
                         </div>
                     </div>
@@ -56,7 +70,8 @@
                     <div class="text-col"> {{ printDateTime(media.lastModify) }} </div>
                 </td>
                 <td>
-                    <div class="text-col optional-col"> {{ isNaN(media.size) ? 0 : Math.round(media.size / 1024) }} KB</div>
+                    <div class="text-col optional-col"> {{ isNaN(media.size) ? 0 : Math.round(media.size / 1024) }} KB
+                    </div>
                 </td>
                 <td>
                     <div class="text-col optional-col">{{ media.mime }}</div>
@@ -66,18 +81,28 @@
     </table>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
+import dbg from 'debug';
+import { useVfm } from 'vue-final-modal'
+import ModalConfirm from './ModalConfirm.vue'
+import ModalRenameConfirm from './ModalRenameConfirm.vue'
 import SortIndicatorComponent from './sortIndicatorComponent.vue';
+import { IMedia } from '../interfaces/interfaces';
 
-export default {
+const debug = dbg("oc:media-app");
+
+export default defineComponent({
     components: {
+        ModalConfirm: ModalConfirm,
+        ModalRenameConfirm: ModalRenameConfirm,
         SortIndicator: SortIndicatorComponent,
     },
     name: "media-items-table",
     props: {
         sortBy: String,
         sortAsc: Boolean,
-        filteredMediaItems: Array,
+        filteredMediaItems: Array<IMedia>,
         selectedMedias: Array,
         thumbSize: Number,
         basePath: String,
@@ -86,22 +111,6 @@ export default {
             required: true,
         }
     },
-/*     data() {
-        return {
-            T: {}
-        }
-    }, */
-/*     created: function () {
-        let self = this;
-        self.t.imageHeader = (<HTMLInputElement>document.getElementById('t-image-header'))?.value;
-        self.t.nameHeader = (<HTMLInputElement>document.getElementById('t-name-header'))?.value;
-        self.t.lastModifyHeader = (<HTMLInputElement>document.getElementById('t-lastModify-header'))?.value;
-        self.t.sizeHeader = (<HTMLInputElement>document.getElementById('t-size-header'))?.value;
-        self.t.typeHeader = (<HTMLInputElement>document.getElementById('t-type-header'))?.value;
-        self.t.editButton = (<HTMLInputElement>document.getElementById('t-edit-button'))?.value;
-        self.t.deleteButton = (<HTMLInputElement>document.getElementById('t-delete-button'))?.value;
-        self.t.viewButton = (<HTMLInputElement>document.getElementById('t-view-button'))?.value;
-    }, */
     methods: {
         isMediaSelected: function (media) {
             let result = this.selectedMedias?.some(function (element) {
@@ -118,8 +127,8 @@ export default {
         toggleSelectionOfMedia: function (media) {
             this.emitter.emit('mediaToggleRequested', media);
         },
-        renameMedia: function (media) {
-            this.emitter.emit('renameMediaRequested', media);
+        renameMedia: function (media, newName) {
+            this.emitter.emit('renameMediaRequested', { media, newName });
         },
         deleteMedia: function (media) {
             this.emitter.emit('deleteMediaRequested', media);
@@ -130,7 +139,28 @@ export default {
         printDateTime: function (datemillis) {
             let d = new Date(datemillis);
             return d.toLocaleString();
-        }
+        },
+        getModalName: function (name: string, action: string) {
+            return action + "-media-item-table-" + name;
+        },
+        openModal: function (media: IMedia, action: string) {
+            const uVfm = useVfm();
+
+            uVfm.open(this.getModalName(media.name, action));
+        },
+        confirm: function (media: IMedia, action: string, newName: string) {
+            const uVfm = useVfm();
+
+            if (action == "delete") {
+                this.deleteMedia(media);
+            }
+            else if (action == "rename") {
+                debug("Confirm media rename:", newName);
+                this.renameMedia(media, newName);
+            }
+
+            uVfm.close(this.getModalName(media.name, action));
+        },
     }
-};
+});
 </script>

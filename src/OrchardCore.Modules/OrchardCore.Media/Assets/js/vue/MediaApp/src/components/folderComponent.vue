@@ -9,24 +9,44 @@
                 <div class="folder-name ms-2">{{ model?.name }}</div>
                 <div class="btn-group folder-actions">
                     <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="createFolder"
-                        v-if="isSelected || isRoot"><fa-icon icon="fas fa-plus"></fa-icon></a>
+                        v-if="isSelected || isRoot"><fa-icon icon="fas fa-plus"></fa-icon>
+                        <ModalConfirm :modal-name="getModalName('folder', 'create')" :title="t.CreateFolderTitle"
+                            @confirm="() => confirm('create')">
+                            <p>{{ t.CreateFolderMessage }}</p>
+                        </ModalConfirm>
+                    </a>
                     <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="deleteFolder"
-                        v-if="isSelected && !isRoot"><fa-icon icon="fas fa-trash"></fa-icon></a>
+                        v-if="isSelected && !isRoot"><fa-icon icon="fas fa-trash"></fa-icon>
+                        <ModalConfirm :modal-name="getModalName('folder', 'delete')" :title="t.DeleteFolderTitle"
+                            @confirm="() => confirm('delete')">
+                            <p>{{ t.DeleteFolderMessage }}</p>
+                        </ModalConfirm>
+                    </a>
                 </div>
             </a>
         </div>
         <ol v-show="open">
-            <folder v-for="folder in children" :key="folder.path" :model="folder"
+            <folder v-for="folder in children" :base-path="basePath" :t="t" :key="folder.path" :model="folder"
                 :selected-in-media-app="selectedInMediaApp" :level="(level ? level : 0) + 1">
             </folder>
         </ol>
     </li>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 import axios from 'axios';
+import dbg from 'debug';
+import { useVfm } from 'vue-final-modal'
+import ModalConfirm from './ModalConfirm.vue'
+import { IMedia } from '../interfaces/interfaces';
 
-export default {
+const debug = dbg("oc:media-app");
+
+export default defineComponent({
+    components: {
+        ModalConfirm: ModalConfirm,
+    },
     name: "folder",
     props: {
         model: Object,
@@ -36,6 +56,10 @@ export default {
             type: String,
             required: true
         },
+        t: {
+            type: Object,
+            required: true,
+        }
     },
     data() {
         return {
@@ -44,7 +68,7 @@ export default {
             parent: null,
             isHovered: false,
             padding: 0,
-            getFoldersUrl: document.getElementById('mediaApp').dataset.getFoldersUrl
+            getFoldersUrl: document.getElementById('mediaApp')?.dataset.getFoldersUrl
         }
     },
     computed: {
@@ -85,7 +109,7 @@ export default {
                 if (self.children !== null) {
                     self.children.push(folder);
                 }
-                
+
                 folder.parent = self.model;
                 self.emitter.emit('folderAdded', folder);
             }
@@ -123,7 +147,7 @@ export default {
         },
         loadChildren: function () {
             let self = this;
-            
+
             if (this.open == false) {
                 this.open = true;
             }
@@ -194,9 +218,30 @@ export default {
                                 });
                             }
                         }}); */
-        }
+        },
+        getModalName: function (name: String, action: String) {
+            return action + "-media-item-table-" + name;
+        },
+        openModal: function (media: IMedia, action: string) {
+            const uVfm = useVfm();
+
+            uVfm.open(this.getModalName(media.name, action));
+        },
+        confirm: function (action: String) {
+            const uVfm = useVfm();
+
+            if (action == "delete") {
+                this.deleteFolder();
+            }
+            else if (action == "create") {
+                //debug("Confirm folder create:", newName);
+                this.createFolder();
+            }
+
+            uVfm.close(this.getModalName('folder', action));
+        },
     }
-}
+});
 </script>
 
 
