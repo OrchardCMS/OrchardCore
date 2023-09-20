@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Routing;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Documents;
 using OrchardCore.Entities;
 
@@ -72,7 +73,10 @@ namespace OrchardCore.Settings
         {
             var name = typeof(T).Name;
 
-            this.Put(name, settings);
+            if (settings is not null)
+            {
+                this.Put(name, settings);
+            }
 
             _cache.Remove(name);
 
