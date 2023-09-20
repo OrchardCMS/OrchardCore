@@ -101,520 +101,6 @@
   });
 }(jQuery);
 /* ===========================================================
- * trumbowyg.base64.js v1.0
- * Base64 plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Cyril Biencourt (lizardK)
- */
-
-(function ($) {
-  'use strict';
-
-  var isSupported = function isSupported() {
-    return typeof FileReader !== 'undefined';
-  };
-  var isValidImage = function isValidImage(type) {
-    return /^data:image\/[a-z]?/i.test(type);
-  };
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        base64: 'Image as base64',
-        file: 'File',
-        errFileReaderNotSupported: 'FileReader is not supported by your browser.',
-        errInvalidImage: 'Invalid image file.'
-      },
-      az: {
-        base64: 'base64 olaraq şəkil',
-        file: 'Fayl',
-        errFileReaderNotSupported: 'FileReader brauzeriniz tərəfindən dəstəklənmir.',
-        errInvalidImage: 'Yanlış şəkil faylı.'
-      },
-      by: {
-        base64: 'Выява (фармат base64)',
-        file: 'Файл',
-        errFileReaderNotSupported: 'FileReader не падтрымліваецца вашым браўзэрам.',
-        errInvalidImage: 'Несапраўдны файл выявы.'
-      },
-      cs: {
-        base64: 'Vložit obrázek',
-        file: 'Soubor'
-      },
-      da: {
-        base64: 'Billede som base64',
-        file: 'Fil',
-        errFileReaderNotSupported: 'FileReader er ikke understøttet af din browser.',
-        errInvalidImage: 'Ugyldig billedfil.'
-      },
-      et: {
-        base64: 'Pilt base64 formaadis',
-        file: 'Fail',
-        errFileReaderNotSupported: 'Teie veebilehitseja ei toeta FileReader funktsiooni.',
-        errInvalidImage: 'Vigane pildifail.'
-      },
-      fr: {
-        base64: 'Image en base64',
-        file: 'Fichier',
-        errFileReaderNotSupported: 'FileReader n\'est pas supporté par votre navigateur.',
-        errInvalidImage: 'Fichier image invalide.'
-      },
-      hu: {
-        base64: 'Kép beszúrás inline',
-        file: 'Fájl',
-        errFileReaderNotSupported: 'Ez a böngésző nem támogatja a FileReader funkciót.',
-        errInvalidImage: 'Érvénytelen képfájl.'
-      },
-      ja: {
-        base64: '画像 (Base64形式)',
-        file: 'ファイル',
-        errFileReaderNotSupported: 'あなたのブラウザーはFileReaderをサポートしていません',
-        errInvalidImage: '画像形式が正しくありません'
-      },
-      ko: {
-        base64: '그림 넣기(base64)',
-        file: '파일',
-        errFileReaderNotSupported: 'FileReader가 현재 브라우저를 지원하지 않습니다.',
-        errInvalidImage: '유효하지 않은 파일'
-      },
-      nl: {
-        base64: 'Afbeelding inline',
-        file: 'Bestand',
-        errFileReaderNotSupported: 'Uw browser ondersteunt deze functionaliteit niet.',
-        errInvalidImage: 'De gekozen afbeelding is ongeldig.'
-      },
-      pt_br: {
-        base64: 'Imagem em base64',
-        file: 'Arquivo',
-        errFileReaderNotSupported: 'FileReader não é suportado pelo seu navegador.',
-        errInvalidImage: 'Arquivo de imagem inválido.'
-      },
-      ru: {
-        base64: 'Изображение как код в base64',
-        file: 'Файл',
-        errFileReaderNotSupported: 'FileReader не поддерживается вашим браузером.',
-        errInvalidImage: 'Недопустимый файл изображения.'
-      },
-      sl: {
-        base64: 'Slika kot base64',
-        file: 'Datoteka',
-        errFileReaderNotSupported: 'FileReader ni podprt v tem brskalniku.',
-        errInvalidImage: 'Neveljavna datoteka s sliko.'
-      },
-      tr: {
-        base64: 'Base64 olarak resim',
-        file: 'Dosya',
-        errFileReaderNotSupported: 'FileReader tarayıcınız tarafından desteklenmiyor.',
-        errInvalidImage: 'Geçersiz resim dosyası.'
-      },
-      zh_cn: {
-        base64: '图片（Base64编码）',
-        file: '文件'
-      },
-      zh_tw: {
-        base64: '圖片(base64編碼)',
-        file: '檔案',
-        errFileReaderNotSupported: '你的瀏覽器不支援FileReader',
-        errInvalidImage: '不正確的檔案格式'
-      }
-    },
-    // jshint camelcase:true
-
-    plugins: {
-      base64: {
-        shouldInit: isSupported,
-        init: function init(trumbowyg) {
-          var btnDef = {
-            isSupported: isSupported,
-            fn: function fn() {
-              trumbowyg.saveRange();
-              var file;
-              var $modal = trumbowyg.openModalInsert(
-              // Title
-              trumbowyg.lang.base64,
-              // Fields
-              {
-                file: {
-                  type: 'file',
-                  required: true,
-                  attributes: {
-                    accept: 'image/*'
-                  }
-                },
-                alt: {
-                  label: 'description',
-                  value: trumbowyg.getRangeText()
-                }
-              },
-              // Callback
-              function (values) {
-                var fReader = new FileReader();
-                fReader.onloadend = function (e) {
-                  if (isValidImage(e.target.result)) {
-                    trumbowyg.execCmd('insertImage', fReader.result, false, true);
-                    $(['img[src="', fReader.result, '"]:not([alt])'].join(''), trumbowyg.$box).attr('alt', values.alt);
-                    trumbowyg.closeModal();
-                  } else {
-                    trumbowyg.addErrorOnModalField($('input[type=file]', $modal), trumbowyg.lang.errInvalidImage);
-                  }
-                };
-                fReader.readAsDataURL(file);
-              });
-              $('input[type=file]').on('change', function (e) {
-                file = e.target.files[0];
-              });
-            }
-          };
-          trumbowyg.addBtnDef('base64', btnDef);
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.base64.js v1.0
- * Base64 plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Cyril Biencourt (lizardK)
- */
-!function (e) {
-  "use strict";
-
-  var a = function a() {
-    return "undefined" != typeof FileReader;
-  };
-  e.extend(!0, e.trumbowyg, {
-    langs: {
-      en: {
-        base64: "Image as base64",
-        file: "File",
-        errFileReaderNotSupported: "FileReader is not supported by your browser.",
-        errInvalidImage: "Invalid image file."
-      },
-      az: {
-        base64: "base64 olaraq şəkil",
-        file: "Fayl",
-        errFileReaderNotSupported: "FileReader brauzeriniz tərəfindən dəstəklənmir.",
-        errInvalidImage: "Yanlış şəkil faylı."
-      },
-      by: {
-        base64: "Выява (фармат base64)",
-        file: "Файл",
-        errFileReaderNotSupported: "FileReader не падтрымліваецца вашым браўзэрам.",
-        errInvalidImage: "Несапраўдны файл выявы."
-      },
-      cs: {
-        base64: "Vložit obrázek",
-        file: "Soubor"
-      },
-      da: {
-        base64: "Billede som base64",
-        file: "Fil",
-        errFileReaderNotSupported: "FileReader er ikke understøttet af din browser.",
-        errInvalidImage: "Ugyldig billedfil."
-      },
-      et: {
-        base64: "Pilt base64 formaadis",
-        file: "Fail",
-        errFileReaderNotSupported: "Teie veebilehitseja ei toeta FileReader funktsiooni.",
-        errInvalidImage: "Vigane pildifail."
-      },
-      fr: {
-        base64: "Image en base64",
-        file: "Fichier",
-        errFileReaderNotSupported: "FileReader n'est pas supporté par votre navigateur.",
-        errInvalidImage: "Fichier image invalide."
-      },
-      hu: {
-        base64: "Kép beszúrás inline",
-        file: "Fájl",
-        errFileReaderNotSupported: "Ez a böngésző nem támogatja a FileReader funkciót.",
-        errInvalidImage: "Érvénytelen képfájl."
-      },
-      ja: {
-        base64: "画像 (Base64形式)",
-        file: "ファイル",
-        errFileReaderNotSupported: "あなたのブラウザーはFileReaderをサポートしていません",
-        errInvalidImage: "画像形式が正しくありません"
-      },
-      ko: {
-        base64: "그림 넣기(base64)",
-        file: "파일",
-        errFileReaderNotSupported: "FileReader가 현재 브라우저를 지원하지 않습니다.",
-        errInvalidImage: "유효하지 않은 파일"
-      },
-      nl: {
-        base64: "Afbeelding inline",
-        file: "Bestand",
-        errFileReaderNotSupported: "Uw browser ondersteunt deze functionaliteit niet.",
-        errInvalidImage: "De gekozen afbeelding is ongeldig."
-      },
-      pt_br: {
-        base64: "Imagem em base64",
-        file: "Arquivo",
-        errFileReaderNotSupported: "FileReader não é suportado pelo seu navegador.",
-        errInvalidImage: "Arquivo de imagem inválido."
-      },
-      ru: {
-        base64: "Изображение как код в base64",
-        file: "Файл",
-        errFileReaderNotSupported: "FileReader не поддерживается вашим браузером.",
-        errInvalidImage: "Недопустимый файл изображения."
-      },
-      sl: {
-        base64: "Slika kot base64",
-        file: "Datoteka",
-        errFileReaderNotSupported: "FileReader ni podprt v tem brskalniku.",
-        errInvalidImage: "Neveljavna datoteka s sliko."
-      },
-      tr: {
-        base64: "Base64 olarak resim",
-        file: "Dosya",
-        errFileReaderNotSupported: "FileReader tarayıcınız tarafından desteklenmiyor.",
-        errInvalidImage: "Geçersiz resim dosyası."
-      },
-      zh_cn: {
-        base64: "图片（Base64编码）",
-        file: "文件"
-      },
-      zh_tw: {
-        base64: "圖片(base64編碼)",
-        file: "檔案",
-        errFileReaderNotSupported: "你的瀏覽器不支援FileReader",
-        errInvalidImage: "不正確的檔案格式"
-      }
-    },
-    plugins: {
-      base64: {
-        shouldInit: a,
-        init: function init(r) {
-          var i = {
-            isSupported: a,
-            fn: function fn() {
-              var a;
-              r.saveRange();
-              var i = r.openModalInsert(r.lang.base64, {
-                file: {
-                  type: "file",
-                  required: !0,
-                  attributes: {
-                    accept: "image/*"
-                  }
-                },
-                alt: {
-                  label: "description",
-                  value: r.getRangeText()
-                }
-              }, function (l) {
-                var t = new FileReader();
-                t.onloadend = function (a) {
-                  var d;
-                  d = a.target.result, /^data:image\/[a-z]?/i.test(d) ? (r.execCmd("insertImage", t.result, !1, !0), e(['img[src="', t.result, '"]:not([alt])'].join(""), r.$box).attr("alt", l.alt), r.closeModal()) : r.addErrorOnModalField(e("input[type=file]", i), r.lang.errInvalidImage);
-                }, t.readAsDataURL(a);
-              });
-              e("input[type=file]").on("change", function (e) {
-                a = e.target.files[0];
-              });
-            }
-          };
-          r.addBtnDef("base64", i);
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.cleanpaste.js v1.0
- * Font Clean paste plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Authors : Eric Radin
- *           Todd Graham (slackwalker)
- *
- * This plugin will perform a "cleaning" on any paste, in particular
- * it will clean pasted content of microsoft word document tags and classes.
- */
-
-(function ($) {
-  'use strict';
-
-  function checkValidTags(snippet) {
-    var theString = snippet;
-
-    // Replace uppercase element names with lowercase
-    theString = theString.replace(/<[^> ]*/g, function (match) {
-      return match.toLowerCase();
-    });
-
-    // Replace uppercase attribute names with lowercase
-    theString = theString.replace(/<[^>]*>/g, function (match) {
-      match = match.replace(/ [^=]+=/g, function (match2) {
-        return match2.toLowerCase();
-      });
-      return match;
-    });
-
-    // Put quotes around unquoted attributes
-    theString = theString.replace(/<[^>]*>/g, function (match) {
-      match = match.replace(/( [^=]+=)([^"][^ >]*)/g, '$1\"$2\"');
-      return match;
-    });
-    return theString;
-  }
-  function cleanIt(html) {
-    // first make sure all tags and attributes are made valid
-    html = checkValidTags(html);
-
-    // Replace opening bold tags with strong
-    html = html.replace(/<b(\s+|>)/g, '<strong$1');
-    // Replace closing bold tags with closing strong
-    html = html.replace(/<\/b(\s+|>)/g, '</strong$1');
-
-    // Replace italic tags with em
-    html = html.replace(/<i(\s+|>)/g, '<em$1');
-    // Replace closing italic tags with closing em
-    html = html.replace(/<\/i(\s+|>)/g, '</em$1');
-
-    // strip out comments -cgCraft
-    html = html.replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, '');
-
-    // strip out &nbsp; -cgCraft
-    html = html.replace(/&nbsp;/gi, ' ');
-    // strip out extra spaces -cgCraft
-    html = html.replace(/ <\//gi, '</');
-
-    // Remove multiple spaces
-    html.replace(/\s+/g, ' ');
-
-    // strip &nbsp; -cgCraft
-    html = html.replace(/^\s*|\s*$/g, '');
-
-    // Strip out unaccepted attributes
-    html = html.replace(/<[^>]*>/g, function (match) {
-      match = match.replace(/ ([^=]+)="[^"]*"/g, function (match2, attributeName) {
-        if (['alt', 'href', 'src', 'title'].indexOf(attributeName) !== -1) {
-          return match2;
-        }
-        return '';
-      });
-      return match;
-    });
-
-    // Final clean out for MS Word crud
-    html = html.replace(/<\?xml[^>]*>/g, '');
-    html = html.replace(/<[^ >]+:[^>]*>/g, '');
-    html = html.replace(/<\/[^ >]+:[^>]*>/g, '');
-
-    // remove unwanted tags
-    html = html.replace(/<(div|span|style|meta|link).*?>/gi, '');
-    return html;
-  }
-
-  // clean editor
-  // this will clean the inserted contents
-  // it does a compare, before and after paste to determine the
-  // pasted contents
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      cleanPaste: {
-        init: function init(trumbowyg) {
-          trumbowyg.pasteHandlers.push(function (pasteEvent) {
-            setTimeout(function () {
-              try {
-                trumbowyg.saveRange();
-                var clipboardData = (pasteEvent.originalEvent || pasteEvent).clipboardData,
-                  pastedData = clipboardData.getData('Text'),
-                  node = trumbowyg.doc.getSelection().focusNode,
-                  range = trumbowyg.doc.createRange(),
-                  cleanedPaste = cleanIt(pastedData.trim()),
-                  newNode = $(cleanedPaste)[0] || trumbowyg.doc.createTextNode(cleanedPaste);
-                if (trumbowyg.$ed.html() === '') {
-                  // simply append if there is no content in editor
-                  trumbowyg.$ed[0].appendChild(newNode);
-                } else {
-                  // insert pasted content behind last focused node
-                  range.setStartAfter(node);
-                  range.setEndAfter(node);
-                  trumbowyg.doc.getSelection().removeAllRanges();
-                  trumbowyg.doc.getSelection().addRange(range);
-                  trumbowyg.range.insertNode(newNode);
-                }
-
-                // now set cursor right after pasted content
-                range = trumbowyg.doc.createRange();
-                range.setStartAfter(newNode);
-                range.setEndAfter(newNode);
-                trumbowyg.doc.getSelection().removeAllRanges();
-                trumbowyg.doc.getSelection().addRange(range);
-
-                // prevent defaults
-                pasteEvent.stopPropagation();
-                pasteEvent.preventDefault();
-
-                // save new node as focused node
-                trumbowyg.saveRange();
-                trumbowyg.syncCode();
-                trumbowyg.$c.trigger('tbwchange');
-              } catch (c) {}
-            }, 0);
-          });
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.cleanpaste.js v1.0
- * Font Clean paste plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Authors : Eric Radin
- *           Todd Graham (slackwalker)
- *
- * This plugin will perform a "cleaning" on any paste, in particular
- * it will clean pasted content of microsoft word document tags and classes.
- */
-!function (e) {
-  "use strict";
-
-  e.extend(!0, e.trumbowyg, {
-    plugins: {
-      cleanPaste: {
-        init: function init(t) {
-          t.pasteHandlers.push(function (r) {
-            setTimeout(function () {
-              try {
-                t.saveRange();
-                var a = (r.originalEvent || r).clipboardData.getData("Text"),
-                  n = t.doc.getSelection().focusNode,
-                  c = t.doc.createRange(),
-                  g = ((l = (l = (l = (l = (l = (l = (l = (l = (l = a.trim()).replace(/<[^> ]*/g, function (e) {
-                    return e.toLowerCase();
-                  }).replace(/<[^>]*>/g, function (e) {
-                    return e.replace(/ [^=]+=/g, function (e) {
-                      return e.toLowerCase();
-                    });
-                  }).replace(/<[^>]*>/g, function (e) {
-                    return e.replace(/( [^=]+=)([^"][^ >]*)/g, '$1"$2"');
-                  })).replace(/<b(\s+|>)/g, "<strong$1")).replace(/<\/b(\s+|>)/g, "</strong$1")).replace(/<i(\s+|>)/g, "<em$1")).replace(/<\/i(\s+|>)/g, "</em$1")).replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, "")).replace(/&nbsp;/gi, " ")).replace(/ <\//gi, "</")).replace(/\s+/g, " "), (l = (l = (l = (l = (l = l.replace(/^\s*|\s*$/g, "")).replace(/<[^>]*>/g, function (e) {
-                    return e.replace(/ ([^=]+)="[^"]*"/g, function (e, t) {
-                      return -1 !== ["alt", "href", "src", "title"].indexOf(t) ? e : "";
-                    });
-                  })).replace(/<\?xml[^>]*>/g, "")).replace(/<[^ >]+:[^>]*>/g, "")).replace(/<\/[^ >]+:[^>]*>/g, "")).replace(/<(div|span|style|meta|link).*?>/gi, "")),
-                  o = e(g)[0] || t.doc.createTextNode(g);
-                "" === t.$ed.html() ? t.$ed[0].appendChild(o) : (c.setStartAfter(n), c.setEndAfter(n), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), t.range.insertNode(o)), (c = t.doc.createRange()).setStartAfter(o), c.setEndAfter(o), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), r.stopPropagation(), r.preventDefault(), t.saveRange(), t.syncCode(), t.$c.trigger("tbwchange");
-              } catch (e) {}
-              var l;
-            }, 0);
-          });
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
  * trumbowyg.colors.js v1.2
  * Colors picker plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -1100,6 +586,780 @@
             r.o.plugins.colors.colorList.indexOf(t) >= 0 ? a.push("backColor" + t) : a.push("backColorFree");
           }
           return "" !== o.style.color ? l = e(o.style.color) : o.hasAttribute("color") && (l = e(o.getAttribute("color"))), l && (r.o.plugins.colors.colorList.indexOf(l) >= 0 ? a.push("foreColor" + l) : a.push("foreColorFree")), a;
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.cleanpaste.js v1.0
+ * Font Clean paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Authors : Eric Radin
+ *           Todd Graham (slackwalker)
+ *
+ * This plugin will perform a "cleaning" on any paste, in particular
+ * it will clean pasted content of microsoft word document tags and classes.
+ */
+
+(function ($) {
+  'use strict';
+
+  function checkValidTags(snippet) {
+    var theString = snippet;
+
+    // Replace uppercase element names with lowercase
+    theString = theString.replace(/<[^> ]*/g, function (match) {
+      return match.toLowerCase();
+    });
+
+    // Replace uppercase attribute names with lowercase
+    theString = theString.replace(/<[^>]*>/g, function (match) {
+      match = match.replace(/ [^=]+=/g, function (match2) {
+        return match2.toLowerCase();
+      });
+      return match;
+    });
+
+    // Put quotes around unquoted attributes
+    theString = theString.replace(/<[^>]*>/g, function (match) {
+      match = match.replace(/( [^=]+=)([^"][^ >]*)/g, '$1\"$2\"');
+      return match;
+    });
+    return theString;
+  }
+  function cleanIt(html) {
+    // first make sure all tags and attributes are made valid
+    html = checkValidTags(html);
+
+    // Replace opening bold tags with strong
+    html = html.replace(/<b(\s+|>)/g, '<strong$1');
+    // Replace closing bold tags with closing strong
+    html = html.replace(/<\/b(\s+|>)/g, '</strong$1');
+
+    // Replace italic tags with em
+    html = html.replace(/<i(\s+|>)/g, '<em$1');
+    // Replace closing italic tags with closing em
+    html = html.replace(/<\/i(\s+|>)/g, '</em$1');
+
+    // strip out comments -cgCraft
+    html = html.replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, '');
+
+    // strip out &nbsp; -cgCraft
+    html = html.replace(/&nbsp;/gi, ' ');
+    // strip out extra spaces -cgCraft
+    html = html.replace(/ <\//gi, '</');
+
+    // Remove multiple spaces
+    html.replace(/\s+/g, ' ');
+
+    // strip &nbsp; -cgCraft
+    html = html.replace(/^\s*|\s*$/g, '');
+
+    // Strip out unaccepted attributes
+    html = html.replace(/<[^>]*>/g, function (match) {
+      match = match.replace(/ ([^=]+)="[^"]*"/g, function (match2, attributeName) {
+        if (['alt', 'href', 'src', 'title'].indexOf(attributeName) !== -1) {
+          return match2;
+        }
+        return '';
+      });
+      return match;
+    });
+
+    // Final clean out for MS Word crud
+    html = html.replace(/<\?xml[^>]*>/g, '');
+    html = html.replace(/<[^ >]+:[^>]*>/g, '');
+    html = html.replace(/<\/[^ >]+:[^>]*>/g, '');
+
+    // remove unwanted tags
+    html = html.replace(/<(div|span|style|meta|link).*?>/gi, '');
+    return html;
+  }
+
+  // clean editor
+  // this will clean the inserted contents
+  // it does a compare, before and after paste to determine the
+  // pasted contents
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      cleanPaste: {
+        init: function init(trumbowyg) {
+          trumbowyg.pasteHandlers.push(function (pasteEvent) {
+            setTimeout(function () {
+              try {
+                trumbowyg.saveRange();
+                var clipboardData = (pasteEvent.originalEvent || pasteEvent).clipboardData,
+                  pastedData = clipboardData.getData('Text'),
+                  node = trumbowyg.doc.getSelection().focusNode,
+                  range = trumbowyg.doc.createRange(),
+                  cleanedPaste = cleanIt(pastedData.trim()),
+                  newNode = $(cleanedPaste)[0] || trumbowyg.doc.createTextNode(cleanedPaste);
+                if (trumbowyg.$ed.html() === '') {
+                  // simply append if there is no content in editor
+                  trumbowyg.$ed[0].appendChild(newNode);
+                } else {
+                  // insert pasted content behind last focused node
+                  range.setStartAfter(node);
+                  range.setEndAfter(node);
+                  trumbowyg.doc.getSelection().removeAllRanges();
+                  trumbowyg.doc.getSelection().addRange(range);
+                  trumbowyg.range.insertNode(newNode);
+                }
+
+                // now set cursor right after pasted content
+                range = trumbowyg.doc.createRange();
+                range.setStartAfter(newNode);
+                range.setEndAfter(newNode);
+                trumbowyg.doc.getSelection().removeAllRanges();
+                trumbowyg.doc.getSelection().addRange(range);
+
+                // prevent defaults
+                pasteEvent.stopPropagation();
+                pasteEvent.preventDefault();
+
+                // save new node as focused node
+                trumbowyg.saveRange();
+                trumbowyg.syncCode();
+                trumbowyg.$c.trigger('tbwchange');
+              } catch (c) {}
+            }, 0);
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.cleanpaste.js v1.0
+ * Font Clean paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Authors : Eric Radin
+ *           Todd Graham (slackwalker)
+ *
+ * This plugin will perform a "cleaning" on any paste, in particular
+ * it will clean pasted content of microsoft word document tags and classes.
+ */
+!function (e) {
+  "use strict";
+
+  e.extend(!0, e.trumbowyg, {
+    plugins: {
+      cleanPaste: {
+        init: function init(t) {
+          t.pasteHandlers.push(function (r) {
+            setTimeout(function () {
+              try {
+                t.saveRange();
+                var a = (r.originalEvent || r).clipboardData.getData("Text"),
+                  n = t.doc.getSelection().focusNode,
+                  c = t.doc.createRange(),
+                  g = ((l = (l = (l = (l = (l = (l = (l = (l = (l = a.trim()).replace(/<[^> ]*/g, function (e) {
+                    return e.toLowerCase();
+                  }).replace(/<[^>]*>/g, function (e) {
+                    return e.replace(/ [^=]+=/g, function (e) {
+                      return e.toLowerCase();
+                    });
+                  }).replace(/<[^>]*>/g, function (e) {
+                    return e.replace(/( [^=]+=)([^"][^ >]*)/g, '$1"$2"');
+                  })).replace(/<b(\s+|>)/g, "<strong$1")).replace(/<\/b(\s+|>)/g, "</strong$1")).replace(/<i(\s+|>)/g, "<em$1")).replace(/<\/i(\s+|>)/g, "</em$1")).replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, "")).replace(/&nbsp;/gi, " ")).replace(/ <\//gi, "</")).replace(/\s+/g, " "), (l = (l = (l = (l = (l = l.replace(/^\s*|\s*$/g, "")).replace(/<[^>]*>/g, function (e) {
+                    return e.replace(/ ([^=]+)="[^"]*"/g, function (e, t) {
+                      return -1 !== ["alt", "href", "src", "title"].indexOf(t) ? e : "";
+                    });
+                  })).replace(/<\?xml[^>]*>/g, "")).replace(/<[^ >]+:[^>]*>/g, "")).replace(/<\/[^ >]+:[^>]*>/g, "")).replace(/<(div|span|style|meta|link).*?>/gi, "")),
+                  o = e(g)[0] || t.doc.createTextNode(g);
+                "" === t.$ed.html() ? t.$ed[0].appendChild(o) : (c.setStartAfter(n), c.setEndAfter(n), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), t.range.insertNode(o)), (c = t.doc.createRange()).setStartAfter(o), c.setEndAfter(o), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), r.stopPropagation(), r.preventDefault(), t.saveRange(), t.syncCode(), t.$c.trigger("tbwchange");
+              } catch (e) {}
+              var l;
+            }, 0);
+          });
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.base64.js v1.0
+ * Base64 plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Cyril Biencourt (lizardK)
+ */
+
+(function ($) {
+  'use strict';
+
+  var isSupported = function isSupported() {
+    return typeof FileReader !== 'undefined';
+  };
+  var isValidImage = function isValidImage(type) {
+    return /^data:image\/[a-z]?/i.test(type);
+  };
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        base64: 'Image as base64',
+        file: 'File',
+        errFileReaderNotSupported: 'FileReader is not supported by your browser.',
+        errInvalidImage: 'Invalid image file.'
+      },
+      az: {
+        base64: 'base64 olaraq şəkil',
+        file: 'Fayl',
+        errFileReaderNotSupported: 'FileReader brauzeriniz tərəfindən dəstəklənmir.',
+        errInvalidImage: 'Yanlış şəkil faylı.'
+      },
+      by: {
+        base64: 'Выява (фармат base64)',
+        file: 'Файл',
+        errFileReaderNotSupported: 'FileReader не падтрымліваецца вашым браўзэрам.',
+        errInvalidImage: 'Несапраўдны файл выявы.'
+      },
+      cs: {
+        base64: 'Vložit obrázek',
+        file: 'Soubor'
+      },
+      da: {
+        base64: 'Billede som base64',
+        file: 'Fil',
+        errFileReaderNotSupported: 'FileReader er ikke understøttet af din browser.',
+        errInvalidImage: 'Ugyldig billedfil.'
+      },
+      et: {
+        base64: 'Pilt base64 formaadis',
+        file: 'Fail',
+        errFileReaderNotSupported: 'Teie veebilehitseja ei toeta FileReader funktsiooni.',
+        errInvalidImage: 'Vigane pildifail.'
+      },
+      fr: {
+        base64: 'Image en base64',
+        file: 'Fichier',
+        errFileReaderNotSupported: 'FileReader n\'est pas supporté par votre navigateur.',
+        errInvalidImage: 'Fichier image invalide.'
+      },
+      hu: {
+        base64: 'Kép beszúrás inline',
+        file: 'Fájl',
+        errFileReaderNotSupported: 'Ez a böngésző nem támogatja a FileReader funkciót.',
+        errInvalidImage: 'Érvénytelen képfájl.'
+      },
+      ja: {
+        base64: '画像 (Base64形式)',
+        file: 'ファイル',
+        errFileReaderNotSupported: 'あなたのブラウザーはFileReaderをサポートしていません',
+        errInvalidImage: '画像形式が正しくありません'
+      },
+      ko: {
+        base64: '그림 넣기(base64)',
+        file: '파일',
+        errFileReaderNotSupported: 'FileReader가 현재 브라우저를 지원하지 않습니다.',
+        errInvalidImage: '유효하지 않은 파일'
+      },
+      nl: {
+        base64: 'Afbeelding inline',
+        file: 'Bestand',
+        errFileReaderNotSupported: 'Uw browser ondersteunt deze functionaliteit niet.',
+        errInvalidImage: 'De gekozen afbeelding is ongeldig.'
+      },
+      pt_br: {
+        base64: 'Imagem em base64',
+        file: 'Arquivo',
+        errFileReaderNotSupported: 'FileReader não é suportado pelo seu navegador.',
+        errInvalidImage: 'Arquivo de imagem inválido.'
+      },
+      ru: {
+        base64: 'Изображение как код в base64',
+        file: 'Файл',
+        errFileReaderNotSupported: 'FileReader не поддерживается вашим браузером.',
+        errInvalidImage: 'Недопустимый файл изображения.'
+      },
+      sl: {
+        base64: 'Slika kot base64',
+        file: 'Datoteka',
+        errFileReaderNotSupported: 'FileReader ni podprt v tem brskalniku.',
+        errInvalidImage: 'Neveljavna datoteka s sliko.'
+      },
+      tr: {
+        base64: 'Base64 olarak resim',
+        file: 'Dosya',
+        errFileReaderNotSupported: 'FileReader tarayıcınız tarafından desteklenmiyor.',
+        errInvalidImage: 'Geçersiz resim dosyası.'
+      },
+      zh_cn: {
+        base64: '图片（Base64编码）',
+        file: '文件'
+      },
+      zh_tw: {
+        base64: '圖片(base64編碼)',
+        file: '檔案',
+        errFileReaderNotSupported: '你的瀏覽器不支援FileReader',
+        errInvalidImage: '不正確的檔案格式'
+      }
+    },
+    // jshint camelcase:true
+
+    plugins: {
+      base64: {
+        shouldInit: isSupported,
+        init: function init(trumbowyg) {
+          var btnDef = {
+            isSupported: isSupported,
+            fn: function fn() {
+              trumbowyg.saveRange();
+              var file;
+              var $modal = trumbowyg.openModalInsert(
+              // Title
+              trumbowyg.lang.base64,
+              // Fields
+              {
+                file: {
+                  type: 'file',
+                  required: true,
+                  attributes: {
+                    accept: 'image/*'
+                  }
+                },
+                alt: {
+                  label: 'description',
+                  value: trumbowyg.getRangeText()
+                }
+              },
+              // Callback
+              function (values) {
+                var fReader = new FileReader();
+                fReader.onloadend = function (e) {
+                  if (isValidImage(e.target.result)) {
+                    trumbowyg.execCmd('insertImage', fReader.result, false, true);
+                    $(['img[src="', fReader.result, '"]:not([alt])'].join(''), trumbowyg.$box).attr('alt', values.alt);
+                    trumbowyg.closeModal();
+                  } else {
+                    trumbowyg.addErrorOnModalField($('input[type=file]', $modal), trumbowyg.lang.errInvalidImage);
+                  }
+                };
+                fReader.readAsDataURL(file);
+              });
+              $('input[type=file]').on('change', function (e) {
+                file = e.target.files[0];
+              });
+            }
+          };
+          trumbowyg.addBtnDef('base64', btnDef);
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.base64.js v1.0
+ * Base64 plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Cyril Biencourt (lizardK)
+ */
+!function (e) {
+  "use strict";
+
+  var a = function a() {
+    return "undefined" != typeof FileReader;
+  };
+  e.extend(!0, e.trumbowyg, {
+    langs: {
+      en: {
+        base64: "Image as base64",
+        file: "File",
+        errFileReaderNotSupported: "FileReader is not supported by your browser.",
+        errInvalidImage: "Invalid image file."
+      },
+      az: {
+        base64: "base64 olaraq şəkil",
+        file: "Fayl",
+        errFileReaderNotSupported: "FileReader brauzeriniz tərəfindən dəstəklənmir.",
+        errInvalidImage: "Yanlış şəkil faylı."
+      },
+      by: {
+        base64: "Выява (фармат base64)",
+        file: "Файл",
+        errFileReaderNotSupported: "FileReader не падтрымліваецца вашым браўзэрам.",
+        errInvalidImage: "Несапраўдны файл выявы."
+      },
+      cs: {
+        base64: "Vložit obrázek",
+        file: "Soubor"
+      },
+      da: {
+        base64: "Billede som base64",
+        file: "Fil",
+        errFileReaderNotSupported: "FileReader er ikke understøttet af din browser.",
+        errInvalidImage: "Ugyldig billedfil."
+      },
+      et: {
+        base64: "Pilt base64 formaadis",
+        file: "Fail",
+        errFileReaderNotSupported: "Teie veebilehitseja ei toeta FileReader funktsiooni.",
+        errInvalidImage: "Vigane pildifail."
+      },
+      fr: {
+        base64: "Image en base64",
+        file: "Fichier",
+        errFileReaderNotSupported: "FileReader n'est pas supporté par votre navigateur.",
+        errInvalidImage: "Fichier image invalide."
+      },
+      hu: {
+        base64: "Kép beszúrás inline",
+        file: "Fájl",
+        errFileReaderNotSupported: "Ez a böngésző nem támogatja a FileReader funkciót.",
+        errInvalidImage: "Érvénytelen képfájl."
+      },
+      ja: {
+        base64: "画像 (Base64形式)",
+        file: "ファイル",
+        errFileReaderNotSupported: "あなたのブラウザーはFileReaderをサポートしていません",
+        errInvalidImage: "画像形式が正しくありません"
+      },
+      ko: {
+        base64: "그림 넣기(base64)",
+        file: "파일",
+        errFileReaderNotSupported: "FileReader가 현재 브라우저를 지원하지 않습니다.",
+        errInvalidImage: "유효하지 않은 파일"
+      },
+      nl: {
+        base64: "Afbeelding inline",
+        file: "Bestand",
+        errFileReaderNotSupported: "Uw browser ondersteunt deze functionaliteit niet.",
+        errInvalidImage: "De gekozen afbeelding is ongeldig."
+      },
+      pt_br: {
+        base64: "Imagem em base64",
+        file: "Arquivo",
+        errFileReaderNotSupported: "FileReader não é suportado pelo seu navegador.",
+        errInvalidImage: "Arquivo de imagem inválido."
+      },
+      ru: {
+        base64: "Изображение как код в base64",
+        file: "Файл",
+        errFileReaderNotSupported: "FileReader не поддерживается вашим браузером.",
+        errInvalidImage: "Недопустимый файл изображения."
+      },
+      sl: {
+        base64: "Slika kot base64",
+        file: "Datoteka",
+        errFileReaderNotSupported: "FileReader ni podprt v tem brskalniku.",
+        errInvalidImage: "Neveljavna datoteka s sliko."
+      },
+      tr: {
+        base64: "Base64 olarak resim",
+        file: "Dosya",
+        errFileReaderNotSupported: "FileReader tarayıcınız tarafından desteklenmiyor.",
+        errInvalidImage: "Geçersiz resim dosyası."
+      },
+      zh_cn: {
+        base64: "图片（Base64编码）",
+        file: "文件"
+      },
+      zh_tw: {
+        base64: "圖片(base64編碼)",
+        file: "檔案",
+        errFileReaderNotSupported: "你的瀏覽器不支援FileReader",
+        errInvalidImage: "不正確的檔案格式"
+      }
+    },
+    plugins: {
+      base64: {
+        shouldInit: a,
+        init: function init(r) {
+          var i = {
+            isSupported: a,
+            fn: function fn() {
+              var a;
+              r.saveRange();
+              var i = r.openModalInsert(r.lang.base64, {
+                file: {
+                  type: "file",
+                  required: !0,
+                  attributes: {
+                    accept: "image/*"
+                  }
+                },
+                alt: {
+                  label: "description",
+                  value: r.getRangeText()
+                }
+              }, function (l) {
+                var t = new FileReader();
+                t.onloadend = function (a) {
+                  var d;
+                  d = a.target.result, /^data:image\/[a-z]?/i.test(d) ? (r.execCmd("insertImage", t.result, !1, !0), e(['img[src="', t.result, '"]:not([alt])'].join(""), r.$box).attr("alt", l.alt), r.closeModal()) : r.addErrorOnModalField(e("input[type=file]", i), r.lang.errInvalidImage);
+                }, t.readAsDataURL(a);
+              });
+              e("input[type=file]").on("change", function (e) {
+                a = e.target.files[0];
+              });
+            }
+          };
+          r.addBtnDef("base64", i);
+        }
+      }
+    }
+  });
+}(jQuery);
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        fontFamily: 'Font'
+      },
+      az: {
+        fontFamily: 'Şrift'
+      },
+      by: {
+        fontFamily: 'Шрыфт'
+      },
+      ca: {
+        fontFamily: 'Font'
+      },
+      da: {
+        fontFamily: 'Skrifttype'
+      },
+      de: {
+        fontFamily: 'Schriftart'
+      },
+      es: {
+        fontFamily: 'Fuente'
+      },
+      et: {
+        fontFamily: 'Font'
+      },
+      fr: {
+        fontFamily: 'Police'
+      },
+      hu: {
+        fontFamily: 'Betűtípus'
+      },
+      ko: {
+        fontFamily: '글꼴'
+      },
+      nl: {
+        fontFamily: 'Lettertype'
+      },
+      pt_br: {
+        fontFamily: 'Fonte'
+      },
+      ru: {
+        fontFamily: 'Шрифт'
+      },
+      sl: {
+        fontFamily: 'Pisava'
+      },
+      tr: {
+        fontFamily: 'Yazı tipi'
+      },
+      zh_tw: {
+        fontFamily: '字體'
+      }
+    }
+  });
+  // jshint camelcase:true
+
+  var defaultOptions = {
+    fontList: [{
+      name: 'Arial',
+      family: 'Arial, Helvetica, sans-serif'
+    }, {
+      name: 'Arial Black',
+      family: 'Arial Black, Gadget, sans-serif'
+    }, {
+      name: 'Comic Sans',
+      family: 'Comic Sans MS, Textile, cursive, sans-serif'
+    }, {
+      name: 'Courier New',
+      family: 'Courier New, Courier, monospace'
+    }, {
+      name: 'Georgia',
+      family: 'Georgia, serif'
+    }, {
+      name: 'Impact',
+      family: 'Impact, Charcoal, sans-serif'
+    }, {
+      name: 'Lucida Console',
+      family: 'Lucida Console, Monaco, monospace'
+    }, {
+      name: 'Lucida Sans',
+      family: 'Lucida Sans Uncide, Lucida Grande, sans-serif'
+    }, {
+      name: 'Palatino',
+      family: 'Palatino Linotype, Book Antiqua, Palatino, serif'
+    }, {
+      name: 'Tahoma',
+      family: 'Tahoma, Geneva, sans-serif'
+    }, {
+      name: 'Times New Roman',
+      family: 'Times New Roman, Times, serif'
+    }, {
+      name: 'Trebuchet',
+      family: 'Trebuchet MS, Helvetica, sans-serif'
+    }, {
+      name: 'Verdana',
+      family: 'Verdana, Geneva, sans-serif'
+    }]
+  };
+
+  // Add dropdown with web safe fonts
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      fontfamily: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.fontfamily = $.extend({}, defaultOptions, trumbowyg.o.plugins.fontfamily || {});
+          trumbowyg.addBtnDef('fontfamily', {
+            dropdown: buildDropdown(trumbowyg),
+            hasIcon: false,
+            text: trumbowyg.lang.fontFamily
+          });
+        }
+      }
+    }
+  });
+  function buildDropdown(trumbowyg) {
+    var dropdown = [];
+    $.each(trumbowyg.o.plugins.fontfamily.fontList, function (index, font) {
+      trumbowyg.addBtnDef('fontfamily_' + index, {
+        title: '<span style="font-family: ' + font.family + ';">' + font.name + '</span>',
+        hasIcon: false,
+        fn: function fn() {
+          trumbowyg.execCmd('fontName', font.family, true);
+        }
+      });
+      dropdown.push('fontfamily_' + index);
+    });
+    return dropdown;
+  }
+})(jQuery);
+!function (a) {
+  "use strict";
+
+  a.extend(!0, a.trumbowyg, {
+    langs: {
+      en: {
+        fontFamily: "Font"
+      },
+      az: {
+        fontFamily: "Şrift"
+      },
+      by: {
+        fontFamily: "Шрыфт"
+      },
+      ca: {
+        fontFamily: "Font"
+      },
+      da: {
+        fontFamily: "Skrifttype"
+      },
+      de: {
+        fontFamily: "Schriftart"
+      },
+      es: {
+        fontFamily: "Fuente"
+      },
+      et: {
+        fontFamily: "Font"
+      },
+      fr: {
+        fontFamily: "Police"
+      },
+      hu: {
+        fontFamily: "Betűtípus"
+      },
+      ko: {
+        fontFamily: "글꼴"
+      },
+      nl: {
+        fontFamily: "Lettertype"
+      },
+      pt_br: {
+        fontFamily: "Fonte"
+      },
+      ru: {
+        fontFamily: "Шрифт"
+      },
+      sl: {
+        fontFamily: "Pisava"
+      },
+      tr: {
+        fontFamily: "Yazı tipi"
+      },
+      zh_tw: {
+        fontFamily: "字體"
+      }
+    }
+  });
+  var n = {
+    fontList: [{
+      name: "Arial",
+      family: "Arial, Helvetica, sans-serif"
+    }, {
+      name: "Arial Black",
+      family: "Arial Black, Gadget, sans-serif"
+    }, {
+      name: "Comic Sans",
+      family: "Comic Sans MS, Textile, cursive, sans-serif"
+    }, {
+      name: "Courier New",
+      family: "Courier New, Courier, monospace"
+    }, {
+      name: "Georgia",
+      family: "Georgia, serif"
+    }, {
+      name: "Impact",
+      family: "Impact, Charcoal, sans-serif"
+    }, {
+      name: "Lucida Console",
+      family: "Lucida Console, Monaco, monospace"
+    }, {
+      name: "Lucida Sans",
+      family: "Lucida Sans Uncide, Lucida Grande, sans-serif"
+    }, {
+      name: "Palatino",
+      family: "Palatino Linotype, Book Antiqua, Palatino, serif"
+    }, {
+      name: "Tahoma",
+      family: "Tahoma, Geneva, sans-serif"
+    }, {
+      name: "Times New Roman",
+      family: "Times New Roman, Times, serif"
+    }, {
+      name: "Trebuchet",
+      family: "Trebuchet MS, Helvetica, sans-serif"
+    }, {
+      name: "Verdana",
+      family: "Verdana, Geneva, sans-serif"
+    }]
+  };
+  function i(n) {
+    var i = [];
+    return a.each(n.o.plugins.fontfamily.fontList, function (a, e) {
+      n.addBtnDef("fontfamily_" + a, {
+        title: '<span style="font-family: ' + e.family + ';">' + e.name + "</span>",
+        hasIcon: !1,
+        fn: function fn() {
+          n.execCmd("fontName", e.family, !0);
+        }
+      }), i.push("fontfamily_" + a);
+    }), i;
+  }
+  a.extend(!0, a.trumbowyg, {
+    plugins: {
+      fontfamily: {
+        init: function init(e) {
+          e.o.plugins.fontfamily = a.extend({}, n, e.o.plugins.fontfamily || {}), e.addBtnDef("fontfamily", {
+            dropdown: i(e),
+            hasIcon: !1,
+            text: e.lang.fontFamily
+          });
         }
       }
     }
@@ -2056,266 +2316,6 @@
     langs: {
       // jshint camelcase:false
       en: {
-        fontFamily: 'Font'
-      },
-      az: {
-        fontFamily: 'Şrift'
-      },
-      by: {
-        fontFamily: 'Шрыфт'
-      },
-      ca: {
-        fontFamily: 'Font'
-      },
-      da: {
-        fontFamily: 'Skrifttype'
-      },
-      de: {
-        fontFamily: 'Schriftart'
-      },
-      es: {
-        fontFamily: 'Fuente'
-      },
-      et: {
-        fontFamily: 'Font'
-      },
-      fr: {
-        fontFamily: 'Police'
-      },
-      hu: {
-        fontFamily: 'Betűtípus'
-      },
-      ko: {
-        fontFamily: '글꼴'
-      },
-      nl: {
-        fontFamily: 'Lettertype'
-      },
-      pt_br: {
-        fontFamily: 'Fonte'
-      },
-      ru: {
-        fontFamily: 'Шрифт'
-      },
-      sl: {
-        fontFamily: 'Pisava'
-      },
-      tr: {
-        fontFamily: 'Yazı tipi'
-      },
-      zh_tw: {
-        fontFamily: '字體'
-      }
-    }
-  });
-  // jshint camelcase:true
-
-  var defaultOptions = {
-    fontList: [{
-      name: 'Arial',
-      family: 'Arial, Helvetica, sans-serif'
-    }, {
-      name: 'Arial Black',
-      family: 'Arial Black, Gadget, sans-serif'
-    }, {
-      name: 'Comic Sans',
-      family: 'Comic Sans MS, Textile, cursive, sans-serif'
-    }, {
-      name: 'Courier New',
-      family: 'Courier New, Courier, monospace'
-    }, {
-      name: 'Georgia',
-      family: 'Georgia, serif'
-    }, {
-      name: 'Impact',
-      family: 'Impact, Charcoal, sans-serif'
-    }, {
-      name: 'Lucida Console',
-      family: 'Lucida Console, Monaco, monospace'
-    }, {
-      name: 'Lucida Sans',
-      family: 'Lucida Sans Uncide, Lucida Grande, sans-serif'
-    }, {
-      name: 'Palatino',
-      family: 'Palatino Linotype, Book Antiqua, Palatino, serif'
-    }, {
-      name: 'Tahoma',
-      family: 'Tahoma, Geneva, sans-serif'
-    }, {
-      name: 'Times New Roman',
-      family: 'Times New Roman, Times, serif'
-    }, {
-      name: 'Trebuchet',
-      family: 'Trebuchet MS, Helvetica, sans-serif'
-    }, {
-      name: 'Verdana',
-      family: 'Verdana, Geneva, sans-serif'
-    }]
-  };
-
-  // Add dropdown with web safe fonts
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      fontfamily: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.fontfamily = $.extend({}, defaultOptions, trumbowyg.o.plugins.fontfamily || {});
-          trumbowyg.addBtnDef('fontfamily', {
-            dropdown: buildDropdown(trumbowyg),
-            hasIcon: false,
-            text: trumbowyg.lang.fontFamily
-          });
-        }
-      }
-    }
-  });
-  function buildDropdown(trumbowyg) {
-    var dropdown = [];
-    $.each(trumbowyg.o.plugins.fontfamily.fontList, function (index, font) {
-      trumbowyg.addBtnDef('fontfamily_' + index, {
-        title: '<span style="font-family: ' + font.family + ';">' + font.name + '</span>',
-        hasIcon: false,
-        fn: function fn() {
-          trumbowyg.execCmd('fontName', font.family, true);
-        }
-      });
-      dropdown.push('fontfamily_' + index);
-    });
-    return dropdown;
-  }
-})(jQuery);
-!function (a) {
-  "use strict";
-
-  a.extend(!0, a.trumbowyg, {
-    langs: {
-      en: {
-        fontFamily: "Font"
-      },
-      az: {
-        fontFamily: "Şrift"
-      },
-      by: {
-        fontFamily: "Шрыфт"
-      },
-      ca: {
-        fontFamily: "Font"
-      },
-      da: {
-        fontFamily: "Skrifttype"
-      },
-      de: {
-        fontFamily: "Schriftart"
-      },
-      es: {
-        fontFamily: "Fuente"
-      },
-      et: {
-        fontFamily: "Font"
-      },
-      fr: {
-        fontFamily: "Police"
-      },
-      hu: {
-        fontFamily: "Betűtípus"
-      },
-      ko: {
-        fontFamily: "글꼴"
-      },
-      nl: {
-        fontFamily: "Lettertype"
-      },
-      pt_br: {
-        fontFamily: "Fonte"
-      },
-      ru: {
-        fontFamily: "Шрифт"
-      },
-      sl: {
-        fontFamily: "Pisava"
-      },
-      tr: {
-        fontFamily: "Yazı tipi"
-      },
-      zh_tw: {
-        fontFamily: "字體"
-      }
-    }
-  });
-  var n = {
-    fontList: [{
-      name: "Arial",
-      family: "Arial, Helvetica, sans-serif"
-    }, {
-      name: "Arial Black",
-      family: "Arial Black, Gadget, sans-serif"
-    }, {
-      name: "Comic Sans",
-      family: "Comic Sans MS, Textile, cursive, sans-serif"
-    }, {
-      name: "Courier New",
-      family: "Courier New, Courier, monospace"
-    }, {
-      name: "Georgia",
-      family: "Georgia, serif"
-    }, {
-      name: "Impact",
-      family: "Impact, Charcoal, sans-serif"
-    }, {
-      name: "Lucida Console",
-      family: "Lucida Console, Monaco, monospace"
-    }, {
-      name: "Lucida Sans",
-      family: "Lucida Sans Uncide, Lucida Grande, sans-serif"
-    }, {
-      name: "Palatino",
-      family: "Palatino Linotype, Book Antiqua, Palatino, serif"
-    }, {
-      name: "Tahoma",
-      family: "Tahoma, Geneva, sans-serif"
-    }, {
-      name: "Times New Roman",
-      family: "Times New Roman, Times, serif"
-    }, {
-      name: "Trebuchet",
-      family: "Trebuchet MS, Helvetica, sans-serif"
-    }, {
-      name: "Verdana",
-      family: "Verdana, Geneva, sans-serif"
-    }]
-  };
-  function i(n) {
-    var i = [];
-    return a.each(n.o.plugins.fontfamily.fontList, function (a, e) {
-      n.addBtnDef("fontfamily_" + a, {
-        title: '<span style="font-family: ' + e.family + ';">' + e.name + "</span>",
-        hasIcon: !1,
-        fn: function fn() {
-          n.execCmd("fontName", e.family, !0);
-        }
-      }), i.push("fontfamily_" + a);
-    }), i;
-  }
-  a.extend(!0, a.trumbowyg, {
-    plugins: {
-      fontfamily: {
-        init: function init(e) {
-          e.o.plugins.fontfamily = a.extend({}, n, e.o.plugins.fontfamily || {}), e.addBtnDef("fontfamily", {
-            dropdown: i(e),
-            hasIcon: !1,
-            text: e.lang.fontFamily
-          });
-        }
-      }
-    }
-  });
-}(jQuery);
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
         giphy: 'Insert GIF'
       },
       az: {
@@ -2659,6 +2659,891 @@
               });
             }
           });
+        }
+      }
+    }
+  });
+}(jQuery);
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        lineheight: 'Line height',
+        lineheights: {
+          '0.9': 'Small',
+          'normal': 'Regular',
+          '1.5': 'Large',
+          '2.0': 'Extra large'
+        }
+      },
+      az: {
+        lineheight: 'Sətir yüksəkliyi',
+        lineheights: {
+          '0.9': 'Kiçik',
+          'normal': 'Normal',
+          '1.5': 'Böyük',
+          '2.0': 'Daha böyük'
+        }
+      },
+      by: {
+        lineheight: 'Міжрадковы інтэрвал',
+        lineheights: {
+          '0.9': 'Маленькі',
+          'normal': 'Звычайны',
+          '1.5': 'Вялікі',
+          '2.0': 'Вельмі вялікі'
+        }
+      },
+      da: {
+        lineheight: 'Linjehøjde',
+        lineheights: {
+          '0.9': 'Lille',
+          'normal': 'Normal',
+          '1.5': 'Stor',
+          '2.0': 'Ekstra stor'
+        }
+      },
+      et: {
+        lineheight: 'Reavahe',
+        lineheights: {
+          '0.9': 'Väike',
+          'normal': 'Tavaline',
+          '1.5': 'Suur',
+          '2.0': 'Väga suur'
+        }
+      },
+      fr: {
+        lineheight: 'Hauteur de ligne',
+        lineheights: {
+          '0.9': 'Petite',
+          'normal': 'Normale',
+          '1.5': 'Grande',
+          '2.0': 'Très grande'
+        }
+      },
+      hu: {
+        lineheight: 'Line height',
+        lineheights: {
+          '0.9': 'Small',
+          'normal': 'Regular',
+          '1.5': 'Large',
+          '2.0': 'Extra large'
+        }
+      },
+      it: {
+        lineheight: 'Altezza linea',
+        lineheights: {
+          '0.9': 'Bassa',
+          'normal': 'Normale',
+          '1.5': 'Alta',
+          '2.0': 'Molto alta'
+        }
+      },
+      ko: {
+        lineheight: '줄 간격',
+        lineheights: {
+          '0.9': '좁게',
+          'normal': '보통',
+          '1.5': '넓게',
+          '2.0': '아주 넓게'
+        }
+      },
+      nl: {
+        lineheight: 'Regelhoogte',
+        lineheights: {
+          '0.9': 'Klein',
+          'normal': 'Normaal',
+          '1.5': 'Groot',
+          '2.0': 'Extra groot'
+        }
+      },
+      pt_br: {
+        lineheight: 'Altura de linha',
+        lineheights: {
+          '0.9': 'Pequena',
+          'normal': 'Regular',
+          '1.5': 'Grande',
+          '2.0': 'Extra grande'
+        }
+      },
+      ru: {
+        lineheight: 'Межстрочный интервал',
+        lineheights: {
+          '0.9': 'Маленький',
+          'normal': 'Обычный',
+          '1.5': 'Большой',
+          '2.0': 'Очень большой'
+        }
+      },
+      sl: {
+        lineheight: 'Višina vrstice',
+        lineheights: {
+          '0.9': 'Majhna',
+          'normal': 'Navadna',
+          '1.5': 'Velika',
+          '2.0': 'Ekstra velika'
+        }
+      },
+      tr: {
+        lineheight: 'Satır yüksekliği',
+        lineheights: {
+          '0.9': 'Küçük',
+          'normal': 'Normal',
+          '1.5': 'Büyük',
+          '2.0': 'Çok Büyük'
+        }
+      },
+      zh_tw: {
+        lineheight: '文字間距',
+        lineheights: {
+          '0.9': '小',
+          'normal': '正常',
+          '1.5': '大',
+          '2.0': '特大'
+        }
+      }
+    }
+  });
+  // jshint camelcase:true
+
+  var defaultOptions = {
+    sizeList: ['0.9', 'normal', '1.5', '2.0']
+  };
+
+  // Add dropdown with font sizes
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      lineheight: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.lineheight = $.extend({}, defaultOptions, trumbowyg.o.plugins.lineheight || {});
+          trumbowyg.addBtnDef('lineheight', {
+            dropdown: buildDropdown(trumbowyg)
+          });
+        }
+      }
+    }
+  });
+
+  // Build the dropdown
+  function buildDropdown(trumbowyg) {
+    var dropdown = [];
+    $.each(trumbowyg.o.plugins.lineheight.sizeList, function (index, size) {
+      trumbowyg.addBtnDef('lineheight_' + size, {
+        text: trumbowyg.lang.lineheights[size] || size,
+        hasIcon: false,
+        fn: function fn() {
+          trumbowyg.saveRange();
+          var text = trumbowyg.getRangeText();
+          if (text.replace(/\s/g, '') !== '') {
+            try {
+              var parent = getSelectionParentElement();
+              $(parent).css('lineHeight', size);
+            } catch (e) {}
+          }
+        }
+      });
+      dropdown.push('lineheight_' + size);
+    });
+    return dropdown;
+  }
+
+  // Get the selection's parent
+  function getSelectionParentElement() {
+    var parentEl = null,
+      selection;
+    if (window.getSelection) {
+      selection = window.getSelection();
+      if (selection.rangeCount) {
+        parentEl = selection.getRangeAt(0).commonAncestorContainer;
+        if (parentEl.nodeType !== 1) {
+          parentEl = parentEl.parentNode;
+        }
+      }
+    } else if ((selection = document.selection) && selection.type !== 'Control') {
+      parentEl = selection.createRange().parentElement();
+    }
+    return parentEl;
+  }
+})(jQuery);
+!function (e) {
+  "use strict";
+
+  e.extend(!0, e.trumbowyg, {
+    langs: {
+      en: {
+        lineheight: "Line height",
+        lineheights: {
+          .9: "Small",
+          normal: "Regular",
+          1.5: "Large",
+          "2.0": "Extra large"
+        }
+      },
+      az: {
+        lineheight: "Sətir yüksəkliyi",
+        lineheights: {
+          .9: "Kiçik",
+          normal: "Normal",
+          1.5: "Böyük",
+          "2.0": "Daha böyük"
+        }
+      },
+      by: {
+        lineheight: "Міжрадковы інтэрвал",
+        lineheights: {
+          .9: "Маленькі",
+          normal: "Звычайны",
+          1.5: "Вялікі",
+          "2.0": "Вельмі вялікі"
+        }
+      },
+      da: {
+        lineheight: "Linjehøjde",
+        lineheights: {
+          .9: "Lille",
+          normal: "Normal",
+          1.5: "Stor",
+          "2.0": "Ekstra stor"
+        }
+      },
+      et: {
+        lineheight: "Reavahe",
+        lineheights: {
+          .9: "Väike",
+          normal: "Tavaline",
+          1.5: "Suur",
+          "2.0": "Väga suur"
+        }
+      },
+      fr: {
+        lineheight: "Hauteur de ligne",
+        lineheights: {
+          .9: "Petite",
+          normal: "Normale",
+          1.5: "Grande",
+          "2.0": "Très grande"
+        }
+      },
+      hu: {
+        lineheight: "Line height",
+        lineheights: {
+          .9: "Small",
+          normal: "Regular",
+          1.5: "Large",
+          "2.0": "Extra large"
+        }
+      },
+      it: {
+        lineheight: "Altezza linea",
+        lineheights: {
+          .9: "Bassa",
+          normal: "Normale",
+          1.5: "Alta",
+          "2.0": "Molto alta"
+        }
+      },
+      ko: {
+        lineheight: "줄 간격",
+        lineheights: {
+          .9: "좁게",
+          normal: "보통",
+          1.5: "넓게",
+          "2.0": "아주 넓게"
+        }
+      },
+      nl: {
+        lineheight: "Regelhoogte",
+        lineheights: {
+          .9: "Klein",
+          normal: "Normaal",
+          1.5: "Groot",
+          "2.0": "Extra groot"
+        }
+      },
+      pt_br: {
+        lineheight: "Altura de linha",
+        lineheights: {
+          .9: "Pequena",
+          normal: "Regular",
+          1.5: "Grande",
+          "2.0": "Extra grande"
+        }
+      },
+      ru: {
+        lineheight: "Межстрочный интервал",
+        lineheights: {
+          .9: "Маленький",
+          normal: "Обычный",
+          1.5: "Большой",
+          "2.0": "Очень большой"
+        }
+      },
+      sl: {
+        lineheight: "Višina vrstice",
+        lineheights: {
+          .9: "Majhna",
+          normal: "Navadna",
+          1.5: "Velika",
+          "2.0": "Ekstra velika"
+        }
+      },
+      tr: {
+        lineheight: "Satır yüksekliği",
+        lineheights: {
+          .9: "Küçük",
+          normal: "Normal",
+          1.5: "Büyük",
+          "2.0": "Çok Büyük"
+        }
+      },
+      zh_tw: {
+        lineheight: "文字間距",
+        lineheights: {
+          .9: "小",
+          normal: "正常",
+          1.5: "大",
+          "2.0": "特大"
+        }
+      }
+    }
+  });
+  var i = {
+    sizeList: ["0.9", "normal", "1.5", "2.0"]
+  };
+  function n(i) {
+    var n = [];
+    return e.each(i.o.plugins.lineheight.sizeList, function (t, l) {
+      i.addBtnDef("lineheight_" + l, {
+        text: i.lang.lineheights[l] || l,
+        hasIcon: !1,
+        fn: function fn() {
+          if (i.saveRange(), "" !== i.getRangeText().replace(/\s/g, "")) try {
+            var n = function () {
+              var e,
+                i = null;
+              window.getSelection ? (e = window.getSelection()).rangeCount && 1 !== (i = e.getRangeAt(0).commonAncestorContainer).nodeType && (i = i.parentNode) : (e = document.selection) && "Control" !== e.type && (i = e.createRange().parentElement());
+              return i;
+            }();
+            e(n).css("lineHeight", l);
+          } catch (e) {}
+        }
+      }), n.push("lineheight_" + l);
+    }), n;
+  }
+  e.extend(!0, e.trumbowyg, {
+    plugins: {
+      lineheight: {
+        init: function init(t) {
+          t.o.plugins.lineheight = e.extend({}, i, t.o.plugins.lineheight || {}), t.addBtnDef("lineheight", {
+            dropdown: n(t)
+          });
+        }
+      }
+    }
+  });
+}(jQuery);
+/*/* ===========================================================
+ * trumbowyg.insertaudio.js v1.0
+ * InsertAudio plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Adam Hess (AdamHess)
+ */
+
+(function ($) {
+  'use strict';
+
+  var insertAudioOptions = {
+    src: {
+      label: 'URL',
+      required: true
+    },
+    autoplay: {
+      label: 'AutoPlay',
+      required: false,
+      type: 'checkbox'
+    },
+    muted: {
+      label: 'Muted',
+      required: false,
+      type: 'checkbox'
+    },
+    preload: {
+      label: 'preload options',
+      required: false
+    }
+  };
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        insertAudio: 'Insert Audio'
+      },
+      az: {
+        insertAudio: 'Səs yerləşdir'
+      },
+      by: {
+        insertAudio: 'Уставіць аўдыё'
+      },
+      ca: {
+        insertAudio: 'Inserir Audio'
+      },
+      da: {
+        insertAudio: 'Indsæt lyd'
+      },
+      es: {
+        insertAudio: 'Insertar Audio'
+      },
+      et: {
+        insertAudio: 'Lisa helifail'
+      },
+      fr: {
+        insertAudio: 'Insérer un son'
+      },
+      hu: {
+        insertAudio: 'Audio beszúrás'
+      },
+      ja: {
+        insertAudio: '音声の挿入'
+      },
+      ko: {
+        insertAudio: '소리 넣기'
+      },
+      pt_br: {
+        insertAudio: 'Inserir áudio'
+      },
+      ru: {
+        insertAudio: 'Вставить аудио'
+      },
+      sl: {
+        insertAudio: 'Vstavi zvočno datoteko'
+      },
+      tr: {
+        insertAudio: 'Ses Ekle'
+      }
+      // jshint camelcase:true
+    },
+
+    plugins: {
+      insertAudio: {
+        init: function init(trumbowyg) {
+          var btnDef = {
+            fn: function fn() {
+              var insertAudioCallback = function insertAudioCallback(v) {
+                // controls should always be show otherwise the audio will
+                // be invisible defeating the point of a wysiwyg
+                var html = '<audio controls';
+                if (v.src) {
+                  html += ' src=\'' + v.src + '\'';
+                }
+                if (v.autoplay) {
+                  html += ' autoplay';
+                }
+                if (v.muted) {
+                  html += ' muted';
+                }
+                if (v.preload) {
+                  html += ' preload=\'' + v + '\'';
+                }
+                html += '></audio>';
+                var node = $(html)[0];
+                trumbowyg.range.deleteContents();
+                trumbowyg.range.insertNode(node);
+                return true;
+              };
+              trumbowyg.openModalInsert(trumbowyg.lang.insertAudio, insertAudioOptions, insertAudioCallback);
+            }
+          };
+          trumbowyg.addBtnDef('insertAudio', btnDef);
+        }
+      }
+    }
+  });
+})(jQuery);
+/*/* ===========================================================
+ * trumbowyg.insertaudio.js v1.0
+ * InsertAudio plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Adam Hess (AdamHess)
+ */
+!function (e) {
+  "use strict";
+
+  var i = {
+    src: {
+      label: "URL",
+      required: !0
+    },
+    autoplay: {
+      label: "AutoPlay",
+      required: !1,
+      type: "checkbox"
+    },
+    muted: {
+      label: "Muted",
+      required: !1,
+      type: "checkbox"
+    },
+    preload: {
+      label: "preload options",
+      required: !1
+    }
+  };
+  e.extend(!0, e.trumbowyg, {
+    langs: {
+      en: {
+        insertAudio: "Insert Audio"
+      },
+      az: {
+        insertAudio: "Səs yerləşdir"
+      },
+      by: {
+        insertAudio: "Уставіць аўдыё"
+      },
+      ca: {
+        insertAudio: "Inserir Audio"
+      },
+      da: {
+        insertAudio: "Indsæt lyd"
+      },
+      es: {
+        insertAudio: "Insertar Audio"
+      },
+      et: {
+        insertAudio: "Lisa helifail"
+      },
+      fr: {
+        insertAudio: "Insérer un son"
+      },
+      hu: {
+        insertAudio: "Audio beszúrás"
+      },
+      ja: {
+        insertAudio: "音声の挿入"
+      },
+      ko: {
+        insertAudio: "소리 넣기"
+      },
+      pt_br: {
+        insertAudio: "Inserir áudio"
+      },
+      ru: {
+        insertAudio: "Вставить аудио"
+      },
+      sl: {
+        insertAudio: "Vstavi zvočno datoteko"
+      },
+      tr: {
+        insertAudio: "Ses Ekle"
+      }
+    },
+    plugins: {
+      insertAudio: {
+        init: function init(r) {
+          var t = {
+            fn: function fn() {
+              r.openModalInsert(r.lang.insertAudio, i, function (i) {
+                var t = "<audio controls";
+                i.src && (t += " src='" + i.src + "'"), i.autoplay && (t += " autoplay"), i.muted && (t += " muted"), i.preload && (t += " preload='" + i + "'");
+                var o = e(t += "></audio>")[0];
+                return r.range.deleteContents(), r.range.insertNode(o), !0;
+              });
+            }
+          };
+          r.addBtnDef("insertAudio", t);
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.mathMl.js v1.0
+ * MathML plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : loclamor
+ */
+
+/* globals MathJax */
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        mathml: 'Insert Formulas',
+        formulas: 'Formulas',
+        inline: 'Inline'
+      },
+      az: {
+        mathml: 'Düstur əlavə et',
+        formulas: 'Düsturlar',
+        inline: 'Sətir içi'
+      },
+      by: {
+        mathml: 'Уставіць формулу',
+        formulas: 'Формула',
+        inline: 'Inline-элемент'
+      },
+      ca: {
+        mathml: 'Inserir Fórmula',
+        formulas: 'Fórmula',
+        inline: 'En línia'
+      },
+      da: {
+        mathml: 'Indsæt formler',
+        formulas: 'Formler',
+        inline: 'Inline'
+      },
+      es: {
+        mathml: 'Insertar Fórmula',
+        formulas: 'Fórmula',
+        inline: 'En línea'
+      },
+      et: {
+        mathml: 'Sisesta valem',
+        formulas: 'Valemid',
+        inline: 'Teksti sees'
+      },
+      fr: {
+        mathml: 'Inserer une formule',
+        formulas: 'Formule',
+        inline: 'En ligne'
+      },
+      hu: {
+        mathml: 'Formulák beszúrás',
+        formulas: 'Formulák',
+        inline: 'Inline'
+      },
+      ko: {
+        mathml: '수식 넣기',
+        formulas: '수식',
+        inline: '글 안에 넣기'
+      },
+      pt_br: {
+        mathml: 'Inserir fórmulas',
+        formulas: 'Fórmulas',
+        inline: 'Em linha'
+      },
+      ru: {
+        mathml: 'Вставить формулу',
+        formulas: 'Формула',
+        inline: 'Строчный элемент'
+      },
+      sl: {
+        mathml: 'Vstavi matematični izraz',
+        formulas: 'Formula',
+        inline: 'V vrstici'
+      },
+      tr: {
+        mathml: 'Formül Ekle',
+        formulas: 'Formüller',
+        inline: 'Satır içi'
+      },
+      zh_tw: {
+        mathml: '插入方程式',
+        formulas: '方程式',
+        inline: '內嵌'
+      }
+    },
+    // jshint camelcase:true
+
+    plugins: {
+      mathml: {
+        init: function init(trumbowyg) {
+          var mathMlOptions = {
+            formulas: {
+              label: trumbowyg.lang.formulas,
+              required: true,
+              value: ''
+            },
+            inline: {
+              label: trumbowyg.lang.inline,
+              attributes: {
+                checked: true
+              },
+              type: 'checkbox',
+              required: false
+            }
+          };
+          var mathmlCallback = function mathmlCallback(v) {
+            var delimiter = v.inline ? '$' : '$$';
+            if (trumbowyg.currentMathNode) {
+              $(trumbowyg.currentMathNode).html(delimiter + ' ' + v.formulas + ' ' + delimiter).attr('formulas', v.formulas).attr('inline', v.inline ? 'true' : 'false');
+            } else {
+              var html = '<span contenteditable="false" formulas="' + v.formulas + '" inline="' + (v.inline ? 'true' : 'false') + '" >' + delimiter + ' ' + v.formulas + ' ' + delimiter + '</span>';
+              var node = $(html)[0];
+              node.onclick = openModal;
+              trumbowyg.range.deleteContents();
+              trumbowyg.range.insertNode(node);
+            }
+            trumbowyg.currentMathNode = false;
+            MathJax.Hub.Queue(['Typeset', MathJax.Hub]);
+            return true;
+          };
+          var openModal = function openModal() {
+            trumbowyg.currentMathNode = this;
+            mathMlOptions.formulas.value = $(this).attr('formulas');
+            if ($(this).attr('inline') === 'true') {
+              mathMlOptions.inline.attributes.checked = true;
+            } else {
+              delete mathMlOptions.inline.attributes.checked;
+            }
+            trumbowyg.openModalInsert(trumbowyg.lang.mathml, mathMlOptions, mathmlCallback);
+          };
+          var btnDef = {
+            fn: function fn() {
+              trumbowyg.saveRange();
+              mathMlOptions.formulas.value = trumbowyg.getRangeText();
+              mathMlOptions.inline.attributes.checked = true;
+              trumbowyg.openModalInsert(trumbowyg.lang.mathml, mathMlOptions, mathmlCallback);
+            }
+          };
+          trumbowyg.$ta.on('tbwinit', function () {
+            var nodes = trumbowyg.$ed.find('[formulas]');
+            nodes.each(function (i, elem) {
+              elem.onclick = openModal;
+            });
+          });
+          trumbowyg.addBtnDef('mathml', btnDef);
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.mathMl.js v1.0
+ * MathML plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : loclamor
+ */
+!function (e) {
+  "use strict";
+
+  e.extend(!0, e.trumbowyg, {
+    langs: {
+      en: {
+        mathml: "Insert Formulas",
+        formulas: "Formulas",
+        inline: "Inline"
+      },
+      az: {
+        mathml: "Düstur əlavə et",
+        formulas: "Düsturlar",
+        inline: "Sətir içi"
+      },
+      by: {
+        mathml: "Уставіць формулу",
+        formulas: "Формула",
+        inline: "Inline-элемент"
+      },
+      ca: {
+        mathml: "Inserir Fórmula",
+        formulas: "Fórmula",
+        inline: "En línia"
+      },
+      da: {
+        mathml: "Indsæt formler",
+        formulas: "Formler",
+        inline: "Inline"
+      },
+      es: {
+        mathml: "Insertar Fórmula",
+        formulas: "Fórmula",
+        inline: "En línea"
+      },
+      et: {
+        mathml: "Sisesta valem",
+        formulas: "Valemid",
+        inline: "Teksti sees"
+      },
+      fr: {
+        mathml: "Inserer une formule",
+        formulas: "Formule",
+        inline: "En ligne"
+      },
+      hu: {
+        mathml: "Formulák beszúrás",
+        formulas: "Formulák",
+        inline: "Inline"
+      },
+      ko: {
+        mathml: "수식 넣기",
+        formulas: "수식",
+        inline: "글 안에 넣기"
+      },
+      pt_br: {
+        mathml: "Inserir fórmulas",
+        formulas: "Fórmulas",
+        inline: "Em linha"
+      },
+      ru: {
+        mathml: "Вставить формулу",
+        formulas: "Формула",
+        inline: "Строчный элемент"
+      },
+      sl: {
+        mathml: "Vstavi matematični izraz",
+        formulas: "Formula",
+        inline: "V vrstici"
+      },
+      tr: {
+        mathml: "Formül Ekle",
+        formulas: "Formüller",
+        inline: "Satır içi"
+      },
+      zh_tw: {
+        mathml: "插入方程式",
+        formulas: "方程式",
+        inline: "內嵌"
+      }
+    },
+    plugins: {
+      mathml: {
+        init: function init(l) {
+          var n = {
+              formulas: {
+                label: l.lang.formulas,
+                required: !0,
+                value: ""
+              },
+              inline: {
+                label: l.lang.inline,
+                attributes: {
+                  checked: !0
+                },
+                type: "checkbox",
+                required: !1
+              }
+            },
+            a = function a(n) {
+              var a = n.inline ? "$" : "$$";
+              if (l.currentMathNode) e(l.currentMathNode).html(a + " " + n.formulas + " " + a).attr("formulas", n.formulas).attr("inline", n.inline ? "true" : "false");else {
+                var r = '<span contenteditable="false" formulas="' + n.formulas + '" inline="' + (n.inline ? "true" : "false") + '" >' + a + " " + n.formulas + " " + a + "</span>",
+                  i = e(r)[0];
+                i.onclick = t, l.range.deleteContents(), l.range.insertNode(i);
+              }
+              return l.currentMathNode = !1, MathJax.Hub.Queue(["Typeset", MathJax.Hub]), !0;
+            },
+            t = function t() {
+              l.currentMathNode = this, n.formulas.value = e(this).attr("formulas"), "true" === e(this).attr("inline") ? n.inline.attributes.checked = !0 : delete n.inline.attributes.checked, l.openModalInsert(l.lang.mathml, n, a);
+            },
+            r = {
+              fn: function fn() {
+                l.saveRange(), n.formulas.value = l.getRangeText(), n.inline.attributes.checked = !0, l.openModalInsert(l.lang.mathml, n, a);
+              }
+            };
+          l.$ta.on("tbwinit", function () {
+            l.$ed.find("[formulas]").each(function (e, l) {
+              l.onclick = t;
+            });
+          }), l.addBtnDef("mathml", r);
         }
       }
     }
@@ -3064,597 +3949,215 @@
     }
   });
 }(jQuery);
-/*/* ===========================================================
- * trumbowyg.insertaudio.js v1.0
- * InsertAudio plugin for Trumbowyg
+/* ===========================================================
+ * trumbowyg.mention.js v0.1
+ * Mention plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
  * ===========================================================
- * Author : Adam Hess (AdamHess)
+ * Author : Viper
+ *          Github: https://github.com/Globulopolis
+ *          Website: http://киноархив.com
  */
 
 (function ($) {
   'use strict';
 
-  var insertAudioOptions = {
-    src: {
-      label: 'URL',
-      required: true
-    },
-    autoplay: {
-      label: 'AutoPlay',
-      required: false,
-      type: 'checkbox'
-    },
-    muted: {
-      label: 'Muted',
-      required: false,
-      type: 'checkbox'
-    },
-    preload: {
-      label: 'preload options',
-      required: false
-    }
+  var defaultOptions = {
+    source: [],
+    formatDropdownItem: formatDropdownItem,
+    formatResult: formatResult
   };
   $.extend(true, $.trumbowyg, {
     langs: {
       // jshint camelcase:false
       en: {
-        insertAudio: 'Insert Audio'
+        mention: 'Mention'
       },
       az: {
-        insertAudio: 'Səs yerləşdir'
+        mention: 'Bildirmək'
       },
       by: {
-        insertAudio: 'Уставіць аўдыё'
-      },
-      ca: {
-        insertAudio: 'Inserir Audio'
+        mention: 'Згадаць'
       },
       da: {
-        insertAudio: 'Indsæt lyd'
-      },
-      es: {
-        insertAudio: 'Insertar Audio'
+        mention: 'Nævn'
       },
       et: {
-        insertAudio: 'Lisa helifail'
+        mention: 'Maini'
       },
       fr: {
-        insertAudio: 'Insérer un son'
+        mention: 'Mentionner'
       },
       hu: {
-        insertAudio: 'Audio beszúrás'
-      },
-      ja: {
-        insertAudio: '音声の挿入'
+        mention: 'Említ'
       },
       ko: {
-        insertAudio: '소리 넣기'
+        mention: '언급'
       },
       pt_br: {
-        insertAudio: 'Inserir áudio'
+        mention: 'Menção'
       },
       ru: {
-        insertAudio: 'Вставить аудио'
+        mention: 'Упомянуть'
       },
       sl: {
-        insertAudio: 'Vstavi zvočno datoteko'
+        mention: 'Omeni'
       },
       tr: {
-        insertAudio: 'Ses Ekle'
+        mention: 'Bahset'
+      },
+      zh_tw: {
+        mention: '標記'
       }
       // jshint camelcase:true
     },
 
     plugins: {
-      insertAudio: {
+      mention: {
         init: function init(trumbowyg) {
+          trumbowyg.o.plugins.mention = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.mention || {});
           var btnDef = {
-            fn: function fn() {
-              var insertAudioCallback = function insertAudioCallback(v) {
-                // controls should always be show otherwise the audio will
-                // be invisible defeating the point of a wysiwyg
-                var html = '<audio controls';
-                if (v.src) {
-                  html += ' src=\'' + v.src + '\'';
-                }
-                if (v.autoplay) {
-                  html += ' autoplay';
-                }
-                if (v.muted) {
-                  html += ' muted';
-                }
-                if (v.preload) {
-                  html += ' preload=\'' + v + '\'';
-                }
-                html += '></audio>';
-                var node = $(html)[0];
-                trumbowyg.range.deleteContents();
-                trumbowyg.range.insertNode(node);
-                return true;
-              };
-              trumbowyg.openModalInsert(trumbowyg.lang.insertAudio, insertAudioOptions, insertAudioCallback);
-            }
+            dropdown: buildDropdown(trumbowyg.o.plugins.mention.source, trumbowyg)
           };
-          trumbowyg.addBtnDef('insertAudio', btnDef);
-        }
-      }
-    }
-  });
-})(jQuery);
-/*/* ===========================================================
- * trumbowyg.insertaudio.js v1.0
- * InsertAudio plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Adam Hess (AdamHess)
- */
-!function (e) {
-  "use strict";
-
-  var i = {
-    src: {
-      label: "URL",
-      required: !0
-    },
-    autoplay: {
-      label: "AutoPlay",
-      required: !1,
-      type: "checkbox"
-    },
-    muted: {
-      label: "Muted",
-      required: !1,
-      type: "checkbox"
-    },
-    preload: {
-      label: "preload options",
-      required: !1
-    }
-  };
-  e.extend(!0, e.trumbowyg, {
-    langs: {
-      en: {
-        insertAudio: "Insert Audio"
-      },
-      az: {
-        insertAudio: "Səs yerləşdir"
-      },
-      by: {
-        insertAudio: "Уставіць аўдыё"
-      },
-      ca: {
-        insertAudio: "Inserir Audio"
-      },
-      da: {
-        insertAudio: "Indsæt lyd"
-      },
-      es: {
-        insertAudio: "Insertar Audio"
-      },
-      et: {
-        insertAudio: "Lisa helifail"
-      },
-      fr: {
-        insertAudio: "Insérer un son"
-      },
-      hu: {
-        insertAudio: "Audio beszúrás"
-      },
-      ja: {
-        insertAudio: "音声の挿入"
-      },
-      ko: {
-        insertAudio: "소리 넣기"
-      },
-      pt_br: {
-        insertAudio: "Inserir áudio"
-      },
-      ru: {
-        insertAudio: "Вставить аудио"
-      },
-      sl: {
-        insertAudio: "Vstavi zvočno datoteko"
-      },
-      tr: {
-        insertAudio: "Ses Ekle"
-      }
-    },
-    plugins: {
-      insertAudio: {
-        init: function init(r) {
-          var t = {
-            fn: function fn() {
-              r.openModalInsert(r.lang.insertAudio, i, function (i) {
-                var t = "<audio controls";
-                i.src && (t += " src='" + i.src + "'"), i.autoplay && (t += " autoplay"), i.muted && (t += " muted"), i.preload && (t += " preload='" + i + "'");
-                var o = e(t += "></audio>")[0];
-                return r.range.deleteContents(), r.range.insertNode(o), !0;
-              });
-            }
-          };
-          r.addBtnDef("insertAudio", t);
-        }
-      }
-    }
-  });
-}(jQuery);
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        lineheight: 'Line height',
-        lineheights: {
-          '0.9': 'Small',
-          'normal': 'Regular',
-          '1.5': 'Large',
-          '2.0': 'Extra large'
-        }
-      },
-      az: {
-        lineheight: 'Sətir yüksəkliyi',
-        lineheights: {
-          '0.9': 'Kiçik',
-          'normal': 'Normal',
-          '1.5': 'Böyük',
-          '2.0': 'Daha böyük'
-        }
-      },
-      by: {
-        lineheight: 'Міжрадковы інтэрвал',
-        lineheights: {
-          '0.9': 'Маленькі',
-          'normal': 'Звычайны',
-          '1.5': 'Вялікі',
-          '2.0': 'Вельмі вялікі'
-        }
-      },
-      da: {
-        lineheight: 'Linjehøjde',
-        lineheights: {
-          '0.9': 'Lille',
-          'normal': 'Normal',
-          '1.5': 'Stor',
-          '2.0': 'Ekstra stor'
-        }
-      },
-      et: {
-        lineheight: 'Reavahe',
-        lineheights: {
-          '0.9': 'Väike',
-          'normal': 'Tavaline',
-          '1.5': 'Suur',
-          '2.0': 'Väga suur'
-        }
-      },
-      fr: {
-        lineheight: 'Hauteur de ligne',
-        lineheights: {
-          '0.9': 'Petite',
-          'normal': 'Normale',
-          '1.5': 'Grande',
-          '2.0': 'Très grande'
-        }
-      },
-      hu: {
-        lineheight: 'Line height',
-        lineheights: {
-          '0.9': 'Small',
-          'normal': 'Regular',
-          '1.5': 'Large',
-          '2.0': 'Extra large'
-        }
-      },
-      it: {
-        lineheight: 'Altezza linea',
-        lineheights: {
-          '0.9': 'Bassa',
-          'normal': 'Normale',
-          '1.5': 'Alta',
-          '2.0': 'Molto alta'
-        }
-      },
-      ko: {
-        lineheight: '줄 간격',
-        lineheights: {
-          '0.9': '좁게',
-          'normal': '보통',
-          '1.5': '넓게',
-          '2.0': '아주 넓게'
-        }
-      },
-      nl: {
-        lineheight: 'Regelhoogte',
-        lineheights: {
-          '0.9': 'Klein',
-          'normal': 'Normaal',
-          '1.5': 'Groot',
-          '2.0': 'Extra groot'
-        }
-      },
-      pt_br: {
-        lineheight: 'Altura de linha',
-        lineheights: {
-          '0.9': 'Pequena',
-          'normal': 'Regular',
-          '1.5': 'Grande',
-          '2.0': 'Extra grande'
-        }
-      },
-      ru: {
-        lineheight: 'Межстрочный интервал',
-        lineheights: {
-          '0.9': 'Маленький',
-          'normal': 'Обычный',
-          '1.5': 'Большой',
-          '2.0': 'Очень большой'
-        }
-      },
-      sl: {
-        lineheight: 'Višina vrstice',
-        lineheights: {
-          '0.9': 'Majhna',
-          'normal': 'Navadna',
-          '1.5': 'Velika',
-          '2.0': 'Ekstra velika'
-        }
-      },
-      tr: {
-        lineheight: 'Satır yüksekliği',
-        lineheights: {
-          '0.9': 'Küçük',
-          'normal': 'Normal',
-          '1.5': 'Büyük',
-          '2.0': 'Çok Büyük'
-        }
-      },
-      zh_tw: {
-        lineheight: '文字間距',
-        lineheights: {
-          '0.9': '小',
-          'normal': '正常',
-          '1.5': '大',
-          '2.0': '特大'
-        }
-      }
-    }
-  });
-  // jshint camelcase:true
-
-  var defaultOptions = {
-    sizeList: ['0.9', 'normal', '1.5', '2.0']
-  };
-
-  // Add dropdown with font sizes
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      lineheight: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.lineheight = $.extend({}, defaultOptions, trumbowyg.o.plugins.lineheight || {});
-          trumbowyg.addBtnDef('lineheight', {
-            dropdown: buildDropdown(trumbowyg)
-          });
+          trumbowyg.addBtnDef('mention', btnDef);
         }
       }
     }
   });
 
-  // Build the dropdown
-  function buildDropdown(trumbowyg) {
+  /**
+   * Build dropdown list
+   *
+   * @param {Array}   items      Items
+   * @param {object}  trumbowyg  Editor
+   *
+   * @return {Array}
+   */
+  function buildDropdown(items, trumbowyg) {
     var dropdown = [];
-    $.each(trumbowyg.o.plugins.lineheight.sizeList, function (index, size) {
-      trumbowyg.addBtnDef('lineheight_' + size, {
-        text: trumbowyg.lang.lineheights[size] || size,
-        hasIcon: false,
-        fn: function fn() {
-          trumbowyg.saveRange();
-          var text = trumbowyg.getRangeText();
-          if (text.replace(/\s/g, '') !== '') {
-            try {
-              var parent = getSelectionParentElement();
-              $(parent).css('lineHeight', size);
-            } catch (e) {}
+    $.each(items, function (i, item) {
+      var btn = 'mention-' + i,
+        btnDef = {
+          hasIcon: false,
+          text: trumbowyg.o.plugins.mention.formatDropdownItem(item),
+          fn: function fn() {
+            trumbowyg.execCmd('insertHTML', trumbowyg.o.plugins.mention.formatResult(item));
+            return true;
           }
-        }
-      });
-      dropdown.push('lineheight_' + size);
+        };
+      trumbowyg.addBtnDef(btn, btnDef);
+      dropdown.push(btn);
     });
     return dropdown;
   }
 
-  // Get the selection's parent
-  function getSelectionParentElement() {
-    var parentEl = null,
-      selection;
-    if (window.getSelection) {
-      selection = window.getSelection();
-      if (selection.rangeCount) {
-        parentEl = selection.getRangeAt(0).commonAncestorContainer;
-        if (parentEl.nodeType !== 1) {
-          parentEl = parentEl.parentNode;
-        }
-      }
-    } else if ((selection = document.selection) && selection.type !== 'Control') {
-      parentEl = selection.createRange().parentElement();
-    }
-    return parentEl;
+  /**
+   * Format item in dropdown.
+   *
+   * @param   {object}  item  Item object.
+   *
+   * @return  {string}
+   */
+  function formatDropdownItem(item) {
+    return item.login;
+  }
+
+  /**
+   * Format result pasted in editor.
+   *
+   * @param   {object}  item  Item object.
+   *
+   * @return  {string}
+   */
+  function formatResult(item) {
+    return '@' + item.login + ' ';
   }
 })(jQuery);
-!function (e) {
+/* ===========================================================
+ * trumbowyg.mention.js v0.1
+ * Mention plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Viper
+ *          Github: https://github.com/Globulopolis
+ *          Website: http://киноархив.com
+ */
+!function (n) {
   "use strict";
 
-  e.extend(!0, e.trumbowyg, {
+  var t = {
+    source: [],
+    formatDropdownItem: function formatDropdownItem(n) {
+      return n.login;
+    },
+    formatResult: function formatResult(n) {
+      return "@" + n.login + " ";
+    }
+  };
+  function o(t, o) {
+    var e = [];
+    return n.each(t, function (n, t) {
+      var i = "mention-" + n,
+        m = {
+          hasIcon: !1,
+          text: o.o.plugins.mention.formatDropdownItem(t),
+          fn: function fn() {
+            return o.execCmd("insertHTML", o.o.plugins.mention.formatResult(t)), !0;
+          }
+        };
+      o.addBtnDef(i, m), e.push(i);
+    }), e;
+  }
+  n.extend(!0, n.trumbowyg, {
     langs: {
       en: {
-        lineheight: "Line height",
-        lineheights: {
-          .9: "Small",
-          normal: "Regular",
-          1.5: "Large",
-          "2.0": "Extra large"
-        }
+        mention: "Mention"
       },
       az: {
-        lineheight: "Sətir yüksəkliyi",
-        lineheights: {
-          .9: "Kiçik",
-          normal: "Normal",
-          1.5: "Böyük",
-          "2.0": "Daha böyük"
-        }
+        mention: "Bildirmək"
       },
       by: {
-        lineheight: "Міжрадковы інтэрвал",
-        lineheights: {
-          .9: "Маленькі",
-          normal: "Звычайны",
-          1.5: "Вялікі",
-          "2.0": "Вельмі вялікі"
-        }
+        mention: "Згадаць"
       },
       da: {
-        lineheight: "Linjehøjde",
-        lineheights: {
-          .9: "Lille",
-          normal: "Normal",
-          1.5: "Stor",
-          "2.0": "Ekstra stor"
-        }
+        mention: "Nævn"
       },
       et: {
-        lineheight: "Reavahe",
-        lineheights: {
-          .9: "Väike",
-          normal: "Tavaline",
-          1.5: "Suur",
-          "2.0": "Väga suur"
-        }
+        mention: "Maini"
       },
       fr: {
-        lineheight: "Hauteur de ligne",
-        lineheights: {
-          .9: "Petite",
-          normal: "Normale",
-          1.5: "Grande",
-          "2.0": "Très grande"
-        }
+        mention: "Mentionner"
       },
       hu: {
-        lineheight: "Line height",
-        lineheights: {
-          .9: "Small",
-          normal: "Regular",
-          1.5: "Large",
-          "2.0": "Extra large"
-        }
-      },
-      it: {
-        lineheight: "Altezza linea",
-        lineheights: {
-          .9: "Bassa",
-          normal: "Normale",
-          1.5: "Alta",
-          "2.0": "Molto alta"
-        }
+        mention: "Említ"
       },
       ko: {
-        lineheight: "줄 간격",
-        lineheights: {
-          .9: "좁게",
-          normal: "보통",
-          1.5: "넓게",
-          "2.0": "아주 넓게"
-        }
-      },
-      nl: {
-        lineheight: "Regelhoogte",
-        lineheights: {
-          .9: "Klein",
-          normal: "Normaal",
-          1.5: "Groot",
-          "2.0": "Extra groot"
-        }
+        mention: "언급"
       },
       pt_br: {
-        lineheight: "Altura de linha",
-        lineheights: {
-          .9: "Pequena",
-          normal: "Regular",
-          1.5: "Grande",
-          "2.0": "Extra grande"
-        }
+        mention: "Menção"
       },
       ru: {
-        lineheight: "Межстрочный интервал",
-        lineheights: {
-          .9: "Маленький",
-          normal: "Обычный",
-          1.5: "Большой",
-          "2.0": "Очень большой"
-        }
+        mention: "Упомянуть"
       },
       sl: {
-        lineheight: "Višina vrstice",
-        lineheights: {
-          .9: "Majhna",
-          normal: "Navadna",
-          1.5: "Velika",
-          "2.0": "Ekstra velika"
-        }
+        mention: "Omeni"
       },
       tr: {
-        lineheight: "Satır yüksekliği",
-        lineheights: {
-          .9: "Küçük",
-          normal: "Normal",
-          1.5: "Büyük",
-          "2.0": "Çok Büyük"
-        }
+        mention: "Bahset"
       },
       zh_tw: {
-        lineheight: "文字間距",
-        lineheights: {
-          .9: "小",
-          normal: "正常",
-          1.5: "大",
-          "2.0": "特大"
-        }
+        mention: "標記"
       }
-    }
-  });
-  var i = {
-    sizeList: ["0.9", "normal", "1.5", "2.0"]
-  };
-  function n(i) {
-    var n = [];
-    return e.each(i.o.plugins.lineheight.sizeList, function (t, l) {
-      i.addBtnDef("lineheight_" + l, {
-        text: i.lang.lineheights[l] || l,
-        hasIcon: !1,
-        fn: function fn() {
-          if (i.saveRange(), "" !== i.getRangeText().replace(/\s/g, "")) try {
-            var n = function () {
-              var e,
-                i = null;
-              window.getSelection ? (e = window.getSelection()).rangeCount && 1 !== (i = e.getRangeAt(0).commonAncestorContainer).nodeType && (i = i.parentNode) : (e = document.selection) && "Control" !== e.type && (i = e.createRange().parentElement());
-              return i;
-            }();
-            e(n).css("lineHeight", l);
-          } catch (e) {}
-        }
-      }), n.push("lineheight_" + l);
-    }), n;
-  }
-  e.extend(!0, e.trumbowyg, {
+    },
     plugins: {
-      lineheight: {
-        init: function init(t) {
-          t.o.plugins.lineheight = e.extend({}, i, t.o.plugins.lineheight || {}), t.addBtnDef("lineheight", {
-            dropdown: n(t)
-          });
+      mention: {
+        init: function init(e) {
+          e.o.plugins.mention = n.extend(!0, {}, t, e.o.plugins.mention || {});
+          var i = {
+            dropdown: o(e.o.plugins.mention.source, e)
+          };
+          e.addBtnDef("mention", i);
         }
       }
     }
@@ -3801,295 +4304,6 @@
               }
             } catch (t) {}
           });
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.mathMl.js v1.0
- * MathML plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : loclamor
- */
-
-/* globals MathJax */
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        mathml: 'Insert Formulas',
-        formulas: 'Formulas',
-        inline: 'Inline'
-      },
-      az: {
-        mathml: 'Düstur əlavə et',
-        formulas: 'Düsturlar',
-        inline: 'Sətir içi'
-      },
-      by: {
-        mathml: 'Уставіць формулу',
-        formulas: 'Формула',
-        inline: 'Inline-элемент'
-      },
-      ca: {
-        mathml: 'Inserir Fórmula',
-        formulas: 'Fórmula',
-        inline: 'En línia'
-      },
-      da: {
-        mathml: 'Indsæt formler',
-        formulas: 'Formler',
-        inline: 'Inline'
-      },
-      es: {
-        mathml: 'Insertar Fórmula',
-        formulas: 'Fórmula',
-        inline: 'En línea'
-      },
-      et: {
-        mathml: 'Sisesta valem',
-        formulas: 'Valemid',
-        inline: 'Teksti sees'
-      },
-      fr: {
-        mathml: 'Inserer une formule',
-        formulas: 'Formule',
-        inline: 'En ligne'
-      },
-      hu: {
-        mathml: 'Formulák beszúrás',
-        formulas: 'Formulák',
-        inline: 'Inline'
-      },
-      ko: {
-        mathml: '수식 넣기',
-        formulas: '수식',
-        inline: '글 안에 넣기'
-      },
-      pt_br: {
-        mathml: 'Inserir fórmulas',
-        formulas: 'Fórmulas',
-        inline: 'Em linha'
-      },
-      ru: {
-        mathml: 'Вставить формулу',
-        formulas: 'Формула',
-        inline: 'Строчный элемент'
-      },
-      sl: {
-        mathml: 'Vstavi matematični izraz',
-        formulas: 'Formula',
-        inline: 'V vrstici'
-      },
-      tr: {
-        mathml: 'Formül Ekle',
-        formulas: 'Formüller',
-        inline: 'Satır içi'
-      },
-      zh_tw: {
-        mathml: '插入方程式',
-        formulas: '方程式',
-        inline: '內嵌'
-      }
-    },
-    // jshint camelcase:true
-
-    plugins: {
-      mathml: {
-        init: function init(trumbowyg) {
-          var mathMlOptions = {
-            formulas: {
-              label: trumbowyg.lang.formulas,
-              required: true,
-              value: ''
-            },
-            inline: {
-              label: trumbowyg.lang.inline,
-              attributes: {
-                checked: true
-              },
-              type: 'checkbox',
-              required: false
-            }
-          };
-          var mathmlCallback = function mathmlCallback(v) {
-            var delimiter = v.inline ? '$' : '$$';
-            if (trumbowyg.currentMathNode) {
-              $(trumbowyg.currentMathNode).html(delimiter + ' ' + v.formulas + ' ' + delimiter).attr('formulas', v.formulas).attr('inline', v.inline ? 'true' : 'false');
-            } else {
-              var html = '<span contenteditable="false" formulas="' + v.formulas + '" inline="' + (v.inline ? 'true' : 'false') + '" >' + delimiter + ' ' + v.formulas + ' ' + delimiter + '</span>';
-              var node = $(html)[0];
-              node.onclick = openModal;
-              trumbowyg.range.deleteContents();
-              trumbowyg.range.insertNode(node);
-            }
-            trumbowyg.currentMathNode = false;
-            MathJax.Hub.Queue(['Typeset', MathJax.Hub]);
-            return true;
-          };
-          var openModal = function openModal() {
-            trumbowyg.currentMathNode = this;
-            mathMlOptions.formulas.value = $(this).attr('formulas');
-            if ($(this).attr('inline') === 'true') {
-              mathMlOptions.inline.attributes.checked = true;
-            } else {
-              delete mathMlOptions.inline.attributes.checked;
-            }
-            trumbowyg.openModalInsert(trumbowyg.lang.mathml, mathMlOptions, mathmlCallback);
-          };
-          var btnDef = {
-            fn: function fn() {
-              trumbowyg.saveRange();
-              mathMlOptions.formulas.value = trumbowyg.getRangeText();
-              mathMlOptions.inline.attributes.checked = true;
-              trumbowyg.openModalInsert(trumbowyg.lang.mathml, mathMlOptions, mathmlCallback);
-            }
-          };
-          trumbowyg.$ta.on('tbwinit', function () {
-            var nodes = trumbowyg.$ed.find('[formulas]');
-            nodes.each(function (i, elem) {
-              elem.onclick = openModal;
-            });
-          });
-          trumbowyg.addBtnDef('mathml', btnDef);
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.mathMl.js v1.0
- * MathML plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : loclamor
- */
-!function (e) {
-  "use strict";
-
-  e.extend(!0, e.trumbowyg, {
-    langs: {
-      en: {
-        mathml: "Insert Formulas",
-        formulas: "Formulas",
-        inline: "Inline"
-      },
-      az: {
-        mathml: "Düstur əlavə et",
-        formulas: "Düsturlar",
-        inline: "Sətir içi"
-      },
-      by: {
-        mathml: "Уставіць формулу",
-        formulas: "Формула",
-        inline: "Inline-элемент"
-      },
-      ca: {
-        mathml: "Inserir Fórmula",
-        formulas: "Fórmula",
-        inline: "En línia"
-      },
-      da: {
-        mathml: "Indsæt formler",
-        formulas: "Formler",
-        inline: "Inline"
-      },
-      es: {
-        mathml: "Insertar Fórmula",
-        formulas: "Fórmula",
-        inline: "En línea"
-      },
-      et: {
-        mathml: "Sisesta valem",
-        formulas: "Valemid",
-        inline: "Teksti sees"
-      },
-      fr: {
-        mathml: "Inserer une formule",
-        formulas: "Formule",
-        inline: "En ligne"
-      },
-      hu: {
-        mathml: "Formulák beszúrás",
-        formulas: "Formulák",
-        inline: "Inline"
-      },
-      ko: {
-        mathml: "수식 넣기",
-        formulas: "수식",
-        inline: "글 안에 넣기"
-      },
-      pt_br: {
-        mathml: "Inserir fórmulas",
-        formulas: "Fórmulas",
-        inline: "Em linha"
-      },
-      ru: {
-        mathml: "Вставить формулу",
-        formulas: "Формула",
-        inline: "Строчный элемент"
-      },
-      sl: {
-        mathml: "Vstavi matematični izraz",
-        formulas: "Formula",
-        inline: "V vrstici"
-      },
-      tr: {
-        mathml: "Formül Ekle",
-        formulas: "Formüller",
-        inline: "Satır içi"
-      },
-      zh_tw: {
-        mathml: "插入方程式",
-        formulas: "方程式",
-        inline: "內嵌"
-      }
-    },
-    plugins: {
-      mathml: {
-        init: function init(l) {
-          var n = {
-              formulas: {
-                label: l.lang.formulas,
-                required: !0,
-                value: ""
-              },
-              inline: {
-                label: l.lang.inline,
-                attributes: {
-                  checked: !0
-                },
-                type: "checkbox",
-                required: !1
-              }
-            },
-            a = function a(n) {
-              var a = n.inline ? "$" : "$$";
-              if (l.currentMathNode) e(l.currentMathNode).html(a + " " + n.formulas + " " + a).attr("formulas", n.formulas).attr("inline", n.inline ? "true" : "false");else {
-                var r = '<span contenteditable="false" formulas="' + n.formulas + '" inline="' + (n.inline ? "true" : "false") + '" >' + a + " " + n.formulas + " " + a + "</span>",
-                  i = e(r)[0];
-                i.onclick = t, l.range.deleteContents(), l.range.insertNode(i);
-              }
-              return l.currentMathNode = !1, MathJax.Hub.Queue(["Typeset", MathJax.Hub]), !0;
-            },
-            t = function t() {
-              l.currentMathNode = this, n.formulas.value = e(this).attr("formulas"), "true" === e(this).attr("inline") ? n.inline.attributes.checked = !0 : delete n.inline.attributes.checked, l.openModalInsert(l.lang.mathml, n, a);
-            },
-            r = {
-              fn: function fn() {
-                l.saveRange(), n.formulas.value = l.getRangeText(), n.inline.attributes.checked = !0, l.openModalInsert(l.lang.mathml, n, a);
-              }
-            };
-          l.$ta.on("tbwinit", function () {
-            l.$ed.find("[formulas]").each(function (e, l) {
-              l.onclick = t;
-            });
-          }), l.addBtnDef("mathml", r);
         }
       }
     }
@@ -4339,220 +4553,6 @@
   });
 }(jQuery);
 /* ===========================================================
- * trumbowyg.mention.js v0.1
- * Mention plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Viper
- *          Github: https://github.com/Globulopolis
- *          Website: http://киноархив.com
- */
-
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    source: [],
-    formatDropdownItem: formatDropdownItem,
-    formatResult: formatResult
-  };
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        mention: 'Mention'
-      },
-      az: {
-        mention: 'Bildirmək'
-      },
-      by: {
-        mention: 'Згадаць'
-      },
-      da: {
-        mention: 'Nævn'
-      },
-      et: {
-        mention: 'Maini'
-      },
-      fr: {
-        mention: 'Mentionner'
-      },
-      hu: {
-        mention: 'Említ'
-      },
-      ko: {
-        mention: '언급'
-      },
-      pt_br: {
-        mention: 'Menção'
-      },
-      ru: {
-        mention: 'Упомянуть'
-      },
-      sl: {
-        mention: 'Omeni'
-      },
-      tr: {
-        mention: 'Bahset'
-      },
-      zh_tw: {
-        mention: '標記'
-      }
-      // jshint camelcase:true
-    },
-
-    plugins: {
-      mention: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.mention = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.mention || {});
-          var btnDef = {
-            dropdown: buildDropdown(trumbowyg.o.plugins.mention.source, trumbowyg)
-          };
-          trumbowyg.addBtnDef('mention', btnDef);
-        }
-      }
-    }
-  });
-
-  /**
-   * Build dropdown list
-   *
-   * @param {Array}   items      Items
-   * @param {object}  trumbowyg  Editor
-   *
-   * @return {Array}
-   */
-  function buildDropdown(items, trumbowyg) {
-    var dropdown = [];
-    $.each(items, function (i, item) {
-      var btn = 'mention-' + i,
-        btnDef = {
-          hasIcon: false,
-          text: trumbowyg.o.plugins.mention.formatDropdownItem(item),
-          fn: function fn() {
-            trumbowyg.execCmd('insertHTML', trumbowyg.o.plugins.mention.formatResult(item));
-            return true;
-          }
-        };
-      trumbowyg.addBtnDef(btn, btnDef);
-      dropdown.push(btn);
-    });
-    return dropdown;
-  }
-
-  /**
-   * Format item in dropdown.
-   *
-   * @param   {object}  item  Item object.
-   *
-   * @return  {string}
-   */
-  function formatDropdownItem(item) {
-    return item.login;
-  }
-
-  /**
-   * Format result pasted in editor.
-   *
-   * @param   {object}  item  Item object.
-   *
-   * @return  {string}
-   */
-  function formatResult(item) {
-    return '@' + item.login + ' ';
-  }
-})(jQuery);
-/* ===========================================================
- * trumbowyg.mention.js v0.1
- * Mention plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Viper
- *          Github: https://github.com/Globulopolis
- *          Website: http://киноархив.com
- */
-!function (n) {
-  "use strict";
-
-  var t = {
-    source: [],
-    formatDropdownItem: function formatDropdownItem(n) {
-      return n.login;
-    },
-    formatResult: function formatResult(n) {
-      return "@" + n.login + " ";
-    }
-  };
-  function o(t, o) {
-    var e = [];
-    return n.each(t, function (n, t) {
-      var i = "mention-" + n,
-        m = {
-          hasIcon: !1,
-          text: o.o.plugins.mention.formatDropdownItem(t),
-          fn: function fn() {
-            return o.execCmd("insertHTML", o.o.plugins.mention.formatResult(t)), !0;
-          }
-        };
-      o.addBtnDef(i, m), e.push(i);
-    }), e;
-  }
-  n.extend(!0, n.trumbowyg, {
-    langs: {
-      en: {
-        mention: "Mention"
-      },
-      az: {
-        mention: "Bildirmək"
-      },
-      by: {
-        mention: "Згадаць"
-      },
-      da: {
-        mention: "Nævn"
-      },
-      et: {
-        mention: "Maini"
-      },
-      fr: {
-        mention: "Mentionner"
-      },
-      hu: {
-        mention: "Említ"
-      },
-      ko: {
-        mention: "언급"
-      },
-      pt_br: {
-        mention: "Menção"
-      },
-      ru: {
-        mention: "Упомянуть"
-      },
-      sl: {
-        mention: "Omeni"
-      },
-      tr: {
-        mention: "Bahset"
-      },
-      zh_tw: {
-        mention: "標記"
-      }
-    },
-    plugins: {
-      mention: {
-        init: function init(e) {
-          e.o.plugins.mention = n.extend(!0, {}, t, e.o.plugins.mention || {});
-          var i = {
-            dropdown: o(e.o.plugins.mention.source, e)
-          };
-          e.addBtnDef("mention", i);
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
  * trumbowyg.pasteimage.js v1.0
  * Basic base64 paste plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -4621,390 +4621,6 @@
               i && (t.stopPropagation(), t.preventDefault());
             } catch (e) {}
           });
-        }
-      }
-    }
-  });
-}(jQuery);
-;
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    minSize: 32,
-    step: 4
-  };
-  function preventDefault(e) {
-    e.stopPropagation();
-    e.preventDefault();
-  }
-  var ResizeWithCanvas = function ResizeWithCanvas(trumbowyg) {
-    // variable to create canvas and save img in resize mode
-    this.resizeCanvas = document.createElement('canvas');
-    // to allow canvas to get focus
-    this.resizeCanvas.setAttribute('tabindex', '0');
-    this.resizeCanvas.id = 'trumbowyg-resizimg-' + +new Date();
-    this.ctx = null;
-    this.resizeImg = null;
-    this.pressEscape = function (obj) {
-      obj.reset();
-    };
-    this.pressBackspaceOrDelete = function (obj) {
-      $(obj.resizeCanvas).remove();
-      obj.resizeImg = null;
-      if (trumbowyg !== null) {
-        trumbowyg.syncCode();
-        // notify changes
-        trumbowyg.$c.trigger('tbwchange');
-      }
-    };
-
-    // PRIVATE FUNCTION
-    var focusedNow = false;
-    var isCursorSeResize = false;
-
-    // calculate offset to change mouse over square in the canvas
-    var offsetX, offsetY;
-    var reOffset = function reOffset(canvas) {
-      var BB = canvas.getBoundingClientRect();
-      offsetX = BB.left;
-      offsetY = BB.top;
-    };
-    var updateCanvas = function updateCanvas(canvas, ctx, img, canvasWidth, canvasHeight) {
-      ctx.translate(0.5, 0.5);
-      ctx.lineWidth = 1;
-
-      // image
-      ctx.drawImage(img, 5, 5, canvasWidth - 10, canvasHeight - 10);
-
-      // border
-      ctx.beginPath();
-      ctx.rect(5, 5, canvasWidth - 10, canvasHeight - 10);
-      ctx.stroke();
-
-      // square in the angle
-      ctx.beginPath();
-      ctx.fillStyle = 'rgb(255, 255, 255)';
-      ctx.rect(canvasWidth - 10, canvasHeight - 10, 9, 9);
-      ctx.fill();
-      ctx.stroke();
-
-      // get the offset to change the mouse cursor
-      reOffset(canvas);
-      return ctx;
-    };
-
-    // PUBLIC FUNCTION
-    // necessary to correctly print cursor over square. Called once for instance. Useless with trumbowyg.
-    this.init = function () {
-      var _this = this;
-      $(window).on('scroll resize', function () {
-        _this.reCalcOffset();
-      });
-    };
-    this.reCalcOffset = function () {
-      reOffset(this.resizeCanvas);
-    };
-    this.canvasId = function () {
-      return this.resizeCanvas.id;
-    };
-    this.isActive = function () {
-      return this.resizeImg !== null;
-    };
-    this.isFocusedNow = function () {
-      return focusedNow;
-    };
-    this.blurNow = function () {
-      focusedNow = false;
-    };
-
-    // restore image in the HTML of the editor
-    this.reset = function () {
-      if (this.resizeImg === null) {
-        return;
-      }
-
-      // set style of image to avoid issue on resize because this attribute have priority over width and height attribute
-      this.resizeImg.setAttribute('style', 'width: 100%; max-width: ' + (this.resizeCanvas.clientWidth - 10) + 'px; height: auto; max-height: ' + (this.resizeCanvas.clientHeight - 10) + 'px;');
-      $(this.resizeCanvas).replaceWith($(this.resizeImg));
-
-      // reset canvas style
-      this.resizeCanvas.removeAttribute('style');
-      this.resizeImg = null;
-    };
-
-    // setup canvas with points and border to allow the resizing operation
-    this.setup = function (img, resizableOptions) {
-      this.resizeImg = img;
-      if (!this.resizeCanvas.getContext) {
-        return false;
-      }
-      focusedNow = true;
-
-      // draw canvas
-      this.resizeCanvas.width = $(this.resizeImg).width() + 10;
-      this.resizeCanvas.height = $(this.resizeImg).height() + 10;
-      this.resizeCanvas.style.margin = '-5px';
-      this.ctx = this.resizeCanvas.getContext('2d');
-
-      // replace image with canvas
-      $(this.resizeImg).replaceWith($(this.resizeCanvas));
-      updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height);
-
-      // enable resize
-      $(this.resizeCanvas).resizableSafe(resizableOptions).on('mousedown', preventDefault);
-      var _this = this;
-      $(this.resizeCanvas).on('mousemove', function (e) {
-        var mouseX = Math.round(e.clientX - offsetX);
-        var mouseY = Math.round(e.clientY - offsetY);
-        var wasCursorSeResize = isCursorSeResize;
-        _this.ctx.rect(_this.resizeCanvas.width - 10, _this.resizeCanvas.height - 10, 9, 9);
-        isCursorSeResize = _this.ctx.isPointInPath(mouseX, mouseY);
-        if (wasCursorSeResize !== isCursorSeResize) {
-          this.style.cursor = isCursorSeResize ? 'se-resize' : 'default';
-        }
-      }).on('keydown', function (e) {
-        if (!_this.isActive()) {
-          return;
-        }
-        var x = e.keyCode;
-        if (x === 27) {
-          // ESC
-          _this.pressEscape(_this);
-        } else if (x === 8 || x === 46) {
-          // BACKSPACE or DELETE
-          _this.pressBackspaceOrDelete(_this);
-        }
-      }).on('focus', preventDefault).on('blur', function () {
-        _this.reset();
-        // save changes
-        if (trumbowyg !== null) {
-          trumbowyg.syncCode();
-          // notify changes
-          trumbowyg.$c.trigger('tbwchange');
-        }
-      });
-      this.resizeCanvas.focus();
-      return true;
-    };
-
-    // update the canvas after the resizing
-    this.refresh = function () {
-      if (!this.resizeCanvas.getContext) {
-        return;
-      }
-      this.resizeCanvas.width = this.resizeCanvas.clientWidth;
-      this.resizeCanvas.height = this.resizeCanvas.clientHeight;
-      updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height);
-    };
-  };
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      resizimg: {
-        destroyResizable: function destroyResizable() {},
-        init: function init(trumbowyg) {
-          var destroyResizable = this.destroyResizable;
-
-          // object to interact with canvas
-          var resizeWithCanvas = new ResizeWithCanvas(trumbowyg);
-          this.destroyResizable = function () {
-            // clean html code
-            trumbowyg.$ed.find('canvas.resizable').resizableSafe('destroy').off('mousedown', preventDefault).removeClass('resizable');
-            resizeWithCanvas.reset();
-            trumbowyg.syncCode();
-          };
-          trumbowyg.o.plugins.resizimg = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.resizimg || {}, {
-            resizable: {
-              resizeWidth: false,
-              onDragStart: function onDragStart(ev, $el) {
-                var opt = trumbowyg.o.plugins.resizimg;
-                var x = ev.pageX - $el.offset().left;
-                var y = ev.pageY - $el.offset().top;
-                if (x < $el.width() - opt.minSize || y < $el.height() - opt.minSize) {
-                  return false;
-                }
-              },
-              onDrag: function onDrag(ev, $el, newWidth, newHeight) {
-                var opt = trumbowyg.o.plugins.resizimg;
-                if (newHeight < opt.minSize) {
-                  newHeight = opt.minSize;
-                }
-                newHeight -= newHeight % opt.step;
-                $el.height(newHeight);
-                return false;
-              },
-              onDragEnd: function onDragEnd() {
-                // resize update canvas information
-                resizeWithCanvas.refresh();
-                trumbowyg.syncCode();
-              }
-            }
-          });
-          function initResizable() {
-            trumbowyg.$ed.find('img').off('click').on('click', function (e) {
-              // if I'm already do a resize, reset it
-              if (resizeWithCanvas.isActive()) {
-                resizeWithCanvas.reset();
-              }
-              // initialize resize of image
-              resizeWithCanvas.setup(this, trumbowyg.o.plugins.resizimg.resizable);
-              preventDefault(e);
-            });
-          }
-          trumbowyg.$c.on('tbwinit', function () {
-            initResizable();
-
-            // disable resize when click on other items
-            trumbowyg.$ed.on('click', function (e) {
-              // check if I've clicked out of canvas or image to reset it
-              if ($(e.target).is('img') || e.target.id === resizeWithCanvas.canvasId()) {
-                return;
-              }
-              preventDefault(e);
-              resizeWithCanvas.reset();
-              //sync
-              trumbowyg.syncCode();
-              // notify changes
-              trumbowyg.$c.trigger('tbwchange');
-            });
-            trumbowyg.$ed.on('scroll', function () {
-              resizeWithCanvas.reCalcOffset();
-            });
-          });
-          trumbowyg.$c.on('tbwfocus tbwchange', initResizable);
-          trumbowyg.$c.on('tbwresize', function () {
-            resizeWithCanvas.reCalcOffset();
-          });
-
-          // Destroy
-          trumbowyg.$c.on('tbwblur', function () {
-            // when canvas is created the tbwblur is called
-            // this code avoid to destroy the canvas that allow the image resizing
-            if (resizeWithCanvas.isFocusedNow()) {
-              resizeWithCanvas.blurNow();
-            } else {
-              destroyResizable();
-            }
-          });
-        },
-        destroy: function destroy() {
-          this.destroyResizable();
-        }
-      }
-    }
-  });
-})(jQuery);
-!function (e) {
-  "use strict";
-
-  var i = {
-    minSize: 32,
-    step: 4
-  };
-  function t(e) {
-    e.stopPropagation(), e.preventDefault();
-  }
-  var s = function s(i) {
-    this.resizeCanvas = document.createElement("canvas"), this.resizeCanvas.setAttribute("tabindex", "0"), this.resizeCanvas.id = "trumbowyg-resizimg-" + +new Date(), this.ctx = null, this.resizeImg = null, this.pressEscape = function (e) {
-      e.reset();
-    }, this.pressBackspaceOrDelete = function (t) {
-      e(t.resizeCanvas).remove(), t.resizeImg = null, null !== i && (i.syncCode(), i.$c.trigger("tbwchange"));
-    };
-    var s,
-      n,
-      r = !1,
-      a = !1,
-      o = function o(e) {
-        var i = e.getBoundingClientRect();
-        s = i.left, n = i.top;
-      },
-      h = function h(e, i, t, s, n) {
-        return i.translate(.5, .5), i.lineWidth = 1, i.drawImage(t, 5, 5, s - 10, n - 10), i.beginPath(), i.rect(5, 5, s - 10, n - 10), i.stroke(), i.beginPath(), i.fillStyle = "rgb(255, 255, 255)", i.rect(s - 10, n - 10, 9, 9), i.fill(), i.stroke(), o(e), i;
-      };
-    // necessary to correctly print cursor over square. Called once for instance. Useless with trumbowyg.
-    this.init = function () {
-      var i = this;
-      e(window).on("scroll resize", function () {
-        i.reCalcOffset();
-      });
-    }, this.reCalcOffset = function () {
-      o(this.resizeCanvas);
-    }, this.canvasId = function () {
-      return this.resizeCanvas.id;
-    }, this.isActive = function () {
-      return null !== this.resizeImg;
-    }, this.isFocusedNow = function () {
-      return r;
-    }, this.blurNow = function () {
-      r = !1;
-    }, this.reset = function () {
-      null !== this.resizeImg && (this.resizeImg.setAttribute("style", "width: 100%; max-width: " + (this.resizeCanvas.clientWidth - 10) + "px; height: auto; max-height: " + (this.resizeCanvas.clientHeight - 10) + "px;"), e(this.resizeCanvas).replaceWith(e(this.resizeImg)), this.resizeCanvas.removeAttribute("style"), this.resizeImg = null);
-    }, this.setup = function (o, c) {
-      if (this.resizeImg = o, !this.resizeCanvas.getContext) return !1;
-      r = !0, this.resizeCanvas.width = e(this.resizeImg).width() + 10, this.resizeCanvas.height = e(this.resizeImg).height() + 10, this.resizeCanvas.style.margin = "-5px", this.ctx = this.resizeCanvas.getContext("2d"), e(this.resizeImg).replaceWith(e(this.resizeCanvas)), h(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height), e(this.resizeCanvas).resizableSafe(c).on("mousedown", t);
-      var u = this;
-      return e(this.resizeCanvas).on("mousemove", function (e) {
-        var i = Math.round(e.clientX - s),
-          t = Math.round(e.clientY - n),
-          r = a;
-        u.ctx.rect(u.resizeCanvas.width - 10, u.resizeCanvas.height - 10, 9, 9), r !== (a = u.ctx.isPointInPath(i, t)) && (this.style.cursor = a ? "se-resize" : "default");
-      }).on("keydown", function (e) {
-        if (u.isActive()) {
-          var i = e.keyCode;
-          27 === i ? u.pressEscape(u) : 8 !== i && 46 !== i || u.pressBackspaceOrDelete(u);
-        }
-      }).on("focus", t).on("blur", function () {
-        u.reset(), null !== i && (i.syncCode(), i.$c.trigger("tbwchange"));
-      }), this.resizeCanvas.focus(), !0;
-    }, this.refresh = function () {
-      this.resizeCanvas.getContext && (this.resizeCanvas.width = this.resizeCanvas.clientWidth, this.resizeCanvas.height = this.resizeCanvas.clientHeight, h(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height));
-    };
-  };
-  e.extend(!0, e.trumbowyg, {
-    plugins: {
-      resizimg: {
-        destroyResizable: function destroyResizable() {},
-        init: function init(n) {
-          var r = this.destroyResizable,
-            a = new s(n);
-          function o() {
-            n.$ed.find("img").off("click").on("click", function (e) {
-              a.isActive() && a.reset(), a.setup(this, n.o.plugins.resizimg.resizable), t(e);
-            });
-          }
-          this.destroyResizable = function () {
-            n.$ed.find("canvas.resizable").resizableSafe("destroy").off("mousedown", t).removeClass("resizable"), a.reset(), n.syncCode();
-          }, n.o.plugins.resizimg = e.extend(!0, {}, i, n.o.plugins.resizimg || {}, {
-            resizable: {
-              resizeWidth: !1,
-              onDragStart: function onDragStart(e, i) {
-                var t = n.o.plugins.resizimg,
-                  s = e.pageX - i.offset().left,
-                  r = e.pageY - i.offset().top;
-                if (s < i.width() - t.minSize || r < i.height() - t.minSize) return !1;
-              },
-              onDrag: function onDrag(e, i, t, s) {
-                var r = n.o.plugins.resizimg;
-                return s < r.minSize && (s = r.minSize), s -= s % r.step, i.height(s), !1;
-              },
-              onDragEnd: function onDragEnd() {
-                a.refresh(), n.syncCode();
-              }
-            }
-          }), n.$c.on("tbwinit", function () {
-            o(), n.$ed.on("click", function (i) {
-              e(i.target).is("img") || i.target.id === a.canvasId() || (t(i), a.reset(), n.syncCode(), n.$c.trigger("tbwchange"));
-            }), n.$ed.on("scroll", function () {
-              a.reCalcOffset();
-            });
-          }), n.$c.on("tbwfocus tbwchange", o), n.$c.on("tbwresize", function () {
-            a.reCalcOffset();
-          }), n.$c.on("tbwblur", function () {
-            a.isFocusedNow() ? a.blurNow() : r();
-          });
-        },
-        destroy: function destroy() {
-          this.destroyResizable();
         }
       }
     }
@@ -5419,6 +5035,390 @@
             dropdown: r(a)
           };
           a.addBtnDef("specialChars", e);
+        }
+      }
+    }
+  });
+}(jQuery);
+;
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    minSize: 32,
+    step: 4
+  };
+  function preventDefault(e) {
+    e.stopPropagation();
+    e.preventDefault();
+  }
+  var ResizeWithCanvas = function ResizeWithCanvas(trumbowyg) {
+    // variable to create canvas and save img in resize mode
+    this.resizeCanvas = document.createElement('canvas');
+    // to allow canvas to get focus
+    this.resizeCanvas.setAttribute('tabindex', '0');
+    this.resizeCanvas.id = 'trumbowyg-resizimg-' + +new Date();
+    this.ctx = null;
+    this.resizeImg = null;
+    this.pressEscape = function (obj) {
+      obj.reset();
+    };
+    this.pressBackspaceOrDelete = function (obj) {
+      $(obj.resizeCanvas).remove();
+      obj.resizeImg = null;
+      if (trumbowyg !== null) {
+        trumbowyg.syncCode();
+        // notify changes
+        trumbowyg.$c.trigger('tbwchange');
+      }
+    };
+
+    // PRIVATE FUNCTION
+    var focusedNow = false;
+    var isCursorSeResize = false;
+
+    // calculate offset to change mouse over square in the canvas
+    var offsetX, offsetY;
+    var reOffset = function reOffset(canvas) {
+      var BB = canvas.getBoundingClientRect();
+      offsetX = BB.left;
+      offsetY = BB.top;
+    };
+    var updateCanvas = function updateCanvas(canvas, ctx, img, canvasWidth, canvasHeight) {
+      ctx.translate(0.5, 0.5);
+      ctx.lineWidth = 1;
+
+      // image
+      ctx.drawImage(img, 5, 5, canvasWidth - 10, canvasHeight - 10);
+
+      // border
+      ctx.beginPath();
+      ctx.rect(5, 5, canvasWidth - 10, canvasHeight - 10);
+      ctx.stroke();
+
+      // square in the angle
+      ctx.beginPath();
+      ctx.fillStyle = 'rgb(255, 255, 255)';
+      ctx.rect(canvasWidth - 10, canvasHeight - 10, 9, 9);
+      ctx.fill();
+      ctx.stroke();
+
+      // get the offset to change the mouse cursor
+      reOffset(canvas);
+      return ctx;
+    };
+
+    // PUBLIC FUNCTION
+    // necessary to correctly print cursor over square. Called once for instance. Useless with trumbowyg.
+    this.init = function () {
+      var _this = this;
+      $(window).on('scroll resize', function () {
+        _this.reCalcOffset();
+      });
+    };
+    this.reCalcOffset = function () {
+      reOffset(this.resizeCanvas);
+    };
+    this.canvasId = function () {
+      return this.resizeCanvas.id;
+    };
+    this.isActive = function () {
+      return this.resizeImg !== null;
+    };
+    this.isFocusedNow = function () {
+      return focusedNow;
+    };
+    this.blurNow = function () {
+      focusedNow = false;
+    };
+
+    // restore image in the HTML of the editor
+    this.reset = function () {
+      if (this.resizeImg === null) {
+        return;
+      }
+
+      // set style of image to avoid issue on resize because this attribute have priority over width and height attribute
+      this.resizeImg.setAttribute('style', 'width: 100%; max-width: ' + (this.resizeCanvas.clientWidth - 10) + 'px; height: auto; max-height: ' + (this.resizeCanvas.clientHeight - 10) + 'px;');
+      $(this.resizeCanvas).replaceWith($(this.resizeImg));
+
+      // reset canvas style
+      this.resizeCanvas.removeAttribute('style');
+      this.resizeImg = null;
+    };
+
+    // setup canvas with points and border to allow the resizing operation
+    this.setup = function (img, resizableOptions) {
+      this.resizeImg = img;
+      if (!this.resizeCanvas.getContext) {
+        return false;
+      }
+      focusedNow = true;
+
+      // draw canvas
+      this.resizeCanvas.width = $(this.resizeImg).width() + 10;
+      this.resizeCanvas.height = $(this.resizeImg).height() + 10;
+      this.resizeCanvas.style.margin = '-5px';
+      this.ctx = this.resizeCanvas.getContext('2d');
+
+      // replace image with canvas
+      $(this.resizeImg).replaceWith($(this.resizeCanvas));
+      updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height);
+
+      // enable resize
+      $(this.resizeCanvas).resizableSafe(resizableOptions).on('mousedown', preventDefault);
+      var _this = this;
+      $(this.resizeCanvas).on('mousemove', function (e) {
+        var mouseX = Math.round(e.clientX - offsetX);
+        var mouseY = Math.round(e.clientY - offsetY);
+        var wasCursorSeResize = isCursorSeResize;
+        _this.ctx.rect(_this.resizeCanvas.width - 10, _this.resizeCanvas.height - 10, 9, 9);
+        isCursorSeResize = _this.ctx.isPointInPath(mouseX, mouseY);
+        if (wasCursorSeResize !== isCursorSeResize) {
+          this.style.cursor = isCursorSeResize ? 'se-resize' : 'default';
+        }
+      }).on('keydown', function (e) {
+        if (!_this.isActive()) {
+          return;
+        }
+        var x = e.keyCode;
+        if (x === 27) {
+          // ESC
+          _this.pressEscape(_this);
+        } else if (x === 8 || x === 46) {
+          // BACKSPACE or DELETE
+          _this.pressBackspaceOrDelete(_this);
+        }
+      }).on('focus', preventDefault).on('blur', function () {
+        _this.reset();
+        // save changes
+        if (trumbowyg !== null) {
+          trumbowyg.syncCode();
+          // notify changes
+          trumbowyg.$c.trigger('tbwchange');
+        }
+      });
+      this.resizeCanvas.focus();
+      return true;
+    };
+
+    // update the canvas after the resizing
+    this.refresh = function () {
+      if (!this.resizeCanvas.getContext) {
+        return;
+      }
+      this.resizeCanvas.width = this.resizeCanvas.clientWidth;
+      this.resizeCanvas.height = this.resizeCanvas.clientHeight;
+      updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height);
+    };
+  };
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      resizimg: {
+        destroyResizable: function destroyResizable() {},
+        init: function init(trumbowyg) {
+          var destroyResizable = this.destroyResizable;
+
+          // object to interact with canvas
+          var resizeWithCanvas = new ResizeWithCanvas(trumbowyg);
+          this.destroyResizable = function () {
+            // clean html code
+            trumbowyg.$ed.find('canvas.resizable').resizableSafe('destroy').off('mousedown', preventDefault).removeClass('resizable');
+            resizeWithCanvas.reset();
+            trumbowyg.syncCode();
+          };
+          trumbowyg.o.plugins.resizimg = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.resizimg || {}, {
+            resizable: {
+              resizeWidth: false,
+              onDragStart: function onDragStart(ev, $el) {
+                var opt = trumbowyg.o.plugins.resizimg;
+                var x = ev.pageX - $el.offset().left;
+                var y = ev.pageY - $el.offset().top;
+                if (x < $el.width() - opt.minSize || y < $el.height() - opt.minSize) {
+                  return false;
+                }
+              },
+              onDrag: function onDrag(ev, $el, newWidth, newHeight) {
+                var opt = trumbowyg.o.plugins.resizimg;
+                if (newHeight < opt.minSize) {
+                  newHeight = opt.minSize;
+                }
+                newHeight -= newHeight % opt.step;
+                $el.height(newHeight);
+                return false;
+              },
+              onDragEnd: function onDragEnd() {
+                // resize update canvas information
+                resizeWithCanvas.refresh();
+                trumbowyg.syncCode();
+              }
+            }
+          });
+          function initResizable() {
+            trumbowyg.$ed.find('img').off('click').on('click', function (e) {
+              // if I'm already do a resize, reset it
+              if (resizeWithCanvas.isActive()) {
+                resizeWithCanvas.reset();
+              }
+              // initialize resize of image
+              resizeWithCanvas.setup(this, trumbowyg.o.plugins.resizimg.resizable);
+              preventDefault(e);
+            });
+          }
+          trumbowyg.$c.on('tbwinit', function () {
+            initResizable();
+
+            // disable resize when click on other items
+            trumbowyg.$ed.on('click', function (e) {
+              // check if I've clicked out of canvas or image to reset it
+              if ($(e.target).is('img') || e.target.id === resizeWithCanvas.canvasId()) {
+                return;
+              }
+              preventDefault(e);
+              resizeWithCanvas.reset();
+              //sync
+              trumbowyg.syncCode();
+              // notify changes
+              trumbowyg.$c.trigger('tbwchange');
+            });
+            trumbowyg.$ed.on('scroll', function () {
+              resizeWithCanvas.reCalcOffset();
+            });
+          });
+          trumbowyg.$c.on('tbwfocus tbwchange', initResizable);
+          trumbowyg.$c.on('tbwresize', function () {
+            resizeWithCanvas.reCalcOffset();
+          });
+
+          // Destroy
+          trumbowyg.$c.on('tbwblur', function () {
+            // when canvas is created the tbwblur is called
+            // this code avoid to destroy the canvas that allow the image resizing
+            if (resizeWithCanvas.isFocusedNow()) {
+              resizeWithCanvas.blurNow();
+            } else {
+              destroyResizable();
+            }
+          });
+        },
+        destroy: function destroy() {
+          this.destroyResizable();
+        }
+      }
+    }
+  });
+})(jQuery);
+!function (e) {
+  "use strict";
+
+  var i = {
+    minSize: 32,
+    step: 4
+  };
+  function t(e) {
+    e.stopPropagation(), e.preventDefault();
+  }
+  var s = function s(i) {
+    this.resizeCanvas = document.createElement("canvas"), this.resizeCanvas.setAttribute("tabindex", "0"), this.resizeCanvas.id = "trumbowyg-resizimg-" + +new Date(), this.ctx = null, this.resizeImg = null, this.pressEscape = function (e) {
+      e.reset();
+    }, this.pressBackspaceOrDelete = function (t) {
+      e(t.resizeCanvas).remove(), t.resizeImg = null, null !== i && (i.syncCode(), i.$c.trigger("tbwchange"));
+    };
+    var s,
+      n,
+      r = !1,
+      a = !1,
+      o = function o(e) {
+        var i = e.getBoundingClientRect();
+        s = i.left, n = i.top;
+      },
+      h = function h(e, i, t, s, n) {
+        return i.translate(.5, .5), i.lineWidth = 1, i.drawImage(t, 5, 5, s - 10, n - 10), i.beginPath(), i.rect(5, 5, s - 10, n - 10), i.stroke(), i.beginPath(), i.fillStyle = "rgb(255, 255, 255)", i.rect(s - 10, n - 10, 9, 9), i.fill(), i.stroke(), o(e), i;
+      };
+    // necessary to correctly print cursor over square. Called once for instance. Useless with trumbowyg.
+    this.init = function () {
+      var i = this;
+      e(window).on("scroll resize", function () {
+        i.reCalcOffset();
+      });
+    }, this.reCalcOffset = function () {
+      o(this.resizeCanvas);
+    }, this.canvasId = function () {
+      return this.resizeCanvas.id;
+    }, this.isActive = function () {
+      return null !== this.resizeImg;
+    }, this.isFocusedNow = function () {
+      return r;
+    }, this.blurNow = function () {
+      r = !1;
+    }, this.reset = function () {
+      null !== this.resizeImg && (this.resizeImg.setAttribute("style", "width: 100%; max-width: " + (this.resizeCanvas.clientWidth - 10) + "px; height: auto; max-height: " + (this.resizeCanvas.clientHeight - 10) + "px;"), e(this.resizeCanvas).replaceWith(e(this.resizeImg)), this.resizeCanvas.removeAttribute("style"), this.resizeImg = null);
+    }, this.setup = function (o, c) {
+      if (this.resizeImg = o, !this.resizeCanvas.getContext) return !1;
+      r = !0, this.resizeCanvas.width = e(this.resizeImg).width() + 10, this.resizeCanvas.height = e(this.resizeImg).height() + 10, this.resizeCanvas.style.margin = "-5px", this.ctx = this.resizeCanvas.getContext("2d"), e(this.resizeImg).replaceWith(e(this.resizeCanvas)), h(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height), e(this.resizeCanvas).resizableSafe(c).on("mousedown", t);
+      var u = this;
+      return e(this.resizeCanvas).on("mousemove", function (e) {
+        var i = Math.round(e.clientX - s),
+          t = Math.round(e.clientY - n),
+          r = a;
+        u.ctx.rect(u.resizeCanvas.width - 10, u.resizeCanvas.height - 10, 9, 9), r !== (a = u.ctx.isPointInPath(i, t)) && (this.style.cursor = a ? "se-resize" : "default");
+      }).on("keydown", function (e) {
+        if (u.isActive()) {
+          var i = e.keyCode;
+          27 === i ? u.pressEscape(u) : 8 !== i && 46 !== i || u.pressBackspaceOrDelete(u);
+        }
+      }).on("focus", t).on("blur", function () {
+        u.reset(), null !== i && (i.syncCode(), i.$c.trigger("tbwchange"));
+      }), this.resizeCanvas.focus(), !0;
+    }, this.refresh = function () {
+      this.resizeCanvas.getContext && (this.resizeCanvas.width = this.resizeCanvas.clientWidth, this.resizeCanvas.height = this.resizeCanvas.clientHeight, h(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height));
+    };
+  };
+  e.extend(!0, e.trumbowyg, {
+    plugins: {
+      resizimg: {
+        destroyResizable: function destroyResizable() {},
+        init: function init(n) {
+          var r = this.destroyResizable,
+            a = new s(n);
+          function o() {
+            n.$ed.find("img").off("click").on("click", function (e) {
+              a.isActive() && a.reset(), a.setup(this, n.o.plugins.resizimg.resizable), t(e);
+            });
+          }
+          this.destroyResizable = function () {
+            n.$ed.find("canvas.resizable").resizableSafe("destroy").off("mousedown", t).removeClass("resizable"), a.reset(), n.syncCode();
+          }, n.o.plugins.resizimg = e.extend(!0, {}, i, n.o.plugins.resizimg || {}, {
+            resizable: {
+              resizeWidth: !1,
+              onDragStart: function onDragStart(e, i) {
+                var t = n.o.plugins.resizimg,
+                  s = e.pageX - i.offset().left,
+                  r = e.pageY - i.offset().top;
+                if (s < i.width() - t.minSize || r < i.height() - t.minSize) return !1;
+              },
+              onDrag: function onDrag(e, i, t, s) {
+                var r = n.o.plugins.resizimg;
+                return s < r.minSize && (s = r.minSize), s -= s % r.step, i.height(s), !1;
+              },
+              onDragEnd: function onDragEnd() {
+                a.refresh(), n.syncCode();
+              }
+            }
+          }), n.$c.on("tbwinit", function () {
+            o(), n.$ed.on("click", function (i) {
+              e(i.target).is("img") || i.target.id === a.canvasId() || (t(i), a.reset(), n.syncCode(), n.$c.trigger("tbwchange"));
+            }), n.$ed.on("scroll", function () {
+              a.reCalcOffset();
+            });
+          }), n.$c.on("tbwfocus tbwchange", o), n.$c.on("tbwresize", function () {
+            a.reCalcOffset();
+          }), n.$c.on("tbwblur", function () {
+            a.isFocusedNow() ? a.blurNow() : r();
+          });
+        },
+        destroy: function destroy() {
+          this.destroyResizable();
         }
       }
     }

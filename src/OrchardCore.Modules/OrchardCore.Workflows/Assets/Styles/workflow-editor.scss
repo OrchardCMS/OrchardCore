@@ -62,10 +62,16 @@
     }
 }
 
-@include media-breakpoint-up(lg) {
-    .modal-activities {
-        .modal-lg {
-            max-width: 1200px;
-        }
-    }
+.jtk-connector-outline {
+    stroke-width: 0;
+}
+
+.jtk-connector:not(.jtk-hover) path {
+    stroke: var(--bs-border-color, black);
+    stroke-width: 3;
+}
+
+.jtk-connector.jtk-hover {
+    stroke: #216477;
+    fill: #216477;
 }
