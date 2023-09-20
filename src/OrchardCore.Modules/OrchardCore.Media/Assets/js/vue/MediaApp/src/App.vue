@@ -390,6 +390,7 @@ export default {
 
     },
     mounted: function () {
+        let me = this;
         this.$refs.rootFolder.toggle();
 
         var chunkedFileUploadId = crypto.randomUUID();
@@ -399,13 +400,13 @@ export default {
                 dropZone: $('#mediaApp'),
                 limitConcurrentUploads: 20,
                 dataType: 'json',
-                url: $('#uploadFiles').val(),
+                url: me.uploadUrl(),
                 maxChunkSize: Number($('#maxUploadChunkSize').val() || 0),
                 formData: function () {
                     var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
 
                     return [
-                        { name: 'path', value: mediaApp.selectedFolder.path },
+                        { name: 'path', value: me.selectedFolder.path },
                         { name: '__RequestVerificationToken', value: antiForgeryToken },
                         { name: '__chunkedFileUploadId', value: chunkedFileUploadId },
                     ]
@@ -413,7 +414,7 @@ export default {
                 done: function (e, data) {
                     $.each(data.result.files, function (index, file) {
                         if (!file.error) {
-                            mediaApp.mediaItems.push(file)
+                            me.mediaItems.push(file)
                         }
                     });
                 }
@@ -458,9 +459,9 @@ export default {
                 return null;
             }
 
-            let urlValue = document.getElementById('uploadFiles').value;
+            let urlValue = this.basePath + this.$props.uploadFilesUrl;
 
-            return urlValue + (urlValue.indexOf('?') == -1 ? '?' : '&') + "path=" + encodeURIComponent(this.selectedFolder.path);
+            return urlValue + (urlValue.indexOf('?') == -1 ? '?' : '&') + "path=" + encodeURIComponent(this.selectedFolder.path) + '&extensions=jpg';
         },
         selectRoot: function () {
             this.selectedFolder = this.root;
