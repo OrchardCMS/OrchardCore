@@ -209,7 +209,8 @@ namespace OrchardCore.Environment.Shell
                 if (_shellContexts.TryRemove(settings.Name, out var context))
                 {
                     _runningShellTable.Remove(settings);
-                    await context.ReleaseAsync();
+
+                    await context.UnloadAsync();
                 }
 
                 // Add a 'PlaceHolder' allowing to retrieve the settings until the shell will be rebuilt.
@@ -219,17 +220,17 @@ namespace OrchardCore.Environment.Shell
                     continue;
                 }
 
-                _shellSettings.AddOrUpdate(settings.Name, (key) => settings, (key, existing) =>
-                {
-                    if (existing != settings)
-                    {
-                        existing.Release();
-                    }
+                //_shellSettings.AddOrUpdate(settings.Name, (key) => settings, (key, existing) =>
+                //{
+                //    if (existing != settings)
+                //    {
+                //        existing.Release();
+                //    }
 
-                    return settings;
-                });
+                //    return settings;
+                //});
 
-                //_shellSettings[settings.Name] = settings;
+                _shellSettings[settings.Name] = settings;
 
                 if (CanRegisterShell(settings))
                 {
@@ -313,7 +314,7 @@ namespace OrchardCore.Environment.Shell
 
             if (_shellContexts.TryRemove(settings.Name, out var context))
             {
-                await context.ReleaseAsync();
+                await context.UnloadAsync();
             }
 
             _shellSettings.TryRemove(settings.Name, out _);

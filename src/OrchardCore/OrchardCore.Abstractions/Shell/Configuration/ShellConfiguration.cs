@@ -15,7 +15,7 @@ namespace OrchardCore.Environment.Shell.Configuration
     /// from the application configuration 'appsettings.json', the 'App_Data/appsettings.json'
     /// file and then the 'App_Data/Sites/{tenant}/appsettings.json' file.
     /// </summary>
-    public class ShellConfiguration : IShellConfiguration // , IDisposable
+    public class ShellConfiguration : IShellConfiguration
     {
         internal IConfigurationRoot _configuration;
         private UpdatableDataProvider _updatableData;
@@ -25,7 +25,7 @@ namespace OrchardCore.Environment.Shell.Configuration
         private readonly Func<string, Task<IConfigurationBuilder>> _configBuilderFactory;
         private readonly IConfiguration _initialConfiguration;
         private readonly SemaphoreSlim _semaphore = new(1);
-        private bool _disposed;
+        private bool _released;
 
         public ShellConfiguration()
         {
@@ -149,14 +149,14 @@ namespace OrchardCore.Environment.Shell.Configuration
 
         public IChangeToken GetReloadToken() => Configuration.GetReloadToken();
 
-        public void Dispose()
+        public void Release()
         {
-            if (_disposed)
+            if (_released)
             {
                 return;
             }
 
-            _disposed = true;
+            _released = true;
 
             (_configuration as IDisposable)?.Dispose();
         }

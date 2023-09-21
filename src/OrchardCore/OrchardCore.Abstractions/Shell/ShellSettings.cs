@@ -150,8 +150,8 @@ namespace OrchardCore.Environment.Shell
 
             _released = true;
 
-            _settings?.Dispose();
-            _configuration?.Dispose();
+            _settings?.Release();
+            _configuration?.Release();
         }
 
         ~ShellSettings() => Release();

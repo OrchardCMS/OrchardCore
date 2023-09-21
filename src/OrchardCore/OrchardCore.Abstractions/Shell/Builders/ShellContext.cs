@@ -12,9 +12,10 @@ namespace OrchardCore.Environment.Shell.Builders
     /// </summary>
     public class ShellContext : IDisposable, IAsyncDisposable
     {
-        private bool _disposed;
         private List<WeakReference<ShellContext>> _dependents;
         private readonly SemaphoreSlim _semaphore = new(1);
+        private bool _unloaded;
+        private bool _disposed;
 
         internal volatile int _refCount;
         internal volatile int _terminated;
@@ -101,7 +102,16 @@ namespace OrchardCore.Environment.Shell.Builders
         public int ActiveScopes => _refCount;
 
         /// <summary>
-        /// Mark the <see cref="ShellContext"/> as released and then a candidate to be disposed.
+        /// Marks the <see cref="ShellContext"/> as unloaded and then releases it.
+        /// </summary>
+        public Task UnloadAsync()
+        {
+            _unloaded = true;
+            return ReleaseInternalAsync();
+        }
+
+        /// <summary>
+        /// Marks the <see cref="ShellContext"/> as released and then a candidate to be disposed.
         /// </summary>
         public Task ReleaseAsync() => ReleaseInternalAsync();
 
@@ -230,7 +240,7 @@ namespace OrchardCore.Environment.Shell.Builders
             GC.SuppressFinalize(this);
         }
 
-        private void Close()
+        public void Close()
         {
             if (_disposed)
             {
@@ -248,7 +258,7 @@ namespace OrchardCore.Environment.Shell.Builders
             Terminate();
         }
 
-        private async ValueTask CloseAsync()
+        public async ValueTask CloseAsync()
         {
             if (_disposed)
             {
@@ -277,7 +287,13 @@ namespace OrchardCore.Environment.Shell.Builders
             Blueprint = null;
             Pipeline = null;
 
-            // To be still retrieved by name in the background.
+            if (_unloaded)
+            {
+                Settings.Release();
+            }
+
+            // Remove the reference to the settings but keep a way
+            // to retrieve the released shells in the background.
             Settings = new ShellSettings() { Name = Settings.Name };
         }
 
