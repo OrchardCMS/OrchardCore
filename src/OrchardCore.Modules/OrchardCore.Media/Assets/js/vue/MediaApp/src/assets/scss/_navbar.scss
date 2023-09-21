@@ -8,13 +8,22 @@
     .media-filter {
         margin-top: 3px;
 
+        .fa-filter {
+            position: relative;
+            left: 23px;
+            top: 8px;
+            z-index: 999;
+            margin-left: -20px
+        }
+
         .input-filter {
             border-color: $gray-400;
             border-right: none;
             max-width: 80px;
             padding-left: 32px;
 
-            &:focus, &:focus + .input-group-append > button {
+            &:focus,
+            &:focus + .input-group-append > button {
                 border-color: $gray-700;
             }
         }
@@ -78,13 +87,12 @@
 
         .breadcrumb-item {
             display: inline-block;
-            
+
             a {
                 color: $gray-700;
             }
         }
     }
-
 
     .breadcrumb-buttons {
         justify-content: flex-start;
