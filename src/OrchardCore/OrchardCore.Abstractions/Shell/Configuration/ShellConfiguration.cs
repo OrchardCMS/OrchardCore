@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -14,16 +15,17 @@ namespace OrchardCore.Environment.Shell.Configuration
     /// from the application configuration 'appsettings.json', the 'App_Data/appsettings.json'
     /// file and then the 'App_Data/Sites/{tenant}/appsettings.json' file.
     /// </summary>
-    public class ShellConfiguration : IShellConfiguration
+    public class ShellConfiguration : IShellConfiguration // , IDisposable
     {
-        private IConfigurationRoot _configuration;
+        internal IConfigurationRoot _configuration;
         private UpdatableDataProvider _updatableData;
         private readonly IEnumerable<KeyValuePair<string, string>> _initialData;
 
         private readonly string _name;
         private readonly Func<string, Task<IConfigurationBuilder>> _configBuilderFactory;
-        private readonly IEnumerable<IConfigurationProvider> _configurationProviders;
+        private readonly IConfiguration _initialConfiguration;
         private readonly SemaphoreSlim _semaphore = new(1);
+        private bool _disposed;
 
         public ShellConfiguration()
         {
@@ -31,9 +33,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
         public ShellConfiguration(IConfiguration configuration)
         {
-            _configurationProviders = new ConfigurationBuilder()
-                .AddConfiguration(configuration)
-                .Build().Providers;
+            _initialConfiguration = configuration;
         }
 
         public ShellConfiguration(string name, Func<string, Task<IConfigurationBuilder>> factory)
@@ -50,19 +50,17 @@ namespace OrchardCore.Environment.Shell.Configuration
         {
             _name = name;
 
-            if (configuration._configuration != null)
+            if (configuration._configuration is not null)
             {
-                _configurationProviders = configuration._configuration.Providers
-                    .Where(p => p is not UpdatableDataProvider).ToArray();
-
+                _initialConfiguration = configuration._configuration;
                 _initialData = configuration._updatableData.ToArray();
 
                 return;
             }
 
-            if (name == null)
+            if (name is null)
             {
-                _configurationProviders = configuration._configurationProviders;
+                _initialConfiguration = configuration._initialConfiguration;
                 _initialData = configuration._initialData;
                 return;
             }
@@ -72,7 +70,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
         private void EnsureConfiguration()
         {
-            if (_configuration != null)
+            if (_configuration is not null)
             {
                 return;
             }
@@ -82,7 +80,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
         internal async Task EnsureConfigurationAsync()
         {
-            if (_configuration != null)
+            if (_configuration is not null)
             {
                 return;
             }
@@ -90,30 +88,25 @@ namespace OrchardCore.Environment.Shell.Configuration
             await _semaphore.WaitAsync();
             try
             {
-                if (_configuration != null)
+                if (_configuration is not null)
                 {
                     return;
                 }
 
-                var providers = new List<IConfigurationProvider>();
+                var builder = _configBuilderFactory is not null ?
+                    await _configBuilderFactory.Invoke(_name)
+                    : new ConfigurationBuilder();
 
-                if (_configBuilderFactory != null)
+                if (_initialConfiguration is not null)
                 {
-                    providers.AddRange(new ConfigurationBuilder()
-                        .AddConfiguration((await _configBuilderFactory.Invoke(_name)).Build())
-                        .Build().Providers);
-                }
-
-                if (_configurationProviders != null)
-                {
-                    providers.AddRange(_configurationProviders);
+                    builder.AddConfiguration(_initialConfiguration, shouldDisposeConfiguration: true);
                 }
 
                 _updatableData = new UpdatableDataProvider(_initialData ?? Enumerable.Empty<KeyValuePair<string, string>>());
 
-                providers.Add(_updatableData);
-
-                _configuration = new ConfigurationRoot(providers);
+                _configuration = builder
+                    .AddConfiguration(new ConfigurationRoot(new[] { _updatableData }), shouldDisposeConfiguration: true)
+                    .Build();
             }
             finally
             {
@@ -122,7 +115,7 @@ namespace OrchardCore.Environment.Shell.Configuration
         }
 
         /// <summary>
-        /// The tenant lazily built <see cref="IConfiguration"/>.
+        /// The tenant configuration lazily built <see cref="IConfiguration"/>.
         /// </summary>
         private IConfiguration Configuration
         {
@@ -150,19 +143,22 @@ namespace OrchardCore.Environment.Shell.Configuration
             }
         }
 
-        public IConfigurationSection GetSection(string key)
-        {
-            return Configuration.GetSectionCompat(key);
-        }
+        public IConfigurationSection GetSection(string key) => Configuration.GetSectionCompat(key);
 
-        public IEnumerable<IConfigurationSection> GetChildren()
-        {
-            return Configuration.GetChildren();
-        }
+        public IEnumerable<IConfigurationSection> GetChildren() => Configuration.GetChildren();
 
-        public IChangeToken GetReloadToken()
+        public IChangeToken GetReloadToken() => Configuration.GetReloadToken();
+
+        public void Dispose()
         {
-            return Configuration.GetReloadToken();
+            if (_disposed)
+            {
+                return;
+            }
+
+            _disposed = true;
+
+            (_configuration as IDisposable)?.Dispose();
         }
     }
 }

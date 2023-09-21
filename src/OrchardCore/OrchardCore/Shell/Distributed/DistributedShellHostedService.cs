@@ -117,6 +117,8 @@ namespace OrchardCore.Environment.Shell.Distributed
                             await _shellHost.ReloadShellContextAsync(defaultContext.Settings, eventSource: false);
                         }
 
+                        defaultSettings.Release();
+
                         continue;
                     }
 
@@ -317,6 +319,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             var defaultSettings = await _shellSettingsManager.LoadSettingsAsync(ShellSettings.DefaultShellName);
             if (!defaultSettings.IsRunning())
             {
+                defaultSettings.Release();
                 return;
             }
 

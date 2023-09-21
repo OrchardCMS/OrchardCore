@@ -25,8 +25,10 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         public static readonly char[] HostSeparators = new[] { ',', ' ' };
 
-        private readonly ShellConfiguration _settings;
-        private readonly ShellConfiguration _configuration;
+        private ShellConfiguration _settings;
+        private ShellConfiguration _configuration;
+        internal volatile int _refCount;
+        private bool _released;
 
         /// <summary>
         /// Initializes a new <see cref="ShellSettings"/>.
@@ -56,6 +58,11 @@ namespace OrchardCore.Environment.Shell
             _configuration = new ShellConfiguration(settings.Name, settings._configuration);
             Name = settings.Name;
         }
+
+        /// <summary>
+        /// Whether this instance has been released or not.
+        /// </summary>
+        public bool Released => _released;
 
         /// <summary>
         /// The tenant name.
@@ -133,5 +140,20 @@ namespace OrchardCore.Environment.Shell
         /// Ensures that the tenant configuration is initialized.
         /// </summary>
         public Task EnsureConfigurationAsync() => _configuration.EnsureConfigurationAsync();
+
+        public void Release()
+        {
+            if (_released)
+            {
+                return;
+            }
+
+            _released = true;
+
+            _settings?.Dispose();
+            _configuration?.Dispose();
+        }
+
+        ~ShellSettings() => Release();
     }
 }

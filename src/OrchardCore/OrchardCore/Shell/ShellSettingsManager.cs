@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.CommandLine;
 using Microsoft.Extensions.Configuration.EnvironmentVariables;
+using Microsoft.Extensions.Configuration.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Models;
@@ -58,6 +59,7 @@ namespace OrchardCore.Environment.Shell
                     .AddSourcesAsync(_settingsSources))
                     .Build();
 
+                using var disposable = tenantsSettings as IDisposable;
                 var tenants = tenantsSettings.GetChildren().Select(section => section.Key);
                 var allTenants = _configuredTenants.Concat(tenants).Distinct().ToArray();
 
@@ -66,9 +68,9 @@ namespace OrchardCore.Environment.Shell
                 foreach (var tenant in allTenants)
                 {
                     var tenantSettings = new ConfigurationBuilder()
-                        .AddConfiguration(_configuration)
-                        .AddConfiguration(_configuration.GetSection(tenant))
-                        .AddConfiguration(tenantsSettings.GetSection(tenant))
+                        .AddConfiguration(_configuration, shouldDisposeConfiguration: true)
+                        .AddConfiguration(_configuration.GetSection(tenant), shouldDisposeConfiguration: true)
+                        .AddConfiguration(tenantsSettings.GetSection(tenant), shouldDisposeConfiguration: true)
                         .Build();
 
                     var settings = new ShellConfiguration(tenantSettings);
@@ -101,7 +103,9 @@ namespace OrchardCore.Environment.Shell
                     .AddSourcesAsync(_settingsSources))
                     .Build();
 
+                using var disposable = tenantsSettings as IDisposable;
                 var tenants = tenantsSettings.GetChildren().Select(section => section.Key);
+
                 return _configuredTenants.Concat(tenants).Distinct().ToArray();
             }
             finally
@@ -121,10 +125,12 @@ namespace OrchardCore.Environment.Shell
                     .AddSourcesAsync(tenant, _settingsSources))
                     .Build();
 
+                using var disposable = tenantsSettings as IDisposable;
+
                 var tenantSettings = new ConfigurationBuilder()
-                    .AddConfiguration(_configuration)
-                    .AddConfiguration(_configuration.GetSection(tenant))
-                    .AddConfiguration(tenantsSettings.GetSection(tenant))
+                    .AddConfiguration(_configuration, shouldDisposeConfiguration: true)
+                    .AddConfiguration(_configuration.GetSection(tenant), shouldDisposeConfiguration: true)
+                    .AddConfiguration(tenantsSettings.GetSection(tenant), shouldDisposeConfiguration: true)
                     .Build();
 
                 var settings = new ShellConfiguration(tenantSettings);
@@ -154,9 +160,11 @@ namespace OrchardCore.Environment.Shell
                 }
 
                 var configuration = new ConfigurationBuilder()
-                    .AddConfiguration(_configuration)
-                    .AddConfiguration(_configuration.GetSection(settings.Name))
+                    .AddConfiguration(_configuration, shouldDisposeConfiguration: true)
+                    .AddConfiguration(_configuration.GetSection(settings.Name), shouldDisposeConfiguration: true)
                     .Build();
+
+                using var disposable = configuration as IDisposable;
 
                 var shellSettings = new ShellSettings()
                 {
@@ -260,18 +268,48 @@ namespace OrchardCore.Environment.Shell
                 return;
             }
 
-            var lastProviders = (_applicationConfiguration as IConfigurationRoot)?.Providers
-                .Where(p => p is EnvironmentVariablesConfigurationProvider ||
-                            p is CommandLineConfigurationProvider)
-                .ToArray();
+            var providers = new List<IConfigurationProvider>();
+            var lastProviders = new List<IConfigurationProvider>();
+            var appConfigurationBuilder = new ConfigurationBuilder();
 
-            var configurationBuilder = await new ConfigurationBuilder()
-                .AddConfiguration(_applicationConfiguration)
+            var applicationProviders = (_applicationConfiguration as IConfigurationRoot)?.Providers;
+            foreach ( var provider in applicationProviders)
+            {
+                if (provider is EnvironmentVariablesConfigurationProvider || provider is CommandLineConfigurationProvider)
+                {
+                    lastProviders.Add(provider);
+                    continue;
+                }
+
+                if (provider is JsonConfigurationProvider jsonProvider)
+                {
+                    var tenantJsonProvider = new TenantJsonConfigurationProvider(new TenantJsonConfigurationSource
+                    {
+                        FileProvider = jsonProvider.Source.FileProvider,
+                        Path = jsonProvider.Source.Path,
+                        Optional = jsonProvider.Source.Optional,
+                        ReloadOnChange = jsonProvider.Source.ReloadOnChange,
+                    });
+
+                    if (tenantJsonProvider.Source.FileProvider is null)
+                    {
+                        tenantJsonProvider.Source.ResolveFileProvider();
+                    }
+
+                    providers.Add(tenantJsonProvider);
+                    continue;
+                }
+
+                providers.Add(provider);
+            }
+
+            var configurationBuilder = await appConfigurationBuilder
+                .AddConfiguration(new ConfigurationRoot(providers), shouldDisposeConfiguration: true)
                 .AddSourcesAsync(_tenantsConfigSources);
 
-            if (lastProviders?.Length > 0)
+            if (lastProviders.Count > 0)
             {
-                configurationBuilder.AddConfiguration(new ConfigurationRoot(lastProviders));
+                configurationBuilder.AddConfiguration(new ConfigurationRoot(lastProviders), shouldDisposeConfiguration: true);
             }
 
             var configuration = configurationBuilder.Build().GetSection("OrchardCore");
@@ -287,8 +325,8 @@ namespace OrchardCore.Environment.Shell
                 await _tenantConfigSemaphore.WaitAsync();
                 try
                 {
-                    var builder = new ConfigurationBuilder().AddConfiguration(_configuration);
-                    builder.AddConfiguration(configuration.GetSection(tenant));
+                    var builder = new ConfigurationBuilder().AddConfiguration(_configuration, shouldDisposeConfiguration: true);
+                    builder.AddConfiguration(_configuration.GetSection(tenant), shouldDisposeConfiguration: true);
                     return await builder.AddSourcesAsync(tenant, _tenantConfigSources);
                 }
                 finally

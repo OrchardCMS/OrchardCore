@@ -92,7 +92,6 @@ namespace OrchardCore.Environment.Shell
                     var semaphore = _shellSemaphores.GetOrAdd(settings.Name, (name) => new SemaphoreSlim(1));
 
                     await semaphore.WaitAsync();
-
                     try
                     {
                         if (!_shellContexts.TryGetValue(settings.Name, out shell))
@@ -199,7 +198,9 @@ namespace OrchardCore.Environment.Shell
 
             if (!settings.IsInitializing())
             {
+                var previous = settings;
                 settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
+                previous.Release();
             }
 
             var count = 0;
@@ -218,7 +219,17 @@ namespace OrchardCore.Environment.Shell
                     continue;
                 }
 
-                _shellSettings[settings.Name] = settings;
+                _shellSettings.AddOrUpdate(settings.Name, (key) => settings, (key, existing) =>
+                {
+                    if (existing != settings)
+                    {
+                        existing.Release();
+                    }
+
+                    return settings;
+                });
+
+                //_shellSettings[settings.Name] = settings;
 
                 if (CanRegisterShell(settings))
                 {
@@ -230,15 +241,18 @@ namespace OrchardCore.Environment.Shell
                     return;
                 }
 
-                var currentVersionId = settings.VersionId;
+                // var currentVersionId = settings.VersionId;
 
-                settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
+                /*using*/ var loadedSettings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
 
                 // Consistency: We may have been the last to add the shell but not with the last settings.
-                if (settings.VersionId == currentVersionId)
+                if (settings.VersionId == loadedSettings.VersionId)
+                //if (settings.VersionId == currentVersionId)
                 {
                     return;
                 }
+
+                loadedSettings.Release();
             }
 
             throw new ShellHostReloadException(
@@ -378,6 +392,11 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         private Task<ShellContext> CreateShellContextAsync(ShellSettings settings)
         {
+            // if (settings.Disposed && _shellSettings.TryGetValue(settings.Name, out var currentSettings))
+            // {
+            //     settings = currentSettings;
+            // }
+
             if (settings.IsUninitialized())
             {
                 if (_logger.IsEnabled(LogLevel.Debug))

@@ -276,6 +276,9 @@ namespace OrchardCore.Environment.Shell.Builders
             IsActivated = false;
             Blueprint = null;
             Pipeline = null;
+
+            // To be still retrieved by name in the background.
+            Settings = new ShellSettings() { Name = Settings.Name };
         }
 
         ~ShellContext() => Close();
