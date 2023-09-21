@@ -209,7 +209,6 @@ namespace OrchardCore.Environment.Shell
                 if (_shellContexts.TryRemove(settings.Name, out var context))
                 {
                     _runningShellTable.Remove(settings);
-
                     await context.UnloadAsync();
                 }
 
@@ -219,16 +218,6 @@ namespace OrchardCore.Environment.Shell
                     // Atomicity: We may have been the last to load the settings but unable to add the shell.
                     continue;
                 }
-
-                //_shellSettings.AddOrUpdate(settings.Name, (key) => settings, (key, existing) =>
-                //{
-                //    if (existing != settings)
-                //    {
-                //        existing.Release();
-                //    }
-
-                //    return settings;
-                //});
 
                 _shellSettings[settings.Name] = settings;
 
@@ -242,14 +231,11 @@ namespace OrchardCore.Environment.Shell
                     return;
                 }
 
-                // var currentVersionId = settings.VersionId;
-
-                /*using*/ var loadedSettings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
-
                 // Consistency: We may have been the last to add the shell but not with the last settings.
+                var loadedSettings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
                 if (settings.VersionId == loadedSettings.VersionId)
-                //if (settings.VersionId == currentVersionId)
                 {
+                    loadedSettings.Release();
                     return;
                 }
 
