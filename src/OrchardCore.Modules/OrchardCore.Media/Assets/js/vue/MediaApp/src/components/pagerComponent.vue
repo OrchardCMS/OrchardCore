@@ -7,9 +7,9 @@
 
 <template>
     <div>
-        <nav id="media-pager" class="d-flex justify-content-center" aria-label="Pagination Navigation" role="navigation"
+        <nav id="media-pager" aria-label="Pagination Navigation" role="navigation"
             :data-computed-trigger="itemsInCurrentPage.length">
-            <ul class="pagination pagination-sm m-0">
+            <ul class="pagination pagination-sm">
                 <li class="page-item media-first-button" :class="{ disabled: !canDoFirst }">
                     <a class="page-link" href="#" :tabindex="canDoFirst ? 0 : -1" v-on:click="goFirst">
                         {{ t.PagerFirstButton }}
@@ -51,13 +51,13 @@
             </ul>
         </nav>
         <nav class="d-flex justify-content-center">
-            <ul class="pagination pagination-sm m-0 mt-2">
+            <ul class="pagination pagination-sm mt-2">
                 <li class="page-item ms-4 page-info">
-                    <span class="page-link disabled text-muted ">{{ t.PagerPageLabel }} {{ current +
+                    <span class="page-link disabled text-muted">{{ t.PagerPageLabel }} {{ current +
                         1 }}/{{ totalPages }}</span>
                 </li>
                 <li class="page-item ms-4 total-info">
-                    <span class="page-link disabled text-muted "> {{ t.PagerTotalLabel }} {{ total }}</span>
+                    <span class="page-link disabled text-muted"> {{ t.PagerTotalLabel }} {{ total }}</span>
                 </li>
             </ul>
         </nav>

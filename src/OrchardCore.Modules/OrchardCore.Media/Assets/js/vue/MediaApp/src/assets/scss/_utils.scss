@@ -1,8 +1,6 @@
 // media item title. Shared by grid and table-view
 .media-container-main-item-title {
     border-top: solid 1px $gray-300;
-    padding-top: 24px;
-    position: relative;
     overflow: hidden;
 
     .media-filename {
@@ -20,4 +18,31 @@
 
 [v-cloak] {
     display: none !important;
+}
+
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: 0.25rem;
+}
+
+.card-body {
+    flex: 1 1 auto;
+    padding: 1rem 1rem;
+}
+
+.card-footer:last-child {
+    border-radius: 0 0 calc(0.25rem - 1px) calc(0.25rem - 1px);
+}
+
+.card-footer {
+    padding: 0.5rem 1rem;
+    background-color: rgba(0,0,0,.03);
+    border-top: 1px solid rgba(0,0,0,.125);
 }

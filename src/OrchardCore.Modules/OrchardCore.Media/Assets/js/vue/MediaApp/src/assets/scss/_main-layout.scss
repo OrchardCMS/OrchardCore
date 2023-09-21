@@ -8,6 +8,7 @@
     background-color: $body-bg;
     width: 100%;
     height: 100vh;
+    color: #000;
     
     ::-webkit-scrollbar {
         width: 4px;
@@ -38,6 +39,7 @@
                 flex-grow: 1;
                 flex-shrink: 0;
                 overflow: auto;
+                height: calc(100vh - 236px);
             }
 
             .media-container-footer {
@@ -62,8 +64,7 @@
         }
         // we don't want left navigation 100% tall when on stacked over the thumbs list
         #navigationApp {
-            height: 100%;
-            width: 240px;
+            min-width: 240px;
             overflow: auto;
             scrollbar-width: thin;
             scrollbar-color: #495057 #EAEAEA;

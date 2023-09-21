@@ -258,6 +258,7 @@ export default defineComponent({
                 }
 
                 uVfm.close(this.getModalName('media', action));
+                moveAssetsState = {};
             }
         },
     }

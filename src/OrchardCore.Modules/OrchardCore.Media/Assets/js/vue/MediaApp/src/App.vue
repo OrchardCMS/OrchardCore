@@ -117,7 +117,7 @@
                         t.FolderFilterEmpty }}</div>
                     <div class="alert-info p-2" v-show="mediaItems.length < 1">{{ t.FolderEmpty }}</div>
                 </div>
-                <div v-show="filteredMediaItems.length > 0" class="media-container-footer p-3">
+                <div v-show="filteredMediaItems.length > 0" class="media-container-footer p-3 pb-0">
                     <pager :t="t" :source-items="filteredMediaItems"> </pager>
                 </div>
             </div>
@@ -142,7 +142,7 @@ import DragDropThumbnail from './assets/drag-thumbnail.png';
 import { ModalsContainer, useVfm } from 'vue-final-modal'
 import ModalConfirm from './components/ModalConfirm.vue'
 
-import "bootstrap/dist/css/bootstrap.min.css" // TODO remove
+//import "bootstrap/dist/css/bootstrap.min.css" // TODO remove
 
 const debug = dbg("oc:media-app");
 
@@ -281,6 +281,7 @@ export default defineComponent({
 
         this.emitter.on('mediaToggleRequested', (media) => {
             self.toggleSelectionOfMedia(media);
+            self.isSelectedAll = false;
         })
 
         this.emitter.on('renameMediaRequested', (media) => {
@@ -367,7 +368,7 @@ export default defineComponent({
             return result;
         },
         thumbSize: function () {
-            return this.smallThumbs ? 100 : 240;
+            return this.smallThumbs ? 150 : 300;
         },
         currentPrefs: {
             get: function () {

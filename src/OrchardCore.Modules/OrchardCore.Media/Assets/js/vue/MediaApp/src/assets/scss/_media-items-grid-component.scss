@@ -1,7 +1,8 @@
 ol.media-items-grid {
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     align-items: stretch;
+    gap: 15px;
 
     &.row {
         margin-left: 0;
@@ -9,28 +10,18 @@ ol.media-items-grid {
     }
 
     li {
-        margin-bottom: 16px;
         cursor: pointer;
         margin-left: 0;
-        margin-right: 1.9em;
         border-radius: 0;
 
         .inline-media-button {
             color: $gray-700;
-            opacity: 0;
-            padding-top: 0px;
-            position: absolute;
-            top: 0px;
-            right: 0px;
-            border-radius: 0px;
-            margin-top: -32px;
-            transition: all 0.2s;
-            &.delete-button {
-                margin-right: 2.0rem;
-            }
-            &.edit-button {
-                margin-right: 3.8rem;
-            }
+            margin-left: 5px;
+        }
+
+        .card-footer{
+            display: flex;
+            justify-content: center;
         }
 
         &.selected {
@@ -52,6 +43,7 @@ ol.media-items-grid {
         background: white;
 
         img {
+            width: 100%;
             background: repeating-conic-gradient($gray-200 0% 25%, transparent 0% 50%) 50% / 10px 10px;
         }
     }

@@ -2,28 +2,35 @@
     <media-items-grid> component 
 -->
 <template>
-    <ol class="row media-items-grid">
+    <ol class="row media-items-grid" :style="'grid-template-columns: repeat(auto-fill, minmax(' + thumbSize + 'px, 1fr));'">
         <li v-for="media in filteredMediaItems" :key="media.name" class="media-item media-container-main-list-item card p-0"
-            :style="{ width: thumbSize + 2 + 'px' }" :class="{ selected: isMediaSelected(media) }"
-            v-on:click.stop="toggleSelectionOfMedia(media)" draggable="true" v-on:dragstart="dragStart(media, $event)">
-            <div class="thumb-container" :style="{ height: thumbSize + 'px' }">
-                <img v-if="media.mime.startsWith('image')" :src="buildMediaUrl(media.url, thumbSize)"
-                    :data-mime="media.mime" :style="{ maxHeight: thumbSize + 'px', maxWidth: thumbSize + 'px' }" />
+            :class="{ selected: isMediaSelected(media) }" v-on:click.stop="toggleSelectionOfMedia(media)" draggable="true"
+            v-on:dragstart="dragStart(media, $event)">
+            <div class="thumb-container">
+                <img class="img-fluid" v-if="media.mime.startsWith('image')" :src="buildMediaUrl(media.url, thumbSize)"
+                    :data-mime="media.mime" />
                 <i v-else class="fa fa-file-o fa-lg" :data-mime="media.mime"></i>
             </div>
             <div class="media-container-main-item-title card-body">
+                <span class="media-filename card-text small" :title="media.name">{{ media.name }}</span>
+            </div>
+            <div class="card-footer">
+                <a :href="basePath + media.url" target="_blank"
+                    class="btn btn-light btn-sm inline-media-button view-button"><fa-icon
+                        icon="fa-solid fa-download"></fa-icon></a>
                 <a alt="{{ t.EditButton }}" href="javascript:void(0)"
-                    class="btn btn-light btn-sm float-end inline-media-button edit-button"
+                    class="btn btn-light btn-sm inline-media-button edit-button"
                     @click="() => openModal(media, 'rename')"><fa-icon icon="fa-solid fa-edit"></fa-icon>
-                    <ModalInputConfirm action-name="Rename" :modal-name="getModalName(media.name, 'rename')" :new-name="media.name"
-                        :title="t.RenameMediaTitle" @confirm="(newName) => confirm(media, 'rename', newName)">
+                    <ModalInputConfirm action-name="Rename" :modal-name="getModalName(media.name, 'rename')"
+                        :new-name="media.name" :title="t.RenameMediaTitle"
+                        @confirm="(newName) => confirm(media, 'rename', newName)">
                         <div>
                             <label>{{ t.RenameMediaMessage }}</label>
                         </div>
                     </ModalInputConfirm>
                 </a>
                 <a alt="{{ t.DeleteButton }}" href="javascript:void(0)"
-                    class="btn btn-light btn-sm float-end inline-media-button delete-button"
+                    class="btn btn-light btn-sm inline-media-button delete-button"
                     @click="() => openModal(media, 'delete')"><fa-icon icon="fa-solid fa-trash"></fa-icon>
                     <ModalConfirm :modal-name="getModalName(media.name, 'delete')" :title="t.DeleteMediaTitle"
                         @confirm="() => confirm(media, 'delete', '')">
@@ -31,10 +38,6 @@
                         <p>{{ media.name }}</p>
                     </ModalConfirm>
                 </a>
-                <a :href="basePath + media.url" target="_blank"
-                    class="btn btn-light btn-sm float-end inline-media-button view-button"><fa-icon
-                        icon="fa-solid fa-download"></fa-icon></a>
-                <span class="media-filename card-text small" :title="media.name">{{ media.name }}</span>
             </div>
         </li>
     </ol>
