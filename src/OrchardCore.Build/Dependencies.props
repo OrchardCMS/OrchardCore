@@ -58,9 +58,9 @@
     <PackageManagement Include="StackExchange.Redis" Version="2.6.122" />
     <PackageManagement Include="StyleCop.Analyzers" Version="1.1.118" />
     <PackageManagement Include="System.Linq.Async" Version="6.0.1" />
-    <PackageManagement Include="xunit" Version="2.5.0" />
-    <PackageManagement Include="xunit.analyzers" Version="1.2.0" />
-    <PackageManagement Include="xunit.runner.visualstudio" Version="2.5.0" />
+    <PackageManagement Include="xunit" Version="2.5.1" />
+    <PackageManagement Include="xunit.analyzers" Version="1.3.0" />
+    <PackageManagement Include="xunit.runner.visualstudio" Version="2.5.1" />
     <PackageManagement Include="YesSql" Version="3.3.0" />
     <PackageManagement Include="YesSql.Abstractions" Version="3.3.0" />
     <PackageManagement Include="YesSql.Core" Version="3.3.0" />
