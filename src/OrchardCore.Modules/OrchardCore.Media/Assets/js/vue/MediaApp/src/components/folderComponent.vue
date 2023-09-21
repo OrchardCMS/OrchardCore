@@ -1,24 +1,31 @@
 <template>
     <li :class="{ selected: isSelected }" v-on:dragleave.prevent="handleDragLeave($event);"
         v-on:dragover.prevent.stop="handleDragOver($event);" v-on:drop.prevent.stop="moveMediaToFolder(model, $event)">
+        <ModalConfirm :modal-name="getModalName('media', 'move')" :title="t.MoveMediaTitle"
+            @confirm="(elem) => confirm(elem, 'move')">
+            <p>{{ t.MoveMediaMessage }}</p>
+        </ModalConfirm>
         <div :class="{ folderhovered: isHovered, treeroot: level == 1 }">
-            <a href="javascript:;" v-on:click="select" draggable="false" class="folder-menu-item">
-                <span v-on:click.stop="toggle" class="expand" :class="{ opened: open, closed: !open, empty: empty }">
-                    <fa-icon v-if="open" icon="fas fa-chevron-left"></fa-icon>
+            <a href="javascript:void(0)" :style="{ 'padding-left': padding + 'px' }" v-on:click="select" draggable="false"
+                class="folder-menu-item">
+                <span v-on:click.stop="toggle" class="expand">
+                    <fa-icon v-if="!empty && open" icon="fas fa-chevron-down"></fa-icon>
+                    <fa-icon v-if="!empty && !open" icon="fas fa-chevron-up"></fa-icon>
                 </span>
                 <div class="folder-name ms-2">{{ model?.name }}</div>
                 <div class="btn-group folder-actions">
-                    <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="createFolder"
+                    <a v-cloak href="javascript:void(0)" class="btn btn-sm" @click="() => openModal('folder', 'create')"
                         v-if="isSelected || isRoot"><fa-icon icon="fas fa-plus"></fa-icon>
-                        <ModalConfirm :modal-name="getModalName('folder', 'create')" :title="t.CreateFolderTitle"
-                            @confirm="() => confirm('create')">
+                        <ModalInputConfirm action-name="Create folder" :modal-name="getModalName('folder', 'create')"
+                            :new-name="t.NewFolder" :title="t.CreateFolderTitle"
+                            @confirm="(folderName) => confirm(folderName, 'create')">
                             <p>{{ t.CreateFolderMessage }}</p>
-                        </ModalConfirm>
+                        </ModalInputConfirm>
                     </a>
-                    <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="deleteFolder"
+                    <a v-cloak href="javascript:void(0)" class="btn btn-sm" @click="() => openModal('folder', 'delete')"
                         v-if="isSelected && !isRoot"><fa-icon icon="fas fa-trash"></fa-icon>
                         <ModalConfirm :modal-name="getModalName('folder', 'delete')" :title="t.DeleteFolderTitle"
-                            @confirm="() => confirm('delete')">
+                            @confirm="() => confirm('folder', 'delete')">
                             <p>{{ t.DeleteFolderMessage }}</p>
                         </ModalConfirm>
                     </a>
@@ -26,7 +33,7 @@
             </a>
         </div>
         <ol v-show="open">
-            <folder v-for="folder in children" :base-path="basePath" :t="t" :key="folder.path" :model="folder"
+            <folder :move-media-list-url="moveMediaListUrl" v-for="folder in children" :base-path="basePath" :t="t" :key="folder.path" :model="folder"
                 :selected-in-media-app="selectedInMediaApp" :level="(level ? level : 0) + 1">
             </folder>
         </ol>
@@ -39,13 +46,16 @@ import axios from 'axios';
 import dbg from 'debug';
 import { useVfm } from 'vue-final-modal'
 import ModalConfirm from './ModalConfirm.vue'
+import ModalInputConfirm from './ModalInputConfirm.vue'
 import { IMedia } from '../interfaces/interfaces';
 
 const debug = dbg("oc:media-app");
+let moveAssetsState = {};
 
 export default defineComponent({
     components: {
         ModalConfirm: ModalConfirm,
+        ModalInputConfirm: ModalInputConfirm,
     },
     name: "folder",
     props: {
@@ -59,7 +69,11 @@ export default defineComponent({
         t: {
             type: Object,
             required: true,
-        }
+        },
+        moveMediaListUrl: {
+            type: String,
+            required: true
+        },
     },
     data() {
         return {
@@ -68,7 +82,7 @@ export default defineComponent({
             parent: null,
             isHovered: false,
             padding: 0,
-            getFoldersUrl: document.getElementById('mediaApp')?.dataset.getFoldersUrl
+            getFoldersUrl: document.getElementById('mediaApp')?.dataset.getFoldersUrl,
         }
     },
     computed: {
@@ -104,10 +118,18 @@ export default defineComponent({
             }
         });
 
-        this.emitter.on('addFolder', function (target, folder) {
+        this.emitter.on('addFolder', function (element) {
+            let target = element.selectedFolder;
+            let folder = element.data;
+
             if (self.model == target) {
                 if (self.children !== null) {
                     self.children.push(folder);
+                    self.children.sort(function (a, b) {
+                        if (a.name > b.name) { return -1; }
+                        if (a.name < b.name) { return 1; }
+                        return 0;
+                    });
                 }
 
                 folder.parent = self.model;
@@ -139,8 +161,8 @@ export default defineComponent({
             this.emitter.emit('folderSelected', this.model);
             this.loadChildren();
         },
-        createFolder: function () {
-            this.emitter.emit('createFolderRequested');
+        createFolder: function (media: String) {
+            this.emitter.emit('createFolderRequested', media);
         },
         deleteFolder: function () {
             this.emitter.emit('deleteFolderRequested');
@@ -171,7 +193,7 @@ export default defineComponent({
             this.isHovered = false;
         },
         moveMediaToFolder: function (folder, e) {
-
+            debug("Move media to folder", folder, e);
             let self = this;
             self.isHovered = false;
 
@@ -193,52 +215,50 @@ export default defineComponent({
             }
 
             if (sourceFolder === targetFolder) {
-                alert(document.querySelector('#sameFolderMessage')?.nodeValue);
+                alert(this.$props.t.SameFolderMessage);
                 return;
             }
 
-            /*             confirmDialog({...$("#moveMedia").data(), callback: function (resp) {
-                            if (resp) {
-                                $.ajax({
-                                    url: $('#moveMediaListUrl').val(),
-                                    method: 'POST',
-                                    data: {
-                                        __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
-                                        mediaNames: mediaNames,
-                                        sourceFolder: sourceFolder,
-                                        targetFolder: targetFolder
-                                    },
-                                    success: function () {
-                                        bus.$emit('mediaListMoved'); // MediaApp will listen to this, and then it will reload page so the moved medias won't be there anymore
-                                    },
-                                    error: function (error) {
-                                        console.error(error.responseText);
-                                        bus.$emit('mediaListMoved', error.responseText);
-                                    }
-                                });
-                            }
-                        }}); */
+            moveAssetsState = {
+                mediaNames: mediaNames,
+                sourceFolder: sourceFolder,
+                targetFolder: targetFolder
+            };
+
+            const uVfm = useVfm();
+
+            uVfm.open(this.getModalName('media', 'move'));
         },
         getModalName: function (name: String, action: String) {
             return action + "-media-item-table-" + name;
         },
-        openModal: function (media: IMedia, action: string) {
+        openModal: function (media: String, action: String) {
             const uVfm = useVfm();
 
-            uVfm.open(this.getModalName(media.name, action));
+            uVfm.open(this.getModalName(media, action));
         },
-        confirm: function (action: String) {
+        confirm: function (media: String, action: String) {
+            let self = this;
             const uVfm = useVfm();
 
             if (action == "delete") {
                 this.deleteFolder();
+
+                uVfm.close(this.getModalName(media, action));
             }
             else if (action == "create") {
                 //debug("Confirm folder create:", newName);
-                this.createFolder();
-            }
+                this.createFolder(media);
 
-            uVfm.close(this.getModalName('folder', action));
+                uVfm.close(this.getModalName('folder', action));
+            }
+            else if (action == "move") {
+                if (moveAssetsState.mediaNames.length > 0) {
+                    self.emitter.emit('mediaListMove', moveAssetsState);
+                }
+
+                uVfm.close(this.getModalName('media', action));
+            }
         },
     }
 });

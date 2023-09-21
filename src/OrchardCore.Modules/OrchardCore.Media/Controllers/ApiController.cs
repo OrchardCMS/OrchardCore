@@ -318,7 +318,7 @@ namespace OrchardCore.Media.Controllers
 
         [HttpPost]
         [Route("DeleteMediaList")]
-        public async Task<IActionResult> DeleteMediaList(string[] paths)
+        public async Task<IActionResult> DeleteMediaList([FromBody] List<String> paths)
         {
             if (paths == null)
             {
@@ -351,31 +351,31 @@ namespace OrchardCore.Media.Controllers
 
         [HttpPost]
         [Route("MoveMediaList")]
-        public async Task<IActionResult> MoveMediaList(string[] mediaNames, string sourceFolder, string targetFolder)
+        public async Task<IActionResult> MoveMediaList([FromBody] MoveMedia model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
-                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)sourceFolder)
-                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)targetFolder))
+                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)model.sourceFolder)
+                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)model.targetFolder))
             {
                 return Forbid();
             }
 
-            if ((mediaNames == null) || (mediaNames.Length < 1)
-                || String.IsNullOrEmpty(sourceFolder)
-                || String.IsNullOrEmpty(targetFolder))
+            if ((model.mediaNames == null) || (model.mediaNames.Length < 1)
+                || String.IsNullOrEmpty(model.sourceFolder)
+                || String.IsNullOrEmpty(model.targetFolder))
             {
                 return NotFound();
             }
 
-            sourceFolder = sourceFolder == "root" ? String.Empty : sourceFolder;
-            targetFolder = targetFolder == "root" ? String.Empty : targetFolder;
+            model.sourceFolder = model.sourceFolder == "root" ? String.Empty : model.sourceFolder;
+            model.targetFolder = model.targetFolder == "root" ? String.Empty : model.targetFolder;
 
             var filesOnError = new List<string>();
 
-            foreach (var name in mediaNames)
+            foreach (var name in model.mediaNames)
             {
-                var sourcePath = _mediaFileStore.Combine(sourceFolder, name);
-                var targetPath = _mediaFileStore.Combine(targetFolder, name);
+                var sourcePath = _mediaFileStore.Combine(model.sourceFolder, name);
+                var targetPath = _mediaFileStore.Combine(model.targetFolder, name);
                 try
                 {
                     await _mediaFileStore.MoveFileAsync(sourcePath, targetPath);
@@ -495,4 +495,12 @@ namespace OrchardCore.Media.Controllers
             return EmptySet;
         }
     }
+
+    public class MoveMedia
+    {
+        public string[] mediaNames { get; set; }
+        public string sourceFolder { get; set; }
+        public string targetFolder { get; set; }
+    }
 }
+

@@ -15,12 +15,12 @@
                 <a alt="{{ t.EditButton }}" href="javascript:void(0)"
                     class="btn btn-light btn-sm float-end inline-media-button edit-button"
                     @click="() => openModal(media, 'rename')"><fa-icon icon="fa-solid fa-edit"></fa-icon>
-                    <ModalRenameConfirm :modal-name="getModalName(media.name, 'rename')" :file-name="media.name"
-                        :title="t.RenameMediaTitle" @confirm="(fileName) => confirm(media, 'rename', fileName)">
+                    <ModalInputConfirm action-name="Rename" :modal-name="getModalName(media.name, 'rename')" :new-name="media.name"
+                        :title="t.RenameMediaTitle" @confirm="(newName) => confirm(media, 'rename', newName)">
                         <div>
                             <label>{{ t.RenameMediaMessage }}</label>
                         </div>
-                    </ModalRenameConfirm>
+                    </ModalInputConfirm>
                 </a>
                 <a alt="{{ t.DeleteButton }}" href="javascript:void(0)"
                     class="btn btn-light btn-sm float-end inline-media-button delete-button"
@@ -45,7 +45,7 @@ import { defineComponent } from 'vue'
 import dbg from 'debug';
 import { useVfm, ModalId } from 'vue-final-modal'
 import ModalConfirm from './ModalConfirm.vue'
-import ModalRenameConfirm from './ModalRenameConfirm.vue'
+import ModalInputConfirm from './ModalInputConfirm.vue'
 import { IMedia } from '../interfaces/interfaces';
 
 const debug = dbg("oc:media-app");
@@ -53,7 +53,7 @@ const debug = dbg("oc:media-app");
 export default defineComponent({
     components: {
         ModalConfirm: ModalConfirm,
-        ModalRenameConfirm: ModalRenameConfirm,
+        ModalInputConfirm: ModalInputConfirm,
     },
     name: "media-items-grid",
     props: {

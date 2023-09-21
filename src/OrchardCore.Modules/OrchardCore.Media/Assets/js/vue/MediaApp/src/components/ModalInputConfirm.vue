@@ -5,10 +5,11 @@ import { VueFinalModal } from 'vue-final-modal'
 const props = defineProps<{
     title?: string
     modalName: string
-    fileName: string
+    newName: string
+    actionName: string
 }>()
 
-let newFileName = ref(props.fileName);
+let newName = ref(props.newName);
 
 const emit = defineEmits<{
     (e: 'confirm', fileName: string): void
@@ -23,10 +24,10 @@ const emit = defineEmits<{
         </h1>
         <slot />
         <div>
-            <input type="text" name="renameFile" v-model="newFileName" />
+            <input type="text" name="rename" v-model="newName" />
         </div>
-        <button class="mt-1 ml-auto px-2 border rounded-lg" @click="emit('confirm', newFileName)">
-            Rename
+        <button class="mt-1 ml-auto px-2 border rounded-lg" @click="emit('confirm', newName)">
+            {{ actionName }}
         </button>
     </VueFinalModal>
 </template>

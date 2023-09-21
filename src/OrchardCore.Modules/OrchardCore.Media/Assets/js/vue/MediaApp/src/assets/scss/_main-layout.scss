@@ -1,11 +1,13 @@
 #mediaApp {
-    position: absolute;
-    top: 52px;
-    bottom: 0;
-    right: 0;
-    left: 259px;
+    //position: absolute;
+    //top: 52px;
+    //bottom: 0;
+    //right: 0;
+    //left: 259px;
     transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
     background-color: $body-bg;
+    width: 100%;
+    height: 100vh;
     
     ::-webkit-scrollbar {
         width: 4px;

@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { VueFinalModal } from 'vue-final-modal'
 
-defineProps<{
+const props = defineProps<{
     title?: string
     modalName: string
 }>()

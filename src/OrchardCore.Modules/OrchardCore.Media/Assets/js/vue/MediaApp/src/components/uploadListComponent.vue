@@ -7,7 +7,7 @@
             <span> {{ t.Uploads }} </span>
             <span v-show="pendingCount"> (Pending: {{ pendingCount }}) </span>
             <span v-show="errorCount" :class="{ 'text-danger': errorCount }"> ( {{ t.Errors }}: {{ errorCount }} / <a
-                    href="javascript:;" v-on:click.stop="clearErrors"> {{ t.ClearErrors }} </a>)</span>
+                    href="javascript:void(0)" v-on:click.stop="clearErrors"> {{ t.ClearErrors }} </a>)</span>
             <div class="toggle-button">
                 <div v-show="expanded">
                     <fa-icon icon="fa-solid fa-chevron-down"></fa-icon>
@@ -25,10 +25,11 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 import UploadComponent from './uploadComponent.vue';
 
-export default {
+export default defineComponent({
     components: {
         Upload: UploadComponent,
     },
@@ -43,7 +44,10 @@ export default {
     },
     props: {
         uploadInputId: String,
-        t: Object
+        t: {
+            type: Object,
+            required: true
+        }
     },
     created: function () {
 
@@ -110,5 +114,5 @@ export default {
             this.updateCount();
         }
     }
-};
+});
 </script>

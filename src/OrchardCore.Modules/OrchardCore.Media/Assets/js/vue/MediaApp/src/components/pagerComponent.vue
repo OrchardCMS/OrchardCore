@@ -51,9 +51,10 @@
         </nav>
         </div>
 </template>
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 
-export default {
+export default defineComponent({
     name: "pager",
     props: {
         sourceItems: Array,
@@ -169,5 +170,5 @@ export default {
             this.current = 0;
         }
     }
-};
+});
 </script>

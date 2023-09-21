@@ -1,5 +1,9 @@
 .action-bar {
-    border-bottom: $media-border-content; 
+    border-bottom: $media-border-content;
+
+    .badge {
+        color: black;
+    }
 
     .media-filter {
         margin-top: 3px;

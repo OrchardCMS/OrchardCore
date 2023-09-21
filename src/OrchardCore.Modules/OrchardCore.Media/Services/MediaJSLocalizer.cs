@@ -30,11 +30,12 @@ public class MediaJSLocalizer: IJSLocalizer
         if (groups.Contains("media-app"))
         {
             // Localizable Strings shared
+            dictionary.Add("NewFolder", S["New folder"].Value);
             dictionary.Add("DeleteFolderTitle", S["Delete media folder"].Value);
             dictionary.Add("DeleteFolderMessage", S["Are you sure you want to delete this folder?"].Value);
             dictionary.Add("DeleteMediaTitle", S["Delete media"].Value);
             dictionary.Add("DeleteMediaMessage", S["Are you sure you want to delete this/these media item(s)?"].Value);
-            dictionary.Add("RenameMediaTitle", S["Rename item"].Value);
+            dictionary.Add("RenameMediaTitle", S["Rename media"].Value);
             dictionary.Add("RenameMediaMessage", S["New name"].Value);
             dictionary.Add("MoveMediaTitle", S["Move media"].Value);
             dictionary.Add("MoveMediaMessage", S["Are you sure you want to move the selected media to this folder?"].Value);

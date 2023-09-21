@@ -17,8 +17,10 @@
     </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from 'vue'
+
+export default defineComponent({
     name: "upload",
     props: {
         model: {
@@ -72,5 +74,5 @@ export default {
             this.emitter.emit('removalRequest', this.model);
         }
     }
-};
+});
 </script>

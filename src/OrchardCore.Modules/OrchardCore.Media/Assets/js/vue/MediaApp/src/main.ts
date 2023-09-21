@@ -14,6 +14,7 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 /* import specific icons */
 import { fas } from '@fortawesome/free-solid-svg-icons'
+import { far } from '@fortawesome/free-regular-svg-icons'
 import { createVfm } from 'vue-final-modal'
 import 'vue-final-modal/style.css'
 
@@ -23,6 +24,7 @@ const vfm = createVfm();
 
 /* add icons to the library */
 library.add(fas);
+library.add(far);
 
 const app = createApp(App, { ...mountEl?.dataset });
 app.component('fa-icon', FontAwesomeIcon);

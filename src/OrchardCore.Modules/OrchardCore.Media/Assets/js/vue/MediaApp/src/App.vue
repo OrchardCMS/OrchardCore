@@ -14,8 +14,8 @@
         <div id="mediaContainer" class="align-items-stretch">
             <div id="navigationApp" class="media-container-navigation m-0 p-0" v-cloak>
                 <ol id="folder-tree">
-                    <folder :model="root" :t="t" :base-path="basePath" ref="rootFolder" :selected-in-media-app="selectedFolder"
-                        :level="1">
+                    <folder :move-media-list-url="moveMediaListUrl" :model="root" :t="t" :base-path="basePath"
+                        ref="rootFolder" :selected-in-media-app="selectedFolder" :level="1">
                     </folder>
                 </ol>
             </div>
@@ -24,21 +24,24 @@
                 <div class="media-container-top-bar">
                     <nav class="nav action-bar pb-3 pt-3 pl-3">
                         <div class="me-auto ms-4">
-                            <a href="javascript:;" class="btn btn-light btn-sm me-2" v-on:click="selectAll">
-                                {{ t.SelectAll }}
+                            <a :title="isSelectedAll ? t.SelectNone : t.SelectAll" href="javascript:void(0)"
+                                class="btn btn-light btn-sm me-2" v-on:click="selectAll">
+                                <fa-icon v-if="isSelectedAll" icon="fa-regular fa-square-check"></fa-icon>
+                                <fa-icon v-if="!isSelectedAll" icon="fa-regular fa-square"></fa-icon>
                             </a>
-                            <a href="javascript:;" class="btn btn-light btn-sm me-2" v-on:click="unSelectAll"
-                                :class="{ disabled: selectedMedias.length < 1 }">
-                                {{ t.SelectNone }}
+                            <a :title="t.Invert" href="javascript:void(0)" class="btn btn-light btn-sm me-2"
+                                v-on:click="invertSelection">
+                                <fa-icon icon="fa-solid fa-right-left"></fa-icon>
                             </a>
-                            <a href="javascript:;" class="btn btn-light btn-sm me-2" v-on:click="invertSelection">
-                                {{ t.Invert }}
-                            </a>
-                            <a href="javascript:;" class="btn btn-light btn-sm me-2" v-on:click="deleteMediaList"
-                                :class="{ disabled: selectedMedias.length < 1 }">
-                                {{ t.Delete }} <span class="badge rounded-pill bg-light"
-                                    v-show="selectedMedias.length > 0">{{
-                                        selectedMedias.length }}</span>
+                            <a :title="t.Delete" href="javascript:void(0)" class="btn btn-light btn-sm me-2"
+                                @click="() => openModal('nav', 'delete')" :class="{ disabled: selectedMedias.length < 1 }">
+                                <fa-icon icon="fa-solid fa-trash"></fa-icon>
+                                <span class="badge rounded-pill" v-show="selectedMedias.length > 0">{{
+                                    selectedMedias.length }}</span>
+                                <ModalConfirm :modal-name="getModalName('nav', 'delete')" :title="t.DeleteMediaTitle"
+                                    @confirm="() => confirm('nav', 'delete')">
+                                    <p>{{ t.DeleteMediaMessage }}</p>
+                                </ModalConfirm>
                             </a>
                         </div>
                         <div class="btn-group visibility-buttons">
@@ -126,7 +129,8 @@
 @import "./assets/scss/media.scss";
 </style>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 import axios from 'axios';
 import dbg from 'debug';
 import FolderComponent from './components/folderComponent.vue';
@@ -135,14 +139,14 @@ import MediaItemsGridComponent from './components/mediaItemsGridComponent.vue';
 import MediaItemsTableComponent from './components/mediaItemsTableComponent.vue';
 import PagerComponent from './components/pagerComponent.vue';
 import DragDropThumbnail from './assets/drag-thumbnail.png';
-import { ModalsContainer, useModal } from 'vue-final-modal'
+import { ModalsContainer, useVfm } from 'vue-final-modal'
 import ModalConfirm from './components/ModalConfirm.vue'
 
 import "bootstrap/dist/css/bootstrap.min.css" // TODO remove
 
 const debug = dbg("oc:media-app");
 
-export default {
+export default defineComponent({
     components: {
         Folder: FolderComponent,
         UploadList: UploadListComponent,
@@ -150,6 +154,7 @@ export default {
         MediaItemsTable: MediaItemsTableComponent,
         Pager: PagerComponent,
         ModalsContainer: ModalsContainer,
+        ModalConfirm: ModalConfirm
     },
     name: "mediaApp",
     props: {
@@ -204,6 +209,7 @@ export default {
             selectedFolder: {},
             mediaItems: [],
             selectedMedias: [],
+            isSelectedAll: false,
             errors: [],
             dragDropThumbnail: new Image(),
             smallThumbs: false,
@@ -240,6 +246,10 @@ export default {
             folder.selected = true;
         })
 
+        this.emitter.on('mediaListMove', (elem) => {
+            self.mediaListMove(elem);
+        })
+
         this.emitter.on('mediaListMoved', (errorInfo) => {
             self.loadFolder(self.selectedFolder);
             if (errorInfo) {
@@ -247,17 +257,17 @@ export default {
             }
         })
 
-        this.emitter.on('mediaRenamed', (newName, newPath, oldPath) => {
+        this.emitter.on('mediaRenamed', (element) => {
             let media = self.mediaItems.filter(function (item) {
-                return item.mediaPath === oldPath; // mediaPath ??? should it not be .url ?
+                return item.mediaPath === element.oldPath; // mediaPath ??? should it not be .url ?
             })[0];
 
-            media.mediaPath = newPath;
-            media.name = newName;
+            media.mediaPath = element.newPath;
+            media.name = element.newName;
         })
 
-        this.emitter.on('createFolderRequested', () => {
-            self.createFolder();
+        this.emitter.on('createFolderRequested', (folderName) => {
+            self.createFolder(folderName);
         })
 
         this.emitter.on('deleteFolderRequested', () => {
@@ -453,6 +463,27 @@ export default {
 
     },
     methods: {
+        getModalName: function (name: string, action: string) {
+            return action + "-media-" + name;
+        },
+        openModal: function (media: string, action: string) {
+            const uVfm = useVfm();
+
+            uVfm.open(this.getModalName(media, action));
+        },
+        confirm: function (media: string, action: string) {
+            const uVfm = useVfm();
+
+            if (action == "delete") {
+                this.deleteMediaList();
+            }
+            else if (action == "create") {
+                //debug("Confirm folder create:", newName);
+                this.createFolder();
+            }
+
+            uVfm.close(this.getModalName(media, action));
+        },
         uploadUrl: function () {
 
             if (!this.selectedFolder) {
@@ -465,6 +496,29 @@ export default {
         },
         selectRoot: function () {
             this.selectedFolder = this.root;
+        },
+        mediaListMove: function (elem) {
+            let self = this;
+
+            if (elem) {
+                axios({
+                    method: 'post',
+                    headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val(), "Content-Type": "application/json" },
+                    url: self.$props.basePath + self.$props.moveMediaListUrl,
+                    data: {
+                        mediaNames: elem.mediaNames,
+                        sourceFolder: elem.sourceFolder,
+                        targetFolder: elem.targetFolder
+                    }
+                })
+                    .then((response) => {
+                        self.emitter.emit('mediaListMoved'); // MediaApp will listen to this, and then it will reload page so the moved medias won't be there anymore
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        self.emitter.emit('mediaListMoved', error.responseText);
+                    });
+            }
         },
         loadFolder: function (folder) {
             this.errors = [];
@@ -491,13 +545,17 @@ export default {
             }
         },
         selectAll: function () {
-            this.selectedMedias = [];
-            for (let i = 0; i < this.filteredMediaItems.length; i++) {
-                this.selectedMedias.push(this.filteredMediaItems[i]);
+            if (this.isSelectedAll) {
+                this.selectedMedias = [];
+                this.isSelectedAll = false;
             }
-        },
-        unSelectAll: function () {
-            this.selectedMedias = [];
+            else {
+                this.selectedMedias = [];
+                for (let i = 0; i < this.filteredMediaItems.length; i++) {
+                    this.selectedMedias.push(this.filteredMediaItems[i]);
+                }
+                this.isSelectedAll = true;
+            }
         },
         invertSelection: function () {
             let temp = [];
@@ -529,32 +587,62 @@ export default {
                 return;
             }
 
-            this.confirmDialog({
-                ...$("#deleteFolder").data(), callback: function (resp) {
-                    if (resp) {
-                        $.ajax({
-                            url: $('#deleteFolderUrl').val() + "?path=" + encodeURIComponent(folder.path),
+            const config = {
+                headers: {
+                    "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                }
+            }
+
+            axios.post(
+                self.basePath + self.$props.deleteFoldersUrl + "?path=" + encodeURIComponent(folder.path),
+                config)
+                .then((response) => {
+                    self.emitter.emit('deleteFolder', folder);
+                })
+                .catch((error) => {
+                    console.error(error.message);
+                });
+        },
+        createFolder: function (folderName) {
+            let self = this;
+            document.getElementById('createFolderModal-errors')?.empty();
+
+            if (folderName === "") {
+                return;
+            }
+
+            axios({
+                method: 'post',
+                headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                url: self.$props.basePath + self.$props.createFoldersUrl + "?path=" + encodeURIComponent(self.selectedFolder.path) + "&name=" + encodeURIComponent(folderName),
+            })
+                .then((response) => {
+                    this.emitter.emit('addFolder', { selectedFolder: self.selectedFolder, data: response.data });
+                })
+                .catch((error) => {
+                    console.error(error);
+                    $('#createFolderModal-errors').empty();
+                    $('<div class="alert alert-danger" role="alert"></div>').text(error.message).appendTo($('#createFolderModal-errors'));
+                });
+
+            /*             $.ajax({
+                            url: $('#createFolderUrl').val() + "?path=" + encodeURIComponent(mediaApp.selectedFolder.path) + "&name=" + encodeURIComponent(name),
                             method: 'POST',
                             data: {
                                 __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
                             },
                             success: function (data) {
-                                bus.$emit('deleteFolder', folder);
+                                bus.$emit('addFolder', mediaApp.selectedFolder, data);
+                                var modal = bootstrap.Modal.getOrCreateInstance($('#createFolderModal'));
+                                modal.hide();
                             },
                             error: function (error) {
-                                console.error(error.responseText);
+                                $('#createFolderModal-errors').empty();
+                                var errorMessage = JSON.parse(error.responseText).value;
+                                $('<div class="alert alert-danger" role="alert"></div>').text(errorMessage).appendTo($('#createFolderModal-errors'));
                             }
-                        });
-                    }
-                }
-            });
-        },
-        createFolder: function () {
-            //document.getElementById('createFolderModal-errors').empty();
-            //modal.show();
-            let createFolderModalInput = document.querySelector('#createFolderModal .modal-body input');
-            createFolderModalInput.value = "";
-            createFolderModalInput.focus();
+                        }); */
+
         },
         renameMedia: function (element) {
             $('#renameMediaModal-errors').empty(); // TODO use a slot
@@ -574,7 +662,7 @@ export default {
                 url: self.$props.basePath + self.$props.renameMediaUrl + "?oldPath=" + encodeURIComponent(oldPath) + "&newPath=" + encodeURIComponent(newPath),
             })
                 .then((response) => {
-                    this.emitter.emit('mediaRenamed', { newName, newPath, oldPath });
+                    this.emitter.emit('mediaRenamed', { newName: newName, newPath: newPath, oldPath: oldPath });
                 })
                 .catch((error) => {
                     $('#renameMediaModal-errors').empty();
@@ -595,38 +683,34 @@ export default {
                 return;
             }
 
-            this.confirmDialog({
-                ...$("#deleteMedia").data(), callback: function (resp) {
-                    if (resp) {
-                        let paths = [];
-                        for (let i = 0; i < mediaList.length; i++) {
-                            paths.push(mediaList[i].mediaPath);
-                        }
+            let imagePaths = [];
 
-                        $.ajax({
-                            url: $('#deleteMediaListUrl').val(),
-                            method: 'POST',
-                            data: {
-                                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
-                                paths: paths
-                            },
-                            success: function (data) {
-                                for (let i = 0; i < self.selectedMedias.length; i++) {
-                                    let index = self.mediaItems && self.mediaItems.indexOf(self.selectedMedias[i]);
-                                    if (index > -1) {
-                                        self.mediaItems.splice(index, 1);
-                                        bus.$emit('mediaDeleted', self.selectedMedias[i]);
-                                    }
-                                }
-                                self.selectedMedias = [];
-                            },
-                            error: function (error) {
-                                console.error(error.responseText);
-                            }
-                        });
-                    }
+            for (let i = 0; i < mediaList.length; i++) {
+                imagePaths.push(mediaList[i].mediaPath);
+            }
+
+            const config = {
+                headers: {
+                    "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val(),
+                    "Content-Type": "application/json"
                 }
-            });
+            }
+
+            axios.post(self.basePath + self.deleteMediaListUrl, JSON.stringify(imagePaths), config)
+                .then((response) => {
+                    for (let i = 0; i < self.selectedMedias.length; i++) {
+                        let index = self.mediaItems && self.mediaItems.indexOf(self.selectedMedias[i]);
+                        if (index > -1) {
+                            self.mediaItems.splice(index, 1);
+                            self.emitter.emit('mediaDeleted', self.selectedMedias[i]);
+                        }
+                    }
+                    self.selectedMedias = [];
+                    self.isSelectedAll = false;
+                })
+                .catch((error) => {
+                    console.error(error.message);
+                });
         },
         deleteMediaItem: function (media) {
             let self = this;
@@ -654,7 +738,7 @@ export default {
                     console.error(e);
                 });
         },
-        handleDragStart: function (media, e) {
+        handleDragStart: function (element) {
             // first part of move media to folder:
             // prepare the data that will be handled by the folder component on drop event
             let mediaNames = [];
@@ -663,15 +747,15 @@ export default {
             });
 
             // in case the user drags an unselected item, we select it first
-            if (this.isMediaSelected(media) == false) {
-                mediaNames.push(media.name);
-                this.selectedMedias.push(media);
+            if (this.isMediaSelected(element.media) == false) {
+                mediaNames.push(element.media.name);
+                this.selectedMedias.push(element.media);
             }
 
-            e.dataTransfer.setData('mediaNames', JSON.stringify(mediaNames));
-            e.dataTransfer.setData('sourceFolder', this.selectedFolder.path);
-            e.dataTransfer.setDragImage(this.dragDropThumbnail, 10, 10);
-            e.dataTransfer.effectAllowed = 'move';
+            element.e.dataTransfer.setData('mediaNames', JSON.stringify(mediaNames));
+            element.e.dataTransfer.setData('sourceFolder', this.selectedFolder.path);
+            element.e.dataTransfer.setDragImage(this.dragDropThumbnail, 10, 10);
+            element.e.dataTransfer.effectAllowed = 'move';
         },
         handleScrollWhileDrag: function (e) {
             if (e.clientY < 150) {
@@ -735,5 +819,5 @@ export default {
             });
         }
     }
-};
+});
 </script>

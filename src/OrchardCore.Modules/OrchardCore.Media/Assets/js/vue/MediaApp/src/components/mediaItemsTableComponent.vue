@@ -43,16 +43,16 @@
                     <div class="media-name-cell">
                         <span class="break-word"> {{ media.name }} </span>
                         <div class="buttons-container">
-                            <a href="javascript:;" class="btn btn-link btn-sm me-1 edit-button"
+                            <a href="javascript:void(0)" class="btn btn-link btn-sm me-1 edit-button"
                                 @click="() => openModal(media, 'rename')"> {{ t.EditButton }}
-                                <ModalRenameConfirm :modal-name="getModalName(media.name, 'rename')" :file-name="media.name"
-                                    :title="t.RenameMediaTitle" @confirm="(fileName) => confirm(media, 'rename', fileName)">
+                                <ModalInputConfirm action-name="Rename" :modal-name="getModalName(media.name, 'rename')" :new-name="media.name"
+                                    :title="t.RenameMediaTitle" @confirm="(newName) => confirm(media, 'rename', newName)">
                                     <div>
                                         <label>{{ t.RenameMediaMessage }}</label>
                                     </div>
-                                </ModalRenameConfirm>
+                                </ModalInputConfirm>
                             </a>
-                            <a href="javascript:;" class="btn btn-link btn-sm delete-button"
+                            <a href="javascript:void(0)" class="btn btn-link btn-sm delete-button"
                                 @click="() => openModal(media, 'delete')"> {{ t.DeleteButton }}
                                 <ModalConfirm :modal-name="getModalName(media.name, 'delete')" :title="t.DeleteMediaTitle"
                                     @confirm="() => confirm(media, 'delete', '')">
@@ -86,7 +86,7 @@ import { defineComponent } from 'vue'
 import dbg from 'debug';
 import { useVfm } from 'vue-final-modal'
 import ModalConfirm from './ModalConfirm.vue'
-import ModalRenameConfirm from './ModalRenameConfirm.vue'
+import ModalInputConfirm from './ModalInputConfirm.vue'
 import SortIndicatorComponent from './sortIndicatorComponent.vue';
 import { IMedia } from '../interfaces/interfaces';
 
@@ -95,7 +95,7 @@ const debug = dbg("oc:media-app");
 export default defineComponent({
     components: {
         ModalConfirm: ModalConfirm,
-        ModalRenameConfirm: ModalRenameConfirm,
+        ModalInputConfirm: ModalInputConfirm,
         SortIndicator: SortIndicatorComponent,
     },
     name: "media-items-table",
@@ -134,7 +134,7 @@ export default defineComponent({
             this.emitter.emit('deleteMediaRequested', media);
         },
         dragStart: function (media, e) {
-            this.emitter.emit('mediaDragStartRequested', media, e);
+            this.emitter.emit('mediaDragStartRequested', { media: media, e: e });
         },
         printDateTime: function (datemillis) {
             let d = new Date(datemillis);
