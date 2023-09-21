@@ -38,8 +38,6 @@
             .media-container-middle {
                 flex-grow: 1;
                 flex-shrink: 0;
-                overflow: auto;
-                height: calc(100vh - 236px);
             }
 
             .media-container-footer {
@@ -59,6 +57,8 @@
 
                 .media-container-middle {
                     flex-shrink: 1;
+                    overflow: auto;
+                    height: calc(100vh - 236px);
                 }
             }
         }

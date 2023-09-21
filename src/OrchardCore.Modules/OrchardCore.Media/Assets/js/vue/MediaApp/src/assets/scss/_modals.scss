@@ -1,0 +1,16 @@
+.vfm {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .vfm__content {
+        &.bg-white {
+            background: #fff !important;
+            color: #000;
+        }
+
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        border-radius: 0.3rem;
+        width: 50vw;
+    }
+}

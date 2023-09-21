@@ -108,7 +108,7 @@ export default defineComponent({
     created: function () {
         let self = this;
 
-        this.emitter.on('deleteFolder', function (folder) {
+        this.emitter.on('deleteFolder', function (folder: any) {
             if (self.children) {
                 let index = self.children && self.children.indexOf(folder)
                 if (index > -1) {
@@ -118,7 +118,7 @@ export default defineComponent({
             }
         });
 
-        this.emitter.on('addFolder', function (element) {
+        this.emitter.on('addFolder', function (element: { selectedFolder: any; data: any; }) {
             let target = element.selectedFolder;
             let folder = element.data;
 

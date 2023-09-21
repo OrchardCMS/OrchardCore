@@ -23,6 +23,14 @@
             background-color: inherit;
         }
     }
+
+    .page-link{
+        outline: none !important;
+        &:focus {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+    }
 }
 
 @media only screen and ( max-width: 576px ) {

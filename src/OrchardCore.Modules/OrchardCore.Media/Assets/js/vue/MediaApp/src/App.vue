@@ -368,7 +368,7 @@ export default defineComponent({
             return result;
         },
         thumbSize: function () {
-            return this.smallThumbs ? 150 : 300;
+            return this.smallThumbs ? 160 : 240;
         },
         currentPrefs: {
             get: function () {

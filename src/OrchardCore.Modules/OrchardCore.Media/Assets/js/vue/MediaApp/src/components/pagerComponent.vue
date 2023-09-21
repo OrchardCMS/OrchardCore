@@ -24,7 +24,7 @@
                     <li v-if="link != -1" class="page-item page-number" :class="{ active: current == link - 1 }">
                         <a class="page-link" href="#" v-on:click="goTo(link - 1)" :aria-label="'Goto Page ' + link">
                             {{ link }}
-                            <span v-if="current == link - 1" class="visually-hidden">(current)</span>
+                            <span v-if="current == link - 1" style="display:none">(current)</span>
                         </a>
                     </li>
                 </template>
