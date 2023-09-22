@@ -11,11 +11,6 @@ public class PhoneNumberValidator : IPhoneNumberValidator
     /// <inheritdoc/>
     public bool Validate(string phoneNumber)
     {
-        if (string.IsNullOrEmpty(phoneNumber))
-        {
-            throw new ArgumentException("Value cannot be null or empty.", nameof(phoneNumber));
-        }
-
         var phoneNumberUtil = PhoneNumberUtil.GetInstance();
 
         try
