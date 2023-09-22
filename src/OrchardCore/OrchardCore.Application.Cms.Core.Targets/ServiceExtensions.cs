@@ -23,6 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddMvc()
                 .AddIdGeneration()
                 .AddEmailAddressValidator()
+                .AddPhoneNumberValidator()
                 .AddHtmlSanitizer()
                 .AddSetupFeatures("OrchardCore.Setup")
 

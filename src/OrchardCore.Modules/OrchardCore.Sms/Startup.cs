@@ -25,7 +25,6 @@ public class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddSmsServices();
-        services.AddPhoneFormatValidator();
 
         // Add Twilio provider.
         services.AddTwilioSmsProvider()

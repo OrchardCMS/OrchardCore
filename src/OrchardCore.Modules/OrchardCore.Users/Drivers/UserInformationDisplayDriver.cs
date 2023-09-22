@@ -19,20 +19,20 @@ namespace OrchardCore.Users.Drivers
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IPhoneFormatValidator _phoneFormatValidator;
+        private readonly IPhoneNumberValidator _phoneNumberValidator;
         private readonly ISiteService _siteService;
         protected readonly IStringLocalizer S;
 
         public UserInformationDisplayDriver(
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
-            IPhoneFormatValidator phoneFormatValidator,
+            IPhoneNumberValidator phoneNumberValidator,
             IStringLocalizer<UserInformationDisplayDriver> stringLocalizer,
             ISiteService siteService)
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
-            _phoneFormatValidator = phoneFormatValidator;
+            _phoneNumberValidator = phoneNumberValidator;
             S = stringLocalizer;
             _siteService = siteService;
         }
@@ -106,7 +106,7 @@ namespace OrchardCore.Users.Drivers
 
                 if (await context.Updater.TryUpdateModelAsync(phoneNumberModel, Prefix))
                 {
-                    if (!string.IsNullOrEmpty(phoneNumberModel.PhoneNumber) && !_phoneFormatValidator.IsValid(phoneNumberModel.PhoneNumber))
+                    if (!string.IsNullOrEmpty(phoneNumberModel.PhoneNumber) && !_phoneNumberValidator.Validate(phoneNumberModel.PhoneNumber))
                     {
                         context.Updater.ModelState.AddModelError(Prefix, nameof(phoneNumberModel.PhoneNumber), S["Please provide a valid phone number."]);
                     }
@@ -135,7 +135,7 @@ namespace OrchardCore.Users.Drivers
 
                     if (settings.AllowChangingPhoneNumber && await context.Updater.TryUpdateModelAsync(phoneNumberModel, Prefix))
                     {
-                        if (!string.IsNullOrEmpty(phoneNumberModel.PhoneNumber) && !_phoneFormatValidator.IsValid(phoneNumberModel.PhoneNumber))
+                        if (!string.IsNullOrEmpty(phoneNumberModel.PhoneNumber) && !_phoneNumberValidator.Validate(phoneNumberModel.PhoneNumber))
                         {
                             context.Updater.ModelState.AddModelError(Prefix, nameof(phoneNumberModel.PhoneNumber), S["Please provide a valid phone number."]);
                         }

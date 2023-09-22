@@ -20,20 +20,20 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IPhoneFormatValidator _phoneFormatValidator;
+    private readonly IPhoneNumberValidator _phoneNumberValidator;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     protected readonly IStringLocalizer S;
 
     public TwilioSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IPhoneFormatValidator phoneFormatValidator,
+        IPhoneNumberValidator phoneNumberValidator,
         IDataProtectionProvider dataProtectionProvider,
         IStringLocalizer<TwilioSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _phoneFormatValidator = phoneFormatValidator;
+        _phoneNumberValidator = phoneNumberValidator;
         _dataProtectionProvider = dataProtectionProvider;
         S = stringLocalizer;
     }
@@ -74,7 +74,7 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.PhoneNumber), S["Phone number requires a value."]);
             }
-            else if (!_phoneFormatValidator.IsValid(model.PhoneNumber))
+            else if (!_phoneNumberValidator.Validate(model.PhoneNumber))
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.PhoneNumber), S["Please provide a valid phone number."]);
             }

@@ -180,7 +180,6 @@ namespace OrchardCore.Users
                 options.Tokens.ChangeEmailTokenProvider = TokenOptions.DefaultEmailProvider;
                 options.Tokens.ChangePhoneNumberTokenProvider = TokenOptions.DefaultPhoneProvider;
             });
-            services.AddPhoneFormatValidator();
             // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
             // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
             services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme);

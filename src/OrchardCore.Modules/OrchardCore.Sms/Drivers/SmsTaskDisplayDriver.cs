@@ -15,16 +15,16 @@ namespace OrchardCore.Sms.Drivers;
 
 public class SmsTaskDisplayDriver : ActivityDisplayDriver<SmsTask, SmsTaskViewModel>
 {
-    private readonly IPhoneFormatValidator _phoneFormatValidator;
+    private readonly IPhoneNumberValidator _phoneNumberValidator;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     protected readonly IStringLocalizer S;
 
     public SmsTaskDisplayDriver(
-        IPhoneFormatValidator phoneFormatValidator,
+        IPhoneNumberValidator phoneNumberValidator,
         IStringLocalizer<SmsTaskDisplayDriver> stringLocalizer,
         ILiquidTemplateManager liquidTemplateManager)
     {
-        _phoneFormatValidator = phoneFormatValidator;
+        _phoneNumberValidator = phoneNumberValidator;
         S = stringLocalizer;
         _liquidTemplateManager = liquidTemplateManager;
     }
@@ -45,7 +45,7 @@ public class SmsTaskDisplayDriver : ActivityDisplayDriver<SmsTask, SmsTaskViewMo
             {
                 updater.ModelState.AddModelError(Prefix, nameof(viewModel.PhoneNumber), S["Phone number requires a value."]);
             }
-            else if (!_phoneFormatValidator.IsValid(viewModel.PhoneNumber))
+            else if (!_phoneNumberValidator.Validate(viewModel.PhoneNumber))
             {
                 updater.ModelState.AddModelError(Prefix, nameof(viewModel.PhoneNumber), S["Invalid phone number used."]);
             }

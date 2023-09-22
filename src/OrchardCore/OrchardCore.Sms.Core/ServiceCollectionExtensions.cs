@@ -1,6 +1,5 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Sms.Services;
@@ -35,11 +34,6 @@ public static class ServiceCollectionExtensions
         });
 
         return services;
-    }
-
-    public static void AddPhoneFormatValidator(this IServiceCollection services)
-    {
-        services.TryAddScoped<IPhoneFormatValidator, DefaultPhoneFormatValidator>();
     }
 
     public static IServiceCollection AddSmsProvider<T>(this IServiceCollection services, string name) where T : class, ISmsProvider

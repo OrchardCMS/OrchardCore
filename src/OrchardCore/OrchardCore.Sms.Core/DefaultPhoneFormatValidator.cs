@@ -1,22 +1,11 @@
-using PhoneNumbers;
-
 namespace OrchardCore.Sms;
 
 public class DefaultPhoneFormatValidator : IPhoneFormatValidator
 {
-    public bool IsValid(string phoneNumber)
-    {
-        var phoneNumberUtil = PhoneNumberUtil.GetInstance();
+    private readonly IPhoneNumberValidator _phoneNumberValidator;
 
-        try
-        {
-            var phone = phoneNumberUtil.Parse(phoneNumber, null);
+    public DefaultPhoneFormatValidator(IPhoneNumberValidator phoneNumberValidator)
+        => _phoneNumberValidator = phoneNumberValidator;
 
-            return phoneNumberUtil.IsValidNumber(phone);
-        }
-        catch
-        {
-            return false;
-        }
-    }
+    public bool IsValid(string phoneNumber) => _phoneNumberValidator.Validate(phoneNumber);
 }

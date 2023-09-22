@@ -16,6 +16,7 @@
   <ItemGroup>
     <PackageReference Include="HtmlSanitizer" />
     <PackageReference Include="MimeKit" />
+    <PackageReference Include="libphonenumber-csharp" />
   </ItemGroup>
 
   <ItemGroup>

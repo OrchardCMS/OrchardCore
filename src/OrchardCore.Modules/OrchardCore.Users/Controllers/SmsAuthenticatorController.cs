@@ -32,7 +32,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
     private readonly IUserService _userService;
     private readonly ISmsProvider _smsProvider;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
-    private readonly IPhoneFormatValidator _phoneFormatValidator;
+    private readonly IPhoneNumberValidator _phoneNumberValidator;
     private readonly HtmlEncoder _htmlEncoder;
 
     public SmsAuthenticatorController(
@@ -47,7 +47,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         IUserService userService,
         ISmsProvider smsProvider,
         ILiquidTemplateManager liquidTemplateManager,
-        IPhoneFormatValidator phoneFormatValidator,
+        IPhoneNumberValidator phoneNumberValidator,
         HtmlEncoder htmlEncoder,
         ITwoFactorAuthenticationHandlerCoordinator twoFactorAuthenticationHandlerCoordinator)
         : base(
@@ -64,7 +64,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         _userService = userService;
         _smsProvider = smsProvider;
         _liquidTemplateManager = liquidTemplateManager;
-        _phoneFormatValidator = phoneFormatValidator;
+        _phoneNumberValidator = phoneNumberValidator;
         _htmlEncoder = htmlEncoder;
     }
 
@@ -86,7 +86,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
             PhoneNumber = currentPhoneNumber,
             AllowChangingPhoneNumber = settings.AllowChangingPhoneNumber
             || string.IsNullOrEmpty(currentPhoneNumber)
-            || !_phoneFormatValidator.IsValid(currentPhoneNumber),
+            || !_phoneNumberValidator.Validate(currentPhoneNumber),
         };
 
         return View(model);
@@ -107,11 +107,11 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
 
         var canSetNewPhone = settings.AllowChangingPhoneNumber
             || string.IsNullOrEmpty(currentPhoneNumber)
-            || !_phoneFormatValidator.IsValid(currentPhoneNumber);
+            || !_phoneNumberValidator.Validate(currentPhoneNumber);
 
         model.AllowChangingPhoneNumber = canSetNewPhone;
 
-        if (canSetNewPhone && !_phoneFormatValidator.IsValid(model.PhoneNumber))
+        if (canSetNewPhone && !_phoneNumberValidator.Validate(model.PhoneNumber))
         {
             ModelState.AddModelError(nameof(model.PhoneNumber), S["Invalid phone number used."]);
 
