@@ -1,8 +1,8 @@
 <template>
-    <li :class="{ selected: isSelected }" v-on:dragleave.prevent="handleDragLeave($event);"
-        v-on:dragover.prevent.stop="handleDragOver($event);" v-on:drop.prevent.stop="moveMediaToFolder(model, $event)">
+    <li :class="{ selected: isSelected }" v-on:dragleave.prevent="handleDragLeave();"
+        v-on:dragover.prevent.stop="handleDragOver();" v-on:drop.prevent.stop="moveMediaToFolder(model, $event)">
         <ModalConfirm :modal-name="getModalName('media', 'move')" :title="t.MoveMediaTitle"
-            @confirm="(elem) => confirm(elem, 'move')">
+            @confirm="() => confirm('media', 'move')">
             <p>{{ t.MoveMediaMessage }}</p>
         </ModalConfirm>
         <div :class="{ folderhovered: isHovered, treeroot: level == 1 }">
@@ -47,10 +47,9 @@ import dbg from 'debug';
 import { useVfm } from 'vue-final-modal'
 import ModalConfirm from './ModalConfirm.vue'
 import ModalInputConfirm from './ModalInputConfirm.vue'
-import { IMedia } from '../interfaces/interfaces';
 
 const debug = dbg("oc:media-app");
-let moveAssetsState = {};
+let moveAssetsState = <any>{};
 
 export default defineComponent({
     components: {
@@ -59,7 +58,7 @@ export default defineComponent({
     },
     name: "folder",
     props: {
-        model: Object,
+        model: <any>Object,
         selectedInMediaApp: Object,
         level: Number,
         basePath: {
@@ -78,7 +77,7 @@ export default defineComponent({
     data() {
         return {
             open: false,
-            children: [], // not initialized state (for lazy-loading)
+            children: <any>[], // not initialized state (for lazy-loading)
             parent: null,
             isHovered: false,
             padding: 0,
@@ -108,7 +107,7 @@ export default defineComponent({
     created: function () {
         let self = this;
 
-        this.emitter.on('deleteFolder', function (folder: any) {
+        this.emitter.on('deleteFolder', function (folder: never) {
             if (self.children) {
                 let index = self.children && self.children.indexOf(folder)
                 if (index > -1) {
@@ -120,12 +119,12 @@ export default defineComponent({
 
         this.emitter.on('addFolder', function (element: { selectedFolder: any; data: any; }) {
             let target = element.selectedFolder;
-            let folder = element.data;
+            let folder = <any>element.data;
 
             if (self.model == target) {
                 if (self.children !== null) {
-                    self.children.push(folder);
-                    self.children.sort(function (a, b) {
+                    self.children.push(<never>folder);
+                    self.children.sort(function (a: any, b: any) {
                         if (a.name > b.name) { return -1; }
                         if (a.name < b.name) { return 1; }
                         return 0;
@@ -139,14 +138,14 @@ export default defineComponent({
     },
     methods: {
         isAncestorOfSelectedFolder: function () {
-            let parentFolder = mediaApp.selectedFolder;
+/*             let parentFolder = mediaApp.selectedFolder;
 
             while (parentFolder) {
                 if (parentFolder.path == this.model.path) {
                     return true;
                 }
                 parentFolder = parentFolder.parent;
-            }
+            } */
 
             return false;
         },
@@ -177,7 +176,7 @@ export default defineComponent({
             axios.get(this.basePath + this.getFoldersUrl + "?path=" + encodeURIComponent(self.model?.path))
                 .then((response) => {
                     self.children = response.data;
-                    self.children.forEach(function (c) {
+                    self.children.forEach(function (c: any) {
                         c.parent = self.model;
                     });
                 })
@@ -186,24 +185,25 @@ export default defineComponent({
                     console.error(error.responseText);
                 });
         },
-        handleDragOver: function (e) {
+        handleDragOver: function () {
             this.isHovered = true;
         },
-        handleDragLeave: function (e) {
+        handleDragLeave: function () {
             this.isHovered = false;
         },
-        moveMediaToFolder: function (folder, e) {
+        moveMediaToFolder: function (folder: { path: any; }, e: DragEvent) {
             debug("Move media to folder", folder, e);
             let self = this;
             self.isHovered = false;
 
-            let mediaNames = JSON.parse(e.dataTransfer.getData('mediaNames'));
+            let mediaNamesData = e.dataTransfer?.getData('mediaNames') ?? "";
+            let mediaNames = JSON.parse(mediaNamesData);
 
             if (mediaNames.length < 1) {
                 return;
             }
 
-            let sourceFolder = e.dataTransfer.getData('sourceFolder');
+            let sourceFolder = e.dataTransfer?.getData('sourceFolder');
             let targetFolder = folder.path;
 
             if (sourceFolder === '') {
@@ -264,5 +264,3 @@ export default defineComponent({
     }
 });
 </script>
-
-

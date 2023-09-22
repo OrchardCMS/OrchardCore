@@ -28,6 +28,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import UploadComponent from './uploadComponent.vue';
+import $ from "jquery";
 
 export default defineComponent({
     components: {
@@ -36,7 +37,7 @@ export default defineComponent({
     name: "uploadList",
     data: function () {
         return {
-            files: [],
+            files: <any>[],
             expanded: false,
             pendingCount: 0,
             errorCount: 0
@@ -58,13 +59,29 @@ export default defineComponent({
         }
     },
     mounted: function () {
-        let self = this;
-        let uploadInput = document.getElementById(self.uploadInputId ?? 'fileupload');
+        var self = this;
+        var uploadInput = document.getElementById(self.uploadInputId ?? 'fileupload');
 
-        uploadInput?.addEventListener('fileuploadadd', this.fileUploadAdd);
+        $(uploadInput).bind('fileuploadadd', function (e: any, data: any) {
+            if (!data.files) {
+                return;
+            }
 
-        this.emitter.on('removalRequest', (fileUpload) => {
-            self.files.forEach(function (item, index, array) {
+            data.files.forEach(function (newFile: any) {
+                var alreadyInList = self.files.some(function (f: any) {
+                    return f.name == newFile.name;
+                });
+
+                if (!alreadyInList) {
+                    self.files.push({ name: newFile.name, percentage: 0, errorMessage: '' });
+                } else {
+                    console.error('A file with the same name is already on the queue:' + newFile.name);
+                }
+            });
+        });
+
+        this.emitter.on('removalRequest', (fileUpload: any) => {
+            self.files.forEach(function (item: any, index: any, array: any) {
                 if (item.name == fileUpload.name) {
                     array.splice(index, 1);
                 }
@@ -76,14 +93,15 @@ export default defineComponent({
         })
     },
     methods: {
-        fileUploadAdd: function (data, ev) {
+        fileUploadAdd: function (data: any, ev: any) {
             let self = this;
 
             if (!data.files) {
                 return;
             }
-            data.files.forEach(function (newFile) {
-                let alreadyInList = self.files.some(function (f) {
+
+            data.files.forEach(function (newFile: any) {
+                let alreadyInList = self.files.some(function (f: any) {
                     return f.name == newFile.name;
                 });
 
@@ -95,16 +113,18 @@ export default defineComponent({
             });
         },
         updateCount: function () {
-            this.errorCount = this.files.filter(function (item) {
+            this.errorCount = this.files.filter(function (item: any) {
                 return item.errorMessage != '';
             }).length;
+
             this.pendingCount = this.files.length - this.errorCount;
+
             if (this.files.length < 1) {
                 this.expanded = false;
             }
         },
         clearErrors: function () {
-            this.files = this.files.filter(function (item) {
+            this.files = this.files.filter(function (item: any) {
                 return item.errorMessage == '';
             });
         }

@@ -141,6 +141,7 @@ import PagerComponent from './components/pagerComponent.vue';
 import DragDropThumbnail from './assets/drag-thumbnail.png';
 import { ModalsContainer, useVfm } from 'vue-final-modal'
 import ModalConfirm from './components/ModalConfirm.vue'
+import $ from "jquery";
 
 //import "bootstrap/dist/css/bootstrap.min.css" // TODO remove
 
@@ -205,19 +206,19 @@ export default defineComponent({
     },
     data() {
         return {
-            t: Object,
-            selectedFolder: {},
-            mediaItems: [],
-            selectedMedias: [],
+            t: <any>Object,
+            selectedFolder: <any>{},
+            mediaItems: <any>[],
+            selectedMedias: <any>[],
             isSelectedAll: false,
-            errors: [],
+            errors: <any>[],
             dragDropThumbnail: new Image(),
             smallThumbs: false,
             gridView: false,
             mediaFilter: '',
             sortBy: '',
             sortAsc: true,
-            itemsInPage: [],
+            itemsInPage: <any>[],
             root: {
                 name: document.querySelector('#t-mediaLibrary')?.textContent,
                 path: '',
@@ -233,7 +234,7 @@ export default defineComponent({
 
         this.t = JSON.parse(this.$props.translations);
 
-        this.emitter.on('folderSelected', (folder) => {
+        this.emitter.on('folderSelected', (folder: any) => {
             self.selectedFolder = folder;
         })
 
@@ -241,24 +242,24 @@ export default defineComponent({
             self.selectRoot();
         })
 
-        this.emitter.on('folderAdded', (folder) => {
+        this.emitter.on('folderAdded', (folder: any) => {
             self.selectedFolder = folder;
             folder.selected = true;
         })
 
-        this.emitter.on('mediaListMove', (elem) => {
+        this.emitter.on('mediaListMove', (elem: any) => {
             self.mediaListMove(elem);
         })
 
-        this.emitter.on('mediaListMoved', (errorInfo) => {
+        this.emitter.on('mediaListMoved', (errorInfo: never) => {
             self.loadFolder(self.selectedFolder);
             if (errorInfo) {
                 self.errors.push(errorInfo);
             }
         })
 
-        this.emitter.on('mediaRenamed', (element) => {
-            let media = self.mediaItems.filter(function (item) {
+        this.emitter.on('mediaRenamed', (element: any) => {
+            let media = <any>self.mediaItems.filter(function (item: any) {
                 return item.mediaPath === element.oldPath; // mediaPath ??? should it not be .url ?
             })[0];
 
@@ -266,7 +267,7 @@ export default defineComponent({
             media.name = element.newName;
         })
 
-        this.emitter.on('createFolderRequested', (folderName) => {
+        this.emitter.on('createFolderRequested', (folderName: any) => {
             self.createFolder(folderName);
         })
 
@@ -275,29 +276,29 @@ export default defineComponent({
         })
 
         // common handlers for actions in both grid and table view.
-        this.emitter.on('sortChangeRequested', (newSort) => {
+        this.emitter.on('sortChangeRequested', (newSort: any) => {
             self.changeSort(newSort);
         })
 
-        this.emitter.on('mediaToggleRequested', (media) => {
+        this.emitter.on('mediaToggleRequested', (media: any) => {
             self.toggleSelectionOfMedia(media);
             self.isSelectedAll = false;
         })
 
-        this.emitter.on('renameMediaRequested', (media) => {
+        this.emitter.on('renameMediaRequested', (media: any) => {
             self.renameMedia(media);
         })
 
-        this.emitter.on('deleteMediaRequested', (media) => {
+        this.emitter.on('deleteMediaRequested', (media: any) => {
             self.deleteMediaItem(media);
         })
 
-        this.emitter.on('mediaDragStartRequested', (media, e) => {
-            self.handleDragStart(media, e);
+        this.emitter.on('mediaDragStartRequested', (media: any) => {
+            self.handleDragStart(media);
         })
 
         // handler for pager events
-        this.emitter.on('pagerEvent', (itemsInPage) => {
+        this.emitter.on('pagerEvent', (itemsInPage: any) => {
             self.itemsInPage = itemsInPage;
             self.selectedMedias = [];
         })
@@ -334,28 +335,28 @@ export default defineComponent({
 
             self.selectedMedias = [];
 
-            let filtered = self.mediaItems.filter(function (item) {
+            let filtered = self.mediaItems.filter(function (item: any) {
                 return item.name.toLowerCase().indexOf(self.mediaFilter.toLowerCase()) > - 1;
             });
 
             switch (self.sortBy) {
                 case 'size':
-                    filtered.sort(function (a, b) {
+                    filtered.sort(function (a: any, b: any) {
                         return self.sortAsc ? a.size - b.size : b.size - a.size;
                     });
                     break;
                 case 'mime':
-                    filtered.sort(function (a, b) {
+                    filtered.sort(function (a: any, b: any) {
                         return self.sortAsc ? a.mime.toLowerCase().localeCompare(b.mime.toLowerCase()) : b.mime.toLowerCase().localeCompare(a.mime.toLowerCase());
                     });
                     break;
                 case 'lastModify':
-                    filtered.sort(function (a, b) {
+                    filtered.sort(function (a: any, b: any) {
                         return self.sortAsc ? a.lastModify - b.lastModify : b.lastModify - a.lastModify;
                     });
                     break;
                 default:
-                    filtered.sort(function (a, b) {
+                    filtered.sort(function (a: any, b: any) {
                         return self.sortAsc ? a.name.toLowerCase().localeCompare(b.name.toLowerCase()) : b.name.toLowerCase().localeCompare(a.name.toLowerCase());
                     });
             }
@@ -378,7 +379,7 @@ export default defineComponent({
                     gridView: this.gridView
                 };
             },
-            set: function (newPrefs) {
+            set: function (newPrefs: any) {
                 if (!newPrefs) {
                     return;
                 }
@@ -423,9 +424,9 @@ export default defineComponent({
                     ]
                 },
                 done: function (e, data) {
-                    $.each(data.result.files, function (index, file) {
+                    $.each(data.result.files, function (index, file: any) {
                         if (!file.error) {
-                            me.mediaItems.push(file)
+                            me.mediaItems.push(<never>file)
                         }
                     });
                 }
@@ -444,7 +445,7 @@ export default defineComponent({
 
 
 
-        $(document).bind('dragover', function (e) {
+        $(document).bind('dragover', function (e: { originalEvent: { dataTransfer: any; }; target: any; }) {
             var dt = e.originalEvent.dataTransfer;
             if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') != -1 : dt.types.contains('Files'))) {
                 var dropZone = $('#customdropzone'),
@@ -464,23 +465,19 @@ export default defineComponent({
 
     },
     methods: {
-        getModalName: function (name: string, action: string) {
+        getModalName: function (name: String, action: String) {
             return action + "-media-" + name;
         },
-        openModal: function (media: string, action: string) {
+        openModal: function (media: String, action: String) {
             const uVfm = useVfm();
 
             uVfm.open(this.getModalName(media, action));
         },
-        confirm: function (media: string, action: string) {
+        confirm: function (media: String, action: String) {
             const uVfm = useVfm();
 
             if (action == "delete") {
                 this.deleteMediaList();
-            }
-            else if (action == "create") {
-                //debug("Confirm folder create:", newName);
-                this.createFolder();
             }
 
             uVfm.close(this.getModalName(media, action));
@@ -498,7 +495,7 @@ export default defineComponent({
         selectRoot: function () {
             this.selectedFolder = this.root;
         },
-        mediaListMove: function (elem) {
+        mediaListMove: function (elem: any) {
             let self = this;
 
             if (elem) {
@@ -521,7 +518,7 @@ export default defineComponent({
                     });
             }
         },
-        loadFolder: function (folder) {
+        loadFolder: function (folder: any) {
             this.errors = [];
             this.selectedMedias = [];
             let self = this;
@@ -531,7 +528,7 @@ export default defineComponent({
             if (mediaUrl != null) {
                 axios.get(mediaUrl + (mediaUrl.indexOf('?') == -1 ? '?' : '&') + "path=" + encodeURIComponent(folder.path))
                     .then((response) => {
-                        response.data.forEach(function (item) {
+                        response.data.forEach(function (item: any) {
                             item.open = false;
                         });
                         self.mediaItems = response.data;
@@ -567,15 +564,15 @@ export default defineComponent({
             }
             this.selectedMedias = temp;
         },
-        toggleSelectionOfMedia: function (media) {
+        toggleSelectionOfMedia: function (media: any) {
             if (this.isMediaSelected(media) == true) {
                 this.selectedMedias.splice(this.selectedMedias.indexOf(media), 1);
             } else {
                 this.selectedMedias.push(media);
             }
         },
-        isMediaSelected: function (media) {
-            let result = this.selectedMedias?.some(function (element, index, array) {
+        isMediaSelected: function (media: any) {
+            let result = this.selectedMedias?.some(function (element: any, index: any, array: any) {
                 return element.url.toLowerCase() === media.url.toLowerCase();
             });
             return result;
@@ -604,7 +601,7 @@ export default defineComponent({
                     console.error(error.message);
                 });
         },
-        createFolder: function (folderName) {
+        createFolder: function (folderName: any) {
             let self = this;
             document.getElementById('createFolderModal-errors')?.empty();
 
@@ -645,7 +642,7 @@ export default defineComponent({
                         }); */
 
         },
-        renameMedia: function (element) {
+        renameMedia: function (element: any) {
             $('#renameMediaModal-errors').empty(); // TODO use a slot
 
             let self = this;
@@ -673,7 +670,7 @@ export default defineComponent({
             $('#old-item-name').val(media.name); // TODO remove probably
             $('#renameMediaModal .modal-body input').val(media.name).focus(); // TODO remove probably
         },
-        selectAndDeleteMedia: function (media) {
+        selectAndDeleteMedia: function (media: any) {
             //this.deleteMedia();
         },
         deleteMediaList: function () {
@@ -713,7 +710,7 @@ export default defineComponent({
                     console.error(error.message);
                 });
         },
-        deleteMediaItem: function (media) {
+        deleteMediaItem: function (media: any) {
             let self = this;
             if (!media) {
                 debug("Cannot delete null media item", media);
@@ -739,11 +736,11 @@ export default defineComponent({
                     console.error(e);
                 });
         },
-        handleDragStart: function (element) {
+        handleDragStart: function (element: any) {
             // first part of move media to folder:
             // prepare the data that will be handled by the folder component on drop event
             let mediaNames = [];
-            this.selectedMedias.forEach(function (item) {
+            this.selectedMedias.forEach(function (item: any) {
                 mediaNames.push(item.name);
             });
 
@@ -758,7 +755,7 @@ export default defineComponent({
             element.e.dataTransfer.setDragImage(this.dragDropThumbnail, 10, 10);
             element.e.dataTransfer.effectAllowed = 'move';
         },
-        handleScrollWhileDrag: function (e) {
+        handleScrollWhileDrag: function (e: any) {
             if (e.clientY < 150) {
                 window.scrollBy(0, -10);
             }
@@ -767,7 +764,7 @@ export default defineComponent({
                 window.scrollBy(0, 10);
             }
         },
-        changeSort: function (newSort) {
+        changeSort: function (newSort: any) {
             if (this.sortBy == newSort) {
                 this.sortAsc = !this.sortAsc;
             } else {
@@ -775,50 +772,6 @@ export default defineComponent({
                 this.sortBy = newSort;
             }
         },
-        confirmDialog: function ({ callback, ...options }) {
-            const defaultOptions = $('#confirmRemoveModalMetadata').data();
-            const { title, message, okText, cancelText, okClass, cancelClass } = $.extend({}, defaultOptions, options);
-
-            $('<div id="confirmRemoveModal" class="modal" tabindex="-1" role="dialog">\
-                <div class="modal-dialog modal-dialog-centered" role="document">\
-                    <div class="modal-content">\
-                        <div class="modal-header">\
-                            <h5 class="modal-title">' + title + '</h5>\
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>\
-                        </div>\
-                        <div class="modal-body">\
-                            <p>' + message + '</p>\
-                        </div>\
-                        <div class="modal-footer">\
-                            <button id="modalOkButton" type="button" class="btn ' + okClass + '">' + okText + '</button>\
-                            <button id="modalCancelButton" type="button" class="btn ' + cancelClass + '" data-bs-dismiss="modal">' + cancelText + '</button>\
-                        </div>\
-                    </div>\
-                </div>\
-            </div>').appendTo('body');
-
-            var confirmModal = new bootstrap.Modal($('#confirmRemoveModal'), {
-                backdrop: 'static',
-                keyboard: false
-            })
-
-            confirmModal.show();
-
-            document.getElementById('confirmRemoveModal').addEventListener('hidden.bs.modal', function () {
-                document.getElementById('confirmRemoveModal').remove();
-                confirmModal.dispose();
-            });
-
-            $('#modalOkButton').click(function () {
-                callback(true);
-                confirmModal.hide();
-            });
-
-            $('#modalCancelButton').click(function () {
-                callback(false);
-                confirmModal.hide();
-            });
-        }
     }
 });
 </script>

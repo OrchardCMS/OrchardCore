@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { VueFinalModal } from 'vue-final-modal'
 
 const props = defineProps<{

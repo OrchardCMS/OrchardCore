@@ -8,7 +8,7 @@
 <template>
     <div>
         <nav id="media-pager" aria-label="Pagination Navigation" role="navigation"
-            :data-computed-trigger="itemsInCurrentPage.length">
+            :data-computed-trigger="itemsInCurrentPage?.length">
             <ul class="pagination pagination-sm">
                 <li class="page-item media-first-button" :class="{ disabled: !canDoFirst }">
                     <a class="page-link" href="#" :tabindex="canDoFirst ? 0 : -1" v-on:click="goFirst">

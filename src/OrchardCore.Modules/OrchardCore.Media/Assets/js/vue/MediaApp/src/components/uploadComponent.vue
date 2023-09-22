@@ -1,18 +1,17 @@
 <!-- 
     <upload> component
 -->
-
 <template>
     <div :class="{ 'upload-warning': model?.errorMessage }" class="upload m-2 p-2 pt-0">
-        <span v-if="model?.errorMessage" v-on:click="dismissWarning()" class="close-warning"><i class="fa-solid fa-times"
-                aria-hidden="true"></i> </span>
+        <span v-if="model?.errorMessage" v-on:click="dismissWarning()" class="close-warning">
+            <fa-icon icon="fa-solid fa-times"></fa-icon>
+        </span>
         <p class="upload-name" :title="model?.errorMessage">{{ model?.name }}</p>
         <div>
-            <span v-show="!model?.errorMessage" :style="{
-                width: model?.percentage + '%'
-            }" class="progress-bar"> </span>
-            <span v-if="model?.errorMessage" class="error-message" :title="model.errorMessage"> Error: {{ model.errorMessage
-            }} </span>
+            <span v-show="!model?.errorMessage" :style="{ width: model?.percentage + '%' }" class="progress-bar"></span>
+            <span v-if="model?.errorMessage" class="error-message" :title="model.errorMessage">
+                Error: {{ model.errorMessage }}
+            </span>
         </div>
     </div>
 </template>
@@ -33,15 +32,15 @@ export default defineComponent({
         let self = this;
         const uploadInput = document.getElementById(self.uploadInputId ?? 'fileupload');
 
-        uploadInput.addEventListener('fileuploadprogress', (data) => {
+        uploadInput?.addEventListener('fileuploadprogress', (data: any) => {
             if (data.files[0].name !== self.model.name) {
                 return;
             }
-            
-            self.model.percentage = parseInt(data.loaded / data.total * 100, 10);
+
+            self.model.percentage = parseInt((data.loaded / data.total * 100).toString(), 10);
         });
 
-        uploadInput.addEventListener('fileuploaddone', (data) => {
+        uploadInput?.addEventListener('fileuploaddone', (data: any) => {
             if (data.files[0].name !== self.model.name) {
                 return;
             }
@@ -53,16 +52,18 @@ export default defineComponent({
             }
         });
 
-        uploadInput.addEventListener('fileuploadfail', (data) => {
+        uploadInput?.addEventListener('fileuploadfail', (data: any) => {
             if (data.files[0].name !== self.model.name) {
                 return;
             }
 
-            self.handleFailure(data.files[0].name, document.getElementById('t-error').value);
+            let error = <HTMLInputElement>(document.getElementById('t-error'));
+
+            self.handleFailure(data.files[0].name, error?.value);
         });
     },
     methods: {
-        handleFailure: function (fileName, message) {
+        handleFailure: function (fileName: any, message: any) {
             if (fileName !== this.model.name) {
                 return;
             }

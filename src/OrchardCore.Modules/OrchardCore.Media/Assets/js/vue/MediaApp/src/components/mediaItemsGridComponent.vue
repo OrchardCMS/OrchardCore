@@ -46,7 +46,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import dbg from 'debug';
-import { useVfm, ModalId } from 'vue-final-modal'
+import { useVfm } from 'vue-final-modal'
 import ModalConfirm from './ModalConfirm.vue'
 import ModalInputConfirm from './ModalInputConfirm.vue'
 import { IMedia } from '../interfaces/interfaces';
@@ -72,23 +72,20 @@ export default defineComponent({
             required: true,
         }
     },
-    setup(props, context) {
-
-    },
     methods: {
         isMediaSelected: function (media: IMedia) {
-            var result = this.selectedMedias?.some(function (element, index, array) {
+            var result = this.selectedMedias?.some(function (element: any) {
                 return element.url.toLowerCase() === media.url.toLowerCase();
             });
             return result;
         },
-        buildMediaUrl: function (url, thumbSize) {
+        buildMediaUrl: function (url: string | string[], thumbSize: Number) {
             return "https://localhost:5001" + url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize;
         },
         toggleSelectionOfMedia: function (media: IMedia) {
             this.emitter.emit('mediaToggleRequested', media);
         },
-        renameMedia: function (media, newName) {
+        renameMedia: function (media: IMedia, newName: any) {
             this.emitter.emit('renameMediaRequested', { media, newName });
         },
         deleteMedia: function (media: IMedia) {

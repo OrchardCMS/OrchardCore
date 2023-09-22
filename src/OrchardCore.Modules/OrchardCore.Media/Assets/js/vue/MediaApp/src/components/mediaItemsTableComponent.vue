@@ -100,11 +100,17 @@ export default defineComponent({
     },
     name: "media-items-table",
     props: {
-        sortBy: String,
+        sortBy: {
+            type: String,
+            required: true
+        },
         sortAsc: Boolean,
         filteredMediaItems: Array<IMedia>,
         selectedMedias: Array,
-        thumbSize: Number,
+        thumbSize: {
+            type: Number,
+            required: true
+        },
         basePath: String,
         t: {
             type: Object,
@@ -112,31 +118,31 @@ export default defineComponent({
         }
     },
     methods: {
-        isMediaSelected: function (media) {
-            let result = this.selectedMedias?.some(function (element) {
+        isMediaSelected: function (media: IMedia) {
+            let result = this.selectedMedias?.some(function (element: any) {
                 return element.url.toLowerCase() === media.url.toLowerCase();
             });
             return result;
         },
-        buildMediaUrl: function (url, thumbSize) {
+        buildMediaUrl: function (url: string | string[], thumbSize: Number) {
             return "https://localhost:5001" + url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize;
         },
-        changeSort: function (newSort) {
+        changeSort: function (newSort: any) {
             this.emitter.emit('sortChangeRequested', newSort);
         },
-        toggleSelectionOfMedia: function (media) {
+        toggleSelectionOfMedia: function (media: IMedia) {
             this.emitter.emit('mediaToggleRequested', media);
         },
-        renameMedia: function (media, newName) {
+        renameMedia: function (media: IMedia, newName: any) {
             this.emitter.emit('renameMediaRequested', { media, newName });
         },
-        deleteMedia: function (media) {
+        deleteMedia: function (media: IMedia) {
             this.emitter.emit('deleteMediaRequested', media);
         },
-        dragStart: function (media, e) {
+        dragStart: function (media: IMedia, e: DragEvent) {
             this.emitter.emit('mediaDragStartRequested', { media: media, e: e });
         },
-        printDateTime: function (datemillis) {
+        printDateTime: function (datemillis: string | number | Date) {
             let d = new Date(datemillis);
             return d.toLocaleString();
         },
