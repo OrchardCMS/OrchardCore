@@ -48,7 +48,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             feature.ViewDescriptors.Add(new CompiledViewDescriptor
             {
                 RelativePath = DefaultRazorViewPath,
-                Item = new RazorViewCompiledItem(typeof(LiquidPage), @"mvc.1.0.view", DefaultLiquidViewPath)
+                Item = new RazorViewCompiledItem(typeof(LiquidPage), "mvc.1.0.view", DefaultLiquidViewPath)
             });
 
             foreach (var path in _sharedPaths)
@@ -59,7 +59,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                     feature.ViewDescriptors.Add(new CompiledViewDescriptor
                     {
                         RelativePath = viewPath,
-                        Item = new RazorViewCompiledItem(typeof(LiquidPage), @"mvc.1.0.view", viewPath)
+                        Item = new RazorViewCompiledItem(typeof(LiquidPage), "mvc.1.0.view", viewPath)
                     });
                 }
             }

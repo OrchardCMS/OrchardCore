@@ -25,14 +25,14 @@ namespace OrchardCore.DisplayManagement.Theming
             {
                 ExpirationTokens = Array.Empty<IChangeToken>(),
                 RelativePath = "/_ViewStart" + RazorViewEngine.ViewExtension,
-                Item = new RazorViewCompiledItem(typeof(ThemeViewStart), @"mvc.1.0.view", "/_ViewStart")
+                Item = new RazorViewCompiledItem(typeof(ThemeViewStart), "mvc.1.0.view", "/_ViewStart")
             });
 
             feature.ViewDescriptors.Add(new CompiledViewDescriptor()
             {
                 ExpirationTokens = Array.Empty<IChangeToken>(),
                 RelativePath = '/' + ThemeLayoutFileName,
-                Item = new RazorViewCompiledItem(typeof(ThemeLayout), @"mvc.1.0.view", '/' + ThemeLayoutFileName)
+                Item = new RazorViewCompiledItem(typeof(ThemeLayout), "mvc.1.0.view", '/' + ThemeLayoutFileName)
             });
         }
     }
