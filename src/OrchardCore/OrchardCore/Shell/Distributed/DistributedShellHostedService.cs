@@ -110,14 +110,14 @@ namespace OrchardCore.Environment.Shell.Distributed
                         defaultTenantSyncingSeconds = 0;
 
                         // Load the settings of the default tenant that may have been setup by another instance.
-                        var defaultSettings = await _shellSettingsManager.LoadSettingsAsync(ShellSettings.DefaultShellName);
-                        if (defaultSettings.IsRunning())
+                        var loadedDefaultSettings = await _shellSettingsManager.LoadSettingsAsync(ShellSettings.DefaultShellName);
+                        if (loadedDefaultSettings.IsRunning())
                         {
                             // If the default tenant has been setup by another instance, reload it locally.
                             await _shellHost.ReloadShellContextAsync(defaultContext.Settings, eventSource: false);
                         }
 
-                        defaultSettings.Release();
+                        loadedDefaultSettings.Release();
 
                         continue;
                     }
@@ -666,8 +666,9 @@ namespace OrchardCore.Environment.Shell.Distributed
                 return null;
             }
 
-            // Check if the default tenant descriptor was updated.
-            if (_context.Context.Blueprint.Descriptor.SerialNumber != descriptor.SerialNumber)
+            // Check if the default tenant descriptor was updated or if the settings was released.
+            if (_context.Context.Blueprint.Descriptor.SerialNumber != descriptor.SerialNumber ||
+                _context.Context.Settings.Released)
             {
                 // Creates a new context based on the default settings and descriptor.
                 return await CreateDistributedContextAsync(defaultContext.Settings, descriptor);

@@ -219,7 +219,15 @@ namespace OrchardCore.Environment.Shell
                     continue;
                 }
 
-                _shellSettings[settings.Name] = settings;
+                _shellSettings.AddOrUpdate(settings.Name, (key) => settings, (key, existing) =>
+                {
+                    if (existing != settings)
+                    {
+                        existing.Release();
+                    }
+
+                    return settings;
+                });
 
                 if (CanRegisterShell(settings))
                 {

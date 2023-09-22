@@ -65,6 +65,11 @@ namespace OrchardCore.Environment.Shell
         public string Name { get; set; }
 
         /// <summary>
+        /// Whether this instance has been released or not.
+        /// </summary>
+        public bool Released => _released;
+
+        /// <summary>
         /// The tenant version identifier.
         /// </summary>
         public string VersionId
