@@ -1,5 +1,8 @@
+using System;
+
 namespace OrchardCore.Sms;
 
+[Obsolete("This class has been deprecated, please use PhoneNumberValidator instead.")]
 public class DefaultPhoneFormatValidator : IPhoneFormatValidator
 {
     private readonly IPhoneNumberValidator _phoneNumberValidator;
