@@ -8,7 +8,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static partial class OrchardCoreBuilderExtensions
     {
         /// <summary>
-        /// Adds e-mail address validator service.
+        /// Adds phone number validator service.
         /// </summary>
         /// <param name="builder">The <see cref="OrchardCoreBuilder"/>.</param>
         public static OrchardCoreBuilder AddPhoneNumberValidator(this OrchardCoreBuilder builder)

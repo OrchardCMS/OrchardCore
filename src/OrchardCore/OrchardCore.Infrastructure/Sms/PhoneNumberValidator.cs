@@ -3,8 +3,12 @@ using PhoneNumbers;
 
 namespace OrchardCore.Sms;
 
+/// <summary>
+/// Represents a service for phone number validation.
+/// </summary>
 public class PhoneNumberValidator : IPhoneNumberValidator
 {
+    /// <inheritdoc/>
     public bool Validate(string phoneNumber)
     {
         if (string.IsNullOrEmpty(phoneNumber))
