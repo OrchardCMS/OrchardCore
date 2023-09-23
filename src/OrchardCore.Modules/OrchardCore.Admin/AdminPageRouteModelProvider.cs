@@ -6,6 +6,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
+using Microsoft.AspNetCore.Mvc.Razor.Extensions;
 using Microsoft.Extensions.Hosting;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Mvc;
@@ -14,8 +15,6 @@ namespace OrchardCore.Admin
 {
     internal class AdminPageRouteModelProvider : IPageRouteModelProvider
     {
-        private const string RazorPageDocumentKind = "mvc.1.0.razor-page";
-
         private readonly IHostEnvironment _hostingEnvironment;
         private readonly ApplicationPartManager _applicationManager;
 
@@ -76,7 +75,8 @@ namespace OrchardCore.Admin
         {
         }
 
-        private static IEnumerable<CompiledViewDescriptor> GetPageDescriptors<T>(ApplicationPartManager applicationManager) where T : ViewsFeature, new()
+        private static IEnumerable<CompiledViewDescriptor> GetPageDescriptors<T>(ApplicationPartManager applicationManager)
+            where T : ViewsFeature, new()
         {
             if (applicationManager == null)
             {
@@ -84,8 +84,10 @@ namespace OrchardCore.Admin
             }
 
             // First try to get it as a shell scope feature.
-            var viewsFeature = ShellScope.GetFeature<T>()
-                ?? GetViewFeature<T>(applicationManager);
+            var viewsFeature =
+                //ShellScope.GetFeature<T>()
+                //??
+                GetViewFeature<T>(applicationManager);
 
             var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
@@ -103,7 +105,8 @@ namespace OrchardCore.Admin
             }
         }
 
-        private static bool IsRazorPage(CompiledViewDescriptor viewDescriptor) => viewDescriptor.Item?.Kind == RazorPageDocumentKind;
+        private static bool IsRazorPage(CompiledViewDescriptor viewDescriptor) =>
+            viewDescriptor.Item?.Kind == RazorPageDocumentClassifierPass.RazorPageDocumentKind;
 
         private static T GetViewFeature<T>(ApplicationPartManager applicationManager) where T : ViewsFeature, new()
         {

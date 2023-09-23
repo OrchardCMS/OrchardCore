@@ -37,6 +37,15 @@ namespace OrchardCore.Mvc
             {
                 ShellScope.SetFeature(feature);
             }
+            else
+            {
+                foreach (var descriptor in viewsFeature.ViewDescriptors)
+                {
+                    feature.ViewDescriptors.Add(descriptor);
+                }
+
+                return;
+            }
 
             PopulateFeatureInternal(feature);
 
@@ -130,7 +139,7 @@ namespace OrchardCore.Mvc
 
                 foreach (var assembly in assembliesWithViews)
                 {
-                    var applicationPart = new ApplicationPart[] { new CompiledRazorAssemblyPart(assembly) };
+                    var applicationPart = new ApplicationPart[] { new TenantCompiledRazorAssemblyPart(assembly) };
 
                     foreach (var provider in mvcFeatureProviders)
                     {
