@@ -31,6 +31,9 @@ namespace OrchardCore.Mvc
         {
             EnsureScopedServices();
 
+            // Set as a shell scope feature.
+            ShellScope.SetFeature(feature);
+
             PopulateFeatureInternal(feature);
 
             // Apply views feature providers registered at the tenant level.

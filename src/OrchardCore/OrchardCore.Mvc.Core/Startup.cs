@@ -110,7 +110,7 @@ namespace OrchardCore.Mvc
                 builder.AddRazorRuntimeCompilation();
             }
 
-            // Shares across tenants a static compiler even if there is no runtime compilation
+            // Share across tenants a static compiler even if there is no runtime compilation
             // because the compiler still uses its internal cache to retrieve compiled items.
             services.AddSingleton<IViewCompilerProvider, SharedViewCompilerProvider>();
 

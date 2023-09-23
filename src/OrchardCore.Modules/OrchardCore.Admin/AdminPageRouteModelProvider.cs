@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.Hosting;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Mvc;
 
 namespace OrchardCore.Admin
@@ -82,7 +83,9 @@ namespace OrchardCore.Admin
                 throw new ArgumentNullException(nameof(applicationManager));
             }
 
-            var viewsFeature = GetViewFeature<T>(applicationManager);
+            // First try to get it as a shell scope feature.
+            var viewsFeature = ShellScope.GetFeature<T>()
+                ?? GetViewFeature<T>(applicationManager);
 
             var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
