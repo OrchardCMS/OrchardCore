@@ -31,8 +31,12 @@ namespace OrchardCore.Mvc
         {
             EnsureScopedServices();
 
-            // Set it as a shell scope feature.
-            ShellScope.SetFeature(feature);
+            // Set it as a shell scope feature to be used later on.
+            var viewsFeature = ShellScope.GetFeature<ViewsFeature>();
+            if (viewsFeature is null)
+            {
+                ShellScope.SetFeature(feature);
+            }
 
             PopulateFeatureInternal(feature);
 
