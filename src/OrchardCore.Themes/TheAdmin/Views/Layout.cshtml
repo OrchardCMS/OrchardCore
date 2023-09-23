@@ -34,7 +34,7 @@
 </head>
 <body class="preload">
     <div class="ta-wrapper">
-        <nav class="ta-navbar-top navbar navbar-expand-md text-bg-theme navbar fixed-top">
+        <nav class="ta-navbar-top navbar text-bg-theme fixed-top">
             <div class="container-fluid">
                 <div class="d-flex w-100 justify-content-between align-items-center">
                     <div class="brand-wrapper">
@@ -49,48 +49,46 @@
                             }
                         </div>
                     </div>
-                    <div class="d-flex align-items-end">
-                        <ul class="navbar-nav user-top-navbar flex-row">
-                            @await RenderSectionAsync("NavbarTop", required: false)
-                            @if (adminSettings.DisplayThemeToggler)
-                            {
-                                <li class="nav-item">
-                                    <div class="dropdown">
-                                        <button class="btn btn-link nav-link dropdown-toggle d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static" aria-label="@T["Toggle theme"]">
-                                            <span class="theme-icon-active"><i class="fa-solid fa-circle-half-stroke"></i></span>
-                                            <span class="d-none" id="bd-theme-text">@T["Toggle theme"]</span>
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
-                                            <li>
-                                                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto" aria-pressed="false">
-                                                    <span class="theme-icon"><i class="fa-solid fa-circle-half-stroke"></i></span> <span class="ps-2">@T["Auto"]</span>
-                                                </button>
-                                            </li>
-                                            <li>
-                                                <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="light" aria-pressed="true">
-                                                    <span class="theme-icon"><i class="fa-solid fa-sun"></i></span> <span class="ps-2">@T["Light"]</span>
-                                                </button>
-                                            </li>
-                                            <li>
-                                                <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
-                                                    <span class="theme-icon"><i class="fa-solid fa-moon"></i></span> <span class="ps-2">@T["Dark"]</span>
-                                                </button>
-                                            </li>
-                                            @await RenderSectionAsync("ToggleThemeItems", required: false)
-                                        </ul>
-                                    </div>
-                                </li>
-                            }
+                    <ul class="navbar-nav user-top-navbar ms-auto d-flex flex-row">
+                        @await RenderSectionAsync("NavbarTop", required: false)
+                        @if (adminSettings.DisplayThemeToggler)
+                        {
                             <li class="nav-item">
-                                <a href="@Url.Content("~/")" class="nav-link" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@T["Visit Site"]" role="button">
-                                    <i class="fa-solid fa-fw fa-external-link" aria-hidden="true"></i>
-                                </a>
+                                <div class="dropdown">
+                                    <button class="btn btn-link nav-link dropdown-toggle d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static" aria-label="@T["Toggle theme"]">
+                                        <span class="theme-icon-active"><i class="fa-solid fa-circle-half-stroke"></i></span>
+                                        <span class="d-none" id="bd-theme-text">@T["Toggle theme"]</span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end position-absolute" aria-labelledby="bd-theme-text">
+                                        <li>
+                                            <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto" aria-pressed="false">
+                                                <span class="theme-icon"><i class="fa-solid fa-circle-half-stroke"></i></span> <span class="ps-2">@T["Auto"]</span>
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="light" aria-pressed="true">
+                                                <span class="theme-icon"><i class="fa-solid fa-sun"></i></span> <span class="ps-2">@T["Light"]</span>
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
+                                                <span class="theme-icon"><i class="fa-solid fa-moon"></i></span> <span class="ps-2">@T["Dark"]</span>
+                                            </button>
+                                        </li>
+                                        @await RenderSectionAsync("ToggleThemeItems", required: false)
+                                    </ul>
+                                </div>
                             </li>
-                            <li class="nav-item">
-                                @await DisplayAsync(await DisplayManager.BuildDisplayAsync(new UserMenu(), UpdateModelAccessor.ModelUpdater, "DetailAdmin"))
-                            </li>
-                        </ul>
-                    </div>
+                        }
+                        <li class="nav-item">
+                            <a href="@Url.Content("~/")" class="nav-link" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@T["Visit Site"]" role="button">
+                                <i class="fa-solid fa-fw fa-external-link" aria-hidden="true"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            @await DisplayAsync(await DisplayManager.BuildDisplayAsync(new UserMenu(), UpdateModelAccessor.ModelUpdater, "DetailAdmin"))
+                        </li>
+                    </ul>
                 </div>
             </div>
         </nav>

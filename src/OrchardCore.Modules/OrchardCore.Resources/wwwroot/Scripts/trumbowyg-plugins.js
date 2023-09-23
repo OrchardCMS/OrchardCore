@@ -4,617 +4,6 @@
 */
 
 /* ===========================================================
- * trumbowyg.allowTagsFromPaste.js v1.0.2
- * It cleans tags from pasted text, whilst allowing several specified tags
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author	: Fathi Anshory (0x00000F5C)
- * Twitter	: @fscchannl
- * Notes:
- *  - removeformatPasted must be set to FALSE since it was applied prior to pasteHandlers, or else it will be useless
- *	- It is most advisable to use along with the cleanpaste plugin, or else you'd end up with dirty markup
- */
-
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    // When empty, all tags are allowed making this plugin useless
-    // If you want to remove all tags, use removeformatPasted core option instead
-    allowedTags: [],
-    // List of tags which can be allowed
-    removableTags: ['a', 'abbr', 'address', 'b', 'bdi', 'bdo', 'blockquote', 'br', 'cite', 'code', 'del', 'dfn', 'details', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'ins', 'kbd', 'mark', 'meter', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'small', 'span', 'strong', 'sub', 'summary', 'sup', 'time', 'u', 'var', 'wbr', 'img', 'map', 'area', 'canvas', 'figcaption', 'figure', 'picture', 'audio', 'source', 'track', 'video', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'table', 'caption', 'th', 'tr', 'td', 'thead', 'tbody', 'tfoot', 'col', 'colgroup', 'style', 'div', 'p', 'form', 'input', 'textarea', 'button', 'select', 'optgroup', 'option', 'label', 'fieldset', 'legend', 'datalist', 'keygen', 'output', 'iframe', 'link', 'nav', 'header', 'hgroup', 'footer', 'main', 'section', 'article', 'aside', 'dialog', 'script', 'noscript', 'embed', 'object', 'param']
-  };
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      allowTagsFromPaste: {
-        init: function init(trumbowyg) {
-          if (!trumbowyg.o.plugins.allowTagsFromPaste) {
-            return;
-          }
-
-          // Force disable remove format pasted
-          trumbowyg.o.removeformatPasted = false;
-          var allowedTags = trumbowyg.o.plugins.allowTagsFromPaste.allowedTags || defaultOptions.allowedTags;
-          var removableTags = trumbowyg.o.plugins.allowTagsFromPaste.removableTags || defaultOptions.removableTags;
-          if (allowedTags.length === 0) {
-            return;
-          }
-
-          // Get list of tags to remove
-          var tagsToRemove = $(removableTags).not(allowedTags).get();
-          trumbowyg.pasteHandlers.push(function () {
-            setTimeout(function () {
-              var processNodes = trumbowyg.$ed.html();
-              $.each(tagsToRemove, function (iterator, tagName) {
-                processNodes = processNodes.replace(new RegExp('<\\/?' + tagName + '(\\s[^>]*)?>', 'gi'), '');
-              });
-              trumbowyg.$ed.html(processNodes);
-            }, 0);
-          });
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.allowTagsFromPaste.js v1.0.2
- * It cleans tags from pasted text, whilst allowing several specified tags
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author	: Fathi Anshory (0x00000F5C)
- * Twitter	: @fscchannl
- * Notes:
- *  - removeformatPasted must be set to FALSE since it was applied prior to pasteHandlers, or else it will be useless
- *	- It is most advisable to use along with the cleanpaste plugin, or else you'd end up with dirty markup
- */
-!function (e) {
-  "use strict";
-
-  var a = {
-    allowedTags: [],
-    removableTags: ["a", "abbr", "address", "b", "bdi", "bdo", "blockquote", "br", "cite", "code", "del", "dfn", "details", "em", "h1", "h2", "h3", "h4", "h5", "h6", "hr", "i", "ins", "kbd", "mark", "meter", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp", "small", "span", "strong", "sub", "summary", "sup", "time", "u", "var", "wbr", "img", "map", "area", "canvas", "figcaption", "figure", "picture", "audio", "source", "track", "video", "ul", "ol", "li", "dl", "dt", "dd", "table", "caption", "th", "tr", "td", "thead", "tbody", "tfoot", "col", "colgroup", "style", "div", "p", "form", "input", "textarea", "button", "select", "optgroup", "option", "label", "fieldset", "legend", "datalist", "keygen", "output", "iframe", "link", "nav", "header", "hgroup", "footer", "main", "section", "article", "aside", "dialog", "script", "noscript", "embed", "object", "param"]
-  };
-  e.extend(!0, e.trumbowyg, {
-    plugins: {
-      allowTagsFromPaste: {
-        init: function init(t) {
-          if (t.o.plugins.allowTagsFromPaste) {
-            t.o.removeformatPasted = !1;
-            var o = t.o.plugins.allowTagsFromPaste.allowedTags || a.allowedTags,
-              r = t.o.plugins.allowTagsFromPaste.removableTags || a.removableTags;
-            if (0 !== o.length) {
-              var s = e(r).not(o).get();
-              t.pasteHandlers.push(function () {
-                setTimeout(function () {
-                  var a = t.$ed.html();
-                  e.each(s, function (e, t) {
-                    a = a.replace(new RegExp("<\\/?" + t + "(\\s[^>]*)?>", "gi"), "");
-                  }), t.$ed.html(a);
-                }, 0);
-              });
-            }
-          }
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.base64.js v1.0
- * Base64 plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Cyril Biencourt (lizardK)
- */
-
-(function ($) {
-  'use strict';
-
-  var isSupported = function isSupported() {
-    return typeof FileReader !== 'undefined';
-  };
-  var isValidImage = function isValidImage(type) {
-    return /^data:image\/[a-z]?/i.test(type);
-  };
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        base64: 'Image as base64',
-        file: 'File',
-        errFileReaderNotSupported: 'FileReader is not supported by your browser.',
-        errInvalidImage: 'Invalid image file.'
-      },
-      az: {
-        base64: 'base64 olaraq şəkil',
-        file: 'Fayl',
-        errFileReaderNotSupported: 'FileReader brauzeriniz tərəfindən dəstəklənmir.',
-        errInvalidImage: 'Yanlış şəkil faylı.'
-      },
-      by: {
-        base64: 'Выява (фармат base64)',
-        file: 'Файл',
-        errFileReaderNotSupported: 'FileReader не падтрымліваецца вашым браўзэрам.',
-        errInvalidImage: 'Несапраўдны файл выявы.'
-      },
-      cs: {
-        base64: 'Vložit obrázek',
-        file: 'Soubor'
-      },
-      da: {
-        base64: 'Billede som base64',
-        file: 'Fil',
-        errFileReaderNotSupported: 'FileReader er ikke understøttet af din browser.',
-        errInvalidImage: 'Ugyldig billedfil.'
-      },
-      et: {
-        base64: 'Pilt base64 formaadis',
-        file: 'Fail',
-        errFileReaderNotSupported: 'Teie veebilehitseja ei toeta FileReader funktsiooni.',
-        errInvalidImage: 'Vigane pildifail.'
-      },
-      fr: {
-        base64: 'Image en base64',
-        file: 'Fichier',
-        errFileReaderNotSupported: 'FileReader n\'est pas supporté par votre navigateur.',
-        errInvalidImage: 'Fichier image invalide.'
-      },
-      hu: {
-        base64: 'Kép beszúrás inline',
-        file: 'Fájl',
-        errFileReaderNotSupported: 'Ez a böngésző nem támogatja a FileReader funkciót.',
-        errInvalidImage: 'Érvénytelen képfájl.'
-      },
-      ja: {
-        base64: '画像 (Base64形式)',
-        file: 'ファイル',
-        errFileReaderNotSupported: 'あなたのブラウザーはFileReaderをサポートしていません',
-        errInvalidImage: '画像形式が正しくありません'
-      },
-      ko: {
-        base64: '그림 넣기(base64)',
-        file: '파일',
-        errFileReaderNotSupported: 'FileReader가 현재 브라우저를 지원하지 않습니다.',
-        errInvalidImage: '유효하지 않은 파일'
-      },
-      nl: {
-        base64: 'Afbeelding inline',
-        file: 'Bestand',
-        errFileReaderNotSupported: 'Uw browser ondersteunt deze functionaliteit niet.',
-        errInvalidImage: 'De gekozen afbeelding is ongeldig.'
-      },
-      pt_br: {
-        base64: 'Imagem em base64',
-        file: 'Arquivo',
-        errFileReaderNotSupported: 'FileReader não é suportado pelo seu navegador.',
-        errInvalidImage: 'Arquivo de imagem inválido.'
-      },
-      ru: {
-        base64: 'Изображение как код в base64',
-        file: 'Файл',
-        errFileReaderNotSupported: 'FileReader не поддерживается вашим браузером.',
-        errInvalidImage: 'Недопустимый файл изображения.'
-      },
-      sl: {
-        base64: 'Slika kot base64',
-        file: 'Datoteka',
-        errFileReaderNotSupported: 'FileReader ni podprt v tem brskalniku.',
-        errInvalidImage: 'Neveljavna datoteka s sliko.'
-      },
-      tr: {
-        base64: 'Base64 olarak resim',
-        file: 'Dosya',
-        errFileReaderNotSupported: 'FileReader tarayıcınız tarafından desteklenmiyor.',
-        errInvalidImage: 'Geçersiz resim dosyası.'
-      },
-      zh_cn: {
-        base64: '图片（Base64编码）',
-        file: '文件'
-      },
-      zh_tw: {
-        base64: '圖片(base64編碼)',
-        file: '檔案',
-        errFileReaderNotSupported: '你的瀏覽器不支援FileReader',
-        errInvalidImage: '不正確的檔案格式'
-      }
-    },
-    // jshint camelcase:true
-
-    plugins: {
-      base64: {
-        shouldInit: isSupported,
-        init: function init(trumbowyg) {
-          var btnDef = {
-            isSupported: isSupported,
-            fn: function fn() {
-              trumbowyg.saveRange();
-              var file;
-              var $modal = trumbowyg.openModalInsert(
-              // Title
-              trumbowyg.lang.base64,
-              // Fields
-              {
-                file: {
-                  type: 'file',
-                  required: true,
-                  attributes: {
-                    accept: 'image/*'
-                  }
-                },
-                alt: {
-                  label: 'description',
-                  value: trumbowyg.getRangeText()
-                }
-              },
-              // Callback
-              function (values) {
-                var fReader = new FileReader();
-                fReader.onloadend = function (e) {
-                  if (isValidImage(e.target.result)) {
-                    trumbowyg.execCmd('insertImage', fReader.result, false, true);
-                    $(['img[src="', fReader.result, '"]:not([alt])'].join(''), trumbowyg.$box).attr('alt', values.alt);
-                    trumbowyg.closeModal();
-                  } else {
-                    trumbowyg.addErrorOnModalField($('input[type=file]', $modal), trumbowyg.lang.errInvalidImage);
-                  }
-                };
-                fReader.readAsDataURL(file);
-              });
-              $('input[type=file]').on('change', function (e) {
-                file = e.target.files[0];
-              });
-            }
-          };
-          trumbowyg.addBtnDef('base64', btnDef);
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.base64.js v1.0
- * Base64 plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Cyril Biencourt (lizardK)
- */
-!function (e) {
-  "use strict";
-
-  var a = function a() {
-    return "undefined" != typeof FileReader;
-  };
-  e.extend(!0, e.trumbowyg, {
-    langs: {
-      en: {
-        base64: "Image as base64",
-        file: "File",
-        errFileReaderNotSupported: "FileReader is not supported by your browser.",
-        errInvalidImage: "Invalid image file."
-      },
-      az: {
-        base64: "base64 olaraq şəkil",
-        file: "Fayl",
-        errFileReaderNotSupported: "FileReader brauzeriniz tərəfindən dəstəklənmir.",
-        errInvalidImage: "Yanlış şəkil faylı."
-      },
-      by: {
-        base64: "Выява (фармат base64)",
-        file: "Файл",
-        errFileReaderNotSupported: "FileReader не падтрымліваецца вашым браўзэрам.",
-        errInvalidImage: "Несапраўдны файл выявы."
-      },
-      cs: {
-        base64: "Vložit obrázek",
-        file: "Soubor"
-      },
-      da: {
-        base64: "Billede som base64",
-        file: "Fil",
-        errFileReaderNotSupported: "FileReader er ikke understøttet af din browser.",
-        errInvalidImage: "Ugyldig billedfil."
-      },
-      et: {
-        base64: "Pilt base64 formaadis",
-        file: "Fail",
-        errFileReaderNotSupported: "Teie veebilehitseja ei toeta FileReader funktsiooni.",
-        errInvalidImage: "Vigane pildifail."
-      },
-      fr: {
-        base64: "Image en base64",
-        file: "Fichier",
-        errFileReaderNotSupported: "FileReader n'est pas supporté par votre navigateur.",
-        errInvalidImage: "Fichier image invalide."
-      },
-      hu: {
-        base64: "Kép beszúrás inline",
-        file: "Fájl",
-        errFileReaderNotSupported: "Ez a böngésző nem támogatja a FileReader funkciót.",
-        errInvalidImage: "Érvénytelen képfájl."
-      },
-      ja: {
-        base64: "画像 (Base64形式)",
-        file: "ファイル",
-        errFileReaderNotSupported: "あなたのブラウザーはFileReaderをサポートしていません",
-        errInvalidImage: "画像形式が正しくありません"
-      },
-      ko: {
-        base64: "그림 넣기(base64)",
-        file: "파일",
-        errFileReaderNotSupported: "FileReader가 현재 브라우저를 지원하지 않습니다.",
-        errInvalidImage: "유효하지 않은 파일"
-      },
-      nl: {
-        base64: "Afbeelding inline",
-        file: "Bestand",
-        errFileReaderNotSupported: "Uw browser ondersteunt deze functionaliteit niet.",
-        errInvalidImage: "De gekozen afbeelding is ongeldig."
-      },
-      pt_br: {
-        base64: "Imagem em base64",
-        file: "Arquivo",
-        errFileReaderNotSupported: "FileReader não é suportado pelo seu navegador.",
-        errInvalidImage: "Arquivo de imagem inválido."
-      },
-      ru: {
-        base64: "Изображение как код в base64",
-        file: "Файл",
-        errFileReaderNotSupported: "FileReader не поддерживается вашим браузером.",
-        errInvalidImage: "Недопустимый файл изображения."
-      },
-      sl: {
-        base64: "Slika kot base64",
-        file: "Datoteka",
-        errFileReaderNotSupported: "FileReader ni podprt v tem brskalniku.",
-        errInvalidImage: "Neveljavna datoteka s sliko."
-      },
-      tr: {
-        base64: "Base64 olarak resim",
-        file: "Dosya",
-        errFileReaderNotSupported: "FileReader tarayıcınız tarafından desteklenmiyor.",
-        errInvalidImage: "Geçersiz resim dosyası."
-      },
-      zh_cn: {
-        base64: "图片（Base64编码）",
-        file: "文件"
-      },
-      zh_tw: {
-        base64: "圖片(base64編碼)",
-        file: "檔案",
-        errFileReaderNotSupported: "你的瀏覽器不支援FileReader",
-        errInvalidImage: "不正確的檔案格式"
-      }
-    },
-    plugins: {
-      base64: {
-        shouldInit: a,
-        init: function init(r) {
-          var i = {
-            isSupported: a,
-            fn: function fn() {
-              var a;
-              r.saveRange();
-              var i = r.openModalInsert(r.lang.base64, {
-                file: {
-                  type: "file",
-                  required: !0,
-                  attributes: {
-                    accept: "image/*"
-                  }
-                },
-                alt: {
-                  label: "description",
-                  value: r.getRangeText()
-                }
-              }, function (l) {
-                var t = new FileReader();
-                t.onloadend = function (a) {
-                  var d;
-                  d = a.target.result, /^data:image\/[a-z]?/i.test(d) ? (r.execCmd("insertImage", t.result, !1, !0), e(['img[src="', t.result, '"]:not([alt])'].join(""), r.$box).attr("alt", l.alt), r.closeModal()) : r.addErrorOnModalField(e("input[type=file]", i), r.lang.errInvalidImage);
-                }, t.readAsDataURL(a);
-              });
-              e("input[type=file]").on("change", function (e) {
-                a = e.target.files[0];
-              });
-            }
-          };
-          r.addBtnDef("base64", i);
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.cleanpaste.js v1.0
- * Font Clean paste plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Authors : Eric Radin
- *           Todd Graham (slackwalker)
- *
- * This plugin will perform a "cleaning" on any paste, in particular
- * it will clean pasted content of microsoft word document tags and classes.
- */
-
-(function ($) {
-  'use strict';
-
-  function checkValidTags(snippet) {
-    var theString = snippet;
-
-    // Replace uppercase element names with lowercase
-    theString = theString.replace(/<[^> ]*/g, function (match) {
-      return match.toLowerCase();
-    });
-
-    // Replace uppercase attribute names with lowercase
-    theString = theString.replace(/<[^>]*>/g, function (match) {
-      match = match.replace(/ [^=]+=/g, function (match2) {
-        return match2.toLowerCase();
-      });
-      return match;
-    });
-
-    // Put quotes around unquoted attributes
-    theString = theString.replace(/<[^>]*>/g, function (match) {
-      match = match.replace(/( [^=]+=)([^"][^ >]*)/g, '$1\"$2\"');
-      return match;
-    });
-    return theString;
-  }
-  function cleanIt(html) {
-    // first make sure all tags and attributes are made valid
-    html = checkValidTags(html);
-
-    // Replace opening bold tags with strong
-    html = html.replace(/<b(\s+|>)/g, '<strong$1');
-    // Replace closing bold tags with closing strong
-    html = html.replace(/<\/b(\s+|>)/g, '</strong$1');
-
-    // Replace italic tags with em
-    html = html.replace(/<i(\s+|>)/g, '<em$1');
-    // Replace closing italic tags with closing em
-    html = html.replace(/<\/i(\s+|>)/g, '</em$1');
-
-    // strip out comments -cgCraft
-    html = html.replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, '');
-
-    // strip out &nbsp; -cgCraft
-    html = html.replace(/&nbsp;/gi, ' ');
-    // strip out extra spaces -cgCraft
-    html = html.replace(/ <\//gi, '</');
-
-    // Remove multiple spaces
-    html.replace(/\s+/g, ' ');
-
-    // strip &nbsp; -cgCraft
-    html = html.replace(/^\s*|\s*$/g, '');
-
-    // Strip out unaccepted attributes
-    html = html.replace(/<[^>]*>/g, function (match) {
-      match = match.replace(/ ([^=]+)="[^"]*"/g, function (match2, attributeName) {
-        if (['alt', 'href', 'src', 'title'].indexOf(attributeName) !== -1) {
-          return match2;
-        }
-        return '';
-      });
-      return match;
-    });
-
-    // Final clean out for MS Word crud
-    html = html.replace(/<\?xml[^>]*>/g, '');
-    html = html.replace(/<[^ >]+:[^>]*>/g, '');
-    html = html.replace(/<\/[^ >]+:[^>]*>/g, '');
-
-    // remove unwanted tags
-    html = html.replace(/<(div|span|style|meta|link).*?>/gi, '');
-    return html;
-  }
-
-  // clean editor
-  // this will clean the inserted contents
-  // it does a compare, before and after paste to determine the
-  // pasted contents
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      cleanPaste: {
-        init: function init(trumbowyg) {
-          trumbowyg.pasteHandlers.push(function (pasteEvent) {
-            setTimeout(function () {
-              try {
-                trumbowyg.saveRange();
-                var clipboardData = (pasteEvent.originalEvent || pasteEvent).clipboardData,
-                  pastedData = clipboardData.getData('Text'),
-                  node = trumbowyg.doc.getSelection().focusNode,
-                  range = trumbowyg.doc.createRange(),
-                  cleanedPaste = cleanIt(pastedData.trim()),
-                  newNode = $(cleanedPaste)[0] || trumbowyg.doc.createTextNode(cleanedPaste);
-                if (trumbowyg.$ed.html() === '') {
-                  // simply append if there is no content in editor
-                  trumbowyg.$ed[0].appendChild(newNode);
-                } else {
-                  // insert pasted content behind last focused node
-                  range.setStartAfter(node);
-                  range.setEndAfter(node);
-                  trumbowyg.doc.getSelection().removeAllRanges();
-                  trumbowyg.doc.getSelection().addRange(range);
-                  trumbowyg.range.insertNode(newNode);
-                }
-
-                // now set cursor right after pasted content
-                range = trumbowyg.doc.createRange();
-                range.setStartAfter(newNode);
-                range.setEndAfter(newNode);
-                trumbowyg.doc.getSelection().removeAllRanges();
-                trumbowyg.doc.getSelection().addRange(range);
-
-                // prevent defaults
-                pasteEvent.stopPropagation();
-                pasteEvent.preventDefault();
-
-                // save new node as focused node
-                trumbowyg.saveRange();
-                trumbowyg.syncCode();
-                trumbowyg.$c.trigger('tbwchange');
-              } catch (c) {}
-            }, 0);
-          });
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.cleanpaste.js v1.0
- * Font Clean paste plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Authors : Eric Radin
- *           Todd Graham (slackwalker)
- *
- * This plugin will perform a "cleaning" on any paste, in particular
- * it will clean pasted content of microsoft word document tags and classes.
- */
-!function (e) {
-  "use strict";
-
-  e.extend(!0, e.trumbowyg, {
-    plugins: {
-      cleanPaste: {
-        init: function init(t) {
-          t.pasteHandlers.push(function (r) {
-            setTimeout(function () {
-              try {
-                t.saveRange();
-                var a = (r.originalEvent || r).clipboardData.getData("Text"),
-                  n = t.doc.getSelection().focusNode,
-                  c = t.doc.createRange(),
-                  g = ((l = (l = (l = (l = (l = (l = (l = (l = (l = a.trim()).replace(/<[^> ]*/g, function (e) {
-                    return e.toLowerCase();
-                  }).replace(/<[^>]*>/g, function (e) {
-                    return e.replace(/ [^=]+=/g, function (e) {
-                      return e.toLowerCase();
-                    });
-                  }).replace(/<[^>]*>/g, function (e) {
-                    return e.replace(/( [^=]+=)([^"][^ >]*)/g, '$1"$2"');
-                  })).replace(/<b(\s+|>)/g, "<strong$1")).replace(/<\/b(\s+|>)/g, "</strong$1")).replace(/<i(\s+|>)/g, "<em$1")).replace(/<\/i(\s+|>)/g, "</em$1")).replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, "")).replace(/&nbsp;/gi, " ")).replace(/ <\//gi, "</")).replace(/\s+/g, " "), (l = (l = (l = (l = (l = l.replace(/^\s*|\s*$/g, "")).replace(/<[^>]*>/g, function (e) {
-                    return e.replace(/ ([^=]+)="[^"]*"/g, function (e, t) {
-                      return -1 !== ["alt", "href", "src", "title"].indexOf(t) ? e : "";
-                    });
-                  })).replace(/<\?xml[^>]*>/g, "")).replace(/<[^ >]+:[^>]*>/g, "")).replace(/<\/[^ >]+:[^>]*>/g, "")).replace(/<(div|span|style|meta|link).*?>/gi, "")),
-                  o = e(g)[0] || t.doc.createTextNode(g);
-                "" === t.$ed.html() ? t.$ed[0].appendChild(o) : (c.setStartAfter(n), c.setEndAfter(n), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), t.range.insertNode(o)), (c = t.doc.createRange()).setStartAfter(o), c.setEndAfter(o), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), r.stopPropagation(), r.preventDefault(), t.saveRange(), t.syncCode(), t.$c.trigger("tbwchange");
-              } catch (e) {}
-              var l;
-            }, 0);
-          });
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
  * trumbowyg.colors.js v1.2
  * Colors picker plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -1100,6 +489,617 @@
             r.o.plugins.colors.colorList.indexOf(t) >= 0 ? a.push("backColor" + t) : a.push("backColorFree");
           }
           return "" !== o.style.color ? l = e(o.style.color) : o.hasAttribute("color") && (l = e(o.getAttribute("color"))), l && (r.o.plugins.colors.colorList.indexOf(l) >= 0 ? a.push("foreColor" + l) : a.push("foreColorFree")), a;
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.base64.js v1.0
+ * Base64 plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Cyril Biencourt (lizardK)
+ */
+
+(function ($) {
+  'use strict';
+
+  var isSupported = function isSupported() {
+    return typeof FileReader !== 'undefined';
+  };
+  var isValidImage = function isValidImage(type) {
+    return /^data:image\/[a-z]?/i.test(type);
+  };
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        base64: 'Image as base64',
+        file: 'File',
+        errFileReaderNotSupported: 'FileReader is not supported by your browser.',
+        errInvalidImage: 'Invalid image file.'
+      },
+      az: {
+        base64: 'base64 olaraq şəkil',
+        file: 'Fayl',
+        errFileReaderNotSupported: 'FileReader brauzeriniz tərəfindən dəstəklənmir.',
+        errInvalidImage: 'Yanlış şəkil faylı.'
+      },
+      by: {
+        base64: 'Выява (фармат base64)',
+        file: 'Файл',
+        errFileReaderNotSupported: 'FileReader не падтрымліваецца вашым браўзэрам.',
+        errInvalidImage: 'Несапраўдны файл выявы.'
+      },
+      cs: {
+        base64: 'Vložit obrázek',
+        file: 'Soubor'
+      },
+      da: {
+        base64: 'Billede som base64',
+        file: 'Fil',
+        errFileReaderNotSupported: 'FileReader er ikke understøttet af din browser.',
+        errInvalidImage: 'Ugyldig billedfil.'
+      },
+      et: {
+        base64: 'Pilt base64 formaadis',
+        file: 'Fail',
+        errFileReaderNotSupported: 'Teie veebilehitseja ei toeta FileReader funktsiooni.',
+        errInvalidImage: 'Vigane pildifail.'
+      },
+      fr: {
+        base64: 'Image en base64',
+        file: 'Fichier',
+        errFileReaderNotSupported: 'FileReader n\'est pas supporté par votre navigateur.',
+        errInvalidImage: 'Fichier image invalide.'
+      },
+      hu: {
+        base64: 'Kép beszúrás inline',
+        file: 'Fájl',
+        errFileReaderNotSupported: 'Ez a böngésző nem támogatja a FileReader funkciót.',
+        errInvalidImage: 'Érvénytelen képfájl.'
+      },
+      ja: {
+        base64: '画像 (Base64形式)',
+        file: 'ファイル',
+        errFileReaderNotSupported: 'あなたのブラウザーはFileReaderをサポートしていません',
+        errInvalidImage: '画像形式が正しくありません'
+      },
+      ko: {
+        base64: '그림 넣기(base64)',
+        file: '파일',
+        errFileReaderNotSupported: 'FileReader가 현재 브라우저를 지원하지 않습니다.',
+        errInvalidImage: '유효하지 않은 파일'
+      },
+      nl: {
+        base64: 'Afbeelding inline',
+        file: 'Bestand',
+        errFileReaderNotSupported: 'Uw browser ondersteunt deze functionaliteit niet.',
+        errInvalidImage: 'De gekozen afbeelding is ongeldig.'
+      },
+      pt_br: {
+        base64: 'Imagem em base64',
+        file: 'Arquivo',
+        errFileReaderNotSupported: 'FileReader não é suportado pelo seu navegador.',
+        errInvalidImage: 'Arquivo de imagem inválido.'
+      },
+      ru: {
+        base64: 'Изображение как код в base64',
+        file: 'Файл',
+        errFileReaderNotSupported: 'FileReader не поддерживается вашим браузером.',
+        errInvalidImage: 'Недопустимый файл изображения.'
+      },
+      sl: {
+        base64: 'Slika kot base64',
+        file: 'Datoteka',
+        errFileReaderNotSupported: 'FileReader ni podprt v tem brskalniku.',
+        errInvalidImage: 'Neveljavna datoteka s sliko.'
+      },
+      tr: {
+        base64: 'Base64 olarak resim',
+        file: 'Dosya',
+        errFileReaderNotSupported: 'FileReader tarayıcınız tarafından desteklenmiyor.',
+        errInvalidImage: 'Geçersiz resim dosyası.'
+      },
+      zh_cn: {
+        base64: '图片（Base64编码）',
+        file: '文件'
+      },
+      zh_tw: {
+        base64: '圖片(base64編碼)',
+        file: '檔案',
+        errFileReaderNotSupported: '你的瀏覽器不支援FileReader',
+        errInvalidImage: '不正確的檔案格式'
+      }
+    },
+    // jshint camelcase:true
+
+    plugins: {
+      base64: {
+        shouldInit: isSupported,
+        init: function init(trumbowyg) {
+          var btnDef = {
+            isSupported: isSupported,
+            fn: function fn() {
+              trumbowyg.saveRange();
+              var file;
+              var $modal = trumbowyg.openModalInsert(
+              // Title
+              trumbowyg.lang.base64,
+              // Fields
+              {
+                file: {
+                  type: 'file',
+                  required: true,
+                  attributes: {
+                    accept: 'image/*'
+                  }
+                },
+                alt: {
+                  label: 'description',
+                  value: trumbowyg.getRangeText()
+                }
+              },
+              // Callback
+              function (values) {
+                var fReader = new FileReader();
+                fReader.onloadend = function (e) {
+                  if (isValidImage(e.target.result)) {
+                    trumbowyg.execCmd('insertImage', fReader.result, false, true);
+                    $(['img[src="', fReader.result, '"]:not([alt])'].join(''), trumbowyg.$box).attr('alt', values.alt);
+                    trumbowyg.closeModal();
+                  } else {
+                    trumbowyg.addErrorOnModalField($('input[type=file]', $modal), trumbowyg.lang.errInvalidImage);
+                  }
+                };
+                fReader.readAsDataURL(file);
+              });
+              $('input[type=file]').on('change', function (e) {
+                file = e.target.files[0];
+              });
+            }
+          };
+          trumbowyg.addBtnDef('base64', btnDef);
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.base64.js v1.0
+ * Base64 plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Cyril Biencourt (lizardK)
+ */
+!function (e) {
+  "use strict";
+
+  var a = function a() {
+    return "undefined" != typeof FileReader;
+  };
+  e.extend(!0, e.trumbowyg, {
+    langs: {
+      en: {
+        base64: "Image as base64",
+        file: "File",
+        errFileReaderNotSupported: "FileReader is not supported by your browser.",
+        errInvalidImage: "Invalid image file."
+      },
+      az: {
+        base64: "base64 olaraq şəkil",
+        file: "Fayl",
+        errFileReaderNotSupported: "FileReader brauzeriniz tərəfindən dəstəklənmir.",
+        errInvalidImage: "Yanlış şəkil faylı."
+      },
+      by: {
+        base64: "Выява (фармат base64)",
+        file: "Файл",
+        errFileReaderNotSupported: "FileReader не падтрымліваецца вашым браўзэрам.",
+        errInvalidImage: "Несапраўдны файл выявы."
+      },
+      cs: {
+        base64: "Vložit obrázek",
+        file: "Soubor"
+      },
+      da: {
+        base64: "Billede som base64",
+        file: "Fil",
+        errFileReaderNotSupported: "FileReader er ikke understøttet af din browser.",
+        errInvalidImage: "Ugyldig billedfil."
+      },
+      et: {
+        base64: "Pilt base64 formaadis",
+        file: "Fail",
+        errFileReaderNotSupported: "Teie veebilehitseja ei toeta FileReader funktsiooni.",
+        errInvalidImage: "Vigane pildifail."
+      },
+      fr: {
+        base64: "Image en base64",
+        file: "Fichier",
+        errFileReaderNotSupported: "FileReader n'est pas supporté par votre navigateur.",
+        errInvalidImage: "Fichier image invalide."
+      },
+      hu: {
+        base64: "Kép beszúrás inline",
+        file: "Fájl",
+        errFileReaderNotSupported: "Ez a böngésző nem támogatja a FileReader funkciót.",
+        errInvalidImage: "Érvénytelen képfájl."
+      },
+      ja: {
+        base64: "画像 (Base64形式)",
+        file: "ファイル",
+        errFileReaderNotSupported: "あなたのブラウザーはFileReaderをサポートしていません",
+        errInvalidImage: "画像形式が正しくありません"
+      },
+      ko: {
+        base64: "그림 넣기(base64)",
+        file: "파일",
+        errFileReaderNotSupported: "FileReader가 현재 브라우저를 지원하지 않습니다.",
+        errInvalidImage: "유효하지 않은 파일"
+      },
+      nl: {
+        base64: "Afbeelding inline",
+        file: "Bestand",
+        errFileReaderNotSupported: "Uw browser ondersteunt deze functionaliteit niet.",
+        errInvalidImage: "De gekozen afbeelding is ongeldig."
+      },
+      pt_br: {
+        base64: "Imagem em base64",
+        file: "Arquivo",
+        errFileReaderNotSupported: "FileReader não é suportado pelo seu navegador.",
+        errInvalidImage: "Arquivo de imagem inválido."
+      },
+      ru: {
+        base64: "Изображение как код в base64",
+        file: "Файл",
+        errFileReaderNotSupported: "FileReader не поддерживается вашим браузером.",
+        errInvalidImage: "Недопустимый файл изображения."
+      },
+      sl: {
+        base64: "Slika kot base64",
+        file: "Datoteka",
+        errFileReaderNotSupported: "FileReader ni podprt v tem brskalniku.",
+        errInvalidImage: "Neveljavna datoteka s sliko."
+      },
+      tr: {
+        base64: "Base64 olarak resim",
+        file: "Dosya",
+        errFileReaderNotSupported: "FileReader tarayıcınız tarafından desteklenmiyor.",
+        errInvalidImage: "Geçersiz resim dosyası."
+      },
+      zh_cn: {
+        base64: "图片（Base64编码）",
+        file: "文件"
+      },
+      zh_tw: {
+        base64: "圖片(base64編碼)",
+        file: "檔案",
+        errFileReaderNotSupported: "你的瀏覽器不支援FileReader",
+        errInvalidImage: "不正確的檔案格式"
+      }
+    },
+    plugins: {
+      base64: {
+        shouldInit: a,
+        init: function init(r) {
+          var i = {
+            isSupported: a,
+            fn: function fn() {
+              var a;
+              r.saveRange();
+              var i = r.openModalInsert(r.lang.base64, {
+                file: {
+                  type: "file",
+                  required: !0,
+                  attributes: {
+                    accept: "image/*"
+                  }
+                },
+                alt: {
+                  label: "description",
+                  value: r.getRangeText()
+                }
+              }, function (l) {
+                var t = new FileReader();
+                t.onloadend = function (a) {
+                  var d;
+                  d = a.target.result, /^data:image\/[a-z]?/i.test(d) ? (r.execCmd("insertImage", t.result, !1, !0), e(['img[src="', t.result, '"]:not([alt])'].join(""), r.$box).attr("alt", l.alt), r.closeModal()) : r.addErrorOnModalField(e("input[type=file]", i), r.lang.errInvalidImage);
+                }, t.readAsDataURL(a);
+              });
+              e("input[type=file]").on("change", function (e) {
+                a = e.target.files[0];
+              });
+            }
+          };
+          r.addBtnDef("base64", i);
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.allowTagsFromPaste.js v1.0.2
+ * It cleans tags from pasted text, whilst allowing several specified tags
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author	: Fathi Anshory (0x00000F5C)
+ * Twitter	: @fscchannl
+ * Notes:
+ *  - removeformatPasted must be set to FALSE since it was applied prior to pasteHandlers, or else it will be useless
+ *	- It is most advisable to use along with the cleanpaste plugin, or else you'd end up with dirty markup
+ */
+
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    // When empty, all tags are allowed making this plugin useless
+    // If you want to remove all tags, use removeformatPasted core option instead
+    allowedTags: [],
+    // List of tags which can be allowed
+    removableTags: ['a', 'abbr', 'address', 'b', 'bdi', 'bdo', 'blockquote', 'br', 'cite', 'code', 'del', 'dfn', 'details', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'ins', 'kbd', 'mark', 'meter', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'small', 'span', 'strong', 'sub', 'summary', 'sup', 'time', 'u', 'var', 'wbr', 'img', 'map', 'area', 'canvas', 'figcaption', 'figure', 'picture', 'audio', 'source', 'track', 'video', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'table', 'caption', 'th', 'tr', 'td', 'thead', 'tbody', 'tfoot', 'col', 'colgroup', 'style', 'div', 'p', 'form', 'input', 'textarea', 'button', 'select', 'optgroup', 'option', 'label', 'fieldset', 'legend', 'datalist', 'keygen', 'output', 'iframe', 'link', 'nav', 'header', 'hgroup', 'footer', 'main', 'section', 'article', 'aside', 'dialog', 'script', 'noscript', 'embed', 'object', 'param']
+  };
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      allowTagsFromPaste: {
+        init: function init(trumbowyg) {
+          if (!trumbowyg.o.plugins.allowTagsFromPaste) {
+            return;
+          }
+
+          // Force disable remove format pasted
+          trumbowyg.o.removeformatPasted = false;
+          var allowedTags = trumbowyg.o.plugins.allowTagsFromPaste.allowedTags || defaultOptions.allowedTags;
+          var removableTags = trumbowyg.o.plugins.allowTagsFromPaste.removableTags || defaultOptions.removableTags;
+          if (allowedTags.length === 0) {
+            return;
+          }
+
+          // Get list of tags to remove
+          var tagsToRemove = $(removableTags).not(allowedTags).get();
+          trumbowyg.pasteHandlers.push(function () {
+            setTimeout(function () {
+              var processNodes = trumbowyg.$ed.html();
+              $.each(tagsToRemove, function (iterator, tagName) {
+                processNodes = processNodes.replace(new RegExp('<\\/?' + tagName + '(\\s[^>]*)?>', 'gi'), '');
+              });
+              trumbowyg.$ed.html(processNodes);
+            }, 0);
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.allowTagsFromPaste.js v1.0.2
+ * It cleans tags from pasted text, whilst allowing several specified tags
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author	: Fathi Anshory (0x00000F5C)
+ * Twitter	: @fscchannl
+ * Notes:
+ *  - removeformatPasted must be set to FALSE since it was applied prior to pasteHandlers, or else it will be useless
+ *	- It is most advisable to use along with the cleanpaste plugin, or else you'd end up with dirty markup
+ */
+!function (e) {
+  "use strict";
+
+  var a = {
+    allowedTags: [],
+    removableTags: ["a", "abbr", "address", "b", "bdi", "bdo", "blockquote", "br", "cite", "code", "del", "dfn", "details", "em", "h1", "h2", "h3", "h4", "h5", "h6", "hr", "i", "ins", "kbd", "mark", "meter", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp", "small", "span", "strong", "sub", "summary", "sup", "time", "u", "var", "wbr", "img", "map", "area", "canvas", "figcaption", "figure", "picture", "audio", "source", "track", "video", "ul", "ol", "li", "dl", "dt", "dd", "table", "caption", "th", "tr", "td", "thead", "tbody", "tfoot", "col", "colgroup", "style", "div", "p", "form", "input", "textarea", "button", "select", "optgroup", "option", "label", "fieldset", "legend", "datalist", "keygen", "output", "iframe", "link", "nav", "header", "hgroup", "footer", "main", "section", "article", "aside", "dialog", "script", "noscript", "embed", "object", "param"]
+  };
+  e.extend(!0, e.trumbowyg, {
+    plugins: {
+      allowTagsFromPaste: {
+        init: function init(t) {
+          if (t.o.plugins.allowTagsFromPaste) {
+            t.o.removeformatPasted = !1;
+            var o = t.o.plugins.allowTagsFromPaste.allowedTags || a.allowedTags,
+              r = t.o.plugins.allowTagsFromPaste.removableTags || a.removableTags;
+            if (0 !== o.length) {
+              var s = e(r).not(o).get();
+              t.pasteHandlers.push(function () {
+                setTimeout(function () {
+                  var a = t.$ed.html();
+                  e.each(s, function (e, t) {
+                    a = a.replace(new RegExp("<\\/?" + t + "(\\s[^>]*)?>", "gi"), "");
+                  }), t.$ed.html(a);
+                }, 0);
+              });
+            }
+          }
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.cleanpaste.js v1.0
+ * Font Clean paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Authors : Eric Radin
+ *           Todd Graham (slackwalker)
+ *
+ * This plugin will perform a "cleaning" on any paste, in particular
+ * it will clean pasted content of microsoft word document tags and classes.
+ */
+
+(function ($) {
+  'use strict';
+
+  function checkValidTags(snippet) {
+    var theString = snippet;
+
+    // Replace uppercase element names with lowercase
+    theString = theString.replace(/<[^> ]*/g, function (match) {
+      return match.toLowerCase();
+    });
+
+    // Replace uppercase attribute names with lowercase
+    theString = theString.replace(/<[^>]*>/g, function (match) {
+      match = match.replace(/ [^=]+=/g, function (match2) {
+        return match2.toLowerCase();
+      });
+      return match;
+    });
+
+    // Put quotes around unquoted attributes
+    theString = theString.replace(/<[^>]*>/g, function (match) {
+      match = match.replace(/( [^=]+=)([^"][^ >]*)/g, '$1\"$2\"');
+      return match;
+    });
+    return theString;
+  }
+  function cleanIt(html) {
+    // first make sure all tags and attributes are made valid
+    html = checkValidTags(html);
+
+    // Replace opening bold tags with strong
+    html = html.replace(/<b(\s+|>)/g, '<strong$1');
+    // Replace closing bold tags with closing strong
+    html = html.replace(/<\/b(\s+|>)/g, '</strong$1');
+
+    // Replace italic tags with em
+    html = html.replace(/<i(\s+|>)/g, '<em$1');
+    // Replace closing italic tags with closing em
+    html = html.replace(/<\/i(\s+|>)/g, '</em$1');
+
+    // strip out comments -cgCraft
+    html = html.replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, '');
+
+    // strip out &nbsp; -cgCraft
+    html = html.replace(/&nbsp;/gi, ' ');
+    // strip out extra spaces -cgCraft
+    html = html.replace(/ <\//gi, '</');
+
+    // Remove multiple spaces
+    html.replace(/\s+/g, ' ');
+
+    // strip &nbsp; -cgCraft
+    html = html.replace(/^\s*|\s*$/g, '');
+
+    // Strip out unaccepted attributes
+    html = html.replace(/<[^>]*>/g, function (match) {
+      match = match.replace(/ ([^=]+)="[^"]*"/g, function (match2, attributeName) {
+        if (['alt', 'href', 'src', 'title'].indexOf(attributeName) !== -1) {
+          return match2;
+        }
+        return '';
+      });
+      return match;
+    });
+
+    // Final clean out for MS Word crud
+    html = html.replace(/<\?xml[^>]*>/g, '');
+    html = html.replace(/<[^ >]+:[^>]*>/g, '');
+    html = html.replace(/<\/[^ >]+:[^>]*>/g, '');
+
+    // remove unwanted tags
+    html = html.replace(/<(div|span|style|meta|link).*?>/gi, '');
+    return html;
+  }
+
+  // clean editor
+  // this will clean the inserted contents
+  // it does a compare, before and after paste to determine the
+  // pasted contents
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      cleanPaste: {
+        init: function init(trumbowyg) {
+          trumbowyg.pasteHandlers.push(function (pasteEvent) {
+            setTimeout(function () {
+              try {
+                trumbowyg.saveRange();
+                var clipboardData = (pasteEvent.originalEvent || pasteEvent).clipboardData,
+                  pastedData = clipboardData.getData('Text'),
+                  node = trumbowyg.doc.getSelection().focusNode,
+                  range = trumbowyg.doc.createRange(),
+                  cleanedPaste = cleanIt(pastedData.trim()),
+                  newNode = $(cleanedPaste)[0] || trumbowyg.doc.createTextNode(cleanedPaste);
+                if (trumbowyg.$ed.html() === '') {
+                  // simply append if there is no content in editor
+                  trumbowyg.$ed[0].appendChild(newNode);
+                } else {
+                  // insert pasted content behind last focused node
+                  range.setStartAfter(node);
+                  range.setEndAfter(node);
+                  trumbowyg.doc.getSelection().removeAllRanges();
+                  trumbowyg.doc.getSelection().addRange(range);
+                  trumbowyg.range.insertNode(newNode);
+                }
+
+                // now set cursor right after pasted content
+                range = trumbowyg.doc.createRange();
+                range.setStartAfter(newNode);
+                range.setEndAfter(newNode);
+                trumbowyg.doc.getSelection().removeAllRanges();
+                trumbowyg.doc.getSelection().addRange(range);
+
+                // prevent defaults
+                pasteEvent.stopPropagation();
+                pasteEvent.preventDefault();
+
+                // save new node as focused node
+                trumbowyg.saveRange();
+                trumbowyg.syncCode();
+                trumbowyg.$c.trigger('tbwchange');
+              } catch (c) {}
+            }, 0);
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.cleanpaste.js v1.0
+ * Font Clean paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Authors : Eric Radin
+ *           Todd Graham (slackwalker)
+ *
+ * This plugin will perform a "cleaning" on any paste, in particular
+ * it will clean pasted content of microsoft word document tags and classes.
+ */
+!function (e) {
+  "use strict";
+
+  e.extend(!0, e.trumbowyg, {
+    plugins: {
+      cleanPaste: {
+        init: function init(t) {
+          t.pasteHandlers.push(function (r) {
+            setTimeout(function () {
+              try {
+                t.saveRange();
+                var a = (r.originalEvent || r).clipboardData.getData("Text"),
+                  n = t.doc.getSelection().focusNode,
+                  c = t.doc.createRange(),
+                  g = ((l = (l = (l = (l = (l = (l = (l = (l = (l = a.trim()).replace(/<[^> ]*/g, function (e) {
+                    return e.toLowerCase();
+                  }).replace(/<[^>]*>/g, function (e) {
+                    return e.replace(/ [^=]+=/g, function (e) {
+                      return e.toLowerCase();
+                    });
+                  }).replace(/<[^>]*>/g, function (e) {
+                    return e.replace(/( [^=]+=)([^"][^ >]*)/g, '$1"$2"');
+                  })).replace(/<b(\s+|>)/g, "<strong$1")).replace(/<\/b(\s+|>)/g, "</strong$1")).replace(/<i(\s+|>)/g, "<em$1")).replace(/<\/i(\s+|>)/g, "</em$1")).replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, "")).replace(/&nbsp;/gi, " ")).replace(/ <\//gi, "</")).replace(/\s+/g, " "), (l = (l = (l = (l = (l = l.replace(/^\s*|\s*$/g, "")).replace(/<[^>]*>/g, function (e) {
+                    return e.replace(/ ([^=]+)="[^"]*"/g, function (e, t) {
+                      return -1 !== ["alt", "href", "src", "title"].indexOf(t) ? e : "";
+                    });
+                  })).replace(/<\?xml[^>]*>/g, "")).replace(/<[^ >]+:[^>]*>/g, "")).replace(/<\/[^ >]+:[^>]*>/g, "")).replace(/<(div|span|style|meta|link).*?>/gi, "")),
+                  o = e(g)[0] || t.doc.createTextNode(g);
+                "" === t.$ed.html() ? t.$ed[0].appendChild(o) : (c.setStartAfter(n), c.setEndAfter(n), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), t.range.insertNode(o)), (c = t.doc.createRange()).setStartAfter(o), c.setEndAfter(o), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), r.stopPropagation(), r.preventDefault(), t.saveRange(), t.syncCode(), t.$c.trigger("tbwchange");
+              } catch (e) {}
+              var l;
+            }, 0);
+          });
         }
       }
     }
@@ -4874,6 +4874,172 @@
     }
   });
 }(jQuery);
+/* ===========================================================
+ * trumbowyg.specialchars.js v0.99
+ * Unicode characters picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Renaud Hoyoux (geektortoise)
+*/
+
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    symbolList: [
+    // currencies
+    '0024', '20AC', '00A3', '00A2', '00A5', '00A4', '2030', null,
+    // legal signs
+    '00A9', '00AE', '2122', null,
+    // textual sign
+    '00A7', '00B6', '00C6', '00E6', '0152', '0153', null, '2022', '25CF', '2023', '25B6', '2B29', '25C6', null,
+    //maths
+    '00B1', '00D7', '00F7', '21D2', '21D4', '220F', '2211', '2243', '2264', '2265']
+  };
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      en: {
+        specialChars: 'Special characters'
+      },
+      az: {
+        specialChars: 'Xüsusi simvollar'
+      },
+      by: {
+        specialChars: 'Спецыяльныя сімвалы'
+      },
+      et: {
+        specialChars: 'Erimärgid'
+      },
+      fr: {
+        specialChars: 'Caractères spéciaux'
+      },
+      hu: {
+        specialChars: 'Speciális karakterek'
+      },
+      ko: {
+        specialChars: '특수문자'
+      },
+      ru: {
+        specialChars: 'Специальные символы'
+      },
+      sl: {
+        specialChars: 'Posebni znaki'
+      },
+      tr: {
+        specialChars: 'Özel karakterler'
+      }
+    },
+    plugins: {
+      specialchars: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.specialchars = trumbowyg.o.plugins.specialchars || defaultOptions;
+          var specialCharsBtnDef = {
+            dropdown: buildDropdown(trumbowyg)
+          };
+          trumbowyg.addBtnDef('specialChars', specialCharsBtnDef);
+        }
+      }
+    }
+  });
+  function buildDropdown(trumbowyg) {
+    var dropdown = [];
+    $.each(trumbowyg.o.plugins.specialchars.symbolList, function (i, symbol) {
+      if (symbol === null) {
+        symbol = '&nbsp';
+      } else {
+        symbol = '&#x' + symbol;
+      }
+      var btn = symbol.replace(/:/g, ''),
+        defaultSymbolBtnName = 'symbol-' + btn,
+        defaultSymbolBtnDef = {
+          text: symbol,
+          hasIcon: false,
+          fn: function fn() {
+            var encodedSymbol = String.fromCodePoint(parseInt(symbol.replace('&#', '0')));
+            trumbowyg.execCmd('insertText', encodedSymbol);
+            return true;
+          }
+        };
+      trumbowyg.addBtnDef(defaultSymbolBtnName, defaultSymbolBtnDef);
+      dropdown.push(defaultSymbolBtnName);
+    });
+    return dropdown;
+  }
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.specialchars.js v0.99
+ * Unicode characters picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Renaud Hoyoux (geektortoise)
+*/
+!function (a) {
+  "use strict";
+
+  var s = {
+    symbolList: ["0024", "20AC", "00A3", "00A2", "00A5", "00A4", "2030", null, "00A9", "00AE", "2122", null, "00A7", "00B6", "00C6", "00E6", "0152", "0153", null, "2022", "25CF", "2023", "25B6", "2B29", "25C6", null, "00B1", "00D7", "00F7", "21D2", "21D4", "220F", "2211", "2243", "2264", "2265"]
+  };
+  function r(s) {
+    var r = [];
+    return a.each(s.o.plugins.specialchars.symbolList, function (a, e) {
+      var i = "symbol-" + (e = null === e ? "&nbsp" : "&#x" + e).replace(/:/g, ""),
+        l = {
+          text: e,
+          hasIcon: !1,
+          fn: function fn() {
+            var a = String.fromCodePoint(parseInt(e.replace("&#", "0")));
+            return s.execCmd("insertText", a), !0;
+          }
+        };
+      s.addBtnDef(i, l), r.push(i);
+    }), r;
+  }
+  a.extend(!0, a.trumbowyg, {
+    langs: {
+      en: {
+        specialChars: "Special characters"
+      },
+      az: {
+        specialChars: "Xüsusi simvollar"
+      },
+      by: {
+        specialChars: "Спецыяльныя сімвалы"
+      },
+      et: {
+        specialChars: "Erimärgid"
+      },
+      fr: {
+        specialChars: "Caractères spéciaux"
+      },
+      hu: {
+        specialChars: "Speciális karakterek"
+      },
+      ko: {
+        specialChars: "특수문자"
+      },
+      ru: {
+        specialChars: "Специальные символы"
+      },
+      sl: {
+        specialChars: "Posebni znaki"
+      },
+      tr: {
+        specialChars: "Özel karakterler"
+      }
+    },
+    plugins: {
+      specialchars: {
+        init: function init(a) {
+          a.o.plugins.specialchars = a.o.plugins.specialchars || s;
+          var e = {
+            dropdown: r(a)
+          };
+          a.addBtnDef("specialChars", e);
+        }
+      }
+    }
+  });
+}(jQuery);
 ;
 (function ($) {
   'use strict';
@@ -5253,172 +5419,6 @@
         },
         destroy: function destroy() {
           this.destroyResizable();
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.specialchars.js v0.99
- * Unicode characters picker plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Renaud Hoyoux (geektortoise)
-*/
-
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    symbolList: [
-    // currencies
-    '0024', '20AC', '00A3', '00A2', '00A5', '00A4', '2030', null,
-    // legal signs
-    '00A9', '00AE', '2122', null,
-    // textual sign
-    '00A7', '00B6', '00C6', '00E6', '0152', '0153', null, '2022', '25CF', '2023', '25B6', '2B29', '25C6', null,
-    //maths
-    '00B1', '00D7', '00F7', '21D2', '21D4', '220F', '2211', '2243', '2264', '2265']
-  };
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      en: {
-        specialChars: 'Special characters'
-      },
-      az: {
-        specialChars: 'Xüsusi simvollar'
-      },
-      by: {
-        specialChars: 'Спецыяльныя сімвалы'
-      },
-      et: {
-        specialChars: 'Erimärgid'
-      },
-      fr: {
-        specialChars: 'Caractères spéciaux'
-      },
-      hu: {
-        specialChars: 'Speciális karakterek'
-      },
-      ko: {
-        specialChars: '특수문자'
-      },
-      ru: {
-        specialChars: 'Специальные символы'
-      },
-      sl: {
-        specialChars: 'Posebni znaki'
-      },
-      tr: {
-        specialChars: 'Özel karakterler'
-      }
-    },
-    plugins: {
-      specialchars: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.specialchars = trumbowyg.o.plugins.specialchars || defaultOptions;
-          var specialCharsBtnDef = {
-            dropdown: buildDropdown(trumbowyg)
-          };
-          trumbowyg.addBtnDef('specialChars', specialCharsBtnDef);
-        }
-      }
-    }
-  });
-  function buildDropdown(trumbowyg) {
-    var dropdown = [];
-    $.each(trumbowyg.o.plugins.specialchars.symbolList, function (i, symbol) {
-      if (symbol === null) {
-        symbol = '&nbsp';
-      } else {
-        symbol = '&#x' + symbol;
-      }
-      var btn = symbol.replace(/:/g, ''),
-        defaultSymbolBtnName = 'symbol-' + btn,
-        defaultSymbolBtnDef = {
-          text: symbol,
-          hasIcon: false,
-          fn: function fn() {
-            var encodedSymbol = String.fromCodePoint(parseInt(symbol.replace('&#', '0')));
-            trumbowyg.execCmd('insertText', encodedSymbol);
-            return true;
-          }
-        };
-      trumbowyg.addBtnDef(defaultSymbolBtnName, defaultSymbolBtnDef);
-      dropdown.push(defaultSymbolBtnName);
-    });
-    return dropdown;
-  }
-})(jQuery);
-/* ===========================================================
- * trumbowyg.specialchars.js v0.99
- * Unicode characters picker plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Renaud Hoyoux (geektortoise)
-*/
-!function (a) {
-  "use strict";
-
-  var s = {
-    symbolList: ["0024", "20AC", "00A3", "00A2", "00A5", "00A4", "2030", null, "00A9", "00AE", "2122", null, "00A7", "00B6", "00C6", "00E6", "0152", "0153", null, "2022", "25CF", "2023", "25B6", "2B29", "25C6", null, "00B1", "00D7", "00F7", "21D2", "21D4", "220F", "2211", "2243", "2264", "2265"]
-  };
-  function r(s) {
-    var r = [];
-    return a.each(s.o.plugins.specialchars.symbolList, function (a, e) {
-      var i = "symbol-" + (e = null === e ? "&nbsp" : "&#x" + e).replace(/:/g, ""),
-        l = {
-          text: e,
-          hasIcon: !1,
-          fn: function fn() {
-            var a = String.fromCodePoint(parseInt(e.replace("&#", "0")));
-            return s.execCmd("insertText", a), !0;
-          }
-        };
-      s.addBtnDef(i, l), r.push(i);
-    }), r;
-  }
-  a.extend(!0, a.trumbowyg, {
-    langs: {
-      en: {
-        specialChars: "Special characters"
-      },
-      az: {
-        specialChars: "Xüsusi simvollar"
-      },
-      by: {
-        specialChars: "Спецыяльныя сімвалы"
-      },
-      et: {
-        specialChars: "Erimärgid"
-      },
-      fr: {
-        specialChars: "Caractères spéciaux"
-      },
-      hu: {
-        specialChars: "Speciális karakterek"
-      },
-      ko: {
-        specialChars: "특수문자"
-      },
-      ru: {
-        specialChars: "Специальные символы"
-      },
-      sl: {
-        specialChars: "Posebni znaki"
-      },
-      tr: {
-        specialChars: "Özel karakterler"
-      }
-    },
-    plugins: {
-      specialchars: {
-        init: function init(a) {
-          a.o.plugins.specialchars = a.o.plugins.specialchars || s;
-          var e = {
-            dropdown: r(a)
-          };
-          a.addBtnDef("specialChars", e);
         }
       }
     }
@@ -7755,6 +7755,184 @@
     }
   });
 }(jQuery);
+(function ($) {
+  'use strict';
+
+  // Adds the language variables
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        template: 'Template'
+      },
+      az: {
+        template: 'Şablon'
+      },
+      by: {
+        template: 'Шаблон'
+      },
+      da: {
+        template: 'Skabelon'
+      },
+      de: {
+        template: 'Vorlage'
+      },
+      et: {
+        template: 'Mall'
+      },
+      fr: {
+        template: 'Patron'
+      },
+      hu: {
+        template: 'Sablon'
+      },
+      ja: {
+        template: 'テンプレート'
+      },
+      ko: {
+        template: '서식'
+      },
+      nl: {
+        template: 'Sjabloon'
+      },
+      pt_br: {
+        template: 'Modelo'
+      },
+      ru: {
+        template: 'Шаблон'
+      },
+      sl: {
+        template: 'Predloga'
+      },
+      tr: {
+        template: 'Şablon'
+      },
+      zh_tw: {
+        template: '模板'
+      }
+      // jshint camelcase:true
+    }
+  });
+
+  // Adds the extra button definition
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      template: {
+        shouldInit: function shouldInit(trumbowyg) {
+          return trumbowyg.o.plugins.hasOwnProperty('templates');
+        },
+        init: function init(trumbowyg) {
+          trumbowyg.addBtnDef('template', {
+            dropdown: templateSelector(trumbowyg),
+            hasIcon: false,
+            text: trumbowyg.lang.template
+          });
+        }
+      }
+    }
+  });
+
+  // Creates the template-selector dropdown.
+  function templateSelector(trumbowyg) {
+    var available = trumbowyg.o.plugins.templates;
+    var templates = [];
+    $.each(available, function (index, template) {
+      trumbowyg.addBtnDef('template_' + index, {
+        fn: function fn() {
+          trumbowyg.html(template.html);
+        },
+        hasIcon: false,
+        title: template.name
+      });
+      templates.push('template_' + index);
+    });
+    return templates;
+  }
+})(jQuery);
+!function (t) {
+  "use strict";
+
+  function e(e) {
+    var a = e.o.plugins.templates,
+      l = [];
+    return t.each(a, function (t, a) {
+      e.addBtnDef("template_" + t, {
+        fn: function fn() {
+          e.html(a.html);
+        },
+        hasIcon: !1,
+        title: a.name
+      }), l.push("template_" + t);
+    }), l;
+  }
+  t.extend(!0, t.trumbowyg, {
+    langs: {
+      en: {
+        template: "Template"
+      },
+      az: {
+        template: "Şablon"
+      },
+      by: {
+        template: "Шаблон"
+      },
+      da: {
+        template: "Skabelon"
+      },
+      de: {
+        template: "Vorlage"
+      },
+      et: {
+        template: "Mall"
+      },
+      fr: {
+        template: "Patron"
+      },
+      hu: {
+        template: "Sablon"
+      },
+      ja: {
+        template: "テンプレート"
+      },
+      ko: {
+        template: "서식"
+      },
+      nl: {
+        template: "Sjabloon"
+      },
+      pt_br: {
+        template: "Modelo"
+      },
+      ru: {
+        template: "Шаблон"
+      },
+      sl: {
+        template: "Predloga"
+      },
+      tr: {
+        template: "Şablon"
+      },
+      zh_tw: {
+        template: "模板"
+      }
+    }
+  }), t.extend(!0, t.trumbowyg, {
+    plugins: {
+      template: {
+        shouldInit: function shouldInit(t) {
+          return t.o.plugins.hasOwnProperty("templates");
+        },
+        init: function init(t) {
+          t.addBtnDef("template", {
+            dropdown: e(t),
+            hasIcon: !1,
+            text: t.lang.template
+          });
+        }
+      }
+    }
+  });
+}(jQuery);
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 /* ===========================================================
  * trumbowyg.upload.js v1.2
@@ -8284,184 +8462,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
           };
           e.addBtnDef("upload", l);
-        }
-      }
-    }
-  });
-}(jQuery);
-(function ($) {
-  'use strict';
-
-  // Adds the language variables
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        template: 'Template'
-      },
-      az: {
-        template: 'Şablon'
-      },
-      by: {
-        template: 'Шаблон'
-      },
-      da: {
-        template: 'Skabelon'
-      },
-      de: {
-        template: 'Vorlage'
-      },
-      et: {
-        template: 'Mall'
-      },
-      fr: {
-        template: 'Patron'
-      },
-      hu: {
-        template: 'Sablon'
-      },
-      ja: {
-        template: 'テンプレート'
-      },
-      ko: {
-        template: '서식'
-      },
-      nl: {
-        template: 'Sjabloon'
-      },
-      pt_br: {
-        template: 'Modelo'
-      },
-      ru: {
-        template: 'Шаблон'
-      },
-      sl: {
-        template: 'Predloga'
-      },
-      tr: {
-        template: 'Şablon'
-      },
-      zh_tw: {
-        template: '模板'
-      }
-      // jshint camelcase:true
-    }
-  });
-
-  // Adds the extra button definition
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      template: {
-        shouldInit: function shouldInit(trumbowyg) {
-          return trumbowyg.o.plugins.hasOwnProperty('templates');
-        },
-        init: function init(trumbowyg) {
-          trumbowyg.addBtnDef('template', {
-            dropdown: templateSelector(trumbowyg),
-            hasIcon: false,
-            text: trumbowyg.lang.template
-          });
-        }
-      }
-    }
-  });
-
-  // Creates the template-selector dropdown.
-  function templateSelector(trumbowyg) {
-    var available = trumbowyg.o.plugins.templates;
-    var templates = [];
-    $.each(available, function (index, template) {
-      trumbowyg.addBtnDef('template_' + index, {
-        fn: function fn() {
-          trumbowyg.html(template.html);
-        },
-        hasIcon: false,
-        title: template.name
-      });
-      templates.push('template_' + index);
-    });
-    return templates;
-  }
-})(jQuery);
-!function (t) {
-  "use strict";
-
-  function e(e) {
-    var a = e.o.plugins.templates,
-      l = [];
-    return t.each(a, function (t, a) {
-      e.addBtnDef("template_" + t, {
-        fn: function fn() {
-          e.html(a.html);
-        },
-        hasIcon: !1,
-        title: a.name
-      }), l.push("template_" + t);
-    }), l;
-  }
-  t.extend(!0, t.trumbowyg, {
-    langs: {
-      en: {
-        template: "Template"
-      },
-      az: {
-        template: "Şablon"
-      },
-      by: {
-        template: "Шаблон"
-      },
-      da: {
-        template: "Skabelon"
-      },
-      de: {
-        template: "Vorlage"
-      },
-      et: {
-        template: "Mall"
-      },
-      fr: {
-        template: "Patron"
-      },
-      hu: {
-        template: "Sablon"
-      },
-      ja: {
-        template: "テンプレート"
-      },
-      ko: {
-        template: "서식"
-      },
-      nl: {
-        template: "Sjabloon"
-      },
-      pt_br: {
-        template: "Modelo"
-      },
-      ru: {
-        template: "Шаблон"
-      },
-      sl: {
-        template: "Predloga"
-      },
-      tr: {
-        template: "Şablon"
-      },
-      zh_tw: {
-        template: "模板"
-      }
-    }
-  }), t.extend(!0, t.trumbowyg, {
-    plugins: {
-      template: {
-        shouldInit: function shouldInit(t) {
-          return t.o.plugins.hasOwnProperty("templates");
-        },
-        init: function init(t) {
-          t.addBtnDef("template", {
-            dropdown: e(t),
-            hasIcon: !1,
-            text: t.lang.template
-          });
         }
       }
     }

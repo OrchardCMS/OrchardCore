@@ -8,7 +8,7 @@
 
     @if (Model.Content != null)
     {
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+        <ul class="dropdown-menu dropdown-menu-end position-absolute" aria-labelledby="navbarDropdown">
             @await DisplayAsync(Model.Content)
         </ul>
     }

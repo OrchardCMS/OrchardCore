@@ -8,6 +8,76 @@
  *         Twitter : @AlexandreDemode
  *         Website : alex-d.fr
  */
+.trumbowyg-dropdown-emoji {
+  width: 265px;
+}
+[dir=ltr] .trumbowyg-dropdown-emoji {
+  padding: 7px 0 7px 5px;
+}
+[dir=rtl] .trumbowyg-dropdown-emoji {
+  padding: 7px 5px 7px 0;
+}
+
+.trumbowyg-dropdown-emoji svg {
+  display: none !important;
+}
+
+.trumbowyg-dropdown-emoji button {
+  display: block;
+  position: relative;
+  height: 26px;
+  width: 26px;
+  line-height: 24px;
+}
+
+[dir] .trumbowyg-dropdown-emoji button {
+  padding: 0;
+  margin: 2px;
+  text-align: center;
+}
+
+[dir=ltr] .trumbowyg-dropdown-emoji button {
+  float: left;
+}
+
+[dir=rtl] .trumbowyg-dropdown-emoji button {
+  float: right;
+}
+.trumbowyg-dropdown-emoji button:hover::after, .trumbowyg-dropdown-emoji button:focus::after {
+  display: block;
+  position: absolute;
+  top: -5px;
+  height: 27px;
+  width: 27px;
+  z-index: 10;
+}
+[dir] .trumbowyg-dropdown-emoji button:hover::after, [dir] .trumbowyg-dropdown-emoji button:focus::after {
+  background: inherit;
+  box-shadow: #000 0 0 2px;
+  background-color: transparent;
+}
+[dir=ltr] .trumbowyg-dropdown-emoji button:hover::after, [dir=ltr] .trumbowyg-dropdown-emoji button:focus::after {
+  left: -5px;
+}
+[dir=rtl] .trumbowyg-dropdown-emoji button:hover::after, [dir=rtl] .trumbowyg-dropdown-emoji button:focus::after {
+  right: -5px;
+}
+
+.trumbowyg .emoji {
+  width: 22px;
+  height: 22px;
+  display: inline-block;
+}
+/**
+ * Trumbowyg v2.27.3 - A lightweight WYSIWYG editor
+ * Default stylesheet for Trumbowyg editor plugin
+ * ------------------------
+ * @link https://alex-d.github.io/Trumbowyg/
+ * @license MIT
+ * @author Alexandre Demode (Alex-D)
+ *         Twitter : @AlexandreDemode
+ *         Website : alex-d.fr
+ */
 .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list),
 .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) {
   max-width: 276px;
@@ -80,76 +150,6 @@
 [dir=rtl] .trumbowyg-dropdown-backColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-backColorRemove-dropdown-button):hover::after, [dir=rtl] .trumbowyg-dropdown-backColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-backColorRemove-dropdown-button):focus::after {
   right: 0;
   border-right-color: #fff;
-}
-/**
- * Trumbowyg v2.27.3 - A lightweight WYSIWYG editor
- * Default stylesheet for Trumbowyg editor plugin
- * ------------------------
- * @link https://alex-d.github.io/Trumbowyg/
- * @license MIT
- * @author Alexandre Demode (Alex-D)
- *         Twitter : @AlexandreDemode
- *         Website : alex-d.fr
- */
-.trumbowyg-dropdown-emoji {
-  width: 265px;
-}
-[dir=ltr] .trumbowyg-dropdown-emoji {
-  padding: 7px 0 7px 5px;
-}
-[dir=rtl] .trumbowyg-dropdown-emoji {
-  padding: 7px 5px 7px 0;
-}
-
-.trumbowyg-dropdown-emoji svg {
-  display: none !important;
-}
-
-.trumbowyg-dropdown-emoji button {
-  display: block;
-  position: relative;
-  height: 26px;
-  width: 26px;
-  line-height: 24px;
-}
-
-[dir] .trumbowyg-dropdown-emoji button {
-  padding: 0;
-  margin: 2px;
-  text-align: center;
-}
-
-[dir=ltr] .trumbowyg-dropdown-emoji button {
-  float: left;
-}
-
-[dir=rtl] .trumbowyg-dropdown-emoji button {
-  float: right;
-}
-.trumbowyg-dropdown-emoji button:hover::after, .trumbowyg-dropdown-emoji button:focus::after {
-  display: block;
-  position: absolute;
-  top: -5px;
-  height: 27px;
-  width: 27px;
-  z-index: 10;
-}
-[dir] .trumbowyg-dropdown-emoji button:hover::after, [dir] .trumbowyg-dropdown-emoji button:focus::after {
-  background: inherit;
-  box-shadow: #000 0 0 2px;
-  background-color: transparent;
-}
-[dir=ltr] .trumbowyg-dropdown-emoji button:hover::after, [dir=ltr] .trumbowyg-dropdown-emoji button:focus::after {
-  left: -5px;
-}
-[dir=rtl] .trumbowyg-dropdown-emoji button:hover::after, [dir=rtl] .trumbowyg-dropdown-emoji button:focus::after {
-  right: -5px;
-}
-
-.trumbowyg .emoji {
-  width: 22px;
-  height: 22px;
-  display: inline-block;
 }
 /**
  * Trumbowyg v2.27.3 - A lightweight WYSIWYG editor
@@ -301,6 +301,39 @@
 .trumbowyg-giphy-modal .img-container img.tbw-loaded {
   opacity: 1;
 }
+/**
+ * Trumbowyg v2.27.3 - A lightweight WYSIWYG editor
+ * Default stylesheet for Trumbowyg editor plugin
+ * ------------------------
+ * @link https://alex-d.github.io/Trumbowyg/
+ * @license MIT
+ * @author Alexandre Demode (Alex-D)
+ *         Twitter : @AlexandreDemode
+ *         Website : alex-d.fr
+ */
+.trumbowyg-dropdown-mention button {
+  position: relative;
+  white-space: nowrap;
+}
+.trumbowyg-dropdown-mention button:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 15%;
+  height: 100%;
+  pointer-events: none;
+}
+[dir] .trumbowyg-dropdown-mention button:after {
+  background-size: 100%;
+}
+[dir=ltr] .trumbowyg-dropdown-mention button:after {
+  right: 0;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #ffffff 80%, #ffffff 100%);
+}
+[dir=rtl] .trumbowyg-dropdown-mention button:after {
+  left: 0;
+  background-image: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, #ffffff 80%, #ffffff 100%);
+}
 @charset "UTF-8";
 /**
  * Trumbowyg v2.27.3 - A lightweight WYSIWYG editor
@@ -344,111 +377,6 @@
 }
 [formulas]:hover::after {
   opacity: 1;
-}
-/**
- * Trumbowyg v2.27.3 - A lightweight WYSIWYG editor
- * Default stylesheet for Trumbowyg editor plugin
- * ------------------------
- * @link https://alex-d.github.io/Trumbowyg/
- * @license MIT
- * @author Alexandre Demode (Alex-D)
- *         Twitter : @AlexandreDemode
- *         Website : alex-d.fr
- */
-.trumbowyg-dropdown-mention button {
-  position: relative;
-  white-space: nowrap;
-}
-.trumbowyg-dropdown-mention button:after {
-  content: "";
-  position: absolute;
-  top: 0;
-  width: 15%;
-  height: 100%;
-  pointer-events: none;
-}
-[dir] .trumbowyg-dropdown-mention button:after {
-  background-size: 100%;
-}
-[dir=ltr] .trumbowyg-dropdown-mention button:after {
-  right: 0;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #ffffff 80%, #ffffff 100%);
-}
-[dir=rtl] .trumbowyg-dropdown-mention button:after {
-  left: 0;
-  background-image: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, #ffffff 80%, #ffffff 100%);
-}
-/**
- * Trumbowyg v2.27.3 - A lightweight WYSIWYG editor
- * Default stylesheet for Trumbowyg editor plugin
- * ------------------------
- * @link https://alex-d.github.io/Trumbowyg/
- * @license MIT
- * @author Alexandre Demode (Alex-D)
- *         Twitter : @AlexandreDemode
- *         Website : alex-d.fr
- */
-.trumbowyg-symbol-\&nbsp-dropdown-button {
-  display: none !important;
-}
-
-[dir] .trumbowyg-symbol-\&nbsp-dropdown-button + button {
-  clear: both;
-}
-
-.trumbowyg-dropdown-specialChars {
-  width: 248px;
-}
-
-[dir] .trumbowyg-dropdown-specialChars {
-  padding: 5px 3px 3px;
-}
-
-.trumbowyg-dropdown-specialChars button {
-  display: block;
-  position: relative;
-  height: 26px;
-  width: 26px;
-  line-height: 24px;
-}
-
-[dir] .trumbowyg-dropdown-specialChars button {
-  padding: 0;
-  margin: 2px;
-  text-align: center;
-}
-
-[dir=ltr] .trumbowyg-dropdown-specialChars button {
-  float: left;
-}
-
-[dir=rtl] .trumbowyg-dropdown-specialChars button {
-  float: right;
-}
-.trumbowyg-dropdown-specialChars button:hover::after, .trumbowyg-dropdown-specialChars button:focus::after {
-  display: block;
-  position: absolute;
-  top: -5px;
-  height: 27px;
-  width: 27px;
-  z-index: 10;
-}
-[dir] .trumbowyg-dropdown-specialChars button:hover::after, [dir] .trumbowyg-dropdown-specialChars button:focus::after {
-  background: inherit;
-  box-shadow: #000 0 0 2px;
-  background-color: transparent;
-}
-[dir=ltr] .trumbowyg-dropdown-specialChars button:hover::after, [dir=ltr] .trumbowyg-dropdown-specialChars button:focus::after {
-  left: -5px;
-}
-[dir=rtl] .trumbowyg-dropdown-specialChars button:hover::after, [dir=rtl] .trumbowyg-dropdown-specialChars button:focus::after {
-  right: -5px;
-}
-
-.trumbowyg .specialChars {
-  width: 22px;
-  height: 22px;
-  display: inline-block;
 }
 /**
  * Trumbowyg v2.27.3 - A lightweight WYSIWYG editor
@@ -671,4 +599,76 @@
 [dir=rtl] .trumbowyg-dropdown-tableCellBackgroundColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-removeTableCellBackgroundColor-dropdown-button):not(.trumbowyg-removeTableBorderColor-dropdown-button):hover::after, [dir=rtl] .trumbowyg-dropdown-tableCellBackgroundColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-removeTableCellBackgroundColor-dropdown-button):not(.trumbowyg-removeTableBorderColor-dropdown-button):focus::after, [dir=rtl] .trumbowyg-dropdown-tableBorderColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-removeTableCellBackgroundColor-dropdown-button):not(.trumbowyg-removeTableBorderColor-dropdown-button):hover::after, [dir=rtl] .trumbowyg-dropdown-tableBorderColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-removeTableCellBackgroundColor-dropdown-button):not(.trumbowyg-removeTableBorderColor-dropdown-button):focus::after {
   right: 0;
   border-right-color: #fff;
+}
+/**
+ * Trumbowyg v2.27.3 - A lightweight WYSIWYG editor
+ * Default stylesheet for Trumbowyg editor plugin
+ * ------------------------
+ * @link https://alex-d.github.io/Trumbowyg/
+ * @license MIT
+ * @author Alexandre Demode (Alex-D)
+ *         Twitter : @AlexandreDemode
+ *         Website : alex-d.fr
+ */
+.trumbowyg-symbol-\&nbsp-dropdown-button {
+  display: none !important;
+}
+
+[dir] .trumbowyg-symbol-\&nbsp-dropdown-button + button {
+  clear: both;
+}
+
+.trumbowyg-dropdown-specialChars {
+  width: 248px;
+}
+
+[dir] .trumbowyg-dropdown-specialChars {
+  padding: 5px 3px 3px;
+}
+
+.trumbowyg-dropdown-specialChars button {
+  display: block;
+  position: relative;
+  height: 26px;
+  width: 26px;
+  line-height: 24px;
+}
+
+[dir] .trumbowyg-dropdown-specialChars button {
+  padding: 0;
+  margin: 2px;
+  text-align: center;
+}
+
+[dir=ltr] .trumbowyg-dropdown-specialChars button {
+  float: left;
+}
+
+[dir=rtl] .trumbowyg-dropdown-specialChars button {
+  float: right;
+}
+.trumbowyg-dropdown-specialChars button:hover::after, .trumbowyg-dropdown-specialChars button:focus::after {
+  display: block;
+  position: absolute;
+  top: -5px;
+  height: 27px;
+  width: 27px;
+  z-index: 10;
+}
+[dir] .trumbowyg-dropdown-specialChars button:hover::after, [dir] .trumbowyg-dropdown-specialChars button:focus::after {
+  background: inherit;
+  box-shadow: #000 0 0 2px;
+  background-color: transparent;
+}
+[dir=ltr] .trumbowyg-dropdown-specialChars button:hover::after, [dir=ltr] .trumbowyg-dropdown-specialChars button:focus::after {
+  left: -5px;
+}
+[dir=rtl] .trumbowyg-dropdown-specialChars button:hover::after, [dir=rtl] .trumbowyg-dropdown-specialChars button:focus::after {
+  right: -5px;
+}
+
+.trumbowyg .specialChars {
+  width: 22px;
+  height: 22px;
+  display: inline-block;
 }
