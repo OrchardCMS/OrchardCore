@@ -4,497 +4,6 @@
 */
 
 /* ===========================================================
- * trumbowyg.colors.js v1.2
- * Colors picker plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Alexandre Demode (Alex-D)
- *          Twitter : @AlexandreDemode
- *          Website : alex-d.fr
- */
-
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        foreColor: 'Text color',
-        backColor: 'Background color',
-        foreColorRemove: 'Remove text color',
-        backColorRemove: 'Remove background color'
-      },
-      az: {
-        foreColor: 'Yazı rəngi',
-        backColor: 'Arxa plan rəngi',
-        foreColorRemove: 'Yazı rəngini sil',
-        backColorRemove: 'Arxa plan rəngini sil'
-      },
-      by: {
-        foreColor: 'Колер тэксту',
-        backColor: 'Колер фону тэксту',
-        foreColorRemove: 'Выдаліць колер тэксту',
-        backColorRemove: 'Выдаліць колер фону тэксту'
-      },
-      ca: {
-        foreColor: 'Color del text',
-        backColor: 'Color del fons',
-        foreColorRemove: 'Eliminar color del text',
-        backColorRemove: 'Eliminar color del fons'
-      },
-      cs: {
-        foreColor: 'Barva textu',
-        backColor: 'Barva pozadí'
-      },
-      da: {
-        foreColor: 'Tekstfarve',
-        backColor: 'Baggrundsfarve'
-      },
-      de: {
-        foreColor: 'Textfarbe',
-        backColor: 'Hintergrundfarbe'
-      },
-      es: {
-        foreColor: 'Color del texto',
-        backColor: 'Color del fondo',
-        foreColorRemove: 'Eliminar color del texto',
-        backColorRemove: 'Eliminar color del fondo'
-      },
-      et: {
-        foreColor: 'Teksti värv',
-        backColor: 'Taustavärv',
-        foreColorRemove: 'Eemalda teksti värv',
-        backColorRemove: 'Eemalda taustavärv'
-      },
-      fr: {
-        foreColor: 'Couleur du texte',
-        backColor: 'Couleur de fond',
-        foreColorRemove: 'Supprimer la couleur du texte',
-        backColorRemove: 'Supprimer la couleur de fond'
-      },
-      hu: {
-        foreColor: 'Betű szín',
-        backColor: 'Háttér szín',
-        foreColorRemove: 'Betű szín eltávolítása',
-        backColorRemove: 'Háttér szín eltávolítása'
-      },
-      ja: {
-        foreColor: '文字色',
-        backColor: '背景色'
-      },
-      ko: {
-        foreColor: '글자색',
-        backColor: '배경색',
-        foreColorRemove: '글자색 지우기',
-        backColorRemove: '배경색 지우기'
-      },
-      nl: {
-        foreColor: 'Tekstkleur',
-        backColor: 'Achtergrondkleur'
-      },
-      pt_br: {
-        foreColor: 'Cor de fonte',
-        backColor: 'Cor de fundo'
-      },
-      ru: {
-        foreColor: 'Цвет текста',
-        backColor: 'Цвет выделения текста',
-        foreColorRemove: 'Очистить цвет текста',
-        backColorRemove: 'Очистить цвет выделения текста'
-      },
-      sl: {
-        foreColor: 'Barva teksta',
-        backColor: 'Barva ozadja',
-        foreColorRemove: 'Ponastavi barvo teksta',
-        backColorRemove: 'Ponastavi barvo ozadja'
-      },
-      sk: {
-        foreColor: 'Farba textu',
-        backColor: 'Farba pozadia'
-      },
-      tr: {
-        foreColor: 'Yazı rengi',
-        backColor: 'Arka plan rengi',
-        foreColorRemove: 'Yazı rengini kaldır',
-        backColorRemove: 'Arka plan rengini kaldır'
-      },
-      zh_cn: {
-        foreColor: '文字颜色',
-        backColor: '背景颜色'
-      },
-      zh_tw: {
-        foreColor: '文字顏色',
-        backColor: '背景顏色'
-      }
-    }
-  });
-
-  // jshint camelcase:true
-
-  function hex(x) {
-    return ('0' + parseInt(x).toString(16)).slice(-2);
-  }
-  function colorToHex(rgb) {
-    if (rgb.search('rgb') === -1) {
-      return rgb.replace('#', '');
-    } else if (rgb === 'rgba(0, 0, 0, 0)') {
-      return 'transparent';
-    } else {
-      rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/);
-      if (rgb == null) {
-        return 'transparent'; // No match, return transparent as unkown color
-      }
-
-      return hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
-    }
-  }
-  function colorTagHandler(element, trumbowyg) {
-    var tags = [];
-    if (!element.style) {
-      return tags;
-    }
-
-    // background color
-    if (element.style.backgroundColor !== '') {
-      var backColor = colorToHex(element.style.backgroundColor);
-      if (trumbowyg.o.plugins.colors.colorList.indexOf(backColor) >= 0) {
-        tags.push('backColor' + backColor);
-      } else {
-        tags.push('backColorFree');
-      }
-    }
-
-    // text color
-    var foreColor;
-    if (element.style.color !== '') {
-      foreColor = colorToHex(element.style.color);
-    } else if (element.hasAttribute('color')) {
-      foreColor = colorToHex(element.getAttribute('color'));
-    }
-    if (foreColor) {
-      if (trumbowyg.o.plugins.colors.colorList.indexOf(foreColor) >= 0) {
-        tags.push('foreColor' + foreColor);
-      } else {
-        tags.push('foreColorFree');
-      }
-    }
-    return tags;
-  }
-  var defaultOptions = {
-    colorList: ['ffffff', '000000', 'eeece1', '1f497d', '4f81bd', 'c0504d', '9bbb59', '8064a2', '4bacc6', 'f79646', 'ffff00', 'f2f2f2', '7f7f7f', 'ddd9c3', 'c6d9f0', 'dbe5f1', 'f2dcdb', 'ebf1dd', 'e5e0ec', 'dbeef3', 'fdeada', 'fff2ca', 'd8d8d8', '595959', 'c4bd97', '8db3e2', 'b8cce4', 'e5b9b7', 'd7e3bc', 'ccc1d9', 'b7dde8', 'fbd5b5', 'ffe694', 'bfbfbf', '3f3f3f', '938953', '548dd4', '95b3d7', 'd99694', 'c3d69b', 'b2a2c7', 'b7dde8', 'fac08f', 'f2c314', 'a5a5a5', '262626', '494429', '17365d', '366092', '953734', '76923c', '5f497a', '92cddc', 'e36c09', 'c09100', '7f7f7f', '0c0c0c', '1d1b10', '0f243e', '244061', '632423', '4f6128', '3f3151', '31859b', '974806', '7f6000'],
-    foreColorList: null,
-    // fallbacks on colorList
-    backColorList: null,
-    // fallbacks on colorList
-    allowCustomForeColor: true,
-    allowCustomBackColor: true,
-    displayAsList: false
-  };
-
-  // Add all colors in two dropdowns
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      color: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.colors = trumbowyg.o.plugins.colors || defaultOptions;
-          var dropdownClass = trumbowyg.o.plugins.colors.displayAsList ? trumbowyg.o.prefix + 'dropdown--color-list' : '';
-          var foreColorBtnDef = {
-              dropdown: buildDropdown('foreColor', trumbowyg),
-              dropdownClass: dropdownClass
-            },
-            backColorBtnDef = {
-              dropdown: buildDropdown('backColor', trumbowyg),
-              dropdownClass: dropdownClass
-            };
-          trumbowyg.addBtnDef('foreColor', foreColorBtnDef);
-          trumbowyg.addBtnDef('backColor', backColorBtnDef);
-        },
-        tagHandler: colorTagHandler
-      }
-    }
-  });
-  function buildDropdown(_fn, trumbowyg) {
-    var dropdown = [],
-      trumbowygColorOptions = trumbowyg.o.plugins.colors,
-      colorList = trumbowygColorOptions[_fn + 'List'] || trumbowygColorOptions.colorList;
-    $.each(colorList, function (i, color) {
-      var btn = _fn + color,
-        btnDef = {
-          fn: _fn,
-          forceCss: true,
-          hasIcon: false,
-          text: trumbowyg.lang['#' + color] || '#' + color,
-          param: '#' + color,
-          style: 'background-color: #' + color + ';'
-        };
-      if (trumbowygColorOptions.displayAsList && _fn === 'foreColor') {
-        btnDef.style = 'color: #' + color + ' !important;';
-      }
-      trumbowyg.addBtnDef(btn, btnDef);
-      dropdown.push(btn);
-    });
-
-    // Remove color
-    var removeColorButtonName = _fn + 'Remove',
-      removeColorBtnDef = {
-        fn: 'removeFormat',
-        hasIcon: false,
-        param: _fn,
-        style: 'background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);'
-      };
-    if (trumbowygColorOptions.displayAsList) {
-      removeColorBtnDef.style = '';
-    }
-    trumbowyg.addBtnDef(removeColorButtonName, removeColorBtnDef);
-    dropdown.push(removeColorButtonName);
-
-    // Custom color
-    if (trumbowygColorOptions['allowCustom' + _fn.charAt(0).toUpperCase() + _fn.substr(1)]) {
-      // add free color btn
-      var freeColorButtonName = _fn + 'Free',
-        freeColorBtnDef = {
-          fn: function fn() {
-            trumbowyg.openModalInsert(trumbowyg.lang[_fn], {
-              color: {
-                label: _fn,
-                forceCss: true,
-                type: 'color',
-                value: '#FFFFFF'
-              }
-            },
-            // callback
-            function (values) {
-              trumbowyg.execCmd(_fn, values.color);
-              return true;
-            });
-          },
-          hasIcon: false,
-          text: '#',
-          // style adjust for displaying the text
-          style: 'text-indent: 0; line-height: 20px; padding: 0 5px;'
-        };
-      trumbowyg.addBtnDef(freeColorButtonName, freeColorBtnDef);
-      dropdown.push(freeColorButtonName);
-    }
-    return dropdown;
-  }
-})(jQuery);
-/* ===========================================================
- * trumbowyg.colors.js v1.2
- * Colors picker plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Alexandre Demode (Alex-D)
- *          Twitter : @AlexandreDemode
- *          Website : alex-d.fr
- */
-!function (o) {
-  "use strict";
-
-  function r(o) {
-    return ("0" + parseInt(o).toString(16)).slice(-2);
-  }
-  function e(o) {
-    return -1 === o.search("rgb") ? o.replace("#", "") : "rgba(0, 0, 0, 0)" === o || null == (o = o.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/)) ? "transparent" : r(o[1]) + r(o[2]) + r(o[3]);
-  }
-  o.extend(!0, o.trumbowyg, {
-    langs: {
-      en: {
-        foreColor: "Text color",
-        backColor: "Background color",
-        foreColorRemove: "Remove text color",
-        backColorRemove: "Remove background color"
-      },
-      az: {
-        foreColor: "Yazı rəngi",
-        backColor: "Arxa plan rəngi",
-        foreColorRemove: "Yazı rəngini sil",
-        backColorRemove: "Arxa plan rəngini sil"
-      },
-      by: {
-        foreColor: "Колер тэксту",
-        backColor: "Колер фону тэксту",
-        foreColorRemove: "Выдаліць колер тэксту",
-        backColorRemove: "Выдаліць колер фону тэксту"
-      },
-      ca: {
-        foreColor: "Color del text",
-        backColor: "Color del fons",
-        foreColorRemove: "Eliminar color del text",
-        backColorRemove: "Eliminar color del fons"
-      },
-      cs: {
-        foreColor: "Barva textu",
-        backColor: "Barva pozadí"
-      },
-      da: {
-        foreColor: "Tekstfarve",
-        backColor: "Baggrundsfarve"
-      },
-      de: {
-        foreColor: "Textfarbe",
-        backColor: "Hintergrundfarbe"
-      },
-      es: {
-        foreColor: "Color del texto",
-        backColor: "Color del fondo",
-        foreColorRemove: "Eliminar color del texto",
-        backColorRemove: "Eliminar color del fondo"
-      },
-      et: {
-        foreColor: "Teksti värv",
-        backColor: "Taustavärv",
-        foreColorRemove: "Eemalda teksti värv",
-        backColorRemove: "Eemalda taustavärv"
-      },
-      fr: {
-        foreColor: "Couleur du texte",
-        backColor: "Couleur de fond",
-        foreColorRemove: "Supprimer la couleur du texte",
-        backColorRemove: "Supprimer la couleur de fond"
-      },
-      hu: {
-        foreColor: "Betű szín",
-        backColor: "Háttér szín",
-        foreColorRemove: "Betű szín eltávolítása",
-        backColorRemove: "Háttér szín eltávolítása"
-      },
-      ja: {
-        foreColor: "文字色",
-        backColor: "背景色"
-      },
-      ko: {
-        foreColor: "글자색",
-        backColor: "배경색",
-        foreColorRemove: "글자색 지우기",
-        backColorRemove: "배경색 지우기"
-      },
-      nl: {
-        foreColor: "Tekstkleur",
-        backColor: "Achtergrondkleur"
-      },
-      pt_br: {
-        foreColor: "Cor de fonte",
-        backColor: "Cor de fundo"
-      },
-      ru: {
-        foreColor: "Цвет текста",
-        backColor: "Цвет выделения текста",
-        foreColorRemove: "Очистить цвет текста",
-        backColorRemove: "Очистить цвет выделения текста"
-      },
-      sl: {
-        foreColor: "Barva teksta",
-        backColor: "Barva ozadja",
-        foreColorRemove: "Ponastavi barvo teksta",
-        backColorRemove: "Ponastavi barvo ozadja"
-      },
-      sk: {
-        foreColor: "Farba textu",
-        backColor: "Farba pozadia"
-      },
-      tr: {
-        foreColor: "Yazı rengi",
-        backColor: "Arka plan rengi",
-        foreColorRemove: "Yazı rengini kaldır",
-        backColorRemove: "Arka plan rengini kaldır"
-      },
-      zh_cn: {
-        foreColor: "文字颜色",
-        backColor: "背景颜色"
-      },
-      zh_tw: {
-        foreColor: "文字顏色",
-        backColor: "背景顏色"
-      }
-    }
-  });
-  var l = {
-    colorList: ["ffffff", "000000", "eeece1", "1f497d", "4f81bd", "c0504d", "9bbb59", "8064a2", "4bacc6", "f79646", "ffff00", "f2f2f2", "7f7f7f", "ddd9c3", "c6d9f0", "dbe5f1", "f2dcdb", "ebf1dd", "e5e0ec", "dbeef3", "fdeada", "fff2ca", "d8d8d8", "595959", "c4bd97", "8db3e2", "b8cce4", "e5b9b7", "d7e3bc", "ccc1d9", "b7dde8", "fbd5b5", "ffe694", "bfbfbf", "3f3f3f", "938953", "548dd4", "95b3d7", "d99694", "c3d69b", "b2a2c7", "b7dde8", "fac08f", "f2c314", "a5a5a5", "262626", "494429", "17365d", "366092", "953734", "76923c", "5f497a", "92cddc", "e36c09", "c09100", "7f7f7f", "0c0c0c", "1d1b10", "0f243e", "244061", "632423", "4f6128", "3f3151", "31859b", "974806", "7f6000"],
-    foreColorList: null,
-    backColorList: null,
-    allowCustomForeColor: !0,
-    allowCustomBackColor: !0,
-    displayAsList: !1
-  };
-  function a(r, e) {
-    var l = [],
-      a = e.o.plugins.colors,
-      t = a[r + "List"] || a.colorList;
-    o.each(t, function (o, t) {
-      var c = r + t,
-        f = {
-          fn: r,
-          forceCss: !0,
-          hasIcon: !1,
-          text: e.lang["#" + t] || "#" + t,
-          param: "#" + t,
-          style: "background-color: #" + t + ";"
-        };
-      a.displayAsList && "foreColor" === r && (f.style = "color: #" + t + " !important;"), e.addBtnDef(c, f), l.push(c);
-    });
-    var c = r + "Remove",
-      f = {
-        fn: "removeFormat",
-        hasIcon: !1,
-        param: r,
-        style: "background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);"
-      };
-    if (a.displayAsList && (f.style = ""), e.addBtnDef(c, f), l.push(c), a["allowCustom" + r.charAt(0).toUpperCase() + r.substr(1)]) {
-      var n = r + "Free",
-        d = {
-          fn: function fn() {
-            e.openModalInsert(e.lang[r], {
-              color: {
-                label: r,
-                forceCss: !0,
-                type: "color",
-                value: "#FFFFFF"
-              }
-            }, function (o) {
-              return e.execCmd(r, o.color), !0;
-            });
-          },
-          hasIcon: !1,
-          text: "#",
-          style: "text-indent: 0; line-height: 20px; padding: 0 5px;"
-        };
-      e.addBtnDef(n, d), l.push(n);
-    }
-    return l;
-  }
-  o.extend(!0, o.trumbowyg, {
-    plugins: {
-      color: {
-        init: function init(o) {
-          o.o.plugins.colors = o.o.plugins.colors || l;
-          var r = o.o.plugins.colors.displayAsList ? o.o.prefix + "dropdown--color-list" : "",
-            e = {
-              dropdown: a("foreColor", o),
-              dropdownClass: r
-            },
-            t = {
-              dropdown: a("backColor", o),
-              dropdownClass: r
-            };
-          o.addBtnDef("foreColor", e), o.addBtnDef("backColor", t);
-        },
-        tagHandler: function tagHandler(o, r) {
-          var l,
-            a = [];
-          if (!o.style) return a;
-          if ("" !== o.style.backgroundColor) {
-            var t = e(o.style.backgroundColor);
-            r.o.plugins.colors.colorList.indexOf(t) >= 0 ? a.push("backColor" + t) : a.push("backColorFree");
-          }
-          return "" !== o.style.color ? l = e(o.style.color) : o.hasAttribute("color") && (l = e(o.getAttribute("color"))), l && (r.o.plugins.colors.colorList.indexOf(l) >= 0 ? a.push("foreColor" + l) : a.push("foreColorFree")), a;
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
  * trumbowyg.base64.js v1.0
  * Base64 plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -1106,6 +615,497 @@
   });
 }(jQuery);
 /* ===========================================================
+ * trumbowyg.colors.js v1.2
+ * Colors picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ */
+
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        foreColor: 'Text color',
+        backColor: 'Background color',
+        foreColorRemove: 'Remove text color',
+        backColorRemove: 'Remove background color'
+      },
+      az: {
+        foreColor: 'Yazı rəngi',
+        backColor: 'Arxa plan rəngi',
+        foreColorRemove: 'Yazı rəngini sil',
+        backColorRemove: 'Arxa plan rəngini sil'
+      },
+      by: {
+        foreColor: 'Колер тэксту',
+        backColor: 'Колер фону тэксту',
+        foreColorRemove: 'Выдаліць колер тэксту',
+        backColorRemove: 'Выдаліць колер фону тэксту'
+      },
+      ca: {
+        foreColor: 'Color del text',
+        backColor: 'Color del fons',
+        foreColorRemove: 'Eliminar color del text',
+        backColorRemove: 'Eliminar color del fons'
+      },
+      cs: {
+        foreColor: 'Barva textu',
+        backColor: 'Barva pozadí'
+      },
+      da: {
+        foreColor: 'Tekstfarve',
+        backColor: 'Baggrundsfarve'
+      },
+      de: {
+        foreColor: 'Textfarbe',
+        backColor: 'Hintergrundfarbe'
+      },
+      es: {
+        foreColor: 'Color del texto',
+        backColor: 'Color del fondo',
+        foreColorRemove: 'Eliminar color del texto',
+        backColorRemove: 'Eliminar color del fondo'
+      },
+      et: {
+        foreColor: 'Teksti värv',
+        backColor: 'Taustavärv',
+        foreColorRemove: 'Eemalda teksti värv',
+        backColorRemove: 'Eemalda taustavärv'
+      },
+      fr: {
+        foreColor: 'Couleur du texte',
+        backColor: 'Couleur de fond',
+        foreColorRemove: 'Supprimer la couleur du texte',
+        backColorRemove: 'Supprimer la couleur de fond'
+      },
+      hu: {
+        foreColor: 'Betű szín',
+        backColor: 'Háttér szín',
+        foreColorRemove: 'Betű szín eltávolítása',
+        backColorRemove: 'Háttér szín eltávolítása'
+      },
+      ja: {
+        foreColor: '文字色',
+        backColor: '背景色'
+      },
+      ko: {
+        foreColor: '글자색',
+        backColor: '배경색',
+        foreColorRemove: '글자색 지우기',
+        backColorRemove: '배경색 지우기'
+      },
+      nl: {
+        foreColor: 'Tekstkleur',
+        backColor: 'Achtergrondkleur'
+      },
+      pt_br: {
+        foreColor: 'Cor de fonte',
+        backColor: 'Cor de fundo'
+      },
+      ru: {
+        foreColor: 'Цвет текста',
+        backColor: 'Цвет выделения текста',
+        foreColorRemove: 'Очистить цвет текста',
+        backColorRemove: 'Очистить цвет выделения текста'
+      },
+      sl: {
+        foreColor: 'Barva teksta',
+        backColor: 'Barva ozadja',
+        foreColorRemove: 'Ponastavi barvo teksta',
+        backColorRemove: 'Ponastavi barvo ozadja'
+      },
+      sk: {
+        foreColor: 'Farba textu',
+        backColor: 'Farba pozadia'
+      },
+      tr: {
+        foreColor: 'Yazı rengi',
+        backColor: 'Arka plan rengi',
+        foreColorRemove: 'Yazı rengini kaldır',
+        backColorRemove: 'Arka plan rengini kaldır'
+      },
+      zh_cn: {
+        foreColor: '文字颜色',
+        backColor: '背景颜色'
+      },
+      zh_tw: {
+        foreColor: '文字顏色',
+        backColor: '背景顏色'
+      }
+    }
+  });
+
+  // jshint camelcase:true
+
+  function hex(x) {
+    return ('0' + parseInt(x).toString(16)).slice(-2);
+  }
+  function colorToHex(rgb) {
+    if (rgb.search('rgb') === -1) {
+      return rgb.replace('#', '');
+    } else if (rgb === 'rgba(0, 0, 0, 0)') {
+      return 'transparent';
+    } else {
+      rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/);
+      if (rgb == null) {
+        return 'transparent'; // No match, return transparent as unkown color
+      }
+
+      return hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+    }
+  }
+  function colorTagHandler(element, trumbowyg) {
+    var tags = [];
+    if (!element.style) {
+      return tags;
+    }
+
+    // background color
+    if (element.style.backgroundColor !== '') {
+      var backColor = colorToHex(element.style.backgroundColor);
+      if (trumbowyg.o.plugins.colors.colorList.indexOf(backColor) >= 0) {
+        tags.push('backColor' + backColor);
+      } else {
+        tags.push('backColorFree');
+      }
+    }
+
+    // text color
+    var foreColor;
+    if (element.style.color !== '') {
+      foreColor = colorToHex(element.style.color);
+    } else if (element.hasAttribute('color')) {
+      foreColor = colorToHex(element.getAttribute('color'));
+    }
+    if (foreColor) {
+      if (trumbowyg.o.plugins.colors.colorList.indexOf(foreColor) >= 0) {
+        tags.push('foreColor' + foreColor);
+      } else {
+        tags.push('foreColorFree');
+      }
+    }
+    return tags;
+  }
+  var defaultOptions = {
+    colorList: ['ffffff', '000000', 'eeece1', '1f497d', '4f81bd', 'c0504d', '9bbb59', '8064a2', '4bacc6', 'f79646', 'ffff00', 'f2f2f2', '7f7f7f', 'ddd9c3', 'c6d9f0', 'dbe5f1', 'f2dcdb', 'ebf1dd', 'e5e0ec', 'dbeef3', 'fdeada', 'fff2ca', 'd8d8d8', '595959', 'c4bd97', '8db3e2', 'b8cce4', 'e5b9b7', 'd7e3bc', 'ccc1d9', 'b7dde8', 'fbd5b5', 'ffe694', 'bfbfbf', '3f3f3f', '938953', '548dd4', '95b3d7', 'd99694', 'c3d69b', 'b2a2c7', 'b7dde8', 'fac08f', 'f2c314', 'a5a5a5', '262626', '494429', '17365d', '366092', '953734', '76923c', '5f497a', '92cddc', 'e36c09', 'c09100', '7f7f7f', '0c0c0c', '1d1b10', '0f243e', '244061', '632423', '4f6128', '3f3151', '31859b', '974806', '7f6000'],
+    foreColorList: null,
+    // fallbacks on colorList
+    backColorList: null,
+    // fallbacks on colorList
+    allowCustomForeColor: true,
+    allowCustomBackColor: true,
+    displayAsList: false
+  };
+
+  // Add all colors in two dropdowns
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      color: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.colors = trumbowyg.o.plugins.colors || defaultOptions;
+          var dropdownClass = trumbowyg.o.plugins.colors.displayAsList ? trumbowyg.o.prefix + 'dropdown--color-list' : '';
+          var foreColorBtnDef = {
+              dropdown: buildDropdown('foreColor', trumbowyg),
+              dropdownClass: dropdownClass
+            },
+            backColorBtnDef = {
+              dropdown: buildDropdown('backColor', trumbowyg),
+              dropdownClass: dropdownClass
+            };
+          trumbowyg.addBtnDef('foreColor', foreColorBtnDef);
+          trumbowyg.addBtnDef('backColor', backColorBtnDef);
+        },
+        tagHandler: colorTagHandler
+      }
+    }
+  });
+  function buildDropdown(_fn, trumbowyg) {
+    var dropdown = [],
+      trumbowygColorOptions = trumbowyg.o.plugins.colors,
+      colorList = trumbowygColorOptions[_fn + 'List'] || trumbowygColorOptions.colorList;
+    $.each(colorList, function (i, color) {
+      var btn = _fn + color,
+        btnDef = {
+          fn: _fn,
+          forceCss: true,
+          hasIcon: false,
+          text: trumbowyg.lang['#' + color] || '#' + color,
+          param: '#' + color,
+          style: 'background-color: #' + color + ';'
+        };
+      if (trumbowygColorOptions.displayAsList && _fn === 'foreColor') {
+        btnDef.style = 'color: #' + color + ' !important;';
+      }
+      trumbowyg.addBtnDef(btn, btnDef);
+      dropdown.push(btn);
+    });
+
+    // Remove color
+    var removeColorButtonName = _fn + 'Remove',
+      removeColorBtnDef = {
+        fn: 'removeFormat',
+        hasIcon: false,
+        param: _fn,
+        style: 'background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);'
+      };
+    if (trumbowygColorOptions.displayAsList) {
+      removeColorBtnDef.style = '';
+    }
+    trumbowyg.addBtnDef(removeColorButtonName, removeColorBtnDef);
+    dropdown.push(removeColorButtonName);
+
+    // Custom color
+    if (trumbowygColorOptions['allowCustom' + _fn.charAt(0).toUpperCase() + _fn.substr(1)]) {
+      // add free color btn
+      var freeColorButtonName = _fn + 'Free',
+        freeColorBtnDef = {
+          fn: function fn() {
+            trumbowyg.openModalInsert(trumbowyg.lang[_fn], {
+              color: {
+                label: _fn,
+                forceCss: true,
+                type: 'color',
+                value: '#FFFFFF'
+              }
+            },
+            // callback
+            function (values) {
+              trumbowyg.execCmd(_fn, values.color);
+              return true;
+            });
+          },
+          hasIcon: false,
+          text: '#',
+          // style adjust for displaying the text
+          style: 'text-indent: 0; line-height: 20px; padding: 0 5px;'
+        };
+      trumbowyg.addBtnDef(freeColorButtonName, freeColorBtnDef);
+      dropdown.push(freeColorButtonName);
+    }
+    return dropdown;
+  }
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.colors.js v1.2
+ * Colors picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ */
+!function (o) {
+  "use strict";
+
+  function r(o) {
+    return ("0" + parseInt(o).toString(16)).slice(-2);
+  }
+  function e(o) {
+    return -1 === o.search("rgb") ? o.replace("#", "") : "rgba(0, 0, 0, 0)" === o || null == (o = o.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/)) ? "transparent" : r(o[1]) + r(o[2]) + r(o[3]);
+  }
+  o.extend(!0, o.trumbowyg, {
+    langs: {
+      en: {
+        foreColor: "Text color",
+        backColor: "Background color",
+        foreColorRemove: "Remove text color",
+        backColorRemove: "Remove background color"
+      },
+      az: {
+        foreColor: "Yazı rəngi",
+        backColor: "Arxa plan rəngi",
+        foreColorRemove: "Yazı rəngini sil",
+        backColorRemove: "Arxa plan rəngini sil"
+      },
+      by: {
+        foreColor: "Колер тэксту",
+        backColor: "Колер фону тэксту",
+        foreColorRemove: "Выдаліць колер тэксту",
+        backColorRemove: "Выдаліць колер фону тэксту"
+      },
+      ca: {
+        foreColor: "Color del text",
+        backColor: "Color del fons",
+        foreColorRemove: "Eliminar color del text",
+        backColorRemove: "Eliminar color del fons"
+      },
+      cs: {
+        foreColor: "Barva textu",
+        backColor: "Barva pozadí"
+      },
+      da: {
+        foreColor: "Tekstfarve",
+        backColor: "Baggrundsfarve"
+      },
+      de: {
+        foreColor: "Textfarbe",
+        backColor: "Hintergrundfarbe"
+      },
+      es: {
+        foreColor: "Color del texto",
+        backColor: "Color del fondo",
+        foreColorRemove: "Eliminar color del texto",
+        backColorRemove: "Eliminar color del fondo"
+      },
+      et: {
+        foreColor: "Teksti värv",
+        backColor: "Taustavärv",
+        foreColorRemove: "Eemalda teksti värv",
+        backColorRemove: "Eemalda taustavärv"
+      },
+      fr: {
+        foreColor: "Couleur du texte",
+        backColor: "Couleur de fond",
+        foreColorRemove: "Supprimer la couleur du texte",
+        backColorRemove: "Supprimer la couleur de fond"
+      },
+      hu: {
+        foreColor: "Betű szín",
+        backColor: "Háttér szín",
+        foreColorRemove: "Betű szín eltávolítása",
+        backColorRemove: "Háttér szín eltávolítása"
+      },
+      ja: {
+        foreColor: "文字色",
+        backColor: "背景色"
+      },
+      ko: {
+        foreColor: "글자색",
+        backColor: "배경색",
+        foreColorRemove: "글자색 지우기",
+        backColorRemove: "배경색 지우기"
+      },
+      nl: {
+        foreColor: "Tekstkleur",
+        backColor: "Achtergrondkleur"
+      },
+      pt_br: {
+        foreColor: "Cor de fonte",
+        backColor: "Cor de fundo"
+      },
+      ru: {
+        foreColor: "Цвет текста",
+        backColor: "Цвет выделения текста",
+        foreColorRemove: "Очистить цвет текста",
+        backColorRemove: "Очистить цвет выделения текста"
+      },
+      sl: {
+        foreColor: "Barva teksta",
+        backColor: "Barva ozadja",
+        foreColorRemove: "Ponastavi barvo teksta",
+        backColorRemove: "Ponastavi barvo ozadja"
+      },
+      sk: {
+        foreColor: "Farba textu",
+        backColor: "Farba pozadia"
+      },
+      tr: {
+        foreColor: "Yazı rengi",
+        backColor: "Arka plan rengi",
+        foreColorRemove: "Yazı rengini kaldır",
+        backColorRemove: "Arka plan rengini kaldır"
+      },
+      zh_cn: {
+        foreColor: "文字颜色",
+        backColor: "背景颜色"
+      },
+      zh_tw: {
+        foreColor: "文字顏色",
+        backColor: "背景顏色"
+      }
+    }
+  });
+  var l = {
+    colorList: ["ffffff", "000000", "eeece1", "1f497d", "4f81bd", "c0504d", "9bbb59", "8064a2", "4bacc6", "f79646", "ffff00", "f2f2f2", "7f7f7f", "ddd9c3", "c6d9f0", "dbe5f1", "f2dcdb", "ebf1dd", "e5e0ec", "dbeef3", "fdeada", "fff2ca", "d8d8d8", "595959", "c4bd97", "8db3e2", "b8cce4", "e5b9b7", "d7e3bc", "ccc1d9", "b7dde8", "fbd5b5", "ffe694", "bfbfbf", "3f3f3f", "938953", "548dd4", "95b3d7", "d99694", "c3d69b", "b2a2c7", "b7dde8", "fac08f", "f2c314", "a5a5a5", "262626", "494429", "17365d", "366092", "953734", "76923c", "5f497a", "92cddc", "e36c09", "c09100", "7f7f7f", "0c0c0c", "1d1b10", "0f243e", "244061", "632423", "4f6128", "3f3151", "31859b", "974806", "7f6000"],
+    foreColorList: null,
+    backColorList: null,
+    allowCustomForeColor: !0,
+    allowCustomBackColor: !0,
+    displayAsList: !1
+  };
+  function a(r, e) {
+    var l = [],
+      a = e.o.plugins.colors,
+      t = a[r + "List"] || a.colorList;
+    o.each(t, function (o, t) {
+      var c = r + t,
+        f = {
+          fn: r,
+          forceCss: !0,
+          hasIcon: !1,
+          text: e.lang["#" + t] || "#" + t,
+          param: "#" + t,
+          style: "background-color: #" + t + ";"
+        };
+      a.displayAsList && "foreColor" === r && (f.style = "color: #" + t + " !important;"), e.addBtnDef(c, f), l.push(c);
+    });
+    var c = r + "Remove",
+      f = {
+        fn: "removeFormat",
+        hasIcon: !1,
+        param: r,
+        style: "background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);"
+      };
+    if (a.displayAsList && (f.style = ""), e.addBtnDef(c, f), l.push(c), a["allowCustom" + r.charAt(0).toUpperCase() + r.substr(1)]) {
+      var n = r + "Free",
+        d = {
+          fn: function fn() {
+            e.openModalInsert(e.lang[r], {
+              color: {
+                label: r,
+                forceCss: !0,
+                type: "color",
+                value: "#FFFFFF"
+              }
+            }, function (o) {
+              return e.execCmd(r, o.color), !0;
+            });
+          },
+          hasIcon: !1,
+          text: "#",
+          style: "text-indent: 0; line-height: 20px; padding: 0 5px;"
+        };
+      e.addBtnDef(n, d), l.push(n);
+    }
+    return l;
+  }
+  o.extend(!0, o.trumbowyg, {
+    plugins: {
+      color: {
+        init: function init(o) {
+          o.o.plugins.colors = o.o.plugins.colors || l;
+          var r = o.o.plugins.colors.displayAsList ? o.o.prefix + "dropdown--color-list" : "",
+            e = {
+              dropdown: a("foreColor", o),
+              dropdownClass: r
+            },
+            t = {
+              dropdown: a("backColor", o),
+              dropdownClass: r
+            };
+          o.addBtnDef("foreColor", e), o.addBtnDef("backColor", t);
+        },
+        tagHandler: function tagHandler(o, r) {
+          var l,
+            a = [];
+          if (!o.style) return a;
+          if ("" !== o.style.backgroundColor) {
+            var t = e(o.style.backgroundColor);
+            r.o.plugins.colors.colorList.indexOf(t) >= 0 ? a.push("backColor" + t) : a.push("backColorFree");
+          }
+          return "" !== o.style.color ? l = e(o.style.color) : o.hasAttribute("color") && (l = e(o.getAttribute("color"))), l && (r.o.plugins.colors.colorList.indexOf(l) >= 0 ? a.push("foreColor" + l) : a.push("foreColorFree")), a;
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
  * trumbowyg.emoji.js v0.1
  * Emoji picker plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -1580,361 +1580,6 @@
             dropdown: i(e),
             hasIcon: !1,
             text: e.lang.fontFamily
-          });
-        }
-      }
-    }
-  });
-}(jQuery);
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        giphy: 'Insert GIF'
-      },
-      az: {
-        giphy: 'GIF yerləşdir'
-      },
-      by: {
-        giphy: 'Уставіць GIF'
-      },
-      et: {
-        giphy: 'Sisesta GIF'
-      },
-      fr: {
-        giphy: 'Insérer un GIF'
-      },
-      hu: {
-        giphy: 'GIF beszúrás'
-      },
-      ru: {
-        giphy: 'Вставить GIF'
-      },
-      sl: {
-        giphy: 'Vstavi GIF'
-      },
-      tr: {
-        giphy: 'GIF ekle'
-      }
-      // jshint camelcase:true
-    }
-  });
-
-  var giphyLogo = '<svg viewBox="0 0 231 53" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"><path d="M48.32 22.386c0-1.388-.252-1.892-1.767-1.85-3.448.126-6.855.042-10.303.042H25.443c-.927 0-1.346.211-1.305 1.22.085 2.86.085 5.72.043 8.58 0 .883.252 1.169 1.169 1.135 2.018-.084 3.995-.042 6.014 0 1.64 0 4.164-.546 4.752.252.841 1.169.421 3.364.337 5.089-.043.547-.547 1.304-1.094 1.598-2.692 1.556-5.678 2.018-8.747 1.892-5.342-.21-9.336-2.439-11.481-7.527-1.388-3.364-1.725-6.855-1.01-10.43 1.01-4.963 3.407-8.747 8.58-10.051 5.215-1.305 10.136-.547 14.467 2.817 1.219.967 1.798.715 2.691-.294 1.514-1.724 3.154-3.322 4.753-4.963 1.892-1.933 1.892-1.892-.169-3.7C38.429.813 31.238-.617 23.5.224 12.818 1.393 5.248 6.658 1.59 17.045-.177 22.008-.428 27.097.623 32.227c1.682 7.914 5.551 14.12 13.289 17.368 6.898 2.901 14.046 3.448 21.321 1.598 4.331-1.093 8.411-2.608 11.354-6.223 1.136-1.388 1.725-2.902 1.682-4.71l.043-17.873.008-.001zm125.153 3.784l.042-23.046c0-1.136-.168-1.598-1.472-1.556a238.02 238.02 0 0 1-11.017 0c-1.136-.042-1.439.337-1.439 1.439v15.645c0 1.345-.421 1.556-1.641 1.556a422.563 422.563 0 0 0-14.593 0c-1.262.042-1.472-.421-1.439-1.556l.043-15.813c0-.926-.169-1.304-1.17-1.262h-11.513c-.927 0-1.304.169-1.304 1.22v46.764c0 .967.252 1.262 1.219 1.262h11.512c1.169.042 1.262-.462 1.262-1.388l-.042-15.644c0-1.053.251-1.346 1.304-1.346h15.14c1.22 0 1.388.421 1.388 1.472l-.042 15.477c0 1.093.21 1.472 1.388 1.439 3.615-.085 7.233-.085 10.807 0 1.304.042 1.598-.337 1.598-1.598l-.042-23.047.011-.018zM106.565 1.654c-8.369-.211-16.728-.126-25.065-.211-1.346 0-1.767.337-1.767 1.724l.043 23.004v23.215c0 1.009.168 1.439 1.304 1.387a271.22 271.22 0 0 1 11.691 0c1.094 0 1.346-.336 1.346-1.345l-.042-10.64c0-1.052.294-1.345 1.345-1.345 3.322.042 6.645.085 9.967-.085 4.407-.21 8.621-1.219 12.111-4.12 5.551-4.584 7.613-12.701 5.131-20.061-2.313-6.561-8.747-11.354-16.064-11.522v-.001zm-3.028 24.013c-2.818.042-5.594-.043-8.411.042-1.169.042-1.439-.378-1.345-1.439.084-1.556 0-3.069 0-4.626v-5.131c-.043-.841.251-1.094 1.052-1.052 2.986.042 5.929-.085 8.915.042 3.616.126 5.887 2.692 5.846 6.266-.126 3.658-2.313 5.846-6.055 5.887l-.002.011zM229.699 1.569c-4.458 0-8.915-.042-13.415.043-.629 0-1.472.503-1.85 1.052a505.695 505.695 0 0 0-8.957 14.214c-.884 1.472-1.22 1.169-1.977-.084l-8.496-14.089c-.503-.841-1.052-1.136-2.018-1.136l-13.078.043c-.462 0-.967.125-1.439.21.21.378.378.799.629 1.169l17.412 27.167c.462.715.715 1.682.757 2.524v16.653c0 1.052.168 1.514 1.388 1.472 3.784-.084 7.57-.084 11.354 0 1.136.043 1.304-.377 1.304-1.387l-.042-8.58c0-2.734-.084-5.51.042-8.243.043-.926.337-1.933.841-2.649l18.167-27.041c.252-.337.337-.758.547-1.17a3.636 3.636 0 0 0-1.169-.168zM70.104 2.661c0-1.009-.294-1.219-1.262-1.219H57.69c-1.262-.043-1.472.377-1.472 1.513l.042 23.004v23.34c0 1.053.126 1.514 1.346 1.473 3.7-.085 7.444-.043 11.152 0 .966 0 1.387-.085 1.387-1.262l-.042-46.857.001.008z" fill="currentColor" fill-rule="nonzero"/></svg>'; // jshint ignore:line
-
-  var CANCEL_EVENT = 'tbwcancel';
-
-  // Throttle helper
-  function trumbowygThrottle(callback, delay) {
-    var last;
-    var timer;
-    return function () {
-      var context = this;
-      var now = +new Date();
-      var args = arguments;
-      if (last && now < last + delay) {
-        clearTimeout(timer);
-        timer = setTimeout(function () {
-          last = now;
-          callback.apply(context, args);
-        }, delay);
-      } else {
-        last = now;
-        callback.apply(context, args);
-      }
-    };
-  }
-
-  // Fills modal with response gifs
-  function renderGifs(response, $giphyModal, trumbowyg, mustEmpty) {
-    var width = ($giphyModal.width() - 20) / 3;
-    var html = response.data.filter(function (gifData) {
-      // jshint camelcase:false
-      var downsized = gifData.images.downsized || gifData.images.downsized_medium;
-      // jshint camelcase:true
-      return !!downsized.url;
-    }).map(function (gifData) {
-      // jshint camelcase:false
-      var downsized = gifData.images.downsized || gifData.images.downsized_medium;
-      // jshint camelcase:true
-      var image = downsized,
-        imageRatio = image.height / image.width,
-        altText = gifData.title;
-      var imgHtml = '<img src=' + image.url + ' width="' + width + '" height="' + imageRatio * width + '" alt="' + altText + '" loading="lazy" />';
-      return '<div class="img-container">' + imgHtml + '</div>';
-    }).join('');
-    if (mustEmpty === true) {
-      if (html.length === 0) {
-        if ($('.' + trumbowyg.o.prefix + 'giphy-no-result', $giphyModal).length > 0) {
-          return;
-        }
-        html = '<img class="' + trumbowyg.o.prefix + 'giphy-no-result" src="' + trumbowyg.o.plugins.giphy.noResultGifUrl + '"/>';
-      }
-      $giphyModal.empty();
-    }
-    $giphyModal.append(html);
-
-    // Remove gray overlay on image load
-    // moved here from inline callback definition due to CSP issue
-    // Note: this is being done post-factum because load event doesn't bubble up and so can't be delegated
-    var addLoadedClass = function addLoadedClass(img) {
-      img.classList.add('tbw-loaded');
-    };
-    $('img', $giphyModal).each(function () {
-      var img = this;
-      if (img.complete) {
-        // images load instantly when cached and esp. when loaded in previous modal open
-        addLoadedClass(img);
-      } else {
-        img.addEventListener('load', function () {
-          addLoadedClass(this);
-        });
-      }
-    });
-    $('img', $giphyModal).on('click', function () {
-      var src = $(this).attr('src'),
-        alt = $(this).attr('alt');
-      trumbowyg.restoreRange();
-      trumbowyg.execCmd('insertImage', src, false, true);
-
-      // relay alt tag into inserted image
-      if (alt) {
-        var $img = $('img[src="' + src + '"]:not([alt])', trumbowyg.$box);
-        $img.attr('alt', alt);
-        // Note: This seems to fire relatively early and could be wrapped in a setTimeout if needed
-        trumbowyg.syncCode();
-      }
-      $('img', $giphyModal).off();
-      trumbowyg.closeModal();
-    });
-  }
-  var defaultOptions = {
-    rating: 'g',
-    apiKey: null,
-    throttleDelay: 300,
-    noResultGifUrl: 'https://media.giphy.com/media/2Faz9FbRzmwxY0pZS/giphy.gif'
-  };
-
-  // Add dropdown with font sizes
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      giphy: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.giphy = $.extend({}, defaultOptions, trumbowyg.o.plugins.giphy || {});
-          trumbowyg.addBtnDef('giphy', {
-            fn: function fn() {
-              if (trumbowyg.o.plugins.giphy.apiKey === null) {
-                throw new Error('You must set a Giphy API Key');
-              }
-              var BASE_URL = 'https://api.giphy.com/v1/gifs/search?api_key=' + trumbowyg.o.plugins.giphy.apiKey + '&rating=' + trumbowyg.o.plugins.giphy.rating,
-                DEFAULT_URL = BASE_URL.replace('/search', '/trending');
-              var previousAjaxCall = {
-                abort: function abort() {}
-              };
-              var prefix = trumbowyg.o.prefix;
-
-              // Create and open the modal
-              var searchInput = '<input name="" class="' + prefix + 'giphy-search" placeholder="Search a GIF" autofocus="autofocus">',
-                closeButton = '<button class="' + prefix + 'giphy-close" title="' + trumbowyg.lang.close + '"><svg><use xlink:href="' + trumbowyg.svgPath + '#' + prefix + 'close"/></svg></button>',
-                poweredByGiphy = '<div class="' + prefix + 'powered-by-giphy"><span>Powered by</span>' + giphyLogo + '</div>',
-                giphyModalHtml = searchInput + closeButton + poweredByGiphy + '<div class="' + prefix + 'giphy-modal-scroll"><div class="' + prefix + 'giphy-modal"></div></div>';
-              trumbowyg.openModal(null, giphyModalHtml, false).one(CANCEL_EVENT, function () {
-                try {
-                  previousAjaxCall.abort();
-                } catch (e) {}
-                trumbowyg.closeModal();
-              });
-              var $giphyInput = $('.' + prefix + 'giphy-search'),
-                $giphyClose = $('.' + prefix + 'giphy-close'),
-                $giphyModal = $('.' + prefix + 'giphy-modal');
-              var ajaxError = function ajaxError() {
-                if (!navigator.onLine && !$('.' + prefix + 'giphy-offline', $giphyModal).length) {
-                  $giphyModal.empty();
-                  $giphyModal.append('<p class="' + prefix + 'giphy-offline">You are offline</p>');
-                }
-              };
-
-              // Load trending gifs as default
-              $.ajax({
-                url: DEFAULT_URL,
-                dataType: 'json',
-                success: function success(response) {
-                  renderGifs(response, $giphyModal, trumbowyg, true);
-                },
-                error: ajaxError
-              });
-              var searchGifsOnInput = function searchGifsOnInput() {
-                var query = $giphyInput.val();
-                if (query.length === 0) {
-                  return;
-                }
-                try {
-                  previousAjaxCall.abort();
-                } catch (e) {}
-                previousAjaxCall = $.ajax({
-                  url: BASE_URL + '&q=' + encodeURIComponent(query),
-                  dataType: 'json',
-                  success: function success(response) {
-                    renderGifs(response, $giphyModal, trumbowyg, true);
-                  },
-                  error: ajaxError
-                });
-              };
-              var throttledInputRequest = trumbowygThrottle(searchGifsOnInput, trumbowyg.o.plugins.giphy.throttleDelay);
-              $giphyInput.on('input', throttledInputRequest);
-              $giphyInput.focus();
-              $giphyClose.one('click', function () {
-                $giphyModal.trigger(CANCEL_EVENT);
-              });
-            }
-          });
-        }
-      }
-    }
-  });
-})(jQuery);
-!function (i) {
-  "use strict";
-
-  i.extend(!0, i.trumbowyg, {
-    langs: {
-      en: {
-        giphy: "Insert GIF"
-      },
-      az: {
-        giphy: "GIF yerləşdir"
-      },
-      by: {
-        giphy: "Уставіць GIF"
-      },
-      et: {
-        giphy: "Sisesta GIF"
-      },
-      fr: {
-        giphy: "Insérer un GIF"
-      },
-      hu: {
-        giphy: "GIF beszúrás"
-      },
-      ru: {
-        giphy: "Вставить GIF"
-      },
-      sl: {
-        giphy: "Vstavi GIF"
-      },
-      tr: {
-        giphy: "GIF ekle"
-      }
-    }
-  });
-  var e = "tbwcancel";
-  function t(e, t, n, l) {
-    var a = (t.width() - 20) / 3,
-      o = e.data.filter(function (i) {
-        return !!(i.images.downsized || i.images.downsized_medium).url;
-      }).map(function (i) {
-        var e = i.images.downsized || i.images.downsized_medium,
-          t = e.height / e.width,
-          n = i.title;
-        return '<div class="img-container">' + ("<img src=" + e.url + ' width="' + a + '" height="' + t * a + '" alt="' + n + '" loading="lazy" />') + "</div>";
-      }).join("");
-    if (!0 === l) {
-      if (0 === o.length) {
-        if (i("." + n.o.prefix + "giphy-no-result", t).length > 0) return;
-        o = '<img class="' + n.o.prefix + 'giphy-no-result" src="' + n.o.plugins.giphy.noResultGifUrl + '"/>';
-      }
-      t.empty();
-    }
-    t.append(o);
-    var c = function c(i) {
-      i.classList.add("tbw-loaded");
-    };
-    i("img", t).each(function () {
-      var i = this;
-      i.complete ? c(i) : i.addEventListener("load", function () {
-        c(this);
-      });
-    }), i("img", t).on("click", function () {
-      var e = i(this).attr("src"),
-        l = i(this).attr("alt");
-      (n.restoreRange(), n.execCmd("insertImage", e, !1, !0), l) && (i('img[src="' + e + '"]:not([alt])', n.$box).attr("alt", l), n.syncCode());
-      i("img", t).off(), n.closeModal();
-    });
-  }
-  var n = {
-    rating: "g",
-    apiKey: null,
-    throttleDelay: 300,
-    noResultGifUrl: "https://media.giphy.com/media/2Faz9FbRzmwxY0pZS/giphy.gif"
-  };
-  i.extend(!0, i.trumbowyg, {
-    plugins: {
-      giphy: {
-        init: function init(l) {
-          l.o.plugins.giphy = i.extend({}, n, l.o.plugins.giphy || {}), l.addBtnDef("giphy", {
-            fn: function fn() {
-              if (null === l.o.plugins.giphy.apiKey) throw new Error("You must set a Giphy API Key");
-              var n = "https://api.giphy.com/v1/gifs/search?api_key=" + l.o.plugins.giphy.apiKey + "&rating=" + l.o.plugins.giphy.rating,
-                a = n.replace("/search", "/trending"),
-                o = {
-                  abort: function abort() {}
-                },
-                c = l.o.prefix,
-                r = '<input name="" class="' + c + 'giphy-search" placeholder="Search a GIF" autofocus="autofocus">' + ('<button class="' + c + 'giphy-close" title="' + l.lang.close + '"><svg><use xlink:href="' + l.svgPath + "#" + c + 'close"/></svg></button>') + ('<div class="' + c + 'powered-by-giphy"><span>Powered by</span><svg viewBox="0 0 231 53" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"><path d="M48.32 22.386c0-1.388-.252-1.892-1.767-1.85-3.448.126-6.855.042-10.303.042H25.443c-.927 0-1.346.211-1.305 1.22.085 2.86.085 5.72.043 8.58 0 .883.252 1.169 1.169 1.135 2.018-.084 3.995-.042 6.014 0 1.64 0 4.164-.546 4.752.252.841 1.169.421 3.364.337 5.089-.043.547-.547 1.304-1.094 1.598-2.692 1.556-5.678 2.018-8.747 1.892-5.342-.21-9.336-2.439-11.481-7.527-1.388-3.364-1.725-6.855-1.01-10.43 1.01-4.963 3.407-8.747 8.58-10.051 5.215-1.305 10.136-.547 14.467 2.817 1.219.967 1.798.715 2.691-.294 1.514-1.724 3.154-3.322 4.753-4.963 1.892-1.933 1.892-1.892-.169-3.7C38.429.813 31.238-.617 23.5.224 12.818 1.393 5.248 6.658 1.59 17.045-.177 22.008-.428 27.097.623 32.227c1.682 7.914 5.551 14.12 13.289 17.368 6.898 2.901 14.046 3.448 21.321 1.598 4.331-1.093 8.411-2.608 11.354-6.223 1.136-1.388 1.725-2.902 1.682-4.71l.043-17.873.008-.001zm125.153 3.784l.042-23.046c0-1.136-.168-1.598-1.472-1.556a238.02 238.02 0 0 1-11.017 0c-1.136-.042-1.439.337-1.439 1.439v15.645c0 1.345-.421 1.556-1.641 1.556a422.563 422.563 0 0 0-14.593 0c-1.262.042-1.472-.421-1.439-1.556l.043-15.813c0-.926-.169-1.304-1.17-1.262h-11.513c-.927 0-1.304.169-1.304 1.22v46.764c0 .967.252 1.262 1.219 1.262h11.512c1.169.042 1.262-.462 1.262-1.388l-.042-15.644c0-1.053.251-1.346 1.304-1.346h15.14c1.22 0 1.388.421 1.388 1.472l-.042 15.477c0 1.093.21 1.472 1.388 1.439 3.615-.085 7.233-.085 10.807 0 1.304.042 1.598-.337 1.598-1.598l-.042-23.047.011-.018zM106.565 1.654c-8.369-.211-16.728-.126-25.065-.211-1.346 0-1.767.337-1.767 1.724l.043 23.004v23.215c0 1.009.168 1.439 1.304 1.387a271.22 271.22 0 0 1 11.691 0c1.094 0 1.346-.336 1.346-1.345l-.042-10.64c0-1.052.294-1.345 1.345-1.345 3.322.042 6.645.085 9.967-.085 4.407-.21 8.621-1.219 12.111-4.12 5.551-4.584 7.613-12.701 5.131-20.061-2.313-6.561-8.747-11.354-16.064-11.522v-.001zm-3.028 24.013c-2.818.042-5.594-.043-8.411.042-1.169.042-1.439-.378-1.345-1.439.084-1.556 0-3.069 0-4.626v-5.131c-.043-.841.251-1.094 1.052-1.052 2.986.042 5.929-.085 8.915.042 3.616.126 5.887 2.692 5.846 6.266-.126 3.658-2.313 5.846-6.055 5.887l-.002.011zM229.699 1.569c-4.458 0-8.915-.042-13.415.043-.629 0-1.472.503-1.85 1.052a505.695 505.695 0 0 0-8.957 14.214c-.884 1.472-1.22 1.169-1.977-.084l-8.496-14.089c-.503-.841-1.052-1.136-2.018-1.136l-13.078.043c-.462 0-.967.125-1.439.21.21.378.378.799.629 1.169l17.412 27.167c.462.715.715 1.682.757 2.524v16.653c0 1.052.168 1.514 1.388 1.472 3.784-.084 7.57-.084 11.354 0 1.136.043 1.304-.377 1.304-1.387l-.042-8.58c0-2.734-.084-5.51.042-8.243.043-.926.337-1.933.841-2.649l18.167-27.041c.252-.337.337-.758.547-1.17a3.636 3.636 0 0 0-1.169-.168zM70.104 2.661c0-1.009-.294-1.219-1.262-1.219H57.69c-1.262-.043-1.472.377-1.472 1.513l.042 23.004v23.34c0 1.053.126 1.514 1.346 1.473 3.7-.085 7.444-.043 11.152 0 .966 0 1.387-.085 1.387-1.262l-.042-46.857.001.008z" fill="currentColor" fill-rule="nonzero"/></svg></div>') + '<div class="' + c + 'giphy-modal-scroll"><div class="' + c + 'giphy-modal"></div></div>';
-              l.openModal(null, r, !1).one(e, function () {
-                try {
-                  o.abort();
-                } catch (i) {}
-                l.closeModal();
-              });
-              var s = i("." + c + "giphy-search"),
-                g = i("." + c + "giphy-close"),
-                p = i("." + c + "giphy-modal"),
-                h = function h() {
-                  navigator.onLine || i("." + c + "giphy-offline", p).length || (p.empty(), p.append('<p class="' + c + 'giphy-offline">You are offline</p>'));
-                };
-              i.ajax({
-                url: a,
-                dataType: "json",
-                success: function success(i) {
-                  t(i, p, l, !0);
-                },
-                error: h
-              });
-              var u,
-                d,
-                y,
-                f,
-                m = (u = function u() {
-                  var e = s.val();
-                  if (0 !== e.length) {
-                    try {
-                      o.abort();
-                    } catch (i) {}
-                    o = i.ajax({
-                      url: n + "&q=" + encodeURIComponent(e),
-                      dataType: "json",
-                      success: function success(i) {
-                        t(i, p, l, !0);
-                      },
-                      error: h
-                    });
-                  }
-                }, d = l.o.plugins.giphy.throttleDelay, function () {
-                  var i = this,
-                    e = +new Date(),
-                    t = arguments;
-                  y && e < y + d ? (clearTimeout(f), f = setTimeout(function () {
-                    y = e, u.apply(i, t);
-                  }, d)) : (y = e, u.apply(i, t));
-                });
-              s.on("input", m), s.focus(), g.one("click", function () {
-                p.trigger(e);
-              });
-            }
           });
         }
       }
@@ -2664,165 +2309,6 @@
     }
   });
 }(jQuery);
-/* ===========================================================
- * trumbowyg.indent.js v1.0
- * Indent or Outdent plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Fabacks
- *          Website : https://github.com/Fabacks
- */
-
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        indent: 'Indent',
-        outdent: 'Outdent'
-      },
-      az: {
-        indent: 'Girinti',
-        outdent: 'Çıxıntı'
-      },
-      by: {
-        indent: 'Водступ',
-        outdent: 'Выступ'
-      },
-      et: {
-        indent: 'Taande suurendamine',
-        outdent: 'Taande vähendamine'
-      },
-      fr: {
-        indent: 'Augmenter le retrait',
-        outdent: 'Diminuer le retrait'
-      },
-      pt_br: {
-        indent: 'Aumentar Recuo',
-        outdent: 'Diminuir Recuo'
-      },
-      ru: {
-        indent: 'Отступ',
-        outdent: 'Выступ'
-      },
-      sl: {
-        indent: 'Povečaj zamik',
-        outdent: 'Zmanjšaj zamik'
-      },
-      tr: {
-        indent: 'Girinti',
-        outdent: 'Çıkıntı'
-      }
-      // jshint camelcase:true
-    }
-  });
-
-  // Adds the extra button definition
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      paragraph: {
-        init: function init(trumbowyg) {
-          var indentBtnDef = {
-            fn: 'indent',
-            title: trumbowyg.lang.indent,
-            isSupported: function isSupported() {
-              return !!document.queryCommandSupported && !!document.queryCommandSupported('indent');
-            },
-            ico: 'indent'
-          };
-          var outdentBtnDef = {
-            fn: 'outdent',
-            title: trumbowyg.lang.outdent,
-            isSupported: function isSupported() {
-              return !!document.queryCommandSupported && !!document.queryCommandSupported('outdent');
-            },
-            ico: 'outdent'
-          };
-          trumbowyg.addBtnDef('indent', indentBtnDef);
-          trumbowyg.addBtnDef('outdent', outdentBtnDef);
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.indent.js v1.0
- * Indent or Outdent plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Fabacks
- *          Website : https://github.com/Fabacks
- */
-!function (n) {
-  "use strict";
-
-  n.extend(!0, n.trumbowyg, {
-    langs: {
-      en: {
-        indent: "Indent",
-        outdent: "Outdent"
-      },
-      az: {
-        indent: "Girinti",
-        outdent: "Çıxıntı"
-      },
-      by: {
-        indent: "Водступ",
-        outdent: "Выступ"
-      },
-      et: {
-        indent: "Taande suurendamine",
-        outdent: "Taande vähendamine"
-      },
-      fr: {
-        indent: "Augmenter le retrait",
-        outdent: "Diminuer le retrait"
-      },
-      pt_br: {
-        indent: "Aumentar Recuo",
-        outdent: "Diminuir Recuo"
-      },
-      ru: {
-        indent: "Отступ",
-        outdent: "Выступ"
-      },
-      sl: {
-        indent: "Povečaj zamik",
-        outdent: "Zmanjšaj zamik"
-      },
-      tr: {
-        indent: "Girinti",
-        outdent: "Çıkıntı"
-      }
-    }
-  }), n.extend(!0, n.trumbowyg, {
-    plugins: {
-      paragraph: {
-        init: function init(n) {
-          var t = {
-              fn: "indent",
-              title: n.lang.indent,
-              isSupported: function isSupported() {
-                return !!document.queryCommandSupported && !!document.queryCommandSupported("indent");
-              },
-              ico: "indent"
-            },
-            e = {
-              fn: "outdent",
-              title: n.lang.outdent,
-              isSupported: function isSupported() {
-                return !!document.queryCommandSupported && !!document.queryCommandSupported("outdent");
-              },
-              ico: "outdent"
-            };
-          n.addBtnDef("indent", t), n.addBtnDef("outdent", e);
-        }
-      }
-    }
-  });
-}(jQuery);
 /*/* ===========================================================
  * trumbowyg.history.js v1.0
  * history plugin for Trumbowyg
@@ -3059,6 +2545,520 @@
               return this.localName;
             }), c && (t.o.plugins.history._focusEl = c, g = c.outerHTML || c.textContent), h !== u && (g.slice(-1).match(/\s/) || !l(o, n) || t.o.plugins.history._index <= 0 || c !== a ? (t.o.plugins.history._index += 1, t.o.plugins.history._stack = r.slice(0, t.o.plugins.history._index), t.o.plugins.history._stack.push(h)) : t.o.plugins.history._stack[e] = h, s());
           }), t.addBtnDef("historyRedo", o), t.addBtnDef("historyUndo", n);
+        }
+      }
+    }
+  });
+}(jQuery);
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        giphy: 'Insert GIF'
+      },
+      az: {
+        giphy: 'GIF yerləşdir'
+      },
+      by: {
+        giphy: 'Уставіць GIF'
+      },
+      et: {
+        giphy: 'Sisesta GIF'
+      },
+      fr: {
+        giphy: 'Insérer un GIF'
+      },
+      hu: {
+        giphy: 'GIF beszúrás'
+      },
+      ru: {
+        giphy: 'Вставить GIF'
+      },
+      sl: {
+        giphy: 'Vstavi GIF'
+      },
+      tr: {
+        giphy: 'GIF ekle'
+      }
+      // jshint camelcase:true
+    }
+  });
+
+  var giphyLogo = '<svg viewBox="0 0 231 53" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"><path d="M48.32 22.386c0-1.388-.252-1.892-1.767-1.85-3.448.126-6.855.042-10.303.042H25.443c-.927 0-1.346.211-1.305 1.22.085 2.86.085 5.72.043 8.58 0 .883.252 1.169 1.169 1.135 2.018-.084 3.995-.042 6.014 0 1.64 0 4.164-.546 4.752.252.841 1.169.421 3.364.337 5.089-.043.547-.547 1.304-1.094 1.598-2.692 1.556-5.678 2.018-8.747 1.892-5.342-.21-9.336-2.439-11.481-7.527-1.388-3.364-1.725-6.855-1.01-10.43 1.01-4.963 3.407-8.747 8.58-10.051 5.215-1.305 10.136-.547 14.467 2.817 1.219.967 1.798.715 2.691-.294 1.514-1.724 3.154-3.322 4.753-4.963 1.892-1.933 1.892-1.892-.169-3.7C38.429.813 31.238-.617 23.5.224 12.818 1.393 5.248 6.658 1.59 17.045-.177 22.008-.428 27.097.623 32.227c1.682 7.914 5.551 14.12 13.289 17.368 6.898 2.901 14.046 3.448 21.321 1.598 4.331-1.093 8.411-2.608 11.354-6.223 1.136-1.388 1.725-2.902 1.682-4.71l.043-17.873.008-.001zm125.153 3.784l.042-23.046c0-1.136-.168-1.598-1.472-1.556a238.02 238.02 0 0 1-11.017 0c-1.136-.042-1.439.337-1.439 1.439v15.645c0 1.345-.421 1.556-1.641 1.556a422.563 422.563 0 0 0-14.593 0c-1.262.042-1.472-.421-1.439-1.556l.043-15.813c0-.926-.169-1.304-1.17-1.262h-11.513c-.927 0-1.304.169-1.304 1.22v46.764c0 .967.252 1.262 1.219 1.262h11.512c1.169.042 1.262-.462 1.262-1.388l-.042-15.644c0-1.053.251-1.346 1.304-1.346h15.14c1.22 0 1.388.421 1.388 1.472l-.042 15.477c0 1.093.21 1.472 1.388 1.439 3.615-.085 7.233-.085 10.807 0 1.304.042 1.598-.337 1.598-1.598l-.042-23.047.011-.018zM106.565 1.654c-8.369-.211-16.728-.126-25.065-.211-1.346 0-1.767.337-1.767 1.724l.043 23.004v23.215c0 1.009.168 1.439 1.304 1.387a271.22 271.22 0 0 1 11.691 0c1.094 0 1.346-.336 1.346-1.345l-.042-10.64c0-1.052.294-1.345 1.345-1.345 3.322.042 6.645.085 9.967-.085 4.407-.21 8.621-1.219 12.111-4.12 5.551-4.584 7.613-12.701 5.131-20.061-2.313-6.561-8.747-11.354-16.064-11.522v-.001zm-3.028 24.013c-2.818.042-5.594-.043-8.411.042-1.169.042-1.439-.378-1.345-1.439.084-1.556 0-3.069 0-4.626v-5.131c-.043-.841.251-1.094 1.052-1.052 2.986.042 5.929-.085 8.915.042 3.616.126 5.887 2.692 5.846 6.266-.126 3.658-2.313 5.846-6.055 5.887l-.002.011zM229.699 1.569c-4.458 0-8.915-.042-13.415.043-.629 0-1.472.503-1.85 1.052a505.695 505.695 0 0 0-8.957 14.214c-.884 1.472-1.22 1.169-1.977-.084l-8.496-14.089c-.503-.841-1.052-1.136-2.018-1.136l-13.078.043c-.462 0-.967.125-1.439.21.21.378.378.799.629 1.169l17.412 27.167c.462.715.715 1.682.757 2.524v16.653c0 1.052.168 1.514 1.388 1.472 3.784-.084 7.57-.084 11.354 0 1.136.043 1.304-.377 1.304-1.387l-.042-8.58c0-2.734-.084-5.51.042-8.243.043-.926.337-1.933.841-2.649l18.167-27.041c.252-.337.337-.758.547-1.17a3.636 3.636 0 0 0-1.169-.168zM70.104 2.661c0-1.009-.294-1.219-1.262-1.219H57.69c-1.262-.043-1.472.377-1.472 1.513l.042 23.004v23.34c0 1.053.126 1.514 1.346 1.473 3.7-.085 7.444-.043 11.152 0 .966 0 1.387-.085 1.387-1.262l-.042-46.857.001.008z" fill="currentColor" fill-rule="nonzero"/></svg>'; // jshint ignore:line
+
+  var CANCEL_EVENT = 'tbwcancel';
+
+  // Throttle helper
+  function trumbowygThrottle(callback, delay) {
+    var last;
+    var timer;
+    return function () {
+      var context = this;
+      var now = +new Date();
+      var args = arguments;
+      if (last && now < last + delay) {
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+          last = now;
+          callback.apply(context, args);
+        }, delay);
+      } else {
+        last = now;
+        callback.apply(context, args);
+      }
+    };
+  }
+
+  // Fills modal with response gifs
+  function renderGifs(response, $giphyModal, trumbowyg, mustEmpty) {
+    var width = ($giphyModal.width() - 20) / 3;
+    var html = response.data.filter(function (gifData) {
+      // jshint camelcase:false
+      var downsized = gifData.images.downsized || gifData.images.downsized_medium;
+      // jshint camelcase:true
+      return !!downsized.url;
+    }).map(function (gifData) {
+      // jshint camelcase:false
+      var downsized = gifData.images.downsized || gifData.images.downsized_medium;
+      // jshint camelcase:true
+      var image = downsized,
+        imageRatio = image.height / image.width,
+        altText = gifData.title;
+      var imgHtml = '<img src=' + image.url + ' width="' + width + '" height="' + imageRatio * width + '" alt="' + altText + '" loading="lazy" />';
+      return '<div class="img-container">' + imgHtml + '</div>';
+    }).join('');
+    if (mustEmpty === true) {
+      if (html.length === 0) {
+        if ($('.' + trumbowyg.o.prefix + 'giphy-no-result', $giphyModal).length > 0) {
+          return;
+        }
+        html = '<img class="' + trumbowyg.o.prefix + 'giphy-no-result" src="' + trumbowyg.o.plugins.giphy.noResultGifUrl + '"/>';
+      }
+      $giphyModal.empty();
+    }
+    $giphyModal.append(html);
+
+    // Remove gray overlay on image load
+    // moved here from inline callback definition due to CSP issue
+    // Note: this is being done post-factum because load event doesn't bubble up and so can't be delegated
+    var addLoadedClass = function addLoadedClass(img) {
+      img.classList.add('tbw-loaded');
+    };
+    $('img', $giphyModal).each(function () {
+      var img = this;
+      if (img.complete) {
+        // images load instantly when cached and esp. when loaded in previous modal open
+        addLoadedClass(img);
+      } else {
+        img.addEventListener('load', function () {
+          addLoadedClass(this);
+        });
+      }
+    });
+    $('img', $giphyModal).on('click', function () {
+      var src = $(this).attr('src'),
+        alt = $(this).attr('alt');
+      trumbowyg.restoreRange();
+      trumbowyg.execCmd('insertImage', src, false, true);
+
+      // relay alt tag into inserted image
+      if (alt) {
+        var $img = $('img[src="' + src + '"]:not([alt])', trumbowyg.$box);
+        $img.attr('alt', alt);
+        // Note: This seems to fire relatively early and could be wrapped in a setTimeout if needed
+        trumbowyg.syncCode();
+      }
+      $('img', $giphyModal).off();
+      trumbowyg.closeModal();
+    });
+  }
+  var defaultOptions = {
+    rating: 'g',
+    apiKey: null,
+    throttleDelay: 300,
+    noResultGifUrl: 'https://media.giphy.com/media/2Faz9FbRzmwxY0pZS/giphy.gif'
+  };
+
+  // Add dropdown with font sizes
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      giphy: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.giphy = $.extend({}, defaultOptions, trumbowyg.o.plugins.giphy || {});
+          trumbowyg.addBtnDef('giphy', {
+            fn: function fn() {
+              if (trumbowyg.o.plugins.giphy.apiKey === null) {
+                throw new Error('You must set a Giphy API Key');
+              }
+              var BASE_URL = 'https://api.giphy.com/v1/gifs/search?api_key=' + trumbowyg.o.plugins.giphy.apiKey + '&rating=' + trumbowyg.o.plugins.giphy.rating,
+                DEFAULT_URL = BASE_URL.replace('/search', '/trending');
+              var previousAjaxCall = {
+                abort: function abort() {}
+              };
+              var prefix = trumbowyg.o.prefix;
+
+              // Create and open the modal
+              var searchInput = '<input name="" class="' + prefix + 'giphy-search" placeholder="Search a GIF" autofocus="autofocus">',
+                closeButton = '<button class="' + prefix + 'giphy-close" title="' + trumbowyg.lang.close + '"><svg><use xlink:href="' + trumbowyg.svgPath + '#' + prefix + 'close"/></svg></button>',
+                poweredByGiphy = '<div class="' + prefix + 'powered-by-giphy"><span>Powered by</span>' + giphyLogo + '</div>',
+                giphyModalHtml = searchInput + closeButton + poweredByGiphy + '<div class="' + prefix + 'giphy-modal-scroll"><div class="' + prefix + 'giphy-modal"></div></div>';
+              trumbowyg.openModal(null, giphyModalHtml, false).one(CANCEL_EVENT, function () {
+                try {
+                  previousAjaxCall.abort();
+                } catch (e) {}
+                trumbowyg.closeModal();
+              });
+              var $giphyInput = $('.' + prefix + 'giphy-search'),
+                $giphyClose = $('.' + prefix + 'giphy-close'),
+                $giphyModal = $('.' + prefix + 'giphy-modal');
+              var ajaxError = function ajaxError() {
+                if (!navigator.onLine && !$('.' + prefix + 'giphy-offline', $giphyModal).length) {
+                  $giphyModal.empty();
+                  $giphyModal.append('<p class="' + prefix + 'giphy-offline">You are offline</p>');
+                }
+              };
+
+              // Load trending gifs as default
+              $.ajax({
+                url: DEFAULT_URL,
+                dataType: 'json',
+                success: function success(response) {
+                  renderGifs(response, $giphyModal, trumbowyg, true);
+                },
+                error: ajaxError
+              });
+              var searchGifsOnInput = function searchGifsOnInput() {
+                var query = $giphyInput.val();
+                if (query.length === 0) {
+                  return;
+                }
+                try {
+                  previousAjaxCall.abort();
+                } catch (e) {}
+                previousAjaxCall = $.ajax({
+                  url: BASE_URL + '&q=' + encodeURIComponent(query),
+                  dataType: 'json',
+                  success: function success(response) {
+                    renderGifs(response, $giphyModal, trumbowyg, true);
+                  },
+                  error: ajaxError
+                });
+              };
+              var throttledInputRequest = trumbowygThrottle(searchGifsOnInput, trumbowyg.o.plugins.giphy.throttleDelay);
+              $giphyInput.on('input', throttledInputRequest);
+              $giphyInput.focus();
+              $giphyClose.one('click', function () {
+                $giphyModal.trigger(CANCEL_EVENT);
+              });
+            }
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
+!function (i) {
+  "use strict";
+
+  i.extend(!0, i.trumbowyg, {
+    langs: {
+      en: {
+        giphy: "Insert GIF"
+      },
+      az: {
+        giphy: "GIF yerləşdir"
+      },
+      by: {
+        giphy: "Уставіць GIF"
+      },
+      et: {
+        giphy: "Sisesta GIF"
+      },
+      fr: {
+        giphy: "Insérer un GIF"
+      },
+      hu: {
+        giphy: "GIF beszúrás"
+      },
+      ru: {
+        giphy: "Вставить GIF"
+      },
+      sl: {
+        giphy: "Vstavi GIF"
+      },
+      tr: {
+        giphy: "GIF ekle"
+      }
+    }
+  });
+  var e = "tbwcancel";
+  function t(e, t, n, l) {
+    var a = (t.width() - 20) / 3,
+      o = e.data.filter(function (i) {
+        return !!(i.images.downsized || i.images.downsized_medium).url;
+      }).map(function (i) {
+        var e = i.images.downsized || i.images.downsized_medium,
+          t = e.height / e.width,
+          n = i.title;
+        return '<div class="img-container">' + ("<img src=" + e.url + ' width="' + a + '" height="' + t * a + '" alt="' + n + '" loading="lazy" />') + "</div>";
+      }).join("");
+    if (!0 === l) {
+      if (0 === o.length) {
+        if (i("." + n.o.prefix + "giphy-no-result", t).length > 0) return;
+        o = '<img class="' + n.o.prefix + 'giphy-no-result" src="' + n.o.plugins.giphy.noResultGifUrl + '"/>';
+      }
+      t.empty();
+    }
+    t.append(o);
+    var c = function c(i) {
+      i.classList.add("tbw-loaded");
+    };
+    i("img", t).each(function () {
+      var i = this;
+      i.complete ? c(i) : i.addEventListener("load", function () {
+        c(this);
+      });
+    }), i("img", t).on("click", function () {
+      var e = i(this).attr("src"),
+        l = i(this).attr("alt");
+      (n.restoreRange(), n.execCmd("insertImage", e, !1, !0), l) && (i('img[src="' + e + '"]:not([alt])', n.$box).attr("alt", l), n.syncCode());
+      i("img", t).off(), n.closeModal();
+    });
+  }
+  var n = {
+    rating: "g",
+    apiKey: null,
+    throttleDelay: 300,
+    noResultGifUrl: "https://media.giphy.com/media/2Faz9FbRzmwxY0pZS/giphy.gif"
+  };
+  i.extend(!0, i.trumbowyg, {
+    plugins: {
+      giphy: {
+        init: function init(l) {
+          l.o.plugins.giphy = i.extend({}, n, l.o.plugins.giphy || {}), l.addBtnDef("giphy", {
+            fn: function fn() {
+              if (null === l.o.plugins.giphy.apiKey) throw new Error("You must set a Giphy API Key");
+              var n = "https://api.giphy.com/v1/gifs/search?api_key=" + l.o.plugins.giphy.apiKey + "&rating=" + l.o.plugins.giphy.rating,
+                a = n.replace("/search", "/trending"),
+                o = {
+                  abort: function abort() {}
+                },
+                c = l.o.prefix,
+                r = '<input name="" class="' + c + 'giphy-search" placeholder="Search a GIF" autofocus="autofocus">' + ('<button class="' + c + 'giphy-close" title="' + l.lang.close + '"><svg><use xlink:href="' + l.svgPath + "#" + c + 'close"/></svg></button>') + ('<div class="' + c + 'powered-by-giphy"><span>Powered by</span><svg viewBox="0 0 231 53" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"><path d="M48.32 22.386c0-1.388-.252-1.892-1.767-1.85-3.448.126-6.855.042-10.303.042H25.443c-.927 0-1.346.211-1.305 1.22.085 2.86.085 5.72.043 8.58 0 .883.252 1.169 1.169 1.135 2.018-.084 3.995-.042 6.014 0 1.64 0 4.164-.546 4.752.252.841 1.169.421 3.364.337 5.089-.043.547-.547 1.304-1.094 1.598-2.692 1.556-5.678 2.018-8.747 1.892-5.342-.21-9.336-2.439-11.481-7.527-1.388-3.364-1.725-6.855-1.01-10.43 1.01-4.963 3.407-8.747 8.58-10.051 5.215-1.305 10.136-.547 14.467 2.817 1.219.967 1.798.715 2.691-.294 1.514-1.724 3.154-3.322 4.753-4.963 1.892-1.933 1.892-1.892-.169-3.7C38.429.813 31.238-.617 23.5.224 12.818 1.393 5.248 6.658 1.59 17.045-.177 22.008-.428 27.097.623 32.227c1.682 7.914 5.551 14.12 13.289 17.368 6.898 2.901 14.046 3.448 21.321 1.598 4.331-1.093 8.411-2.608 11.354-6.223 1.136-1.388 1.725-2.902 1.682-4.71l.043-17.873.008-.001zm125.153 3.784l.042-23.046c0-1.136-.168-1.598-1.472-1.556a238.02 238.02 0 0 1-11.017 0c-1.136-.042-1.439.337-1.439 1.439v15.645c0 1.345-.421 1.556-1.641 1.556a422.563 422.563 0 0 0-14.593 0c-1.262.042-1.472-.421-1.439-1.556l.043-15.813c0-.926-.169-1.304-1.17-1.262h-11.513c-.927 0-1.304.169-1.304 1.22v46.764c0 .967.252 1.262 1.219 1.262h11.512c1.169.042 1.262-.462 1.262-1.388l-.042-15.644c0-1.053.251-1.346 1.304-1.346h15.14c1.22 0 1.388.421 1.388 1.472l-.042 15.477c0 1.093.21 1.472 1.388 1.439 3.615-.085 7.233-.085 10.807 0 1.304.042 1.598-.337 1.598-1.598l-.042-23.047.011-.018zM106.565 1.654c-8.369-.211-16.728-.126-25.065-.211-1.346 0-1.767.337-1.767 1.724l.043 23.004v23.215c0 1.009.168 1.439 1.304 1.387a271.22 271.22 0 0 1 11.691 0c1.094 0 1.346-.336 1.346-1.345l-.042-10.64c0-1.052.294-1.345 1.345-1.345 3.322.042 6.645.085 9.967-.085 4.407-.21 8.621-1.219 12.111-4.12 5.551-4.584 7.613-12.701 5.131-20.061-2.313-6.561-8.747-11.354-16.064-11.522v-.001zm-3.028 24.013c-2.818.042-5.594-.043-8.411.042-1.169.042-1.439-.378-1.345-1.439.084-1.556 0-3.069 0-4.626v-5.131c-.043-.841.251-1.094 1.052-1.052 2.986.042 5.929-.085 8.915.042 3.616.126 5.887 2.692 5.846 6.266-.126 3.658-2.313 5.846-6.055 5.887l-.002.011zM229.699 1.569c-4.458 0-8.915-.042-13.415.043-.629 0-1.472.503-1.85 1.052a505.695 505.695 0 0 0-8.957 14.214c-.884 1.472-1.22 1.169-1.977-.084l-8.496-14.089c-.503-.841-1.052-1.136-2.018-1.136l-13.078.043c-.462 0-.967.125-1.439.21.21.378.378.799.629 1.169l17.412 27.167c.462.715.715 1.682.757 2.524v16.653c0 1.052.168 1.514 1.388 1.472 3.784-.084 7.57-.084 11.354 0 1.136.043 1.304-.377 1.304-1.387l-.042-8.58c0-2.734-.084-5.51.042-8.243.043-.926.337-1.933.841-2.649l18.167-27.041c.252-.337.337-.758.547-1.17a3.636 3.636 0 0 0-1.169-.168zM70.104 2.661c0-1.009-.294-1.219-1.262-1.219H57.69c-1.262-.043-1.472.377-1.472 1.513l.042 23.004v23.34c0 1.053.126 1.514 1.346 1.473 3.7-.085 7.444-.043 11.152 0 .966 0 1.387-.085 1.387-1.262l-.042-46.857.001.008z" fill="currentColor" fill-rule="nonzero"/></svg></div>') + '<div class="' + c + 'giphy-modal-scroll"><div class="' + c + 'giphy-modal"></div></div>';
+              l.openModal(null, r, !1).one(e, function () {
+                try {
+                  o.abort();
+                } catch (i) {}
+                l.closeModal();
+              });
+              var s = i("." + c + "giphy-search"),
+                g = i("." + c + "giphy-close"),
+                p = i("." + c + "giphy-modal"),
+                h = function h() {
+                  navigator.onLine || i("." + c + "giphy-offline", p).length || (p.empty(), p.append('<p class="' + c + 'giphy-offline">You are offline</p>'));
+                };
+              i.ajax({
+                url: a,
+                dataType: "json",
+                success: function success(i) {
+                  t(i, p, l, !0);
+                },
+                error: h
+              });
+              var u,
+                d,
+                y,
+                f,
+                m = (u = function u() {
+                  var e = s.val();
+                  if (0 !== e.length) {
+                    try {
+                      o.abort();
+                    } catch (i) {}
+                    o = i.ajax({
+                      url: n + "&q=" + encodeURIComponent(e),
+                      dataType: "json",
+                      success: function success(i) {
+                        t(i, p, l, !0);
+                      },
+                      error: h
+                    });
+                  }
+                }, d = l.o.plugins.giphy.throttleDelay, function () {
+                  var i = this,
+                    e = +new Date(),
+                    t = arguments;
+                  y && e < y + d ? (clearTimeout(f), f = setTimeout(function () {
+                    y = e, u.apply(i, t);
+                  }, d)) : (y = e, u.apply(i, t));
+                });
+              s.on("input", m), s.focus(), g.one("click", function () {
+                p.trigger(e);
+              });
+            }
+          });
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.indent.js v1.0
+ * Indent or Outdent plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Fabacks
+ *          Website : https://github.com/Fabacks
+ */
+
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        indent: 'Indent',
+        outdent: 'Outdent'
+      },
+      az: {
+        indent: 'Girinti',
+        outdent: 'Çıxıntı'
+      },
+      by: {
+        indent: 'Водступ',
+        outdent: 'Выступ'
+      },
+      et: {
+        indent: 'Taande suurendamine',
+        outdent: 'Taande vähendamine'
+      },
+      fr: {
+        indent: 'Augmenter le retrait',
+        outdent: 'Diminuer le retrait'
+      },
+      pt_br: {
+        indent: 'Aumentar Recuo',
+        outdent: 'Diminuir Recuo'
+      },
+      ru: {
+        indent: 'Отступ',
+        outdent: 'Выступ'
+      },
+      sl: {
+        indent: 'Povečaj zamik',
+        outdent: 'Zmanjšaj zamik'
+      },
+      tr: {
+        indent: 'Girinti',
+        outdent: 'Çıkıntı'
+      }
+      // jshint camelcase:true
+    }
+  });
+
+  // Adds the extra button definition
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      paragraph: {
+        init: function init(trumbowyg) {
+          var indentBtnDef = {
+            fn: 'indent',
+            title: trumbowyg.lang.indent,
+            isSupported: function isSupported() {
+              return !!document.queryCommandSupported && !!document.queryCommandSupported('indent');
+            },
+            ico: 'indent'
+          };
+          var outdentBtnDef = {
+            fn: 'outdent',
+            title: trumbowyg.lang.outdent,
+            isSupported: function isSupported() {
+              return !!document.queryCommandSupported && !!document.queryCommandSupported('outdent');
+            },
+            ico: 'outdent'
+          };
+          trumbowyg.addBtnDef('indent', indentBtnDef);
+          trumbowyg.addBtnDef('outdent', outdentBtnDef);
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.indent.js v1.0
+ * Indent or Outdent plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Fabacks
+ *          Website : https://github.com/Fabacks
+ */
+!function (n) {
+  "use strict";
+
+  n.extend(!0, n.trumbowyg, {
+    langs: {
+      en: {
+        indent: "Indent",
+        outdent: "Outdent"
+      },
+      az: {
+        indent: "Girinti",
+        outdent: "Çıxıntı"
+      },
+      by: {
+        indent: "Водступ",
+        outdent: "Выступ"
+      },
+      et: {
+        indent: "Taande suurendamine",
+        outdent: "Taande vähendamine"
+      },
+      fr: {
+        indent: "Augmenter le retrait",
+        outdent: "Diminuer le retrait"
+      },
+      pt_br: {
+        indent: "Aumentar Recuo",
+        outdent: "Diminuir Recuo"
+      },
+      ru: {
+        indent: "Отступ",
+        outdent: "Выступ"
+      },
+      sl: {
+        indent: "Povečaj zamik",
+        outdent: "Zmanjšaj zamik"
+      },
+      tr: {
+        indent: "Girinti",
+        outdent: "Çıkıntı"
+      }
+    }
+  }), n.extend(!0, n.trumbowyg, {
+    plugins: {
+      paragraph: {
+        init: function init(n) {
+          var t = {
+              fn: "indent",
+              title: n.lang.indent,
+              isSupported: function isSupported() {
+                return !!document.queryCommandSupported && !!document.queryCommandSupported("indent");
+              },
+              ico: "indent"
+            },
+            e = {
+              fn: "outdent",
+              title: n.lang.outdent,
+              isSupported: function isSupported() {
+                return !!document.queryCommandSupported && !!document.queryCommandSupported("outdent");
+              },
+              ico: "outdent"
+            };
+          n.addBtnDef("indent", t), n.addBtnDef("outdent", e);
         }
       }
     }
@@ -4627,6 +4627,172 @@
   });
 }(jQuery);
 /* ===========================================================
+ * trumbowyg.specialchars.js v0.99
+ * Unicode characters picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Renaud Hoyoux (geektortoise)
+*/
+
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    symbolList: [
+    // currencies
+    '0024', '20AC', '00A3', '00A2', '00A5', '00A4', '2030', null,
+    // legal signs
+    '00A9', '00AE', '2122', null,
+    // textual sign
+    '00A7', '00B6', '00C6', '00E6', '0152', '0153', null, '2022', '25CF', '2023', '25B6', '2B29', '25C6', null,
+    //maths
+    '00B1', '00D7', '00F7', '21D2', '21D4', '220F', '2211', '2243', '2264', '2265']
+  };
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      en: {
+        specialChars: 'Special characters'
+      },
+      az: {
+        specialChars: 'Xüsusi simvollar'
+      },
+      by: {
+        specialChars: 'Спецыяльныя сімвалы'
+      },
+      et: {
+        specialChars: 'Erimärgid'
+      },
+      fr: {
+        specialChars: 'Caractères spéciaux'
+      },
+      hu: {
+        specialChars: 'Speciális karakterek'
+      },
+      ko: {
+        specialChars: '특수문자'
+      },
+      ru: {
+        specialChars: 'Специальные символы'
+      },
+      sl: {
+        specialChars: 'Posebni znaki'
+      },
+      tr: {
+        specialChars: 'Özel karakterler'
+      }
+    },
+    plugins: {
+      specialchars: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.specialchars = trumbowyg.o.plugins.specialchars || defaultOptions;
+          var specialCharsBtnDef = {
+            dropdown: buildDropdown(trumbowyg)
+          };
+          trumbowyg.addBtnDef('specialChars', specialCharsBtnDef);
+        }
+      }
+    }
+  });
+  function buildDropdown(trumbowyg) {
+    var dropdown = [];
+    $.each(trumbowyg.o.plugins.specialchars.symbolList, function (i, symbol) {
+      if (symbol === null) {
+        symbol = '&nbsp';
+      } else {
+        symbol = '&#x' + symbol;
+      }
+      var btn = symbol.replace(/:/g, ''),
+        defaultSymbolBtnName = 'symbol-' + btn,
+        defaultSymbolBtnDef = {
+          text: symbol,
+          hasIcon: false,
+          fn: function fn() {
+            var encodedSymbol = String.fromCodePoint(parseInt(symbol.replace('&#', '0')));
+            trumbowyg.execCmd('insertText', encodedSymbol);
+            return true;
+          }
+        };
+      trumbowyg.addBtnDef(defaultSymbolBtnName, defaultSymbolBtnDef);
+      dropdown.push(defaultSymbolBtnName);
+    });
+    return dropdown;
+  }
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.specialchars.js v0.99
+ * Unicode characters picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Renaud Hoyoux (geektortoise)
+*/
+!function (a) {
+  "use strict";
+
+  var s = {
+    symbolList: ["0024", "20AC", "00A3", "00A2", "00A5", "00A4", "2030", null, "00A9", "00AE", "2122", null, "00A7", "00B6", "00C6", "00E6", "0152", "0153", null, "2022", "25CF", "2023", "25B6", "2B29", "25C6", null, "00B1", "00D7", "00F7", "21D2", "21D4", "220F", "2211", "2243", "2264", "2265"]
+  };
+  function r(s) {
+    var r = [];
+    return a.each(s.o.plugins.specialchars.symbolList, function (a, e) {
+      var i = "symbol-" + (e = null === e ? "&nbsp" : "&#x" + e).replace(/:/g, ""),
+        l = {
+          text: e,
+          hasIcon: !1,
+          fn: function fn() {
+            var a = String.fromCodePoint(parseInt(e.replace("&#", "0")));
+            return s.execCmd("insertText", a), !0;
+          }
+        };
+      s.addBtnDef(i, l), r.push(i);
+    }), r;
+  }
+  a.extend(!0, a.trumbowyg, {
+    langs: {
+      en: {
+        specialChars: "Special characters"
+      },
+      az: {
+        specialChars: "Xüsusi simvollar"
+      },
+      by: {
+        specialChars: "Спецыяльныя сімвалы"
+      },
+      et: {
+        specialChars: "Erimärgid"
+      },
+      fr: {
+        specialChars: "Caractères spéciaux"
+      },
+      hu: {
+        specialChars: "Speciális karakterek"
+      },
+      ko: {
+        specialChars: "특수문자"
+      },
+      ru: {
+        specialChars: "Специальные символы"
+      },
+      sl: {
+        specialChars: "Posebni znaki"
+      },
+      tr: {
+        specialChars: "Özel karakterler"
+      }
+    },
+    plugins: {
+      specialchars: {
+        init: function init(a) {
+          a.o.plugins.specialchars = a.o.plugins.specialchars || s;
+          var e = {
+            dropdown: r(a)
+          };
+          a.addBtnDef("specialChars", e);
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
  * trumbowyg.preformatted.js v1.0
  * Preformatted plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -4869,556 +5035,6 @@
             tag: "pre"
           };
           t.addBtnDef("preformatted", r);
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.specialchars.js v0.99
- * Unicode characters picker plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Renaud Hoyoux (geektortoise)
-*/
-
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    symbolList: [
-    // currencies
-    '0024', '20AC', '00A3', '00A2', '00A5', '00A4', '2030', null,
-    // legal signs
-    '00A9', '00AE', '2122', null,
-    // textual sign
-    '00A7', '00B6', '00C6', '00E6', '0152', '0153', null, '2022', '25CF', '2023', '25B6', '2B29', '25C6', null,
-    //maths
-    '00B1', '00D7', '00F7', '21D2', '21D4', '220F', '2211', '2243', '2264', '2265']
-  };
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      en: {
-        specialChars: 'Special characters'
-      },
-      az: {
-        specialChars: 'Xüsusi simvollar'
-      },
-      by: {
-        specialChars: 'Спецыяльныя сімвалы'
-      },
-      et: {
-        specialChars: 'Erimärgid'
-      },
-      fr: {
-        specialChars: 'Caractères spéciaux'
-      },
-      hu: {
-        specialChars: 'Speciális karakterek'
-      },
-      ko: {
-        specialChars: '특수문자'
-      },
-      ru: {
-        specialChars: 'Специальные символы'
-      },
-      sl: {
-        specialChars: 'Posebni znaki'
-      },
-      tr: {
-        specialChars: 'Özel karakterler'
-      }
-    },
-    plugins: {
-      specialchars: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.specialchars = trumbowyg.o.plugins.specialchars || defaultOptions;
-          var specialCharsBtnDef = {
-            dropdown: buildDropdown(trumbowyg)
-          };
-          trumbowyg.addBtnDef('specialChars', specialCharsBtnDef);
-        }
-      }
-    }
-  });
-  function buildDropdown(trumbowyg) {
-    var dropdown = [];
-    $.each(trumbowyg.o.plugins.specialchars.symbolList, function (i, symbol) {
-      if (symbol === null) {
-        symbol = '&nbsp';
-      } else {
-        symbol = '&#x' + symbol;
-      }
-      var btn = symbol.replace(/:/g, ''),
-        defaultSymbolBtnName = 'symbol-' + btn,
-        defaultSymbolBtnDef = {
-          text: symbol,
-          hasIcon: false,
-          fn: function fn() {
-            var encodedSymbol = String.fromCodePoint(parseInt(symbol.replace('&#', '0')));
-            trumbowyg.execCmd('insertText', encodedSymbol);
-            return true;
-          }
-        };
-      trumbowyg.addBtnDef(defaultSymbolBtnName, defaultSymbolBtnDef);
-      dropdown.push(defaultSymbolBtnName);
-    });
-    return dropdown;
-  }
-})(jQuery);
-/* ===========================================================
- * trumbowyg.specialchars.js v0.99
- * Unicode characters picker plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Renaud Hoyoux (geektortoise)
-*/
-!function (a) {
-  "use strict";
-
-  var s = {
-    symbolList: ["0024", "20AC", "00A3", "00A2", "00A5", "00A4", "2030", null, "00A9", "00AE", "2122", null, "00A7", "00B6", "00C6", "00E6", "0152", "0153", null, "2022", "25CF", "2023", "25B6", "2B29", "25C6", null, "00B1", "00D7", "00F7", "21D2", "21D4", "220F", "2211", "2243", "2264", "2265"]
-  };
-  function r(s) {
-    var r = [];
-    return a.each(s.o.plugins.specialchars.symbolList, function (a, e) {
-      var i = "symbol-" + (e = null === e ? "&nbsp" : "&#x" + e).replace(/:/g, ""),
-        l = {
-          text: e,
-          hasIcon: !1,
-          fn: function fn() {
-            var a = String.fromCodePoint(parseInt(e.replace("&#", "0")));
-            return s.execCmd("insertText", a), !0;
-          }
-        };
-      s.addBtnDef(i, l), r.push(i);
-    }), r;
-  }
-  a.extend(!0, a.trumbowyg, {
-    langs: {
-      en: {
-        specialChars: "Special characters"
-      },
-      az: {
-        specialChars: "Xüsusi simvollar"
-      },
-      by: {
-        specialChars: "Спецыяльныя сімвалы"
-      },
-      et: {
-        specialChars: "Erimärgid"
-      },
-      fr: {
-        specialChars: "Caractères spéciaux"
-      },
-      hu: {
-        specialChars: "Speciális karakterek"
-      },
-      ko: {
-        specialChars: "특수문자"
-      },
-      ru: {
-        specialChars: "Специальные символы"
-      },
-      sl: {
-        specialChars: "Posebni znaki"
-      },
-      tr: {
-        specialChars: "Özel karakterler"
-      }
-    },
-    plugins: {
-      specialchars: {
-        init: function init(a) {
-          a.o.plugins.specialchars = a.o.plugins.specialchars || s;
-          var e = {
-            dropdown: r(a)
-          };
-          a.addBtnDef("specialChars", e);
-        }
-      }
-    }
-  });
-}(jQuery);
-;
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    minSize: 32,
-    step: 4
-  };
-  function preventDefault(e) {
-    e.stopPropagation();
-    e.preventDefault();
-  }
-  var ResizeWithCanvas = function ResizeWithCanvas(trumbowyg) {
-    // variable to create canvas and save img in resize mode
-    this.resizeCanvas = document.createElement('canvas');
-    // to allow canvas to get focus
-    this.resizeCanvas.setAttribute('tabindex', '0');
-    this.resizeCanvas.id = 'trumbowyg-resizimg-' + +new Date();
-    this.ctx = null;
-    this.resizeImg = null;
-    this.pressEscape = function (obj) {
-      obj.reset();
-    };
-    this.pressBackspaceOrDelete = function (obj) {
-      $(obj.resizeCanvas).remove();
-      obj.resizeImg = null;
-      if (trumbowyg !== null) {
-        trumbowyg.syncCode();
-        // notify changes
-        trumbowyg.$c.trigger('tbwchange');
-      }
-    };
-
-    // PRIVATE FUNCTION
-    var focusedNow = false;
-    var isCursorSeResize = false;
-
-    // calculate offset to change mouse over square in the canvas
-    var offsetX, offsetY;
-    var reOffset = function reOffset(canvas) {
-      var BB = canvas.getBoundingClientRect();
-      offsetX = BB.left;
-      offsetY = BB.top;
-    };
-    var updateCanvas = function updateCanvas(canvas, ctx, img, canvasWidth, canvasHeight) {
-      ctx.translate(0.5, 0.5);
-      ctx.lineWidth = 1;
-
-      // image
-      ctx.drawImage(img, 5, 5, canvasWidth - 10, canvasHeight - 10);
-
-      // border
-      ctx.beginPath();
-      ctx.rect(5, 5, canvasWidth - 10, canvasHeight - 10);
-      ctx.stroke();
-
-      // square in the angle
-      ctx.beginPath();
-      ctx.fillStyle = 'rgb(255, 255, 255)';
-      ctx.rect(canvasWidth - 10, canvasHeight - 10, 9, 9);
-      ctx.fill();
-      ctx.stroke();
-
-      // get the offset to change the mouse cursor
-      reOffset(canvas);
-      return ctx;
-    };
-
-    // PUBLIC FUNCTION
-    // necessary to correctly print cursor over square. Called once for instance. Useless with trumbowyg.
-    this.init = function () {
-      var _this = this;
-      $(window).on('scroll resize', function () {
-        _this.reCalcOffset();
-      });
-    };
-    this.reCalcOffset = function () {
-      reOffset(this.resizeCanvas);
-    };
-    this.canvasId = function () {
-      return this.resizeCanvas.id;
-    };
-    this.isActive = function () {
-      return this.resizeImg !== null;
-    };
-    this.isFocusedNow = function () {
-      return focusedNow;
-    };
-    this.blurNow = function () {
-      focusedNow = false;
-    };
-
-    // restore image in the HTML of the editor
-    this.reset = function () {
-      if (this.resizeImg === null) {
-        return;
-      }
-
-      // set style of image to avoid issue on resize because this attribute have priority over width and height attribute
-      this.resizeImg.setAttribute('style', 'width: 100%; max-width: ' + (this.resizeCanvas.clientWidth - 10) + 'px; height: auto; max-height: ' + (this.resizeCanvas.clientHeight - 10) + 'px;');
-      $(this.resizeCanvas).replaceWith($(this.resizeImg));
-
-      // reset canvas style
-      this.resizeCanvas.removeAttribute('style');
-      this.resizeImg = null;
-    };
-
-    // setup canvas with points and border to allow the resizing operation
-    this.setup = function (img, resizableOptions) {
-      this.resizeImg = img;
-      if (!this.resizeCanvas.getContext) {
-        return false;
-      }
-      focusedNow = true;
-
-      // draw canvas
-      this.resizeCanvas.width = $(this.resizeImg).width() + 10;
-      this.resizeCanvas.height = $(this.resizeImg).height() + 10;
-      this.resizeCanvas.style.margin = '-5px';
-      this.ctx = this.resizeCanvas.getContext('2d');
-
-      // replace image with canvas
-      $(this.resizeImg).replaceWith($(this.resizeCanvas));
-      updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height);
-
-      // enable resize
-      $(this.resizeCanvas).resizableSafe(resizableOptions).on('mousedown', preventDefault);
-      var _this = this;
-      $(this.resizeCanvas).on('mousemove', function (e) {
-        var mouseX = Math.round(e.clientX - offsetX);
-        var mouseY = Math.round(e.clientY - offsetY);
-        var wasCursorSeResize = isCursorSeResize;
-        _this.ctx.rect(_this.resizeCanvas.width - 10, _this.resizeCanvas.height - 10, 9, 9);
-        isCursorSeResize = _this.ctx.isPointInPath(mouseX, mouseY);
-        if (wasCursorSeResize !== isCursorSeResize) {
-          this.style.cursor = isCursorSeResize ? 'se-resize' : 'default';
-        }
-      }).on('keydown', function (e) {
-        if (!_this.isActive()) {
-          return;
-        }
-        var x = e.keyCode;
-        if (x === 27) {
-          // ESC
-          _this.pressEscape(_this);
-        } else if (x === 8 || x === 46) {
-          // BACKSPACE or DELETE
-          _this.pressBackspaceOrDelete(_this);
-        }
-      }).on('focus', preventDefault).on('blur', function () {
-        _this.reset();
-        // save changes
-        if (trumbowyg !== null) {
-          trumbowyg.syncCode();
-          // notify changes
-          trumbowyg.$c.trigger('tbwchange');
-        }
-      });
-      this.resizeCanvas.focus();
-      return true;
-    };
-
-    // update the canvas after the resizing
-    this.refresh = function () {
-      if (!this.resizeCanvas.getContext) {
-        return;
-      }
-      this.resizeCanvas.width = this.resizeCanvas.clientWidth;
-      this.resizeCanvas.height = this.resizeCanvas.clientHeight;
-      updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height);
-    };
-  };
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      resizimg: {
-        destroyResizable: function destroyResizable() {},
-        init: function init(trumbowyg) {
-          var destroyResizable = this.destroyResizable;
-
-          // object to interact with canvas
-          var resizeWithCanvas = new ResizeWithCanvas(trumbowyg);
-          this.destroyResizable = function () {
-            // clean html code
-            trumbowyg.$ed.find('canvas.resizable').resizableSafe('destroy').off('mousedown', preventDefault).removeClass('resizable');
-            resizeWithCanvas.reset();
-            trumbowyg.syncCode();
-          };
-          trumbowyg.o.plugins.resizimg = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.resizimg || {}, {
-            resizable: {
-              resizeWidth: false,
-              onDragStart: function onDragStart(ev, $el) {
-                var opt = trumbowyg.o.plugins.resizimg;
-                var x = ev.pageX - $el.offset().left;
-                var y = ev.pageY - $el.offset().top;
-                if (x < $el.width() - opt.minSize || y < $el.height() - opt.minSize) {
-                  return false;
-                }
-              },
-              onDrag: function onDrag(ev, $el, newWidth, newHeight) {
-                var opt = trumbowyg.o.plugins.resizimg;
-                if (newHeight < opt.minSize) {
-                  newHeight = opt.minSize;
-                }
-                newHeight -= newHeight % opt.step;
-                $el.height(newHeight);
-                return false;
-              },
-              onDragEnd: function onDragEnd() {
-                // resize update canvas information
-                resizeWithCanvas.refresh();
-                trumbowyg.syncCode();
-              }
-            }
-          });
-          function initResizable() {
-            trumbowyg.$ed.find('img').off('click').on('click', function (e) {
-              // if I'm already do a resize, reset it
-              if (resizeWithCanvas.isActive()) {
-                resizeWithCanvas.reset();
-              }
-              // initialize resize of image
-              resizeWithCanvas.setup(this, trumbowyg.o.plugins.resizimg.resizable);
-              preventDefault(e);
-            });
-          }
-          trumbowyg.$c.on('tbwinit', function () {
-            initResizable();
-
-            // disable resize when click on other items
-            trumbowyg.$ed.on('click', function (e) {
-              // check if I've clicked out of canvas or image to reset it
-              if ($(e.target).is('img') || e.target.id === resizeWithCanvas.canvasId()) {
-                return;
-              }
-              preventDefault(e);
-              resizeWithCanvas.reset();
-              //sync
-              trumbowyg.syncCode();
-              // notify changes
-              trumbowyg.$c.trigger('tbwchange');
-            });
-            trumbowyg.$ed.on('scroll', function () {
-              resizeWithCanvas.reCalcOffset();
-            });
-          });
-          trumbowyg.$c.on('tbwfocus tbwchange', initResizable);
-          trumbowyg.$c.on('tbwresize', function () {
-            resizeWithCanvas.reCalcOffset();
-          });
-
-          // Destroy
-          trumbowyg.$c.on('tbwblur', function () {
-            // when canvas is created the tbwblur is called
-            // this code avoid to destroy the canvas that allow the image resizing
-            if (resizeWithCanvas.isFocusedNow()) {
-              resizeWithCanvas.blurNow();
-            } else {
-              destroyResizable();
-            }
-          });
-        },
-        destroy: function destroy() {
-          this.destroyResizable();
-        }
-      }
-    }
-  });
-})(jQuery);
-!function (e) {
-  "use strict";
-
-  var i = {
-    minSize: 32,
-    step: 4
-  };
-  function t(e) {
-    e.stopPropagation(), e.preventDefault();
-  }
-  var s = function s(i) {
-    this.resizeCanvas = document.createElement("canvas"), this.resizeCanvas.setAttribute("tabindex", "0"), this.resizeCanvas.id = "trumbowyg-resizimg-" + +new Date(), this.ctx = null, this.resizeImg = null, this.pressEscape = function (e) {
-      e.reset();
-    }, this.pressBackspaceOrDelete = function (t) {
-      e(t.resizeCanvas).remove(), t.resizeImg = null, null !== i && (i.syncCode(), i.$c.trigger("tbwchange"));
-    };
-    var s,
-      n,
-      r = !1,
-      a = !1,
-      o = function o(e) {
-        var i = e.getBoundingClientRect();
-        s = i.left, n = i.top;
-      },
-      h = function h(e, i, t, s, n) {
-        return i.translate(.5, .5), i.lineWidth = 1, i.drawImage(t, 5, 5, s - 10, n - 10), i.beginPath(), i.rect(5, 5, s - 10, n - 10), i.stroke(), i.beginPath(), i.fillStyle = "rgb(255, 255, 255)", i.rect(s - 10, n - 10, 9, 9), i.fill(), i.stroke(), o(e), i;
-      };
-    // necessary to correctly print cursor over square. Called once for instance. Useless with trumbowyg.
-    this.init = function () {
-      var i = this;
-      e(window).on("scroll resize", function () {
-        i.reCalcOffset();
-      });
-    }, this.reCalcOffset = function () {
-      o(this.resizeCanvas);
-    }, this.canvasId = function () {
-      return this.resizeCanvas.id;
-    }, this.isActive = function () {
-      return null !== this.resizeImg;
-    }, this.isFocusedNow = function () {
-      return r;
-    }, this.blurNow = function () {
-      r = !1;
-    }, this.reset = function () {
-      null !== this.resizeImg && (this.resizeImg.setAttribute("style", "width: 100%; max-width: " + (this.resizeCanvas.clientWidth - 10) + "px; height: auto; max-height: " + (this.resizeCanvas.clientHeight - 10) + "px;"), e(this.resizeCanvas).replaceWith(e(this.resizeImg)), this.resizeCanvas.removeAttribute("style"), this.resizeImg = null);
-    }, this.setup = function (o, c) {
-      if (this.resizeImg = o, !this.resizeCanvas.getContext) return !1;
-      r = !0, this.resizeCanvas.width = e(this.resizeImg).width() + 10, this.resizeCanvas.height = e(this.resizeImg).height() + 10, this.resizeCanvas.style.margin = "-5px", this.ctx = this.resizeCanvas.getContext("2d"), e(this.resizeImg).replaceWith(e(this.resizeCanvas)), h(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height), e(this.resizeCanvas).resizableSafe(c).on("mousedown", t);
-      var u = this;
-      return e(this.resizeCanvas).on("mousemove", function (e) {
-        var i = Math.round(e.clientX - s),
-          t = Math.round(e.clientY - n),
-          r = a;
-        u.ctx.rect(u.resizeCanvas.width - 10, u.resizeCanvas.height - 10, 9, 9), r !== (a = u.ctx.isPointInPath(i, t)) && (this.style.cursor = a ? "se-resize" : "default");
-      }).on("keydown", function (e) {
-        if (u.isActive()) {
-          var i = e.keyCode;
-          27 === i ? u.pressEscape(u) : 8 !== i && 46 !== i || u.pressBackspaceOrDelete(u);
-        }
-      }).on("focus", t).on("blur", function () {
-        u.reset(), null !== i && (i.syncCode(), i.$c.trigger("tbwchange"));
-      }), this.resizeCanvas.focus(), !0;
-    }, this.refresh = function () {
-      this.resizeCanvas.getContext && (this.resizeCanvas.width = this.resizeCanvas.clientWidth, this.resizeCanvas.height = this.resizeCanvas.clientHeight, h(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height));
-    };
-  };
-  e.extend(!0, e.trumbowyg, {
-    plugins: {
-      resizimg: {
-        destroyResizable: function destroyResizable() {},
-        init: function init(n) {
-          var r = this.destroyResizable,
-            a = new s(n);
-          function o() {
-            n.$ed.find("img").off("click").on("click", function (e) {
-              a.isActive() && a.reset(), a.setup(this, n.o.plugins.resizimg.resizable), t(e);
-            });
-          }
-          this.destroyResizable = function () {
-            n.$ed.find("canvas.resizable").resizableSafe("destroy").off("mousedown", t).removeClass("resizable"), a.reset(), n.syncCode();
-          }, n.o.plugins.resizimg = e.extend(!0, {}, i, n.o.plugins.resizimg || {}, {
-            resizable: {
-              resizeWidth: !1,
-              onDragStart: function onDragStart(e, i) {
-                var t = n.o.plugins.resizimg,
-                  s = e.pageX - i.offset().left,
-                  r = e.pageY - i.offset().top;
-                if (s < i.width() - t.minSize || r < i.height() - t.minSize) return !1;
-              },
-              onDrag: function onDrag(e, i, t, s) {
-                var r = n.o.plugins.resizimg;
-                return s < r.minSize && (s = r.minSize), s -= s % r.step, i.height(s), !1;
-              },
-              onDragEnd: function onDragEnd() {
-                a.refresh(), n.syncCode();
-              }
-            }
-          }), n.$c.on("tbwinit", function () {
-            o(), n.$ed.on("click", function (i) {
-              e(i.target).is("img") || i.target.id === a.canvasId() || (t(i), a.reset(), n.syncCode(), n.$c.trigger("tbwchange"));
-            }), n.$ed.on("scroll", function () {
-              a.reCalcOffset();
-            });
-          }), n.$c.on("tbwfocus tbwchange", o), n.$c.on("tbwresize", function () {
-            a.reCalcOffset();
-          }), n.$c.on("tbwblur", function () {
-            a.isFocusedNow() ? a.blurNow() : r();
-          });
-        },
-        destroy: function destroy() {
-          this.destroyResizable();
         }
       }
     }
@@ -7750,6 +7366,390 @@
             t.o.plugins.table.colorList.indexOf(s) >= 0 ? a.push("tableCellBackgroundColor" + s) : a.push("freeTableCellBackgroundColor");
           }
           return a;
+        }
+      }
+    }
+  });
+}(jQuery);
+;
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    minSize: 32,
+    step: 4
+  };
+  function preventDefault(e) {
+    e.stopPropagation();
+    e.preventDefault();
+  }
+  var ResizeWithCanvas = function ResizeWithCanvas(trumbowyg) {
+    // variable to create canvas and save img in resize mode
+    this.resizeCanvas = document.createElement('canvas');
+    // to allow canvas to get focus
+    this.resizeCanvas.setAttribute('tabindex', '0');
+    this.resizeCanvas.id = 'trumbowyg-resizimg-' + +new Date();
+    this.ctx = null;
+    this.resizeImg = null;
+    this.pressEscape = function (obj) {
+      obj.reset();
+    };
+    this.pressBackspaceOrDelete = function (obj) {
+      $(obj.resizeCanvas).remove();
+      obj.resizeImg = null;
+      if (trumbowyg !== null) {
+        trumbowyg.syncCode();
+        // notify changes
+        trumbowyg.$c.trigger('tbwchange');
+      }
+    };
+
+    // PRIVATE FUNCTION
+    var focusedNow = false;
+    var isCursorSeResize = false;
+
+    // calculate offset to change mouse over square in the canvas
+    var offsetX, offsetY;
+    var reOffset = function reOffset(canvas) {
+      var BB = canvas.getBoundingClientRect();
+      offsetX = BB.left;
+      offsetY = BB.top;
+    };
+    var updateCanvas = function updateCanvas(canvas, ctx, img, canvasWidth, canvasHeight) {
+      ctx.translate(0.5, 0.5);
+      ctx.lineWidth = 1;
+
+      // image
+      ctx.drawImage(img, 5, 5, canvasWidth - 10, canvasHeight - 10);
+
+      // border
+      ctx.beginPath();
+      ctx.rect(5, 5, canvasWidth - 10, canvasHeight - 10);
+      ctx.stroke();
+
+      // square in the angle
+      ctx.beginPath();
+      ctx.fillStyle = 'rgb(255, 255, 255)';
+      ctx.rect(canvasWidth - 10, canvasHeight - 10, 9, 9);
+      ctx.fill();
+      ctx.stroke();
+
+      // get the offset to change the mouse cursor
+      reOffset(canvas);
+      return ctx;
+    };
+
+    // PUBLIC FUNCTION
+    // necessary to correctly print cursor over square. Called once for instance. Useless with trumbowyg.
+    this.init = function () {
+      var _this = this;
+      $(window).on('scroll resize', function () {
+        _this.reCalcOffset();
+      });
+    };
+    this.reCalcOffset = function () {
+      reOffset(this.resizeCanvas);
+    };
+    this.canvasId = function () {
+      return this.resizeCanvas.id;
+    };
+    this.isActive = function () {
+      return this.resizeImg !== null;
+    };
+    this.isFocusedNow = function () {
+      return focusedNow;
+    };
+    this.blurNow = function () {
+      focusedNow = false;
+    };
+
+    // restore image in the HTML of the editor
+    this.reset = function () {
+      if (this.resizeImg === null) {
+        return;
+      }
+
+      // set style of image to avoid issue on resize because this attribute have priority over width and height attribute
+      this.resizeImg.setAttribute('style', 'width: 100%; max-width: ' + (this.resizeCanvas.clientWidth - 10) + 'px; height: auto; max-height: ' + (this.resizeCanvas.clientHeight - 10) + 'px;');
+      $(this.resizeCanvas).replaceWith($(this.resizeImg));
+
+      // reset canvas style
+      this.resizeCanvas.removeAttribute('style');
+      this.resizeImg = null;
+    };
+
+    // setup canvas with points and border to allow the resizing operation
+    this.setup = function (img, resizableOptions) {
+      this.resizeImg = img;
+      if (!this.resizeCanvas.getContext) {
+        return false;
+      }
+      focusedNow = true;
+
+      // draw canvas
+      this.resizeCanvas.width = $(this.resizeImg).width() + 10;
+      this.resizeCanvas.height = $(this.resizeImg).height() + 10;
+      this.resizeCanvas.style.margin = '-5px';
+      this.ctx = this.resizeCanvas.getContext('2d');
+
+      // replace image with canvas
+      $(this.resizeImg).replaceWith($(this.resizeCanvas));
+      updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height);
+
+      // enable resize
+      $(this.resizeCanvas).resizableSafe(resizableOptions).on('mousedown', preventDefault);
+      var _this = this;
+      $(this.resizeCanvas).on('mousemove', function (e) {
+        var mouseX = Math.round(e.clientX - offsetX);
+        var mouseY = Math.round(e.clientY - offsetY);
+        var wasCursorSeResize = isCursorSeResize;
+        _this.ctx.rect(_this.resizeCanvas.width - 10, _this.resizeCanvas.height - 10, 9, 9);
+        isCursorSeResize = _this.ctx.isPointInPath(mouseX, mouseY);
+        if (wasCursorSeResize !== isCursorSeResize) {
+          this.style.cursor = isCursorSeResize ? 'se-resize' : 'default';
+        }
+      }).on('keydown', function (e) {
+        if (!_this.isActive()) {
+          return;
+        }
+        var x = e.keyCode;
+        if (x === 27) {
+          // ESC
+          _this.pressEscape(_this);
+        } else if (x === 8 || x === 46) {
+          // BACKSPACE or DELETE
+          _this.pressBackspaceOrDelete(_this);
+        }
+      }).on('focus', preventDefault).on('blur', function () {
+        _this.reset();
+        // save changes
+        if (trumbowyg !== null) {
+          trumbowyg.syncCode();
+          // notify changes
+          trumbowyg.$c.trigger('tbwchange');
+        }
+      });
+      this.resizeCanvas.focus();
+      return true;
+    };
+
+    // update the canvas after the resizing
+    this.refresh = function () {
+      if (!this.resizeCanvas.getContext) {
+        return;
+      }
+      this.resizeCanvas.width = this.resizeCanvas.clientWidth;
+      this.resizeCanvas.height = this.resizeCanvas.clientHeight;
+      updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height);
+    };
+  };
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      resizimg: {
+        destroyResizable: function destroyResizable() {},
+        init: function init(trumbowyg) {
+          var destroyResizable = this.destroyResizable;
+
+          // object to interact with canvas
+          var resizeWithCanvas = new ResizeWithCanvas(trumbowyg);
+          this.destroyResizable = function () {
+            // clean html code
+            trumbowyg.$ed.find('canvas.resizable').resizableSafe('destroy').off('mousedown', preventDefault).removeClass('resizable');
+            resizeWithCanvas.reset();
+            trumbowyg.syncCode();
+          };
+          trumbowyg.o.plugins.resizimg = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.resizimg || {}, {
+            resizable: {
+              resizeWidth: false,
+              onDragStart: function onDragStart(ev, $el) {
+                var opt = trumbowyg.o.plugins.resizimg;
+                var x = ev.pageX - $el.offset().left;
+                var y = ev.pageY - $el.offset().top;
+                if (x < $el.width() - opt.minSize || y < $el.height() - opt.minSize) {
+                  return false;
+                }
+              },
+              onDrag: function onDrag(ev, $el, newWidth, newHeight) {
+                var opt = trumbowyg.o.plugins.resizimg;
+                if (newHeight < opt.minSize) {
+                  newHeight = opt.minSize;
+                }
+                newHeight -= newHeight % opt.step;
+                $el.height(newHeight);
+                return false;
+              },
+              onDragEnd: function onDragEnd() {
+                // resize update canvas information
+                resizeWithCanvas.refresh();
+                trumbowyg.syncCode();
+              }
+            }
+          });
+          function initResizable() {
+            trumbowyg.$ed.find('img').off('click').on('click', function (e) {
+              // if I'm already do a resize, reset it
+              if (resizeWithCanvas.isActive()) {
+                resizeWithCanvas.reset();
+              }
+              // initialize resize of image
+              resizeWithCanvas.setup(this, trumbowyg.o.plugins.resizimg.resizable);
+              preventDefault(e);
+            });
+          }
+          trumbowyg.$c.on('tbwinit', function () {
+            initResizable();
+
+            // disable resize when click on other items
+            trumbowyg.$ed.on('click', function (e) {
+              // check if I've clicked out of canvas or image to reset it
+              if ($(e.target).is('img') || e.target.id === resizeWithCanvas.canvasId()) {
+                return;
+              }
+              preventDefault(e);
+              resizeWithCanvas.reset();
+              //sync
+              trumbowyg.syncCode();
+              // notify changes
+              trumbowyg.$c.trigger('tbwchange');
+            });
+            trumbowyg.$ed.on('scroll', function () {
+              resizeWithCanvas.reCalcOffset();
+            });
+          });
+          trumbowyg.$c.on('tbwfocus tbwchange', initResizable);
+          trumbowyg.$c.on('tbwresize', function () {
+            resizeWithCanvas.reCalcOffset();
+          });
+
+          // Destroy
+          trumbowyg.$c.on('tbwblur', function () {
+            // when canvas is created the tbwblur is called
+            // this code avoid to destroy the canvas that allow the image resizing
+            if (resizeWithCanvas.isFocusedNow()) {
+              resizeWithCanvas.blurNow();
+            } else {
+              destroyResizable();
+            }
+          });
+        },
+        destroy: function destroy() {
+          this.destroyResizable();
+        }
+      }
+    }
+  });
+})(jQuery);
+!function (e) {
+  "use strict";
+
+  var i = {
+    minSize: 32,
+    step: 4
+  };
+  function t(e) {
+    e.stopPropagation(), e.preventDefault();
+  }
+  var s = function s(i) {
+    this.resizeCanvas = document.createElement("canvas"), this.resizeCanvas.setAttribute("tabindex", "0"), this.resizeCanvas.id = "trumbowyg-resizimg-" + +new Date(), this.ctx = null, this.resizeImg = null, this.pressEscape = function (e) {
+      e.reset();
+    }, this.pressBackspaceOrDelete = function (t) {
+      e(t.resizeCanvas).remove(), t.resizeImg = null, null !== i && (i.syncCode(), i.$c.trigger("tbwchange"));
+    };
+    var s,
+      n,
+      r = !1,
+      a = !1,
+      o = function o(e) {
+        var i = e.getBoundingClientRect();
+        s = i.left, n = i.top;
+      },
+      h = function h(e, i, t, s, n) {
+        return i.translate(.5, .5), i.lineWidth = 1, i.drawImage(t, 5, 5, s - 10, n - 10), i.beginPath(), i.rect(5, 5, s - 10, n - 10), i.stroke(), i.beginPath(), i.fillStyle = "rgb(255, 255, 255)", i.rect(s - 10, n - 10, 9, 9), i.fill(), i.stroke(), o(e), i;
+      };
+    // necessary to correctly print cursor over square. Called once for instance. Useless with trumbowyg.
+    this.init = function () {
+      var i = this;
+      e(window).on("scroll resize", function () {
+        i.reCalcOffset();
+      });
+    }, this.reCalcOffset = function () {
+      o(this.resizeCanvas);
+    }, this.canvasId = function () {
+      return this.resizeCanvas.id;
+    }, this.isActive = function () {
+      return null !== this.resizeImg;
+    }, this.isFocusedNow = function () {
+      return r;
+    }, this.blurNow = function () {
+      r = !1;
+    }, this.reset = function () {
+      null !== this.resizeImg && (this.resizeImg.setAttribute("style", "width: 100%; max-width: " + (this.resizeCanvas.clientWidth - 10) + "px; height: auto; max-height: " + (this.resizeCanvas.clientHeight - 10) + "px;"), e(this.resizeCanvas).replaceWith(e(this.resizeImg)), this.resizeCanvas.removeAttribute("style"), this.resizeImg = null);
+    }, this.setup = function (o, c) {
+      if (this.resizeImg = o, !this.resizeCanvas.getContext) return !1;
+      r = !0, this.resizeCanvas.width = e(this.resizeImg).width() + 10, this.resizeCanvas.height = e(this.resizeImg).height() + 10, this.resizeCanvas.style.margin = "-5px", this.ctx = this.resizeCanvas.getContext("2d"), e(this.resizeImg).replaceWith(e(this.resizeCanvas)), h(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height), e(this.resizeCanvas).resizableSafe(c).on("mousedown", t);
+      var u = this;
+      return e(this.resizeCanvas).on("mousemove", function (e) {
+        var i = Math.round(e.clientX - s),
+          t = Math.round(e.clientY - n),
+          r = a;
+        u.ctx.rect(u.resizeCanvas.width - 10, u.resizeCanvas.height - 10, 9, 9), r !== (a = u.ctx.isPointInPath(i, t)) && (this.style.cursor = a ? "se-resize" : "default");
+      }).on("keydown", function (e) {
+        if (u.isActive()) {
+          var i = e.keyCode;
+          27 === i ? u.pressEscape(u) : 8 !== i && 46 !== i || u.pressBackspaceOrDelete(u);
+        }
+      }).on("focus", t).on("blur", function () {
+        u.reset(), null !== i && (i.syncCode(), i.$c.trigger("tbwchange"));
+      }), this.resizeCanvas.focus(), !0;
+    }, this.refresh = function () {
+      this.resizeCanvas.getContext && (this.resizeCanvas.width = this.resizeCanvas.clientWidth, this.resizeCanvas.height = this.resizeCanvas.clientHeight, h(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height));
+    };
+  };
+  e.extend(!0, e.trumbowyg, {
+    plugins: {
+      resizimg: {
+        destroyResizable: function destroyResizable() {},
+        init: function init(n) {
+          var r = this.destroyResizable,
+            a = new s(n);
+          function o() {
+            n.$ed.find("img").off("click").on("click", function (e) {
+              a.isActive() && a.reset(), a.setup(this, n.o.plugins.resizimg.resizable), t(e);
+            });
+          }
+          this.destroyResizable = function () {
+            n.$ed.find("canvas.resizable").resizableSafe("destroy").off("mousedown", t).removeClass("resizable"), a.reset(), n.syncCode();
+          }, n.o.plugins.resizimg = e.extend(!0, {}, i, n.o.plugins.resizimg || {}, {
+            resizable: {
+              resizeWidth: !1,
+              onDragStart: function onDragStart(e, i) {
+                var t = n.o.plugins.resizimg,
+                  s = e.pageX - i.offset().left,
+                  r = e.pageY - i.offset().top;
+                if (s < i.width() - t.minSize || r < i.height() - t.minSize) return !1;
+              },
+              onDrag: function onDrag(e, i, t, s) {
+                var r = n.o.plugins.resizimg;
+                return s < r.minSize && (s = r.minSize), s -= s % r.step, i.height(s), !1;
+              },
+              onDragEnd: function onDragEnd() {
+                a.refresh(), n.syncCode();
+              }
+            }
+          }), n.$c.on("tbwinit", function () {
+            o(), n.$ed.on("click", function (i) {
+              e(i.target).is("img") || i.target.id === a.canvasId() || (t(i), a.reset(), n.syncCode(), n.$c.trigger("tbwchange"));
+            }), n.$ed.on("scroll", function () {
+              a.reCalcOffset();
+            });
+          }), n.$c.on("tbwfocus tbwchange", o), n.$c.on("tbwresize", function () {
+            a.reCalcOffset();
+          }), n.$c.on("tbwblur", function () {
+            a.isFocusedNow() ? a.blurNow() : r();
+          });
+        },
+        destroy: function destroy() {
+          this.destroyResizable();
         }
       }
     }

@@ -6,7 +6,6 @@ function persistAdminPreferences(theme) {
         var adminPreferences = {};
         adminPreferences.leftSidebarCompact = document.body.classList.contains('left-sidebar-compact') ? true : false;
         adminPreferences.isCompactExplicit = isCompactExplicit;
-        adminPreferences.darkMode = (theme || document.documentElement.getAttribute('data-bs-theme')) === darkThemeName ? true : false;
         setAdminPreferences(adminPreferences);
     }, 200);
 }
