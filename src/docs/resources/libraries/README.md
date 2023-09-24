@@ -8,7 +8,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [AWSSDK S3](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | 3.7.203.16 |[Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
 | [AWSSDK SecurityToken](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | 3.7.201.37 |[Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
 | [AWSSDK Extensions Setup](https://github.com/aws/aws-sdk-net) | AWS SDK for .NET. | 3.7.7 |[Apache-2.0 license](https://github.com/aws/aws-sdk-net/blob/master/License.txt) |
-| [Azure Identity](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/identity/Azure.Identity/README.md) | Azure Active Directory token authentication support. | 1.10.0 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
+| [Azure Identity](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/identity/Azure.Identity/README.md) | Azure Active Directory token authentication support. | 1.10.1 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
 | [Azure Configuration Secrets](https://github.com/Azure/azure-sdk-for-net/blob/Azure.Extensions.AspNetCore.Configuration.Secrets_1.2.2/sdk/extensions/Azure.Extensions.AspNetCore.Configuration.Secrets/README.md) | Azure Key Vault configuration provider implementation for Microsoft.Extensions.Configuration. | 1.2.2 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
 | [Azure Storage Blobs](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/storage/Azure.Storage.Blobs/README.md) | Azure Storage Blobs client library for .NET. | 12.18.0 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
 | [Azure Storage Blobs for DataProtection](https://github.com/Azure/azure-sdk-for-net/blob/Azure.Extensions.AspNetCore.DataProtection.Blobs_1.3.2/sdk/extensions/Azure.Extensions.AspNetCore.DataProtection.Blobs/README.md) | Allows storing ASP.NET Core DataProtection keys in Azure Blob Storage. | 1.3.2 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
@@ -41,7 +41,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [Shortcodes](https://github.com/sebastienros/shortcodes) | Shortcodes processor for .NET. | 1.3.3 | [MIT](https://github.com/sebastienros/shortcodes/blob/dev/LICENSE) |
 | [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) | General purpose redis client. | 2.6.122 | [MIT](https://github.com/StackExchange/StackExchange.Redis/blob/main/LICENSE) |
 | [YesSql](https://github.com/sebastienros/yessql) | .NET document database working on any RDBMS. | 3.3.0 | [MIT](https://github.com/sebastienros/yessql/blob/dev/LICENSE) |
-| [ZString](https://github.com/Cysharp/ZString) | Zero Allocation StringBuilder for .NET Core and Unity. | 2.5.0 | [MIT](https://github.com/Cysharp/ZString/blob/master/LICENSE) |
+| [ZString](https://github.com/Cysharp/ZString) | Zero Allocation StringBuilder for .NET Core and Unity. | 2.5.1 | [MIT](https://github.com/Cysharp/ZString/blob/master/LICENSE) |
 
 The below table lists the different libraries used as Resources:
 
@@ -94,6 +94,6 @@ The below table lists the different Tests libraries:
 | [Cypress Orchard](https://www.npmjs.com/package/cypress-orchardcore) | A collection of cypress commands for Orchard Core. | 0.4.5 | MIT |
 | [Moq](https://github.com/moq/moq) | The most popular and friendly mocking framework for .NET. | 4.18.4 | [MIT](https://github.com/moq/moq/blob/main/LICENSE) |
 | [VS Test SDK](https://github.com/microsoft/vstest/) | Visual Studio Test Platform. | 17.7.2 | [MIT](https://github.com/microsoft/vstest/blob/master/LICENSE) |
-| [xUnit](https://github.com/xunit/xunit) | Free, open source, community-focused unit testing tool for the .NET Framework. | 2.5.0 | [MIT](https://github.com/xunit/xunit/blob/main/LICENSE) |
-| [xUnit Analyzers](https://github.com/xunit/xunit.analyzers) | Roslyn analyzers for xUnit.net. | 1.2.0 | [MIT](https://github.com/xunit/xunit.analyzers/blob/main/LICENSE) |
-| [xUnit VS runner](https://github.com/xunit/visualstudio.xunit) | VSTest runner for xUnit.net. | 2.5.0 | [MIT](https://github.com/xunit/visualstudio.xunit/blob/main/License.txt) |
+| [xUnit](https://github.com/xunit/xunit) | Free, open source, community-focused unit testing tool for the .NET Framework. | 2.5.1 | [MIT](https://github.com/xunit/xunit/blob/main/LICENSE) |
+| [xUnit Analyzers](https://github.com/xunit/xunit.analyzers) | Roslyn analyzers for xUnit.net. | 1.3.0 | [MIT](https://github.com/xunit/xunit.analyzers/blob/main/LICENSE) |
+| [xUnit VS runner](https://github.com/xunit/visualstudio.xunit) | VSTest runner for xUnit.net. | 2.5.1 | [MIT](https://github.com/xunit/visualstudio.xunit/blob/main/License.txt) |
