@@ -19,7 +19,7 @@ namespace Microsoft.Extensions.Internal
             }
 
             // Don't capture the current ExecutionContext and its AsyncLocals onto the timer.
-            bool restoreFlow = false;
+            var restoreFlow = false;
             try
             {
                 if (!ExecutionContext.IsFlowSuppressed())

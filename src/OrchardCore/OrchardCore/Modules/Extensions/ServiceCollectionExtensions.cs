@@ -335,9 +335,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 // Make the http client factory 'IDisposable'.
                 collection.AddSingleton<TenantHttpClientFactory>();
-                collection.AddSingleton<IHttpClientFactory>(serviceProvider => serviceProvider.GetRequiredService<TenantHttpClientFactory>());
-                collection.AddSingleton<IHttpMessageHandlerFactory>(serviceProvider => serviceProvider.GetRequiredService<TenantHttpClientFactory>());
-
+                collection.AddSingleton<IHttpClientFactory>(sp => sp.GetRequiredService<TenantHttpClientFactory>());
+                collection.AddSingleton<IHttpMessageHandlerFactory>(sp => sp.GetRequiredService<TenantHttpClientFactory>());
             },
             order: int.MinValue + 100);
         }

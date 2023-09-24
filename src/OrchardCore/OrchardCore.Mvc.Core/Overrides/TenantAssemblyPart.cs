@@ -1,11 +1,10 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using System.Collections.Generic;
 using System;
-using System.Reflection;
+using System.Collections.Generic;
 using System.Linq;
-using static System.Net.Mime.MediaTypeNames;
+using System.Reflection;
 
 namespace Microsoft.AspNetCore.Mvc.ApplicationParts;
 
@@ -38,8 +37,12 @@ public class TenantAssemblyPart : ApplicationPart, IApplicationPartTypeProvider
     {
         get
         {
-            var types = Assembly.DefinedTypes.Where(t => t.Name != nameof(CompiledRazorAssemblyPart)).ToList();
+            var types = Assembly.DefinedTypes
+                .Where(t => t.Name != nameof(CompiledRazorAssemblyPart))
+                .ToList();
+
             types.Add(typeof(TenantCompiledRazorAssemblyPart).GetTypeInfo());
+
             return types;
         }
     }
