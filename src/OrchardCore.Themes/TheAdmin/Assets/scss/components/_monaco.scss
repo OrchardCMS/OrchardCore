@@ -1,4 +1,5 @@
 .monaco-editor {
+    --vscode-foreground: var(--bs-body-color) !important;
     --vscode-editor-background: var(--bs-body-bg) !important;
     --vscode-editor-foreground: var(--bs-body-color) !important;
     --vscode-editorStickyScroll-background: var(--bs-body-bg) !important;
@@ -13,6 +14,9 @@
     --vscode-scrollbarSlider-background: var(--oc-scrollbar-color) !important;
     --vscode-scrollbarSlider-hoverBackground: var(--oc-admin-menu-bg-color) !important;
     --vscode-scrollbarSlider-activeBackground: var(--oc-admin-menu-bg-color) !important;
+    --vscode-dropdown-background: var(--bs-body-bg) !important;
+    --vscode-dropdown-foreground: var(--bs-body-color) !important;
+    --vscode-dropdown-border: var(--bs-border-color-translucent);
 }
 
 div.editor-widget.find-widget {

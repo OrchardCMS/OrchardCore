@@ -3,12 +3,26 @@
 }
 
 .trumbowyg-fullscreen {
-    z-index: 1050;
+    z-index: var(--bs-modal-zindex, 1050);
+}
+
+[dir] .trumbowyg-fullscreen.trumbowyg-box, [dir] .trumbowyg-fullscreen .trumbowyg-editor-box {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
 }
 
 [dir] .trumbowyg-box {
     border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
-    border-radius: var(--bs-border-radius)
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
+
+
+[dir] trumbowyg-editor-box {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
 }
 
 [dir] .trumbowyg-button-pane {
@@ -26,7 +40,27 @@
     margin-bottom: 0 !important;
 }
 
+[dir] .trumbowyg-dropdown {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+}
+
 [dir] .trumbowyg-dropdown button:hover, [dir] .trumbowyg-dropdown button:focus {
     background-color: var(--bs-body-color) !important;
     color: var(--bs-body-bg) !important;
+}
+
+[dir] .trumbowyg-button-pane .trumbowyg-open-dropdown::after {
+    border-top-color: var(--bs-body-color);
+}
+
+[dir] .trumbowyg-dropdown button {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
+.trumbowyg-fullscreen .trumbowyg-button-group .trumbowyg-fullscreen-button svg {
+    color: var(--bs-body-color);
+    fill: var(--bs-body-color);
 }

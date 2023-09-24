@@ -7854,6 +7854,7 @@ input[type=password]::-ms-clear {
 }
 
 .monaco-editor {
+  --vscode-foreground: var(--bs-body-color) !important;
   --vscode-editor-background: var(--bs-body-bg) !important;
   --vscode-editor-foreground: var(--bs-body-color) !important;
   --vscode-editorStickyScroll-background: var(--bs-body-bg) !important;
@@ -7868,6 +7869,9 @@ input[type=password]::-ms-clear {
   --vscode-scrollbarSlider-background: var(--oc-scrollbar-color) !important;
   --vscode-scrollbarSlider-hoverBackground: var(--oc-admin-menu-bg-color) !important;
   --vscode-scrollbarSlider-activeBackground: var(--oc-admin-menu-bg-color) !important;
+  --vscode-dropdown-background: var(--bs-body-bg) !important;
+  --vscode-dropdown-foreground: var(--bs-body-color) !important;
+  --vscode-dropdown-border: var(--bs-border-color-translucent);
 }
 
 div.editor-widget.find-widget .button.codicon {
@@ -9188,12 +9192,24 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
 }
 
 .trumbowyg-fullscreen {
-  z-index: 1050;
+  z-index: var(--bs-modal-zindex, 1050);
+}
+
+[dir] .trumbowyg-fullscreen.trumbowyg-box, [dir] .trumbowyg-fullscreen .trumbowyg-editor-box {
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
 }
 
 [dir] .trumbowyg-box {
   border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
   border-radius: var(--bs-border-radius);
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+
+[dir] trumbowyg-editor-box {
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
 }
 
 [dir] .trumbowyg-button-pane {
@@ -9211,9 +9227,29 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
   margin-bottom: 0 !important;
 }
 
+[dir] .trumbowyg-dropdown {
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+}
+
 [dir] .trumbowyg-dropdown button:hover, [dir] .trumbowyg-dropdown button:focus {
   background-color: var(--bs-body-color) !important;
   color: var(--bs-body-bg) !important;
+}
+
+[dir] .trumbowyg-button-pane .trumbowyg-open-dropdown::after {
+  border-top-color: var(--bs-body-color);
+}
+
+[dir] .trumbowyg-dropdown button {
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+
+.trumbowyg-fullscreen .trumbowyg-button-group .trumbowyg-fullscreen-button svg {
+  color: var(--bs-body-color);
+  fill: var(--bs-body-color);
 }
 
 span.field-validation-error {
