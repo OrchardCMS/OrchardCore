@@ -1,17 +1,26 @@
 .CodeMirror {
     height: auto;
-    border: var(--bs-border-width, 1px) var(--bs-border-style, solid) var(--bs-border-color, #ccc);
+    border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
+.CodeMirror-gutters {
+    background-color: var(--bs-secondary-bg);
+    color: var(--bs-secondary-color);
 }
 
 .CodeMirror-fullscreen {
-    background: var(--bs-body-bg, #fff);
+    background: var(--bs-body-bg);
+    color: var(--bs-body-color);
     position: fixed !important;
-    top: var(--oc-top-nav-height, 50px) !important;
+    top: var(--oc-top-nav-height) !important;
     left: 0;
     right: 0;
     bottom: 0;
     height: auto;
-    z-index: var(--bs-modal-zindex, 1150);
+    z-index: var(--bs-modal-zindex);
     border-right: none !important;
     border-bottom-right-radius: 0 !important;
 }

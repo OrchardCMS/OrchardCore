@@ -577,18 +577,27 @@ html[dir=rtl] .bootstrap-select .bs-ok-default:after {
 
 .CodeMirror {
   height: auto;
-  border: var(--bs-border-width, 1px) var(--bs-border-style, solid) var(--bs-border-color, #ccc);
+  border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+
+.CodeMirror-gutters {
+  background-color: var(--bs-secondary-bg);
+  color: var(--bs-secondary-color);
 }
 
 .CodeMirror-fullscreen {
-  background: var(--bs-body-bg, #fff);
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
   position: fixed !important;
-  top: var(--oc-top-nav-height, 50px) !important;
+  top: var(--oc-top-nav-height) !important;
   left: 0;
   right: 0;
   bottom: 0;
   height: auto;
-  z-index: var(--bs-modal-zindex, 1150);
+  z-index: var(--bs-modal-zindex);
   border-right: none !important;
   border-bottom-right-radius: 0 !important;
 }
@@ -9180,6 +9189,31 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
 
 .trumbowyg-fullscreen {
   z-index: 1050;
+}
+
+[dir] .trumbowyg-box {
+  border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+}
+
+[dir] .trumbowyg-button-pane {
+  border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+  background-color: var(--bs-border-color);
+  padding: 0;
+}
+
+.trumbowyg-box svg, .trumbowyg-modal svg {
+  color: var(--bs-body-color);
+  fill: var(--bs-body-color);
+}
+
+[dir] .trumbowyg-button-pane button {
+  margin-bottom: 0 !important;
+}
+
+[dir] .trumbowyg-dropdown button:hover, [dir] .trumbowyg-dropdown button:focus {
+  background-color: var(--bs-body-color) !important;
+  color: var(--bs-body-bg) !important;
 }
 
 span.field-validation-error {

@@ -5,3 +5,28 @@
 .trumbowyg-fullscreen {
     z-index: 1050;
 }
+
+[dir] .trumbowyg-box {
+    border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+    border-radius: var(--bs-border-radius)
+}
+
+[dir] .trumbowyg-button-pane {
+    border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+    background-color: var(--bs-border-color);
+    padding: 0;
+}
+
+.trumbowyg-box svg, .trumbowyg-modal svg {
+    color: var(--bs-body-color);
+    fill: var(--bs-body-color);
+}
+
+[dir] .trumbowyg-button-pane button {
+    margin-bottom: 0 !important;
+}
+
+[dir] .trumbowyg-dropdown button:hover, [dir] .trumbowyg-dropdown button:focus {
+    background-color: var(--bs-body-color) !important;
+    color: var(--bs-body-bg) !important;
+}
