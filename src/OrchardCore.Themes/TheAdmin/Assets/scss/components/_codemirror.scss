@@ -4,7 +4,7 @@
 }
 
 .CodeMirror-fullscreen {
-    background: var(--bs-white, #fff);
+    background: var(--bs-body-bg, #fff);
     position: fixed !important;
     top: var(--oc-top-nav-height, 50px) !important;
     left: 0;
