@@ -333,7 +333,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     collection.Remove(descriptor);
                 }
 
-                // Override 'IHttpClientFactory' knowing that 'AddHttpClient()' uses 'TryAddSingleton()'.
+                // Make the http client factory 'IDisposable'.
                 collection.AddSingleton<TenantHttpClientFactory>();
                 collection.AddSingleton<IHttpClientFactory>(serviceProvider => serviceProvider.GetRequiredService<TenantHttpClientFactory>());
                 collection.AddSingleton<IHttpMessageHandlerFactory>(serviceProvider => serviceProvider.GetRequiredService<TenantHttpClientFactory>());

@@ -25,8 +25,8 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         public static readonly char[] HostSeparators = new[] { ',', ' ' };
 
-        private ShellConfiguration _settings;
-        private ShellConfiguration _configuration;
+        private readonly ShellConfiguration _settings;
+        private readonly ShellConfiguration _configuration;
         internal volatile int _refCount;
         private bool _released;
 

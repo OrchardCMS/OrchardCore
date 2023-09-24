@@ -31,13 +31,9 @@ namespace OrchardCore.Mvc
         {
             EnsureScopedServices();
 
-            // Set it as a shell scope feature to be used later on.
+            // Check if the feature can be retrieved from the shell scope.
             var viewsFeature = ShellScope.GetFeature<ViewsFeature>();
-            if (viewsFeature is null)
-            {
-                ShellScope.SetFeature(feature);
-            }
-            else
+            if (viewsFeature is not null)
             {
                 foreach (var descriptor in viewsFeature.ViewDescriptors)
                 {
@@ -46,6 +42,9 @@ namespace OrchardCore.Mvc
 
                 return;
             }
+
+            // Set it as a shell scope feature to be used later on.
+            ShellScope.SetFeature(feature);
 
             PopulateFeatureInternal(feature);
 

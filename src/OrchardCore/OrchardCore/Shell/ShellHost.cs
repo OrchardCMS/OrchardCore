@@ -240,14 +240,15 @@ namespace OrchardCore.Environment.Shell
                 }
 
                 // Consistency: We may have been the last to add the shell but not with the last settings.
-                var loadedSettings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
-                if (settings.VersionId == loadedSettings.VersionId)
+                var loaded = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
+                var loadedVersionId = loaded.VersionId;
+
+                loaded.Release();
+
+                if (settings.VersionId == loadedVersionId)
                 {
-                    loadedSettings.Release();
                     return;
                 }
-
-                loadedSettings.Release();
             }
 
             throw new ShellHostReloadException(
@@ -387,11 +388,6 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         private Task<ShellContext> CreateShellContextAsync(ShellSettings settings)
         {
-            // if (settings.Disposed && _shellSettings.TryGetValue(settings.Name, out var currentSettings))
-            // {
-            //     settings = currentSettings;
-            // }
-
             if (settings.IsUninitialized())
             {
                 if (_logger.IsEnabled(LogLevel.Debug))

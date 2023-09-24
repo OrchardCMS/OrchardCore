@@ -240,7 +240,7 @@ namespace OrchardCore.Environment.Shell.Builders
             GC.SuppressFinalize(this);
         }
 
-        public void Close()
+        private void Close()
         {
             if (_disposed)
             {
@@ -258,7 +258,7 @@ namespace OrchardCore.Environment.Shell.Builders
             Terminate();
         }
 
-        public async ValueTask CloseAsync()
+        private async ValueTask CloseAsync()
         {
             if (_disposed)
             {
