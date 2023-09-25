@@ -22,6 +22,20 @@
 
             <div id="mediaContainerMain" v-cloak>
                 <div class="media-container-top-bar">
+                    <nav id="breadcrumb" class="d-flex justify-content-end align-items-end">
+                        <div class="breadcrumb-path p-3">
+                            <span class="breadcrumb-item" :class="{ active: isHome }">
+                                <a id="t-mediaLibrary" :href="isHome ? 'javascript:void(0)' : '#'"
+                                    v-on:click="selectRoot">{{ t.MediaLibrary }}</a>
+                            </span>
+                            <span v-for="(folder, i) in parents" v-cloak class="breadcrumb-item"
+                                :class="{ active: parents.length - i == 1 }">
+                                <a :href="parents.length - i == 1 ? 'javascript:void(0)' : '#'"
+                                    v-on:click="selectedFolder = folder;">{{
+                                        folder.name }}</a>
+                            </span>
+                        </div>
+                    </nav>
                     <nav class="nav action-bar pb-3 pt-3 pl-3">
                         <div class="me-auto ms-4">
                             <a :title="isSelectedAll ? t.SelectNone : t.SelectAll" href="javascript:void(0)"
@@ -87,24 +101,9 @@
                             </div>
                         </div>
                     </nav>
-
-                    <nav id="breadcrumb" class="d-flex justify-content-end align-items-end">
-                        <div class="breadcrumb-path p-3">
-                            <span class="breadcrumb-item" :class="{ active: isHome }">
-                                <a id="t-mediaLibrary" :href="isHome ? 'javascript:void(0)' : '#'"
-                                    v-on:click="selectRoot">{{ t.MediaLibrary }}</a>
-                            </span>
-                            <span v-for="(folder, i) in parents" v-cloak class="breadcrumb-item"
-                                :class="{ active: parents.length - i == 1 }">
-                                <a :href="parents.length - i == 1 ? 'javascript:void(0)' : '#'"
-                                    v-on:click="selectedFolder = folder;">{{
-                                        folder.name }}</a>
-                            </span>
-                        </div>
-                    </nav>
                 </div>
                 <div class="media-container-middle p-3">
-                    <upload-list :t="t"></upload-list>
+                    <upload-list upload-input-id="fileupload" :t="t"></upload-list>
 
                     <media-items-table :t="t" :base-path="basePath" :sort-by="sortBy" :sort-asc="sortAsc"
                         :filtered-media-items="itemsInPage" :selected-medias="selectedMedias" :thumb-size="thumbSize"
@@ -130,7 +129,7 @@
 </style>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, nextTick } from 'vue'
 import axios from 'axios';
 import dbg from 'debug';
 import FolderComponent from './components/folderComponent.vue';
@@ -142,8 +141,6 @@ import DragDropThumbnail from './assets/drag-thumbnail.png';
 import { ModalsContainer, useVfm } from 'vue-final-modal'
 import ModalConfirm from './components/ModalConfirm.vue'
 import $ from "jquery";
-
-//import "bootstrap/dist/css/bootstrap.min.css" // TODO remove
 
 const debug = dbg("oc:media-app");
 
@@ -403,66 +400,69 @@ export default defineComponent({
     },
     mounted: function () {
         let me = this;
-        this.$refs.rootFolder.toggle();
+        (<any>this.$refs.rootFolder).toggle();
 
-        var chunkedFileUploadId = crypto.randomUUID();
+        let chunkedFileUploadId = crypto.randomUUID();
 
-        $('#fileupload')
-            .fileupload({
-                dropZone: $('#mediaApp'),
-                limitConcurrentUploads: 20,
-                dataType: 'json',
-                url: me.uploadUrl(),
-                maxChunkSize: Number($('#maxUploadChunkSize').val() || 0),
-                formData: function () {
-                    var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
+        nextTick(() => {
+            let fileInput: JQueryFileUpload;
+            fileInput = <JQueryFileUpload>$('#fileupload');
+            fileInput
+                .fileupload({
+                    dropZone: $('#mediaApp'),
+                    limitConcurrentUploads: 20,
+                    dataType: 'json',
+                    url: me.uploadUrl() ?? "",
+                    maxChunkSize: Number($('#maxUploadChunkSize').val() || 0),
+                    formData: function () {
+                        var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
 
-                    return [
-                        { name: 'path', value: me.selectedFolder.path },
-                        { name: '__RequestVerificationToken', value: antiForgeryToken },
-                        { name: '__chunkedFileUploadId', value: chunkedFileUploadId },
-                    ]
-                },
-                done: function (e, data) {
-                    $.each(data.result.files, function (index, file: any) {
-                        if (!file.error) {
-                            me.mediaItems.push(<never>file)
-                        }
-                    });
+                        return [
+                            { name: 'path', value: me.selectedFolder.path },
+                            { name: '__RequestVerificationToken', value: antiForgeryToken },
+                            { name: '__chunkedFileUploadId', value: chunkedFileUploadId },
+                        ]
+                    },
+                    done: function (e: any, data: any) {
+                        $.each(data.result.files, function (index, file: any) {
+                            if (!file.error) {
+                                me.mediaItems.push(<never>file)
+                            }
+                        });
+                    }
+                })
+                .on('fileuploadchunkbeforesend', (e: any, options: any) => {
+                    let file = options.files[0];
+                    // Here we replace the blob with a File object to ensure the file name and others are preserved for the backend.
+                    options.blob = new File(
+                        [options.blob],
+                        file.name,
+                        {
+                            type: file.type,
+                            lastModified: file.lastModified,
+                        });
+                });
+
+            $(document).on('dragover', function (e: any) {
+                let dt = e.originalEvent.dataTransfer;
+
+                if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') != -1 : dt.types.contains('Files'))) {
+                    let dropZone = $('#customdropzone'),
+                        timeout = (<any>window).dropZoneTimeout;
+
+                    if (timeout) {
+                        clearTimeout(timeout);
+                    } else {
+                        dropZone.addClass('in');
+                    }
+
+                    (<any>window).dropZoneTimeout = setTimeout(function () {
+                        (<any>window).dropZoneTimeout = null;
+                        dropZone.removeClass('in');
+                    }, 100);
                 }
-            })
-            .on('fileuploadchunkbeforesend', (e, options) => {
-                let file = options.files[0];
-                // Here we replace the blob with a File object to ensure the file name and others are preserved for the backend.
-                options.blob = new File(
-                    [options.blob],
-                    file.name,
-                    {
-                        type: file.type,
-                        lastModified: file.lastModified,
-                    });
             });
-
-
-
-        $(document).bind('dragover', function (e: { originalEvent: { dataTransfer: any; }; target: any; }) {
-            var dt = e.originalEvent.dataTransfer;
-            if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') != -1 : dt.types.contains('Files'))) {
-                var dropZone = $('#customdropzone'),
-                    timeout = window.dropZoneTimeout;
-                if (timeout) {
-                    clearTimeout(timeout);
-                } else {
-                    dropZone.addClass('in');
-                }
-                var hoveredDropZone = $(e.target).closest(dropZone);
-                window.dropZoneTimeout = setTimeout(function () {
-                    window.dropZoneTimeout = null;
-                    dropZone.removeClass('in');
-                }, 100);
-            }
         });
-
     },
     methods: {
         getModalName: function (name: String, action: String) {
@@ -581,7 +581,7 @@ export default defineComponent({
             let folder = this.selectedFolder;
             let self = this;
             // The root folder can't be deleted
-            if (folder == this.root.model) {
+            if (folder == this.root) {
                 return;
             }
 
@@ -603,7 +603,7 @@ export default defineComponent({
         },
         createFolder: function (folderName: any) {
             let self = this;
-            document.getElementById('createFolderModal-errors')?.empty();
+            $('createFolderModal-errors')?.empty();
 
             if (folderName === "") {
                 return;
@@ -622,25 +622,6 @@ export default defineComponent({
                     $('#createFolderModal-errors').empty();
                     $('<div class="alert alert-danger" role="alert"></div>').text(error.message).appendTo($('#createFolderModal-errors'));
                 });
-
-            /*             $.ajax({
-                            url: $('#createFolderUrl').val() + "?path=" + encodeURIComponent(mediaApp.selectedFolder.path) + "&name=" + encodeURIComponent(name),
-                            method: 'POST',
-                            data: {
-                                __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val()
-                            },
-                            success: function (data) {
-                                bus.$emit('addFolder', mediaApp.selectedFolder, data);
-                                var modal = bootstrap.Modal.getOrCreateInstance($('#createFolderModal'));
-                                modal.hide();
-                            },
-                            error: function (error) {
-                                $('#createFolderModal-errors').empty();
-                                var errorMessage = JSON.parse(error.responseText).value;
-                                $('<div class="alert alert-danger" role="alert"></div>').text(errorMessage).appendTo($('#createFolderModal-errors'));
-                            }
-                        }); */
-
         },
         renameMedia: function (element: any) {
             $('#renameMediaModal-errors').empty(); // TODO use a slot
@@ -670,9 +651,9 @@ export default defineComponent({
             $('#old-item-name').val(media.name); // TODO remove probably
             $('#renameMediaModal .modal-body input').val(media.name).focus(); // TODO remove probably
         },
-        selectAndDeleteMedia: function (media: any) {
-            //this.deleteMedia();
-        },
+        /*         selectAndDeleteMedia: function (media: any) {
+                    //this.deleteMedia();
+                }, */
         deleteMediaList: function () {
             let mediaList = this.selectedMedias;
             let self = this;

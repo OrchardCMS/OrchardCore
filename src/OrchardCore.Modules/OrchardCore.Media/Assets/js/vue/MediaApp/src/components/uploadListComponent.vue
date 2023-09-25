@@ -44,7 +44,10 @@ export default defineComponent({
         }
     },
     props: {
-        uploadInputId: String,
+        uploadInputId: {
+            type: String,
+            required: true
+        },
         t: {
             type: Object,
             required: true
@@ -60,9 +63,8 @@ export default defineComponent({
     },
     mounted: function () {
         var self = this;
-        var uploadInput = document.getElementById(self.uploadInputId ?? 'fileupload');
 
-        $(uploadInput).bind('fileuploadadd', function (e: any, data: any) {
+        $('#' + self.uploadInputId).on('fileuploadadd', function (e: any, data: any) {
             if (!data.files) {
                 return;
             }
