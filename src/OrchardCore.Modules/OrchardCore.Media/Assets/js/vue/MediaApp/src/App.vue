@@ -140,7 +140,6 @@ import PagerComponent from './components/pagerComponent.vue';
 import DragDropThumbnail from './assets/drag-thumbnail.png';
 import { ModalsContainer, useVfm } from 'vue-final-modal'
 import ModalConfirm from './components/ModalConfirm.vue'
-import $ from "jquery";
 
 const debug = dbg("oc:media-app");
 

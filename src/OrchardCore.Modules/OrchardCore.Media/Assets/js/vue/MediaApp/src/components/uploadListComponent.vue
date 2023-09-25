@@ -28,7 +28,6 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import UploadComponent from './uploadComponent.vue';
-import $ from "jquery";
 
 export default defineComponent({
     components: {
