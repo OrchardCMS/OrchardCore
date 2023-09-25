@@ -13,12 +13,13 @@
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
-  --oc-top-nav-zindex: calc(1030 + 5);
+  --oc-top-nav-zindex: 1034;
   --oc-footer-height: 40px;
   --oc-start-navigation-width: 260px;
   --oc-start-navigation-width-when-compact: 48px;
-  --oc-start-navigation-zindex: calc(1030 + 3);
-  --oc-link-padding-left: 116px;
+  --oc-start-navigation-zindex: 1033;
+  --oc-link-padding-left: 16px;
+  --oc-editor-fullscreen: 1054;
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
 }
@@ -36,12 +37,13 @@
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
-  --oc-top-nav-zindex: calc(1030 + 5);
+  --oc-top-nav-zindex: 1034;
   --oc-footer-height: 40px;
   --oc-start-navigation-width: 260px;
   --oc-start-navigation-width-when-compact: 48px;
-  --oc-start-navigation-zindex: calc(1030 + 3);
-  --oc-link-padding-left: 116px;
+  --oc-start-navigation-zindex: 1033;
+  --oc-link-padding-left: 16px;
+  --oc-editor-fullscreen: 1054;
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
 }
@@ -146,12 +148,13 @@
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
-  --oc-top-nav-zindex: calc(1030 + 5);
+  --oc-top-nav-zindex: 1034;
   --oc-footer-height: 40px;
   --oc-start-navigation-width: 260px;
   --oc-start-navigation-width-when-compact: 48px;
-  --oc-start-navigation-zindex: calc(1030 + 3);
-  --oc-link-padding-left: 116px;
+  --oc-start-navigation-zindex: 1033;
+  --oc-link-padding-left: 16px;
+  --oc-editor-fullscreen: 1054;
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
 }
@@ -221,12 +224,13 @@ body {
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
-  --oc-top-nav-zindex: calc(1030 + 5);
+  --oc-top-nav-zindex: 1034;
   --oc-footer-height: 40px;
   --oc-start-navigation-width: 260px;
   --oc-start-navigation-width-when-compact: 48px;
-  --oc-start-navigation-zindex: calc(1030 + 3);
-  --oc-link-padding-left: 116px;
+  --oc-start-navigation-zindex: 1033;
+  --oc-link-padding-left: 16px;
+  --oc-editor-fullscreen: 1054;
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
 }
@@ -698,18 +702,19 @@ html[dir=rtl] .bootstrap-select .bs-ok-default:after {
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
-  --oc-top-nav-zindex: calc(1030 + 5);
+  --oc-top-nav-zindex: 1034;
   --oc-footer-height: 40px;
   --oc-start-navigation-width: 260px;
   --oc-start-navigation-width-when-compact: 48px;
-  --oc-start-navigation-zindex: calc(1030 + 3);
-  --oc-link-padding-left: 116px;
+  --oc-start-navigation-zindex: 1033;
+  --oc-link-padding-left: 16px;
+  --oc-editor-fullscreen: 1054;
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
 }
 
 :root {
-  --oc-mde-zindex: 1055 -1 !important;
+  --oc-mde-zindex: var(--oc-editor-fullscreen) !important;
 }
 
 .CodeMirror {
@@ -826,12 +831,13 @@ html[dir=rtl] .bootstrap-select .bs-ok-default:after {
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
-  --oc-top-nav-zindex: calc(1030 + 5);
+  --oc-top-nav-zindex: 1034;
   --oc-footer-height: 40px;
   --oc-start-navigation-width: 260px;
   --oc-start-navigation-width-when-compact: 48px;
-  --oc-start-navigation-zindex: calc(1030 + 3);
-  --oc-link-padding-left: 116px;
+  --oc-start-navigation-zindex: 1033;
+  --oc-link-padding-left: 16px;
+  --oc-editor-fullscreen: 1054;
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
 }
@@ -8476,12 +8482,13 @@ ul.pager {
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
-  --oc-top-nav-zindex: calc(1030 + 5);
+  --oc-top-nav-zindex: 1034;
   --oc-footer-height: 40px;
   --oc-start-navigation-width: 260px;
   --oc-start-navigation-width-when-compact: 48px;
-  --oc-start-navigation-zindex: calc(1030 + 3);
-  --oc-link-padding-left: 116px;
+  --oc-start-navigation-zindex: 1033;
+  --oc-link-padding-left: 16px;
+  --oc-editor-fullscreen: 1054;
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
 }
@@ -9251,12 +9258,13 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
-  --oc-top-nav-zindex: calc(1030 + 5);
+  --oc-top-nav-zindex: 1034;
   --oc-footer-height: 40px;
   --oc-start-navigation-width: 260px;
   --oc-start-navigation-width-when-compact: 48px;
-  --oc-start-navigation-zindex: calc(1030 + 3);
-  --oc-link-padding-left: 116px;
+  --oc-start-navigation-zindex: 1033;
+  --oc-link-padding-left: 16px;
+  --oc-editor-fullscreen: 1054;
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
 }
@@ -9373,7 +9381,7 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
 }
 
 .trumbowyg-fullscreen {
-  z-index: var(--bs-modal-zindex, 1050);
+  z-index: var(--oc-editor-fullscreen);
 }
 
 [dir] .trumbowyg-fullscreen.trumbowyg-box, [dir] .trumbowyg-fullscreen .trumbowyg-editor-box {
@@ -9549,12 +9557,13 @@ span.field-validation-error {
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
   --oc-top-nav-height: 52px;
-  --oc-top-nav-zindex: calc(1030 + 5);
+  --oc-top-nav-zindex: 1034;
   --oc-footer-height: 40px;
   --oc-start-navigation-width: 260px;
   --oc-start-navigation-width-when-compact: 48px;
-  --oc-start-navigation-zindex: calc(1030 + 3);
-  --oc-link-padding-left: 116px;
+  --oc-start-navigation-zindex: 1033;
+  --oc-link-padding-left: 16px;
+  --oc-editor-fullscreen: 1054;
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
 }

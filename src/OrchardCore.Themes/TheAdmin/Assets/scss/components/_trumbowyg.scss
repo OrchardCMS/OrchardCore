@@ -50,7 +50,7 @@
 }
 
 .trumbowyg-fullscreen {
-    z-index: var(--bs-modal-zindex, 1050);
+    z-index: var(--oc-editor-fullscreen);
 }
 
 [dir] .trumbowyg-fullscreen.trumbowyg-box, [dir] .trumbowyg-fullscreen .trumbowyg-editor-box {

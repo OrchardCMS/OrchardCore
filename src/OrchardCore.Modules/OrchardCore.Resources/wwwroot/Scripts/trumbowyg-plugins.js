@@ -4,6 +4,497 @@
 */
 
 /* ===========================================================
+ * trumbowyg.colors.js v1.2
+ * Colors picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ */
+
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        foreColor: 'Text color',
+        backColor: 'Background color',
+        foreColorRemove: 'Remove text color',
+        backColorRemove: 'Remove background color'
+      },
+      az: {
+        foreColor: 'Yazı rəngi',
+        backColor: 'Arxa plan rəngi',
+        foreColorRemove: 'Yazı rəngini sil',
+        backColorRemove: 'Arxa plan rəngini sil'
+      },
+      by: {
+        foreColor: 'Колер тэксту',
+        backColor: 'Колер фону тэксту',
+        foreColorRemove: 'Выдаліць колер тэксту',
+        backColorRemove: 'Выдаліць колер фону тэксту'
+      },
+      ca: {
+        foreColor: 'Color del text',
+        backColor: 'Color del fons',
+        foreColorRemove: 'Eliminar color del text',
+        backColorRemove: 'Eliminar color del fons'
+      },
+      cs: {
+        foreColor: 'Barva textu',
+        backColor: 'Barva pozadí'
+      },
+      da: {
+        foreColor: 'Tekstfarve',
+        backColor: 'Baggrundsfarve'
+      },
+      de: {
+        foreColor: 'Textfarbe',
+        backColor: 'Hintergrundfarbe'
+      },
+      es: {
+        foreColor: 'Color del texto',
+        backColor: 'Color del fondo',
+        foreColorRemove: 'Eliminar color del texto',
+        backColorRemove: 'Eliminar color del fondo'
+      },
+      et: {
+        foreColor: 'Teksti värv',
+        backColor: 'Taustavärv',
+        foreColorRemove: 'Eemalda teksti värv',
+        backColorRemove: 'Eemalda taustavärv'
+      },
+      fr: {
+        foreColor: 'Couleur du texte',
+        backColor: 'Couleur de fond',
+        foreColorRemove: 'Supprimer la couleur du texte',
+        backColorRemove: 'Supprimer la couleur de fond'
+      },
+      hu: {
+        foreColor: 'Betű szín',
+        backColor: 'Háttér szín',
+        foreColorRemove: 'Betű szín eltávolítása',
+        backColorRemove: 'Háttér szín eltávolítása'
+      },
+      ja: {
+        foreColor: '文字色',
+        backColor: '背景色'
+      },
+      ko: {
+        foreColor: '글자색',
+        backColor: '배경색',
+        foreColorRemove: '글자색 지우기',
+        backColorRemove: '배경색 지우기'
+      },
+      nl: {
+        foreColor: 'Tekstkleur',
+        backColor: 'Achtergrondkleur'
+      },
+      pt_br: {
+        foreColor: 'Cor de fonte',
+        backColor: 'Cor de fundo'
+      },
+      ru: {
+        foreColor: 'Цвет текста',
+        backColor: 'Цвет выделения текста',
+        foreColorRemove: 'Очистить цвет текста',
+        backColorRemove: 'Очистить цвет выделения текста'
+      },
+      sl: {
+        foreColor: 'Barva teksta',
+        backColor: 'Barva ozadja',
+        foreColorRemove: 'Ponastavi barvo teksta',
+        backColorRemove: 'Ponastavi barvo ozadja'
+      },
+      sk: {
+        foreColor: 'Farba textu',
+        backColor: 'Farba pozadia'
+      },
+      tr: {
+        foreColor: 'Yazı rengi',
+        backColor: 'Arka plan rengi',
+        foreColorRemove: 'Yazı rengini kaldır',
+        backColorRemove: 'Arka plan rengini kaldır'
+      },
+      zh_cn: {
+        foreColor: '文字颜色',
+        backColor: '背景颜色'
+      },
+      zh_tw: {
+        foreColor: '文字顏色',
+        backColor: '背景顏色'
+      }
+    }
+  });
+
+  // jshint camelcase:true
+
+  function hex(x) {
+    return ('0' + parseInt(x).toString(16)).slice(-2);
+  }
+  function colorToHex(rgb) {
+    if (rgb.search('rgb') === -1) {
+      return rgb.replace('#', '');
+    } else if (rgb === 'rgba(0, 0, 0, 0)') {
+      return 'transparent';
+    } else {
+      rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/);
+      if (rgb == null) {
+        return 'transparent'; // No match, return transparent as unkown color
+      }
+
+      return hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+    }
+  }
+  function colorTagHandler(element, trumbowyg) {
+    var tags = [];
+    if (!element.style) {
+      return tags;
+    }
+
+    // background color
+    if (element.style.backgroundColor !== '') {
+      var backColor = colorToHex(element.style.backgroundColor);
+      if (trumbowyg.o.plugins.colors.colorList.indexOf(backColor) >= 0) {
+        tags.push('backColor' + backColor);
+      } else {
+        tags.push('backColorFree');
+      }
+    }
+
+    // text color
+    var foreColor;
+    if (element.style.color !== '') {
+      foreColor = colorToHex(element.style.color);
+    } else if (element.hasAttribute('color')) {
+      foreColor = colorToHex(element.getAttribute('color'));
+    }
+    if (foreColor) {
+      if (trumbowyg.o.plugins.colors.colorList.indexOf(foreColor) >= 0) {
+        tags.push('foreColor' + foreColor);
+      } else {
+        tags.push('foreColorFree');
+      }
+    }
+    return tags;
+  }
+  var defaultOptions = {
+    colorList: ['ffffff', '000000', 'eeece1', '1f497d', '4f81bd', 'c0504d', '9bbb59', '8064a2', '4bacc6', 'f79646', 'ffff00', 'f2f2f2', '7f7f7f', 'ddd9c3', 'c6d9f0', 'dbe5f1', 'f2dcdb', 'ebf1dd', 'e5e0ec', 'dbeef3', 'fdeada', 'fff2ca', 'd8d8d8', '595959', 'c4bd97', '8db3e2', 'b8cce4', 'e5b9b7', 'd7e3bc', 'ccc1d9', 'b7dde8', 'fbd5b5', 'ffe694', 'bfbfbf', '3f3f3f', '938953', '548dd4', '95b3d7', 'd99694', 'c3d69b', 'b2a2c7', 'b7dde8', 'fac08f', 'f2c314', 'a5a5a5', '262626', '494429', '17365d', '366092', '953734', '76923c', '5f497a', '92cddc', 'e36c09', 'c09100', '7f7f7f', '0c0c0c', '1d1b10', '0f243e', '244061', '632423', '4f6128', '3f3151', '31859b', '974806', '7f6000'],
+    foreColorList: null,
+    // fallbacks on colorList
+    backColorList: null,
+    // fallbacks on colorList
+    allowCustomForeColor: true,
+    allowCustomBackColor: true,
+    displayAsList: false
+  };
+
+  // Add all colors in two dropdowns
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      color: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.colors = trumbowyg.o.plugins.colors || defaultOptions;
+          var dropdownClass = trumbowyg.o.plugins.colors.displayAsList ? trumbowyg.o.prefix + 'dropdown--color-list' : '';
+          var foreColorBtnDef = {
+              dropdown: buildDropdown('foreColor', trumbowyg),
+              dropdownClass: dropdownClass
+            },
+            backColorBtnDef = {
+              dropdown: buildDropdown('backColor', trumbowyg),
+              dropdownClass: dropdownClass
+            };
+          trumbowyg.addBtnDef('foreColor', foreColorBtnDef);
+          trumbowyg.addBtnDef('backColor', backColorBtnDef);
+        },
+        tagHandler: colorTagHandler
+      }
+    }
+  });
+  function buildDropdown(_fn, trumbowyg) {
+    var dropdown = [],
+      trumbowygColorOptions = trumbowyg.o.plugins.colors,
+      colorList = trumbowygColorOptions[_fn + 'List'] || trumbowygColorOptions.colorList;
+    $.each(colorList, function (i, color) {
+      var btn = _fn + color,
+        btnDef = {
+          fn: _fn,
+          forceCss: true,
+          hasIcon: false,
+          text: trumbowyg.lang['#' + color] || '#' + color,
+          param: '#' + color,
+          style: 'background-color: #' + color + ';'
+        };
+      if (trumbowygColorOptions.displayAsList && _fn === 'foreColor') {
+        btnDef.style = 'color: #' + color + ' !important;';
+      }
+      trumbowyg.addBtnDef(btn, btnDef);
+      dropdown.push(btn);
+    });
+
+    // Remove color
+    var removeColorButtonName = _fn + 'Remove',
+      removeColorBtnDef = {
+        fn: 'removeFormat',
+        hasIcon: false,
+        param: _fn,
+        style: 'background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);'
+      };
+    if (trumbowygColorOptions.displayAsList) {
+      removeColorBtnDef.style = '';
+    }
+    trumbowyg.addBtnDef(removeColorButtonName, removeColorBtnDef);
+    dropdown.push(removeColorButtonName);
+
+    // Custom color
+    if (trumbowygColorOptions['allowCustom' + _fn.charAt(0).toUpperCase() + _fn.substr(1)]) {
+      // add free color btn
+      var freeColorButtonName = _fn + 'Free',
+        freeColorBtnDef = {
+          fn: function fn() {
+            trumbowyg.openModalInsert(trumbowyg.lang[_fn], {
+              color: {
+                label: _fn,
+                forceCss: true,
+                type: 'color',
+                value: '#FFFFFF'
+              }
+            },
+            // callback
+            function (values) {
+              trumbowyg.execCmd(_fn, values.color);
+              return true;
+            });
+          },
+          hasIcon: false,
+          text: '#',
+          // style adjust for displaying the text
+          style: 'text-indent: 0; line-height: 20px; padding: 0 5px;'
+        };
+      trumbowyg.addBtnDef(freeColorButtonName, freeColorBtnDef);
+      dropdown.push(freeColorButtonName);
+    }
+    return dropdown;
+  }
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.colors.js v1.2
+ * Colors picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ */
+!function (o) {
+  "use strict";
+
+  function r(o) {
+    return ("0" + parseInt(o).toString(16)).slice(-2);
+  }
+  function e(o) {
+    return -1 === o.search("rgb") ? o.replace("#", "") : "rgba(0, 0, 0, 0)" === o || null == (o = o.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/)) ? "transparent" : r(o[1]) + r(o[2]) + r(o[3]);
+  }
+  o.extend(!0, o.trumbowyg, {
+    langs: {
+      en: {
+        foreColor: "Text color",
+        backColor: "Background color",
+        foreColorRemove: "Remove text color",
+        backColorRemove: "Remove background color"
+      },
+      az: {
+        foreColor: "Yazı rəngi",
+        backColor: "Arxa plan rəngi",
+        foreColorRemove: "Yazı rəngini sil",
+        backColorRemove: "Arxa plan rəngini sil"
+      },
+      by: {
+        foreColor: "Колер тэксту",
+        backColor: "Колер фону тэксту",
+        foreColorRemove: "Выдаліць колер тэксту",
+        backColorRemove: "Выдаліць колер фону тэксту"
+      },
+      ca: {
+        foreColor: "Color del text",
+        backColor: "Color del fons",
+        foreColorRemove: "Eliminar color del text",
+        backColorRemove: "Eliminar color del fons"
+      },
+      cs: {
+        foreColor: "Barva textu",
+        backColor: "Barva pozadí"
+      },
+      da: {
+        foreColor: "Tekstfarve",
+        backColor: "Baggrundsfarve"
+      },
+      de: {
+        foreColor: "Textfarbe",
+        backColor: "Hintergrundfarbe"
+      },
+      es: {
+        foreColor: "Color del texto",
+        backColor: "Color del fondo",
+        foreColorRemove: "Eliminar color del texto",
+        backColorRemove: "Eliminar color del fondo"
+      },
+      et: {
+        foreColor: "Teksti värv",
+        backColor: "Taustavärv",
+        foreColorRemove: "Eemalda teksti värv",
+        backColorRemove: "Eemalda taustavärv"
+      },
+      fr: {
+        foreColor: "Couleur du texte",
+        backColor: "Couleur de fond",
+        foreColorRemove: "Supprimer la couleur du texte",
+        backColorRemove: "Supprimer la couleur de fond"
+      },
+      hu: {
+        foreColor: "Betű szín",
+        backColor: "Háttér szín",
+        foreColorRemove: "Betű szín eltávolítása",
+        backColorRemove: "Háttér szín eltávolítása"
+      },
+      ja: {
+        foreColor: "文字色",
+        backColor: "背景色"
+      },
+      ko: {
+        foreColor: "글자색",
+        backColor: "배경색",
+        foreColorRemove: "글자색 지우기",
+        backColorRemove: "배경색 지우기"
+      },
+      nl: {
+        foreColor: "Tekstkleur",
+        backColor: "Achtergrondkleur"
+      },
+      pt_br: {
+        foreColor: "Cor de fonte",
+        backColor: "Cor de fundo"
+      },
+      ru: {
+        foreColor: "Цвет текста",
+        backColor: "Цвет выделения текста",
+        foreColorRemove: "Очистить цвет текста",
+        backColorRemove: "Очистить цвет выделения текста"
+      },
+      sl: {
+        foreColor: "Barva teksta",
+        backColor: "Barva ozadja",
+        foreColorRemove: "Ponastavi barvo teksta",
+        backColorRemove: "Ponastavi barvo ozadja"
+      },
+      sk: {
+        foreColor: "Farba textu",
+        backColor: "Farba pozadia"
+      },
+      tr: {
+        foreColor: "Yazı rengi",
+        backColor: "Arka plan rengi",
+        foreColorRemove: "Yazı rengini kaldır",
+        backColorRemove: "Arka plan rengini kaldır"
+      },
+      zh_cn: {
+        foreColor: "文字颜色",
+        backColor: "背景颜色"
+      },
+      zh_tw: {
+        foreColor: "文字顏色",
+        backColor: "背景顏色"
+      }
+    }
+  });
+  var l = {
+    colorList: ["ffffff", "000000", "eeece1", "1f497d", "4f81bd", "c0504d", "9bbb59", "8064a2", "4bacc6", "f79646", "ffff00", "f2f2f2", "7f7f7f", "ddd9c3", "c6d9f0", "dbe5f1", "f2dcdb", "ebf1dd", "e5e0ec", "dbeef3", "fdeada", "fff2ca", "d8d8d8", "595959", "c4bd97", "8db3e2", "b8cce4", "e5b9b7", "d7e3bc", "ccc1d9", "b7dde8", "fbd5b5", "ffe694", "bfbfbf", "3f3f3f", "938953", "548dd4", "95b3d7", "d99694", "c3d69b", "b2a2c7", "b7dde8", "fac08f", "f2c314", "a5a5a5", "262626", "494429", "17365d", "366092", "953734", "76923c", "5f497a", "92cddc", "e36c09", "c09100", "7f7f7f", "0c0c0c", "1d1b10", "0f243e", "244061", "632423", "4f6128", "3f3151", "31859b", "974806", "7f6000"],
+    foreColorList: null,
+    backColorList: null,
+    allowCustomForeColor: !0,
+    allowCustomBackColor: !0,
+    displayAsList: !1
+  };
+  function a(r, e) {
+    var l = [],
+      a = e.o.plugins.colors,
+      t = a[r + "List"] || a.colorList;
+    o.each(t, function (o, t) {
+      var c = r + t,
+        f = {
+          fn: r,
+          forceCss: !0,
+          hasIcon: !1,
+          text: e.lang["#" + t] || "#" + t,
+          param: "#" + t,
+          style: "background-color: #" + t + ";"
+        };
+      a.displayAsList && "foreColor" === r && (f.style = "color: #" + t + " !important;"), e.addBtnDef(c, f), l.push(c);
+    });
+    var c = r + "Remove",
+      f = {
+        fn: "removeFormat",
+        hasIcon: !1,
+        param: r,
+        style: "background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);"
+      };
+    if (a.displayAsList && (f.style = ""), e.addBtnDef(c, f), l.push(c), a["allowCustom" + r.charAt(0).toUpperCase() + r.substr(1)]) {
+      var n = r + "Free",
+        d = {
+          fn: function fn() {
+            e.openModalInsert(e.lang[r], {
+              color: {
+                label: r,
+                forceCss: !0,
+                type: "color",
+                value: "#FFFFFF"
+              }
+            }, function (o) {
+              return e.execCmd(r, o.color), !0;
+            });
+          },
+          hasIcon: !1,
+          text: "#",
+          style: "text-indent: 0; line-height: 20px; padding: 0 5px;"
+        };
+      e.addBtnDef(n, d), l.push(n);
+    }
+    return l;
+  }
+  o.extend(!0, o.trumbowyg, {
+    plugins: {
+      color: {
+        init: function init(o) {
+          o.o.plugins.colors = o.o.plugins.colors || l;
+          var r = o.o.plugins.colors.displayAsList ? o.o.prefix + "dropdown--color-list" : "",
+            e = {
+              dropdown: a("foreColor", o),
+              dropdownClass: r
+            },
+            t = {
+              dropdown: a("backColor", o),
+              dropdownClass: r
+            };
+          o.addBtnDef("foreColor", e), o.addBtnDef("backColor", t);
+        },
+        tagHandler: function tagHandler(o, r) {
+          var l,
+            a = [];
+          if (!o.style) return a;
+          if ("" !== o.style.backgroundColor) {
+            var t = e(o.style.backgroundColor);
+            r.o.plugins.colors.colorList.indexOf(t) >= 0 ? a.push("backColor" + t) : a.push("backColorFree");
+          }
+          return "" !== o.style.color ? l = e(o.style.color) : o.hasAttribute("color") && (l = e(o.getAttribute("color"))), l && (r.o.plugins.colors.colorList.indexOf(l) >= 0 ? a.push("foreColor" + l) : a.push("foreColorFree")), a;
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
  * trumbowyg.allowTagsFromPaste.js v1.0.2
  * It cleans tags from pasted text, whilst allowing several specified tags
  * http://alex-d.github.com/Trumbowyg
@@ -609,497 +1100,6 @@
             }
           };
           r.addBtnDef("base64", i);
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.colors.js v1.2
- * Colors picker plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Alexandre Demode (Alex-D)
- *          Twitter : @AlexandreDemode
- *          Website : alex-d.fr
- */
-
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        foreColor: 'Text color',
-        backColor: 'Background color',
-        foreColorRemove: 'Remove text color',
-        backColorRemove: 'Remove background color'
-      },
-      az: {
-        foreColor: 'Yazı rəngi',
-        backColor: 'Arxa plan rəngi',
-        foreColorRemove: 'Yazı rəngini sil',
-        backColorRemove: 'Arxa plan rəngini sil'
-      },
-      by: {
-        foreColor: 'Колер тэксту',
-        backColor: 'Колер фону тэксту',
-        foreColorRemove: 'Выдаліць колер тэксту',
-        backColorRemove: 'Выдаліць колер фону тэксту'
-      },
-      ca: {
-        foreColor: 'Color del text',
-        backColor: 'Color del fons',
-        foreColorRemove: 'Eliminar color del text',
-        backColorRemove: 'Eliminar color del fons'
-      },
-      cs: {
-        foreColor: 'Barva textu',
-        backColor: 'Barva pozadí'
-      },
-      da: {
-        foreColor: 'Tekstfarve',
-        backColor: 'Baggrundsfarve'
-      },
-      de: {
-        foreColor: 'Textfarbe',
-        backColor: 'Hintergrundfarbe'
-      },
-      es: {
-        foreColor: 'Color del texto',
-        backColor: 'Color del fondo',
-        foreColorRemove: 'Eliminar color del texto',
-        backColorRemove: 'Eliminar color del fondo'
-      },
-      et: {
-        foreColor: 'Teksti värv',
-        backColor: 'Taustavärv',
-        foreColorRemove: 'Eemalda teksti värv',
-        backColorRemove: 'Eemalda taustavärv'
-      },
-      fr: {
-        foreColor: 'Couleur du texte',
-        backColor: 'Couleur de fond',
-        foreColorRemove: 'Supprimer la couleur du texte',
-        backColorRemove: 'Supprimer la couleur de fond'
-      },
-      hu: {
-        foreColor: 'Betű szín',
-        backColor: 'Háttér szín',
-        foreColorRemove: 'Betű szín eltávolítása',
-        backColorRemove: 'Háttér szín eltávolítása'
-      },
-      ja: {
-        foreColor: '文字色',
-        backColor: '背景色'
-      },
-      ko: {
-        foreColor: '글자색',
-        backColor: '배경색',
-        foreColorRemove: '글자색 지우기',
-        backColorRemove: '배경색 지우기'
-      },
-      nl: {
-        foreColor: 'Tekstkleur',
-        backColor: 'Achtergrondkleur'
-      },
-      pt_br: {
-        foreColor: 'Cor de fonte',
-        backColor: 'Cor de fundo'
-      },
-      ru: {
-        foreColor: 'Цвет текста',
-        backColor: 'Цвет выделения текста',
-        foreColorRemove: 'Очистить цвет текста',
-        backColorRemove: 'Очистить цвет выделения текста'
-      },
-      sl: {
-        foreColor: 'Barva teksta',
-        backColor: 'Barva ozadja',
-        foreColorRemove: 'Ponastavi barvo teksta',
-        backColorRemove: 'Ponastavi barvo ozadja'
-      },
-      sk: {
-        foreColor: 'Farba textu',
-        backColor: 'Farba pozadia'
-      },
-      tr: {
-        foreColor: 'Yazı rengi',
-        backColor: 'Arka plan rengi',
-        foreColorRemove: 'Yazı rengini kaldır',
-        backColorRemove: 'Arka plan rengini kaldır'
-      },
-      zh_cn: {
-        foreColor: '文字颜色',
-        backColor: '背景颜色'
-      },
-      zh_tw: {
-        foreColor: '文字顏色',
-        backColor: '背景顏色'
-      }
-    }
-  });
-
-  // jshint camelcase:true
-
-  function hex(x) {
-    return ('0' + parseInt(x).toString(16)).slice(-2);
-  }
-  function colorToHex(rgb) {
-    if (rgb.search('rgb') === -1) {
-      return rgb.replace('#', '');
-    } else if (rgb === 'rgba(0, 0, 0, 0)') {
-      return 'transparent';
-    } else {
-      rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/);
-      if (rgb == null) {
-        return 'transparent'; // No match, return transparent as unkown color
-      }
-
-      return hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
-    }
-  }
-  function colorTagHandler(element, trumbowyg) {
-    var tags = [];
-    if (!element.style) {
-      return tags;
-    }
-
-    // background color
-    if (element.style.backgroundColor !== '') {
-      var backColor = colorToHex(element.style.backgroundColor);
-      if (trumbowyg.o.plugins.colors.colorList.indexOf(backColor) >= 0) {
-        tags.push('backColor' + backColor);
-      } else {
-        tags.push('backColorFree');
-      }
-    }
-
-    // text color
-    var foreColor;
-    if (element.style.color !== '') {
-      foreColor = colorToHex(element.style.color);
-    } else if (element.hasAttribute('color')) {
-      foreColor = colorToHex(element.getAttribute('color'));
-    }
-    if (foreColor) {
-      if (trumbowyg.o.plugins.colors.colorList.indexOf(foreColor) >= 0) {
-        tags.push('foreColor' + foreColor);
-      } else {
-        tags.push('foreColorFree');
-      }
-    }
-    return tags;
-  }
-  var defaultOptions = {
-    colorList: ['ffffff', '000000', 'eeece1', '1f497d', '4f81bd', 'c0504d', '9bbb59', '8064a2', '4bacc6', 'f79646', 'ffff00', 'f2f2f2', '7f7f7f', 'ddd9c3', 'c6d9f0', 'dbe5f1', 'f2dcdb', 'ebf1dd', 'e5e0ec', 'dbeef3', 'fdeada', 'fff2ca', 'd8d8d8', '595959', 'c4bd97', '8db3e2', 'b8cce4', 'e5b9b7', 'd7e3bc', 'ccc1d9', 'b7dde8', 'fbd5b5', 'ffe694', 'bfbfbf', '3f3f3f', '938953', '548dd4', '95b3d7', 'd99694', 'c3d69b', 'b2a2c7', 'b7dde8', 'fac08f', 'f2c314', 'a5a5a5', '262626', '494429', '17365d', '366092', '953734', '76923c', '5f497a', '92cddc', 'e36c09', 'c09100', '7f7f7f', '0c0c0c', '1d1b10', '0f243e', '244061', '632423', '4f6128', '3f3151', '31859b', '974806', '7f6000'],
-    foreColorList: null,
-    // fallbacks on colorList
-    backColorList: null,
-    // fallbacks on colorList
-    allowCustomForeColor: true,
-    allowCustomBackColor: true,
-    displayAsList: false
-  };
-
-  // Add all colors in two dropdowns
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      color: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.colors = trumbowyg.o.plugins.colors || defaultOptions;
-          var dropdownClass = trumbowyg.o.plugins.colors.displayAsList ? trumbowyg.o.prefix + 'dropdown--color-list' : '';
-          var foreColorBtnDef = {
-              dropdown: buildDropdown('foreColor', trumbowyg),
-              dropdownClass: dropdownClass
-            },
-            backColorBtnDef = {
-              dropdown: buildDropdown('backColor', trumbowyg),
-              dropdownClass: dropdownClass
-            };
-          trumbowyg.addBtnDef('foreColor', foreColorBtnDef);
-          trumbowyg.addBtnDef('backColor', backColorBtnDef);
-        },
-        tagHandler: colorTagHandler
-      }
-    }
-  });
-  function buildDropdown(_fn, trumbowyg) {
-    var dropdown = [],
-      trumbowygColorOptions = trumbowyg.o.plugins.colors,
-      colorList = trumbowygColorOptions[_fn + 'List'] || trumbowygColorOptions.colorList;
-    $.each(colorList, function (i, color) {
-      var btn = _fn + color,
-        btnDef = {
-          fn: _fn,
-          forceCss: true,
-          hasIcon: false,
-          text: trumbowyg.lang['#' + color] || '#' + color,
-          param: '#' + color,
-          style: 'background-color: #' + color + ';'
-        };
-      if (trumbowygColorOptions.displayAsList && _fn === 'foreColor') {
-        btnDef.style = 'color: #' + color + ' !important;';
-      }
-      trumbowyg.addBtnDef(btn, btnDef);
-      dropdown.push(btn);
-    });
-
-    // Remove color
-    var removeColorButtonName = _fn + 'Remove',
-      removeColorBtnDef = {
-        fn: 'removeFormat',
-        hasIcon: false,
-        param: _fn,
-        style: 'background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);'
-      };
-    if (trumbowygColorOptions.displayAsList) {
-      removeColorBtnDef.style = '';
-    }
-    trumbowyg.addBtnDef(removeColorButtonName, removeColorBtnDef);
-    dropdown.push(removeColorButtonName);
-
-    // Custom color
-    if (trumbowygColorOptions['allowCustom' + _fn.charAt(0).toUpperCase() + _fn.substr(1)]) {
-      // add free color btn
-      var freeColorButtonName = _fn + 'Free',
-        freeColorBtnDef = {
-          fn: function fn() {
-            trumbowyg.openModalInsert(trumbowyg.lang[_fn], {
-              color: {
-                label: _fn,
-                forceCss: true,
-                type: 'color',
-                value: '#FFFFFF'
-              }
-            },
-            // callback
-            function (values) {
-              trumbowyg.execCmd(_fn, values.color);
-              return true;
-            });
-          },
-          hasIcon: false,
-          text: '#',
-          // style adjust for displaying the text
-          style: 'text-indent: 0; line-height: 20px; padding: 0 5px;'
-        };
-      trumbowyg.addBtnDef(freeColorButtonName, freeColorBtnDef);
-      dropdown.push(freeColorButtonName);
-    }
-    return dropdown;
-  }
-})(jQuery);
-/* ===========================================================
- * trumbowyg.colors.js v1.2
- * Colors picker plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Alexandre Demode (Alex-D)
- *          Twitter : @AlexandreDemode
- *          Website : alex-d.fr
- */
-!function (o) {
-  "use strict";
-
-  function r(o) {
-    return ("0" + parseInt(o).toString(16)).slice(-2);
-  }
-  function e(o) {
-    return -1 === o.search("rgb") ? o.replace("#", "") : "rgba(0, 0, 0, 0)" === o || null == (o = o.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/)) ? "transparent" : r(o[1]) + r(o[2]) + r(o[3]);
-  }
-  o.extend(!0, o.trumbowyg, {
-    langs: {
-      en: {
-        foreColor: "Text color",
-        backColor: "Background color",
-        foreColorRemove: "Remove text color",
-        backColorRemove: "Remove background color"
-      },
-      az: {
-        foreColor: "Yazı rəngi",
-        backColor: "Arxa plan rəngi",
-        foreColorRemove: "Yazı rəngini sil",
-        backColorRemove: "Arxa plan rəngini sil"
-      },
-      by: {
-        foreColor: "Колер тэксту",
-        backColor: "Колер фону тэксту",
-        foreColorRemove: "Выдаліць колер тэксту",
-        backColorRemove: "Выдаліць колер фону тэксту"
-      },
-      ca: {
-        foreColor: "Color del text",
-        backColor: "Color del fons",
-        foreColorRemove: "Eliminar color del text",
-        backColorRemove: "Eliminar color del fons"
-      },
-      cs: {
-        foreColor: "Barva textu",
-        backColor: "Barva pozadí"
-      },
-      da: {
-        foreColor: "Tekstfarve",
-        backColor: "Baggrundsfarve"
-      },
-      de: {
-        foreColor: "Textfarbe",
-        backColor: "Hintergrundfarbe"
-      },
-      es: {
-        foreColor: "Color del texto",
-        backColor: "Color del fondo",
-        foreColorRemove: "Eliminar color del texto",
-        backColorRemove: "Eliminar color del fondo"
-      },
-      et: {
-        foreColor: "Teksti värv",
-        backColor: "Taustavärv",
-        foreColorRemove: "Eemalda teksti värv",
-        backColorRemove: "Eemalda taustavärv"
-      },
-      fr: {
-        foreColor: "Couleur du texte",
-        backColor: "Couleur de fond",
-        foreColorRemove: "Supprimer la couleur du texte",
-        backColorRemove: "Supprimer la couleur de fond"
-      },
-      hu: {
-        foreColor: "Betű szín",
-        backColor: "Háttér szín",
-        foreColorRemove: "Betű szín eltávolítása",
-        backColorRemove: "Háttér szín eltávolítása"
-      },
-      ja: {
-        foreColor: "文字色",
-        backColor: "背景色"
-      },
-      ko: {
-        foreColor: "글자색",
-        backColor: "배경색",
-        foreColorRemove: "글자색 지우기",
-        backColorRemove: "배경색 지우기"
-      },
-      nl: {
-        foreColor: "Tekstkleur",
-        backColor: "Achtergrondkleur"
-      },
-      pt_br: {
-        foreColor: "Cor de fonte",
-        backColor: "Cor de fundo"
-      },
-      ru: {
-        foreColor: "Цвет текста",
-        backColor: "Цвет выделения текста",
-        foreColorRemove: "Очистить цвет текста",
-        backColorRemove: "Очистить цвет выделения текста"
-      },
-      sl: {
-        foreColor: "Barva teksta",
-        backColor: "Barva ozadja",
-        foreColorRemove: "Ponastavi barvo teksta",
-        backColorRemove: "Ponastavi barvo ozadja"
-      },
-      sk: {
-        foreColor: "Farba textu",
-        backColor: "Farba pozadia"
-      },
-      tr: {
-        foreColor: "Yazı rengi",
-        backColor: "Arka plan rengi",
-        foreColorRemove: "Yazı rengini kaldır",
-        backColorRemove: "Arka plan rengini kaldır"
-      },
-      zh_cn: {
-        foreColor: "文字颜色",
-        backColor: "背景颜色"
-      },
-      zh_tw: {
-        foreColor: "文字顏色",
-        backColor: "背景顏色"
-      }
-    }
-  });
-  var l = {
-    colorList: ["ffffff", "000000", "eeece1", "1f497d", "4f81bd", "c0504d", "9bbb59", "8064a2", "4bacc6", "f79646", "ffff00", "f2f2f2", "7f7f7f", "ddd9c3", "c6d9f0", "dbe5f1", "f2dcdb", "ebf1dd", "e5e0ec", "dbeef3", "fdeada", "fff2ca", "d8d8d8", "595959", "c4bd97", "8db3e2", "b8cce4", "e5b9b7", "d7e3bc", "ccc1d9", "b7dde8", "fbd5b5", "ffe694", "bfbfbf", "3f3f3f", "938953", "548dd4", "95b3d7", "d99694", "c3d69b", "b2a2c7", "b7dde8", "fac08f", "f2c314", "a5a5a5", "262626", "494429", "17365d", "366092", "953734", "76923c", "5f497a", "92cddc", "e36c09", "c09100", "7f7f7f", "0c0c0c", "1d1b10", "0f243e", "244061", "632423", "4f6128", "3f3151", "31859b", "974806", "7f6000"],
-    foreColorList: null,
-    backColorList: null,
-    allowCustomForeColor: !0,
-    allowCustomBackColor: !0,
-    displayAsList: !1
-  };
-  function a(r, e) {
-    var l = [],
-      a = e.o.plugins.colors,
-      t = a[r + "List"] || a.colorList;
-    o.each(t, function (o, t) {
-      var c = r + t,
-        f = {
-          fn: r,
-          forceCss: !0,
-          hasIcon: !1,
-          text: e.lang["#" + t] || "#" + t,
-          param: "#" + t,
-          style: "background-color: #" + t + ";"
-        };
-      a.displayAsList && "foreColor" === r && (f.style = "color: #" + t + " !important;"), e.addBtnDef(c, f), l.push(c);
-    });
-    var c = r + "Remove",
-      f = {
-        fn: "removeFormat",
-        hasIcon: !1,
-        param: r,
-        style: "background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);"
-      };
-    if (a.displayAsList && (f.style = ""), e.addBtnDef(c, f), l.push(c), a["allowCustom" + r.charAt(0).toUpperCase() + r.substr(1)]) {
-      var n = r + "Free",
-        d = {
-          fn: function fn() {
-            e.openModalInsert(e.lang[r], {
-              color: {
-                label: r,
-                forceCss: !0,
-                type: "color",
-                value: "#FFFFFF"
-              }
-            }, function (o) {
-              return e.execCmd(r, o.color), !0;
-            });
-          },
-          hasIcon: !1,
-          text: "#",
-          style: "text-indent: 0; line-height: 20px; padding: 0 5px;"
-        };
-      e.addBtnDef(n, d), l.push(n);
-    }
-    return l;
-  }
-  o.extend(!0, o.trumbowyg, {
-    plugins: {
-      color: {
-        init: function init(o) {
-          o.o.plugins.colors = o.o.plugins.colors || l;
-          var r = o.o.plugins.colors.displayAsList ? o.o.prefix + "dropdown--color-list" : "",
-            e = {
-              dropdown: a("foreColor", o),
-              dropdownClass: r
-            },
-            t = {
-              dropdown: a("backColor", o),
-              dropdownClass: r
-            };
-          o.addBtnDef("foreColor", e), o.addBtnDef("backColor", t);
-        },
-        tagHandler: function tagHandler(o, r) {
-          var l,
-            a = [];
-          if (!o.style) return a;
-          if ("" !== o.style.backgroundColor) {
-            var t = e(o.style.backgroundColor);
-            r.o.plugins.colors.colorList.indexOf(t) >= 0 ? a.push("backColor" + t) : a.push("backColorFree");
-          }
-          return "" !== o.style.color ? l = e(o.style.color) : o.hasAttribute("color") && (l = e(o.getAttribute("color"))), l && (r.o.plugins.colors.colorList.indexOf(l) >= 0 ? a.push("foreColor" + l) : a.push("foreColorFree")), a;
         }
       }
     }
@@ -2309,6 +2309,247 @@
     }
   });
 }(jQuery);
+/*/* ===========================================================
+ * trumbowyg.history.js v1.0
+ * history plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Sven Dunemann [dunemann@forelabs.eu]
+ */
+
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      history: {
+        destroy: function destroy(t) {
+          t.$c.off('tbwinit.history tbwchange.history');
+        },
+        init: function init(t) {
+          t.o.plugins.history = $.extend(true, {
+            _stack: [],
+            _index: -1,
+            _focusEl: undefined
+          }, t.o.plugins.history || {});
+          var btnBuildDefRedo = {
+            title: t.lang.redo,
+            ico: 'redo',
+            key: 'Y',
+            fn: function fn() {
+              if (t.o.plugins.history._index < t.o.plugins.history._stack.length - 1) {
+                t.o.plugins.history._index += 1;
+                var index = t.o.plugins.history._index;
+                var newState = t.o.plugins.history._stack[index];
+                t.execCmd('html', newState);
+                // because of some semantic optimisations we have to save the state back
+                // to history
+                t.o.plugins.history._stack[index] = t.$ed.html();
+                carretToEnd();
+                toggleButtonStates();
+              }
+            }
+          };
+          var btnBuildDefUndo = {
+            title: t.lang.undo,
+            ico: 'undo',
+            key: 'Z',
+            fn: function fn() {
+              if (t.o.plugins.history._index > 0) {
+                t.o.plugins.history._index -= 1;
+                var index = t.o.plugins.history._index,
+                  newState = t.o.plugins.history._stack[index];
+                t.execCmd('html', newState);
+                // because of some semantic optimisations we have to save the state back
+                // to history
+                t.o.plugins.history._stack[index] = t.$ed.html();
+                carretToEnd();
+                toggleButtonStates();
+              }
+            }
+          };
+          var pushToHistory = function pushToHistory() {
+            var index = t.o.plugins.history._index,
+              stack = t.o.plugins.history._stack,
+              latestState = stack.slice(-1)[0] || '<p></p>',
+              prevState = stack[index],
+              newState = t.$ed.html(),
+              focusEl = t.doc.getSelection().focusNode,
+              focusElText = '',
+              latestStateTagsList,
+              newStateTagsList,
+              prevFocusEl = t.o.plugins.history._focusEl;
+            latestStateTagsList = $('<div>' + latestState + '</div>').find('*').map(function () {
+              return this.localName;
+            });
+            newStateTagsList = $('<div>' + newState + '</div>').find('*').map(function () {
+              return this.localName;
+            });
+            if (focusEl) {
+              t.o.plugins.history._focusEl = focusEl;
+              focusElText = focusEl.outerHTML || focusEl.textContent;
+            }
+            if (newState !== prevState) {
+              // a new stack entry is defined when current insert ends on a whitespace character
+              // or count of node elements has been changed
+              // or focused element differs from previous one
+              if (focusElText.slice(-1).match(/\s/) || !arraysAreIdentical(latestStateTagsList, newStateTagsList) || t.o.plugins.history._index <= 0 || focusEl !== prevFocusEl) {
+                t.o.plugins.history._index += 1;
+                // remove newer entries in history when something new was added
+                // because timeline was changes with interaction
+                t.o.plugins.history._stack = stack.slice(0, t.o.plugins.history._index);
+                // now add new state to modified history
+                t.o.plugins.history._stack.push(newState);
+              } else {
+                // modify last stack entry
+                t.o.plugins.history._stack[index] = newState;
+              }
+              toggleButtonStates();
+            }
+          };
+          var toggleButtonStates = function toggleButtonStates() {
+            var index = t.o.plugins.history._index,
+              stackSize = t.o.plugins.history._stack.length,
+              undoState = index > 0,
+              redoState = stackSize !== 0 && index !== stackSize - 1;
+            toggleButtonState('historyUndo', undoState);
+            toggleButtonState('historyRedo', redoState);
+          };
+          var toggleButtonState = function toggleButtonState(btn, enable) {
+            var button = t.$box.find('.trumbowyg-' + btn + '-button');
+            if (enable) {
+              button.removeClass('trumbowyg-disable');
+            } else if (!button.hasClass('trumbowyg-disable')) {
+              button.addClass('trumbowyg-disable');
+            }
+          };
+          var arraysAreIdentical = function arraysAreIdentical(a, b) {
+            if (a === b) {
+              return true;
+            }
+            if (a == null || b == null) {
+              return false;
+            }
+            if (a.length !== b.length) {
+              return false;
+            }
+            for (var i = 0; i < a.length; i += 1) {
+              if (a[i] !== b[i]) {
+                return false;
+              }
+            }
+            return true;
+          };
+          var carretToEnd = function carretToEnd() {
+            var node = t.doc.getSelection().focusNode,
+              range = t.doc.createRange();
+            if (node.childNodes.length > 0) {
+              range.setStartAfter(node.childNodes[node.childNodes.length - 1]);
+              range.setEndAfter(node.childNodes[node.childNodes.length - 1]);
+              t.doc.getSelection().removeAllRanges();
+              t.doc.getSelection().addRange(range);
+            }
+          };
+          t.$c.on('tbwinit.history tbwchange.history', pushToHistory);
+          t.addBtnDef('historyRedo', btnBuildDefRedo);
+          t.addBtnDef('historyUndo', btnBuildDefUndo);
+        }
+      }
+    }
+  });
+})(jQuery);
+/*/* ===========================================================
+ * trumbowyg.history.js v1.0
+ * history plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Sven Dunemann [dunemann@forelabs.eu]
+ */
+!function (i) {
+  "use strict";
+
+  i.extend(!0, i.trumbowyg, {
+    plugins: {
+      history: {
+        destroy: function destroy(i) {
+          i.$c.off("tbwinit.history tbwchange.history");
+        },
+        init: function init(t) {
+          t.o.plugins.history = i.extend(!0, {
+            _stack: [],
+            _index: -1,
+            _focusEl: void 0
+          }, t.o.plugins.history || {});
+          var o = {
+              title: t.lang.redo,
+              ico: "redo",
+              key: "Y",
+              fn: function fn() {
+                if (t.o.plugins.history._index < t.o.plugins.history._stack.length - 1) {
+                  t.o.plugins.history._index += 1;
+                  var i = t.o.plugins.history._index,
+                    o = t.o.plugins.history._stack[i];
+                  t.execCmd("html", o), t.o.plugins.history._stack[i] = t.$ed.html(), r(), s();
+                }
+              }
+            },
+            n = {
+              title: t.lang.undo,
+              ico: "undo",
+              key: "Z",
+              fn: function fn() {
+                if (t.o.plugins.history._index > 0) {
+                  t.o.plugins.history._index -= 1;
+                  var i = t.o.plugins.history._index,
+                    o = t.o.plugins.history._stack[i];
+                  t.execCmd("html", o), t.o.plugins.history._stack[i] = t.$ed.html(), r(), s();
+                }
+              }
+            },
+            s = function s() {
+              var i = t.o.plugins.history._index,
+                o = t.o.plugins.history._stack.length,
+                n = 0 !== o && i !== o - 1;
+              e("historyUndo", i > 0), e("historyRedo", n);
+            },
+            e = function e(i, o) {
+              var n = t.$box.find(".trumbowyg-" + i + "-button");
+              o ? n.removeClass("trumbowyg-disable") : n.hasClass("trumbowyg-disable") || n.addClass("trumbowyg-disable");
+            },
+            l = function l(i, t) {
+              if (i === t) return !0;
+              if (null == i || null == t) return !1;
+              if (i.length !== t.length) return !1;
+              for (var o = 0; o < i.length; o += 1) if (i[o] !== t[o]) return !1;
+              return !0;
+            },
+            r = function r() {
+              var i = t.doc.getSelection().focusNode,
+                o = t.doc.createRange();
+              i.childNodes.length > 0 && (o.setStartAfter(i.childNodes[i.childNodes.length - 1]), o.setEndAfter(i.childNodes[i.childNodes.length - 1]), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(o));
+            };
+          t.$c.on("tbwinit.history tbwchange.history", function () {
+            var o,
+              n,
+              e = t.o.plugins.history._index,
+              r = t.o.plugins.history._stack,
+              d = r.slice(-1)[0] || "<p></p>",
+              u = r[e],
+              h = t.$ed.html(),
+              c = t.doc.getSelection().focusNode,
+              g = "",
+              a = t.o.plugins.history._focusEl;
+            o = i("<div>" + d + "</div>").find("*").map(function () {
+              return this.localName;
+            }), n = i("<div>" + h + "</div>").find("*").map(function () {
+              return this.localName;
+            }), c && (t.o.plugins.history._focusEl = c, g = c.outerHTML || c.textContent), h !== u && (g.slice(-1).match(/\s/) || !l(o, n) || t.o.plugins.history._index <= 0 || c !== a ? (t.o.plugins.history._index += 1, t.o.plugins.history._stack = r.slice(0, t.o.plugins.history._index), t.o.plugins.history._stack.push(h)) : t.o.plugins.history._stack[e] = h, s());
+          }), t.addBtnDef("historyRedo", o), t.addBtnDef("historyUndo", n);
+        }
+      }
+    }
+  });
+}(jQuery);
 (function ($) {
   'use strict';
 
@@ -2659,247 +2900,6 @@
               });
             }
           });
-        }
-      }
-    }
-  });
-}(jQuery);
-/*/* ===========================================================
- * trumbowyg.history.js v1.0
- * history plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Sven Dunemann [dunemann@forelabs.eu]
- */
-
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      history: {
-        destroy: function destroy(t) {
-          t.$c.off('tbwinit.history tbwchange.history');
-        },
-        init: function init(t) {
-          t.o.plugins.history = $.extend(true, {
-            _stack: [],
-            _index: -1,
-            _focusEl: undefined
-          }, t.o.plugins.history || {});
-          var btnBuildDefRedo = {
-            title: t.lang.redo,
-            ico: 'redo',
-            key: 'Y',
-            fn: function fn() {
-              if (t.o.plugins.history._index < t.o.plugins.history._stack.length - 1) {
-                t.o.plugins.history._index += 1;
-                var index = t.o.plugins.history._index;
-                var newState = t.o.plugins.history._stack[index];
-                t.execCmd('html', newState);
-                // because of some semantic optimisations we have to save the state back
-                // to history
-                t.o.plugins.history._stack[index] = t.$ed.html();
-                carretToEnd();
-                toggleButtonStates();
-              }
-            }
-          };
-          var btnBuildDefUndo = {
-            title: t.lang.undo,
-            ico: 'undo',
-            key: 'Z',
-            fn: function fn() {
-              if (t.o.plugins.history._index > 0) {
-                t.o.plugins.history._index -= 1;
-                var index = t.o.plugins.history._index,
-                  newState = t.o.plugins.history._stack[index];
-                t.execCmd('html', newState);
-                // because of some semantic optimisations we have to save the state back
-                // to history
-                t.o.plugins.history._stack[index] = t.$ed.html();
-                carretToEnd();
-                toggleButtonStates();
-              }
-            }
-          };
-          var pushToHistory = function pushToHistory() {
-            var index = t.o.plugins.history._index,
-              stack = t.o.plugins.history._stack,
-              latestState = stack.slice(-1)[0] || '<p></p>',
-              prevState = stack[index],
-              newState = t.$ed.html(),
-              focusEl = t.doc.getSelection().focusNode,
-              focusElText = '',
-              latestStateTagsList,
-              newStateTagsList,
-              prevFocusEl = t.o.plugins.history._focusEl;
-            latestStateTagsList = $('<div>' + latestState + '</div>').find('*').map(function () {
-              return this.localName;
-            });
-            newStateTagsList = $('<div>' + newState + '</div>').find('*').map(function () {
-              return this.localName;
-            });
-            if (focusEl) {
-              t.o.plugins.history._focusEl = focusEl;
-              focusElText = focusEl.outerHTML || focusEl.textContent;
-            }
-            if (newState !== prevState) {
-              // a new stack entry is defined when current insert ends on a whitespace character
-              // or count of node elements has been changed
-              // or focused element differs from previous one
-              if (focusElText.slice(-1).match(/\s/) || !arraysAreIdentical(latestStateTagsList, newStateTagsList) || t.o.plugins.history._index <= 0 || focusEl !== prevFocusEl) {
-                t.o.plugins.history._index += 1;
-                // remove newer entries in history when something new was added
-                // because timeline was changes with interaction
-                t.o.plugins.history._stack = stack.slice(0, t.o.plugins.history._index);
-                // now add new state to modified history
-                t.o.plugins.history._stack.push(newState);
-              } else {
-                // modify last stack entry
-                t.o.plugins.history._stack[index] = newState;
-              }
-              toggleButtonStates();
-            }
-          };
-          var toggleButtonStates = function toggleButtonStates() {
-            var index = t.o.plugins.history._index,
-              stackSize = t.o.plugins.history._stack.length,
-              undoState = index > 0,
-              redoState = stackSize !== 0 && index !== stackSize - 1;
-            toggleButtonState('historyUndo', undoState);
-            toggleButtonState('historyRedo', redoState);
-          };
-          var toggleButtonState = function toggleButtonState(btn, enable) {
-            var button = t.$box.find('.trumbowyg-' + btn + '-button');
-            if (enable) {
-              button.removeClass('trumbowyg-disable');
-            } else if (!button.hasClass('trumbowyg-disable')) {
-              button.addClass('trumbowyg-disable');
-            }
-          };
-          var arraysAreIdentical = function arraysAreIdentical(a, b) {
-            if (a === b) {
-              return true;
-            }
-            if (a == null || b == null) {
-              return false;
-            }
-            if (a.length !== b.length) {
-              return false;
-            }
-            for (var i = 0; i < a.length; i += 1) {
-              if (a[i] !== b[i]) {
-                return false;
-              }
-            }
-            return true;
-          };
-          var carretToEnd = function carretToEnd() {
-            var node = t.doc.getSelection().focusNode,
-              range = t.doc.createRange();
-            if (node.childNodes.length > 0) {
-              range.setStartAfter(node.childNodes[node.childNodes.length - 1]);
-              range.setEndAfter(node.childNodes[node.childNodes.length - 1]);
-              t.doc.getSelection().removeAllRanges();
-              t.doc.getSelection().addRange(range);
-            }
-          };
-          t.$c.on('tbwinit.history tbwchange.history', pushToHistory);
-          t.addBtnDef('historyRedo', btnBuildDefRedo);
-          t.addBtnDef('historyUndo', btnBuildDefUndo);
-        }
-      }
-    }
-  });
-})(jQuery);
-/*/* ===========================================================
- * trumbowyg.history.js v1.0
- * history plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Sven Dunemann [dunemann@forelabs.eu]
- */
-!function (i) {
-  "use strict";
-
-  i.extend(!0, i.trumbowyg, {
-    plugins: {
-      history: {
-        destroy: function destroy(i) {
-          i.$c.off("tbwinit.history tbwchange.history");
-        },
-        init: function init(t) {
-          t.o.plugins.history = i.extend(!0, {
-            _stack: [],
-            _index: -1,
-            _focusEl: void 0
-          }, t.o.plugins.history || {});
-          var o = {
-              title: t.lang.redo,
-              ico: "redo",
-              key: "Y",
-              fn: function fn() {
-                if (t.o.plugins.history._index < t.o.plugins.history._stack.length - 1) {
-                  t.o.plugins.history._index += 1;
-                  var i = t.o.plugins.history._index,
-                    o = t.o.plugins.history._stack[i];
-                  t.execCmd("html", o), t.o.plugins.history._stack[i] = t.$ed.html(), r(), s();
-                }
-              }
-            },
-            n = {
-              title: t.lang.undo,
-              ico: "undo",
-              key: "Z",
-              fn: function fn() {
-                if (t.o.plugins.history._index > 0) {
-                  t.o.plugins.history._index -= 1;
-                  var i = t.o.plugins.history._index,
-                    o = t.o.plugins.history._stack[i];
-                  t.execCmd("html", o), t.o.plugins.history._stack[i] = t.$ed.html(), r(), s();
-                }
-              }
-            },
-            s = function s() {
-              var i = t.o.plugins.history._index,
-                o = t.o.plugins.history._stack.length,
-                n = 0 !== o && i !== o - 1;
-              e("historyUndo", i > 0), e("historyRedo", n);
-            },
-            e = function e(i, o) {
-              var n = t.$box.find(".trumbowyg-" + i + "-button");
-              o ? n.removeClass("trumbowyg-disable") : n.hasClass("trumbowyg-disable") || n.addClass("trumbowyg-disable");
-            },
-            l = function l(i, t) {
-              if (i === t) return !0;
-              if (null == i || null == t) return !1;
-              if (i.length !== t.length) return !1;
-              for (var o = 0; o < i.length; o += 1) if (i[o] !== t[o]) return !1;
-              return !0;
-            },
-            r = function r() {
-              var i = t.doc.getSelection().focusNode,
-                o = t.doc.createRange();
-              i.childNodes.length > 0 && (o.setStartAfter(i.childNodes[i.childNodes.length - 1]), o.setEndAfter(i.childNodes[i.childNodes.length - 1]), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(o));
-            };
-          t.$c.on("tbwinit.history tbwchange.history", function () {
-            var o,
-              n,
-              e = t.o.plugins.history._index,
-              r = t.o.plugins.history._stack,
-              d = r.slice(-1)[0] || "<p></p>",
-              u = r[e],
-              h = t.$ed.html(),
-              c = t.doc.getSelection().focusNode,
-              g = "",
-              a = t.o.plugins.history._focusEl;
-            o = i("<div>" + d + "</div>").find("*").map(function () {
-              return this.localName;
-            }), n = i("<div>" + h + "</div>").find("*").map(function () {
-              return this.localName;
-            }), c && (t.o.plugins.history._focusEl = c, g = c.outerHTML || c.textContent), h !== u && (g.slice(-1).match(/\s/) || !l(o, n) || t.o.plugins.history._index <= 0 || c !== a ? (t.o.plugins.history._index += 1, t.o.plugins.history._stack = r.slice(0, t.o.plugins.history._index), t.o.plugins.history._stack.push(h)) : t.o.plugins.history._stack[e] = h, s());
-          }), t.addBtnDef("historyRedo", o), t.addBtnDef("historyUndo", n);
         }
       }
     }
@@ -3950,249 +3950,6 @@
   });
 }(jQuery);
 /* ===========================================================
- * trumbowyg.noembed.js v1.0
- * noEmbed plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Jake Johns (jakejohns)
- */
-
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    proxy: 'https://noembed.com/embed?nowrap=on',
-    urlFiled: 'url',
-    data: [],
-    success: undefined,
-    error: undefined
-  };
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        noembed: 'Noembed',
-        noembedError: 'Error'
-      },
-      az: {
-        noembed: 'Noembed',
-        noembedError: 'Xəta'
-      },
-      by: {
-        noembedError: 'Памылка'
-      },
-      cs: {
-        noembedError: 'Chyba'
-      },
-      da: {
-        noembedError: 'Fejl'
-      },
-      et: {
-        noembed: 'Noembed',
-        noembedError: 'Viga'
-      },
-      fr: {
-        noembedError: 'Erreur'
-      },
-      hu: {
-        noembed: 'Noembed',
-        noembedError: 'Hiba'
-      },
-      ja: {
-        noembedError: 'エラー'
-      },
-      ko: {
-        noembed: 'oEmbed 넣기',
-        noembedError: '에러'
-      },
-      pt_br: {
-        noembed: 'Incorporar',
-        noembedError: 'Erro'
-      },
-      ru: {
-        noembedError: 'Ошибка'
-      },
-      sl: {
-        noembed: 'Noembed',
-        noembedError: 'Napaka'
-      },
-      sk: {
-        noembedError: 'Chyba'
-      },
-      tr: {
-        noembedError: 'Hata'
-      },
-      zh_tw: {
-        noembed: '插入影片',
-        noembedError: '錯誤'
-      }
-      // jshint camelcase:true
-    },
-
-    plugins: {
-      noembed: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.noembed = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.noembed || {});
-          var btnDef = {
-            fn: function fn() {
-              var $modal = trumbowyg.openModalInsert(
-              // Title
-              trumbowyg.lang.noembed,
-              // Fields
-              {
-                url: {
-                  label: 'URL',
-                  required: true
-                }
-              },
-              // Callback
-              function (data) {
-                $.ajax({
-                  url: trumbowyg.o.plugins.noembed.proxy,
-                  type: 'GET',
-                  data: data,
-                  cache: false,
-                  dataType: 'json',
-                  success: function success(data) {
-                    if (trumbowyg.o.plugins.noembed.success) {
-                      trumbowyg.o.plugins.noembed.success(data, trumbowyg, $modal);
-                      return;
-                    }
-                    if (!data.html) {
-                      trumbowyg.addErrorOnModalField($('input[type=text]', $modal), data.error);
-                      return;
-                    }
-                    trumbowyg.execCmd('insertHTML', data.html);
-                    setTimeout(function () {
-                      trumbowyg.closeModal();
-                    }, 250);
-                  },
-                  error: trumbowyg.o.plugins.noembed.error || function () {
-                    trumbowyg.addErrorOnModalField($('input[type=text]', $modal), trumbowyg.lang.noembedError);
-                  }
-                });
-              });
-            }
-          };
-          trumbowyg.addBtnDef('noembed', btnDef);
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.noembed.js v1.0
- * noEmbed plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Jake Johns (jakejohns)
- */
-!function (e) {
-  "use strict";
-
-  var r = {
-    proxy: "https://noembed.com/embed?nowrap=on",
-    urlFiled: "url",
-    data: [],
-    success: void 0,
-    error: void 0
-  };
-  e.extend(!0, e.trumbowyg, {
-    langs: {
-      en: {
-        noembed: "Noembed",
-        noembedError: "Error"
-      },
-      az: {
-        noembed: "Noembed",
-        noembedError: "Xəta"
-      },
-      by: {
-        noembedError: "Памылка"
-      },
-      cs: {
-        noembedError: "Chyba"
-      },
-      da: {
-        noembedError: "Fejl"
-      },
-      et: {
-        noembed: "Noembed",
-        noembedError: "Viga"
-      },
-      fr: {
-        noembedError: "Erreur"
-      },
-      hu: {
-        noembed: "Noembed",
-        noembedError: "Hiba"
-      },
-      ja: {
-        noembedError: "エラー"
-      },
-      ko: {
-        noembed: "oEmbed 넣기",
-        noembedError: "에러"
-      },
-      pt_br: {
-        noembed: "Incorporar",
-        noembedError: "Erro"
-      },
-      ru: {
-        noembedError: "Ошибка"
-      },
-      sl: {
-        noembed: "Noembed",
-        noembedError: "Napaka"
-      },
-      sk: {
-        noembedError: "Chyba"
-      },
-      tr: {
-        noembedError: "Hata"
-      },
-      zh_tw: {
-        noembed: "插入影片",
-        noembedError: "錯誤"
-      }
-    },
-    plugins: {
-      noembed: {
-        init: function init(o) {
-          o.o.plugins.noembed = e.extend(!0, {}, r, o.o.plugins.noembed || {});
-          var n = {
-            fn: function fn() {
-              var r = o.openModalInsert(o.lang.noembed, {
-                url: {
-                  label: "URL",
-                  required: !0
-                }
-              }, function (n) {
-                e.ajax({
-                  url: o.o.plugins.noembed.proxy,
-                  type: "GET",
-                  data: n,
-                  cache: !1,
-                  dataType: "json",
-                  success: function success(n) {
-                    o.o.plugins.noembed.success ? o.o.plugins.noembed.success(n, o, r) : n.html ? (o.execCmd("insertHTML", n.html), setTimeout(function () {
-                      o.closeModal();
-                    }, 250)) : o.addErrorOnModalField(e("input[type=text]", r), n.error);
-                  },
-                  error: o.o.plugins.noembed.error || function () {
-                    o.addErrorOnModalField(e("input[type=text]", r), o.lang.noembedError);
-                  }
-                });
-              });
-            }
-          };
-          o.addBtnDef("noembed", n);
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
  * trumbowyg.mention.js v0.1
  * Mention plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -4621,6 +4378,249 @@
               i && (t.stopPropagation(), t.preventDefault());
             } catch (e) {}
           });
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.noembed.js v1.0
+ * noEmbed plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Jake Johns (jakejohns)
+ */
+
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    proxy: 'https://noembed.com/embed?nowrap=on',
+    urlFiled: 'url',
+    data: [],
+    success: undefined,
+    error: undefined
+  };
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        noembed: 'Noembed',
+        noembedError: 'Error'
+      },
+      az: {
+        noembed: 'Noembed',
+        noembedError: 'Xəta'
+      },
+      by: {
+        noembedError: 'Памылка'
+      },
+      cs: {
+        noembedError: 'Chyba'
+      },
+      da: {
+        noembedError: 'Fejl'
+      },
+      et: {
+        noembed: 'Noembed',
+        noembedError: 'Viga'
+      },
+      fr: {
+        noembedError: 'Erreur'
+      },
+      hu: {
+        noembed: 'Noembed',
+        noembedError: 'Hiba'
+      },
+      ja: {
+        noembedError: 'エラー'
+      },
+      ko: {
+        noembed: 'oEmbed 넣기',
+        noembedError: '에러'
+      },
+      pt_br: {
+        noembed: 'Incorporar',
+        noembedError: 'Erro'
+      },
+      ru: {
+        noembedError: 'Ошибка'
+      },
+      sl: {
+        noembed: 'Noembed',
+        noembedError: 'Napaka'
+      },
+      sk: {
+        noembedError: 'Chyba'
+      },
+      tr: {
+        noembedError: 'Hata'
+      },
+      zh_tw: {
+        noembed: '插入影片',
+        noembedError: '錯誤'
+      }
+      // jshint camelcase:true
+    },
+
+    plugins: {
+      noembed: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.noembed = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.noembed || {});
+          var btnDef = {
+            fn: function fn() {
+              var $modal = trumbowyg.openModalInsert(
+              // Title
+              trumbowyg.lang.noembed,
+              // Fields
+              {
+                url: {
+                  label: 'URL',
+                  required: true
+                }
+              },
+              // Callback
+              function (data) {
+                $.ajax({
+                  url: trumbowyg.o.plugins.noembed.proxy,
+                  type: 'GET',
+                  data: data,
+                  cache: false,
+                  dataType: 'json',
+                  success: function success(data) {
+                    if (trumbowyg.o.plugins.noembed.success) {
+                      trumbowyg.o.plugins.noembed.success(data, trumbowyg, $modal);
+                      return;
+                    }
+                    if (!data.html) {
+                      trumbowyg.addErrorOnModalField($('input[type=text]', $modal), data.error);
+                      return;
+                    }
+                    trumbowyg.execCmd('insertHTML', data.html);
+                    setTimeout(function () {
+                      trumbowyg.closeModal();
+                    }, 250);
+                  },
+                  error: trumbowyg.o.plugins.noembed.error || function () {
+                    trumbowyg.addErrorOnModalField($('input[type=text]', $modal), trumbowyg.lang.noembedError);
+                  }
+                });
+              });
+            }
+          };
+          trumbowyg.addBtnDef('noembed', btnDef);
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.noembed.js v1.0
+ * noEmbed plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Jake Johns (jakejohns)
+ */
+!function (e) {
+  "use strict";
+
+  var r = {
+    proxy: "https://noembed.com/embed?nowrap=on",
+    urlFiled: "url",
+    data: [],
+    success: void 0,
+    error: void 0
+  };
+  e.extend(!0, e.trumbowyg, {
+    langs: {
+      en: {
+        noembed: "Noembed",
+        noembedError: "Error"
+      },
+      az: {
+        noembed: "Noembed",
+        noembedError: "Xəta"
+      },
+      by: {
+        noembedError: "Памылка"
+      },
+      cs: {
+        noembedError: "Chyba"
+      },
+      da: {
+        noembedError: "Fejl"
+      },
+      et: {
+        noembed: "Noembed",
+        noembedError: "Viga"
+      },
+      fr: {
+        noembedError: "Erreur"
+      },
+      hu: {
+        noembed: "Noembed",
+        noembedError: "Hiba"
+      },
+      ja: {
+        noembedError: "エラー"
+      },
+      ko: {
+        noembed: "oEmbed 넣기",
+        noembedError: "에러"
+      },
+      pt_br: {
+        noembed: "Incorporar",
+        noembedError: "Erro"
+      },
+      ru: {
+        noembedError: "Ошибка"
+      },
+      sl: {
+        noembed: "Noembed",
+        noembedError: "Napaka"
+      },
+      sk: {
+        noembedError: "Chyba"
+      },
+      tr: {
+        noembedError: "Hata"
+      },
+      zh_tw: {
+        noembed: "插入影片",
+        noembedError: "錯誤"
+      }
+    },
+    plugins: {
+      noembed: {
+        init: function init(o) {
+          o.o.plugins.noembed = e.extend(!0, {}, r, o.o.plugins.noembed || {});
+          var n = {
+            fn: function fn() {
+              var r = o.openModalInsert(o.lang.noembed, {
+                url: {
+                  label: "URL",
+                  required: !0
+                }
+              }, function (n) {
+                e.ajax({
+                  url: o.o.plugins.noembed.proxy,
+                  type: "GET",
+                  data: n,
+                  cache: !1,
+                  dataType: "json",
+                  success: function success(n) {
+                    o.o.plugins.noembed.success ? o.o.plugins.noembed.success(n, o, r) : n.html ? (o.execCmd("insertHTML", n.html), setTimeout(function () {
+                      o.closeModal();
+                    }, 250)) : o.addErrorOnModalField(e("input[type=text]", r), n.error);
+                  },
+                  error: o.o.plugins.noembed.error || function () {
+                    o.addErrorOnModalField(e("input[type=text]", r), o.lang.noembedError);
+                  }
+                });
+              });
+            }
+          };
+          o.addBtnDef("noembed", n);
         }
       }
     }
@@ -5419,6 +5419,184 @@
             dropdown: r(a)
           };
           a.addBtnDef("specialChars", e);
+        }
+      }
+    }
+  });
+}(jQuery);
+(function ($) {
+  'use strict';
+
+  // Adds the language variables
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        template: 'Template'
+      },
+      az: {
+        template: 'Şablon'
+      },
+      by: {
+        template: 'Шаблон'
+      },
+      da: {
+        template: 'Skabelon'
+      },
+      de: {
+        template: 'Vorlage'
+      },
+      et: {
+        template: 'Mall'
+      },
+      fr: {
+        template: 'Patron'
+      },
+      hu: {
+        template: 'Sablon'
+      },
+      ja: {
+        template: 'テンプレート'
+      },
+      ko: {
+        template: '서식'
+      },
+      nl: {
+        template: 'Sjabloon'
+      },
+      pt_br: {
+        template: 'Modelo'
+      },
+      ru: {
+        template: 'Шаблон'
+      },
+      sl: {
+        template: 'Predloga'
+      },
+      tr: {
+        template: 'Şablon'
+      },
+      zh_tw: {
+        template: '模板'
+      }
+      // jshint camelcase:true
+    }
+  });
+
+  // Adds the extra button definition
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      template: {
+        shouldInit: function shouldInit(trumbowyg) {
+          return trumbowyg.o.plugins.hasOwnProperty('templates');
+        },
+        init: function init(trumbowyg) {
+          trumbowyg.addBtnDef('template', {
+            dropdown: templateSelector(trumbowyg),
+            hasIcon: false,
+            text: trumbowyg.lang.template
+          });
+        }
+      }
+    }
+  });
+
+  // Creates the template-selector dropdown.
+  function templateSelector(trumbowyg) {
+    var available = trumbowyg.o.plugins.templates;
+    var templates = [];
+    $.each(available, function (index, template) {
+      trumbowyg.addBtnDef('template_' + index, {
+        fn: function fn() {
+          trumbowyg.html(template.html);
+        },
+        hasIcon: false,
+        title: template.name
+      });
+      templates.push('template_' + index);
+    });
+    return templates;
+  }
+})(jQuery);
+!function (t) {
+  "use strict";
+
+  function e(e) {
+    var a = e.o.plugins.templates,
+      l = [];
+    return t.each(a, function (t, a) {
+      e.addBtnDef("template_" + t, {
+        fn: function fn() {
+          e.html(a.html);
+        },
+        hasIcon: !1,
+        title: a.name
+      }), l.push("template_" + t);
+    }), l;
+  }
+  t.extend(!0, t.trumbowyg, {
+    langs: {
+      en: {
+        template: "Template"
+      },
+      az: {
+        template: "Şablon"
+      },
+      by: {
+        template: "Шаблон"
+      },
+      da: {
+        template: "Skabelon"
+      },
+      de: {
+        template: "Vorlage"
+      },
+      et: {
+        template: "Mall"
+      },
+      fr: {
+        template: "Patron"
+      },
+      hu: {
+        template: "Sablon"
+      },
+      ja: {
+        template: "テンプレート"
+      },
+      ko: {
+        template: "서식"
+      },
+      nl: {
+        template: "Sjabloon"
+      },
+      pt_br: {
+        template: "Modelo"
+      },
+      ru: {
+        template: "Шаблон"
+      },
+      sl: {
+        template: "Predloga"
+      },
+      tr: {
+        template: "Şablon"
+      },
+      zh_tw: {
+        template: "模板"
+      }
+    }
+  }), t.extend(!0, t.trumbowyg, {
+    plugins: {
+      template: {
+        shouldInit: function shouldInit(t) {
+          return t.o.plugins.hasOwnProperty("templates");
+        },
+        init: function init(t) {
+          t.addBtnDef("template", {
+            dropdown: e(t),
+            hasIcon: !1,
+            text: t.lang.template
+          });
         }
       }
     }
@@ -8284,184 +8462,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
           };
           e.addBtnDef("upload", l);
-        }
-      }
-    }
-  });
-}(jQuery);
-(function ($) {
-  'use strict';
-
-  // Adds the language variables
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        template: 'Template'
-      },
-      az: {
-        template: 'Şablon'
-      },
-      by: {
-        template: 'Шаблон'
-      },
-      da: {
-        template: 'Skabelon'
-      },
-      de: {
-        template: 'Vorlage'
-      },
-      et: {
-        template: 'Mall'
-      },
-      fr: {
-        template: 'Patron'
-      },
-      hu: {
-        template: 'Sablon'
-      },
-      ja: {
-        template: 'テンプレート'
-      },
-      ko: {
-        template: '서식'
-      },
-      nl: {
-        template: 'Sjabloon'
-      },
-      pt_br: {
-        template: 'Modelo'
-      },
-      ru: {
-        template: 'Шаблон'
-      },
-      sl: {
-        template: 'Predloga'
-      },
-      tr: {
-        template: 'Şablon'
-      },
-      zh_tw: {
-        template: '模板'
-      }
-      // jshint camelcase:true
-    }
-  });
-
-  // Adds the extra button definition
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      template: {
-        shouldInit: function shouldInit(trumbowyg) {
-          return trumbowyg.o.plugins.hasOwnProperty('templates');
-        },
-        init: function init(trumbowyg) {
-          trumbowyg.addBtnDef('template', {
-            dropdown: templateSelector(trumbowyg),
-            hasIcon: false,
-            text: trumbowyg.lang.template
-          });
-        }
-      }
-    }
-  });
-
-  // Creates the template-selector dropdown.
-  function templateSelector(trumbowyg) {
-    var available = trumbowyg.o.plugins.templates;
-    var templates = [];
-    $.each(available, function (index, template) {
-      trumbowyg.addBtnDef('template_' + index, {
-        fn: function fn() {
-          trumbowyg.html(template.html);
-        },
-        hasIcon: false,
-        title: template.name
-      });
-      templates.push('template_' + index);
-    });
-    return templates;
-  }
-})(jQuery);
-!function (t) {
-  "use strict";
-
-  function e(e) {
-    var a = e.o.plugins.templates,
-      l = [];
-    return t.each(a, function (t, a) {
-      e.addBtnDef("template_" + t, {
-        fn: function fn() {
-          e.html(a.html);
-        },
-        hasIcon: !1,
-        title: a.name
-      }), l.push("template_" + t);
-    }), l;
-  }
-  t.extend(!0, t.trumbowyg, {
-    langs: {
-      en: {
-        template: "Template"
-      },
-      az: {
-        template: "Şablon"
-      },
-      by: {
-        template: "Шаблон"
-      },
-      da: {
-        template: "Skabelon"
-      },
-      de: {
-        template: "Vorlage"
-      },
-      et: {
-        template: "Mall"
-      },
-      fr: {
-        template: "Patron"
-      },
-      hu: {
-        template: "Sablon"
-      },
-      ja: {
-        template: "テンプレート"
-      },
-      ko: {
-        template: "서식"
-      },
-      nl: {
-        template: "Sjabloon"
-      },
-      pt_br: {
-        template: "Modelo"
-      },
-      ru: {
-        template: "Шаблон"
-      },
-      sl: {
-        template: "Predloga"
-      },
-      tr: {
-        template: "Şablon"
-      },
-      zh_tw: {
-        template: "模板"
-      }
-    }
-  }), t.extend(!0, t.trumbowyg, {
-    plugins: {
-      template: {
-        shouldInit: function shouldInit(t) {
-          return t.o.plugins.hasOwnProperty("templates");
-        },
-        init: function init(t) {
-          t.addBtnDef("template", {
-            dropdown: e(t),
-            hasIcon: !1,
-            text: t.lang.template
-          });
         }
       }
     }

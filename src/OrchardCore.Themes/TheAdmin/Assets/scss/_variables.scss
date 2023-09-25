@@ -26,12 +26,13 @@ $link-padding-left: 16px !default;
     --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
     --oc-zindex-dropdown: #{$zindex-dropdown};
     --oc-top-nav-height: #{$top-nav-height};
-    --oc-top-nav-zindex: calc(#{$zindex-fixed} + 5);
+    --oc-top-nav-zindex: 1034; // $zindex-fixed + 4
     --oc-footer-height: #{$footer-height};
     --oc-start-navigation-width: #{$left-navigation-width};
     --oc-start-navigation-width-when-compact: #{$left-navigation-width-when-compact};
-    --oc-start-navigation-zindex: calc(#{$zindex-fixed} + 3);
-    --oc-link-padding-left: 1#{$link-padding-left};
+    --oc-start-navigation-zindex: 1033; // $zindex-fixed + 3
+    --oc-link-padding-left: #{$link-padding-left};
+    --oc-editor-fullscreen: 1054; // $zindex-modal - 1
     --bs-dropdown-zindex: #{$zindex-dropdown};
     --bs-zindex-fixed: #{$zindex-fixed};
 }

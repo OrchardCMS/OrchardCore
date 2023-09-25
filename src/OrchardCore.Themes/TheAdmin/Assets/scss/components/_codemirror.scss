@@ -1,7 +1,7 @@
 @import '../variables';
 
 :root {
-    --oc-mde-zindex: #{$zindex-modal -1} !important;
+    --oc-mde-zindex: var(--oc-editor-fullscreen) !important;
 }
 
 .CodeMirror {
