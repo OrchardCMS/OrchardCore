@@ -27,7 +27,6 @@ namespace OrchardCore.Environment.Shell
 
         private readonly ShellConfiguration _settings;
         private readonly ShellConfiguration _configuration;
-        internal volatile int _refCount;
         private bool _released;
 
         /// <summary>
@@ -152,6 +151,11 @@ namespace OrchardCore.Environment.Shell
 
             _settings?.Release();
             _configuration?.Release();
+
+            // Should not be disposed as an 'IDisposable' service.
+#pragma warning disable CA1816 // Call GC.SuppressFinalize correctly.
+            GC.SuppressFinalize(this);
+#pragma warning restore CA1816 // Call GC.SuppressFinalize correctly.
         }
 
         ~ShellSettings() => Release();

@@ -291,10 +291,6 @@ namespace OrchardCore.Environment.Shell.Builders
             {
                 Settings.Release();
             }
-
-            // Remove the reference to the settings but keep a way
-            // to retrieve the released shells in the background.
-            Settings = new ShellSettings() { Name = Settings.Name };
         }
 
         ~ShellContext() => Close();

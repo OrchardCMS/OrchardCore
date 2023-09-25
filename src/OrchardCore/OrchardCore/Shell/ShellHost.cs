@@ -96,6 +96,11 @@ namespace OrchardCore.Environment.Shell
                     {
                         if (!_shellContexts.TryGetValue(settings.Name, out shell))
                         {
+                            if (settings.Released)
+                            {
+                                settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
+                            }
+
                             shell = await CreateShellContextAsync(settings);
                             AddAndRegisterShell(shell);
                         }
@@ -198,9 +203,7 @@ namespace OrchardCore.Environment.Shell
 
             if (!settings.IsInitializing())
             {
-                var previous = settings;
                 settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
-                previous.Release();
             }
 
             var count = 0;
@@ -219,15 +222,7 @@ namespace OrchardCore.Environment.Shell
                     continue;
                 }
 
-                _shellSettings.AddOrUpdate(settings.Name, (key) => settings, (key, existing) =>
-                {
-                    if (existing != settings)
-                    {
-                        existing.Release();
-                    }
-
-                    return settings;
-                });
+                _shellSettings[settings.Name] = settings;
 
                 if (CanRegisterShell(settings))
                 {
@@ -242,7 +237,6 @@ namespace OrchardCore.Environment.Shell
                 // Consistency: We may have been the last to add the shell but not with the last settings.
                 var loaded = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
                 var loadedVersionId = loaded.VersionId;
-
                 loaded.Release();
 
                 if (settings.VersionId == loadedVersionId)
