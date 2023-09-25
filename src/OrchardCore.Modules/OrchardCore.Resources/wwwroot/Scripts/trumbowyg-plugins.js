@@ -1333,6 +1333,266 @@
     langs: {
       // jshint camelcase:false
       en: {
+        fontFamily: 'Font'
+      },
+      az: {
+        fontFamily: 'Şrift'
+      },
+      by: {
+        fontFamily: 'Шрыфт'
+      },
+      ca: {
+        fontFamily: 'Font'
+      },
+      da: {
+        fontFamily: 'Skrifttype'
+      },
+      de: {
+        fontFamily: 'Schriftart'
+      },
+      es: {
+        fontFamily: 'Fuente'
+      },
+      et: {
+        fontFamily: 'Font'
+      },
+      fr: {
+        fontFamily: 'Police'
+      },
+      hu: {
+        fontFamily: 'Betűtípus'
+      },
+      ko: {
+        fontFamily: '글꼴'
+      },
+      nl: {
+        fontFamily: 'Lettertype'
+      },
+      pt_br: {
+        fontFamily: 'Fonte'
+      },
+      ru: {
+        fontFamily: 'Шрифт'
+      },
+      sl: {
+        fontFamily: 'Pisava'
+      },
+      tr: {
+        fontFamily: 'Yazı tipi'
+      },
+      zh_tw: {
+        fontFamily: '字體'
+      }
+    }
+  });
+  // jshint camelcase:true
+
+  var defaultOptions = {
+    fontList: [{
+      name: 'Arial',
+      family: 'Arial, Helvetica, sans-serif'
+    }, {
+      name: 'Arial Black',
+      family: 'Arial Black, Gadget, sans-serif'
+    }, {
+      name: 'Comic Sans',
+      family: 'Comic Sans MS, Textile, cursive, sans-serif'
+    }, {
+      name: 'Courier New',
+      family: 'Courier New, Courier, monospace'
+    }, {
+      name: 'Georgia',
+      family: 'Georgia, serif'
+    }, {
+      name: 'Impact',
+      family: 'Impact, Charcoal, sans-serif'
+    }, {
+      name: 'Lucida Console',
+      family: 'Lucida Console, Monaco, monospace'
+    }, {
+      name: 'Lucida Sans',
+      family: 'Lucida Sans Uncide, Lucida Grande, sans-serif'
+    }, {
+      name: 'Palatino',
+      family: 'Palatino Linotype, Book Antiqua, Palatino, serif'
+    }, {
+      name: 'Tahoma',
+      family: 'Tahoma, Geneva, sans-serif'
+    }, {
+      name: 'Times New Roman',
+      family: 'Times New Roman, Times, serif'
+    }, {
+      name: 'Trebuchet',
+      family: 'Trebuchet MS, Helvetica, sans-serif'
+    }, {
+      name: 'Verdana',
+      family: 'Verdana, Geneva, sans-serif'
+    }]
+  };
+
+  // Add dropdown with web safe fonts
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      fontfamily: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.fontfamily = $.extend({}, defaultOptions, trumbowyg.o.plugins.fontfamily || {});
+          trumbowyg.addBtnDef('fontfamily', {
+            dropdown: buildDropdown(trumbowyg),
+            hasIcon: false,
+            text: trumbowyg.lang.fontFamily
+          });
+        }
+      }
+    }
+  });
+  function buildDropdown(trumbowyg) {
+    var dropdown = [];
+    $.each(trumbowyg.o.plugins.fontfamily.fontList, function (index, font) {
+      trumbowyg.addBtnDef('fontfamily_' + index, {
+        title: '<span style="font-family: ' + font.family + ';">' + font.name + '</span>',
+        hasIcon: false,
+        fn: function fn() {
+          trumbowyg.execCmd('fontName', font.family, true);
+        }
+      });
+      dropdown.push('fontfamily_' + index);
+    });
+    return dropdown;
+  }
+})(jQuery);
+!function (a) {
+  "use strict";
+
+  a.extend(!0, a.trumbowyg, {
+    langs: {
+      en: {
+        fontFamily: "Font"
+      },
+      az: {
+        fontFamily: "Şrift"
+      },
+      by: {
+        fontFamily: "Шрыфт"
+      },
+      ca: {
+        fontFamily: "Font"
+      },
+      da: {
+        fontFamily: "Skrifttype"
+      },
+      de: {
+        fontFamily: "Schriftart"
+      },
+      es: {
+        fontFamily: "Fuente"
+      },
+      et: {
+        fontFamily: "Font"
+      },
+      fr: {
+        fontFamily: "Police"
+      },
+      hu: {
+        fontFamily: "Betűtípus"
+      },
+      ko: {
+        fontFamily: "글꼴"
+      },
+      nl: {
+        fontFamily: "Lettertype"
+      },
+      pt_br: {
+        fontFamily: "Fonte"
+      },
+      ru: {
+        fontFamily: "Шрифт"
+      },
+      sl: {
+        fontFamily: "Pisava"
+      },
+      tr: {
+        fontFamily: "Yazı tipi"
+      },
+      zh_tw: {
+        fontFamily: "字體"
+      }
+    }
+  });
+  var n = {
+    fontList: [{
+      name: "Arial",
+      family: "Arial, Helvetica, sans-serif"
+    }, {
+      name: "Arial Black",
+      family: "Arial Black, Gadget, sans-serif"
+    }, {
+      name: "Comic Sans",
+      family: "Comic Sans MS, Textile, cursive, sans-serif"
+    }, {
+      name: "Courier New",
+      family: "Courier New, Courier, monospace"
+    }, {
+      name: "Georgia",
+      family: "Georgia, serif"
+    }, {
+      name: "Impact",
+      family: "Impact, Charcoal, sans-serif"
+    }, {
+      name: "Lucida Console",
+      family: "Lucida Console, Monaco, monospace"
+    }, {
+      name: "Lucida Sans",
+      family: "Lucida Sans Uncide, Lucida Grande, sans-serif"
+    }, {
+      name: "Palatino",
+      family: "Palatino Linotype, Book Antiqua, Palatino, serif"
+    }, {
+      name: "Tahoma",
+      family: "Tahoma, Geneva, sans-serif"
+    }, {
+      name: "Times New Roman",
+      family: "Times New Roman, Times, serif"
+    }, {
+      name: "Trebuchet",
+      family: "Trebuchet MS, Helvetica, sans-serif"
+    }, {
+      name: "Verdana",
+      family: "Verdana, Geneva, sans-serif"
+    }]
+  };
+  function i(n) {
+    var i = [];
+    return a.each(n.o.plugins.fontfamily.fontList, function (a, e) {
+      n.addBtnDef("fontfamily_" + a, {
+        title: '<span style="font-family: ' + e.family + ';">' + e.name + "</span>",
+        hasIcon: !1,
+        fn: function fn() {
+          n.execCmd("fontName", e.family, !0);
+        }
+      }), i.push("fontfamily_" + a);
+    }), i;
+  }
+  a.extend(!0, a.trumbowyg, {
+    plugins: {
+      fontfamily: {
+        init: function init(e) {
+          e.o.plugins.fontfamily = a.extend({}, n, e.o.plugins.fontfamily || {}), e.addBtnDef("fontfamily", {
+            dropdown: i(e),
+            hasIcon: !1,
+            text: e.lang.fontFamily
+          });
+        }
+      }
+    }
+  });
+}(jQuery);
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
         fontsize: 'Font size',
         fontsizes: {
           'x-small': 'Extra small',
@@ -2043,266 +2303,6 @@
         init: function init(l) {
           l.o.plugins.fontsize = e.extend({}, t, l.o.plugins.fontsize || {}), l.addBtnDef("fontsize", {
             dropdown: a(l)
-          });
-        }
-      }
-    }
-  });
-}(jQuery);
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        fontFamily: 'Font'
-      },
-      az: {
-        fontFamily: 'Şrift'
-      },
-      by: {
-        fontFamily: 'Шрыфт'
-      },
-      ca: {
-        fontFamily: 'Font'
-      },
-      da: {
-        fontFamily: 'Skrifttype'
-      },
-      de: {
-        fontFamily: 'Schriftart'
-      },
-      es: {
-        fontFamily: 'Fuente'
-      },
-      et: {
-        fontFamily: 'Font'
-      },
-      fr: {
-        fontFamily: 'Police'
-      },
-      hu: {
-        fontFamily: 'Betűtípus'
-      },
-      ko: {
-        fontFamily: '글꼴'
-      },
-      nl: {
-        fontFamily: 'Lettertype'
-      },
-      pt_br: {
-        fontFamily: 'Fonte'
-      },
-      ru: {
-        fontFamily: 'Шрифт'
-      },
-      sl: {
-        fontFamily: 'Pisava'
-      },
-      tr: {
-        fontFamily: 'Yazı tipi'
-      },
-      zh_tw: {
-        fontFamily: '字體'
-      }
-    }
-  });
-  // jshint camelcase:true
-
-  var defaultOptions = {
-    fontList: [{
-      name: 'Arial',
-      family: 'Arial, Helvetica, sans-serif'
-    }, {
-      name: 'Arial Black',
-      family: 'Arial Black, Gadget, sans-serif'
-    }, {
-      name: 'Comic Sans',
-      family: 'Comic Sans MS, Textile, cursive, sans-serif'
-    }, {
-      name: 'Courier New',
-      family: 'Courier New, Courier, monospace'
-    }, {
-      name: 'Georgia',
-      family: 'Georgia, serif'
-    }, {
-      name: 'Impact',
-      family: 'Impact, Charcoal, sans-serif'
-    }, {
-      name: 'Lucida Console',
-      family: 'Lucida Console, Monaco, monospace'
-    }, {
-      name: 'Lucida Sans',
-      family: 'Lucida Sans Uncide, Lucida Grande, sans-serif'
-    }, {
-      name: 'Palatino',
-      family: 'Palatino Linotype, Book Antiqua, Palatino, serif'
-    }, {
-      name: 'Tahoma',
-      family: 'Tahoma, Geneva, sans-serif'
-    }, {
-      name: 'Times New Roman',
-      family: 'Times New Roman, Times, serif'
-    }, {
-      name: 'Trebuchet',
-      family: 'Trebuchet MS, Helvetica, sans-serif'
-    }, {
-      name: 'Verdana',
-      family: 'Verdana, Geneva, sans-serif'
-    }]
-  };
-
-  // Add dropdown with web safe fonts
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      fontfamily: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.fontfamily = $.extend({}, defaultOptions, trumbowyg.o.plugins.fontfamily || {});
-          trumbowyg.addBtnDef('fontfamily', {
-            dropdown: buildDropdown(trumbowyg),
-            hasIcon: false,
-            text: trumbowyg.lang.fontFamily
-          });
-        }
-      }
-    }
-  });
-  function buildDropdown(trumbowyg) {
-    var dropdown = [];
-    $.each(trumbowyg.o.plugins.fontfamily.fontList, function (index, font) {
-      trumbowyg.addBtnDef('fontfamily_' + index, {
-        title: '<span style="font-family: ' + font.family + ';">' + font.name + '</span>',
-        hasIcon: false,
-        fn: function fn() {
-          trumbowyg.execCmd('fontName', font.family, true);
-        }
-      });
-      dropdown.push('fontfamily_' + index);
-    });
-    return dropdown;
-  }
-})(jQuery);
-!function (a) {
-  "use strict";
-
-  a.extend(!0, a.trumbowyg, {
-    langs: {
-      en: {
-        fontFamily: "Font"
-      },
-      az: {
-        fontFamily: "Şrift"
-      },
-      by: {
-        fontFamily: "Шрыфт"
-      },
-      ca: {
-        fontFamily: "Font"
-      },
-      da: {
-        fontFamily: "Skrifttype"
-      },
-      de: {
-        fontFamily: "Schriftart"
-      },
-      es: {
-        fontFamily: "Fuente"
-      },
-      et: {
-        fontFamily: "Font"
-      },
-      fr: {
-        fontFamily: "Police"
-      },
-      hu: {
-        fontFamily: "Betűtípus"
-      },
-      ko: {
-        fontFamily: "글꼴"
-      },
-      nl: {
-        fontFamily: "Lettertype"
-      },
-      pt_br: {
-        fontFamily: "Fonte"
-      },
-      ru: {
-        fontFamily: "Шрифт"
-      },
-      sl: {
-        fontFamily: "Pisava"
-      },
-      tr: {
-        fontFamily: "Yazı tipi"
-      },
-      zh_tw: {
-        fontFamily: "字體"
-      }
-    }
-  });
-  var n = {
-    fontList: [{
-      name: "Arial",
-      family: "Arial, Helvetica, sans-serif"
-    }, {
-      name: "Arial Black",
-      family: "Arial Black, Gadget, sans-serif"
-    }, {
-      name: "Comic Sans",
-      family: "Comic Sans MS, Textile, cursive, sans-serif"
-    }, {
-      name: "Courier New",
-      family: "Courier New, Courier, monospace"
-    }, {
-      name: "Georgia",
-      family: "Georgia, serif"
-    }, {
-      name: "Impact",
-      family: "Impact, Charcoal, sans-serif"
-    }, {
-      name: "Lucida Console",
-      family: "Lucida Console, Monaco, monospace"
-    }, {
-      name: "Lucida Sans",
-      family: "Lucida Sans Uncide, Lucida Grande, sans-serif"
-    }, {
-      name: "Palatino",
-      family: "Palatino Linotype, Book Antiqua, Palatino, serif"
-    }, {
-      name: "Tahoma",
-      family: "Tahoma, Geneva, sans-serif"
-    }, {
-      name: "Times New Roman",
-      family: "Times New Roman, Times, serif"
-    }, {
-      name: "Trebuchet",
-      family: "Trebuchet MS, Helvetica, sans-serif"
-    }, {
-      name: "Verdana",
-      family: "Verdana, Geneva, sans-serif"
-    }]
-  };
-  function i(n) {
-    var i = [];
-    return a.each(n.o.plugins.fontfamily.fontList, function (a, e) {
-      n.addBtnDef("fontfamily_" + a, {
-        title: '<span style="font-family: ' + e.family + ';">' + e.name + "</span>",
-        hasIcon: !1,
-        fn: function fn() {
-          n.execCmd("fontName", e.family, !0);
-        }
-      }), i.push("fontfamily_" + a);
-    }), i;
-  }
-  a.extend(!0, a.trumbowyg, {
-    plugins: {
-      fontfamily: {
-        init: function init(e) {
-          e.o.plugins.fontfamily = a.extend({}, n, e.o.plugins.fontfamily || {}), e.addBtnDef("fontfamily", {
-            dropdown: i(e),
-            hasIcon: !1,
-            text: e.lang.fontFamily
           });
         }
       }
@@ -3950,220 +3950,6 @@
   });
 }(jQuery);
 /* ===========================================================
- * trumbowyg.mention.js v0.1
- * Mention plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Viper
- *          Github: https://github.com/Globulopolis
- *          Website: http://киноархив.com
- */
-
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    source: [],
-    formatDropdownItem: formatDropdownItem,
-    formatResult: formatResult
-  };
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        mention: 'Mention'
-      },
-      az: {
-        mention: 'Bildirmək'
-      },
-      by: {
-        mention: 'Згадаць'
-      },
-      da: {
-        mention: 'Nævn'
-      },
-      et: {
-        mention: 'Maini'
-      },
-      fr: {
-        mention: 'Mentionner'
-      },
-      hu: {
-        mention: 'Említ'
-      },
-      ko: {
-        mention: '언급'
-      },
-      pt_br: {
-        mention: 'Menção'
-      },
-      ru: {
-        mention: 'Упомянуть'
-      },
-      sl: {
-        mention: 'Omeni'
-      },
-      tr: {
-        mention: 'Bahset'
-      },
-      zh_tw: {
-        mention: '標記'
-      }
-      // jshint camelcase:true
-    },
-
-    plugins: {
-      mention: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.mention = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.mention || {});
-          var btnDef = {
-            dropdown: buildDropdown(trumbowyg.o.plugins.mention.source, trumbowyg)
-          };
-          trumbowyg.addBtnDef('mention', btnDef);
-        }
-      }
-    }
-  });
-
-  /**
-   * Build dropdown list
-   *
-   * @param {Array}   items      Items
-   * @param {object}  trumbowyg  Editor
-   *
-   * @return {Array}
-   */
-  function buildDropdown(items, trumbowyg) {
-    var dropdown = [];
-    $.each(items, function (i, item) {
-      var btn = 'mention-' + i,
-        btnDef = {
-          hasIcon: false,
-          text: trumbowyg.o.plugins.mention.formatDropdownItem(item),
-          fn: function fn() {
-            trumbowyg.execCmd('insertHTML', trumbowyg.o.plugins.mention.formatResult(item));
-            return true;
-          }
-        };
-      trumbowyg.addBtnDef(btn, btnDef);
-      dropdown.push(btn);
-    });
-    return dropdown;
-  }
-
-  /**
-   * Format item in dropdown.
-   *
-   * @param   {object}  item  Item object.
-   *
-   * @return  {string}
-   */
-  function formatDropdownItem(item) {
-    return item.login;
-  }
-
-  /**
-   * Format result pasted in editor.
-   *
-   * @param   {object}  item  Item object.
-   *
-   * @return  {string}
-   */
-  function formatResult(item) {
-    return '@' + item.login + ' ';
-  }
-})(jQuery);
-/* ===========================================================
- * trumbowyg.mention.js v0.1
- * Mention plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Viper
- *          Github: https://github.com/Globulopolis
- *          Website: http://киноархив.com
- */
-!function (n) {
-  "use strict";
-
-  var t = {
-    source: [],
-    formatDropdownItem: function formatDropdownItem(n) {
-      return n.login;
-    },
-    formatResult: function formatResult(n) {
-      return "@" + n.login + " ";
-    }
-  };
-  function o(t, o) {
-    var e = [];
-    return n.each(t, function (n, t) {
-      var i = "mention-" + n,
-        m = {
-          hasIcon: !1,
-          text: o.o.plugins.mention.formatDropdownItem(t),
-          fn: function fn() {
-            return o.execCmd("insertHTML", o.o.plugins.mention.formatResult(t)), !0;
-          }
-        };
-      o.addBtnDef(i, m), e.push(i);
-    }), e;
-  }
-  n.extend(!0, n.trumbowyg, {
-    langs: {
-      en: {
-        mention: "Mention"
-      },
-      az: {
-        mention: "Bildirmək"
-      },
-      by: {
-        mention: "Згадаць"
-      },
-      da: {
-        mention: "Nævn"
-      },
-      et: {
-        mention: "Maini"
-      },
-      fr: {
-        mention: "Mentionner"
-      },
-      hu: {
-        mention: "Említ"
-      },
-      ko: {
-        mention: "언급"
-      },
-      pt_br: {
-        mention: "Menção"
-      },
-      ru: {
-        mention: "Упомянуть"
-      },
-      sl: {
-        mention: "Omeni"
-      },
-      tr: {
-        mention: "Bahset"
-      },
-      zh_tw: {
-        mention: "標記"
-      }
-    },
-    plugins: {
-      mention: {
-        init: function init(e) {
-          e.o.plugins.mention = n.extend(!0, {}, t, e.o.plugins.mention || {});
-          var i = {
-            dropdown: o(e.o.plugins.mention.source, e)
-          };
-          e.addBtnDef("mention", i);
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
  * trumbowyg.noembed.js v1.0
  * noEmbed plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -4401,6 +4187,220 @@
             }
           };
           o.addBtnDef("noembed", n);
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.mention.js v0.1
+ * Mention plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Viper
+ *          Github: https://github.com/Globulopolis
+ *          Website: http://киноархив.com
+ */
+
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    source: [],
+    formatDropdownItem: formatDropdownItem,
+    formatResult: formatResult
+  };
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        mention: 'Mention'
+      },
+      az: {
+        mention: 'Bildirmək'
+      },
+      by: {
+        mention: 'Згадаць'
+      },
+      da: {
+        mention: 'Nævn'
+      },
+      et: {
+        mention: 'Maini'
+      },
+      fr: {
+        mention: 'Mentionner'
+      },
+      hu: {
+        mention: 'Említ'
+      },
+      ko: {
+        mention: '언급'
+      },
+      pt_br: {
+        mention: 'Menção'
+      },
+      ru: {
+        mention: 'Упомянуть'
+      },
+      sl: {
+        mention: 'Omeni'
+      },
+      tr: {
+        mention: 'Bahset'
+      },
+      zh_tw: {
+        mention: '標記'
+      }
+      // jshint camelcase:true
+    },
+
+    plugins: {
+      mention: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.mention = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.mention || {});
+          var btnDef = {
+            dropdown: buildDropdown(trumbowyg.o.plugins.mention.source, trumbowyg)
+          };
+          trumbowyg.addBtnDef('mention', btnDef);
+        }
+      }
+    }
+  });
+
+  /**
+   * Build dropdown list
+   *
+   * @param {Array}   items      Items
+   * @param {object}  trumbowyg  Editor
+   *
+   * @return {Array}
+   */
+  function buildDropdown(items, trumbowyg) {
+    var dropdown = [];
+    $.each(items, function (i, item) {
+      var btn = 'mention-' + i,
+        btnDef = {
+          hasIcon: false,
+          text: trumbowyg.o.plugins.mention.formatDropdownItem(item),
+          fn: function fn() {
+            trumbowyg.execCmd('insertHTML', trumbowyg.o.plugins.mention.formatResult(item));
+            return true;
+          }
+        };
+      trumbowyg.addBtnDef(btn, btnDef);
+      dropdown.push(btn);
+    });
+    return dropdown;
+  }
+
+  /**
+   * Format item in dropdown.
+   *
+   * @param   {object}  item  Item object.
+   *
+   * @return  {string}
+   */
+  function formatDropdownItem(item) {
+    return item.login;
+  }
+
+  /**
+   * Format result pasted in editor.
+   *
+   * @param   {object}  item  Item object.
+   *
+   * @return  {string}
+   */
+  function formatResult(item) {
+    return '@' + item.login + ' ';
+  }
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.mention.js v0.1
+ * Mention plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Viper
+ *          Github: https://github.com/Globulopolis
+ *          Website: http://киноархив.com
+ */
+!function (n) {
+  "use strict";
+
+  var t = {
+    source: [],
+    formatDropdownItem: function formatDropdownItem(n) {
+      return n.login;
+    },
+    formatResult: function formatResult(n) {
+      return "@" + n.login + " ";
+    }
+  };
+  function o(t, o) {
+    var e = [];
+    return n.each(t, function (n, t) {
+      var i = "mention-" + n,
+        m = {
+          hasIcon: !1,
+          text: o.o.plugins.mention.formatDropdownItem(t),
+          fn: function fn() {
+            return o.execCmd("insertHTML", o.o.plugins.mention.formatResult(t)), !0;
+          }
+        };
+      o.addBtnDef(i, m), e.push(i);
+    }), e;
+  }
+  n.extend(!0, n.trumbowyg, {
+    langs: {
+      en: {
+        mention: "Mention"
+      },
+      az: {
+        mention: "Bildirmək"
+      },
+      by: {
+        mention: "Згадаць"
+      },
+      da: {
+        mention: "Nævn"
+      },
+      et: {
+        mention: "Maini"
+      },
+      fr: {
+        mention: "Mentionner"
+      },
+      hu: {
+        mention: "Említ"
+      },
+      ko: {
+        mention: "언급"
+      },
+      pt_br: {
+        mention: "Menção"
+      },
+      ru: {
+        mention: "Упомянуть"
+      },
+      sl: {
+        mention: "Omeni"
+      },
+      tr: {
+        mention: "Bahset"
+      },
+      zh_tw: {
+        mention: "標記"
+      }
+    },
+    plugins: {
+      mention: {
+        init: function init(e) {
+          e.o.plugins.mention = n.extend(!0, {}, t, e.o.plugins.mention || {});
+          var i = {
+            dropdown: o(e.o.plugins.mention.source, e)
+          };
+          e.addBtnDef("mention", i);
         }
       }
     }
@@ -7755,184 +7755,6 @@
     }
   });
 }(jQuery);
-(function ($) {
-  'use strict';
-
-  // Adds the language variables
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        template: 'Template'
-      },
-      az: {
-        template: 'Şablon'
-      },
-      by: {
-        template: 'Шаблон'
-      },
-      da: {
-        template: 'Skabelon'
-      },
-      de: {
-        template: 'Vorlage'
-      },
-      et: {
-        template: 'Mall'
-      },
-      fr: {
-        template: 'Patron'
-      },
-      hu: {
-        template: 'Sablon'
-      },
-      ja: {
-        template: 'テンプレート'
-      },
-      ko: {
-        template: '서식'
-      },
-      nl: {
-        template: 'Sjabloon'
-      },
-      pt_br: {
-        template: 'Modelo'
-      },
-      ru: {
-        template: 'Шаблон'
-      },
-      sl: {
-        template: 'Predloga'
-      },
-      tr: {
-        template: 'Şablon'
-      },
-      zh_tw: {
-        template: '模板'
-      }
-      // jshint camelcase:true
-    }
-  });
-
-  // Adds the extra button definition
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      template: {
-        shouldInit: function shouldInit(trumbowyg) {
-          return trumbowyg.o.plugins.hasOwnProperty('templates');
-        },
-        init: function init(trumbowyg) {
-          trumbowyg.addBtnDef('template', {
-            dropdown: templateSelector(trumbowyg),
-            hasIcon: false,
-            text: trumbowyg.lang.template
-          });
-        }
-      }
-    }
-  });
-
-  // Creates the template-selector dropdown.
-  function templateSelector(trumbowyg) {
-    var available = trumbowyg.o.plugins.templates;
-    var templates = [];
-    $.each(available, function (index, template) {
-      trumbowyg.addBtnDef('template_' + index, {
-        fn: function fn() {
-          trumbowyg.html(template.html);
-        },
-        hasIcon: false,
-        title: template.name
-      });
-      templates.push('template_' + index);
-    });
-    return templates;
-  }
-})(jQuery);
-!function (t) {
-  "use strict";
-
-  function e(e) {
-    var a = e.o.plugins.templates,
-      l = [];
-    return t.each(a, function (t, a) {
-      e.addBtnDef("template_" + t, {
-        fn: function fn() {
-          e.html(a.html);
-        },
-        hasIcon: !1,
-        title: a.name
-      }), l.push("template_" + t);
-    }), l;
-  }
-  t.extend(!0, t.trumbowyg, {
-    langs: {
-      en: {
-        template: "Template"
-      },
-      az: {
-        template: "Şablon"
-      },
-      by: {
-        template: "Шаблон"
-      },
-      da: {
-        template: "Skabelon"
-      },
-      de: {
-        template: "Vorlage"
-      },
-      et: {
-        template: "Mall"
-      },
-      fr: {
-        template: "Patron"
-      },
-      hu: {
-        template: "Sablon"
-      },
-      ja: {
-        template: "テンプレート"
-      },
-      ko: {
-        template: "서식"
-      },
-      nl: {
-        template: "Sjabloon"
-      },
-      pt_br: {
-        template: "Modelo"
-      },
-      ru: {
-        template: "Шаблон"
-      },
-      sl: {
-        template: "Predloga"
-      },
-      tr: {
-        template: "Şablon"
-      },
-      zh_tw: {
-        template: "模板"
-      }
-    }
-  }), t.extend(!0, t.trumbowyg, {
-    plugins: {
-      template: {
-        shouldInit: function shouldInit(t) {
-          return t.o.plugins.hasOwnProperty("templates");
-        },
-        init: function init(t) {
-          t.addBtnDef("template", {
-            dropdown: e(t),
-            hasIcon: !1,
-            text: t.lang.template
-          });
-        }
-      }
-    }
-  });
-}(jQuery);
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 /* ===========================================================
  * trumbowyg.upload.js v1.2
@@ -8462,6 +8284,184 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
           };
           e.addBtnDef("upload", l);
+        }
+      }
+    }
+  });
+}(jQuery);
+(function ($) {
+  'use strict';
+
+  // Adds the language variables
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        template: 'Template'
+      },
+      az: {
+        template: 'Şablon'
+      },
+      by: {
+        template: 'Шаблон'
+      },
+      da: {
+        template: 'Skabelon'
+      },
+      de: {
+        template: 'Vorlage'
+      },
+      et: {
+        template: 'Mall'
+      },
+      fr: {
+        template: 'Patron'
+      },
+      hu: {
+        template: 'Sablon'
+      },
+      ja: {
+        template: 'テンプレート'
+      },
+      ko: {
+        template: '서식'
+      },
+      nl: {
+        template: 'Sjabloon'
+      },
+      pt_br: {
+        template: 'Modelo'
+      },
+      ru: {
+        template: 'Шаблон'
+      },
+      sl: {
+        template: 'Predloga'
+      },
+      tr: {
+        template: 'Şablon'
+      },
+      zh_tw: {
+        template: '模板'
+      }
+      // jshint camelcase:true
+    }
+  });
+
+  // Adds the extra button definition
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      template: {
+        shouldInit: function shouldInit(trumbowyg) {
+          return trumbowyg.o.plugins.hasOwnProperty('templates');
+        },
+        init: function init(trumbowyg) {
+          trumbowyg.addBtnDef('template', {
+            dropdown: templateSelector(trumbowyg),
+            hasIcon: false,
+            text: trumbowyg.lang.template
+          });
+        }
+      }
+    }
+  });
+
+  // Creates the template-selector dropdown.
+  function templateSelector(trumbowyg) {
+    var available = trumbowyg.o.plugins.templates;
+    var templates = [];
+    $.each(available, function (index, template) {
+      trumbowyg.addBtnDef('template_' + index, {
+        fn: function fn() {
+          trumbowyg.html(template.html);
+        },
+        hasIcon: false,
+        title: template.name
+      });
+      templates.push('template_' + index);
+    });
+    return templates;
+  }
+})(jQuery);
+!function (t) {
+  "use strict";
+
+  function e(e) {
+    var a = e.o.plugins.templates,
+      l = [];
+    return t.each(a, function (t, a) {
+      e.addBtnDef("template_" + t, {
+        fn: function fn() {
+          e.html(a.html);
+        },
+        hasIcon: !1,
+        title: a.name
+      }), l.push("template_" + t);
+    }), l;
+  }
+  t.extend(!0, t.trumbowyg, {
+    langs: {
+      en: {
+        template: "Template"
+      },
+      az: {
+        template: "Şablon"
+      },
+      by: {
+        template: "Шаблон"
+      },
+      da: {
+        template: "Skabelon"
+      },
+      de: {
+        template: "Vorlage"
+      },
+      et: {
+        template: "Mall"
+      },
+      fr: {
+        template: "Patron"
+      },
+      hu: {
+        template: "Sablon"
+      },
+      ja: {
+        template: "テンプレート"
+      },
+      ko: {
+        template: "서식"
+      },
+      nl: {
+        template: "Sjabloon"
+      },
+      pt_br: {
+        template: "Modelo"
+      },
+      ru: {
+        template: "Шаблон"
+      },
+      sl: {
+        template: "Predloga"
+      },
+      tr: {
+        template: "Şablon"
+      },
+      zh_tw: {
+        template: "模板"
+      }
+    }
+  }), t.extend(!0, t.trumbowyg, {
+    plugins: {
+      template: {
+        shouldInit: function shouldInit(t) {
+          return t.o.plugins.hasOwnProperty("templates");
+        },
+        init: function init(t) {
+          t.addBtnDef("template", {
+            dropdown: e(t),
+            hasIcon: !1,
+            text: t.lang.template
+          });
         }
       }
     }

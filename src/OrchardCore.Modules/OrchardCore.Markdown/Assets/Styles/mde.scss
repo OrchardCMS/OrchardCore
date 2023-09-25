@@ -1,3 +1,6 @@
+:root {
+    --oc-mde-zindex: 1054;
+}
 
 .icon-shortcode {
     position: relative;
@@ -41,12 +44,12 @@
 .EasyMDEContainer .CodeMirror-fullscreen {
     background: var(--bs-body-bg, #fff);
     position: fixed !important;
-    top: var(--oc-top-nav-height, 50px) !important;
+    top: 0; //var(--oc-top-nav-height, 50px) !important;
     left: 0;
     right: 0;
     bottom: 0;
     height: auto;
-    z-index: var(--bs-modal-zindex, 1150);
+    z-index: var(--oc-mde-zindex);
     border-right: none !important;
     border-bottom-right-radius: 0 !important;
 }
@@ -116,18 +119,18 @@
     top: 0;
     left: 0;
     opacity: 1;
-    z-index: var(--bs-modal-zindex, 1150);
+    z-index: var(--oc-mde-zindex);
 }
 
 .editor-toolbar.fullscreen::before {
     width: 20px;
     height: 50px;
-    background: -moz-linear-gradient(left, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
-    background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba(255, 255, 255, 1)), color-stop(100%, rgba(255, 255, 255, 0)));
-    background: -webkit-linear-gradient(left, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
-    background: -o-linear-gradient(left, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
-    background: -ms-linear-gradient(left, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
-    background: linear-gradient(to right, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
+    background: -moz-linear-gradient(left, rgba(var(--bs-body-bg-rgb), 1) 0%, rgba(var(--bs-body-bg-rgb), 0) 100%);
+    background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba(var(--bs-body-bg-rgb), 1)), color-stop(100%, rgba(var(--bs-body-bg-rgb), 0)));
+    background: -webkit-linear-gradient(left, rgba(var(--bs-body-bg-rgb), 1) 0%, rgba(var(--bs-body-bg-rgb), 0) 100%);
+    background: -o-linear-gradient(left, rgba(var(--bs-body-bg-rgb), 1) 0%, rgba(var(--bs-body-bg-rgb), 0) 100%);
+    background: -ms-linear-gradient(left, rgba(var(--bs-body-bg-rgb), 1) 0%, rgba(var(--bs-body-bg-rgb), 0) 100%);
+    background: linear-gradient(to right, rgba(var(--bs-body-bg-rgb), 1) 0%, rgba(var(--bs-body-bg-rgb), 0) 100%);
     position: fixed;
     top: 0;
     left: 0;
@@ -138,12 +141,12 @@
 .editor-toolbar.fullscreen::after {
     width: 20px;
     height: 50px;
-    background: -moz-linear-gradient(left, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
-    background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba(255, 255, 255, 0)), color-stop(100%, rgba(255, 255, 255, 1)));
-    background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
-    background: -o-linear-gradient(left, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
-    background: -ms-linear-gradient(left, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
-    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
+    background: -moz-linear-gradient(left, rgba(var(--bs-body-bg-rgb), 0) 0%, rgba(var(--bs-body-bg-rgb), 1) 100%);
+    background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba(var(--bs-body-bg-rgb), 0)), color-stop(100%, rgba(var(--bs-body-bg-rgb), 1)));
+    background: -webkit-linear-gradient(left, rgba(var(--bs-body-bg-rgb), 0) 0%, rgba(var(--bs-body-bg-rgb), 1) 100%);
+    background: -o-linear-gradient(left, rgba(var(--bs-body-bg-rgb), 0) 0%, rgba(var(--bs-body-bg-rgb), 1) 100%);
+    background: -ms-linear-gradient(left, rgba(var(--bs-body-bg-rgb), 0) 0%, rgba(var(--bs-body-bg-rgb), 1) 100%);
+    background: linear-gradient(to right, rgba(var(--bs-body-bg-rgb), 0) 0%, rgba(var(--bs-body-bg-rgb), 1) 100%);
     position: fixed;
     top: 0;
     right: 0;
@@ -164,7 +167,7 @@
     margin: 0;
     padding: 0;
     border: 1px solid transparent;
-    border-radius: 3px;
+    border-radius: var(--bs-border-radius);
     cursor: pointer;
 }
 
@@ -274,7 +277,7 @@
     width: 50%;
     top: 50px;
     right: 0;
-    z-index: var(--bs-modal-zindex, 1150);
+    z-index: var(--oc-mde-zindex);
     overflow: auto;
     display: none;
     box-sizing: border-box;
@@ -298,7 +301,7 @@
 
 .editor-preview {
     padding: 10px;
-    background: #fafafa;
+    background: var(--bs-body-bg);
 }
 
 .editor-preview > p {
@@ -380,8 +383,8 @@
 .easymde-dropdown-content {
     display: none;
     position: absolute;
-    background-color: #f9f9f9;
-    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+    background-color: var(--bs-body-bg);
+    box-shadow: 0 8px 16px 0 rgba(var(--bs-body-bg), 0.2);
     padding: 8px;
     z-index: 2;
     top: 30px;

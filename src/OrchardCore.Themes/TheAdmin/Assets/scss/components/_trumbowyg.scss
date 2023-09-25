@@ -2,23 +2,12 @@
     font-size: 16px;
 }
 
-.trumbowyg-fullscreen {
-    z-index: var(--bs-modal-zindex, 1050);
-}
-
-[dir] .trumbowyg-fullscreen.trumbowyg-box, [dir] .trumbowyg-fullscreen .trumbowyg-editor-box {
-    background-color: var(--bs-body-bg);
-    color: var(--bs-body-color);
-}
-
 [dir] .trumbowyg-box {
     border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
     border-radius: var(--bs-border-radius);
     background-color: var(--bs-body-bg);
     color: var(--bs-body-color);
 }
-
-
 
 [dir] trumbowyg-editor-box {
     background-color: var(--bs-body-bg);
@@ -56,6 +45,15 @@
 }
 
 [dir] .trumbowyg-dropdown button {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
+.trumbowyg-fullscreen {
+    z-index: var(--bs-modal-zindex, 1050);
+}
+
+[dir] .trumbowyg-fullscreen.trumbowyg-box, [dir] .trumbowyg-fullscreen .trumbowyg-editor-box {
     background-color: var(--bs-body-bg);
     color: var(--bs-body-color);
 }

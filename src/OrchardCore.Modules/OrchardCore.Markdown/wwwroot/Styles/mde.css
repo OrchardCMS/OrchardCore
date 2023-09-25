@@ -1,8 +1,13 @@
 @charset "UTF-8";
+:root {
+  --oc-mde-zindex: 1054;
+}
+
 .icon-shortcode {
   position: relative;
   color: var(--bs-body-color);
 }
+
 [dir] .icon-shortcode {
   background-color: var(--bs-body-color);
 }
@@ -53,10 +58,10 @@
 
 .EasyMDEContainer .CodeMirror-fullscreen {
   position: fixed !important;
-  top: var(--oc-top-nav-height, 50px) !important;
+  top: 0;
   bottom: 0;
   height: auto;
-  z-index: var(--bs-modal-zindex, 1150);
+  z-index: var(--oc-mde-zindex);
 }
 
 [dir] .EasyMDEContainer .CodeMirror-fullscreen {
@@ -157,7 +162,7 @@
   position: fixed;
   top: 0;
   opacity: 1;
-  z-index: var(--bs-modal-zindex, 1150);
+  z-index: var(--oc-mde-zindex);
 }
 
 [dir] .editor-toolbar.fullscreen {
@@ -188,22 +193,22 @@
 }
 
 [dir=ltr] .editor-toolbar.fullscreen::before {
-  background: -moz-linear-gradient(left, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%);
-  background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgb(255, 255, 255)), color-stop(100%, rgba(255, 255, 255, 0)));
-  background: -webkit-linear-gradient(left, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%);
-  background: -o-linear-gradient(left, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%);
-  background: -ms-linear-gradient(left, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%);
-  background: linear-gradient(to right, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%);
+  background: -moz-linear-gradient(left, rgba(var(--bs-body-bg-rgb), 1) 0%, rgba(var(--bs-body-bg-rgb), 0) 100%);
+  background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba(var(--bs-body-bg-rgb), 1)), color-stop(100%, rgba(var(--bs-body-bg-rgb), 0)));
+  background: -webkit-linear-gradient(left, rgba(var(--bs-body-bg-rgb), 1) 0%, rgba(var(--bs-body-bg-rgb), 0) 100%);
+  background: -o-linear-gradient(left, rgba(var(--bs-body-bg-rgb), 1) 0%, rgba(var(--bs-body-bg-rgb), 0) 100%);
+  background: -ms-linear-gradient(left, rgba(var(--bs-body-bg-rgb), 1) 0%, rgba(var(--bs-body-bg-rgb), 0) 100%);
+  background: linear-gradient(to right, rgba(var(--bs-body-bg-rgb), 1) 0%, rgba(var(--bs-body-bg-rgb), 0) 100%);
   left: 0;
 }
 
 [dir=rtl] .editor-toolbar.fullscreen::before {
-  background: -moz-linear-gradient(right, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%);
-  background: -webkit-gradient(linear, right top, left top, color-stop(0%, rgb(255, 255, 255)), color-stop(100%, rgba(255, 255, 255, 0)));
-  background: -webkit-linear-gradient(right, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%);
-  background: -o-linear-gradient(right, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%);
-  background: -ms-linear-gradient(right, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%);
-  background: linear-gradient(to left, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%);
+  background: -moz-linear-gradient(right, rgba(var(--bs-body-bg-rgb), 1) 0%, rgba(var(--bs-body-bg-rgb), 0) 100%);
+  background: -webkit-gradient(linear, right top, left top, color-stop(0%, rgba(var(--bs-body-bg-rgb), 1)), color-stop(100%, rgba(var(--bs-body-bg-rgb), 0)));
+  background: -webkit-linear-gradient(right, rgba(var(--bs-body-bg-rgb), 1) 0%, rgba(var(--bs-body-bg-rgb), 0) 100%);
+  background: -o-linear-gradient(right, rgba(var(--bs-body-bg-rgb), 1) 0%, rgba(var(--bs-body-bg-rgb), 0) 100%);
+  background: -ms-linear-gradient(right, rgba(var(--bs-body-bg-rgb), 1) 0%, rgba(var(--bs-body-bg-rgb), 0) 100%);
+  background: linear-gradient(to left, rgba(var(--bs-body-bg-rgb), 1) 0%, rgba(var(--bs-body-bg-rgb), 0) 100%);
   right: 0;
 }
 
@@ -220,22 +225,22 @@
 }
 
 [dir=ltr] .editor-toolbar.fullscreen::after {
-  background: -moz-linear-gradient(left, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 100%);
-  background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba(255, 255, 255, 0)), color-stop(100%, rgb(255, 255, 255)));
-  background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 100%);
-  background: -o-linear-gradient(left, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 100%);
-  background: -ms-linear-gradient(left, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 100%);
-  background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 100%);
+  background: -moz-linear-gradient(left, rgba(var(--bs-body-bg-rgb), 0) 0%, rgba(var(--bs-body-bg-rgb), 1) 100%);
+  background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba(var(--bs-body-bg-rgb), 0)), color-stop(100%, rgba(var(--bs-body-bg-rgb), 1)));
+  background: -webkit-linear-gradient(left, rgba(var(--bs-body-bg-rgb), 0) 0%, rgba(var(--bs-body-bg-rgb), 1) 100%);
+  background: -o-linear-gradient(left, rgba(var(--bs-body-bg-rgb), 0) 0%, rgba(var(--bs-body-bg-rgb), 1) 100%);
+  background: -ms-linear-gradient(left, rgba(var(--bs-body-bg-rgb), 0) 0%, rgba(var(--bs-body-bg-rgb), 1) 100%);
+  background: linear-gradient(to right, rgba(var(--bs-body-bg-rgb), 0) 0%, rgba(var(--bs-body-bg-rgb), 1) 100%);
   right: 0;
 }
 
 [dir=rtl] .editor-toolbar.fullscreen::after {
-  background: -moz-linear-gradient(right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 100%);
-  background: -webkit-gradient(linear, right top, left top, color-stop(0%, rgba(255, 255, 255, 0)), color-stop(100%, rgb(255, 255, 255)));
-  background: -webkit-linear-gradient(right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 100%);
-  background: -o-linear-gradient(right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 100%);
-  background: -ms-linear-gradient(right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 100%);
-  background: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 100%);
+  background: -moz-linear-gradient(right, rgba(var(--bs-body-bg-rgb), 0) 0%, rgba(var(--bs-body-bg-rgb), 1) 100%);
+  background: -webkit-gradient(linear, right top, left top, color-stop(0%, rgba(var(--bs-body-bg-rgb), 0)), color-stop(100%, rgba(var(--bs-body-bg-rgb), 1)));
+  background: -webkit-linear-gradient(right, rgba(var(--bs-body-bg-rgb), 0) 0%, rgba(var(--bs-body-bg-rgb), 1) 100%);
+  background: -o-linear-gradient(right, rgba(var(--bs-body-bg-rgb), 0) 0%, rgba(var(--bs-body-bg-rgb), 1) 100%);
+  background: -ms-linear-gradient(right, rgba(var(--bs-body-bg-rgb), 0) 0%, rgba(var(--bs-body-bg-rgb), 1) 100%);
+  background: linear-gradient(to left, rgba(var(--bs-body-bg-rgb), 0) 0%, rgba(var(--bs-body-bg-rgb), 1) 100%);
   left: 0;
 }
 
@@ -255,7 +260,7 @@
   margin: 0;
   padding: 0;
   border: 1px solid transparent;
-  border-radius: 3px;
+  border-radius: var(--bs-border-radius);
   cursor: pointer;
 }
 
@@ -394,7 +399,7 @@
   bottom: 0;
   width: 50%;
   top: 50px;
-  z-index: var(--bs-modal-zindex, 1150);
+  z-index: var(--oc-mde-zindex);
   overflow: auto;
   display: none;
   box-sizing: border-box;
@@ -429,7 +434,7 @@
 
 [dir] .editor-preview {
   padding: 10px;
-  background: #fafafa;
+  background: var(--bs-body-bg);
 }
 
 [dir] .editor-preview > p {
@@ -518,8 +523,8 @@
 }
 
 [dir] .easymde-dropdown-content {
-  background-color: #f9f9f9;
-  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+  background-color: var(--bs-body-bg);
+  box-shadow: 0 8px 16px 0 rgba(var(--bs-body-bg), 0.2);
   padding: 8px;
 }
 

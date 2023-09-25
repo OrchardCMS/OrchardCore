@@ -36,7 +36,7 @@ ol.media-items-grid {
         }
 
         &.selected {
-            border: 1px solid var(--bg-primary, blue);
+            border: 1px solid var(--bs-primary, blue);
         }
 
         &.selected .inline-media-button, &:hover .inline-media-button {

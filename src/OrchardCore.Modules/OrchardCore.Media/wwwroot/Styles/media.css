@@ -272,7 +272,7 @@ ol.media-items-grid li .inline-media-button {
   margin-left: 3.8rem;
 }
 [dir] ol.media-items-grid li.selected {
-  border: 1px solid var(--bg-primary, blue);
+  border: 1px solid var(--bs-primary, blue);
 }
 ol.media-items-grid li.selected .inline-media-button, ol.media-items-grid li:hover .inline-media-button {
   opacity: 1;

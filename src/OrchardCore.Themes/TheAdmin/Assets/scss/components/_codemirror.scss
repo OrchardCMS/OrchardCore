@@ -1,7 +1,12 @@
+@import '../variables';
+
+:root {
+    --oc-mde-zindex: #{$zindex-modal -1} !important;
+}
+
 .CodeMirror {
     height: auto;
     border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
-    border-radius: var(--bs-border-radius);
     background-color: var(--bs-body-bg);
     color: var(--bs-body-color);
 }

@@ -46,6 +46,116 @@
   --bs-zindex-fixed: 1030;
 }
 
+.w-xs-25 {
+  width: 25% !important;
+}
+
+.w-xs-50 {
+  width: 50% !important;
+}
+
+.w-xs-75 {
+  width: 75% !important;
+}
+
+@media (min-width: 576px) {
+  .w-sm-25 {
+    width: 25% !important;
+  }
+}
+@media (min-width: 576px) {
+  .w-sm-50 {
+    width: 50% !important;
+  }
+}
+@media (min-width: 576px) {
+  .w-sm-75 {
+    width: 75% !important;
+  }
+}
+@media (min-width: 768px) {
+  .w-md-25 {
+    width: 25% !important;
+  }
+}
+@media (min-width: 768px) {
+  .w-md-50 {
+    width: 50% !important;
+  }
+}
+@media (min-width: 768px) {
+  .w-md-75 {
+    width: 75% !important;
+  }
+}
+@media (min-width: 992px) {
+  .w-lg-25 {
+    width: 25% !important;
+  }
+}
+@media (min-width: 992px) {
+  .w-lg-50 {
+    width: 50% !important;
+  }
+}
+@media (min-width: 992px) {
+  .w-lg-75 {
+    width: 75% !important;
+  }
+}
+@media (min-width: 1200px) {
+  .w-xl-25 {
+    width: 25% !important;
+  }
+}
+@media (min-width: 1200px) {
+  .w-xl-50 {
+    width: 50% !important;
+  }
+}
+@media (min-width: 1200px) {
+  .w-xl-75 {
+    width: 75% !important;
+  }
+}
+@media (min-width: 1400px) {
+  .w-xxl-25 {
+    width: 25% !important;
+  }
+}
+@media (min-width: 1400px) {
+  .w-xxl-50 {
+    width: 50% !important;
+  }
+}
+@media (min-width: 1400px) {
+  .w-xxl-75 {
+    width: 75% !important;
+  }
+}
+/* IMPORTANT: Never import Bootstrap directly into the theme. TheAdmin.css will depend on Bootstrap, but we never want to compile it. */
+:root {
+  --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
+  --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
+  --oc-scrollbar-color: #CDCDCD;
+  --oc-admin-menu-font-color: var(--bs-secondary-color);
+  --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
+  --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
+  --oc-admin-menu-item-font-color: var(--bs-secondary-color);
+  --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
+  --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
+  --oc-zindex-dropdown: 1000;
+  --oc-top-nav-height: 52px;
+  --oc-top-nav-zindex: calc(1030 + 5);
+  --oc-footer-height: 40px;
+  --oc-start-navigation-width: 260px;
+  --oc-start-navigation-width-when-compact: 48px;
+  --oc-start-navigation-zindex: calc(1030 + 3);
+  --oc-link-padding-left: 116px;
+  --bs-dropdown-zindex: 1000;
+  --bs-zindex-fixed: 1030;
+}
+
 body {
   margin-bottom: var(--oc-footer-height);
   height: 100%;
@@ -575,10 +685,36 @@ html[dir=rtl] .bootstrap-select .bs-ok-default:after {
   background: unset;
 }
 
+/* IMPORTANT: Never import Bootstrap directly into the theme. TheAdmin.css will depend on Bootstrap, but we never want to compile it. */
+:root {
+  --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
+  --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
+  --oc-scrollbar-color: #CDCDCD;
+  --oc-admin-menu-font-color: var(--bs-secondary-color);
+  --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
+  --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
+  --oc-admin-menu-item-font-color: var(--bs-secondary-color);
+  --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
+  --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
+  --oc-zindex-dropdown: 1000;
+  --oc-top-nav-height: 52px;
+  --oc-top-nav-zindex: calc(1030 + 5);
+  --oc-footer-height: 40px;
+  --oc-start-navigation-width: 260px;
+  --oc-start-navigation-width-when-compact: 48px;
+  --oc-start-navigation-zindex: calc(1030 + 3);
+  --oc-link-padding-left: 116px;
+  --bs-dropdown-zindex: 1000;
+  --bs-zindex-fixed: 1030;
+}
+
+:root {
+  --oc-mde-zindex: 1055 -1 !important;
+}
+
 .CodeMirror {
   height: auto;
   border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
-  border-radius: var(--bs-border-radius);
   background-color: var(--bs-body-bg);
   color: var(--bs-body-color);
 }
@@ -702,7 +838,7 @@ html[dir=rtl] .bootstrap-select .bs-ok-default:after {
 
 .hint {
   font-size: 0.875em;
-  color: #6c757d !important;
+  color: var(--bs-text-body-secondary) !important;
   overflow-wrap: break-word;
   word-wrap: break-word;
   -ms-word-break: break-all;
@@ -719,10 +855,6 @@ html[dir=rtl] .bootstrap-select .bs-ok-default:after {
   content: "— ";
 }
 
-.field-validation-error {
-  color: #6c757d !important;
-}
-
 .code,
 .form-control.code {
   font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -736,12 +868,13 @@ html[dir=rtl] .bootstrap-select .bs-ok-default:after {
   font-size: 12px;
 }
 
-label .field-validation-error::before {
-  content: "- ";
+.form-control:disabled, .form-control[readonly] {
+  background-color: var(--bs-secondary-bg);
+  opacity: 1;
 }
 
-.field-validation-valid {
-  display: none;
+label .field-validation-error::before {
+  content: "- ";
 }
 
 input[type=password]::-ms-reveal,
@@ -8089,18 +8222,19 @@ div.editor-widget.find-widget .button.codicon:active {
  * Giving the connect element a border radius causes issues with using transform: scale
  */
 .noUi-target {
-  background: #FAFAFA;
-  border-radius: 4px;
-  border: 1px solid #D3D3D3;
-  box-shadow: inset 0 1px 1px #F0F0F0, 0 3px 6px -5px #BBB;
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  border-radius: var(--bs-border-radius);
+  border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+  box-shadow: inset 0 1px 1px rgba(var(--bs-border-color), 0.1), 0 3px 6px -5px rgba(var(--bs-border-color), 0.2);
 }
 
 .noUi-connects {
-  border-radius: 3px;
+  border-radius: var(--bs-border-radius);
 }
 
 .noUi-connect {
-  background: #3FB8AF;
+  background-color: var(--bs-body-bg);
 }
 
 /* Handles and cursors;
@@ -8114,15 +8248,15 @@ div.editor-widget.find-widget .button.codicon:active {
 }
 
 .noUi-handle {
-  border: 1px solid #D9D9D9;
-  border-radius: 3px;
-  background: #FFF;
+  border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  background-color: var(--bs-body-bg);
   cursor: default;
-  box-shadow: inset 0 0 1px #FFF, inset 0 1px 7px #EBEBEB, 0 3px 6px -3px #BBB;
+  box-shadow: inset 0 1px 1px rgba(var(--bs-border-color), 0.1), 0 3px 6px -5px rgba(var(--bs-border-color), 0.2);
 }
 
 .noUi-active {
-  box-shadow: inset 0 0 1px #FFF, inset 0 1px 7px #DDD, 0 3px 6px -3px #BBB;
+  box-shadow: inset 0 1px 1px rgba(var(--bs-border-color), 0.1), 0 3px 6px -5px rgba(var(--bs-border-color), 0.2);
 }
 
 /* Handle stripes;
@@ -8134,7 +8268,7 @@ div.editor-widget.find-widget .button.codicon:active {
   position: absolute;
   height: 14px;
   width: 1px;
-  background: #E8E7E6;
+  background-color: var(--bs-body-bg);
   left: 14px;
   top: 6px;
 }
@@ -8158,7 +8292,7 @@ div.editor-widget.find-widget .button.codicon:active {
 /* Disabled state;
  */
 [disabled] .noUi-connect {
-  background: #B8B8B8;
+  background-color: var(--bs-body-bg);
 }
 
 [disabled].noUi-target,
@@ -8178,7 +8312,7 @@ div.editor-widget.find-widget .button.codicon:active {
 
 .noUi-pips {
   position: absolute;
-  color: #999;
+  color: var(--bs-body-color);
 }
 
 /* Values;
@@ -8191,7 +8325,7 @@ div.editor-widget.find-widget .button.codicon:active {
 }
 
 .noUi-value-sub {
-  color: #ccc;
+  color: var(--bs-body-color);
   font-size: 10px;
 }
 
@@ -8200,15 +8334,15 @@ div.editor-widget.find-widget .button.codicon:active {
  */
 .noUi-marker {
   position: absolute;
-  background: #CCC;
+  background-color: var(--bs-body-bg);
 }
 
 .noUi-marker-sub {
-  background: #AAA;
+  background-color: var(--bs-body-bg);
 }
 
 .noUi-marker-large {
-  background: #AAA;
+  background-color: var(--bs-body-bg);
 }
 
 /* Horizontal layout;
@@ -8288,8 +8422,8 @@ div.editor-widget.find-widget .button.codicon:active {
   position: absolute;
   border: 1px solid #D9D9D9;
   border-radius: 3px;
-  background: #fff;
-  color: #000;
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
   padding: 5px;
   text-align: center;
   white-space: nowrap;
@@ -9191,15 +9325,6 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
   font-size: 16px;
 }
 
-.trumbowyg-fullscreen {
-  z-index: var(--bs-modal-zindex, 1050);
-}
-
-[dir] .trumbowyg-fullscreen.trumbowyg-box, [dir] .trumbowyg-fullscreen .trumbowyg-editor-box {
-  background-color: var(--bs-body-bg);
-  color: var(--bs-body-color);
-}
-
 [dir] .trumbowyg-box {
   border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
   border-radius: var(--bs-border-radius);
@@ -9247,6 +9372,15 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
   color: var(--bs-body-color);
 }
 
+.trumbowyg-fullscreen {
+  z-index: var(--bs-modal-zindex, 1050);
+}
+
+[dir] .trumbowyg-fullscreen.trumbowyg-box, [dir] .trumbowyg-fullscreen .trumbowyg-editor-box {
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+
 .trumbowyg-fullscreen .trumbowyg-button-group .trumbowyg-fullscreen-button svg {
   color: var(--bs-body-color);
   fill: var(--bs-body-color);
@@ -9254,6 +9388,39 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
 
 span.field-validation-error {
   width: 100%;
+}
+
+.validation-summary-errors {
+  --bs-alert-color: var(--bs-danger-text-emphasis);
+  --bs-alert-bg: var(--bs-danger-bg-subtle);
+  --bs-alert-border-color: var(--bs-danger-border-subtle);
+  --bs-alert-link-color: var(--bs-danger-text-emphasis);
+  --bs-alert-padding-x: 1rem;
+  --bs-alert-padding-y: 1rem;
+  --bs-alert-margin-bottom: 1rem;
+  --bs-alert-border-color: transparent;
+  --bs-alert-border: var(--bs-border-width) solid var(--bs-alert-border-color);
+  --bs-alert-border-radius: var(--bs-border-radius);
+  --bs-alert-link-color: inherit;
+  position: relative;
+  padding: var(--bs-alert-padding-y) var(--bs-alert-padding-x);
+  margin-bottom: var(--bs-alert-margin-bottom);
+  color: var(--bs-alert-color);
+  background-color: var(--bs-alert-bg);
+  border: var(--bs-alert-border);
+  border-radius: var(--bs-alert-border-radius);
+}
+
+.validation-summary-errors ul {
+  margin-bottom: 0 !important;
+}
+
+.field-validation-error {
+  color: var(--bs-text-danger) !important;
+}
+
+.field-validation-valid {
+  display: none;
 }
 
 .vue-multiselect {
