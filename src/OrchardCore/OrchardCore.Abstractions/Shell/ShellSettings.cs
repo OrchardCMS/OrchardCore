@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Models;
 
@@ -139,6 +140,20 @@ namespace OrchardCore.Environment.Shell
         /// Ensures that the tenant configuration is initialized.
         /// </summary>
         public Task EnsureConfigurationAsync() => _configuration.EnsureConfigurationAsync();
+
+        /// <summary>
+        /// PlaceHolder class used for shell lazy initialization.
+        /// </summary>
+        public class PlaceHolder : ShellSettings
+        {
+            /// <summary>
+            /// Initializes a placeHolder used for shell lazy initialization.
+            /// </summary>
+            public PlaceHolder()
+            {
+                _released = true;
+            }
+        }
 
         public void Release()
         {
