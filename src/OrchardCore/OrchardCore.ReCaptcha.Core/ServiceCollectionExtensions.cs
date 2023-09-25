@@ -13,17 +13,12 @@ namespace OrchardCore.ReCaptcha.Core
     {
         public static IServiceCollection AddReCaptcha(this IServiceCollection services, Action<ReCaptchaSettings> configure = null)
         {
-            services.AddHttpClient(nameof(ReCaptchaService), (serviceProvider, client) =>
-            {
-                var reCaptchaSettings = serviceProvider.GetRequiredService<IOptions<ReCaptchaSettings>>().Value;
-
-                client.BaseAddress = new Uri(reCaptchaSettings.ReCaptchaApiUri.TrimEnd('/') + '/');
-            })
+            services.AddScoped<ReCaptchaService>()
+                .AddHttpClient<ReCaptchaService>()
                 .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(3, attempt => TimeSpan.FromSeconds(0.5 * attempt)));
 
             services.AddTransient<IDetectRobots, IPAddressRobotDetector>();
             services.AddTransient<IConfigureOptions<ReCaptchaSettings>, ReCaptchaSettingsConfiguration>();
-            services.AddScoped<ReCaptchaService>();
             services.AddTagHelpers<ReCaptchaTagHelper>();
 
             if (configure != null)

@@ -23,14 +23,14 @@ namespace OrchardCore.ReCaptcha.Services
         };
 
         private readonly ReCaptchaSettings _reCaptchaSettings;
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _httpClient;
         private readonly IEnumerable<IDetectRobots> _robotDetectors;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
         protected readonly IStringLocalizer S;
 
         public ReCaptchaService(
-            IHttpClientFactory httpClientFactory,
+            HttpClient httpClient,
             IOptions<ReCaptchaSettings> optionsAccessor,
             IEnumerable<IDetectRobots> robotDetectors,
             IHttpContextAccessor httpContextAccessor,
@@ -38,7 +38,7 @@ namespace OrchardCore.ReCaptcha.Services
             IStringLocalizer<ReCaptchaService> stringLocalizer)
         {
             _reCaptchaSettings = optionsAccessor.Value;
-            _httpClientFactory = httpClientFactory;
+            _httpClient = httpClient;
             _robotDetectors = robotDetectors;
             _httpContextAccessor = httpContextAccessor;
             _logger = logger;
@@ -130,8 +130,7 @@ namespace OrchardCore.ReCaptcha.Services
                     { "response", responseToken }
                 });
 
-                var client = _httpClientFactory.CreateClient(nameof(ReCaptchaService));
-                var response = await client.PostAsync("siteverify", content);
+                var response = await _httpClient.PostAsync($"{_reCaptchaSettings.ReCaptchaApiUri.TrimEnd('/')}/siteverify", content);
                 response.EnsureSuccessStatusCode();
                 var result = await response.Content.ReadFromJsonAsync<ReCaptchaResponse>(_jsonSerializerOptions);
 
