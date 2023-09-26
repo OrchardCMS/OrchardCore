@@ -106,6 +106,12 @@ namespace OrchardCore.Environment.Shell.Builders
         /// </summary>
         public Task UnloadAsync()
         {
+            if (this.IsPlaceholder())
+            {
+                Terminate();
+                return Task.CompletedTask;
+            }
+
             _unloaded = true;
             return ReleaseInternalAsync();
         }

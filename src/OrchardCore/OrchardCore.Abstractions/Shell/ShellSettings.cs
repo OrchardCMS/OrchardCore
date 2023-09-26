@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Models;
 
@@ -147,7 +146,7 @@ namespace OrchardCore.Environment.Shell
         public class PlaceHolder : ShellSettings
         {
             /// <summary>
-            /// Initializes a placeHolder used for shell lazy initialization.
+            /// Initializes a placeHolder used for shell disposing.
             /// </summary>
             public PlaceHolder()
             {
@@ -166,11 +165,6 @@ namespace OrchardCore.Environment.Shell
 
             _settings?.Release();
             _configuration?.Release();
-
-            // Should not be disposed as an 'IDisposable' service.
-#pragma warning disable CA1816 // Call GC.SuppressFinalize correctly.
-            GC.SuppressFinalize(this);
-#pragma warning restore CA1816 // Call GC.SuppressFinalize correctly.
         }
 
         ~ShellSettings() => Release();
