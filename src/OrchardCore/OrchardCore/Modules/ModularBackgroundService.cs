@@ -79,7 +79,7 @@ namespace OrchardCore.Modules
                 }
             }
 
-            var previousShells = Array.Empty<ShellContext>();
+            var previousShells = Array.Empty<string>();
             while (!stoppingToken.IsCancellationRequested)
             {
                 // Init the delay first to be also waited on exception.
@@ -89,7 +89,7 @@ namespace OrchardCore.Modules
                     var runningShells = GetRunningShells();
                     await UpdateAsync(previousShells, runningShells, stoppingToken);
                     await RunAsync(runningShells, stoppingToken);
-                    previousShells = runningShells;
+                    previousShells = runningShells.Select(s => s.Settings.Name).ToArray();
                 }
                 catch (Exception ex) when (!ex.IsFatal())
                 {
@@ -209,7 +209,7 @@ namespace OrchardCore.Modules
             });
         }
 
-        private async Task UpdateAsync(ShellContext[] previousShells, ShellContext[] runningShells, CancellationToken stoppingToken)
+        private async Task UpdateAsync(string[] previousShells, ShellContext[] runningShells, CancellationToken stoppingToken)
         {
             var referenceTime = DateTime.UtcNow;
 
@@ -332,12 +332,22 @@ namespace OrchardCore.Modules
             return shells.Where(s => tenantsToRun.Contains(s.Settings.Name)).ToArray();
         }
 
-        private ShellContext[] GetShellsToUpdate(ShellContext[] previousShells, ShellContext[] runningShells)
+        private ShellContext[] GetShellsToUpdate(string[] previousShells, ShellContext[] runningShells)
         {
-            var released = previousShells.Where(s => s.Released).Select(s => s.Settings.Name).ToArray();
-            if (released.Length > 0)
+            var released = new List<string>();
+            foreach (var shell in previousShells)
             {
-                UpdateSchedulers(released, s => s.Released = true);
+                if (_shellHost.TryGetShellContext(shell, out var existing) && !existing.Released)
+                {
+                    continue;
+                }
+
+                released.Add(shell);
+            }
+
+            if (released.Count > 0)
+            {
+                UpdateSchedulers(released.ToArray(), s => s.Released = true);
             }
 
             var changed = _changeTokens.Where(t => t.Value.HasChanged).Select(t => t.Key).ToArray();
@@ -346,7 +356,7 @@ namespace OrchardCore.Modules
                 UpdateSchedulers(changed, s => s.Updated = false);
             }
 
-            var valid = previousShells.Select(s => s.Settings.Name).Except(released).Except(changed);
+            var valid = previousShells.Except(released).Except(changed);
             var tenantsToUpdate = runningShells.Select(s => s.Settings.Name).Except(valid).ToArray();
 
             return runningShells.Where(s => tenantsToUpdate.Contains(s.Settings.Name)).ToArray();

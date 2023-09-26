@@ -16,11 +16,6 @@ namespace OrchardCore.Mvc
 
         public SharedViewCompilerProvider(IServiceProvider services)
         {
-            if (_compiler is not null)
-            {
-                return;
-            }
-
             _services = services;
         }
 
@@ -42,8 +37,6 @@ namespace OrchardCore.Mvc
                     .GetServices<IViewCompilerProvider>()
                     .FirstOrDefault()
                     .GetCompiler();
-
-                _services = null;
             }
 
             return _compiler;
