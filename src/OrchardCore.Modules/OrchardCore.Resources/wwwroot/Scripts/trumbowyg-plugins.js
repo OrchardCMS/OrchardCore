@@ -4,103 +4,6 @@
 */
 
 /* ===========================================================
- * trumbowyg.allowTagsFromPaste.js v1.0.2
- * It cleans tags from pasted text, whilst allowing several specified tags
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author	: Fathi Anshory (0x00000F5C)
- * Twitter	: @fscchannl
- * Notes:
- *  - removeformatPasted must be set to FALSE since it was applied prior to pasteHandlers, or else it will be useless
- *	- It is most advisable to use along with the cleanpaste plugin, or else you'd end up with dirty markup
- */
-
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    // When empty, all tags are allowed making this plugin useless
-    // If you want to remove all tags, use removeformatPasted core option instead
-    allowedTags: [],
-    // List of tags which can be allowed
-    removableTags: ['a', 'abbr', 'address', 'b', 'bdi', 'bdo', 'blockquote', 'br', 'cite', 'code', 'del', 'dfn', 'details', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'ins', 'kbd', 'mark', 'meter', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'small', 'span', 'strong', 'sub', 'summary', 'sup', 'time', 'u', 'var', 'wbr', 'img', 'map', 'area', 'canvas', 'figcaption', 'figure', 'picture', 'audio', 'source', 'track', 'video', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'table', 'caption', 'th', 'tr', 'td', 'thead', 'tbody', 'tfoot', 'col', 'colgroup', 'style', 'div', 'p', 'form', 'input', 'textarea', 'button', 'select', 'optgroup', 'option', 'label', 'fieldset', 'legend', 'datalist', 'keygen', 'output', 'iframe', 'link', 'nav', 'header', 'hgroup', 'footer', 'main', 'section', 'article', 'aside', 'dialog', 'script', 'noscript', 'embed', 'object', 'param']
-  };
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      allowTagsFromPaste: {
-        init: function init(trumbowyg) {
-          if (!trumbowyg.o.plugins.allowTagsFromPaste) {
-            return;
-          }
-
-          // Force disable remove format pasted
-          trumbowyg.o.removeformatPasted = false;
-          var allowedTags = trumbowyg.o.plugins.allowTagsFromPaste.allowedTags || defaultOptions.allowedTags;
-          var removableTags = trumbowyg.o.plugins.allowTagsFromPaste.removableTags || defaultOptions.removableTags;
-          if (allowedTags.length === 0) {
-            return;
-          }
-
-          // Get list of tags to remove
-          var tagsToRemove = $(removableTags).not(allowedTags).get();
-          trumbowyg.pasteHandlers.push(function () {
-            setTimeout(function () {
-              var processNodes = trumbowyg.$ed.html();
-              $.each(tagsToRemove, function (iterator, tagName) {
-                processNodes = processNodes.replace(new RegExp('<\\/?' + tagName + '(\\s[^>]*)?>', 'gi'), '');
-              });
-              trumbowyg.$ed.html(processNodes);
-            }, 0);
-          });
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.allowTagsFromPaste.js v1.0.2
- * It cleans tags from pasted text, whilst allowing several specified tags
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author	: Fathi Anshory (0x00000F5C)
- * Twitter	: @fscchannl
- * Notes:
- *  - removeformatPasted must be set to FALSE since it was applied prior to pasteHandlers, or else it will be useless
- *	- It is most advisable to use along with the cleanpaste plugin, or else you'd end up with dirty markup
- */
-!function (e) {
-  "use strict";
-
-  var a = {
-    allowedTags: [],
-    removableTags: ["a", "abbr", "address", "b", "bdi", "bdo", "blockquote", "br", "cite", "code", "del", "dfn", "details", "em", "h1", "h2", "h3", "h4", "h5", "h6", "hr", "i", "ins", "kbd", "mark", "meter", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp", "small", "span", "strong", "sub", "summary", "sup", "time", "u", "var", "wbr", "img", "map", "area", "canvas", "figcaption", "figure", "picture", "audio", "source", "track", "video", "ul", "ol", "li", "dl", "dt", "dd", "table", "caption", "th", "tr", "td", "thead", "tbody", "tfoot", "col", "colgroup", "style", "div", "p", "form", "input", "textarea", "button", "select", "optgroup", "option", "label", "fieldset", "legend", "datalist", "keygen", "output", "iframe", "link", "nav", "header", "hgroup", "footer", "main", "section", "article", "aside", "dialog", "script", "noscript", "embed", "object", "param"]
-  };
-  e.extend(!0, e.trumbowyg, {
-    plugins: {
-      allowTagsFromPaste: {
-        init: function init(t) {
-          if (t.o.plugins.allowTagsFromPaste) {
-            t.o.removeformatPasted = !1;
-            var o = t.o.plugins.allowTagsFromPaste.allowedTags || a.allowedTags,
-              r = t.o.plugins.allowTagsFromPaste.removableTags || a.removableTags;
-            if (0 !== o.length) {
-              var s = e(r).not(o).get();
-              t.pasteHandlers.push(function () {
-                setTimeout(function () {
-                  var a = t.$ed.html();
-                  e.each(s, function (e, t) {
-                    a = a.replace(new RegExp("<\\/?" + t + "(\\s[^>]*)?>", "gi"), "");
-                  }), t.$ed.html(a);
-                }, 0);
-              });
-            }
-          }
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
  * trumbowyg.base64.js v1.0
  * Base64 plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -609,6 +512,103 @@
               var l;
             }, 0);
           });
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.allowTagsFromPaste.js v1.0.2
+ * It cleans tags from pasted text, whilst allowing several specified tags
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author	: Fathi Anshory (0x00000F5C)
+ * Twitter	: @fscchannl
+ * Notes:
+ *  - removeformatPasted must be set to FALSE since it was applied prior to pasteHandlers, or else it will be useless
+ *	- It is most advisable to use along with the cleanpaste plugin, or else you'd end up with dirty markup
+ */
+
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    // When empty, all tags are allowed making this plugin useless
+    // If you want to remove all tags, use removeformatPasted core option instead
+    allowedTags: [],
+    // List of tags which can be allowed
+    removableTags: ['a', 'abbr', 'address', 'b', 'bdi', 'bdo', 'blockquote', 'br', 'cite', 'code', 'del', 'dfn', 'details', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'ins', 'kbd', 'mark', 'meter', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'small', 'span', 'strong', 'sub', 'summary', 'sup', 'time', 'u', 'var', 'wbr', 'img', 'map', 'area', 'canvas', 'figcaption', 'figure', 'picture', 'audio', 'source', 'track', 'video', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'table', 'caption', 'th', 'tr', 'td', 'thead', 'tbody', 'tfoot', 'col', 'colgroup', 'style', 'div', 'p', 'form', 'input', 'textarea', 'button', 'select', 'optgroup', 'option', 'label', 'fieldset', 'legend', 'datalist', 'keygen', 'output', 'iframe', 'link', 'nav', 'header', 'hgroup', 'footer', 'main', 'section', 'article', 'aside', 'dialog', 'script', 'noscript', 'embed', 'object', 'param']
+  };
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      allowTagsFromPaste: {
+        init: function init(trumbowyg) {
+          if (!trumbowyg.o.plugins.allowTagsFromPaste) {
+            return;
+          }
+
+          // Force disable remove format pasted
+          trumbowyg.o.removeformatPasted = false;
+          var allowedTags = trumbowyg.o.plugins.allowTagsFromPaste.allowedTags || defaultOptions.allowedTags;
+          var removableTags = trumbowyg.o.plugins.allowTagsFromPaste.removableTags || defaultOptions.removableTags;
+          if (allowedTags.length === 0) {
+            return;
+          }
+
+          // Get list of tags to remove
+          var tagsToRemove = $(removableTags).not(allowedTags).get();
+          trumbowyg.pasteHandlers.push(function () {
+            setTimeout(function () {
+              var processNodes = trumbowyg.$ed.html();
+              $.each(tagsToRemove, function (iterator, tagName) {
+                processNodes = processNodes.replace(new RegExp('<\\/?' + tagName + '(\\s[^>]*)?>', 'gi'), '');
+              });
+              trumbowyg.$ed.html(processNodes);
+            }, 0);
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.allowTagsFromPaste.js v1.0.2
+ * It cleans tags from pasted text, whilst allowing several specified tags
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author	: Fathi Anshory (0x00000F5C)
+ * Twitter	: @fscchannl
+ * Notes:
+ *  - removeformatPasted must be set to FALSE since it was applied prior to pasteHandlers, or else it will be useless
+ *	- It is most advisable to use along with the cleanpaste plugin, or else you'd end up with dirty markup
+ */
+!function (e) {
+  "use strict";
+
+  var a = {
+    allowedTags: [],
+    removableTags: ["a", "abbr", "address", "b", "bdi", "bdo", "blockquote", "br", "cite", "code", "del", "dfn", "details", "em", "h1", "h2", "h3", "h4", "h5", "h6", "hr", "i", "ins", "kbd", "mark", "meter", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp", "small", "span", "strong", "sub", "summary", "sup", "time", "u", "var", "wbr", "img", "map", "area", "canvas", "figcaption", "figure", "picture", "audio", "source", "track", "video", "ul", "ol", "li", "dl", "dt", "dd", "table", "caption", "th", "tr", "td", "thead", "tbody", "tfoot", "col", "colgroup", "style", "div", "p", "form", "input", "textarea", "button", "select", "optgroup", "option", "label", "fieldset", "legend", "datalist", "keygen", "output", "iframe", "link", "nav", "header", "hgroup", "footer", "main", "section", "article", "aside", "dialog", "script", "noscript", "embed", "object", "param"]
+  };
+  e.extend(!0, e.trumbowyg, {
+    plugins: {
+      allowTagsFromPaste: {
+        init: function init(t) {
+          if (t.o.plugins.allowTagsFromPaste) {
+            t.o.removeformatPasted = !1;
+            var o = t.o.plugins.allowTagsFromPaste.allowedTags || a.allowedTags,
+              r = t.o.plugins.allowTagsFromPaste.removableTags || a.removableTags;
+            if (0 !== o.length) {
+              var s = e(r).not(o).get();
+              t.pasteHandlers.push(function () {
+                setTimeout(function () {
+                  var a = t.$ed.html();
+                  e.each(s, function (e, t) {
+                    a = a.replace(new RegExp("<\\/?" + t + "(\\s[^>]*)?>", "gi"), "");
+                  }), t.$ed.html(a);
+                }, 0);
+              });
+            }
+          }
         }
       }
     }
@@ -1593,6 +1593,361 @@
     langs: {
       // jshint camelcase:false
       en: {
+        giphy: 'Insert GIF'
+      },
+      az: {
+        giphy: 'GIF yerləşdir'
+      },
+      by: {
+        giphy: 'Уставіць GIF'
+      },
+      et: {
+        giphy: 'Sisesta GIF'
+      },
+      fr: {
+        giphy: 'Insérer un GIF'
+      },
+      hu: {
+        giphy: 'GIF beszúrás'
+      },
+      ru: {
+        giphy: 'Вставить GIF'
+      },
+      sl: {
+        giphy: 'Vstavi GIF'
+      },
+      tr: {
+        giphy: 'GIF ekle'
+      }
+      // jshint camelcase:true
+    }
+  });
+
+  var giphyLogo = '<svg viewBox="0 0 231 53" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"><path d="M48.32 22.386c0-1.388-.252-1.892-1.767-1.85-3.448.126-6.855.042-10.303.042H25.443c-.927 0-1.346.211-1.305 1.22.085 2.86.085 5.72.043 8.58 0 .883.252 1.169 1.169 1.135 2.018-.084 3.995-.042 6.014 0 1.64 0 4.164-.546 4.752.252.841 1.169.421 3.364.337 5.089-.043.547-.547 1.304-1.094 1.598-2.692 1.556-5.678 2.018-8.747 1.892-5.342-.21-9.336-2.439-11.481-7.527-1.388-3.364-1.725-6.855-1.01-10.43 1.01-4.963 3.407-8.747 8.58-10.051 5.215-1.305 10.136-.547 14.467 2.817 1.219.967 1.798.715 2.691-.294 1.514-1.724 3.154-3.322 4.753-4.963 1.892-1.933 1.892-1.892-.169-3.7C38.429.813 31.238-.617 23.5.224 12.818 1.393 5.248 6.658 1.59 17.045-.177 22.008-.428 27.097.623 32.227c1.682 7.914 5.551 14.12 13.289 17.368 6.898 2.901 14.046 3.448 21.321 1.598 4.331-1.093 8.411-2.608 11.354-6.223 1.136-1.388 1.725-2.902 1.682-4.71l.043-17.873.008-.001zm125.153 3.784l.042-23.046c0-1.136-.168-1.598-1.472-1.556a238.02 238.02 0 0 1-11.017 0c-1.136-.042-1.439.337-1.439 1.439v15.645c0 1.345-.421 1.556-1.641 1.556a422.563 422.563 0 0 0-14.593 0c-1.262.042-1.472-.421-1.439-1.556l.043-15.813c0-.926-.169-1.304-1.17-1.262h-11.513c-.927 0-1.304.169-1.304 1.22v46.764c0 .967.252 1.262 1.219 1.262h11.512c1.169.042 1.262-.462 1.262-1.388l-.042-15.644c0-1.053.251-1.346 1.304-1.346h15.14c1.22 0 1.388.421 1.388 1.472l-.042 15.477c0 1.093.21 1.472 1.388 1.439 3.615-.085 7.233-.085 10.807 0 1.304.042 1.598-.337 1.598-1.598l-.042-23.047.011-.018zM106.565 1.654c-8.369-.211-16.728-.126-25.065-.211-1.346 0-1.767.337-1.767 1.724l.043 23.004v23.215c0 1.009.168 1.439 1.304 1.387a271.22 271.22 0 0 1 11.691 0c1.094 0 1.346-.336 1.346-1.345l-.042-10.64c0-1.052.294-1.345 1.345-1.345 3.322.042 6.645.085 9.967-.085 4.407-.21 8.621-1.219 12.111-4.12 5.551-4.584 7.613-12.701 5.131-20.061-2.313-6.561-8.747-11.354-16.064-11.522v-.001zm-3.028 24.013c-2.818.042-5.594-.043-8.411.042-1.169.042-1.439-.378-1.345-1.439.084-1.556 0-3.069 0-4.626v-5.131c-.043-.841.251-1.094 1.052-1.052 2.986.042 5.929-.085 8.915.042 3.616.126 5.887 2.692 5.846 6.266-.126 3.658-2.313 5.846-6.055 5.887l-.002.011zM229.699 1.569c-4.458 0-8.915-.042-13.415.043-.629 0-1.472.503-1.85 1.052a505.695 505.695 0 0 0-8.957 14.214c-.884 1.472-1.22 1.169-1.977-.084l-8.496-14.089c-.503-.841-1.052-1.136-2.018-1.136l-13.078.043c-.462 0-.967.125-1.439.21.21.378.378.799.629 1.169l17.412 27.167c.462.715.715 1.682.757 2.524v16.653c0 1.052.168 1.514 1.388 1.472 3.784-.084 7.57-.084 11.354 0 1.136.043 1.304-.377 1.304-1.387l-.042-8.58c0-2.734-.084-5.51.042-8.243.043-.926.337-1.933.841-2.649l18.167-27.041c.252-.337.337-.758.547-1.17a3.636 3.636 0 0 0-1.169-.168zM70.104 2.661c0-1.009-.294-1.219-1.262-1.219H57.69c-1.262-.043-1.472.377-1.472 1.513l.042 23.004v23.34c0 1.053.126 1.514 1.346 1.473 3.7-.085 7.444-.043 11.152 0 .966 0 1.387-.085 1.387-1.262l-.042-46.857.001.008z" fill="currentColor" fill-rule="nonzero"/></svg>'; // jshint ignore:line
+
+  var CANCEL_EVENT = 'tbwcancel';
+
+  // Throttle helper
+  function trumbowygThrottle(callback, delay) {
+    var last;
+    var timer;
+    return function () {
+      var context = this;
+      var now = +new Date();
+      var args = arguments;
+      if (last && now < last + delay) {
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+          last = now;
+          callback.apply(context, args);
+        }, delay);
+      } else {
+        last = now;
+        callback.apply(context, args);
+      }
+    };
+  }
+
+  // Fills modal with response gifs
+  function renderGifs(response, $giphyModal, trumbowyg, mustEmpty) {
+    var width = ($giphyModal.width() - 20) / 3;
+    var html = response.data.filter(function (gifData) {
+      // jshint camelcase:false
+      var downsized = gifData.images.downsized || gifData.images.downsized_medium;
+      // jshint camelcase:true
+      return !!downsized.url;
+    }).map(function (gifData) {
+      // jshint camelcase:false
+      var downsized = gifData.images.downsized || gifData.images.downsized_medium;
+      // jshint camelcase:true
+      var image = downsized,
+        imageRatio = image.height / image.width,
+        altText = gifData.title;
+      var imgHtml = '<img src=' + image.url + ' width="' + width + '" height="' + imageRatio * width + '" alt="' + altText + '" loading="lazy" />';
+      return '<div class="img-container">' + imgHtml + '</div>';
+    }).join('');
+    if (mustEmpty === true) {
+      if (html.length === 0) {
+        if ($('.' + trumbowyg.o.prefix + 'giphy-no-result', $giphyModal).length > 0) {
+          return;
+        }
+        html = '<img class="' + trumbowyg.o.prefix + 'giphy-no-result" src="' + trumbowyg.o.plugins.giphy.noResultGifUrl + '"/>';
+      }
+      $giphyModal.empty();
+    }
+    $giphyModal.append(html);
+
+    // Remove gray overlay on image load
+    // moved here from inline callback definition due to CSP issue
+    // Note: this is being done post-factum because load event doesn't bubble up and so can't be delegated
+    var addLoadedClass = function addLoadedClass(img) {
+      img.classList.add('tbw-loaded');
+    };
+    $('img', $giphyModal).each(function () {
+      var img = this;
+      if (img.complete) {
+        // images load instantly when cached and esp. when loaded in previous modal open
+        addLoadedClass(img);
+      } else {
+        img.addEventListener('load', function () {
+          addLoadedClass(this);
+        });
+      }
+    });
+    $('img', $giphyModal).on('click', function () {
+      var src = $(this).attr('src'),
+        alt = $(this).attr('alt');
+      trumbowyg.restoreRange();
+      trumbowyg.execCmd('insertImage', src, false, true);
+
+      // relay alt tag into inserted image
+      if (alt) {
+        var $img = $('img[src="' + src + '"]:not([alt])', trumbowyg.$box);
+        $img.attr('alt', alt);
+        // Note: This seems to fire relatively early and could be wrapped in a setTimeout if needed
+        trumbowyg.syncCode();
+      }
+      $('img', $giphyModal).off();
+      trumbowyg.closeModal();
+    });
+  }
+  var defaultOptions = {
+    rating: 'g',
+    apiKey: null,
+    throttleDelay: 300,
+    noResultGifUrl: 'https://media.giphy.com/media/2Faz9FbRzmwxY0pZS/giphy.gif'
+  };
+
+  // Add dropdown with font sizes
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      giphy: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.giphy = $.extend({}, defaultOptions, trumbowyg.o.plugins.giphy || {});
+          trumbowyg.addBtnDef('giphy', {
+            fn: function fn() {
+              if (trumbowyg.o.plugins.giphy.apiKey === null) {
+                throw new Error('You must set a Giphy API Key');
+              }
+              var BASE_URL = 'https://api.giphy.com/v1/gifs/search?api_key=' + trumbowyg.o.plugins.giphy.apiKey + '&rating=' + trumbowyg.o.plugins.giphy.rating,
+                DEFAULT_URL = BASE_URL.replace('/search', '/trending');
+              var previousAjaxCall = {
+                abort: function abort() {}
+              };
+              var prefix = trumbowyg.o.prefix;
+
+              // Create and open the modal
+              var searchInput = '<input name="" class="' + prefix + 'giphy-search" placeholder="Search a GIF" autofocus="autofocus">',
+                closeButton = '<button class="' + prefix + 'giphy-close" title="' + trumbowyg.lang.close + '"><svg><use xlink:href="' + trumbowyg.svgPath + '#' + prefix + 'close"/></svg></button>',
+                poweredByGiphy = '<div class="' + prefix + 'powered-by-giphy"><span>Powered by</span>' + giphyLogo + '</div>',
+                giphyModalHtml = searchInput + closeButton + poweredByGiphy + '<div class="' + prefix + 'giphy-modal-scroll"><div class="' + prefix + 'giphy-modal"></div></div>';
+              trumbowyg.openModal(null, giphyModalHtml, false).one(CANCEL_EVENT, function () {
+                try {
+                  previousAjaxCall.abort();
+                } catch (e) {}
+                trumbowyg.closeModal();
+              });
+              var $giphyInput = $('.' + prefix + 'giphy-search'),
+                $giphyClose = $('.' + prefix + 'giphy-close'),
+                $giphyModal = $('.' + prefix + 'giphy-modal');
+              var ajaxError = function ajaxError() {
+                if (!navigator.onLine && !$('.' + prefix + 'giphy-offline', $giphyModal).length) {
+                  $giphyModal.empty();
+                  $giphyModal.append('<p class="' + prefix + 'giphy-offline">You are offline</p>');
+                }
+              };
+
+              // Load trending gifs as default
+              $.ajax({
+                url: DEFAULT_URL,
+                dataType: 'json',
+                success: function success(response) {
+                  renderGifs(response, $giphyModal, trumbowyg, true);
+                },
+                error: ajaxError
+              });
+              var searchGifsOnInput = function searchGifsOnInput() {
+                var query = $giphyInput.val();
+                if (query.length === 0) {
+                  return;
+                }
+                try {
+                  previousAjaxCall.abort();
+                } catch (e) {}
+                previousAjaxCall = $.ajax({
+                  url: BASE_URL + '&q=' + encodeURIComponent(query),
+                  dataType: 'json',
+                  success: function success(response) {
+                    renderGifs(response, $giphyModal, trumbowyg, true);
+                  },
+                  error: ajaxError
+                });
+              };
+              var throttledInputRequest = trumbowygThrottle(searchGifsOnInput, trumbowyg.o.plugins.giphy.throttleDelay);
+              $giphyInput.on('input', throttledInputRequest);
+              $giphyInput.focus();
+              $giphyClose.one('click', function () {
+                $giphyModal.trigger(CANCEL_EVENT);
+              });
+            }
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
+!function (i) {
+  "use strict";
+
+  i.extend(!0, i.trumbowyg, {
+    langs: {
+      en: {
+        giphy: "Insert GIF"
+      },
+      az: {
+        giphy: "GIF yerləşdir"
+      },
+      by: {
+        giphy: "Уставіць GIF"
+      },
+      et: {
+        giphy: "Sisesta GIF"
+      },
+      fr: {
+        giphy: "Insérer un GIF"
+      },
+      hu: {
+        giphy: "GIF beszúrás"
+      },
+      ru: {
+        giphy: "Вставить GIF"
+      },
+      sl: {
+        giphy: "Vstavi GIF"
+      },
+      tr: {
+        giphy: "GIF ekle"
+      }
+    }
+  });
+  var e = "tbwcancel";
+  function t(e, t, n, l) {
+    var a = (t.width() - 20) / 3,
+      o = e.data.filter(function (i) {
+        return !!(i.images.downsized || i.images.downsized_medium).url;
+      }).map(function (i) {
+        var e = i.images.downsized || i.images.downsized_medium,
+          t = e.height / e.width,
+          n = i.title;
+        return '<div class="img-container">' + ("<img src=" + e.url + ' width="' + a + '" height="' + t * a + '" alt="' + n + '" loading="lazy" />') + "</div>";
+      }).join("");
+    if (!0 === l) {
+      if (0 === o.length) {
+        if (i("." + n.o.prefix + "giphy-no-result", t).length > 0) return;
+        o = '<img class="' + n.o.prefix + 'giphy-no-result" src="' + n.o.plugins.giphy.noResultGifUrl + '"/>';
+      }
+      t.empty();
+    }
+    t.append(o);
+    var c = function c(i) {
+      i.classList.add("tbw-loaded");
+    };
+    i("img", t).each(function () {
+      var i = this;
+      i.complete ? c(i) : i.addEventListener("load", function () {
+        c(this);
+      });
+    }), i("img", t).on("click", function () {
+      var e = i(this).attr("src"),
+        l = i(this).attr("alt");
+      (n.restoreRange(), n.execCmd("insertImage", e, !1, !0), l) && (i('img[src="' + e + '"]:not([alt])', n.$box).attr("alt", l), n.syncCode());
+      i("img", t).off(), n.closeModal();
+    });
+  }
+  var n = {
+    rating: "g",
+    apiKey: null,
+    throttleDelay: 300,
+    noResultGifUrl: "https://media.giphy.com/media/2Faz9FbRzmwxY0pZS/giphy.gif"
+  };
+  i.extend(!0, i.trumbowyg, {
+    plugins: {
+      giphy: {
+        init: function init(l) {
+          l.o.plugins.giphy = i.extend({}, n, l.o.plugins.giphy || {}), l.addBtnDef("giphy", {
+            fn: function fn() {
+              if (null === l.o.plugins.giphy.apiKey) throw new Error("You must set a Giphy API Key");
+              var n = "https://api.giphy.com/v1/gifs/search?api_key=" + l.o.plugins.giphy.apiKey + "&rating=" + l.o.plugins.giphy.rating,
+                a = n.replace("/search", "/trending"),
+                o = {
+                  abort: function abort() {}
+                },
+                c = l.o.prefix,
+                r = '<input name="" class="' + c + 'giphy-search" placeholder="Search a GIF" autofocus="autofocus">' + ('<button class="' + c + 'giphy-close" title="' + l.lang.close + '"><svg><use xlink:href="' + l.svgPath + "#" + c + 'close"/></svg></button>') + ('<div class="' + c + 'powered-by-giphy"><span>Powered by</span><svg viewBox="0 0 231 53" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"><path d="M48.32 22.386c0-1.388-.252-1.892-1.767-1.85-3.448.126-6.855.042-10.303.042H25.443c-.927 0-1.346.211-1.305 1.22.085 2.86.085 5.72.043 8.58 0 .883.252 1.169 1.169 1.135 2.018-.084 3.995-.042 6.014 0 1.64 0 4.164-.546 4.752.252.841 1.169.421 3.364.337 5.089-.043.547-.547 1.304-1.094 1.598-2.692 1.556-5.678 2.018-8.747 1.892-5.342-.21-9.336-2.439-11.481-7.527-1.388-3.364-1.725-6.855-1.01-10.43 1.01-4.963 3.407-8.747 8.58-10.051 5.215-1.305 10.136-.547 14.467 2.817 1.219.967 1.798.715 2.691-.294 1.514-1.724 3.154-3.322 4.753-4.963 1.892-1.933 1.892-1.892-.169-3.7C38.429.813 31.238-.617 23.5.224 12.818 1.393 5.248 6.658 1.59 17.045-.177 22.008-.428 27.097.623 32.227c1.682 7.914 5.551 14.12 13.289 17.368 6.898 2.901 14.046 3.448 21.321 1.598 4.331-1.093 8.411-2.608 11.354-6.223 1.136-1.388 1.725-2.902 1.682-4.71l.043-17.873.008-.001zm125.153 3.784l.042-23.046c0-1.136-.168-1.598-1.472-1.556a238.02 238.02 0 0 1-11.017 0c-1.136-.042-1.439.337-1.439 1.439v15.645c0 1.345-.421 1.556-1.641 1.556a422.563 422.563 0 0 0-14.593 0c-1.262.042-1.472-.421-1.439-1.556l.043-15.813c0-.926-.169-1.304-1.17-1.262h-11.513c-.927 0-1.304.169-1.304 1.22v46.764c0 .967.252 1.262 1.219 1.262h11.512c1.169.042 1.262-.462 1.262-1.388l-.042-15.644c0-1.053.251-1.346 1.304-1.346h15.14c1.22 0 1.388.421 1.388 1.472l-.042 15.477c0 1.093.21 1.472 1.388 1.439 3.615-.085 7.233-.085 10.807 0 1.304.042 1.598-.337 1.598-1.598l-.042-23.047.011-.018zM106.565 1.654c-8.369-.211-16.728-.126-25.065-.211-1.346 0-1.767.337-1.767 1.724l.043 23.004v23.215c0 1.009.168 1.439 1.304 1.387a271.22 271.22 0 0 1 11.691 0c1.094 0 1.346-.336 1.346-1.345l-.042-10.64c0-1.052.294-1.345 1.345-1.345 3.322.042 6.645.085 9.967-.085 4.407-.21 8.621-1.219 12.111-4.12 5.551-4.584 7.613-12.701 5.131-20.061-2.313-6.561-8.747-11.354-16.064-11.522v-.001zm-3.028 24.013c-2.818.042-5.594-.043-8.411.042-1.169.042-1.439-.378-1.345-1.439.084-1.556 0-3.069 0-4.626v-5.131c-.043-.841.251-1.094 1.052-1.052 2.986.042 5.929-.085 8.915.042 3.616.126 5.887 2.692 5.846 6.266-.126 3.658-2.313 5.846-6.055 5.887l-.002.011zM229.699 1.569c-4.458 0-8.915-.042-13.415.043-.629 0-1.472.503-1.85 1.052a505.695 505.695 0 0 0-8.957 14.214c-.884 1.472-1.22 1.169-1.977-.084l-8.496-14.089c-.503-.841-1.052-1.136-2.018-1.136l-13.078.043c-.462 0-.967.125-1.439.21.21.378.378.799.629 1.169l17.412 27.167c.462.715.715 1.682.757 2.524v16.653c0 1.052.168 1.514 1.388 1.472 3.784-.084 7.57-.084 11.354 0 1.136.043 1.304-.377 1.304-1.387l-.042-8.58c0-2.734-.084-5.51.042-8.243.043-.926.337-1.933.841-2.649l18.167-27.041c.252-.337.337-.758.547-1.17a3.636 3.636 0 0 0-1.169-.168zM70.104 2.661c0-1.009-.294-1.219-1.262-1.219H57.69c-1.262-.043-1.472.377-1.472 1.513l.042 23.004v23.34c0 1.053.126 1.514 1.346 1.473 3.7-.085 7.444-.043 11.152 0 .966 0 1.387-.085 1.387-1.262l-.042-46.857.001.008z" fill="currentColor" fill-rule="nonzero"/></svg></div>') + '<div class="' + c + 'giphy-modal-scroll"><div class="' + c + 'giphy-modal"></div></div>';
+              l.openModal(null, r, !1).one(e, function () {
+                try {
+                  o.abort();
+                } catch (i) {}
+                l.closeModal();
+              });
+              var s = i("." + c + "giphy-search"),
+                g = i("." + c + "giphy-close"),
+                p = i("." + c + "giphy-modal"),
+                h = function h() {
+                  navigator.onLine || i("." + c + "giphy-offline", p).length || (p.empty(), p.append('<p class="' + c + 'giphy-offline">You are offline</p>'));
+                };
+              i.ajax({
+                url: a,
+                dataType: "json",
+                success: function success(i) {
+                  t(i, p, l, !0);
+                },
+                error: h
+              });
+              var u,
+                d,
+                y,
+                f,
+                m = (u = function u() {
+                  var e = s.val();
+                  if (0 !== e.length) {
+                    try {
+                      o.abort();
+                    } catch (i) {}
+                    o = i.ajax({
+                      url: n + "&q=" + encodeURIComponent(e),
+                      dataType: "json",
+                      success: function success(i) {
+                        t(i, p, l, !0);
+                      },
+                      error: h
+                    });
+                  }
+                }, d = l.o.plugins.giphy.throttleDelay, function () {
+                  var i = this,
+                    e = +new Date(),
+                    t = arguments;
+                  y && e < y + d ? (clearTimeout(f), f = setTimeout(function () {
+                    y = e, u.apply(i, t);
+                  }, d)) : (y = e, u.apply(i, t));
+                });
+              s.on("input", m), s.focus(), g.one("click", function () {
+                p.trigger(e);
+              });
+            }
+          });
+        }
+      }
+    }
+  });
+}(jQuery);
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
         fontsize: 'Font size',
         fontsizes: {
           'x-small': 'Extra small',
@@ -2303,361 +2658,6 @@
         init: function init(l) {
           l.o.plugins.fontsize = e.extend({}, t, l.o.plugins.fontsize || {}), l.addBtnDef("fontsize", {
             dropdown: a(l)
-          });
-        }
-      }
-    }
-  });
-}(jQuery);
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        giphy: 'Insert GIF'
-      },
-      az: {
-        giphy: 'GIF yerləşdir'
-      },
-      by: {
-        giphy: 'Уставіць GIF'
-      },
-      et: {
-        giphy: 'Sisesta GIF'
-      },
-      fr: {
-        giphy: 'Insérer un GIF'
-      },
-      hu: {
-        giphy: 'GIF beszúrás'
-      },
-      ru: {
-        giphy: 'Вставить GIF'
-      },
-      sl: {
-        giphy: 'Vstavi GIF'
-      },
-      tr: {
-        giphy: 'GIF ekle'
-      }
-      // jshint camelcase:true
-    }
-  });
-
-  var giphyLogo = '<svg viewBox="0 0 231 53" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"><path d="M48.32 22.386c0-1.388-.252-1.892-1.767-1.85-3.448.126-6.855.042-10.303.042H25.443c-.927 0-1.346.211-1.305 1.22.085 2.86.085 5.72.043 8.58 0 .883.252 1.169 1.169 1.135 2.018-.084 3.995-.042 6.014 0 1.64 0 4.164-.546 4.752.252.841 1.169.421 3.364.337 5.089-.043.547-.547 1.304-1.094 1.598-2.692 1.556-5.678 2.018-8.747 1.892-5.342-.21-9.336-2.439-11.481-7.527-1.388-3.364-1.725-6.855-1.01-10.43 1.01-4.963 3.407-8.747 8.58-10.051 5.215-1.305 10.136-.547 14.467 2.817 1.219.967 1.798.715 2.691-.294 1.514-1.724 3.154-3.322 4.753-4.963 1.892-1.933 1.892-1.892-.169-3.7C38.429.813 31.238-.617 23.5.224 12.818 1.393 5.248 6.658 1.59 17.045-.177 22.008-.428 27.097.623 32.227c1.682 7.914 5.551 14.12 13.289 17.368 6.898 2.901 14.046 3.448 21.321 1.598 4.331-1.093 8.411-2.608 11.354-6.223 1.136-1.388 1.725-2.902 1.682-4.71l.043-17.873.008-.001zm125.153 3.784l.042-23.046c0-1.136-.168-1.598-1.472-1.556a238.02 238.02 0 0 1-11.017 0c-1.136-.042-1.439.337-1.439 1.439v15.645c0 1.345-.421 1.556-1.641 1.556a422.563 422.563 0 0 0-14.593 0c-1.262.042-1.472-.421-1.439-1.556l.043-15.813c0-.926-.169-1.304-1.17-1.262h-11.513c-.927 0-1.304.169-1.304 1.22v46.764c0 .967.252 1.262 1.219 1.262h11.512c1.169.042 1.262-.462 1.262-1.388l-.042-15.644c0-1.053.251-1.346 1.304-1.346h15.14c1.22 0 1.388.421 1.388 1.472l-.042 15.477c0 1.093.21 1.472 1.388 1.439 3.615-.085 7.233-.085 10.807 0 1.304.042 1.598-.337 1.598-1.598l-.042-23.047.011-.018zM106.565 1.654c-8.369-.211-16.728-.126-25.065-.211-1.346 0-1.767.337-1.767 1.724l.043 23.004v23.215c0 1.009.168 1.439 1.304 1.387a271.22 271.22 0 0 1 11.691 0c1.094 0 1.346-.336 1.346-1.345l-.042-10.64c0-1.052.294-1.345 1.345-1.345 3.322.042 6.645.085 9.967-.085 4.407-.21 8.621-1.219 12.111-4.12 5.551-4.584 7.613-12.701 5.131-20.061-2.313-6.561-8.747-11.354-16.064-11.522v-.001zm-3.028 24.013c-2.818.042-5.594-.043-8.411.042-1.169.042-1.439-.378-1.345-1.439.084-1.556 0-3.069 0-4.626v-5.131c-.043-.841.251-1.094 1.052-1.052 2.986.042 5.929-.085 8.915.042 3.616.126 5.887 2.692 5.846 6.266-.126 3.658-2.313 5.846-6.055 5.887l-.002.011zM229.699 1.569c-4.458 0-8.915-.042-13.415.043-.629 0-1.472.503-1.85 1.052a505.695 505.695 0 0 0-8.957 14.214c-.884 1.472-1.22 1.169-1.977-.084l-8.496-14.089c-.503-.841-1.052-1.136-2.018-1.136l-13.078.043c-.462 0-.967.125-1.439.21.21.378.378.799.629 1.169l17.412 27.167c.462.715.715 1.682.757 2.524v16.653c0 1.052.168 1.514 1.388 1.472 3.784-.084 7.57-.084 11.354 0 1.136.043 1.304-.377 1.304-1.387l-.042-8.58c0-2.734-.084-5.51.042-8.243.043-.926.337-1.933.841-2.649l18.167-27.041c.252-.337.337-.758.547-1.17a3.636 3.636 0 0 0-1.169-.168zM70.104 2.661c0-1.009-.294-1.219-1.262-1.219H57.69c-1.262-.043-1.472.377-1.472 1.513l.042 23.004v23.34c0 1.053.126 1.514 1.346 1.473 3.7-.085 7.444-.043 11.152 0 .966 0 1.387-.085 1.387-1.262l-.042-46.857.001.008z" fill="currentColor" fill-rule="nonzero"/></svg>'; // jshint ignore:line
-
-  var CANCEL_EVENT = 'tbwcancel';
-
-  // Throttle helper
-  function trumbowygThrottle(callback, delay) {
-    var last;
-    var timer;
-    return function () {
-      var context = this;
-      var now = +new Date();
-      var args = arguments;
-      if (last && now < last + delay) {
-        clearTimeout(timer);
-        timer = setTimeout(function () {
-          last = now;
-          callback.apply(context, args);
-        }, delay);
-      } else {
-        last = now;
-        callback.apply(context, args);
-      }
-    };
-  }
-
-  // Fills modal with response gifs
-  function renderGifs(response, $giphyModal, trumbowyg, mustEmpty) {
-    var width = ($giphyModal.width() - 20) / 3;
-    var html = response.data.filter(function (gifData) {
-      // jshint camelcase:false
-      var downsized = gifData.images.downsized || gifData.images.downsized_medium;
-      // jshint camelcase:true
-      return !!downsized.url;
-    }).map(function (gifData) {
-      // jshint camelcase:false
-      var downsized = gifData.images.downsized || gifData.images.downsized_medium;
-      // jshint camelcase:true
-      var image = downsized,
-        imageRatio = image.height / image.width,
-        altText = gifData.title;
-      var imgHtml = '<img src=' + image.url + ' width="' + width + '" height="' + imageRatio * width + '" alt="' + altText + '" loading="lazy" />';
-      return '<div class="img-container">' + imgHtml + '</div>';
-    }).join('');
-    if (mustEmpty === true) {
-      if (html.length === 0) {
-        if ($('.' + trumbowyg.o.prefix + 'giphy-no-result', $giphyModal).length > 0) {
-          return;
-        }
-        html = '<img class="' + trumbowyg.o.prefix + 'giphy-no-result" src="' + trumbowyg.o.plugins.giphy.noResultGifUrl + '"/>';
-      }
-      $giphyModal.empty();
-    }
-    $giphyModal.append(html);
-
-    // Remove gray overlay on image load
-    // moved here from inline callback definition due to CSP issue
-    // Note: this is being done post-factum because load event doesn't bubble up and so can't be delegated
-    var addLoadedClass = function addLoadedClass(img) {
-      img.classList.add('tbw-loaded');
-    };
-    $('img', $giphyModal).each(function () {
-      var img = this;
-      if (img.complete) {
-        // images load instantly when cached and esp. when loaded in previous modal open
-        addLoadedClass(img);
-      } else {
-        img.addEventListener('load', function () {
-          addLoadedClass(this);
-        });
-      }
-    });
-    $('img', $giphyModal).on('click', function () {
-      var src = $(this).attr('src'),
-        alt = $(this).attr('alt');
-      trumbowyg.restoreRange();
-      trumbowyg.execCmd('insertImage', src, false, true);
-
-      // relay alt tag into inserted image
-      if (alt) {
-        var $img = $('img[src="' + src + '"]:not([alt])', trumbowyg.$box);
-        $img.attr('alt', alt);
-        // Note: This seems to fire relatively early and could be wrapped in a setTimeout if needed
-        trumbowyg.syncCode();
-      }
-      $('img', $giphyModal).off();
-      trumbowyg.closeModal();
-    });
-  }
-  var defaultOptions = {
-    rating: 'g',
-    apiKey: null,
-    throttleDelay: 300,
-    noResultGifUrl: 'https://media.giphy.com/media/2Faz9FbRzmwxY0pZS/giphy.gif'
-  };
-
-  // Add dropdown with font sizes
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      giphy: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.giphy = $.extend({}, defaultOptions, trumbowyg.o.plugins.giphy || {});
-          trumbowyg.addBtnDef('giphy', {
-            fn: function fn() {
-              if (trumbowyg.o.plugins.giphy.apiKey === null) {
-                throw new Error('You must set a Giphy API Key');
-              }
-              var BASE_URL = 'https://api.giphy.com/v1/gifs/search?api_key=' + trumbowyg.o.plugins.giphy.apiKey + '&rating=' + trumbowyg.o.plugins.giphy.rating,
-                DEFAULT_URL = BASE_URL.replace('/search', '/trending');
-              var previousAjaxCall = {
-                abort: function abort() {}
-              };
-              var prefix = trumbowyg.o.prefix;
-
-              // Create and open the modal
-              var searchInput = '<input name="" class="' + prefix + 'giphy-search" placeholder="Search a GIF" autofocus="autofocus">',
-                closeButton = '<button class="' + prefix + 'giphy-close" title="' + trumbowyg.lang.close + '"><svg><use xlink:href="' + trumbowyg.svgPath + '#' + prefix + 'close"/></svg></button>',
-                poweredByGiphy = '<div class="' + prefix + 'powered-by-giphy"><span>Powered by</span>' + giphyLogo + '</div>',
-                giphyModalHtml = searchInput + closeButton + poweredByGiphy + '<div class="' + prefix + 'giphy-modal-scroll"><div class="' + prefix + 'giphy-modal"></div></div>';
-              trumbowyg.openModal(null, giphyModalHtml, false).one(CANCEL_EVENT, function () {
-                try {
-                  previousAjaxCall.abort();
-                } catch (e) {}
-                trumbowyg.closeModal();
-              });
-              var $giphyInput = $('.' + prefix + 'giphy-search'),
-                $giphyClose = $('.' + prefix + 'giphy-close'),
-                $giphyModal = $('.' + prefix + 'giphy-modal');
-              var ajaxError = function ajaxError() {
-                if (!navigator.onLine && !$('.' + prefix + 'giphy-offline', $giphyModal).length) {
-                  $giphyModal.empty();
-                  $giphyModal.append('<p class="' + prefix + 'giphy-offline">You are offline</p>');
-                }
-              };
-
-              // Load trending gifs as default
-              $.ajax({
-                url: DEFAULT_URL,
-                dataType: 'json',
-                success: function success(response) {
-                  renderGifs(response, $giphyModal, trumbowyg, true);
-                },
-                error: ajaxError
-              });
-              var searchGifsOnInput = function searchGifsOnInput() {
-                var query = $giphyInput.val();
-                if (query.length === 0) {
-                  return;
-                }
-                try {
-                  previousAjaxCall.abort();
-                } catch (e) {}
-                previousAjaxCall = $.ajax({
-                  url: BASE_URL + '&q=' + encodeURIComponent(query),
-                  dataType: 'json',
-                  success: function success(response) {
-                    renderGifs(response, $giphyModal, trumbowyg, true);
-                  },
-                  error: ajaxError
-                });
-              };
-              var throttledInputRequest = trumbowygThrottle(searchGifsOnInput, trumbowyg.o.plugins.giphy.throttleDelay);
-              $giphyInput.on('input', throttledInputRequest);
-              $giphyInput.focus();
-              $giphyClose.one('click', function () {
-                $giphyModal.trigger(CANCEL_EVENT);
-              });
-            }
-          });
-        }
-      }
-    }
-  });
-})(jQuery);
-!function (i) {
-  "use strict";
-
-  i.extend(!0, i.trumbowyg, {
-    langs: {
-      en: {
-        giphy: "Insert GIF"
-      },
-      az: {
-        giphy: "GIF yerləşdir"
-      },
-      by: {
-        giphy: "Уставіць GIF"
-      },
-      et: {
-        giphy: "Sisesta GIF"
-      },
-      fr: {
-        giphy: "Insérer un GIF"
-      },
-      hu: {
-        giphy: "GIF beszúrás"
-      },
-      ru: {
-        giphy: "Вставить GIF"
-      },
-      sl: {
-        giphy: "Vstavi GIF"
-      },
-      tr: {
-        giphy: "GIF ekle"
-      }
-    }
-  });
-  var e = "tbwcancel";
-  function t(e, t, n, l) {
-    var a = (t.width() - 20) / 3,
-      o = e.data.filter(function (i) {
-        return !!(i.images.downsized || i.images.downsized_medium).url;
-      }).map(function (i) {
-        var e = i.images.downsized || i.images.downsized_medium,
-          t = e.height / e.width,
-          n = i.title;
-        return '<div class="img-container">' + ("<img src=" + e.url + ' width="' + a + '" height="' + t * a + '" alt="' + n + '" loading="lazy" />') + "</div>";
-      }).join("");
-    if (!0 === l) {
-      if (0 === o.length) {
-        if (i("." + n.o.prefix + "giphy-no-result", t).length > 0) return;
-        o = '<img class="' + n.o.prefix + 'giphy-no-result" src="' + n.o.plugins.giphy.noResultGifUrl + '"/>';
-      }
-      t.empty();
-    }
-    t.append(o);
-    var c = function c(i) {
-      i.classList.add("tbw-loaded");
-    };
-    i("img", t).each(function () {
-      var i = this;
-      i.complete ? c(i) : i.addEventListener("load", function () {
-        c(this);
-      });
-    }), i("img", t).on("click", function () {
-      var e = i(this).attr("src"),
-        l = i(this).attr("alt");
-      (n.restoreRange(), n.execCmd("insertImage", e, !1, !0), l) && (i('img[src="' + e + '"]:not([alt])', n.$box).attr("alt", l), n.syncCode());
-      i("img", t).off(), n.closeModal();
-    });
-  }
-  var n = {
-    rating: "g",
-    apiKey: null,
-    throttleDelay: 300,
-    noResultGifUrl: "https://media.giphy.com/media/2Faz9FbRzmwxY0pZS/giphy.gif"
-  };
-  i.extend(!0, i.trumbowyg, {
-    plugins: {
-      giphy: {
-        init: function init(l) {
-          l.o.plugins.giphy = i.extend({}, n, l.o.plugins.giphy || {}), l.addBtnDef("giphy", {
-            fn: function fn() {
-              if (null === l.o.plugins.giphy.apiKey) throw new Error("You must set a Giphy API Key");
-              var n = "https://api.giphy.com/v1/gifs/search?api_key=" + l.o.plugins.giphy.apiKey + "&rating=" + l.o.plugins.giphy.rating,
-                a = n.replace("/search", "/trending"),
-                o = {
-                  abort: function abort() {}
-                },
-                c = l.o.prefix,
-                r = '<input name="" class="' + c + 'giphy-search" placeholder="Search a GIF" autofocus="autofocus">' + ('<button class="' + c + 'giphy-close" title="' + l.lang.close + '"><svg><use xlink:href="' + l.svgPath + "#" + c + 'close"/></svg></button>') + ('<div class="' + c + 'powered-by-giphy"><span>Powered by</span><svg viewBox="0 0 231 53" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"><path d="M48.32 22.386c0-1.388-.252-1.892-1.767-1.85-3.448.126-6.855.042-10.303.042H25.443c-.927 0-1.346.211-1.305 1.22.085 2.86.085 5.72.043 8.58 0 .883.252 1.169 1.169 1.135 2.018-.084 3.995-.042 6.014 0 1.64 0 4.164-.546 4.752.252.841 1.169.421 3.364.337 5.089-.043.547-.547 1.304-1.094 1.598-2.692 1.556-5.678 2.018-8.747 1.892-5.342-.21-9.336-2.439-11.481-7.527-1.388-3.364-1.725-6.855-1.01-10.43 1.01-4.963 3.407-8.747 8.58-10.051 5.215-1.305 10.136-.547 14.467 2.817 1.219.967 1.798.715 2.691-.294 1.514-1.724 3.154-3.322 4.753-4.963 1.892-1.933 1.892-1.892-.169-3.7C38.429.813 31.238-.617 23.5.224 12.818 1.393 5.248 6.658 1.59 17.045-.177 22.008-.428 27.097.623 32.227c1.682 7.914 5.551 14.12 13.289 17.368 6.898 2.901 14.046 3.448 21.321 1.598 4.331-1.093 8.411-2.608 11.354-6.223 1.136-1.388 1.725-2.902 1.682-4.71l.043-17.873.008-.001zm125.153 3.784l.042-23.046c0-1.136-.168-1.598-1.472-1.556a238.02 238.02 0 0 1-11.017 0c-1.136-.042-1.439.337-1.439 1.439v15.645c0 1.345-.421 1.556-1.641 1.556a422.563 422.563 0 0 0-14.593 0c-1.262.042-1.472-.421-1.439-1.556l.043-15.813c0-.926-.169-1.304-1.17-1.262h-11.513c-.927 0-1.304.169-1.304 1.22v46.764c0 .967.252 1.262 1.219 1.262h11.512c1.169.042 1.262-.462 1.262-1.388l-.042-15.644c0-1.053.251-1.346 1.304-1.346h15.14c1.22 0 1.388.421 1.388 1.472l-.042 15.477c0 1.093.21 1.472 1.388 1.439 3.615-.085 7.233-.085 10.807 0 1.304.042 1.598-.337 1.598-1.598l-.042-23.047.011-.018zM106.565 1.654c-8.369-.211-16.728-.126-25.065-.211-1.346 0-1.767.337-1.767 1.724l.043 23.004v23.215c0 1.009.168 1.439 1.304 1.387a271.22 271.22 0 0 1 11.691 0c1.094 0 1.346-.336 1.346-1.345l-.042-10.64c0-1.052.294-1.345 1.345-1.345 3.322.042 6.645.085 9.967-.085 4.407-.21 8.621-1.219 12.111-4.12 5.551-4.584 7.613-12.701 5.131-20.061-2.313-6.561-8.747-11.354-16.064-11.522v-.001zm-3.028 24.013c-2.818.042-5.594-.043-8.411.042-1.169.042-1.439-.378-1.345-1.439.084-1.556 0-3.069 0-4.626v-5.131c-.043-.841.251-1.094 1.052-1.052 2.986.042 5.929-.085 8.915.042 3.616.126 5.887 2.692 5.846 6.266-.126 3.658-2.313 5.846-6.055 5.887l-.002.011zM229.699 1.569c-4.458 0-8.915-.042-13.415.043-.629 0-1.472.503-1.85 1.052a505.695 505.695 0 0 0-8.957 14.214c-.884 1.472-1.22 1.169-1.977-.084l-8.496-14.089c-.503-.841-1.052-1.136-2.018-1.136l-13.078.043c-.462 0-.967.125-1.439.21.21.378.378.799.629 1.169l17.412 27.167c.462.715.715 1.682.757 2.524v16.653c0 1.052.168 1.514 1.388 1.472 3.784-.084 7.57-.084 11.354 0 1.136.043 1.304-.377 1.304-1.387l-.042-8.58c0-2.734-.084-5.51.042-8.243.043-.926.337-1.933.841-2.649l18.167-27.041c.252-.337.337-.758.547-1.17a3.636 3.636 0 0 0-1.169-.168zM70.104 2.661c0-1.009-.294-1.219-1.262-1.219H57.69c-1.262-.043-1.472.377-1.472 1.513l.042 23.004v23.34c0 1.053.126 1.514 1.346 1.473 3.7-.085 7.444-.043 11.152 0 .966 0 1.387-.085 1.387-1.262l-.042-46.857.001.008z" fill="currentColor" fill-rule="nonzero"/></svg></div>') + '<div class="' + c + 'giphy-modal-scroll"><div class="' + c + 'giphy-modal"></div></div>';
-              l.openModal(null, r, !1).one(e, function () {
-                try {
-                  o.abort();
-                } catch (i) {}
-                l.closeModal();
-              });
-              var s = i("." + c + "giphy-search"),
-                g = i("." + c + "giphy-close"),
-                p = i("." + c + "giphy-modal"),
-                h = function h() {
-                  navigator.onLine || i("." + c + "giphy-offline", p).length || (p.empty(), p.append('<p class="' + c + 'giphy-offline">You are offline</p>'));
-                };
-              i.ajax({
-                url: a,
-                dataType: "json",
-                success: function success(i) {
-                  t(i, p, l, !0);
-                },
-                error: h
-              });
-              var u,
-                d,
-                y,
-                f,
-                m = (u = function u() {
-                  var e = s.val();
-                  if (0 !== e.length) {
-                    try {
-                      o.abort();
-                    } catch (i) {}
-                    o = i.ajax({
-                      url: n + "&q=" + encodeURIComponent(e),
-                      dataType: "json",
-                      success: function success(i) {
-                        t(i, p, l, !0);
-                      },
-                      error: h
-                    });
-                  }
-                }, d = l.o.plugins.giphy.throttleDelay, function () {
-                  var i = this,
-                    e = +new Date(),
-                    t = arguments;
-                  y && e < y + d ? (clearTimeout(f), f = setTimeout(function () {
-                    y = e, u.apply(i, t);
-                  }, d)) : (y = e, u.apply(i, t));
-                });
-              s.on("input", m), s.focus(), g.one("click", function () {
-                p.trigger(e);
-              });
-            }
           });
         }
       }
@@ -4869,556 +4869,6 @@
             tag: "pre"
           };
           t.addBtnDef("preformatted", r);
-        }
-      }
-    }
-  });
-}(jQuery);
-;
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    minSize: 32,
-    step: 4
-  };
-  function preventDefault(e) {
-    e.stopPropagation();
-    e.preventDefault();
-  }
-  var ResizeWithCanvas = function ResizeWithCanvas(trumbowyg) {
-    // variable to create canvas and save img in resize mode
-    this.resizeCanvas = document.createElement('canvas');
-    // to allow canvas to get focus
-    this.resizeCanvas.setAttribute('tabindex', '0');
-    this.resizeCanvas.id = 'trumbowyg-resizimg-' + +new Date();
-    this.ctx = null;
-    this.resizeImg = null;
-    this.pressEscape = function (obj) {
-      obj.reset();
-    };
-    this.pressBackspaceOrDelete = function (obj) {
-      $(obj.resizeCanvas).remove();
-      obj.resizeImg = null;
-      if (trumbowyg !== null) {
-        trumbowyg.syncCode();
-        // notify changes
-        trumbowyg.$c.trigger('tbwchange');
-      }
-    };
-
-    // PRIVATE FUNCTION
-    var focusedNow = false;
-    var isCursorSeResize = false;
-
-    // calculate offset to change mouse over square in the canvas
-    var offsetX, offsetY;
-    var reOffset = function reOffset(canvas) {
-      var BB = canvas.getBoundingClientRect();
-      offsetX = BB.left;
-      offsetY = BB.top;
-    };
-    var updateCanvas = function updateCanvas(canvas, ctx, img, canvasWidth, canvasHeight) {
-      ctx.translate(0.5, 0.5);
-      ctx.lineWidth = 1;
-
-      // image
-      ctx.drawImage(img, 5, 5, canvasWidth - 10, canvasHeight - 10);
-
-      // border
-      ctx.beginPath();
-      ctx.rect(5, 5, canvasWidth - 10, canvasHeight - 10);
-      ctx.stroke();
-
-      // square in the angle
-      ctx.beginPath();
-      ctx.fillStyle = 'rgb(255, 255, 255)';
-      ctx.rect(canvasWidth - 10, canvasHeight - 10, 9, 9);
-      ctx.fill();
-      ctx.stroke();
-
-      // get the offset to change the mouse cursor
-      reOffset(canvas);
-      return ctx;
-    };
-
-    // PUBLIC FUNCTION
-    // necessary to correctly print cursor over square. Called once for instance. Useless with trumbowyg.
-    this.init = function () {
-      var _this = this;
-      $(window).on('scroll resize', function () {
-        _this.reCalcOffset();
-      });
-    };
-    this.reCalcOffset = function () {
-      reOffset(this.resizeCanvas);
-    };
-    this.canvasId = function () {
-      return this.resizeCanvas.id;
-    };
-    this.isActive = function () {
-      return this.resizeImg !== null;
-    };
-    this.isFocusedNow = function () {
-      return focusedNow;
-    };
-    this.blurNow = function () {
-      focusedNow = false;
-    };
-
-    // restore image in the HTML of the editor
-    this.reset = function () {
-      if (this.resizeImg === null) {
-        return;
-      }
-
-      // set style of image to avoid issue on resize because this attribute have priority over width and height attribute
-      this.resizeImg.setAttribute('style', 'width: 100%; max-width: ' + (this.resizeCanvas.clientWidth - 10) + 'px; height: auto; max-height: ' + (this.resizeCanvas.clientHeight - 10) + 'px;');
-      $(this.resizeCanvas).replaceWith($(this.resizeImg));
-
-      // reset canvas style
-      this.resizeCanvas.removeAttribute('style');
-      this.resizeImg = null;
-    };
-
-    // setup canvas with points and border to allow the resizing operation
-    this.setup = function (img, resizableOptions) {
-      this.resizeImg = img;
-      if (!this.resizeCanvas.getContext) {
-        return false;
-      }
-      focusedNow = true;
-
-      // draw canvas
-      this.resizeCanvas.width = $(this.resizeImg).width() + 10;
-      this.resizeCanvas.height = $(this.resizeImg).height() + 10;
-      this.resizeCanvas.style.margin = '-5px';
-      this.ctx = this.resizeCanvas.getContext('2d');
-
-      // replace image with canvas
-      $(this.resizeImg).replaceWith($(this.resizeCanvas));
-      updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height);
-
-      // enable resize
-      $(this.resizeCanvas).resizableSafe(resizableOptions).on('mousedown', preventDefault);
-      var _this = this;
-      $(this.resizeCanvas).on('mousemove', function (e) {
-        var mouseX = Math.round(e.clientX - offsetX);
-        var mouseY = Math.round(e.clientY - offsetY);
-        var wasCursorSeResize = isCursorSeResize;
-        _this.ctx.rect(_this.resizeCanvas.width - 10, _this.resizeCanvas.height - 10, 9, 9);
-        isCursorSeResize = _this.ctx.isPointInPath(mouseX, mouseY);
-        if (wasCursorSeResize !== isCursorSeResize) {
-          this.style.cursor = isCursorSeResize ? 'se-resize' : 'default';
-        }
-      }).on('keydown', function (e) {
-        if (!_this.isActive()) {
-          return;
-        }
-        var x = e.keyCode;
-        if (x === 27) {
-          // ESC
-          _this.pressEscape(_this);
-        } else if (x === 8 || x === 46) {
-          // BACKSPACE or DELETE
-          _this.pressBackspaceOrDelete(_this);
-        }
-      }).on('focus', preventDefault).on('blur', function () {
-        _this.reset();
-        // save changes
-        if (trumbowyg !== null) {
-          trumbowyg.syncCode();
-          // notify changes
-          trumbowyg.$c.trigger('tbwchange');
-        }
-      });
-      this.resizeCanvas.focus();
-      return true;
-    };
-
-    // update the canvas after the resizing
-    this.refresh = function () {
-      if (!this.resizeCanvas.getContext) {
-        return;
-      }
-      this.resizeCanvas.width = this.resizeCanvas.clientWidth;
-      this.resizeCanvas.height = this.resizeCanvas.clientHeight;
-      updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height);
-    };
-  };
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      resizimg: {
-        destroyResizable: function destroyResizable() {},
-        init: function init(trumbowyg) {
-          var destroyResizable = this.destroyResizable;
-
-          // object to interact with canvas
-          var resizeWithCanvas = new ResizeWithCanvas(trumbowyg);
-          this.destroyResizable = function () {
-            // clean html code
-            trumbowyg.$ed.find('canvas.resizable').resizableSafe('destroy').off('mousedown', preventDefault).removeClass('resizable');
-            resizeWithCanvas.reset();
-            trumbowyg.syncCode();
-          };
-          trumbowyg.o.plugins.resizimg = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.resizimg || {}, {
-            resizable: {
-              resizeWidth: false,
-              onDragStart: function onDragStart(ev, $el) {
-                var opt = trumbowyg.o.plugins.resizimg;
-                var x = ev.pageX - $el.offset().left;
-                var y = ev.pageY - $el.offset().top;
-                if (x < $el.width() - opt.minSize || y < $el.height() - opt.minSize) {
-                  return false;
-                }
-              },
-              onDrag: function onDrag(ev, $el, newWidth, newHeight) {
-                var opt = trumbowyg.o.plugins.resizimg;
-                if (newHeight < opt.minSize) {
-                  newHeight = opt.minSize;
-                }
-                newHeight -= newHeight % opt.step;
-                $el.height(newHeight);
-                return false;
-              },
-              onDragEnd: function onDragEnd() {
-                // resize update canvas information
-                resizeWithCanvas.refresh();
-                trumbowyg.syncCode();
-              }
-            }
-          });
-          function initResizable() {
-            trumbowyg.$ed.find('img').off('click').on('click', function (e) {
-              // if I'm already do a resize, reset it
-              if (resizeWithCanvas.isActive()) {
-                resizeWithCanvas.reset();
-              }
-              // initialize resize of image
-              resizeWithCanvas.setup(this, trumbowyg.o.plugins.resizimg.resizable);
-              preventDefault(e);
-            });
-          }
-          trumbowyg.$c.on('tbwinit', function () {
-            initResizable();
-
-            // disable resize when click on other items
-            trumbowyg.$ed.on('click', function (e) {
-              // check if I've clicked out of canvas or image to reset it
-              if ($(e.target).is('img') || e.target.id === resizeWithCanvas.canvasId()) {
-                return;
-              }
-              preventDefault(e);
-              resizeWithCanvas.reset();
-              //sync
-              trumbowyg.syncCode();
-              // notify changes
-              trumbowyg.$c.trigger('tbwchange');
-            });
-            trumbowyg.$ed.on('scroll', function () {
-              resizeWithCanvas.reCalcOffset();
-            });
-          });
-          trumbowyg.$c.on('tbwfocus tbwchange', initResizable);
-          trumbowyg.$c.on('tbwresize', function () {
-            resizeWithCanvas.reCalcOffset();
-          });
-
-          // Destroy
-          trumbowyg.$c.on('tbwblur', function () {
-            // when canvas is created the tbwblur is called
-            // this code avoid to destroy the canvas that allow the image resizing
-            if (resizeWithCanvas.isFocusedNow()) {
-              resizeWithCanvas.blurNow();
-            } else {
-              destroyResizable();
-            }
-          });
-        },
-        destroy: function destroy() {
-          this.destroyResizable();
-        }
-      }
-    }
-  });
-})(jQuery);
-!function (e) {
-  "use strict";
-
-  var i = {
-    minSize: 32,
-    step: 4
-  };
-  function t(e) {
-    e.stopPropagation(), e.preventDefault();
-  }
-  var s = function s(i) {
-    this.resizeCanvas = document.createElement("canvas"), this.resizeCanvas.setAttribute("tabindex", "0"), this.resizeCanvas.id = "trumbowyg-resizimg-" + +new Date(), this.ctx = null, this.resizeImg = null, this.pressEscape = function (e) {
-      e.reset();
-    }, this.pressBackspaceOrDelete = function (t) {
-      e(t.resizeCanvas).remove(), t.resizeImg = null, null !== i && (i.syncCode(), i.$c.trigger("tbwchange"));
-    };
-    var s,
-      n,
-      r = !1,
-      a = !1,
-      o = function o(e) {
-        var i = e.getBoundingClientRect();
-        s = i.left, n = i.top;
-      },
-      h = function h(e, i, t, s, n) {
-        return i.translate(.5, .5), i.lineWidth = 1, i.drawImage(t, 5, 5, s - 10, n - 10), i.beginPath(), i.rect(5, 5, s - 10, n - 10), i.stroke(), i.beginPath(), i.fillStyle = "rgb(255, 255, 255)", i.rect(s - 10, n - 10, 9, 9), i.fill(), i.stroke(), o(e), i;
-      };
-    // necessary to correctly print cursor over square. Called once for instance. Useless with trumbowyg.
-    this.init = function () {
-      var i = this;
-      e(window).on("scroll resize", function () {
-        i.reCalcOffset();
-      });
-    }, this.reCalcOffset = function () {
-      o(this.resizeCanvas);
-    }, this.canvasId = function () {
-      return this.resizeCanvas.id;
-    }, this.isActive = function () {
-      return null !== this.resizeImg;
-    }, this.isFocusedNow = function () {
-      return r;
-    }, this.blurNow = function () {
-      r = !1;
-    }, this.reset = function () {
-      null !== this.resizeImg && (this.resizeImg.setAttribute("style", "width: 100%; max-width: " + (this.resizeCanvas.clientWidth - 10) + "px; height: auto; max-height: " + (this.resizeCanvas.clientHeight - 10) + "px;"), e(this.resizeCanvas).replaceWith(e(this.resizeImg)), this.resizeCanvas.removeAttribute("style"), this.resizeImg = null);
-    }, this.setup = function (o, c) {
-      if (this.resizeImg = o, !this.resizeCanvas.getContext) return !1;
-      r = !0, this.resizeCanvas.width = e(this.resizeImg).width() + 10, this.resizeCanvas.height = e(this.resizeImg).height() + 10, this.resizeCanvas.style.margin = "-5px", this.ctx = this.resizeCanvas.getContext("2d"), e(this.resizeImg).replaceWith(e(this.resizeCanvas)), h(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height), e(this.resizeCanvas).resizableSafe(c).on("mousedown", t);
-      var u = this;
-      return e(this.resizeCanvas).on("mousemove", function (e) {
-        var i = Math.round(e.clientX - s),
-          t = Math.round(e.clientY - n),
-          r = a;
-        u.ctx.rect(u.resizeCanvas.width - 10, u.resizeCanvas.height - 10, 9, 9), r !== (a = u.ctx.isPointInPath(i, t)) && (this.style.cursor = a ? "se-resize" : "default");
-      }).on("keydown", function (e) {
-        if (u.isActive()) {
-          var i = e.keyCode;
-          27 === i ? u.pressEscape(u) : 8 !== i && 46 !== i || u.pressBackspaceOrDelete(u);
-        }
-      }).on("focus", t).on("blur", function () {
-        u.reset(), null !== i && (i.syncCode(), i.$c.trigger("tbwchange"));
-      }), this.resizeCanvas.focus(), !0;
-    }, this.refresh = function () {
-      this.resizeCanvas.getContext && (this.resizeCanvas.width = this.resizeCanvas.clientWidth, this.resizeCanvas.height = this.resizeCanvas.clientHeight, h(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height));
-    };
-  };
-  e.extend(!0, e.trumbowyg, {
-    plugins: {
-      resizimg: {
-        destroyResizable: function destroyResizable() {},
-        init: function init(n) {
-          var r = this.destroyResizable,
-            a = new s(n);
-          function o() {
-            n.$ed.find("img").off("click").on("click", function (e) {
-              a.isActive() && a.reset(), a.setup(this, n.o.plugins.resizimg.resizable), t(e);
-            });
-          }
-          this.destroyResizable = function () {
-            n.$ed.find("canvas.resizable").resizableSafe("destroy").off("mousedown", t).removeClass("resizable"), a.reset(), n.syncCode();
-          }, n.o.plugins.resizimg = e.extend(!0, {}, i, n.o.plugins.resizimg || {}, {
-            resizable: {
-              resizeWidth: !1,
-              onDragStart: function onDragStart(e, i) {
-                var t = n.o.plugins.resizimg,
-                  s = e.pageX - i.offset().left,
-                  r = e.pageY - i.offset().top;
-                if (s < i.width() - t.minSize || r < i.height() - t.minSize) return !1;
-              },
-              onDrag: function onDrag(e, i, t, s) {
-                var r = n.o.plugins.resizimg;
-                return s < r.minSize && (s = r.minSize), s -= s % r.step, i.height(s), !1;
-              },
-              onDragEnd: function onDragEnd() {
-                a.refresh(), n.syncCode();
-              }
-            }
-          }), n.$c.on("tbwinit", function () {
-            o(), n.$ed.on("click", function (i) {
-              e(i.target).is("img") || i.target.id === a.canvasId() || (t(i), a.reset(), n.syncCode(), n.$c.trigger("tbwchange"));
-            }), n.$ed.on("scroll", function () {
-              a.reCalcOffset();
-            });
-          }), n.$c.on("tbwfocus tbwchange", o), n.$c.on("tbwresize", function () {
-            a.reCalcOffset();
-          }), n.$c.on("tbwblur", function () {
-            a.isFocusedNow() ? a.blurNow() : r();
-          });
-        },
-        destroy: function destroy() {
-          this.destroyResizable();
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.specialchars.js v0.99
- * Unicode characters picker plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Renaud Hoyoux (geektortoise)
-*/
-
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    symbolList: [
-    // currencies
-    '0024', '20AC', '00A3', '00A2', '00A5', '00A4', '2030', null,
-    // legal signs
-    '00A9', '00AE', '2122', null,
-    // textual sign
-    '00A7', '00B6', '00C6', '00E6', '0152', '0153', null, '2022', '25CF', '2023', '25B6', '2B29', '25C6', null,
-    //maths
-    '00B1', '00D7', '00F7', '21D2', '21D4', '220F', '2211', '2243', '2264', '2265']
-  };
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      en: {
-        specialChars: 'Special characters'
-      },
-      az: {
-        specialChars: 'Xüsusi simvollar'
-      },
-      by: {
-        specialChars: 'Спецыяльныя сімвалы'
-      },
-      et: {
-        specialChars: 'Erimärgid'
-      },
-      fr: {
-        specialChars: 'Caractères spéciaux'
-      },
-      hu: {
-        specialChars: 'Speciális karakterek'
-      },
-      ko: {
-        specialChars: '특수문자'
-      },
-      ru: {
-        specialChars: 'Специальные символы'
-      },
-      sl: {
-        specialChars: 'Posebni znaki'
-      },
-      tr: {
-        specialChars: 'Özel karakterler'
-      }
-    },
-    plugins: {
-      specialchars: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.specialchars = trumbowyg.o.plugins.specialchars || defaultOptions;
-          var specialCharsBtnDef = {
-            dropdown: buildDropdown(trumbowyg)
-          };
-          trumbowyg.addBtnDef('specialChars', specialCharsBtnDef);
-        }
-      }
-    }
-  });
-  function buildDropdown(trumbowyg) {
-    var dropdown = [];
-    $.each(trumbowyg.o.plugins.specialchars.symbolList, function (i, symbol) {
-      if (symbol === null) {
-        symbol = '&nbsp';
-      } else {
-        symbol = '&#x' + symbol;
-      }
-      var btn = symbol.replace(/:/g, ''),
-        defaultSymbolBtnName = 'symbol-' + btn,
-        defaultSymbolBtnDef = {
-          text: symbol,
-          hasIcon: false,
-          fn: function fn() {
-            var encodedSymbol = String.fromCodePoint(parseInt(symbol.replace('&#', '0')));
-            trumbowyg.execCmd('insertText', encodedSymbol);
-            return true;
-          }
-        };
-      trumbowyg.addBtnDef(defaultSymbolBtnName, defaultSymbolBtnDef);
-      dropdown.push(defaultSymbolBtnName);
-    });
-    return dropdown;
-  }
-})(jQuery);
-/* ===========================================================
- * trumbowyg.specialchars.js v0.99
- * Unicode characters picker plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Renaud Hoyoux (geektortoise)
-*/
-!function (a) {
-  "use strict";
-
-  var s = {
-    symbolList: ["0024", "20AC", "00A3", "00A2", "00A5", "00A4", "2030", null, "00A9", "00AE", "2122", null, "00A7", "00B6", "00C6", "00E6", "0152", "0153", null, "2022", "25CF", "2023", "25B6", "2B29", "25C6", null, "00B1", "00D7", "00F7", "21D2", "21D4", "220F", "2211", "2243", "2264", "2265"]
-  };
-  function r(s) {
-    var r = [];
-    return a.each(s.o.plugins.specialchars.symbolList, function (a, e) {
-      var i = "symbol-" + (e = null === e ? "&nbsp" : "&#x" + e).replace(/:/g, ""),
-        l = {
-          text: e,
-          hasIcon: !1,
-          fn: function fn() {
-            var a = String.fromCodePoint(parseInt(e.replace("&#", "0")));
-            return s.execCmd("insertText", a), !0;
-          }
-        };
-      s.addBtnDef(i, l), r.push(i);
-    }), r;
-  }
-  a.extend(!0, a.trumbowyg, {
-    langs: {
-      en: {
-        specialChars: "Special characters"
-      },
-      az: {
-        specialChars: "Xüsusi simvollar"
-      },
-      by: {
-        specialChars: "Спецыяльныя сімвалы"
-      },
-      et: {
-        specialChars: "Erimärgid"
-      },
-      fr: {
-        specialChars: "Caractères spéciaux"
-      },
-      hu: {
-        specialChars: "Speciális karakterek"
-      },
-      ko: {
-        specialChars: "특수문자"
-      },
-      ru: {
-        specialChars: "Специальные символы"
-      },
-      sl: {
-        specialChars: "Posebni znaki"
-      },
-      tr: {
-        specialChars: "Özel karakterler"
-      }
-    },
-    plugins: {
-      specialchars: {
-        init: function init(a) {
-          a.o.plugins.specialchars = a.o.plugins.specialchars || s;
-          var e = {
-            dropdown: r(a)
-          };
-          a.addBtnDef("specialChars", e);
         }
       }
     }
@@ -7928,6 +7378,556 @@
             hasIcon: !1,
             text: t.lang.template
           });
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.specialchars.js v0.99
+ * Unicode characters picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Renaud Hoyoux (geektortoise)
+*/
+
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    symbolList: [
+    // currencies
+    '0024', '20AC', '00A3', '00A2', '00A5', '00A4', '2030', null,
+    // legal signs
+    '00A9', '00AE', '2122', null,
+    // textual sign
+    '00A7', '00B6', '00C6', '00E6', '0152', '0153', null, '2022', '25CF', '2023', '25B6', '2B29', '25C6', null,
+    //maths
+    '00B1', '00D7', '00F7', '21D2', '21D4', '220F', '2211', '2243', '2264', '2265']
+  };
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      en: {
+        specialChars: 'Special characters'
+      },
+      az: {
+        specialChars: 'Xüsusi simvollar'
+      },
+      by: {
+        specialChars: 'Спецыяльныя сімвалы'
+      },
+      et: {
+        specialChars: 'Erimärgid'
+      },
+      fr: {
+        specialChars: 'Caractères spéciaux'
+      },
+      hu: {
+        specialChars: 'Speciális karakterek'
+      },
+      ko: {
+        specialChars: '특수문자'
+      },
+      ru: {
+        specialChars: 'Специальные символы'
+      },
+      sl: {
+        specialChars: 'Posebni znaki'
+      },
+      tr: {
+        specialChars: 'Özel karakterler'
+      }
+    },
+    plugins: {
+      specialchars: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.specialchars = trumbowyg.o.plugins.specialchars || defaultOptions;
+          var specialCharsBtnDef = {
+            dropdown: buildDropdown(trumbowyg)
+          };
+          trumbowyg.addBtnDef('specialChars', specialCharsBtnDef);
+        }
+      }
+    }
+  });
+  function buildDropdown(trumbowyg) {
+    var dropdown = [];
+    $.each(trumbowyg.o.plugins.specialchars.symbolList, function (i, symbol) {
+      if (symbol === null) {
+        symbol = '&nbsp';
+      } else {
+        symbol = '&#x' + symbol;
+      }
+      var btn = symbol.replace(/:/g, ''),
+        defaultSymbolBtnName = 'symbol-' + btn,
+        defaultSymbolBtnDef = {
+          text: symbol,
+          hasIcon: false,
+          fn: function fn() {
+            var encodedSymbol = String.fromCodePoint(parseInt(symbol.replace('&#', '0')));
+            trumbowyg.execCmd('insertText', encodedSymbol);
+            return true;
+          }
+        };
+      trumbowyg.addBtnDef(defaultSymbolBtnName, defaultSymbolBtnDef);
+      dropdown.push(defaultSymbolBtnName);
+    });
+    return dropdown;
+  }
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.specialchars.js v0.99
+ * Unicode characters picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Renaud Hoyoux (geektortoise)
+*/
+!function (a) {
+  "use strict";
+
+  var s = {
+    symbolList: ["0024", "20AC", "00A3", "00A2", "00A5", "00A4", "2030", null, "00A9", "00AE", "2122", null, "00A7", "00B6", "00C6", "00E6", "0152", "0153", null, "2022", "25CF", "2023", "25B6", "2B29", "25C6", null, "00B1", "00D7", "00F7", "21D2", "21D4", "220F", "2211", "2243", "2264", "2265"]
+  };
+  function r(s) {
+    var r = [];
+    return a.each(s.o.plugins.specialchars.symbolList, function (a, e) {
+      var i = "symbol-" + (e = null === e ? "&nbsp" : "&#x" + e).replace(/:/g, ""),
+        l = {
+          text: e,
+          hasIcon: !1,
+          fn: function fn() {
+            var a = String.fromCodePoint(parseInt(e.replace("&#", "0")));
+            return s.execCmd("insertText", a), !0;
+          }
+        };
+      s.addBtnDef(i, l), r.push(i);
+    }), r;
+  }
+  a.extend(!0, a.trumbowyg, {
+    langs: {
+      en: {
+        specialChars: "Special characters"
+      },
+      az: {
+        specialChars: "Xüsusi simvollar"
+      },
+      by: {
+        specialChars: "Спецыяльныя сімвалы"
+      },
+      et: {
+        specialChars: "Erimärgid"
+      },
+      fr: {
+        specialChars: "Caractères spéciaux"
+      },
+      hu: {
+        specialChars: "Speciális karakterek"
+      },
+      ko: {
+        specialChars: "특수문자"
+      },
+      ru: {
+        specialChars: "Специальные символы"
+      },
+      sl: {
+        specialChars: "Posebni znaki"
+      },
+      tr: {
+        specialChars: "Özel karakterler"
+      }
+    },
+    plugins: {
+      specialchars: {
+        init: function init(a) {
+          a.o.plugins.specialchars = a.o.plugins.specialchars || s;
+          var e = {
+            dropdown: r(a)
+          };
+          a.addBtnDef("specialChars", e);
+        }
+      }
+    }
+  });
+}(jQuery);
+;
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    minSize: 32,
+    step: 4
+  };
+  function preventDefault(e) {
+    e.stopPropagation();
+    e.preventDefault();
+  }
+  var ResizeWithCanvas = function ResizeWithCanvas(trumbowyg) {
+    // variable to create canvas and save img in resize mode
+    this.resizeCanvas = document.createElement('canvas');
+    // to allow canvas to get focus
+    this.resizeCanvas.setAttribute('tabindex', '0');
+    this.resizeCanvas.id = 'trumbowyg-resizimg-' + +new Date();
+    this.ctx = null;
+    this.resizeImg = null;
+    this.pressEscape = function (obj) {
+      obj.reset();
+    };
+    this.pressBackspaceOrDelete = function (obj) {
+      $(obj.resizeCanvas).remove();
+      obj.resizeImg = null;
+      if (trumbowyg !== null) {
+        trumbowyg.syncCode();
+        // notify changes
+        trumbowyg.$c.trigger('tbwchange');
+      }
+    };
+
+    // PRIVATE FUNCTION
+    var focusedNow = false;
+    var isCursorSeResize = false;
+
+    // calculate offset to change mouse over square in the canvas
+    var offsetX, offsetY;
+    var reOffset = function reOffset(canvas) {
+      var BB = canvas.getBoundingClientRect();
+      offsetX = BB.left;
+      offsetY = BB.top;
+    };
+    var updateCanvas = function updateCanvas(canvas, ctx, img, canvasWidth, canvasHeight) {
+      ctx.translate(0.5, 0.5);
+      ctx.lineWidth = 1;
+
+      // image
+      ctx.drawImage(img, 5, 5, canvasWidth - 10, canvasHeight - 10);
+
+      // border
+      ctx.beginPath();
+      ctx.rect(5, 5, canvasWidth - 10, canvasHeight - 10);
+      ctx.stroke();
+
+      // square in the angle
+      ctx.beginPath();
+      ctx.fillStyle = 'rgb(255, 255, 255)';
+      ctx.rect(canvasWidth - 10, canvasHeight - 10, 9, 9);
+      ctx.fill();
+      ctx.stroke();
+
+      // get the offset to change the mouse cursor
+      reOffset(canvas);
+      return ctx;
+    };
+
+    // PUBLIC FUNCTION
+    // necessary to correctly print cursor over square. Called once for instance. Useless with trumbowyg.
+    this.init = function () {
+      var _this = this;
+      $(window).on('scroll resize', function () {
+        _this.reCalcOffset();
+      });
+    };
+    this.reCalcOffset = function () {
+      reOffset(this.resizeCanvas);
+    };
+    this.canvasId = function () {
+      return this.resizeCanvas.id;
+    };
+    this.isActive = function () {
+      return this.resizeImg !== null;
+    };
+    this.isFocusedNow = function () {
+      return focusedNow;
+    };
+    this.blurNow = function () {
+      focusedNow = false;
+    };
+
+    // restore image in the HTML of the editor
+    this.reset = function () {
+      if (this.resizeImg === null) {
+        return;
+      }
+
+      // set style of image to avoid issue on resize because this attribute have priority over width and height attribute
+      this.resizeImg.setAttribute('style', 'width: 100%; max-width: ' + (this.resizeCanvas.clientWidth - 10) + 'px; height: auto; max-height: ' + (this.resizeCanvas.clientHeight - 10) + 'px;');
+      $(this.resizeCanvas).replaceWith($(this.resizeImg));
+
+      // reset canvas style
+      this.resizeCanvas.removeAttribute('style');
+      this.resizeImg = null;
+    };
+
+    // setup canvas with points and border to allow the resizing operation
+    this.setup = function (img, resizableOptions) {
+      this.resizeImg = img;
+      if (!this.resizeCanvas.getContext) {
+        return false;
+      }
+      focusedNow = true;
+
+      // draw canvas
+      this.resizeCanvas.width = $(this.resizeImg).width() + 10;
+      this.resizeCanvas.height = $(this.resizeImg).height() + 10;
+      this.resizeCanvas.style.margin = '-5px';
+      this.ctx = this.resizeCanvas.getContext('2d');
+
+      // replace image with canvas
+      $(this.resizeImg).replaceWith($(this.resizeCanvas));
+      updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height);
+
+      // enable resize
+      $(this.resizeCanvas).resizableSafe(resizableOptions).on('mousedown', preventDefault);
+      var _this = this;
+      $(this.resizeCanvas).on('mousemove', function (e) {
+        var mouseX = Math.round(e.clientX - offsetX);
+        var mouseY = Math.round(e.clientY - offsetY);
+        var wasCursorSeResize = isCursorSeResize;
+        _this.ctx.rect(_this.resizeCanvas.width - 10, _this.resizeCanvas.height - 10, 9, 9);
+        isCursorSeResize = _this.ctx.isPointInPath(mouseX, mouseY);
+        if (wasCursorSeResize !== isCursorSeResize) {
+          this.style.cursor = isCursorSeResize ? 'se-resize' : 'default';
+        }
+      }).on('keydown', function (e) {
+        if (!_this.isActive()) {
+          return;
+        }
+        var x = e.keyCode;
+        if (x === 27) {
+          // ESC
+          _this.pressEscape(_this);
+        } else if (x === 8 || x === 46) {
+          // BACKSPACE or DELETE
+          _this.pressBackspaceOrDelete(_this);
+        }
+      }).on('focus', preventDefault).on('blur', function () {
+        _this.reset();
+        // save changes
+        if (trumbowyg !== null) {
+          trumbowyg.syncCode();
+          // notify changes
+          trumbowyg.$c.trigger('tbwchange');
+        }
+      });
+      this.resizeCanvas.focus();
+      return true;
+    };
+
+    // update the canvas after the resizing
+    this.refresh = function () {
+      if (!this.resizeCanvas.getContext) {
+        return;
+      }
+      this.resizeCanvas.width = this.resizeCanvas.clientWidth;
+      this.resizeCanvas.height = this.resizeCanvas.clientHeight;
+      updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height);
+    };
+  };
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      resizimg: {
+        destroyResizable: function destroyResizable() {},
+        init: function init(trumbowyg) {
+          var destroyResizable = this.destroyResizable;
+
+          // object to interact with canvas
+          var resizeWithCanvas = new ResizeWithCanvas(trumbowyg);
+          this.destroyResizable = function () {
+            // clean html code
+            trumbowyg.$ed.find('canvas.resizable').resizableSafe('destroy').off('mousedown', preventDefault).removeClass('resizable');
+            resizeWithCanvas.reset();
+            trumbowyg.syncCode();
+          };
+          trumbowyg.o.plugins.resizimg = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.resizimg || {}, {
+            resizable: {
+              resizeWidth: false,
+              onDragStart: function onDragStart(ev, $el) {
+                var opt = trumbowyg.o.plugins.resizimg;
+                var x = ev.pageX - $el.offset().left;
+                var y = ev.pageY - $el.offset().top;
+                if (x < $el.width() - opt.minSize || y < $el.height() - opt.minSize) {
+                  return false;
+                }
+              },
+              onDrag: function onDrag(ev, $el, newWidth, newHeight) {
+                var opt = trumbowyg.o.plugins.resizimg;
+                if (newHeight < opt.minSize) {
+                  newHeight = opt.minSize;
+                }
+                newHeight -= newHeight % opt.step;
+                $el.height(newHeight);
+                return false;
+              },
+              onDragEnd: function onDragEnd() {
+                // resize update canvas information
+                resizeWithCanvas.refresh();
+                trumbowyg.syncCode();
+              }
+            }
+          });
+          function initResizable() {
+            trumbowyg.$ed.find('img').off('click').on('click', function (e) {
+              // if I'm already do a resize, reset it
+              if (resizeWithCanvas.isActive()) {
+                resizeWithCanvas.reset();
+              }
+              // initialize resize of image
+              resizeWithCanvas.setup(this, trumbowyg.o.plugins.resizimg.resizable);
+              preventDefault(e);
+            });
+          }
+          trumbowyg.$c.on('tbwinit', function () {
+            initResizable();
+
+            // disable resize when click on other items
+            trumbowyg.$ed.on('click', function (e) {
+              // check if I've clicked out of canvas or image to reset it
+              if ($(e.target).is('img') || e.target.id === resizeWithCanvas.canvasId()) {
+                return;
+              }
+              preventDefault(e);
+              resizeWithCanvas.reset();
+              //sync
+              trumbowyg.syncCode();
+              // notify changes
+              trumbowyg.$c.trigger('tbwchange');
+            });
+            trumbowyg.$ed.on('scroll', function () {
+              resizeWithCanvas.reCalcOffset();
+            });
+          });
+          trumbowyg.$c.on('tbwfocus tbwchange', initResizable);
+          trumbowyg.$c.on('tbwresize', function () {
+            resizeWithCanvas.reCalcOffset();
+          });
+
+          // Destroy
+          trumbowyg.$c.on('tbwblur', function () {
+            // when canvas is created the tbwblur is called
+            // this code avoid to destroy the canvas that allow the image resizing
+            if (resizeWithCanvas.isFocusedNow()) {
+              resizeWithCanvas.blurNow();
+            } else {
+              destroyResizable();
+            }
+          });
+        },
+        destroy: function destroy() {
+          this.destroyResizable();
+        }
+      }
+    }
+  });
+})(jQuery);
+!function (e) {
+  "use strict";
+
+  var i = {
+    minSize: 32,
+    step: 4
+  };
+  function t(e) {
+    e.stopPropagation(), e.preventDefault();
+  }
+  var s = function s(i) {
+    this.resizeCanvas = document.createElement("canvas"), this.resizeCanvas.setAttribute("tabindex", "0"), this.resizeCanvas.id = "trumbowyg-resizimg-" + +new Date(), this.ctx = null, this.resizeImg = null, this.pressEscape = function (e) {
+      e.reset();
+    }, this.pressBackspaceOrDelete = function (t) {
+      e(t.resizeCanvas).remove(), t.resizeImg = null, null !== i && (i.syncCode(), i.$c.trigger("tbwchange"));
+    };
+    var s,
+      n,
+      r = !1,
+      a = !1,
+      o = function o(e) {
+        var i = e.getBoundingClientRect();
+        s = i.left, n = i.top;
+      },
+      h = function h(e, i, t, s, n) {
+        return i.translate(.5, .5), i.lineWidth = 1, i.drawImage(t, 5, 5, s - 10, n - 10), i.beginPath(), i.rect(5, 5, s - 10, n - 10), i.stroke(), i.beginPath(), i.fillStyle = "rgb(255, 255, 255)", i.rect(s - 10, n - 10, 9, 9), i.fill(), i.stroke(), o(e), i;
+      };
+    // necessary to correctly print cursor over square. Called once for instance. Useless with trumbowyg.
+    this.init = function () {
+      var i = this;
+      e(window).on("scroll resize", function () {
+        i.reCalcOffset();
+      });
+    }, this.reCalcOffset = function () {
+      o(this.resizeCanvas);
+    }, this.canvasId = function () {
+      return this.resizeCanvas.id;
+    }, this.isActive = function () {
+      return null !== this.resizeImg;
+    }, this.isFocusedNow = function () {
+      return r;
+    }, this.blurNow = function () {
+      r = !1;
+    }, this.reset = function () {
+      null !== this.resizeImg && (this.resizeImg.setAttribute("style", "width: 100%; max-width: " + (this.resizeCanvas.clientWidth - 10) + "px; height: auto; max-height: " + (this.resizeCanvas.clientHeight - 10) + "px;"), e(this.resizeCanvas).replaceWith(e(this.resizeImg)), this.resizeCanvas.removeAttribute("style"), this.resizeImg = null);
+    }, this.setup = function (o, c) {
+      if (this.resizeImg = o, !this.resizeCanvas.getContext) return !1;
+      r = !0, this.resizeCanvas.width = e(this.resizeImg).width() + 10, this.resizeCanvas.height = e(this.resizeImg).height() + 10, this.resizeCanvas.style.margin = "-5px", this.ctx = this.resizeCanvas.getContext("2d"), e(this.resizeImg).replaceWith(e(this.resizeCanvas)), h(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height), e(this.resizeCanvas).resizableSafe(c).on("mousedown", t);
+      var u = this;
+      return e(this.resizeCanvas).on("mousemove", function (e) {
+        var i = Math.round(e.clientX - s),
+          t = Math.round(e.clientY - n),
+          r = a;
+        u.ctx.rect(u.resizeCanvas.width - 10, u.resizeCanvas.height - 10, 9, 9), r !== (a = u.ctx.isPointInPath(i, t)) && (this.style.cursor = a ? "se-resize" : "default");
+      }).on("keydown", function (e) {
+        if (u.isActive()) {
+          var i = e.keyCode;
+          27 === i ? u.pressEscape(u) : 8 !== i && 46 !== i || u.pressBackspaceOrDelete(u);
+        }
+      }).on("focus", t).on("blur", function () {
+        u.reset(), null !== i && (i.syncCode(), i.$c.trigger("tbwchange"));
+      }), this.resizeCanvas.focus(), !0;
+    }, this.refresh = function () {
+      this.resizeCanvas.getContext && (this.resizeCanvas.width = this.resizeCanvas.clientWidth, this.resizeCanvas.height = this.resizeCanvas.clientHeight, h(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height));
+    };
+  };
+  e.extend(!0, e.trumbowyg, {
+    plugins: {
+      resizimg: {
+        destroyResizable: function destroyResizable() {},
+        init: function init(n) {
+          var r = this.destroyResizable,
+            a = new s(n);
+          function o() {
+            n.$ed.find("img").off("click").on("click", function (e) {
+              a.isActive() && a.reset(), a.setup(this, n.o.plugins.resizimg.resizable), t(e);
+            });
+          }
+          this.destroyResizable = function () {
+            n.$ed.find("canvas.resizable").resizableSafe("destroy").off("mousedown", t).removeClass("resizable"), a.reset(), n.syncCode();
+          }, n.o.plugins.resizimg = e.extend(!0, {}, i, n.o.plugins.resizimg || {}, {
+            resizable: {
+              resizeWidth: !1,
+              onDragStart: function onDragStart(e, i) {
+                var t = n.o.plugins.resizimg,
+                  s = e.pageX - i.offset().left,
+                  r = e.pageY - i.offset().top;
+                if (s < i.width() - t.minSize || r < i.height() - t.minSize) return !1;
+              },
+              onDrag: function onDrag(e, i, t, s) {
+                var r = n.o.plugins.resizimg;
+                return s < r.minSize && (s = r.minSize), s -= s % r.step, i.height(s), !1;
+              },
+              onDragEnd: function onDragEnd() {
+                a.refresh(), n.syncCode();
+              }
+            }
+          }), n.$c.on("tbwinit", function () {
+            o(), n.$ed.on("click", function (i) {
+              e(i.target).is("img") || i.target.id === a.canvasId() || (t(i), a.reset(), n.syncCode(), n.$c.trigger("tbwchange"));
+            }), n.$ed.on("scroll", function () {
+              a.reCalcOffset();
+            });
+          }), n.$c.on("tbwfocus tbwchange", o), n.$c.on("tbwresize", function () {
+            a.reCalcOffset();
+          }), n.$c.on("tbwblur", function () {
+            a.isFocusedNow() ? a.blurNow() : r();
+          });
+        },
+        destroy: function destroy() {
+          this.destroyResizable();
         }
       }
     }

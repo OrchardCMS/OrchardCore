@@ -43,10 +43,15 @@ function confirmDialog({ callback, ...options }) {
     });
 }
 
-// Prevents page flickering while downloading css
-$(window).on('load', function () {
-    $('body').removeClass('preload');
-});
+(function () {
+
+    // Prevents page flickering while downloading css
+    document.addEventListener('DOMContentLoaded', () => {
+        document.body.classList.remove('preload');
+    });
+
+})();
+
 
 $(function () {
     $('body').on('click', '[data-url-af~="RemoveUrl"], a[itemprop~="RemoveUrl"]', function () {

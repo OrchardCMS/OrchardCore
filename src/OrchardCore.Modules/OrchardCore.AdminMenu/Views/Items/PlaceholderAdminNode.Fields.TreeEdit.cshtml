@@ -25,21 +25,18 @@
         <div class="btn-toolbar" role="toolbar" aria-label="Icon Selector Toolbar">
 
             <div class="btn-group input-group me-2" role="group" aria-label="Icon Selector">
-                <button type="button" class="btn btn-primary sample-icon">
+                <button type="button" class="btn btn-secondary sample-icon">
                     <i id="@("sample-icon-" + Html.IdFor(m=>m.IconClass))" class="@Model.IconClass"></i>
                 </button>
                 <input type="hidden" name="@Html.NameFor(m=>m.IconClass)" id="@Html.IdFor(m => m.IconClass)" value="@Model.IconClass" />
                 <button type="button"
-                        class="btn btn-primary icon-picker-trigger"
+                        class="btn btn-secondary icon-picker-trigger"
                         data-related-node="@Html.IdFor(m => m.IconClass)">
                     @T["Pick"]
                 </button>
-            </div>
-
-            <div class="btn-group" role="group" aria-label="Remove Icon Button">
-                <button type="button" class="btn btn-secondary remove-icon" data-related-node="@Html.IdFor(m => m.IconClass)">
+                <button type="button" class="btn btn-warning remove-icon" data-related-node="@Html.IdFor(m => m.IconClass)">
                     <div style="pointer-events:none;">
-                        <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                     </div>
                 </button>
             </div>
@@ -94,19 +91,19 @@
         <div class="mb-3">
             <div class="w-xl-50">
                 <input asp-for="SelectedPermissionNames" type="hidden" v-model="selectedNames" />
-                <vue-multiselect v-model="value" 
-                                :options="options" 
-                                track-by="name"
-                                label="displayText" 
-                                placeholder="@T["Type to search"]"
-                                @@select="onSelect"
-                                :searchable="true" 
-                                :close-on-select="true" 
-                                :reset-after="true"
-                                :show-labels="true" 
-                                :hide-selected="false"
-                                select-label="@T["Select"]" 
-                                deselect-label="@T["Remove"]">
+                <vue-multiselect v-model="value"
+                                 :options="options"
+                                 track-by="name"
+                                 label="displayText"
+                                 placeholder="@T["Type to search"]"
+                                 @@select="onSelect"
+                                 :searchable="true"
+                                 :close-on-select="true"
+                                 :reset-after="true"
+                                 :show-labels="true"
+                                 :hide-selected="false"
+                                 select-label="@T["Select"]"
+                                 deselect-label="@T["Remove"]">
                     <template slot="option" slot-scope="props">
                         <div v-cloak><span>{{ props.option.displayText }}</span></div>
                     </template>

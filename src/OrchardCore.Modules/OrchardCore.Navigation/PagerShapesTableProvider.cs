@@ -189,6 +189,7 @@ namespace OrchardCore.Navigation
             var pageKey = string.IsNullOrEmpty(PagerId) ? "pagenum" : PagerId;
 
             shape.Classes.Add("pager");
+            shape.Classes.Add("pagination");
             shape.Metadata.Alternates.Clear();
             shape.Metadata.Type = "List";
 
@@ -368,6 +369,7 @@ namespace OrchardCore.Navigation
             var nextText = NextText ?? S[">"];
 
             shape.Classes.Add("pager");
+            shape.Classes.Add("pagination");
             shape.Metadata.Alternates.Clear();
             shape.Metadata.Type = "List";
 
