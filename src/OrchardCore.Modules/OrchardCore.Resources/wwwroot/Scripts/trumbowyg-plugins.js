@@ -4,6 +4,497 @@
 */
 
 /* ===========================================================
+ * trumbowyg.colors.js v1.2
+ * Colors picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ */
+
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        foreColor: 'Text color',
+        backColor: 'Background color',
+        foreColorRemove: 'Remove text color',
+        backColorRemove: 'Remove background color'
+      },
+      az: {
+        foreColor: 'Yazı rəngi',
+        backColor: 'Arxa plan rəngi',
+        foreColorRemove: 'Yazı rəngini sil',
+        backColorRemove: 'Arxa plan rəngini sil'
+      },
+      by: {
+        foreColor: 'Колер тэксту',
+        backColor: 'Колер фону тэксту',
+        foreColorRemove: 'Выдаліць колер тэксту',
+        backColorRemove: 'Выдаліць колер фону тэксту'
+      },
+      ca: {
+        foreColor: 'Color del text',
+        backColor: 'Color del fons',
+        foreColorRemove: 'Eliminar color del text',
+        backColorRemove: 'Eliminar color del fons'
+      },
+      cs: {
+        foreColor: 'Barva textu',
+        backColor: 'Barva pozadí'
+      },
+      da: {
+        foreColor: 'Tekstfarve',
+        backColor: 'Baggrundsfarve'
+      },
+      de: {
+        foreColor: 'Textfarbe',
+        backColor: 'Hintergrundfarbe'
+      },
+      es: {
+        foreColor: 'Color del texto',
+        backColor: 'Color del fondo',
+        foreColorRemove: 'Eliminar color del texto',
+        backColorRemove: 'Eliminar color del fondo'
+      },
+      et: {
+        foreColor: 'Teksti värv',
+        backColor: 'Taustavärv',
+        foreColorRemove: 'Eemalda teksti värv',
+        backColorRemove: 'Eemalda taustavärv'
+      },
+      fr: {
+        foreColor: 'Couleur du texte',
+        backColor: 'Couleur de fond',
+        foreColorRemove: 'Supprimer la couleur du texte',
+        backColorRemove: 'Supprimer la couleur de fond'
+      },
+      hu: {
+        foreColor: 'Betű szín',
+        backColor: 'Háttér szín',
+        foreColorRemove: 'Betű szín eltávolítása',
+        backColorRemove: 'Háttér szín eltávolítása'
+      },
+      ja: {
+        foreColor: '文字色',
+        backColor: '背景色'
+      },
+      ko: {
+        foreColor: '글자색',
+        backColor: '배경색',
+        foreColorRemove: '글자색 지우기',
+        backColorRemove: '배경색 지우기'
+      },
+      nl: {
+        foreColor: 'Tekstkleur',
+        backColor: 'Achtergrondkleur'
+      },
+      pt_br: {
+        foreColor: 'Cor de fonte',
+        backColor: 'Cor de fundo'
+      },
+      ru: {
+        foreColor: 'Цвет текста',
+        backColor: 'Цвет выделения текста',
+        foreColorRemove: 'Очистить цвет текста',
+        backColorRemove: 'Очистить цвет выделения текста'
+      },
+      sl: {
+        foreColor: 'Barva teksta',
+        backColor: 'Barva ozadja',
+        foreColorRemove: 'Ponastavi barvo teksta',
+        backColorRemove: 'Ponastavi barvo ozadja'
+      },
+      sk: {
+        foreColor: 'Farba textu',
+        backColor: 'Farba pozadia'
+      },
+      tr: {
+        foreColor: 'Yazı rengi',
+        backColor: 'Arka plan rengi',
+        foreColorRemove: 'Yazı rengini kaldır',
+        backColorRemove: 'Arka plan rengini kaldır'
+      },
+      zh_cn: {
+        foreColor: '文字颜色',
+        backColor: '背景颜色'
+      },
+      zh_tw: {
+        foreColor: '文字顏色',
+        backColor: '背景顏色'
+      }
+    }
+  });
+
+  // jshint camelcase:true
+
+  function hex(x) {
+    return ('0' + parseInt(x).toString(16)).slice(-2);
+  }
+  function colorToHex(rgb) {
+    if (rgb.search('rgb') === -1) {
+      return rgb.replace('#', '');
+    } else if (rgb === 'rgba(0, 0, 0, 0)') {
+      return 'transparent';
+    } else {
+      rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/);
+      if (rgb == null) {
+        return 'transparent'; // No match, return transparent as unkown color
+      }
+
+      return hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+    }
+  }
+  function colorTagHandler(element, trumbowyg) {
+    var tags = [];
+    if (!element.style) {
+      return tags;
+    }
+
+    // background color
+    if (element.style.backgroundColor !== '') {
+      var backColor = colorToHex(element.style.backgroundColor);
+      if (trumbowyg.o.plugins.colors.colorList.indexOf(backColor) >= 0) {
+        tags.push('backColor' + backColor);
+      } else {
+        tags.push('backColorFree');
+      }
+    }
+
+    // text color
+    var foreColor;
+    if (element.style.color !== '') {
+      foreColor = colorToHex(element.style.color);
+    } else if (element.hasAttribute('color')) {
+      foreColor = colorToHex(element.getAttribute('color'));
+    }
+    if (foreColor) {
+      if (trumbowyg.o.plugins.colors.colorList.indexOf(foreColor) >= 0) {
+        tags.push('foreColor' + foreColor);
+      } else {
+        tags.push('foreColorFree');
+      }
+    }
+    return tags;
+  }
+  var defaultOptions = {
+    colorList: ['ffffff', '000000', 'eeece1', '1f497d', '4f81bd', 'c0504d', '9bbb59', '8064a2', '4bacc6', 'f79646', 'ffff00', 'f2f2f2', '7f7f7f', 'ddd9c3', 'c6d9f0', 'dbe5f1', 'f2dcdb', 'ebf1dd', 'e5e0ec', 'dbeef3', 'fdeada', 'fff2ca', 'd8d8d8', '595959', 'c4bd97', '8db3e2', 'b8cce4', 'e5b9b7', 'd7e3bc', 'ccc1d9', 'b7dde8', 'fbd5b5', 'ffe694', 'bfbfbf', '3f3f3f', '938953', '548dd4', '95b3d7', 'd99694', 'c3d69b', 'b2a2c7', 'b7dde8', 'fac08f', 'f2c314', 'a5a5a5', '262626', '494429', '17365d', '366092', '953734', '76923c', '5f497a', '92cddc', 'e36c09', 'c09100', '7f7f7f', '0c0c0c', '1d1b10', '0f243e', '244061', '632423', '4f6128', '3f3151', '31859b', '974806', '7f6000'],
+    foreColorList: null,
+    // fallbacks on colorList
+    backColorList: null,
+    // fallbacks on colorList
+    allowCustomForeColor: true,
+    allowCustomBackColor: true,
+    displayAsList: false
+  };
+
+  // Add all colors in two dropdowns
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      color: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.colors = trumbowyg.o.plugins.colors || defaultOptions;
+          var dropdownClass = trumbowyg.o.plugins.colors.displayAsList ? trumbowyg.o.prefix + 'dropdown--color-list' : '';
+          var foreColorBtnDef = {
+              dropdown: buildDropdown('foreColor', trumbowyg),
+              dropdownClass: dropdownClass
+            },
+            backColorBtnDef = {
+              dropdown: buildDropdown('backColor', trumbowyg),
+              dropdownClass: dropdownClass
+            };
+          trumbowyg.addBtnDef('foreColor', foreColorBtnDef);
+          trumbowyg.addBtnDef('backColor', backColorBtnDef);
+        },
+        tagHandler: colorTagHandler
+      }
+    }
+  });
+  function buildDropdown(_fn, trumbowyg) {
+    var dropdown = [],
+      trumbowygColorOptions = trumbowyg.o.plugins.colors,
+      colorList = trumbowygColorOptions[_fn + 'List'] || trumbowygColorOptions.colorList;
+    $.each(colorList, function (i, color) {
+      var btn = _fn + color,
+        btnDef = {
+          fn: _fn,
+          forceCss: true,
+          hasIcon: false,
+          text: trumbowyg.lang['#' + color] || '#' + color,
+          param: '#' + color,
+          style: 'background-color: #' + color + ';'
+        };
+      if (trumbowygColorOptions.displayAsList && _fn === 'foreColor') {
+        btnDef.style = 'color: #' + color + ' !important;';
+      }
+      trumbowyg.addBtnDef(btn, btnDef);
+      dropdown.push(btn);
+    });
+
+    // Remove color
+    var removeColorButtonName = _fn + 'Remove',
+      removeColorBtnDef = {
+        fn: 'removeFormat',
+        hasIcon: false,
+        param: _fn,
+        style: 'background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);'
+      };
+    if (trumbowygColorOptions.displayAsList) {
+      removeColorBtnDef.style = '';
+    }
+    trumbowyg.addBtnDef(removeColorButtonName, removeColorBtnDef);
+    dropdown.push(removeColorButtonName);
+
+    // Custom color
+    if (trumbowygColorOptions['allowCustom' + _fn.charAt(0).toUpperCase() + _fn.substr(1)]) {
+      // add free color btn
+      var freeColorButtonName = _fn + 'Free',
+        freeColorBtnDef = {
+          fn: function fn() {
+            trumbowyg.openModalInsert(trumbowyg.lang[_fn], {
+              color: {
+                label: _fn,
+                forceCss: true,
+                type: 'color',
+                value: '#FFFFFF'
+              }
+            },
+            // callback
+            function (values) {
+              trumbowyg.execCmd(_fn, values.color);
+              return true;
+            });
+          },
+          hasIcon: false,
+          text: '#',
+          // style adjust for displaying the text
+          style: 'text-indent: 0; line-height: 20px; padding: 0 5px;'
+        };
+      trumbowyg.addBtnDef(freeColorButtonName, freeColorBtnDef);
+      dropdown.push(freeColorButtonName);
+    }
+    return dropdown;
+  }
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.colors.js v1.2
+ * Colors picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ */
+!function (o) {
+  "use strict";
+
+  function r(o) {
+    return ("0" + parseInt(o).toString(16)).slice(-2);
+  }
+  function e(o) {
+    return -1 === o.search("rgb") ? o.replace("#", "") : "rgba(0, 0, 0, 0)" === o || null == (o = o.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/)) ? "transparent" : r(o[1]) + r(o[2]) + r(o[3]);
+  }
+  o.extend(!0, o.trumbowyg, {
+    langs: {
+      en: {
+        foreColor: "Text color",
+        backColor: "Background color",
+        foreColorRemove: "Remove text color",
+        backColorRemove: "Remove background color"
+      },
+      az: {
+        foreColor: "Yazı rəngi",
+        backColor: "Arxa plan rəngi",
+        foreColorRemove: "Yazı rəngini sil",
+        backColorRemove: "Arxa plan rəngini sil"
+      },
+      by: {
+        foreColor: "Колер тэксту",
+        backColor: "Колер фону тэксту",
+        foreColorRemove: "Выдаліць колер тэксту",
+        backColorRemove: "Выдаліць колер фону тэксту"
+      },
+      ca: {
+        foreColor: "Color del text",
+        backColor: "Color del fons",
+        foreColorRemove: "Eliminar color del text",
+        backColorRemove: "Eliminar color del fons"
+      },
+      cs: {
+        foreColor: "Barva textu",
+        backColor: "Barva pozadí"
+      },
+      da: {
+        foreColor: "Tekstfarve",
+        backColor: "Baggrundsfarve"
+      },
+      de: {
+        foreColor: "Textfarbe",
+        backColor: "Hintergrundfarbe"
+      },
+      es: {
+        foreColor: "Color del texto",
+        backColor: "Color del fondo",
+        foreColorRemove: "Eliminar color del texto",
+        backColorRemove: "Eliminar color del fondo"
+      },
+      et: {
+        foreColor: "Teksti värv",
+        backColor: "Taustavärv",
+        foreColorRemove: "Eemalda teksti värv",
+        backColorRemove: "Eemalda taustavärv"
+      },
+      fr: {
+        foreColor: "Couleur du texte",
+        backColor: "Couleur de fond",
+        foreColorRemove: "Supprimer la couleur du texte",
+        backColorRemove: "Supprimer la couleur de fond"
+      },
+      hu: {
+        foreColor: "Betű szín",
+        backColor: "Háttér szín",
+        foreColorRemove: "Betű szín eltávolítása",
+        backColorRemove: "Háttér szín eltávolítása"
+      },
+      ja: {
+        foreColor: "文字色",
+        backColor: "背景色"
+      },
+      ko: {
+        foreColor: "글자색",
+        backColor: "배경색",
+        foreColorRemove: "글자색 지우기",
+        backColorRemove: "배경색 지우기"
+      },
+      nl: {
+        foreColor: "Tekstkleur",
+        backColor: "Achtergrondkleur"
+      },
+      pt_br: {
+        foreColor: "Cor de fonte",
+        backColor: "Cor de fundo"
+      },
+      ru: {
+        foreColor: "Цвет текста",
+        backColor: "Цвет выделения текста",
+        foreColorRemove: "Очистить цвет текста",
+        backColorRemove: "Очистить цвет выделения текста"
+      },
+      sl: {
+        foreColor: "Barva teksta",
+        backColor: "Barva ozadja",
+        foreColorRemove: "Ponastavi barvo teksta",
+        backColorRemove: "Ponastavi barvo ozadja"
+      },
+      sk: {
+        foreColor: "Farba textu",
+        backColor: "Farba pozadia"
+      },
+      tr: {
+        foreColor: "Yazı rengi",
+        backColor: "Arka plan rengi",
+        foreColorRemove: "Yazı rengini kaldır",
+        backColorRemove: "Arka plan rengini kaldır"
+      },
+      zh_cn: {
+        foreColor: "文字颜色",
+        backColor: "背景颜色"
+      },
+      zh_tw: {
+        foreColor: "文字顏色",
+        backColor: "背景顏色"
+      }
+    }
+  });
+  var l = {
+    colorList: ["ffffff", "000000", "eeece1", "1f497d", "4f81bd", "c0504d", "9bbb59", "8064a2", "4bacc6", "f79646", "ffff00", "f2f2f2", "7f7f7f", "ddd9c3", "c6d9f0", "dbe5f1", "f2dcdb", "ebf1dd", "e5e0ec", "dbeef3", "fdeada", "fff2ca", "d8d8d8", "595959", "c4bd97", "8db3e2", "b8cce4", "e5b9b7", "d7e3bc", "ccc1d9", "b7dde8", "fbd5b5", "ffe694", "bfbfbf", "3f3f3f", "938953", "548dd4", "95b3d7", "d99694", "c3d69b", "b2a2c7", "b7dde8", "fac08f", "f2c314", "a5a5a5", "262626", "494429", "17365d", "366092", "953734", "76923c", "5f497a", "92cddc", "e36c09", "c09100", "7f7f7f", "0c0c0c", "1d1b10", "0f243e", "244061", "632423", "4f6128", "3f3151", "31859b", "974806", "7f6000"],
+    foreColorList: null,
+    backColorList: null,
+    allowCustomForeColor: !0,
+    allowCustomBackColor: !0,
+    displayAsList: !1
+  };
+  function a(r, e) {
+    var l = [],
+      a = e.o.plugins.colors,
+      t = a[r + "List"] || a.colorList;
+    o.each(t, function (o, t) {
+      var c = r + t,
+        f = {
+          fn: r,
+          forceCss: !0,
+          hasIcon: !1,
+          text: e.lang["#" + t] || "#" + t,
+          param: "#" + t,
+          style: "background-color: #" + t + ";"
+        };
+      a.displayAsList && "foreColor" === r && (f.style = "color: #" + t + " !important;"), e.addBtnDef(c, f), l.push(c);
+    });
+    var c = r + "Remove",
+      f = {
+        fn: "removeFormat",
+        hasIcon: !1,
+        param: r,
+        style: "background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);"
+      };
+    if (a.displayAsList && (f.style = ""), e.addBtnDef(c, f), l.push(c), a["allowCustom" + r.charAt(0).toUpperCase() + r.substr(1)]) {
+      var n = r + "Free",
+        d = {
+          fn: function fn() {
+            e.openModalInsert(e.lang[r], {
+              color: {
+                label: r,
+                forceCss: !0,
+                type: "color",
+                value: "#FFFFFF"
+              }
+            }, function (o) {
+              return e.execCmd(r, o.color), !0;
+            });
+          },
+          hasIcon: !1,
+          text: "#",
+          style: "text-indent: 0; line-height: 20px; padding: 0 5px;"
+        };
+      e.addBtnDef(n, d), l.push(n);
+    }
+    return l;
+  }
+  o.extend(!0, o.trumbowyg, {
+    plugins: {
+      color: {
+        init: function init(o) {
+          o.o.plugins.colors = o.o.plugins.colors || l;
+          var r = o.o.plugins.colors.displayAsList ? o.o.prefix + "dropdown--color-list" : "",
+            e = {
+              dropdown: a("foreColor", o),
+              dropdownClass: r
+            },
+            t = {
+              dropdown: a("backColor", o),
+              dropdownClass: r
+            };
+          o.addBtnDef("foreColor", e), o.addBtnDef("backColor", t);
+        },
+        tagHandler: function tagHandler(o, r) {
+          var l,
+            a = [];
+          if (!o.style) return a;
+          if ("" !== o.style.backgroundColor) {
+            var t = e(o.style.backgroundColor);
+            r.o.plugins.colors.colorList.indexOf(t) >= 0 ? a.push("backColor" + t) : a.push("backColorFree");
+          }
+          return "" !== o.style.color ? l = e(o.style.color) : o.hasAttribute("color") && (l = e(o.getAttribute("color"))), l && (r.o.plugins.colors.colorList.indexOf(l) >= 0 ? a.push("foreColor" + l) : a.push("foreColorFree")), a;
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
  * trumbowyg.allowTagsFromPaste.js v1.0.2
  * It cleans tags from pasted text, whilst allowing several specified tags
  * http://alex-d.github.com/Trumbowyg
@@ -95,6 +586,195 @@
               });
             }
           }
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.cleanpaste.js v1.0
+ * Font Clean paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Authors : Eric Radin
+ *           Todd Graham (slackwalker)
+ *
+ * This plugin will perform a "cleaning" on any paste, in particular
+ * it will clean pasted content of microsoft word document tags and classes.
+ */
+
+(function ($) {
+  'use strict';
+
+  function checkValidTags(snippet) {
+    var theString = snippet;
+
+    // Replace uppercase element names with lowercase
+    theString = theString.replace(/<[^> ]*/g, function (match) {
+      return match.toLowerCase();
+    });
+
+    // Replace uppercase attribute names with lowercase
+    theString = theString.replace(/<[^>]*>/g, function (match) {
+      match = match.replace(/ [^=]+=/g, function (match2) {
+        return match2.toLowerCase();
+      });
+      return match;
+    });
+
+    // Put quotes around unquoted attributes
+    theString = theString.replace(/<[^>]*>/g, function (match) {
+      match = match.replace(/( [^=]+=)([^"][^ >]*)/g, '$1\"$2\"');
+      return match;
+    });
+    return theString;
+  }
+  function cleanIt(html) {
+    // first make sure all tags and attributes are made valid
+    html = checkValidTags(html);
+
+    // Replace opening bold tags with strong
+    html = html.replace(/<b(\s+|>)/g, '<strong$1');
+    // Replace closing bold tags with closing strong
+    html = html.replace(/<\/b(\s+|>)/g, '</strong$1');
+
+    // Replace italic tags with em
+    html = html.replace(/<i(\s+|>)/g, '<em$1');
+    // Replace closing italic tags with closing em
+    html = html.replace(/<\/i(\s+|>)/g, '</em$1');
+
+    // strip out comments -cgCraft
+    html = html.replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, '');
+
+    // strip out &nbsp; -cgCraft
+    html = html.replace(/&nbsp;/gi, ' ');
+    // strip out extra spaces -cgCraft
+    html = html.replace(/ <\//gi, '</');
+
+    // Remove multiple spaces
+    html.replace(/\s+/g, ' ');
+
+    // strip &nbsp; -cgCraft
+    html = html.replace(/^\s*|\s*$/g, '');
+
+    // Strip out unaccepted attributes
+    html = html.replace(/<[^>]*>/g, function (match) {
+      match = match.replace(/ ([^=]+)="[^"]*"/g, function (match2, attributeName) {
+        if (['alt', 'href', 'src', 'title'].indexOf(attributeName) !== -1) {
+          return match2;
+        }
+        return '';
+      });
+      return match;
+    });
+
+    // Final clean out for MS Word crud
+    html = html.replace(/<\?xml[^>]*>/g, '');
+    html = html.replace(/<[^ >]+:[^>]*>/g, '');
+    html = html.replace(/<\/[^ >]+:[^>]*>/g, '');
+
+    // remove unwanted tags
+    html = html.replace(/<(div|span|style|meta|link).*?>/gi, '');
+    return html;
+  }
+
+  // clean editor
+  // this will clean the inserted contents
+  // it does a compare, before and after paste to determine the
+  // pasted contents
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      cleanPaste: {
+        init: function init(trumbowyg) {
+          trumbowyg.pasteHandlers.push(function (pasteEvent) {
+            setTimeout(function () {
+              try {
+                trumbowyg.saveRange();
+                var clipboardData = (pasteEvent.originalEvent || pasteEvent).clipboardData,
+                  pastedData = clipboardData.getData('Text'),
+                  node = trumbowyg.doc.getSelection().focusNode,
+                  range = trumbowyg.doc.createRange(),
+                  cleanedPaste = cleanIt(pastedData.trim()),
+                  newNode = $(cleanedPaste)[0] || trumbowyg.doc.createTextNode(cleanedPaste);
+                if (trumbowyg.$ed.html() === '') {
+                  // simply append if there is no content in editor
+                  trumbowyg.$ed[0].appendChild(newNode);
+                } else {
+                  // insert pasted content behind last focused node
+                  range.setStartAfter(node);
+                  range.setEndAfter(node);
+                  trumbowyg.doc.getSelection().removeAllRanges();
+                  trumbowyg.doc.getSelection().addRange(range);
+                  trumbowyg.range.insertNode(newNode);
+                }
+
+                // now set cursor right after pasted content
+                range = trumbowyg.doc.createRange();
+                range.setStartAfter(newNode);
+                range.setEndAfter(newNode);
+                trumbowyg.doc.getSelection().removeAllRanges();
+                trumbowyg.doc.getSelection().addRange(range);
+
+                // prevent defaults
+                pasteEvent.stopPropagation();
+                pasteEvent.preventDefault();
+
+                // save new node as focused node
+                trumbowyg.saveRange();
+                trumbowyg.syncCode();
+                trumbowyg.$c.trigger('tbwchange');
+              } catch (c) {}
+            }, 0);
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.cleanpaste.js v1.0
+ * Font Clean paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Authors : Eric Radin
+ *           Todd Graham (slackwalker)
+ *
+ * This plugin will perform a "cleaning" on any paste, in particular
+ * it will clean pasted content of microsoft word document tags and classes.
+ */
+!function (e) {
+  "use strict";
+
+  e.extend(!0, e.trumbowyg, {
+    plugins: {
+      cleanPaste: {
+        init: function init(t) {
+          t.pasteHandlers.push(function (r) {
+            setTimeout(function () {
+              try {
+                t.saveRange();
+                var a = (r.originalEvent || r).clipboardData.getData("Text"),
+                  n = t.doc.getSelection().focusNode,
+                  c = t.doc.createRange(),
+                  g = ((l = (l = (l = (l = (l = (l = (l = (l = (l = a.trim()).replace(/<[^> ]*/g, function (e) {
+                    return e.toLowerCase();
+                  }).replace(/<[^>]*>/g, function (e) {
+                    return e.replace(/ [^=]+=/g, function (e) {
+                      return e.toLowerCase();
+                    });
+                  }).replace(/<[^>]*>/g, function (e) {
+                    return e.replace(/( [^=]+=)([^"][^ >]*)/g, '$1"$2"');
+                  })).replace(/<b(\s+|>)/g, "<strong$1")).replace(/<\/b(\s+|>)/g, "</strong$1")).replace(/<i(\s+|>)/g, "<em$1")).replace(/<\/i(\s+|>)/g, "</em$1")).replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, "")).replace(/&nbsp;/gi, " ")).replace(/ <\//gi, "</")).replace(/\s+/g, " "), (l = (l = (l = (l = (l = l.replace(/^\s*|\s*$/g, "")).replace(/<[^>]*>/g, function (e) {
+                    return e.replace(/ ([^=]+)="[^"]*"/g, function (e, t) {
+                      return -1 !== ["alt", "href", "src", "title"].indexOf(t) ? e : "";
+                    });
+                  })).replace(/<\?xml[^>]*>/g, "")).replace(/<[^ >]+:[^>]*>/g, "")).replace(/<\/[^ >]+:[^>]*>/g, "")).replace(/<(div|span|style|meta|link).*?>/gi, "")),
+                  o = e(g)[0] || t.doc.createTextNode(g);
+                "" === t.$ed.html() ? t.$ed[0].appendChild(o) : (c.setStartAfter(n), c.setEndAfter(n), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), t.range.insertNode(o)), (c = t.doc.createRange()).setStartAfter(o), c.setEndAfter(o), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), r.stopPropagation(), r.preventDefault(), t.saveRange(), t.syncCode(), t.$c.trigger("tbwchange");
+              } catch (e) {}
+              var l;
+            }, 0);
+          });
         }
       }
     }
@@ -420,195 +1100,6 @@
             }
           };
           r.addBtnDef("base64", i);
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.cleanpaste.js v1.0
- * Font Clean paste plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Authors : Eric Radin
- *           Todd Graham (slackwalker)
- *
- * This plugin will perform a "cleaning" on any paste, in particular
- * it will clean pasted content of microsoft word document tags and classes.
- */
-
-(function ($) {
-  'use strict';
-
-  function checkValidTags(snippet) {
-    var theString = snippet;
-
-    // Replace uppercase element names with lowercase
-    theString = theString.replace(/<[^> ]*/g, function (match) {
-      return match.toLowerCase();
-    });
-
-    // Replace uppercase attribute names with lowercase
-    theString = theString.replace(/<[^>]*>/g, function (match) {
-      match = match.replace(/ [^=]+=/g, function (match2) {
-        return match2.toLowerCase();
-      });
-      return match;
-    });
-
-    // Put quotes around unquoted attributes
-    theString = theString.replace(/<[^>]*>/g, function (match) {
-      match = match.replace(/( [^=]+=)([^"][^ >]*)/g, '$1\"$2\"');
-      return match;
-    });
-    return theString;
-  }
-  function cleanIt(html) {
-    // first make sure all tags and attributes are made valid
-    html = checkValidTags(html);
-
-    // Replace opening bold tags with strong
-    html = html.replace(/<b(\s+|>)/g, '<strong$1');
-    // Replace closing bold tags with closing strong
-    html = html.replace(/<\/b(\s+|>)/g, '</strong$1');
-
-    // Replace italic tags with em
-    html = html.replace(/<i(\s+|>)/g, '<em$1');
-    // Replace closing italic tags with closing em
-    html = html.replace(/<\/i(\s+|>)/g, '</em$1');
-
-    // strip out comments -cgCraft
-    html = html.replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, '');
-
-    // strip out &nbsp; -cgCraft
-    html = html.replace(/&nbsp;/gi, ' ');
-    // strip out extra spaces -cgCraft
-    html = html.replace(/ <\//gi, '</');
-
-    // Remove multiple spaces
-    html.replace(/\s+/g, ' ');
-
-    // strip &nbsp; -cgCraft
-    html = html.replace(/^\s*|\s*$/g, '');
-
-    // Strip out unaccepted attributes
-    html = html.replace(/<[^>]*>/g, function (match) {
-      match = match.replace(/ ([^=]+)="[^"]*"/g, function (match2, attributeName) {
-        if (['alt', 'href', 'src', 'title'].indexOf(attributeName) !== -1) {
-          return match2;
-        }
-        return '';
-      });
-      return match;
-    });
-
-    // Final clean out for MS Word crud
-    html = html.replace(/<\?xml[^>]*>/g, '');
-    html = html.replace(/<[^ >]+:[^>]*>/g, '');
-    html = html.replace(/<\/[^ >]+:[^>]*>/g, '');
-
-    // remove unwanted tags
-    html = html.replace(/<(div|span|style|meta|link).*?>/gi, '');
-    return html;
-  }
-
-  // clean editor
-  // this will clean the inserted contents
-  // it does a compare, before and after paste to determine the
-  // pasted contents
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      cleanPaste: {
-        init: function init(trumbowyg) {
-          trumbowyg.pasteHandlers.push(function (pasteEvent) {
-            setTimeout(function () {
-              try {
-                trumbowyg.saveRange();
-                var clipboardData = (pasteEvent.originalEvent || pasteEvent).clipboardData,
-                  pastedData = clipboardData.getData('Text'),
-                  node = trumbowyg.doc.getSelection().focusNode,
-                  range = trumbowyg.doc.createRange(),
-                  cleanedPaste = cleanIt(pastedData.trim()),
-                  newNode = $(cleanedPaste)[0] || trumbowyg.doc.createTextNode(cleanedPaste);
-                if (trumbowyg.$ed.html() === '') {
-                  // simply append if there is no content in editor
-                  trumbowyg.$ed[0].appendChild(newNode);
-                } else {
-                  // insert pasted content behind last focused node
-                  range.setStartAfter(node);
-                  range.setEndAfter(node);
-                  trumbowyg.doc.getSelection().removeAllRanges();
-                  trumbowyg.doc.getSelection().addRange(range);
-                  trumbowyg.range.insertNode(newNode);
-                }
-
-                // now set cursor right after pasted content
-                range = trumbowyg.doc.createRange();
-                range.setStartAfter(newNode);
-                range.setEndAfter(newNode);
-                trumbowyg.doc.getSelection().removeAllRanges();
-                trumbowyg.doc.getSelection().addRange(range);
-
-                // prevent defaults
-                pasteEvent.stopPropagation();
-                pasteEvent.preventDefault();
-
-                // save new node as focused node
-                trumbowyg.saveRange();
-                trumbowyg.syncCode();
-                trumbowyg.$c.trigger('tbwchange');
-              } catch (c) {}
-            }, 0);
-          });
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.cleanpaste.js v1.0
- * Font Clean paste plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Authors : Eric Radin
- *           Todd Graham (slackwalker)
- *
- * This plugin will perform a "cleaning" on any paste, in particular
- * it will clean pasted content of microsoft word document tags and classes.
- */
-!function (e) {
-  "use strict";
-
-  e.extend(!0, e.trumbowyg, {
-    plugins: {
-      cleanPaste: {
-        init: function init(t) {
-          t.pasteHandlers.push(function (r) {
-            setTimeout(function () {
-              try {
-                t.saveRange();
-                var a = (r.originalEvent || r).clipboardData.getData("Text"),
-                  n = t.doc.getSelection().focusNode,
-                  c = t.doc.createRange(),
-                  g = ((l = (l = (l = (l = (l = (l = (l = (l = (l = a.trim()).replace(/<[^> ]*/g, function (e) {
-                    return e.toLowerCase();
-                  }).replace(/<[^>]*>/g, function (e) {
-                    return e.replace(/ [^=]+=/g, function (e) {
-                      return e.toLowerCase();
-                    });
-                  }).replace(/<[^>]*>/g, function (e) {
-                    return e.replace(/( [^=]+=)([^"][^ >]*)/g, '$1"$2"');
-                  })).replace(/<b(\s+|>)/g, "<strong$1")).replace(/<\/b(\s+|>)/g, "</strong$1")).replace(/<i(\s+|>)/g, "<em$1")).replace(/<\/i(\s+|>)/g, "</em$1")).replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, "")).replace(/&nbsp;/gi, " ")).replace(/ <\//gi, "</")).replace(/\s+/g, " "), (l = (l = (l = (l = (l = l.replace(/^\s*|\s*$/g, "")).replace(/<[^>]*>/g, function (e) {
-                    return e.replace(/ ([^=]+)="[^"]*"/g, function (e, t) {
-                      return -1 !== ["alt", "href", "src", "title"].indexOf(t) ? e : "";
-                    });
-                  })).replace(/<\?xml[^>]*>/g, "")).replace(/<[^ >]+:[^>]*>/g, "")).replace(/<\/[^ >]+:[^>]*>/g, "")).replace(/<(div|span|style|meta|link).*?>/gi, "")),
-                  o = e(g)[0] || t.doc.createTextNode(g);
-                "" === t.$ed.html() ? t.$ed[0].appendChild(o) : (c.setStartAfter(n), c.setEndAfter(n), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), t.range.insertNode(o)), (c = t.doc.createRange()).setStartAfter(o), c.setEndAfter(o), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), r.stopPropagation(), r.preventDefault(), t.saveRange(), t.syncCode(), t.$c.trigger("tbwchange");
-              } catch (e) {}
-              var l;
-            }, 0);
-          });
         }
       }
     }
@@ -1818,497 +2309,6 @@
     }
   });
 }(jQuery);
-/* ===========================================================
- * trumbowyg.colors.js v1.2
- * Colors picker plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Alexandre Demode (Alex-D)
- *          Twitter : @AlexandreDemode
- *          Website : alex-d.fr
- */
-
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        foreColor: 'Text color',
-        backColor: 'Background color',
-        foreColorRemove: 'Remove text color',
-        backColorRemove: 'Remove background color'
-      },
-      az: {
-        foreColor: 'Yazı rəngi',
-        backColor: 'Arxa plan rəngi',
-        foreColorRemove: 'Yazı rəngini sil',
-        backColorRemove: 'Arxa plan rəngini sil'
-      },
-      by: {
-        foreColor: 'Колер тэксту',
-        backColor: 'Колер фону тэксту',
-        foreColorRemove: 'Выдаліць колер тэксту',
-        backColorRemove: 'Выдаліць колер фону тэксту'
-      },
-      ca: {
-        foreColor: 'Color del text',
-        backColor: 'Color del fons',
-        foreColorRemove: 'Eliminar color del text',
-        backColorRemove: 'Eliminar color del fons'
-      },
-      cs: {
-        foreColor: 'Barva textu',
-        backColor: 'Barva pozadí'
-      },
-      da: {
-        foreColor: 'Tekstfarve',
-        backColor: 'Baggrundsfarve'
-      },
-      de: {
-        foreColor: 'Textfarbe',
-        backColor: 'Hintergrundfarbe'
-      },
-      es: {
-        foreColor: 'Color del texto',
-        backColor: 'Color del fondo',
-        foreColorRemove: 'Eliminar color del texto',
-        backColorRemove: 'Eliminar color del fondo'
-      },
-      et: {
-        foreColor: 'Teksti värv',
-        backColor: 'Taustavärv',
-        foreColorRemove: 'Eemalda teksti värv',
-        backColorRemove: 'Eemalda taustavärv'
-      },
-      fr: {
-        foreColor: 'Couleur du texte',
-        backColor: 'Couleur de fond',
-        foreColorRemove: 'Supprimer la couleur du texte',
-        backColorRemove: 'Supprimer la couleur de fond'
-      },
-      hu: {
-        foreColor: 'Betű szín',
-        backColor: 'Háttér szín',
-        foreColorRemove: 'Betű szín eltávolítása',
-        backColorRemove: 'Háttér szín eltávolítása'
-      },
-      ja: {
-        foreColor: '文字色',
-        backColor: '背景色'
-      },
-      ko: {
-        foreColor: '글자색',
-        backColor: '배경색',
-        foreColorRemove: '글자색 지우기',
-        backColorRemove: '배경색 지우기'
-      },
-      nl: {
-        foreColor: 'Tekstkleur',
-        backColor: 'Achtergrondkleur'
-      },
-      pt_br: {
-        foreColor: 'Cor de fonte',
-        backColor: 'Cor de fundo'
-      },
-      ru: {
-        foreColor: 'Цвет текста',
-        backColor: 'Цвет выделения текста',
-        foreColorRemove: 'Очистить цвет текста',
-        backColorRemove: 'Очистить цвет выделения текста'
-      },
-      sl: {
-        foreColor: 'Barva teksta',
-        backColor: 'Barva ozadja',
-        foreColorRemove: 'Ponastavi barvo teksta',
-        backColorRemove: 'Ponastavi barvo ozadja'
-      },
-      sk: {
-        foreColor: 'Farba textu',
-        backColor: 'Farba pozadia'
-      },
-      tr: {
-        foreColor: 'Yazı rengi',
-        backColor: 'Arka plan rengi',
-        foreColorRemove: 'Yazı rengini kaldır',
-        backColorRemove: 'Arka plan rengini kaldır'
-      },
-      zh_cn: {
-        foreColor: '文字颜色',
-        backColor: '背景颜色'
-      },
-      zh_tw: {
-        foreColor: '文字顏色',
-        backColor: '背景顏色'
-      }
-    }
-  });
-
-  // jshint camelcase:true
-
-  function hex(x) {
-    return ('0' + parseInt(x).toString(16)).slice(-2);
-  }
-  function colorToHex(rgb) {
-    if (rgb.search('rgb') === -1) {
-      return rgb.replace('#', '');
-    } else if (rgb === 'rgba(0, 0, 0, 0)') {
-      return 'transparent';
-    } else {
-      rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/);
-      if (rgb == null) {
-        return 'transparent'; // No match, return transparent as unkown color
-      }
-
-      return hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
-    }
-  }
-  function colorTagHandler(element, trumbowyg) {
-    var tags = [];
-    if (!element.style) {
-      return tags;
-    }
-
-    // background color
-    if (element.style.backgroundColor !== '') {
-      var backColor = colorToHex(element.style.backgroundColor);
-      if (trumbowyg.o.plugins.colors.colorList.indexOf(backColor) >= 0) {
-        tags.push('backColor' + backColor);
-      } else {
-        tags.push('backColorFree');
-      }
-    }
-
-    // text color
-    var foreColor;
-    if (element.style.color !== '') {
-      foreColor = colorToHex(element.style.color);
-    } else if (element.hasAttribute('color')) {
-      foreColor = colorToHex(element.getAttribute('color'));
-    }
-    if (foreColor) {
-      if (trumbowyg.o.plugins.colors.colorList.indexOf(foreColor) >= 0) {
-        tags.push('foreColor' + foreColor);
-      } else {
-        tags.push('foreColorFree');
-      }
-    }
-    return tags;
-  }
-  var defaultOptions = {
-    colorList: ['ffffff', '000000', 'eeece1', '1f497d', '4f81bd', 'c0504d', '9bbb59', '8064a2', '4bacc6', 'f79646', 'ffff00', 'f2f2f2', '7f7f7f', 'ddd9c3', 'c6d9f0', 'dbe5f1', 'f2dcdb', 'ebf1dd', 'e5e0ec', 'dbeef3', 'fdeada', 'fff2ca', 'd8d8d8', '595959', 'c4bd97', '8db3e2', 'b8cce4', 'e5b9b7', 'd7e3bc', 'ccc1d9', 'b7dde8', 'fbd5b5', 'ffe694', 'bfbfbf', '3f3f3f', '938953', '548dd4', '95b3d7', 'd99694', 'c3d69b', 'b2a2c7', 'b7dde8', 'fac08f', 'f2c314', 'a5a5a5', '262626', '494429', '17365d', '366092', '953734', '76923c', '5f497a', '92cddc', 'e36c09', 'c09100', '7f7f7f', '0c0c0c', '1d1b10', '0f243e', '244061', '632423', '4f6128', '3f3151', '31859b', '974806', '7f6000'],
-    foreColorList: null,
-    // fallbacks on colorList
-    backColorList: null,
-    // fallbacks on colorList
-    allowCustomForeColor: true,
-    allowCustomBackColor: true,
-    displayAsList: false
-  };
-
-  // Add all colors in two dropdowns
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      color: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.colors = trumbowyg.o.plugins.colors || defaultOptions;
-          var dropdownClass = trumbowyg.o.plugins.colors.displayAsList ? trumbowyg.o.prefix + 'dropdown--color-list' : '';
-          var foreColorBtnDef = {
-              dropdown: buildDropdown('foreColor', trumbowyg),
-              dropdownClass: dropdownClass
-            },
-            backColorBtnDef = {
-              dropdown: buildDropdown('backColor', trumbowyg),
-              dropdownClass: dropdownClass
-            };
-          trumbowyg.addBtnDef('foreColor', foreColorBtnDef);
-          trumbowyg.addBtnDef('backColor', backColorBtnDef);
-        },
-        tagHandler: colorTagHandler
-      }
-    }
-  });
-  function buildDropdown(_fn, trumbowyg) {
-    var dropdown = [],
-      trumbowygColorOptions = trumbowyg.o.plugins.colors,
-      colorList = trumbowygColorOptions[_fn + 'List'] || trumbowygColorOptions.colorList;
-    $.each(colorList, function (i, color) {
-      var btn = _fn + color,
-        btnDef = {
-          fn: _fn,
-          forceCss: true,
-          hasIcon: false,
-          text: trumbowyg.lang['#' + color] || '#' + color,
-          param: '#' + color,
-          style: 'background-color: #' + color + ';'
-        };
-      if (trumbowygColorOptions.displayAsList && _fn === 'foreColor') {
-        btnDef.style = 'color: #' + color + ' !important;';
-      }
-      trumbowyg.addBtnDef(btn, btnDef);
-      dropdown.push(btn);
-    });
-
-    // Remove color
-    var removeColorButtonName = _fn + 'Remove',
-      removeColorBtnDef = {
-        fn: 'removeFormat',
-        hasIcon: false,
-        param: _fn,
-        style: 'background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);'
-      };
-    if (trumbowygColorOptions.displayAsList) {
-      removeColorBtnDef.style = '';
-    }
-    trumbowyg.addBtnDef(removeColorButtonName, removeColorBtnDef);
-    dropdown.push(removeColorButtonName);
-
-    // Custom color
-    if (trumbowygColorOptions['allowCustom' + _fn.charAt(0).toUpperCase() + _fn.substr(1)]) {
-      // add free color btn
-      var freeColorButtonName = _fn + 'Free',
-        freeColorBtnDef = {
-          fn: function fn() {
-            trumbowyg.openModalInsert(trumbowyg.lang[_fn], {
-              color: {
-                label: _fn,
-                forceCss: true,
-                type: 'color',
-                value: '#FFFFFF'
-              }
-            },
-            // callback
-            function (values) {
-              trumbowyg.execCmd(_fn, values.color);
-              return true;
-            });
-          },
-          hasIcon: false,
-          text: '#',
-          // style adjust for displaying the text
-          style: 'text-indent: 0; line-height: 20px; padding: 0 5px;'
-        };
-      trumbowyg.addBtnDef(freeColorButtonName, freeColorBtnDef);
-      dropdown.push(freeColorButtonName);
-    }
-    return dropdown;
-  }
-})(jQuery);
-/* ===========================================================
- * trumbowyg.colors.js v1.2
- * Colors picker plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Alexandre Demode (Alex-D)
- *          Twitter : @AlexandreDemode
- *          Website : alex-d.fr
- */
-!function (o) {
-  "use strict";
-
-  function r(o) {
-    return ("0" + parseInt(o).toString(16)).slice(-2);
-  }
-  function e(o) {
-    return -1 === o.search("rgb") ? o.replace("#", "") : "rgba(0, 0, 0, 0)" === o || null == (o = o.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/)) ? "transparent" : r(o[1]) + r(o[2]) + r(o[3]);
-  }
-  o.extend(!0, o.trumbowyg, {
-    langs: {
-      en: {
-        foreColor: "Text color",
-        backColor: "Background color",
-        foreColorRemove: "Remove text color",
-        backColorRemove: "Remove background color"
-      },
-      az: {
-        foreColor: "Yazı rəngi",
-        backColor: "Arxa plan rəngi",
-        foreColorRemove: "Yazı rəngini sil",
-        backColorRemove: "Arxa plan rəngini sil"
-      },
-      by: {
-        foreColor: "Колер тэксту",
-        backColor: "Колер фону тэксту",
-        foreColorRemove: "Выдаліць колер тэксту",
-        backColorRemove: "Выдаліць колер фону тэксту"
-      },
-      ca: {
-        foreColor: "Color del text",
-        backColor: "Color del fons",
-        foreColorRemove: "Eliminar color del text",
-        backColorRemove: "Eliminar color del fons"
-      },
-      cs: {
-        foreColor: "Barva textu",
-        backColor: "Barva pozadí"
-      },
-      da: {
-        foreColor: "Tekstfarve",
-        backColor: "Baggrundsfarve"
-      },
-      de: {
-        foreColor: "Textfarbe",
-        backColor: "Hintergrundfarbe"
-      },
-      es: {
-        foreColor: "Color del texto",
-        backColor: "Color del fondo",
-        foreColorRemove: "Eliminar color del texto",
-        backColorRemove: "Eliminar color del fondo"
-      },
-      et: {
-        foreColor: "Teksti värv",
-        backColor: "Taustavärv",
-        foreColorRemove: "Eemalda teksti värv",
-        backColorRemove: "Eemalda taustavärv"
-      },
-      fr: {
-        foreColor: "Couleur du texte",
-        backColor: "Couleur de fond",
-        foreColorRemove: "Supprimer la couleur du texte",
-        backColorRemove: "Supprimer la couleur de fond"
-      },
-      hu: {
-        foreColor: "Betű szín",
-        backColor: "Háttér szín",
-        foreColorRemove: "Betű szín eltávolítása",
-        backColorRemove: "Háttér szín eltávolítása"
-      },
-      ja: {
-        foreColor: "文字色",
-        backColor: "背景色"
-      },
-      ko: {
-        foreColor: "글자색",
-        backColor: "배경색",
-        foreColorRemove: "글자색 지우기",
-        backColorRemove: "배경색 지우기"
-      },
-      nl: {
-        foreColor: "Tekstkleur",
-        backColor: "Achtergrondkleur"
-      },
-      pt_br: {
-        foreColor: "Cor de fonte",
-        backColor: "Cor de fundo"
-      },
-      ru: {
-        foreColor: "Цвет текста",
-        backColor: "Цвет выделения текста",
-        foreColorRemove: "Очистить цвет текста",
-        backColorRemove: "Очистить цвет выделения текста"
-      },
-      sl: {
-        foreColor: "Barva teksta",
-        backColor: "Barva ozadja",
-        foreColorRemove: "Ponastavi barvo teksta",
-        backColorRemove: "Ponastavi barvo ozadja"
-      },
-      sk: {
-        foreColor: "Farba textu",
-        backColor: "Farba pozadia"
-      },
-      tr: {
-        foreColor: "Yazı rengi",
-        backColor: "Arka plan rengi",
-        foreColorRemove: "Yazı rengini kaldır",
-        backColorRemove: "Arka plan rengini kaldır"
-      },
-      zh_cn: {
-        foreColor: "文字颜色",
-        backColor: "背景颜色"
-      },
-      zh_tw: {
-        foreColor: "文字顏色",
-        backColor: "背景顏色"
-      }
-    }
-  });
-  var l = {
-    colorList: ["ffffff", "000000", "eeece1", "1f497d", "4f81bd", "c0504d", "9bbb59", "8064a2", "4bacc6", "f79646", "ffff00", "f2f2f2", "7f7f7f", "ddd9c3", "c6d9f0", "dbe5f1", "f2dcdb", "ebf1dd", "e5e0ec", "dbeef3", "fdeada", "fff2ca", "d8d8d8", "595959", "c4bd97", "8db3e2", "b8cce4", "e5b9b7", "d7e3bc", "ccc1d9", "b7dde8", "fbd5b5", "ffe694", "bfbfbf", "3f3f3f", "938953", "548dd4", "95b3d7", "d99694", "c3d69b", "b2a2c7", "b7dde8", "fac08f", "f2c314", "a5a5a5", "262626", "494429", "17365d", "366092", "953734", "76923c", "5f497a", "92cddc", "e36c09", "c09100", "7f7f7f", "0c0c0c", "1d1b10", "0f243e", "244061", "632423", "4f6128", "3f3151", "31859b", "974806", "7f6000"],
-    foreColorList: null,
-    backColorList: null,
-    allowCustomForeColor: !0,
-    allowCustomBackColor: !0,
-    displayAsList: !1
-  };
-  function a(r, e) {
-    var l = [],
-      a = e.o.plugins.colors,
-      t = a[r + "List"] || a.colorList;
-    o.each(t, function (o, t) {
-      var c = r + t,
-        f = {
-          fn: r,
-          forceCss: !0,
-          hasIcon: !1,
-          text: e.lang["#" + t] || "#" + t,
-          param: "#" + t,
-          style: "background-color: #" + t + ";"
-        };
-      a.displayAsList && "foreColor" === r && (f.style = "color: #" + t + " !important;"), e.addBtnDef(c, f), l.push(c);
-    });
-    var c = r + "Remove",
-      f = {
-        fn: "removeFormat",
-        hasIcon: !1,
-        param: r,
-        style: "background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);"
-      };
-    if (a.displayAsList && (f.style = ""), e.addBtnDef(c, f), l.push(c), a["allowCustom" + r.charAt(0).toUpperCase() + r.substr(1)]) {
-      var n = r + "Free",
-        d = {
-          fn: function fn() {
-            e.openModalInsert(e.lang[r], {
-              color: {
-                label: r,
-                forceCss: !0,
-                type: "color",
-                value: "#FFFFFF"
-              }
-            }, function (o) {
-              return e.execCmd(r, o.color), !0;
-            });
-          },
-          hasIcon: !1,
-          text: "#",
-          style: "text-indent: 0; line-height: 20px; padding: 0 5px;"
-        };
-      e.addBtnDef(n, d), l.push(n);
-    }
-    return l;
-  }
-  o.extend(!0, o.trumbowyg, {
-    plugins: {
-      color: {
-        init: function init(o) {
-          o.o.plugins.colors = o.o.plugins.colors || l;
-          var r = o.o.plugins.colors.displayAsList ? o.o.prefix + "dropdown--color-list" : "",
-            e = {
-              dropdown: a("foreColor", o),
-              dropdownClass: r
-            },
-            t = {
-              dropdown: a("backColor", o),
-              dropdownClass: r
-            };
-          o.addBtnDef("foreColor", e), o.addBtnDef("backColor", t);
-        },
-        tagHandler: function tagHandler(o, r) {
-          var l,
-            a = [];
-          if (!o.style) return a;
-          if ("" !== o.style.backgroundColor) {
-            var t = e(o.style.backgroundColor);
-            r.o.plugins.colors.colorList.indexOf(t) >= 0 ? a.push("backColor" + t) : a.push("backColorFree");
-          }
-          return "" !== o.style.color ? l = e(o.style.color) : o.hasAttribute("color") && (l = e(o.getAttribute("color"))), l && (r.o.plugins.colors.colorList.indexOf(l) >= 0 ? a.push("foreColor" + l) : a.push("foreColorFree")), a;
-        }
-      }
-    }
-  });
-}(jQuery);
 /*/* ===========================================================
  * trumbowyg.history.js v1.0
  * history plugin for Trumbowyg
@@ -3064,6 +3064,221 @@
     }
   });
 }(jQuery);
+/*/* ===========================================================
+ * trumbowyg.insertaudio.js v1.0
+ * InsertAudio plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Adam Hess (AdamHess)
+ */
+
+(function ($) {
+  'use strict';
+
+  var insertAudioOptions = {
+    src: {
+      label: 'URL',
+      required: true
+    },
+    autoplay: {
+      label: 'AutoPlay',
+      required: false,
+      type: 'checkbox'
+    },
+    muted: {
+      label: 'Muted',
+      required: false,
+      type: 'checkbox'
+    },
+    preload: {
+      label: 'preload options',
+      required: false
+    }
+  };
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        insertAudio: 'Insert Audio'
+      },
+      az: {
+        insertAudio: 'Səs yerləşdir'
+      },
+      by: {
+        insertAudio: 'Уставіць аўдыё'
+      },
+      ca: {
+        insertAudio: 'Inserir Audio'
+      },
+      da: {
+        insertAudio: 'Indsæt lyd'
+      },
+      es: {
+        insertAudio: 'Insertar Audio'
+      },
+      et: {
+        insertAudio: 'Lisa helifail'
+      },
+      fr: {
+        insertAudio: 'Insérer un son'
+      },
+      hu: {
+        insertAudio: 'Audio beszúrás'
+      },
+      ja: {
+        insertAudio: '音声の挿入'
+      },
+      ko: {
+        insertAudio: '소리 넣기'
+      },
+      pt_br: {
+        insertAudio: 'Inserir áudio'
+      },
+      ru: {
+        insertAudio: 'Вставить аудио'
+      },
+      sl: {
+        insertAudio: 'Vstavi zvočno datoteko'
+      },
+      tr: {
+        insertAudio: 'Ses Ekle'
+      }
+      // jshint camelcase:true
+    },
+
+    plugins: {
+      insertAudio: {
+        init: function init(trumbowyg) {
+          var btnDef = {
+            fn: function fn() {
+              var insertAudioCallback = function insertAudioCallback(v) {
+                // controls should always be show otherwise the audio will
+                // be invisible defeating the point of a wysiwyg
+                var html = '<audio controls';
+                if (v.src) {
+                  html += ' src=\'' + v.src + '\'';
+                }
+                if (v.autoplay) {
+                  html += ' autoplay';
+                }
+                if (v.muted) {
+                  html += ' muted';
+                }
+                if (v.preload) {
+                  html += ' preload=\'' + v + '\'';
+                }
+                html += '></audio>';
+                var node = $(html)[0];
+                trumbowyg.range.deleteContents();
+                trumbowyg.range.insertNode(node);
+                return true;
+              };
+              trumbowyg.openModalInsert(trumbowyg.lang.insertAudio, insertAudioOptions, insertAudioCallback);
+            }
+          };
+          trumbowyg.addBtnDef('insertAudio', btnDef);
+        }
+      }
+    }
+  });
+})(jQuery);
+/*/* ===========================================================
+ * trumbowyg.insertaudio.js v1.0
+ * InsertAudio plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Adam Hess (AdamHess)
+ */
+!function (e) {
+  "use strict";
+
+  var i = {
+    src: {
+      label: "URL",
+      required: !0
+    },
+    autoplay: {
+      label: "AutoPlay",
+      required: !1,
+      type: "checkbox"
+    },
+    muted: {
+      label: "Muted",
+      required: !1,
+      type: "checkbox"
+    },
+    preload: {
+      label: "preload options",
+      required: !1
+    }
+  };
+  e.extend(!0, e.trumbowyg, {
+    langs: {
+      en: {
+        insertAudio: "Insert Audio"
+      },
+      az: {
+        insertAudio: "Səs yerləşdir"
+      },
+      by: {
+        insertAudio: "Уставіць аўдыё"
+      },
+      ca: {
+        insertAudio: "Inserir Audio"
+      },
+      da: {
+        insertAudio: "Indsæt lyd"
+      },
+      es: {
+        insertAudio: "Insertar Audio"
+      },
+      et: {
+        insertAudio: "Lisa helifail"
+      },
+      fr: {
+        insertAudio: "Insérer un son"
+      },
+      hu: {
+        insertAudio: "Audio beszúrás"
+      },
+      ja: {
+        insertAudio: "音声の挿入"
+      },
+      ko: {
+        insertAudio: "소리 넣기"
+      },
+      pt_br: {
+        insertAudio: "Inserir áudio"
+      },
+      ru: {
+        insertAudio: "Вставить аудио"
+      },
+      sl: {
+        insertAudio: "Vstavi zvočno datoteko"
+      },
+      tr: {
+        insertAudio: "Ses Ekle"
+      }
+    },
+    plugins: {
+      insertAudio: {
+        init: function init(r) {
+          var t = {
+            fn: function fn() {
+              r.openModalInsert(r.lang.insertAudio, i, function (i) {
+                var t = "<audio controls";
+                i.src && (t += " src='" + i.src + "'"), i.autoplay && (t += " autoplay"), i.muted && (t += " muted"), i.preload && (t += " preload='" + i + "'");
+                var o = e(t += "></audio>")[0];
+                return r.range.deleteContents(), r.range.insertNode(o), !0;
+              });
+            }
+          };
+          r.addBtnDef("insertAudio", t);
+        }
+      }
+    }
+  });
+}(jQuery);
 (function ($) {
   'use strict';
 
@@ -3734,216 +3949,435 @@
     }
   });
 }(jQuery);
-/*/* ===========================================================
- * trumbowyg.insertaudio.js v1.0
- * InsertAudio plugin for Trumbowyg
+/* ===========================================================
+ * trumbowyg.mention.js v0.1
+ * Mention plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
  * ===========================================================
- * Author : Adam Hess (AdamHess)
+ * Author : Viper
+ *          Github: https://github.com/Globulopolis
+ *          Website: http://киноархив.com
  */
 
 (function ($) {
   'use strict';
 
-  var insertAudioOptions = {
-    src: {
-      label: 'URL',
-      required: true
-    },
-    autoplay: {
-      label: 'AutoPlay',
-      required: false,
-      type: 'checkbox'
-    },
-    muted: {
-      label: 'Muted',
-      required: false,
-      type: 'checkbox'
-    },
-    preload: {
-      label: 'preload options',
-      required: false
-    }
+  var defaultOptions = {
+    source: [],
+    formatDropdownItem: formatDropdownItem,
+    formatResult: formatResult
   };
   $.extend(true, $.trumbowyg, {
     langs: {
       // jshint camelcase:false
       en: {
-        insertAudio: 'Insert Audio'
+        mention: 'Mention'
       },
       az: {
-        insertAudio: 'Səs yerləşdir'
+        mention: 'Bildirmək'
       },
       by: {
-        insertAudio: 'Уставіць аўдыё'
-      },
-      ca: {
-        insertAudio: 'Inserir Audio'
+        mention: 'Згадаць'
       },
       da: {
-        insertAudio: 'Indsæt lyd'
-      },
-      es: {
-        insertAudio: 'Insertar Audio'
+        mention: 'Nævn'
       },
       et: {
-        insertAudio: 'Lisa helifail'
+        mention: 'Maini'
       },
       fr: {
-        insertAudio: 'Insérer un son'
+        mention: 'Mentionner'
       },
       hu: {
-        insertAudio: 'Audio beszúrás'
-      },
-      ja: {
-        insertAudio: '音声の挿入'
+        mention: 'Említ'
       },
       ko: {
-        insertAudio: '소리 넣기'
+        mention: '언급'
       },
       pt_br: {
-        insertAudio: 'Inserir áudio'
+        mention: 'Menção'
       },
       ru: {
-        insertAudio: 'Вставить аудио'
+        mention: 'Упомянуть'
       },
       sl: {
-        insertAudio: 'Vstavi zvočno datoteko'
+        mention: 'Omeni'
       },
       tr: {
-        insertAudio: 'Ses Ekle'
+        mention: 'Bahset'
+      },
+      zh_tw: {
+        mention: '標記'
       }
       // jshint camelcase:true
     },
 
     plugins: {
-      insertAudio: {
+      mention: {
         init: function init(trumbowyg) {
+          trumbowyg.o.plugins.mention = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.mention || {});
           var btnDef = {
-            fn: function fn() {
-              var insertAudioCallback = function insertAudioCallback(v) {
-                // controls should always be show otherwise the audio will
-                // be invisible defeating the point of a wysiwyg
-                var html = '<audio controls';
-                if (v.src) {
-                  html += ' src=\'' + v.src + '\'';
-                }
-                if (v.autoplay) {
-                  html += ' autoplay';
-                }
-                if (v.muted) {
-                  html += ' muted';
-                }
-                if (v.preload) {
-                  html += ' preload=\'' + v + '\'';
-                }
-                html += '></audio>';
-                var node = $(html)[0];
-                trumbowyg.range.deleteContents();
-                trumbowyg.range.insertNode(node);
-                return true;
-              };
-              trumbowyg.openModalInsert(trumbowyg.lang.insertAudio, insertAudioOptions, insertAudioCallback);
-            }
+            dropdown: buildDropdown(trumbowyg.o.plugins.mention.source, trumbowyg)
           };
-          trumbowyg.addBtnDef('insertAudio', btnDef);
+          trumbowyg.addBtnDef('mention', btnDef);
+        }
+      }
+    }
+  });
+
+  /**
+   * Build dropdown list
+   *
+   * @param {Array}   items      Items
+   * @param {object}  trumbowyg  Editor
+   *
+   * @return {Array}
+   */
+  function buildDropdown(items, trumbowyg) {
+    var dropdown = [];
+    $.each(items, function (i, item) {
+      var btn = 'mention-' + i,
+        btnDef = {
+          hasIcon: false,
+          text: trumbowyg.o.plugins.mention.formatDropdownItem(item),
+          fn: function fn() {
+            trumbowyg.execCmd('insertHTML', trumbowyg.o.plugins.mention.formatResult(item));
+            return true;
+          }
+        };
+      trumbowyg.addBtnDef(btn, btnDef);
+      dropdown.push(btn);
+    });
+    return dropdown;
+  }
+
+  /**
+   * Format item in dropdown.
+   *
+   * @param   {object}  item  Item object.
+   *
+   * @return  {string}
+   */
+  function formatDropdownItem(item) {
+    return item.login;
+  }
+
+  /**
+   * Format result pasted in editor.
+   *
+   * @param   {object}  item  Item object.
+   *
+   * @return  {string}
+   */
+  function formatResult(item) {
+    return '@' + item.login + ' ';
+  }
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.mention.js v0.1
+ * Mention plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Viper
+ *          Github: https://github.com/Globulopolis
+ *          Website: http://киноархив.com
+ */
+!function (n) {
+  "use strict";
+
+  var t = {
+    source: [],
+    formatDropdownItem: function formatDropdownItem(n) {
+      return n.login;
+    },
+    formatResult: function formatResult(n) {
+      return "@" + n.login + " ";
+    }
+  };
+  function o(t, o) {
+    var e = [];
+    return n.each(t, function (n, t) {
+      var i = "mention-" + n,
+        m = {
+          hasIcon: !1,
+          text: o.o.plugins.mention.formatDropdownItem(t),
+          fn: function fn() {
+            return o.execCmd("insertHTML", o.o.plugins.mention.formatResult(t)), !0;
+          }
+        };
+      o.addBtnDef(i, m), e.push(i);
+    }), e;
+  }
+  n.extend(!0, n.trumbowyg, {
+    langs: {
+      en: {
+        mention: "Mention"
+      },
+      az: {
+        mention: "Bildirmək"
+      },
+      by: {
+        mention: "Згадаць"
+      },
+      da: {
+        mention: "Nævn"
+      },
+      et: {
+        mention: "Maini"
+      },
+      fr: {
+        mention: "Mentionner"
+      },
+      hu: {
+        mention: "Említ"
+      },
+      ko: {
+        mention: "언급"
+      },
+      pt_br: {
+        mention: "Menção"
+      },
+      ru: {
+        mention: "Упомянуть"
+      },
+      sl: {
+        mention: "Omeni"
+      },
+      tr: {
+        mention: "Bahset"
+      },
+      zh_tw: {
+        mention: "標記"
+      }
+    },
+    plugins: {
+      mention: {
+        init: function init(e) {
+          e.o.plugins.mention = n.extend(!0, {}, t, e.o.plugins.mention || {});
+          var i = {
+            dropdown: o(e.o.plugins.mention.source, e)
+          };
+          e.addBtnDef("mention", i);
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.pasteembed.js v1.0
+ * Url paste to iframe with noembed. Plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Max Seelig
+ *          Facebook : https://facebook.com/maxse
+ *          Website : https://www.maxmade.nl/
+ */
+
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    enabled: true,
+    endpoints: ['https://noembed.com/embed?nowrap=on', 'https://api.maxmade.nl/url2iframe/embed']
+  };
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      pasteEmbed: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.pasteEmbed = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.pasteEmbed || {});
+          if (!trumbowyg.o.plugins.pasteEmbed.enabled) {
+            return;
+          }
+          trumbowyg.pasteHandlers.push(function (pasteEvent) {
+            try {
+              var clipboardData = (pasteEvent.originalEvent || pasteEvent).clipboardData,
+                pastedData = clipboardData.getData('Text'),
+                endpoints = trumbowyg.o.plugins.pasteEmbed.endpoints,
+                request = null;
+              if (pastedData.startsWith('http')) {
+                pasteEvent.stopPropagation();
+                pasteEvent.preventDefault();
+                var query = {
+                  url: pastedData.trim()
+                };
+                var content = '';
+                var index = 0;
+                if (request && request.transport) {
+                  request.transport.abort();
+                }
+                request = $.ajax({
+                  crossOrigin: true,
+                  url: endpoints[index],
+                  type: 'GET',
+                  data: query,
+                  cache: false,
+                  dataType: 'jsonp',
+                  success: function success(res) {
+                    if (res.html) {
+                      index = 0;
+                      content = res.html;
+                    } else {
+                      index += 1;
+                    }
+                  },
+                  error: function error() {
+                    index += 1;
+                  },
+                  complete: function complete() {
+                    if (content.length === 0 && index < endpoints.length - 1) {
+                      this.url = endpoints[index];
+                      this.data = query;
+                      $.ajax(this);
+                    }
+                    if (index === endpoints.length - 1) {
+                      content = $('<a>', {
+                        href: pastedData,
+                        text: pastedData
+                      }).prop('outerHTML');
+                    }
+                    if (content.length > 0) {
+                      index = 0;
+                      trumbowyg.execCmd('insertHTML', content);
+                    }
+                  }
+                });
+              }
+            } catch (c) {}
+          });
         }
       }
     }
   });
 })(jQuery);
-/*/* ===========================================================
- * trumbowyg.insertaudio.js v1.0
- * InsertAudio plugin for Trumbowyg
+/* ===========================================================
+ * trumbowyg.pasteembed.js v1.0
+ * Url paste to iframe with noembed. Plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
  * ===========================================================
- * Author : Adam Hess (AdamHess)
+ * Author : Max Seelig
+ *          Facebook : https://facebook.com/maxse
+ *          Website : https://www.maxmade.nl/
+ */
+!function (t) {
+  "use strict";
+
+  var e = {
+    enabled: !0,
+    endpoints: ["https://noembed.com/embed?nowrap=on", "https://api.maxmade.nl/url2iframe/embed"]
+  };
+  t.extend(!0, t.trumbowyg, {
+    plugins: {
+      pasteEmbed: {
+        init: function init(n) {
+          n.o.plugins.pasteEmbed = t.extend(!0, {}, e, n.o.plugins.pasteEmbed || {}), n.o.plugins.pasteEmbed.enabled && n.pasteHandlers.push(function (e) {
+            try {
+              var a = (e.originalEvent || e).clipboardData.getData("Text"),
+                r = n.o.plugins.pasteEmbed.endpoints,
+                s = null;
+              if (a.startsWith("http")) {
+                e.stopPropagation(), e.preventDefault();
+                var i = {
+                    url: a.trim()
+                  },
+                  o = "",
+                  p = 0;
+                s && s.transport && s.transport.abort(), s = t.ajax({
+                  crossOrigin: !0,
+                  url: r[p],
+                  type: "GET",
+                  data: i,
+                  cache: !1,
+                  dataType: "jsonp",
+                  success: function success(t) {
+                    t.html ? (p = 0, o = t.html) : p += 1;
+                  },
+                  error: function error() {
+                    p += 1;
+                  },
+                  complete: function complete() {
+                    0 === o.length && p < r.length - 1 && (this.url = r[p], this.data = i, t.ajax(this)), p === r.length - 1 && (o = t("<a>", {
+                      href: a,
+                      text: a
+                    }).prop("outerHTML")), o.length > 0 && (p = 0, n.execCmd("insertHTML", o));
+                  }
+                });
+              }
+            } catch (t) {}
+          });
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.pasteimage.js v1.0
+ * Basic base64 paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ */
+
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      pasteImage: {
+        init: function init(trumbowyg) {
+          trumbowyg.pasteHandlers.push(function (pasteEvent) {
+            try {
+              var items = (pasteEvent.originalEvent || pasteEvent).clipboardData.items,
+                mustPreventDefault = false,
+                reader;
+              for (var i = items.length - 1; i >= 0; i -= 1) {
+                if (items[i].type.match(/^image\//)) {
+                  reader = new FileReader();
+                  /* jshint -W083 */
+                  reader.onloadend = function (event) {
+                    trumbowyg.execCmd('insertImage', event.target.result, false, true);
+                  };
+                  /* jshint +W083 */
+                  reader.readAsDataURL(items[i].getAsFile());
+                  mustPreventDefault = true;
+                }
+              }
+              if (mustPreventDefault) {
+                pasteEvent.stopPropagation();
+                pasteEvent.preventDefault();
+              }
+            } catch (c) {}
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.pasteimage.js v1.0
+ * Basic base64 paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
  */
 !function (e) {
   "use strict";
 
-  var i = {
-    src: {
-      label: "URL",
-      required: !0
-    },
-    autoplay: {
-      label: "AutoPlay",
-      required: !1,
-      type: "checkbox"
-    },
-    muted: {
-      label: "Muted",
-      required: !1,
-      type: "checkbox"
-    },
-    preload: {
-      label: "preload options",
-      required: !1
-    }
-  };
   e.extend(!0, e.trumbowyg, {
-    langs: {
-      en: {
-        insertAudio: "Insert Audio"
-      },
-      az: {
-        insertAudio: "Səs yerləşdir"
-      },
-      by: {
-        insertAudio: "Уставіць аўдыё"
-      },
-      ca: {
-        insertAudio: "Inserir Audio"
-      },
-      da: {
-        insertAudio: "Indsæt lyd"
-      },
-      es: {
-        insertAudio: "Insertar Audio"
-      },
-      et: {
-        insertAudio: "Lisa helifail"
-      },
-      fr: {
-        insertAudio: "Insérer un son"
-      },
-      hu: {
-        insertAudio: "Audio beszúrás"
-      },
-      ja: {
-        insertAudio: "音声の挿入"
-      },
-      ko: {
-        insertAudio: "소리 넣기"
-      },
-      pt_br: {
-        insertAudio: "Inserir áudio"
-      },
-      ru: {
-        insertAudio: "Вставить аудио"
-      },
-      sl: {
-        insertAudio: "Vstavi zvočno datoteko"
-      },
-      tr: {
-        insertAudio: "Ses Ekle"
-      }
-    },
     plugins: {
-      insertAudio: {
-        init: function init(r) {
-          var t = {
-            fn: function fn() {
-              r.openModalInsert(r.lang.insertAudio, i, function (i) {
-                var t = "<audio controls";
-                i.src && (t += " src='" + i.src + "'"), i.autoplay && (t += " autoplay"), i.muted && (t += " muted"), i.preload && (t += " preload='" + i + "'");
-                var o = e(t += "></audio>")[0];
-                return r.range.deleteContents(), r.range.insertNode(o), !0;
-              });
-            }
-          };
-          r.addBtnDef("insertAudio", t);
+      pasteImage: {
+        init: function init(e) {
+          e.pasteHandlers.push(function (t) {
+            try {
+              for (var a, n = (t.originalEvent || t).clipboardData.items, i = !1, r = n.length - 1; r >= 0; r -= 1) n[r].type.match(/^image\//) && ((a = new FileReader()).onloadend = function (t) {
+                e.execCmd("insertImage", t.target.result, !1, !0);
+              }, a.readAsDataURL(n[r].getAsFile()), i = !0);
+              i && (t.stopPropagation(), t.preventDefault());
+            } catch (e) {}
+          });
         }
       }
     }
@@ -4187,440 +4621,6 @@
             }
           };
           o.addBtnDef("noembed", n);
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.pasteembed.js v1.0
- * Url paste to iframe with noembed. Plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Max Seelig
- *          Facebook : https://facebook.com/maxse
- *          Website : https://www.maxmade.nl/
- */
-
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    enabled: true,
-    endpoints: ['https://noembed.com/embed?nowrap=on', 'https://api.maxmade.nl/url2iframe/embed']
-  };
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      pasteEmbed: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.pasteEmbed = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.pasteEmbed || {});
-          if (!trumbowyg.o.plugins.pasteEmbed.enabled) {
-            return;
-          }
-          trumbowyg.pasteHandlers.push(function (pasteEvent) {
-            try {
-              var clipboardData = (pasteEvent.originalEvent || pasteEvent).clipboardData,
-                pastedData = clipboardData.getData('Text'),
-                endpoints = trumbowyg.o.plugins.pasteEmbed.endpoints,
-                request = null;
-              if (pastedData.startsWith('http')) {
-                pasteEvent.stopPropagation();
-                pasteEvent.preventDefault();
-                var query = {
-                  url: pastedData.trim()
-                };
-                var content = '';
-                var index = 0;
-                if (request && request.transport) {
-                  request.transport.abort();
-                }
-                request = $.ajax({
-                  crossOrigin: true,
-                  url: endpoints[index],
-                  type: 'GET',
-                  data: query,
-                  cache: false,
-                  dataType: 'jsonp',
-                  success: function success(res) {
-                    if (res.html) {
-                      index = 0;
-                      content = res.html;
-                    } else {
-                      index += 1;
-                    }
-                  },
-                  error: function error() {
-                    index += 1;
-                  },
-                  complete: function complete() {
-                    if (content.length === 0 && index < endpoints.length - 1) {
-                      this.url = endpoints[index];
-                      this.data = query;
-                      $.ajax(this);
-                    }
-                    if (index === endpoints.length - 1) {
-                      content = $('<a>', {
-                        href: pastedData,
-                        text: pastedData
-                      }).prop('outerHTML');
-                    }
-                    if (content.length > 0) {
-                      index = 0;
-                      trumbowyg.execCmd('insertHTML', content);
-                    }
-                  }
-                });
-              }
-            } catch (c) {}
-          });
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.pasteembed.js v1.0
- * Url paste to iframe with noembed. Plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Max Seelig
- *          Facebook : https://facebook.com/maxse
- *          Website : https://www.maxmade.nl/
- */
-!function (t) {
-  "use strict";
-
-  var e = {
-    enabled: !0,
-    endpoints: ["https://noembed.com/embed?nowrap=on", "https://api.maxmade.nl/url2iframe/embed"]
-  };
-  t.extend(!0, t.trumbowyg, {
-    plugins: {
-      pasteEmbed: {
-        init: function init(n) {
-          n.o.plugins.pasteEmbed = t.extend(!0, {}, e, n.o.plugins.pasteEmbed || {}), n.o.plugins.pasteEmbed.enabled && n.pasteHandlers.push(function (e) {
-            try {
-              var a = (e.originalEvent || e).clipboardData.getData("Text"),
-                r = n.o.plugins.pasteEmbed.endpoints,
-                s = null;
-              if (a.startsWith("http")) {
-                e.stopPropagation(), e.preventDefault();
-                var i = {
-                    url: a.trim()
-                  },
-                  o = "",
-                  p = 0;
-                s && s.transport && s.transport.abort(), s = t.ajax({
-                  crossOrigin: !0,
-                  url: r[p],
-                  type: "GET",
-                  data: i,
-                  cache: !1,
-                  dataType: "jsonp",
-                  success: function success(t) {
-                    t.html ? (p = 0, o = t.html) : p += 1;
-                  },
-                  error: function error() {
-                    p += 1;
-                  },
-                  complete: function complete() {
-                    0 === o.length && p < r.length - 1 && (this.url = r[p], this.data = i, t.ajax(this)), p === r.length - 1 && (o = t("<a>", {
-                      href: a,
-                      text: a
-                    }).prop("outerHTML")), o.length > 0 && (p = 0, n.execCmd("insertHTML", o));
-                  }
-                });
-              }
-            } catch (t) {}
-          });
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.mention.js v0.1
- * Mention plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Viper
- *          Github: https://github.com/Globulopolis
- *          Website: http://киноархив.com
- */
-
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    source: [],
-    formatDropdownItem: formatDropdownItem,
-    formatResult: formatResult
-  };
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        mention: 'Mention'
-      },
-      az: {
-        mention: 'Bildirmək'
-      },
-      by: {
-        mention: 'Згадаць'
-      },
-      da: {
-        mention: 'Nævn'
-      },
-      et: {
-        mention: 'Maini'
-      },
-      fr: {
-        mention: 'Mentionner'
-      },
-      hu: {
-        mention: 'Említ'
-      },
-      ko: {
-        mention: '언급'
-      },
-      pt_br: {
-        mention: 'Menção'
-      },
-      ru: {
-        mention: 'Упомянуть'
-      },
-      sl: {
-        mention: 'Omeni'
-      },
-      tr: {
-        mention: 'Bahset'
-      },
-      zh_tw: {
-        mention: '標記'
-      }
-      // jshint camelcase:true
-    },
-
-    plugins: {
-      mention: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.mention = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.mention || {});
-          var btnDef = {
-            dropdown: buildDropdown(trumbowyg.o.plugins.mention.source, trumbowyg)
-          };
-          trumbowyg.addBtnDef('mention', btnDef);
-        }
-      }
-    }
-  });
-
-  /**
-   * Build dropdown list
-   *
-   * @param {Array}   items      Items
-   * @param {object}  trumbowyg  Editor
-   *
-   * @return {Array}
-   */
-  function buildDropdown(items, trumbowyg) {
-    var dropdown = [];
-    $.each(items, function (i, item) {
-      var btn = 'mention-' + i,
-        btnDef = {
-          hasIcon: false,
-          text: trumbowyg.o.plugins.mention.formatDropdownItem(item),
-          fn: function fn() {
-            trumbowyg.execCmd('insertHTML', trumbowyg.o.plugins.mention.formatResult(item));
-            return true;
-          }
-        };
-      trumbowyg.addBtnDef(btn, btnDef);
-      dropdown.push(btn);
-    });
-    return dropdown;
-  }
-
-  /**
-   * Format item in dropdown.
-   *
-   * @param   {object}  item  Item object.
-   *
-   * @return  {string}
-   */
-  function formatDropdownItem(item) {
-    return item.login;
-  }
-
-  /**
-   * Format result pasted in editor.
-   *
-   * @param   {object}  item  Item object.
-   *
-   * @return  {string}
-   */
-  function formatResult(item) {
-    return '@' + item.login + ' ';
-  }
-})(jQuery);
-/* ===========================================================
- * trumbowyg.mention.js v0.1
- * Mention plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Viper
- *          Github: https://github.com/Globulopolis
- *          Website: http://киноархив.com
- */
-!function (n) {
-  "use strict";
-
-  var t = {
-    source: [],
-    formatDropdownItem: function formatDropdownItem(n) {
-      return n.login;
-    },
-    formatResult: function formatResult(n) {
-      return "@" + n.login + " ";
-    }
-  };
-  function o(t, o) {
-    var e = [];
-    return n.each(t, function (n, t) {
-      var i = "mention-" + n,
-        m = {
-          hasIcon: !1,
-          text: o.o.plugins.mention.formatDropdownItem(t),
-          fn: function fn() {
-            return o.execCmd("insertHTML", o.o.plugins.mention.formatResult(t)), !0;
-          }
-        };
-      o.addBtnDef(i, m), e.push(i);
-    }), e;
-  }
-  n.extend(!0, n.trumbowyg, {
-    langs: {
-      en: {
-        mention: "Mention"
-      },
-      az: {
-        mention: "Bildirmək"
-      },
-      by: {
-        mention: "Згадаць"
-      },
-      da: {
-        mention: "Nævn"
-      },
-      et: {
-        mention: "Maini"
-      },
-      fr: {
-        mention: "Mentionner"
-      },
-      hu: {
-        mention: "Említ"
-      },
-      ko: {
-        mention: "언급"
-      },
-      pt_br: {
-        mention: "Menção"
-      },
-      ru: {
-        mention: "Упомянуть"
-      },
-      sl: {
-        mention: "Omeni"
-      },
-      tr: {
-        mention: "Bahset"
-      },
-      zh_tw: {
-        mention: "標記"
-      }
-    },
-    plugins: {
-      mention: {
-        init: function init(e) {
-          e.o.plugins.mention = n.extend(!0, {}, t, e.o.plugins.mention || {});
-          var i = {
-            dropdown: o(e.o.plugins.mention.source, e)
-          };
-          e.addBtnDef("mention", i);
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.pasteimage.js v1.0
- * Basic base64 paste plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Alexandre Demode (Alex-D)
- *          Twitter : @AlexandreDemode
- *          Website : alex-d.fr
- */
-
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      pasteImage: {
-        init: function init(trumbowyg) {
-          trumbowyg.pasteHandlers.push(function (pasteEvent) {
-            try {
-              var items = (pasteEvent.originalEvent || pasteEvent).clipboardData.items,
-                mustPreventDefault = false,
-                reader;
-              for (var i = items.length - 1; i >= 0; i -= 1) {
-                if (items[i].type.match(/^image\//)) {
-                  reader = new FileReader();
-                  /* jshint -W083 */
-                  reader.onloadend = function (event) {
-                    trumbowyg.execCmd('insertImage', event.target.result, false, true);
-                  };
-                  /* jshint +W083 */
-                  reader.readAsDataURL(items[i].getAsFile());
-                  mustPreventDefault = true;
-                }
-              }
-              if (mustPreventDefault) {
-                pasteEvent.stopPropagation();
-                pasteEvent.preventDefault();
-              }
-            } catch (c) {}
-          });
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.pasteimage.js v1.0
- * Basic base64 paste plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Alexandre Demode (Alex-D)
- *          Twitter : @AlexandreDemode
- *          Website : alex-d.fr
- */
-!function (e) {
-  "use strict";
-
-  e.extend(!0, e.trumbowyg, {
-    plugins: {
-      pasteImage: {
-        init: function init(e) {
-          e.pasteHandlers.push(function (t) {
-            try {
-              for (var a, n = (t.originalEvent || t).clipboardData.items, i = !1, r = n.length - 1; r >= 0; r -= 1) n[r].type.match(/^image\//) && ((a = new FileReader()).onloadend = function (t) {
-                e.execCmd("insertImage", t.target.result, !1, !0);
-              }, a.readAsDataURL(n[r].getAsFile()), i = !0);
-              i && (t.stopPropagation(), t.preventDefault());
-            } catch (e) {}
-          });
         }
       }
     }

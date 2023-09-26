@@ -1,0 +1,62 @@
+@import '../_variables';
+@import '../mixins/_cursors';
+@import '../../../node_modules/bootstrap/scss/mixins/_breakpoints';
+
+body {
+    margin-bottom: var(--oc-footer-height);
+    height: 100%;
+    /*font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";*/
+}
+
+@include cursor-class(move);
+@include cursor-class(pointer);
+
+// Layout
+// -----------------------------
+
+.ta-wrapper {
+}
+
+.ta-content {
+    padding: 15px;
+    margin-left: var(--oc-start-navigation-width);
+    margin-top: var(--oc-top-nav-height);
+    margin-bottom: var(--oc-footer-height);
+    transition: margin-left 0.2s ease-in-out;
+
+    h1 {
+        line-height: 40px;
+        font-size: 28px;
+        letter-spacing: -0.04em;
+        font-weight: bold;
+    }
+}
+
+.left-sidebar-compact .ta-content {
+    margin-left: var(--oc-start-navigation-width-when-compact);
+}
+
+@include media-breakpoint-down(sm) {
+    .ta-content {
+        margin-left: var(--oc-start-navigation-width-when-compact);
+        transition: margin-left 0.5s ease-in-out;
+    }
+}
+
+.preload * {
+    -webkit-transition: none !important;
+    -moz-transition: none !important;
+    -o-transition: none !important;
+}
+
+// END OF LAYOUT
+
+// Sortable
+// ------------------------------
+.ui-sortable {
+    min-height: $font-size-base;
+}
+
+.unset {
+    all: unset;
+}

@@ -1,0 +1,11 @@
+@import '../_variables';
+
+/* Action bar should always be less than dropdown menu */
+.action-bar {
+    top: 3.3rem;
+    z-index: calc(var(--bs-dropdown-zindex, 1000) - 20);
+}
+
+.second-action-bar {
+    z-index: calc(var(--bs-dropdown-zindex, 1000) - 10);
+}

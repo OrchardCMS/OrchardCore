@@ -47,7 +47,7 @@ class WorkflowViewer extends WorkflowCanvas {
             plumber.batch(() => {
                 var workflowId: number = this.workflowType.id;
 
-                activityElements.each((index, activityElement) => {
+                activityElements.each((_, activityElement) => {
                     const $activityElement = $(activityElement);
                     const activityId = $activityElement.data('activity-id');
                     const activity = this.getActivity(activityId);
