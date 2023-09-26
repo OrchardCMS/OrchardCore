@@ -1,0 +1,10 @@
+.bootstrap-select > .dropdown-toggle.bs-placeholder,
+.bootstrap-select > .dropdown-toggle.bs-placeholder:hover,
+.bootstrap-select > .dropdown-toggle.bs-placeholder:focus,
+.bootstrap-select > .dropdown-toggle.bs-placeholder:active {
+    color: var(--bs-white) !important;
+}
+
+.bootstrap-select .popover-header {
+    background-color: var(--bs-secondary-bg);
+}

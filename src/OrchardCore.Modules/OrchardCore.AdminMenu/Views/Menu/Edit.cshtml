@@ -11,7 +11,7 @@
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+        <button class="btn btn-success save" type="submit">@T["Save"]</button>
         <a class="btn btn-primary edit-nodes" role="button" asp-route-controller="Node" asp-route-action="List" asp-route-id="@Model.Id">@T["Edit Admin Nodes"] </a>
         <a class="btn btn-secondary cancel" role="button" asp-route-action="List">@T["Cancel"]</a>
     </div>

@@ -13,7 +13,7 @@
 <zone Name="Title"><h1>@RenderTitleSegments(title)</h1></zone>
 
 <form autocomplete="off" class="position-sticky action-bar">
-    <div class="card bg-primary mb-3">
+    <div class="card text-bg-theme mb-3">
         <div class="card-body">
 
             <div class="row gx-3">
@@ -60,6 +60,7 @@
                 categoryClassName += " last";
             }
             var features = featureGroup.OrderBy(f => f.Descriptor.Name);
+
             var categoryFeatureNames = string.Join(" ", features.Select(f => f.Descriptor.Name));
 
             <div class="feature-group">
@@ -80,32 +81,35 @@
 
                             var dependencies = (from d in feature.FeatureDependencies
                                                 select (from f in Model.Features where f.Descriptor.Id == d.Id select f).SingleOrDefault()).Where(f => f != null).OrderBy(f => f.Descriptor.Name);
+
                             var dependenciesNames = string.Join(" ", dependencies.Select(d => d.Descriptor.Name));
+
                             var missingDependencies = feature.FeatureDependencies
                             .Where(d => !Model.Features.Any(f => f.Descriptor.Id == d.Id));
                             var showDisable = !feature.Descriptor.EnabledByDependencyOnly && !isAlwaysEnabled && categoryName != "Core" && featureName != Application.ModuleName;
                             var showEnable = !feature.Descriptor.EnabledByDependencyOnly && !missingDependencies.Any() && featureId != "OrchardCore.Setup" && featureId != "OrchardCore.AutoSetup";
 
                             <li class="list-group-item" data-filter-value="@categoryName @dependenciesNames @featureName">
-                                <div class="row">
-                                    <div class="col-md-10">
+                                <div class="row g-0 d-flex align-items-center">
+                                    <div class="col-md-11">
                                         @* Display the checkbox ?*@
                                         @if ((showEnable && !feature.IsEnabled) || (showDisable && feature.IsEnabled))
                                         {
-                                            <div class="form-check">
+                                            <div class="form-check mb-1">
                                                 <input type="checkbox" class="form-check-input" name="featureIds" id="@featureId" value="@featureId">
-                                                <label class="form-check-label h6" for="@featureId">@featureName</label>
+                                                <label class="form-check-label fw-semibold" for="@featureId">@featureName</label>
                                             </div>
                                         }
                                         else
                                         {
-                                            <h6>@featureName</h6>
+                                            <div class="fw-semibold mb-1">@featureName</div>
                                         }
 
-                                        <p class="text-muted">@feature.Descriptor.Description</p>
-                                        <div>
-                                            @if (feature.FeatureDependencies != null && feature.FeatureDependencies.Any())
-                                            {
+                                        <p class="text-muted mb-1">@feature.Descriptor.Description</p>
+
+                                        @if (feature.FeatureDependencies != null && feature.FeatureDependencies.Any())
+                                        {
+                                            <div class="mb-1">
                                                 @foreach (var d in dependencies)
                                                 {
                                                     <span class="badge ta-badge">
@@ -114,14 +118,15 @@
                                                 }
                                                 @foreach (var d in missingDependencies)
                                                 {
-                                                    <span class="badge bg-warning">
+                                                    <span class="badge text-bg-warning">
                                                         @d
                                                     </span>
                                                 }
-                                            }
-                                        </div>
+                                            </div>
+                                        }
+
                                     </div>
-                                    <div class="col-md-2 text-end">
+                                    <div class="col-md-1 text-end">
                                         @if (feature.Descriptor.EnabledByDependencyOnly)
                                         {
                                             @if (feature.IsEnabled)
