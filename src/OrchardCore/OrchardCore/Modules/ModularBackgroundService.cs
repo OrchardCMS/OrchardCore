@@ -13,7 +13,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Settings;
 
@@ -79,7 +78,7 @@ namespace OrchardCore.Modules
                 }
             }
 
-            var previousShells = Array.Empty<string>();
+            var previousShells = Array.Empty<(string Tenant, long UtcTicks)>();
             while (!stoppingToken.IsCancellationRequested)
             {
                 // Init the delay first to be also waited on exception.
@@ -89,7 +88,7 @@ namespace OrchardCore.Modules
                     var runningShells = GetRunningShells();
                     await UpdateAsync(previousShells, runningShells, stoppingToken);
                     await RunAsync(runningShells, stoppingToken);
-                    previousShells = runningShells.Select(s => s.Settings.Name).ToArray();
+                    previousShells = runningShells;
                 }
                 catch (Exception ex) when (!ex.IsFatal())
                 {
@@ -100,11 +99,14 @@ namespace OrchardCore.Modules
             }
         }
 
-        private async Task RunAsync(IEnumerable<ShellContext> runningShells, CancellationToken stoppingToken)
+        private async Task RunAsync(IEnumerable<(string Tenant, long UtcTicks)> runningShells, CancellationToken stoppingToken)
         {
-            await GetShellsToRun(runningShells).ForEachAsync(async shell =>
+            await GetShellsToRun(runningShells).ForEachAsync(async tenant =>
             {
-                var tenant = shell.Settings.Name;
+                if (!_shellHost.TryGetShellContext(tenant, out var shell) || shell.Released)
+                {
+                    return;
+                }
 
                 // Create a new 'HttpContext' to be used in the background.
                 _httpContextAccessor.HttpContext = shell.CreateHttpContext();
@@ -209,13 +211,18 @@ namespace OrchardCore.Modules
             });
         }
 
-        private async Task UpdateAsync(string[] previousShells, ShellContext[] runningShells, CancellationToken stoppingToken)
+        private async Task UpdateAsync(
+            (string Tenant, long UtcTicks)[] previousShells,
+            (string Tenant, long UtcTicks)[] runningShells, CancellationToken stoppingToken)
         {
             var referenceTime = DateTime.UtcNow;
 
-            await GetShellsToUpdate(previousShells, runningShells).ForEachAsync(async shell =>
+            await GetShellsToUpdate(previousShells, runningShells).ForEachAsync(async tenant =>
             {
-                var tenant = shell.Settings.Name;
+                if (!_shellHost.TryGetShellContext(tenant, out var shell) || shell.Released)
+                {
+                    return;
+                }
 
                 if (stoppingToken.IsCancellationRequested)
                 {
@@ -316,12 +323,13 @@ namespace OrchardCore.Modules
             }
         }
 
-        private ShellContext[] GetRunningShells() => _shellHost
+        private (string Tenant, long UtcTicks)[] GetRunningShells() => _shellHost
             .ListShellContexts()
             .Where(s => s.Settings.IsRunning() && (_options.ShellWarmup || s.HasPipeline()))
+            .Select(s => (s.Settings.Name, s.UtcTicks))
             .ToArray();
 
-        private ShellContext[] GetShellsToRun(IEnumerable<ShellContext> shells)
+        private string[] GetShellsToRun(IEnumerable<(string Tenant, long UtcTicks)> shells)
         {
             var tenantsToRun = _schedulers
                 .Where(s => s.Value.CanRun())
@@ -329,20 +337,27 @@ namespace OrchardCore.Modules
                 .Distinct()
                 .ToArray();
 
-            return shells.Where(s => tenantsToRun.Contains(s.Settings.Name)).ToArray();
+            return shells
+                .Select(s => s.Tenant)
+                .Where(s => tenantsToRun.Contains(s))
+                .ToArray();
         }
 
-        private ShellContext[] GetShellsToUpdate(string[] previousShells, ShellContext[] runningShells)
+        private string[] GetShellsToUpdate((string Tenant, long UtcTicks)[] previousShells, (string Tenant, long UtcTicks)[] runningShells)
         {
+            var previous = previousShells.Select(shell => shell.Tenant);
+
             var released = new List<string>();
             foreach (var shell in previousShells)
             {
-                if (_shellHost.TryGetShellContext(shell, out var existing) && !existing.Released)
+                if (_shellHost.TryGetShellContext(shell.Tenant, out var existing) &&
+                    existing.UtcTicks == shell.UtcTicks &&
+                    !existing.Released)
                 {
                     continue;
                 }
 
-                released.Add(shell);
+                released.Add(shell.Tenant);
             }
 
             if (released.Count > 0)
@@ -356,10 +371,11 @@ namespace OrchardCore.Modules
                 UpdateSchedulers(changed, s => s.Updated = false);
             }
 
-            var valid = previousShells.Except(released).Except(changed);
-            var tenantsToUpdate = runningShells.Select(s => s.Settings.Name).Except(valid).ToArray();
+            var valid = previous.Except(released).Except(changed);
+            var running = runningShells.Select(shell => shell.Tenant);
+            var tenantsToUpdate = running.Except(valid).ToArray();
 
-            return runningShells.Where(s => tenantsToUpdate.Contains(s.Settings.Name)).ToArray();
+            return running.Where(s => tenantsToUpdate.Contains(s)).ToArray();
         }
 
         private BackgroundTaskScheduler[] GetSchedulersToRun(string tenant) => _schedulers

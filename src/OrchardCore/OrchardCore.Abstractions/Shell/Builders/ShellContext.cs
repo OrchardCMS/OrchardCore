@@ -21,6 +21,13 @@ namespace OrchardCore.Environment.Shell.Builders
         internal volatile int _terminated;
         internal bool _released;
 
+        public ShellContext() => UtcTicks = DateTime.UtcNow.Ticks;
+
+        /// <summary>
+        /// The creation date and time of this shell context in ticks.
+        /// </summary>
+        public long UtcTicks { get; }
+
         /// <summary>
         /// The <see cref="ShellSettings"/> holding the tenant settings and configuration.
         /// </summary>
