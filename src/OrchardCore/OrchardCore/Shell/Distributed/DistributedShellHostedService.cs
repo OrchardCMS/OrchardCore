@@ -39,7 +39,7 @@ namespace OrchardCore.Environment.Shell.Distributed
         private string _shellChangedId;
         private string _shellCountChangedId;
 
-        private ShellContext _defaultContext;
+        private long _defaultContextUtcTicks;
         private DistributedContext _context;
 
         private DateTime _busyStartTime;
@@ -301,7 +301,6 @@ namespace OrchardCore.Environment.Shell.Distributed
                 await _context.ReleaseAsync();
             }
 
-            _defaultContext = null;
             _context = null;
         }
 
@@ -616,7 +615,7 @@ namespace OrchardCore.Environment.Shell.Distributed
         private async Task<DistributedContext> GetOrCreateDistributedContextAsync(ShellContext defaultContext)
         {
             // Check if the default tenant has changed.
-            if (_defaultContext != defaultContext)
+            if (_defaultContextUtcTicks != defaultContext.UtcTicks)
             {
                 var previousContext = _context;
 
@@ -624,7 +623,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                 _context = await ReuseOrCreateDistributedContextAsync(defaultContext);
 
                 // Cache the default context.
-                _defaultContext = defaultContext;
+                _defaultContextUtcTicks = defaultContext.UtcTicks;
 
                 // If the context is not reused.
                 if (_context != previousContext && previousContext is not null)
