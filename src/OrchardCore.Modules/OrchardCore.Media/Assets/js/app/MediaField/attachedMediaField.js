@@ -129,7 +129,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
 
             var selector = '#' + idOfUploadButton;
             var editorId = mediaFieldEditor.attr('id');
-            var chunkedFileUploadId = crypto.randomUUID();
+            var chunkedFileUploadId = randomUUID();
 
             $(selector)
                 .fileupload({
@@ -160,7 +160,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                     done: function (e, data) {
                         var newMediaItems = [];
                         var errormsg = "";
-                    
+
                         if (data.result.files.length > 0) {
                             for (var i = 0; i < data.result.files.length; i++) {
                                 data.result.files[i].isNew = true;
@@ -173,7 +173,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                                     errormsg += data.result.files[i].error + "\n";
                             }
                         }
-                    
+
                         if (errormsg !== "") {
                             alert(errormsg);
                             return;
@@ -247,29 +247,29 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
             cancelMediaTextModal: function (event) {
                 this.mediaTextModal.hide();
                 this.selectedMedia.mediaText = this.backupMediaText;
-            }, 
+            },
             showAnchorModal: function (event) {
                 this.anchoringModal = new bootstrap.Modal(this.$refs.anchoringModal);
                 this.anchoringModal.show();
                 // Cause a refresh to recalc heights.
                 this.selectedMedia.anchor = {
-                  x: this.selectedMedia.anchor.x,
-                  y: this.selectedMedia.anchor.y
+                    x: this.selectedMedia.anchor.x,
+                    y: this.selectedMedia.anchor.y
                 }
                 this.backupAnchor = this.selectedMedia.anchor;
-            },           
+            },
             cancelAnchoringModal: function (event) {
                 this.anchoringModal.hide();
                 this.selectedMedia.anchor = this.backupAnchor;
-            },            
+            },
             resetAnchor: function (event) {
                 this.selectedMedia.anchor = { x: 0.5, y: 0.5 };
-            }, 
-            onAnchorDrop: function(event) {
+            },
+            onAnchorDrop: function (event) {
                 var image = this.$refs.anchorImage;
                 this.selectedMedia.anchor = {
-                   x: event.offsetX / image.clientWidth,
-                   y: event.offsetY / image.clientHeight
+                    x: event.offsetX / image.clientWidth,
+                    y: event.offsetY / image.clientHeight
                 }
             },
             anchorLeft: function () {
@@ -286,7 +286,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                 } else {
                     return '0';
                 }
-            },           
+            },
             anchorTop: function () {
                 if (this.$refs.anchorImage && this.selectedMedia) {
                     var position = this.selectedMedia.anchor.y * this.$refs.anchorImage.clientHeight;
@@ -306,7 +306,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                     x: event.offsetX / image.clientWidth,
                     y: event.offsetY / image.clientHeight
                 }
-            },         
+            },
             addMediaFiles: function (files) {
                 if ((files.length > 1) && (allowMultiple === false)) {
                     alert($('#onlyOneItemMessage').val());
@@ -330,11 +330,11 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
         watch: {
             mediaItems: {
                 deep: true,
-                handler () {
+                handler() {
                     // Trigger preview rendering
                     setTimeout(function () { $(document).trigger('contentpreview:render'); }, 100);
                 }
-            }, 
+            },
             currentPrefs: function (newPrefs) {
                 localStorage.setItem('mediaFieldPrefs', JSON.stringify(newPrefs));
             }
