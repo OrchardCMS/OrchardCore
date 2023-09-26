@@ -667,7 +667,7 @@ namespace OrchardCore.Environment.Shell.Distributed
 
             // Check if the default tenant descriptor was updated or if the settings was released.
             if (_context.Context.Blueprint.Descriptor.SerialNumber != descriptor.SerialNumber ||
-                _context.Context.Settings.Released)
+                !_context.Context.HasSettings())
             {
                 // Creates a new context based on the default settings and descriptor.
                 return await CreateDistributedContextAsync(defaultContext.Settings, descriptor);

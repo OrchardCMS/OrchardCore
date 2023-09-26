@@ -305,10 +305,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 Settings.Release();
             }
 
-            Settings = new ShellSettings.PlaceHolder
-            {
-                Name = Settings.Name,
-            };
+            Settings = null;
         }
 
         ~ShellContext() => Close();

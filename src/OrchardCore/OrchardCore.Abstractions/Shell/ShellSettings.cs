@@ -140,20 +140,6 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         public Task EnsureConfigurationAsync() => _configuration.EnsureConfigurationAsync();
 
-        /// <summary>
-        /// PlaceHolder class used for shell lazy initialization.
-        /// </summary>
-        public class PlaceHolder : ShellSettings
-        {
-            /// <summary>
-            /// Initializes a placeHolder used for shell disposing.
-            /// </summary>
-            public PlaceHolder()
-            {
-                _released = true;
-            }
-        }
-
         public void Release()
         {
             if (_released)
