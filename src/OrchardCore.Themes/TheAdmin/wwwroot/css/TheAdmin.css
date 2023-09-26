@@ -1,5 +1,5 @@
 @charset "UTF-8";
-/* Import _variables before Bootstrap to allow overriding Bootstrap variables */
+/* Import variables first */
 /* IMPORTANT: Never import Bootstrap directly into the theme. TheAdmin.css will depend on Bootstrap, but we never want to compile it. */
 :root {
   --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
@@ -24,6 +24,7 @@
   --bs-zindex-fixed: 1030;
 }
 
+/* Import the files from main folder before importing any component */
 /* IMPORTANT: Never import Bootstrap directly into the theme. TheAdmin.css will depend on Bootstrap, but we never want to compile it. */
 :root {
   --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
@@ -135,6 +136,18 @@
     width: 75% !important;
   }
 }
+.unset {
+  all: unset;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
 /* IMPORTANT: Never import Bootstrap directly into the theme. TheAdmin.css will depend on Bootstrap, but we never want to compile it. */
 :root {
   --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
@@ -162,7 +175,6 @@
 body {
   margin-bottom: var(--oc-footer-height);
   height: 100%;
-  /*font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";*/
 }
 
 .cursor-move {
@@ -187,30 +199,23 @@ body {
   font-weight: bold;
 }
 
-.left-sidebar-compact .ta-content {
-  margin-left: var(--oc-start-navigation-width-when-compact);
-}
-
 @media (max-width: 575.98px) {
   .ta-content {
     margin-left: var(--oc-start-navigation-width-when-compact);
     transition: margin-left 0.5s ease-in-out;
   }
 }
+.left-sidebar-compact .ta-content {
+  margin-left: var(--oc-start-navigation-width-when-compact);
+}
+
 .preload * {
   -webkit-transition: none !important;
   -moz-transition: none !important;
   -o-transition: none !important;
 }
 
-.ui-sortable {
-  min-height: 1rem;
-}
-
-.unset {
-  all: unset;
-}
-
+/* Import the components files */
 /* IMPORTANT: Never import Bootstrap directly into the theme. TheAdmin.css will depend on Bootstrap, but we never want to compile it. */
 :root {
   --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
@@ -7984,6 +7989,28 @@ input[type=password]::-ms-clear {
   max-width: 100%;
 }
 
+.iconpicker-popover.popover {
+  background: transparent !important;
+}
+
+.iconpicker-popover.popover .popover-title {
+  border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+  background-color: var(--bs-body-bg) !important;
+}
+
+.iconpicker .iconpicker-items {
+  background-color: var(--bs-body-bg) !important;
+}
+
+.iconpicker .iconpicker-item {
+  color: var(--bs-body-color) !important;
+  box-shadow: 0 0 0 1px var(--bs-border-color);
+}
+
+.iconpicker .iconpicker-item:hover {
+  background-color: var(--bs-tertiary-color) !important;
+}
+
 .with-checkbox .list-group-item {
   padding: 0.75rem 0.5rem;
 }
@@ -9243,6 +9270,34 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
 .left-sidebar-compact .leftbar-compactor {
   transition-duration: 0.2s;
   transform: scale(-2, 1);
+}
+
+/* IMPORTANT: Never import Bootstrap directly into the theme. TheAdmin.css will depend on Bootstrap, but we never want to compile it. */
+:root {
+  --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
+  --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
+  --oc-scrollbar-color: #CDCDCD;
+  --oc-admin-menu-font-color: var(--bs-secondary-color);
+  --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
+  --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
+  --oc-admin-menu-item-font-color: var(--bs-secondary-color);
+  --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
+  --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
+  --oc-zindex-dropdown: 1000;
+  --oc-top-nav-height: 52px;
+  --oc-top-nav-zindex: 1034;
+  --oc-footer-height: 40px;
+  --oc-start-navigation-width: 260px;
+  --oc-start-navigation-width-when-compact: 48px;
+  --oc-start-navigation-zindex: 1033;
+  --oc-link-padding-left: 16px;
+  --oc-editor-fullscreen: 1054;
+  --bs-dropdown-zindex: 1000;
+  --bs-zindex-fixed: 1030;
+}
+
+.ui-sortable {
+  min-height: 1rem;
 }
 
 /* IMPORTANT: Never import Bootstrap directly into the theme. TheAdmin.css will depend on Bootstrap, but we never want to compile it. */

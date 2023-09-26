@@ -1,8 +1,12 @@
-/* Import _variables before Bootstrap to allow overriding Bootstrap variables */
+/* Import variables first */
 @import 'variables';
 
-@import 'components/helpers';
-@import 'components/layout';
+/* Import the files from main folder before importing any component */
+@import 'main/helpers';
+@import 'main/overrides';
+@import 'main/layout';
+
+/* Import the components files */
 @import 'components/action-bar';
 @import 'components/badge';
 @import 'components/bootstrap-select';
@@ -10,12 +14,14 @@
 @import 'components/dropdown';
 @import 'components/forms';
 @import 'components/grid';
+@import 'components/icon-picker';
 @import 'components/list-group';
 @import 'components/monaco';
 @import 'components/navbar';
 @import 'components/nouislider';
 @import 'components/pager';
 @import 'components/sidebar-menu';
+@import 'components/sortable';
 @import 'components/tabs';
 @import 'components/trumbowyg';
 @import 'components/validations';
