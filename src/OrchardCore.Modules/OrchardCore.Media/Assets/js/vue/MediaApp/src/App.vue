@@ -112,9 +112,9 @@
                     <media-items-grid :t="t" :base-path="basePath" v-show="gridView" :filtered-media-items="itemsInPage"
                         :selected-medias="selectedMedias" :thumb-size="thumbSize"></media-items-grid>
 
-                    <div class="alert-info p-2" v-show="mediaItems.length > 0 && filteredMediaItems.length < 1">{{
+                    <div class="alert alert-info p-2" v-show="mediaItems.length > 0 && filteredMediaItems.length < 1">{{
                         t.FolderFilterEmpty }}</div>
-                    <div class="alert-info p-2" v-show="mediaItems.length < 1">{{ t.FolderEmpty }}</div>
+                    <div class="alert alert-info p-2" v-show="mediaItems.length < 1">{{ t.FolderEmpty }}</div>
                 </div>
                 <div v-show="filteredMediaItems.length > 0" class="media-container-footer p-3 pb-0">
                     <pager :t="t" :source-items="filteredMediaItems"> </pager>
