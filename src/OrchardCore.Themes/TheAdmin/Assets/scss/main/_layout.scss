@@ -5,14 +5,10 @@
 body {
     margin-bottom: var(--oc-footer-height);
     height: 100%;
-    /*font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";*/
 }
 
 @include cursor-class(move);
 @include cursor-class(pointer);
-
-// Layout
-// -----------------------------
 
 .ta-wrapper {
 }
@@ -32,10 +28,6 @@ body {
     }
 }
 
-.left-sidebar-compact .ta-content {
-    margin-left: var(--oc-start-navigation-width-when-compact);
-}
-
 @include media-breakpoint-down(sm) {
     .ta-content {
         margin-left: var(--oc-start-navigation-width-when-compact);
@@ -43,20 +35,12 @@ body {
     }
 }
 
+.left-sidebar-compact .ta-content {
+    margin-left: var(--oc-start-navigation-width-when-compact);
+}
+
 .preload * {
     -webkit-transition: none !important;
     -moz-transition: none !important;
     -o-transition: none !important;
-}
-
-// END OF LAYOUT
-
-// Sortable
-// ------------------------------
-.ui-sortable {
-    min-height: $font-size-base;
-}
-
-.unset {
-    all: unset;
 }
