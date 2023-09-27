@@ -1,6 +1,6 @@
-@import "../../node_modules/bootstrap/scss/functions";
-@import "../../node_modules/bootstrap/scss/variables";
-@import "../../node_modules/bootstrap/scss/mixins/breakpoints";
+@import "../../node_modules/bootstrap/scss/_functions";
+@import "../../node_modules/bootstrap/scss/_variables";
+@import "../../node_modules/bootstrap/scss/mixins/_breakpoints";
 @import "workflow-canvas";
 
 .modal-activities {
@@ -14,12 +14,11 @@
 .workflow-canvas {
 
     .activity {
-        max-width:280px;
+        max-width: 280px;
         cursor: move;
 
         &:hover {
             box-shadow: 2px 2px 19px #444;
-            -o-box-shadow: 2px 2px 19px #444;
             -webkit-box-shadow: 2px 2px 19px #444;
             -moz-box-shadow: 2px 2px 19px #444;
             opacity: 0.6;
@@ -36,10 +35,10 @@
                 }
             }
         }
-        
+
         span, em {
             /* Add an ellipsis on the workflow activity boxes. This makes the activities much easier to move when they have long text */
-            white-space:nowrap;
+            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             width: 100%;
@@ -53,7 +52,6 @@
     .jtk-drag-select {
         -webkit-touch-callout: none;
         -webkit-user-select: none;
-        -khtml-user-select: none;
         -moz-user-select: none;
         -ms-user-select: none;
         user-select: none;
@@ -64,10 +62,16 @@
     }
 }
 
-@include media-breakpoint-up(lg) {
-    .modal-activities {
-        .modal-lg {
-            max-width: 1200px;
-        }
-    }
+.jtk-connector-outline {
+    stroke-width: 0;
+}
+
+.jtk-connector:not(.jtk-hover) path {
+    stroke: var(--bs-border-color, black);
+    stroke-width: 3;
+}
+
+.jtk-connector.jtk-hover {
+    stroke: #216477;
+    fill: #216477;
 }
