@@ -8111,6 +8111,7 @@ div.editor-widget.find-widget .button.codicon:active {
 .ta-navbar-brand {
   white-space: nowrap;
   transition: width 0.2s ease-in-out;
+  color: var(--bs-navbar-brand-color);
 }
 .ta-navbar-brand span {
   font-size: 14px;

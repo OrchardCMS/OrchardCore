@@ -50,7 +50,6 @@
                     setStoredTheme(theme);
                     setTheme(theme);
                     showActiveTheme(theme, true);
-                    persistAdminPreferences(theme);
                 })
             })
     });
