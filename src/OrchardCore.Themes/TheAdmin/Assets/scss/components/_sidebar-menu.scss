@@ -101,7 +101,7 @@ body:not(.left-sidebar-compact) {
                 // first level menu items that have no items and are active
                 > li.active:not(.has-items)::before {
                     border-left: 3px solid;
-                    border-left-color: #0078d4;
+                    border-left-color: var(--oc-selected-indicator-color);
                     bottom: 0;
                     content: "";
                     left: 0;
@@ -211,7 +211,7 @@ body:not(.left-sidebar-compact) {
 
         li.active > figure > ul > li.active > .item-label::before {
             border-left: 3px solid;
-            border-left-color: #0078d4;
+            border-left-color: var(--oc-selected-indicator-color);
             bottom: 0;
             content: "";
             left: 0;
@@ -328,6 +328,7 @@ body:not(.left-sidebar-compact) {
         }
     }
 }
+
 // Layout 4 : ta-left-sidebar when compacted
 // -----------------------------------------
 .left-sidebar-compact {
@@ -492,7 +493,7 @@ body:not(.left-sidebar-compact) {
 
                 > li.active:not(.has-items) > figure > figcaption > .item-label::before {
                     border-left: 3px solid;
-                    border-left-color: #0078d4;
+                    border-left-color: var(--oc-selected-indicator-color);
                     bottom: 0;
                     content: "";
                     left: 0;
@@ -522,7 +523,7 @@ body:not(.left-sidebar-compact) {
 
                 > li.has-items.active > figure > figcaption > .item-label::before {
                     border-left: 3px solid;
-                    border-left-color: #0078d4;
+                    border-left-color: var(--oc-selected-indicator-color);
                     bottom: 0;
                     content: "";
                     left: 0;
@@ -636,7 +637,7 @@ body:not(.left-sidebar-compact) {
                 // first level menu items that have no items and are active
                 > li.active:not(.has-items)::before {
                     border-left: 3px solid;
-                    border-left-color: #0078d4;
+                    border-left-color: var(--oc-selected-indicator-color);
                     bottom: 0;
                     content: "";
                     left: 0;
@@ -681,7 +682,7 @@ body:not(.left-sidebar-compact) {
 
         li.active > figure > ul > li.active > .item-label::before {
             border-left: 3px solid;
-            border-left-color: #0078d4;
+            border-left-color: var(--oc-selected-indicator-color);
             bottom: 0;
             content: "";
             left: 0;
@@ -691,7 +692,7 @@ body:not(.left-sidebar-compact) {
 
         li.active > figure > ul > li.active ul > li.active .item-label::before {
             border-left: 3px solid;
-            border-left-color: #0078d4;
+            border-left-color: var(--oc-selected-indicator-color);
             bottom: 0;
             content: "";
             left: 0;
@@ -701,7 +702,7 @@ body:not(.left-sidebar-compact) {
 
         li.active > figure > ul > li.active > figure > figcaption > .item-label::before {
             border-left: 3px solid;
-            border-left-color: #0078d4;
+            border-left-color: var(--oc-selected-indicator-color);
             bottom: 0;
             content: "";
             left: 0;
