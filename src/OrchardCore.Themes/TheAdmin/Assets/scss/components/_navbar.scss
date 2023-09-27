@@ -57,6 +57,7 @@
 .ta-navbar-brand {
     white-space: nowrap;
     transition: width 0.2s ease-in-out;
+    color: var(--bs-navbar-brand-color);
 
     span {
         font-size: 14px;
