@@ -305,7 +305,8 @@ namespace OrchardCore.Environment.Shell.Builders
                 Settings.Release();
             }
 
-            Settings = null;
+            // Dereference but still allow to be looked up by name.
+            Settings = new ShellSettings.PlaceHolder(Settings.Name);
         }
 
         ~ShellContext() => Close();

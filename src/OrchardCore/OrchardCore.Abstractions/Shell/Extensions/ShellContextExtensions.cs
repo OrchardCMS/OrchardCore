@@ -17,7 +17,7 @@ public static class ShellContextExtensions
     /// <summary>
     /// Whether or not the tenant has valid settings that have not been released.
     /// </summary>
-    public static bool HasSettings(this ShellContext context) => context is { Settings: not null } && !context.Settings.Released;
+    public static bool HasSettings(this ShellContext context) => context is { Settings: { Released: false } };
 
     /// <summary>
     /// Whether or not the tenant container has been built on a first demand.
