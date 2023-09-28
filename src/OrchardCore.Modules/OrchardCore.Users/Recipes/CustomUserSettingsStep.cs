@@ -54,9 +54,9 @@ public class CustomUserSettingsStep : IRecipeStepHandler
             }
 
             var userSettings = (JArray)userCustomUserSettings
-            .Properties()
-            .FirstOrDefault(p => p.Name == "user-custom-user-settings")
-            ?.Value;
+                .Properties()
+                .FirstOrDefault(p => p.Name == "user-custom-user-settings")
+                ?.Value;
 
             foreach (JObject userSetting in userSettings.Cast<JObject>())
             {
