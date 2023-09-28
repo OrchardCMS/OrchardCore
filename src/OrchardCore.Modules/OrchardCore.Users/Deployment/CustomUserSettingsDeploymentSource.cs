@@ -28,8 +28,8 @@ public class CustomUserSettingsDeploymentSource : IDeploymentSource
         }
 
         var settingsTypes = customUserSettingsStep.IncludeAll
-            ? _customUserSettingsService.GetAllSettingsTypes().ToArray()
-            : _customUserSettingsService.GetSettingsTypes(customUserSettingsStep.SettingsTypeNames).ToArray();
+            ? _customUserSettingsService.GetAllSettingsTypes().ToList()
+            : _customUserSettingsService.GetSettingsTypes(customUserSettingsStep.SettingsTypeNames).ToList();
 
         // Todo: check permissions for each settings type
         var userData = new JArray();
