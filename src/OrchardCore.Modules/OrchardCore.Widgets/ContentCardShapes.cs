@@ -100,7 +100,7 @@ namespace OrchardCore.Widgets
                     //e.g. ContentCard_Frame__FlowPart__Paragraph, ContentCard_Frame__BagPart__Form, ContentCard_Frame__FlowPart__Input
                     contentCardFrame.Metadata.Alternates.Add($"{ContentCardFrame}__{collectionType}__{contentType}");
 
-                    if (!String.IsNullOrWhiteSpace(parentContentType))
+                    if (!string.IsNullOrWhiteSpace(parentContentType))
                     {
                         //Define frame card shape for children per parent content type for given collection
                         //ContentCard_Frame__[ParentContentType]__[CollectionType]
@@ -117,7 +117,7 @@ namespace OrchardCore.Widgets
                         //e.g. ContentCard_Frame__Page__FlowPart__Container, ContentCard_Frame__LandingPage__BagPart__Service, ContentCard_Frame__Form__FlowPart__Label
                         contentCardFrame.Metadata.Alternates.Add($"{ContentCardFrame}__{parentContentType}__{collectionType}__{contentType}");
 
-                        if (!String.IsNullOrWhiteSpace(namedPart) && !namedPart.Equals(collectionType))
+                        if (!string.IsNullOrWhiteSpace(namedPart) && !namedPart.Equals(collectionType))
                         {
                             //Define frame card shape for child  with specific partname and parent content type
                             //ContentCard_Frame__[ParentContentType]__[PartName]

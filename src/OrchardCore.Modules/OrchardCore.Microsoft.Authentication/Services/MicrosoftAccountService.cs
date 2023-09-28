@@ -59,12 +59,12 @@ namespace OrchardCore.Microsoft.Authentication.Services
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            if (String.IsNullOrWhiteSpace(settings.AppId))
+            if (string.IsNullOrWhiteSpace(settings.AppId))
             {
                 yield return new ValidationResult(S["AppId is required"], new string[] { nameof(settings.AppId) });
             }
 
-            if (String.IsNullOrWhiteSpace(settings.AppSecret))
+            if (string.IsNullOrWhiteSpace(settings.AppSecret))
             {
                 yield return new ValidationResult(S["AppSecret is required"], new string[] { nameof(settings.AppSecret) });
             }

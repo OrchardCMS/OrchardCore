@@ -68,7 +68,7 @@ namespace OrchardCore.Menu.Drivers
         {
             var model = new MenuPartEditViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy) && !String.IsNullOrWhiteSpace(model.Hierarchy))
+            if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy) && !string.IsNullOrWhiteSpace(model.Hierarchy))
             {
                 var originalMenuItems = part.ContentItem.As<MenuItemsListPart>();
 

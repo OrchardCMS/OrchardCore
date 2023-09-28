@@ -62,7 +62,7 @@ namespace OrchardCore.Localization.PortableObject
             get
             {
                 var (translation, argumentsWithCount) = GetTranslation(name, arguments);
-                var formatted = String.Format(translation.Value, argumentsWithCount);
+                var formatted = string.Format(translation.Value, argumentsWithCount);
 
                 return new LocalizedString(name, formatted, translation.ResourceNotFound);
             }
@@ -161,7 +161,7 @@ namespace OrchardCore.Localization.PortableObject
             {
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
-                    _logger.LogWarning("Plural form '{PluralForm}' doesn't exist in values provided by the 'IStringLocalizer.Plural' method. Provided values: {PluralForms}", pluralForm, String.Join(", ", pluralForms));
+                    _logger.LogWarning("Plural form '{PluralForm}' doesn't exist in values provided by the 'IStringLocalizer.Plural' method. Provided values: {PluralForms}", pluralForm, string.Join(", ", pluralForms));
                 }
 
                 // Use the latest available form.

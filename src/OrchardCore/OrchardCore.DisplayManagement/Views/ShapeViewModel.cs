@@ -16,7 +16,7 @@ namespace OrchardCore.DisplayManagement.Views
 
         public ShapeViewModel(string shapeType)
         {
-            if (String.IsNullOrEmpty(shapeType))
+            if (string.IsNullOrEmpty(shapeType))
             {
                 throw new ArgumentException($"The {nameof(shapeType)} cannot be empty");
             }

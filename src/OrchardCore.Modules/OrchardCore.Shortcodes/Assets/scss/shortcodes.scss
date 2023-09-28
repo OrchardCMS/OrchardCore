@@ -4,12 +4,14 @@
 @import "../../node_modules/bootstrap/scss/mixins/breakpoints";
 
 .shortcode-modal-btn {
-    position: absolute; 
-    top: 0; 
-    right:0;    
+    position: absolute;
+    top: 0;
+    right: 0;
+
     svg {
         width: 24px;
     }
+
     z-index: 500;
 }
 
@@ -35,6 +37,7 @@ $icon-shortcode-bg: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/s
     display: inline-block;
     width: 20px;
     height: 20px;
-    background: no-repeat 50% / 100% 100% !important;    
+    background: no-repeat 50% / 100% 100% !important;
+    color: var(--bs-body-color, #808080) !important;
     background-image: escape-svg($icon-shortcode-bg) !important;
 }

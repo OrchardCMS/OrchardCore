@@ -14,7 +14,7 @@
 <h3>@T["Google Authentication Settings"]</h3>
 
 <div class="mb-3 row" asp-validation-class-for="ClientID">
-    <div class="col-large">
+    <div class="col-large col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9">
         <label asp-for="ClientID">@T["Client ID"]</label>
         <input asp-for="ClientID" class="form-control" autocomplete="off" />
         <span asp-validation-for="ClientID"></span>
@@ -23,7 +23,7 @@
 </div>
 
 <div class="mb-3 row" asp-validation-class-for="ClientSecret">
-    <div class="col-large">
+    <div class="col-large col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9">
         <label asp-for="ClientSecret">@T["API secret key"]</label>
         <input asp-for="ClientSecret" class="form-control" type="password" value="@Model.ClientSecret" autocomplete="off" />
         <span asp-validation-for="ClientSecret"></span>
@@ -32,7 +32,7 @@
 </div>
 
 <div class="mb-3 row" asp-validation-class-for="CallbackPath">
-    <div class="col-large">
+    <div class="col-large col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9">
         <label asp-for="CallbackPath">@T["CallbackPath"]</label>
         <input asp-for="CallbackPath" class="form-control" placeholder="/signin-google" />
         <span asp-validation-for="CallbackPath"></span>

@@ -87,7 +87,7 @@ public class DefaultContentsAdminListQueryService : IContentsAdminListQueryServi
 
     private static string GetSelectedContentType(ContentOptionsViewModel model)
     {
-        if (String.IsNullOrEmpty(model.SelectedContentType))
+        if (string.IsNullOrEmpty(model.SelectedContentType))
         {
             var typeTermNode = model.FilterResult.OfType<ContentTypeFilterNode>().FirstOrDefault();
             if (typeTermNode is not null)

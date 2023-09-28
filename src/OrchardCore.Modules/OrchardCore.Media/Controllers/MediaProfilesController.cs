@@ -66,7 +66,7 @@ namespace OrchardCore.Media.Controllers
             var mediaProfilesDocument = await _mediaProfilesManager.GetMediaProfilesDocumentAsync();
             var mediaProfiles = mediaProfilesDocument.MediaProfiles.ToList();
 
-            if (!String.IsNullOrWhiteSpace(options.Search))
+            if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 mediaProfiles = mediaProfiles.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
@@ -125,7 +125,7 @@ namespace OrchardCore.Media.Controllers
 
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrWhiteSpace(model.Name))
+                if (string.IsNullOrWhiteSpace(model.Name))
                 {
                     ModelState.AddModelError(nameof(MediaProfileViewModel.Name), S["The name is mandatory."]);
                 }
@@ -229,7 +229,7 @@ namespace OrchardCore.Media.Controllers
 
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrWhiteSpace(model.Name))
+                if (string.IsNullOrWhiteSpace(model.Name))
                 {
                     ModelState.AddModelError(nameof(MediaProfileViewModel.Name), S["The name is mandatory."]);
                 }
@@ -263,6 +263,9 @@ namespace OrchardCore.Media.Controllers
 
             // If we got this far, something failed, redisplay form
             BuildViewModel(model);
+
+            // If the name was changed or removed, prevent a 404 or a failure on the next post.
+            model.Name = sourceName;
 
             return View(model);
         }

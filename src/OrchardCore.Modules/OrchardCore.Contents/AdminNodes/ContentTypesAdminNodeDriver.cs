@@ -49,8 +49,8 @@ namespace OrchardCore.Contents.AdminNodes
                 model.ContentTypes = listable.Select(x => new ContentTypeEntryViewModel
                 {
                     ContentTypeId = x.Name,
-                    IsChecked = treeNode.ContentTypes.Any(selected => String.Equals(selected.ContentTypeId, x.Name, StringComparison.OrdinalIgnoreCase)),
-                    IconClass = treeNode.ContentTypes.FirstOrDefault(selected => selected.ContentTypeId == x.Name)?.IconClass ?? String.Empty
+                    IsChecked = treeNode.ContentTypes.Any(selected => string.Equals(selected.ContentTypeId, x.Name, StringComparison.OrdinalIgnoreCase)),
+                    IconClass = treeNode.ContentTypes.FirstOrDefault(selected => selected.ContentTypeId == x.Name)?.IconClass ?? string.Empty
                 }).ToArray();
             }).Location("Content");
         }

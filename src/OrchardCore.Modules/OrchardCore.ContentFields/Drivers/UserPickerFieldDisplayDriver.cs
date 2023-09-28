@@ -47,7 +47,7 @@ namespace OrchardCore.ContentFields.Drivers
         {
             return Initialize<EditUserPickerFieldViewModel>(GetEditorShapeType(context), async model =>
             {
-                model.UserIds = String.Join(",", field.UserIds);
+                model.UserIds = string.Join(",", field.UserIds);
 
                 model.Field = field;
                 model.Part = context.ContentPart;
@@ -57,7 +57,7 @@ namespace OrchardCore.ContentFields.Drivers
                 if (field.UserIds.Length > 0)
                 {
                     var users = (await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(field.UserIds)).ListAsync())
-                        .OrderBy(o => Array.FindIndex(field.UserIds, x => String.Equals(o.UserId, x, StringComparison.OrdinalIgnoreCase)));
+                        .OrderBy(o => Array.FindIndex(field.UserIds, x => string.Equals(o.UserId, x, StringComparison.OrdinalIgnoreCase)));
 
                     foreach (var user in users)
                     {

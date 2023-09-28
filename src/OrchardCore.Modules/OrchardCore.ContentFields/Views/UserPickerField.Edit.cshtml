@@ -15,7 +15,7 @@
 }
 
 <script asp-name="vue-multiselect-userpicker" asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-userpicker.js" at="Foot" depends-on="vuejs, vue-multiselect, sortable, vuedraggable"></script>
-<style asp-name="vue-multiselect-userpicker" asp-src="~/OrchardCore.ContentFields/Styles/vue-multiselect-userpicker.min.css" debug-src="~/OrchardCore.ContentFields/Styles/vue-multiselect-userpicker.css" depends-on="vue-multiselect"></style>
+<style asp-name="vue-multiselect" at="Foot"></style>
 
 <div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x.UserIds)_FieldWrapper">
     <label asp-for="UserIds" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
@@ -52,7 +52,7 @@
                         @T["No result found"]
                     </template>
                 </vue-multiselect>
-                @if (!String.IsNullOrEmpty(settings.Hint))
+                @if (!string.IsNullOrEmpty(settings.Hint))
                 {
                     <span class="hint">@settings.Hint</span>
                 }

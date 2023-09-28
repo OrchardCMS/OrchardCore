@@ -114,7 +114,7 @@ namespace OrchardCore.ContentManagement.Display
                     shapeResult.OnGroup(context.GroupId);
                     shapeResult.Displaying(ctx =>
                     {
-                        var displayTypes = new[] { String.Empty, "_" + ctx.Shape.Metadata.DisplayType };
+                        var displayTypes = new[] { string.Empty, "_" + ctx.Shape.Metadata.DisplayType };
 
                         foreach (var displayType in displayTypes)
                         {

@@ -190,7 +190,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
 
     private Task<string> GetSubjectAsync(EmailAuthenticatorLoginSettings settings, IUser user, string code)
     {
-        var message = String.IsNullOrWhiteSpace(settings.Subject)
+        var message = string.IsNullOrWhiteSpace(settings.Subject)
         ? EmailAuthenticatorLoginSettings.DefaultSubject
         : settings.Subject;
 
@@ -199,7 +199,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
 
     private Task<string> GetBodyAsync(EmailAuthenticatorLoginSettings settings, IUser user, string code)
     {
-        var message = String.IsNullOrWhiteSpace(settings.Body)
+        var message = string.IsNullOrWhiteSpace(settings.Body)
         ? EmailAuthenticatorLoginSettings.DefaultBody
         : settings.Body;
 

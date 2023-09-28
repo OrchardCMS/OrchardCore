@@ -88,7 +88,7 @@ namespace OrchardCore.Email.Drivers
                 await context.Updater.TryUpdateModelAsync(section, Prefix);
 
                 // Restore password if the input is empty, meaning that it has not been reset.
-                if (String.IsNullOrWhiteSpace(section.Password))
+                if (string.IsNullOrWhiteSpace(section.Password))
                 {
                     section.Password = previousPassword;
                 }

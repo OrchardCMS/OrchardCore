@@ -60,7 +60,7 @@ namespace OrchardCore.Title
 
                 foreach (var contentItemVersion in contentItemVersions)
                 {
-                    if (String.IsNullOrEmpty(contentItemVersion.DisplayText)
+                    if (string.IsNullOrEmpty(contentItemVersion.DisplayText)
                         && UpdateTitle(contentItemVersion.Content))
                     {
                         _session.Save(contentItemVersion);
@@ -81,7 +81,7 @@ namespace OrchardCore.Title
                 {
                     var title = content["TitlePart"]?["Title"]?.Value<string>();
 
-                    if (!String.IsNullOrWhiteSpace(title))
+                    if (!string.IsNullOrWhiteSpace(title))
                     {
                         content["DisplayText"] = title;
                         changed = true;

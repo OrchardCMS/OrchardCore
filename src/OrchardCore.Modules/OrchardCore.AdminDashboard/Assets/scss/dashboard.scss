@@ -1,6 +1,7 @@
 @import '../../node_modules/bootstrap/scss/_functions';
 @import '../../node_modules/bootstrap/scss/_variables';
 @import '../../node_modules/bootstrap/scss/mixins/_breakpoints';
+@import '../../node_modules/bootstrap/scss/mixins/_color-mode';
 
 // Small devices (landscape phones, 576px and up)
 @include media-breakpoint-only(sm) {
@@ -79,7 +80,7 @@
     }
 }
 
-:root[data-theme="default"] {
+@include color-mode(light) {
     & .dashboard-wrapper {
         & .card {
             & .card-header {
@@ -93,7 +94,7 @@
     }
 }
 
-:root[data-theme="darkmode"] {
+@include color-mode(dark) {
     & .dashboard-wrapper {
         & .card {
             & .card-header {

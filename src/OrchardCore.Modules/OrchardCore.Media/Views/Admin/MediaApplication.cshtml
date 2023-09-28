@@ -1,6 +1,8 @@
 @using Microsoft.Extensions.Options
 @using OrchardCore.Media
 
+@model MediaApplicationViewModel
+
 @inject IOptions<MediaOptions> MediaOptions
 
 @{
@@ -13,7 +15,7 @@
         <p>@T["Your files will be uploaded to the current folder when you drop them here"]</p>
     </div>
 
-    <div class="alert message-warning" v-if="errors.length > 0">
+    <div class="alert alert-warning message-warning" v-if="errors.length > 0">
         <ul> <li v-for="e in errors"> <p>{{e}}</p> </li> </ul>
     </div>
 
@@ -29,17 +31,17 @@
             <div class="media-container-top-bar">
                 <nav class="nav action-bar pb-3 pt-3 pl-3">
                     <div class="me-auto ms-4">
-                        <a href="javascript:;" class="btn btn-light btn-sm me-2" v-on:click="selectAll">
+                        <a href="javascript:;" class="btn btn-secondary btn-sm me-2" v-on:click="selectAll">
                             @T["Select All"]
                         </a>
-                        <a href="javascript:;" class="btn btn-light btn-sm me-2" v-on:click="unSelectAll" :class="{disabled: selectedMedias.length < 1 }">
+                        <a href="javascript:;" class="btn btn-secondary btn-sm me-2" v-on:click="unSelectAll" :class="{disabled: selectedMedias.length < 1 }">
                             @T["Select None"]
                         </a>
-                        <a href="javascript:;" class="btn btn-light btn-sm me-2" v-on:click="invertSelection">
+                        <a href="javascript:;" class="btn btn-secondary btn-sm me-2" v-on:click="invertSelection">
                             @T["Invert"]
                         </a>
-                        <a href="javascript:;" class="btn btn-light btn-sm me-2" v-on:click="deleteMediaList" :class="{disabled: selectedMedias.length < 1 }">
-                            @T["Delete"] <span class="badge rounded-pill bg-light" v-show="selectedMedias.length > 0">{{ selectedMedias.length}}</span>
+                        <a href="javascript:;" class="btn btn-secondary btn-sm me-2" v-on:click="deleteMediaList" :class="{disabled: selectedMedias.length < 1 }">
+                            @T["Delete"] <span class="badge rounded-pill text-bg-theme" v-show="selectedMedias.length > 0">{{ selectedMedias.length}}</span>
                         </a>
                     </div>
                     <div class="btn-group visibility-buttons">
@@ -71,7 +73,7 @@
                     <div class="d-inline-flex ms-2 me-3 mb-1 pt-1">
                         <div class="btn-group btn-group-sm">
                             <label for="fileupload" class="btn btn-sm btn-primary fileinput-button upload-button">
-                                <input id="fileupload" type="file" name="files" multiple="multiple">
+                                <input id="fileupload" type="file" name="files" multiple="multiple" accept="@Model.Extensions">
                                 <i class="fa-solid fa-plus" aria-hidden="true"></i>
                                 @T["Upload"]
                             </label>
@@ -118,12 +120,12 @@
 <input type="hidden" id="getFoldersUrl" value="@Url.Action("GetFolders", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="deleteFolderUrl" value="@Url.Action("DeleteFolder", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="createFolderUrl" value="@Url.Action("CreateFolder", "Admin", new { area = "OrchardCore.Media" })" />
-<input type="hidden" id="getMediaItemsUrl" value="@Url.Action("GetMediaItems", "Admin", new { area = "OrchardCore.Media" })" />
+<input type="hidden" id="getMediaItemsUrl" value="@Url.Action("GetMediaItems", "Admin", new { area = "OrchardCore.Media", extensions = Model.Extensions })" />
 <input type="hidden" id="deleteMediaUrl" value="@Url.Action("DeleteMedia", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="renameMediaUrl" value="@Url.Action("MoveMedia", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="deleteMediaListUrl" value="@Url.Action("DeleteMediaList", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="moveMediaListUrl" value="@Url.Action("MoveMediaList", "Admin", new { area = "OrchardCore.Media" })" />
-<input type="hidden" id="uploadFiles" value="@Url.Action("Upload", "Admin", new { area = "OrchardCore.Media" })" />
+<input type="hidden" id="uploadFiles" value="@Url.Action("Upload", "Admin", new { area = "OrchardCore.Media", extensions = Model.Extensions })" />
 
 @* Chunked file upload settings *@
 <input type="hidden" id="maxUploadChunkSize" value="@MediaOptions.Value.MaxUploadChunkSize" />

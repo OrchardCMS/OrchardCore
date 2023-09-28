@@ -26,7 +26,7 @@
 }
 
 <script asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-multitextfieldpicker.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-multitextfieldpicker.js" asp-name="multitextfieldpicker" at="Foot" depends-on="vuejs, vue-multiselect"></script>
-<style asp-src="~/OrchardCore.ContentFields/Styles/vue-multiselect-multitextfieldpicker.min.css" debug-src="~/OrchardCore.ContentFields/Styles/vue-multiselect-multitextfieldpicker.css" asp-name="multitextfieldpicker" depends-on="vue-multiselect"></style>
+<style asp-name="vue-multiselect" at="Foot"></style>
 
 <div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x.Values)_FieldWrapper">
     <label class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
@@ -51,7 +51,7 @@
                     </template>
                 </vue-multiselect>
             </div>
-            @if (!String.IsNullOrEmpty(settings.Hint))
+            @if (!string.IsNullOrEmpty(settings.Hint))
             {
                 <span class="hint">@settings.Hint</span>
             }

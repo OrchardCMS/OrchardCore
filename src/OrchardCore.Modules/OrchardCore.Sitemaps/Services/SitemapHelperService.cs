@@ -42,7 +42,7 @@ namespace OrchardCore.Sitemaps.Services
 
             if (path.IndexOfAny(InvalidCharactersForPath) > -1 || path.IndexOf(' ') > -1)
             {
-                var invalidCharactersForMessage = String.Join(", ", InvalidCharactersForPath.Select(c => $"\"{c}\""));
+                var invalidCharactersForMessage = string.Join(", ", InvalidCharactersForPath.Select(c => $"\"{c}\""));
                 updater.ModelState.AddModelError(Prefix, Path, S["Please do not use any of the following characters in your permalink: {0}. No spaces are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
             }
 
@@ -58,15 +58,15 @@ namespace OrchardCore.Sitemaps.Services
             }
 
             var routeExists = false;
-            if (String.IsNullOrEmpty(sitemapId))
+            if (string.IsNullOrEmpty(sitemapId))
             {
                 routeExists = (await _sitemapManager.GetSitemapsAsync())
-                    .Any(p => String.Equals(p.Path, path.TrimStart('/'), StringComparison.OrdinalIgnoreCase));
+                    .Any(p => string.Equals(p.Path, path.TrimStart('/'), StringComparison.OrdinalIgnoreCase));
             }
             else
             {
                 routeExists = (await _sitemapManager.GetSitemapsAsync())
-                    .Any(p => p.SitemapId != sitemapId && String.Equals(p.Path, path.TrimStart('/'), StringComparison.OrdinalIgnoreCase));
+                    .Any(p => p.SitemapId != sitemapId && string.Equals(p.Path, path.TrimStart('/'), StringComparison.OrdinalIgnoreCase));
             }
 
             if (routeExists)

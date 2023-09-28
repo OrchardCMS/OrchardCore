@@ -26,7 +26,7 @@ public class SmsProviderOptions
     /// <exception cref="ArgumentException"></exception>
     public SmsProviderOptions TryAddProvider(string name, Type type)
     {
-        if (String.IsNullOrEmpty(name))
+        if (string.IsNullOrEmpty(name))
         {
             throw new ArgumentException($"'{nameof(name)}' cannot be null or empty.");
         }
@@ -55,7 +55,7 @@ public class SmsProviderOptions
     /// <exception cref="ArgumentException"></exception>
     public SmsProviderOptions RemoveProvider(string name)
     {
-        if (String.IsNullOrEmpty(name))
+        if (string.IsNullOrEmpty(name))
         {
             throw new ArgumentException($"'{nameof(name)}' cannot be null or empty.");
         }

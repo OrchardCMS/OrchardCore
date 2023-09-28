@@ -118,7 +118,7 @@ namespace OrchardCore.Mvc
                         (folder.EndsWith("/Pages", StringComparison.Ordinal) || folder.Contains("/Pages/")))
                     {
                         // Resolve the subpath relative to "{ModuleProjectDirectory}".
-                        folder = String.Concat(root, folder.AsSpan(module.Length + 1));
+                        folder = string.Concat(root, folder.AsSpan(module.Length + 1));
 
                         if (Directory.Exists(folder))
                         {
@@ -158,7 +158,7 @@ namespace OrchardCore.Mvc
                     if (_roots.TryGetValue(module, out var root))
                     {
                         // Resolve "{ModuleProjectDirectory}**/*.*".
-                        var filePath = String.Concat(root, path.AsSpan(module.Length + 1));
+                        var filePath = string.Concat(root, path.AsSpan(module.Length + 1));
 
                         if (File.Exists(filePath))
                         {
@@ -198,7 +198,7 @@ namespace OrchardCore.Mvc
                     if (_roots.TryGetValue(module, out var root))
                     {
                         // Resolve "{ModuleProjectDirectory}**/*.*".
-                        var filePath = String.Concat(root, path.AsSpan(module.Length + 1));
+                        var filePath = string.Concat(root, path.AsSpan(module.Length + 1));
 
                         var directory = Path.GetDirectoryName(filePath);
                         var fileName = Path.GetFileNameWithoutExtension(filePath);

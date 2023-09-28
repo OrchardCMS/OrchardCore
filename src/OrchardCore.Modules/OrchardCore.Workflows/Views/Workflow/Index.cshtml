@@ -29,7 +29,7 @@
         <ul class="list-group with-checkbox">
             @if (Model.Workflows.Any())
             {
-                <li class="list-group-item bg-primary">
+                <li class="list-group-item text-bg-theme">
                     <div class="row">
                         <div class="col mb-1 text-nowrap">
                             <div class="form-check mt-2 me-n2">
@@ -103,7 +103,7 @@
                             <div>
                                 <span class="hint">@T["Created {0}", (object)(await DisplayAsync(await New.TimeSpan(Utc: entry.Workflow.CreatedUtc)))]</span>
                                 <div class="info">
-                                    <span class="badge bg-@statusCss">
+                                    <span class="badge text-bg-@statusCss">
                                         @T.GetLocalizedStatus(entry.Workflow.Status)
                                     </span>
                                 </div>

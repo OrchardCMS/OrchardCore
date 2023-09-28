@@ -37,7 +37,7 @@
         <fieldset class="permissions-list">
             <legend>
                 <span>@group.Key.Title</span>
-                @if (!String.IsNullOrEmpty(group.Key.Source))
+                @if (!string.IsNullOrEmpty(group.Key.Source))
                 {
                     <span class="hint">(@group.Key.Source)</span>
                 }
@@ -60,7 +60,7 @@
                                 @if (permission.IsSecurityCritical)
                                 {
                                     <div class="float-end">
-                                        <span class="badge bg-danger" data-bs-toggle="tooltip" data-html="true" title="@T["This permission could allow a user to elevate their other permissions. Grant it with extreme consideration."]">@T["Security Critical"]</span>
+                                        <span class="badge text-bg-danger" data-bs-toggle="tooltip" data-html="true" title="@T["This permission could allow a user to elevate their other permissions. Grant it with extreme consideration."]">@T["Security Critical"]</span>
                                     </div>
                                 }
                             </td>

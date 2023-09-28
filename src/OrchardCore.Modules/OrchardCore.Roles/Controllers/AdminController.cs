@@ -96,12 +96,12 @@ namespace OrchardCore.Roles.Controllers
 
                 if (model.RoleName.Contains('/'))
                 {
-                    ModelState.AddModelError(String.Empty, S["Invalid role name."]);
+                    ModelState.AddModelError(string.Empty, S["Invalid role name."]);
                 }
 
                 if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(model.RoleName)) != null)
                 {
-                    ModelState.AddModelError(String.Empty, S["The role is already used."]);
+                    ModelState.AddModelError(string.Empty, S["The role is already used."]);
                 }
             }
 
@@ -119,7 +119,7 @@ namespace OrchardCore.Roles.Controllers
 
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(String.Empty, error.Description);
+                    ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
 
@@ -264,12 +264,12 @@ namespace OrchardCore.Roles.Controllers
 
         private PermissionGroupKey GetGroupKey(IFeatureInfo feature, string category)
         {
-            if (!String.IsNullOrWhiteSpace(category))
+            if (!string.IsNullOrWhiteSpace(category))
             {
                 return new PermissionGroupKey(category, category);
             }
 
-            var title = String.IsNullOrWhiteSpace(feature.Name) ? S["{0} Feature", feature.Id] : feature.Name;
+            var title = string.IsNullOrWhiteSpace(feature.Name) ? S["{0} Feature", feature.Id] : feature.Name;
 
             return new PermissionGroupKey(feature.Id, title)
             {

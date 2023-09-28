@@ -1,7 +1,7 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 
 @model ShapeViewModel<UserNotificationCollectionViewModel>
-<li class="nav-item dropdown">
+<li class="nav-item dropdown text-end">
     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
         @if (Model.Value.TotalUnread > 0)
         {
@@ -23,7 +23,7 @@
             <i class="fa-regular fa-bell" aria-hidden="true" data-bs-toggle="tooltip" data-bs-original-title="@T["You have no unread notifications"]"></i>
         }
     </a>
-    <div class="dropdown-menu dropdown-menu-end notification-navbar" style="max-width: 20rem;">
+    <div class="dropdown-menu dropdown-menu-end notification-navbar scrollable" style="max-width: 20rem;">
         @if (Model.Value.Notifications.Count > 0)
         {
             var maxCount = Math.Min(Model.Value.MaxVisibleNotifications, Model.Value.Notifications.Count);
@@ -32,7 +32,7 @@
                 {
                     var notification = Model.Value.Notifications[i];
 
-                    <div class="@(i == maxCount - 1 ? String.Empty : "border-bottom")">
+                    <div class="@(i == maxCount - 1 ? string.Empty : "border-bottom")">
                         @await DisplayAsync(notification)
                     </div>
                 }

@@ -106,7 +106,7 @@ namespace OrchardCore.Contents.Sitemaps
             var sitemapMetadataAspect = await _contentManager.PopulateAspectAsync<SitemapMetadataAspect>(contentItem);
 
             var changeFrequencyValue = sitemapMetadataAspect.ChangeFrequency;
-            if (String.IsNullOrEmpty(changeFrequencyValue))
+            if (string.IsNullOrEmpty(changeFrequencyValue))
             {
                 if (source.IndexAll)
                 {
@@ -119,7 +119,7 @@ namespace OrchardCore.Contents.Sitemaps
                 else
                 {
                     var sitemapEntry = source.ContentTypes
-                        .FirstOrDefault(ct => String.Equals(ct.ContentTypeName, contentItem.ContentType));
+                        .FirstOrDefault(ct => string.Equals(ct.ContentTypeName, contentItem.ContentType));
 
                     changeFrequencyValue = sitemapEntry.ChangeFrequency.ToString();
                 }
@@ -139,7 +139,7 @@ namespace OrchardCore.Contents.Sitemaps
                 else
                 {
                     var sitemapEntry = source.ContentTypes
-                        .FirstOrDefault(ct => String.Equals(ct.ContentTypeName, contentItem.ContentType));
+                        .FirstOrDefault(ct => string.Equals(ct.ContentTypeName, contentItem.ContentType));
 
                     priorityIntValue = sitemapEntry.Priority;
                 }

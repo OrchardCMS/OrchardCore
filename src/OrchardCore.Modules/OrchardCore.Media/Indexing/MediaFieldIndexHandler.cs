@@ -12,8 +12,8 @@ namespace OrchardCore.Media.Indexing
 {
     public class MediaFieldIndexHandler : ContentFieldIndexHandler<MediaField>
     {
-        private const string _mediaTextKeySuffix = ".MediaText";
-        private const string _fileTextKeySuffix = ".FileText";
+        private const string MediaTextKeySuffix = ".MediaText";
+        private const string FileTextKeySuffix = ".FileText";
 
         private readonly IMediaFileStore _mediaFileStore;
         private readonly MediaFileIndexingOptions _mediaFileIndexingOptions;
@@ -38,8 +38,8 @@ namespace OrchardCore.Media.Indexing
             {
                 foreach (var key in context.Keys)
                 {
-                    context.DocumentIndex.Set(key + _mediaTextKeySuffix, "NULL", options);
-                    context.DocumentIndex.Set(key + _fileTextKeySuffix, "NULL", options);
+                    context.DocumentIndex.Set(key + MediaTextKeySuffix, "NULL", options);
+                    context.DocumentIndex.Set(key + FileTextKeySuffix, "NULL", options);
                 }
 
                 return;
@@ -53,12 +53,12 @@ namespace OrchardCore.Media.Indexing
                     {
                         foreach (var mediaText in field.MediaTexts)
                         {
-                            context.DocumentIndex.Set(key + _mediaTextKeySuffix, mediaText, options);
+                            context.DocumentIndex.Set(key + MediaTextKeySuffix, mediaText, options);
                         }
                     }
                     else
                     {
-                        context.DocumentIndex.Set(key + _mediaTextKeySuffix, "NULL", options);
+                        context.DocumentIndex.Set(key + MediaTextKeySuffix, "NULL", options);
                     }
                 }
             }
@@ -76,21 +76,24 @@ namespace OrchardCore.Media.Indexing
 
                 var providerType = _mediaFileIndexingOptions.GetRegisteredMediaFileTextProvider(Path.GetExtension(path));
 
-                if (providerType != null)
+                if (providerType == null)
                 {
-                    using var fileStream = await _mediaFileStore.GetFileStreamAsync(path);
+                    continue;
+                }
 
-                    if (fileStream != null)
-                    {
-                        var fileText = await _serviceProvider
-                            .CreateInstance<IMediaFileTextProvider>(providerType)
-                            .GetTextAsync(path, fileStream);
+                using var fileStream = await _mediaFileStore.GetFileStreamAsync(path);
 
-                        foreach (var key in context.Keys)
-                        {
-                            context.DocumentIndex.Set(key + _fileTextKeySuffix, fileText, options);
-                        }
-                    }
+                if (fileStream == null)
+                {
+                    continue;
+                }
+
+                var fileText = await _serviceProvider.CreateInstance<IMediaFileTextProvider>(providerType)
+                    .GetTextAsync(path, fileStream);
+
+                foreach (var key in context.Keys)
+                {
+                    context.DocumentIndex.Set(key + FileTextKeySuffix, fileText, options);
                 }
             }
         }
