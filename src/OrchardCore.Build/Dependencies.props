@@ -19,7 +19,7 @@
     <PackageManagement Include="BenchmarkDotNet" Version="0.13.8" />
     <PackageManagement Include="Castle.Core" Version="5.1.1" />
     <PackageManagement Include="DocumentFormat.OpenXml" Version="2.20.0" />
-    <PackageManagement Include="Fluid.Core" Version="2.4.0" />
+    <PackageManagement Include="Fluid.Core" Version="2.5.0" />
     <PackageManagement Include="GraphQL" Version="4.8.0" />
     <PackageManagement Include="GraphQL.DataLoader" Version="4.8.0" />
     <PackageManagement Include="GraphQL.MicrosoftDI" Version="4.8.0" />
