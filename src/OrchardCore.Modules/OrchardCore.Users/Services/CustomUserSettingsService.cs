@@ -35,16 +35,14 @@ public class CustomUserSettingsService
         _contentDefinitionManager = contentDefinitionManager;
         _settingsTypes = new Lazy<IDictionary<string, ContentTypeDefinition>>(
             () => _contentDefinitionManager
-                    .ListTypeDefinitions()
-                    .Where(x => x.StereotypeEquals("CustomUserSettings"))
-                    .ToDictionary(x => x.Name));
+            .ListTypeDefinitions()
+            .Where(x => x.StereotypeEquals("CustomUserSettings"))
+            .ToDictionary(x => x.Name));
+
         _session = session;
     }
 
-    public IEnumerable<string> GetAllSettingsTypeNames()
-    {
-        return _settingsTypes.Value.Keys;
-    }
+    public IEnumerable<string> GetAllSettingsTypeNames() => _settingsTypes.Value.Keys;
 
     public IEnumerable<ContentTypeDefinition> GetAllSettingsTypes()
     {

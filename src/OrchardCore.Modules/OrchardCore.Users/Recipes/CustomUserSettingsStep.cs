@@ -32,10 +32,10 @@ public class CustomUserSettingsStep : IRecipeStepHandler
         var model = context.Step;
 
         var customUserSettingsList = (JArray)model
-                                    .Properties()
-                                    .Where(p => p.Name != "name")
-                                    .FirstOrDefault()
-                                    ?.Value;
+            .Properties()
+            .Where(p => p.Name != "name")
+            .FirstOrDefault()
+            ?.Value;
 
         var allUsers = await _session.Query<User>().ListAsync();
 
@@ -48,7 +48,7 @@ public class CustomUserSettingsStep : IRecipeStepHandler
                 ?.ToString();
 
             var iUser = allUsers.FirstOrDefault(u => u.UserId == userId);
-            if (iUser is not User user)
+            if (iUser is not User _)
             {
                 continue;
             }
