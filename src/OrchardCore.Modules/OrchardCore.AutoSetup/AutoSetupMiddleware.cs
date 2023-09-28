@@ -128,7 +128,7 @@ namespace OrchardCore.AutoSetup
                     }
 
                     // Check if the tenant was installed by another instance.
-                    var settings = await _shellSettingsManager.LoadSettingsAsync(_shellSettings.Name);
+                    using var settings = (await _shellSettingsManager.LoadSettingsAsync(_shellSettings.Name)).AsDisposable();
                     if (!settings.IsUninitialized())
                     {
                         await _shellHost.ReloadShellContextAsync(_shellSettings, eventSource: false);

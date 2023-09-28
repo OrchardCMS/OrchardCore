@@ -110,14 +110,14 @@ namespace OrchardCore.Environment.Shell.Distributed
                         defaultTenantSyncingSeconds = 0;
 
                         // Load the settings of the default tenant that may have been setup by another instance.
-                        var loadedDefaultSettings = await _shellSettingsManager.LoadSettingsAsync(ShellSettings.DefaultShellName);
+                        using var loadedDefaultSettings = (await _shellSettingsManager.LoadSettingsAsync(ShellSettings.DefaultShellName))
+                            .AsDisposable();
+
                         if (loadedDefaultSettings.IsRunning())
                         {
                             // If the default tenant has been setup by another instance, reload it locally.
                             await _shellHost.ReloadShellContextAsync(defaultContext.Settings, eventSource: false);
                         }
-
-                        loadedDefaultSettings.Release();
 
                         continue;
                     }
@@ -175,6 +175,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                     // Retrieve all tenant settings that are loaded locally.
                     var loadedSettings = _shellHost.GetAllSettings().ToList();
                     var tenantsToRemove = Array.Empty<string>();
+                    var tenantsToCreate = Array.Empty<string>();
 
                     // Check if at least one tenant has been created or removed.
                     if (shellCountChangedId is not null && _shellCountChangedId != shellCountChangedId)
@@ -183,10 +184,10 @@ namespace OrchardCore.Environment.Shell.Distributed
                         var loadedTenants = loadedSettings.Select(s => s.Name);
 
                         // Retrieve all new created tenants that are not already loaded.
-                        var tenantsToLoad = sharedTenants.Except(loadedTenants).ToArray();
+                        tenantsToCreate = sharedTenants.Except(loadedTenants).ToArray();
 
                         // Load all new created tenants.
-                        foreach (var tenant in tenantsToLoad)
+                        foreach (var tenant in tenantsToCreate)
                         {
                             loadedSettings.Add(await _shellSettingsManager.LoadSettingsAsync(tenant));
                         }
@@ -214,7 +215,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                         {
                             // Try to retrieve the release identifier of this tenant from the distributed cache.
                             var releaseId = await distributedCache.GetStringAsync(ReleaseIdKey(settings.Name), CancellationToken.None);
-                            if (releaseId is not null)
+                            if (releaseId is not null && !tenantsToCreate.Contains(settings.Name))
                             {
                                 // Check if the release identifier of this tenant has changed.
                                 var identifier = _identifiers.GetOrAdd(settings.Name, name => new ShellIdentifier());
@@ -238,6 +239,12 @@ namespace OrchardCore.Environment.Shell.Distributed
                                 {
                                     // Update the local identifier.
                                     identifier.ReloadId = reloadId;
+
+                                    // For a new tenant also update the release identifier.
+                                    if (tenantsToCreate.Contains(settings.Name))
+                                    {
+                                        identifier.ReleaseId = releaseId;
+                                    }
 
                                     // Keep in sync this tenant by reloading it locally.
                                     await _shellHost.ReloadShellContextAsync(settings, eventSource: false);
@@ -277,6 +284,13 @@ namespace OrchardCore.Environment.Shell.Distributed
                         }
                         finally
                         {
+                            // New settings loaded from the config can be disposed.
+                            if (tenantsToCreate.Contains(settings.Name))
+                            {
+                                settings.AsDisposable();
+                                settings.Dispose();
+                            }
+
                             semaphore.Release();
                         }
                     }
@@ -315,10 +329,11 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
 
             // If there is no default tenant or it is not running, nothing to do.
-            var defaultSettings = await _shellSettingsManager.LoadSettingsAsync(ShellSettings.DefaultShellName);
+            using var defaultSettings = (await _shellSettingsManager.LoadSettingsAsync(ShellSettings.DefaultShellName))
+                .AsDisposable();
+
             if (!defaultSettings.IsRunning())
             {
-                defaultSettings.Release();
                 return;
             }
 

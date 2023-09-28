@@ -14,7 +14,6 @@ namespace OrchardCore.Environment.Shell.Builders
     {
         private List<WeakReference<ShellContext>> _dependents;
         private readonly SemaphoreSlim _semaphore = new(1);
-        private bool _unloaded;
         private bool _disposed;
 
         internal volatile int _refCount;
@@ -107,21 +106,6 @@ namespace OrchardCore.Environment.Shell.Builders
         /// Returns the number of active scopes on this tenant.
         /// </summary>
         public int ActiveScopes => _refCount;
-
-        /// <summary>
-        /// Marks the <see cref="ShellContext"/> as unloaded and then releases it.
-        /// </summary>
-        public Task UnloadAsync()
-        {
-            if (this.IsPlaceholder())
-            {
-                Terminate();
-                return Task.CompletedTask;
-            }
-
-            _unloaded = true;
-            return ReleaseInternalAsync();
-        }
 
         /// <summary>
         /// Marks the <see cref="ShellContext"/> as released and then a candidate to be disposed.
@@ -300,12 +284,9 @@ namespace OrchardCore.Environment.Shell.Builders
             Blueprint = null;
             Pipeline = null;
 
-            if (_unloaded)
-            {
-                Settings.Release();
-            }
+            Settings.Dispose();
 
-            Settings = null;
+            Settings = new ShellSettings.PlaceHolder(Settings.Name);
         }
 
         ~ShellContext() => Close();

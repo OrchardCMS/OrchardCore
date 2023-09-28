@@ -16,7 +16,12 @@ namespace OrchardCore.Environment.Shell.Configuration
     /// </summary>
     public class ShellConfiguration : IShellConfiguration
     {
-        internal IConfigurationRoot _configuration;
+        public static readonly ShellConfiguration Empty = new()
+        {
+            _configuration = new EmptyConfigurationRoot(),
+        };
+
+        private IConfigurationRoot _configuration;
         private UpdatableDataProvider _updatableData;
         private readonly IEnumerable<KeyValuePair<string, string>> _initialData;
 

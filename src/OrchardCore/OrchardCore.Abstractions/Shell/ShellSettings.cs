@@ -13,7 +13,7 @@ namespace OrchardCore.Environment.Shell
     /// by regular configuration sources, then by default settings of all tenants are stored in 'App_Data/tenants.json',
     /// while each tenant configuration is stored in the related site folder 'App_Data/Sites/{tenant}/appsettings.json'.
     /// </summary>
-    public class ShellSettings
+    public class ShellSettings : IDisposable
     {
         /// <summary>
         /// The name of the 'Default' tenant.
@@ -27,7 +27,8 @@ namespace OrchardCore.Environment.Shell
 
         private readonly ShellConfiguration _settings;
         private readonly ShellConfiguration _configuration;
-        private bool _released;
+        private bool _disposable;
+        private bool _disposed;
 
         /// <summary>
         /// Initializes a new <see cref="ShellSettings"/>.
@@ -64,9 +65,18 @@ namespace OrchardCore.Environment.Shell
         public string Name { get; set; }
 
         /// <summary>
-        /// Whether this instance has been released or not.
+        /// Whether this instance has been disposed or not.
         /// </summary>
-        public bool Released => _released;
+        public bool Disposed => _disposed;
+
+        /// <summary>
+        /// Whether this instance is disposable or not.
+        /// </summary>
+        public bool Disposable
+        {
+            get => _disposable;
+            set => _disposable = value;
+        }
 
         /// <summary>
         /// The tenant version identifier.
@@ -118,7 +128,15 @@ namespace OrchardCore.Environment.Shell
         [JsonConverter(typeof(StringEnumConverter))]
         public TenantState State
         {
-            get => _settings.GetValue<TenantState>("State");
+            get
+            {
+                var state = _settings["State"] ?? string.Empty;
+
+                return Enum.IsDefined(typeof(TenantState), state)
+                    ? Enum.Parse<TenantState>(state)
+                    : TenantState.Uninitialized;
+            }
+
             set => _settings["State"] = value.ToString();
         }
 
@@ -141,7 +159,7 @@ namespace OrchardCore.Environment.Shell
         public Task EnsureConfigurationAsync() => _configuration.EnsureConfigurationAsync();
 
         /// <summary>
-        /// PlaceHolder class used for shell lazy initialization.
+        /// PlaceHolder class used for shell disposing.
         /// </summary>
         public class PlaceHolder : ShellSettings
         {
@@ -149,25 +167,33 @@ namespace OrchardCore.Environment.Shell
             /// Initializes a placeHolder used for shell disposing.
             /// </summary>
             public PlaceHolder(string name)
+                : base(Configuration.ShellConfiguration.Empty,
+                      Configuration.ShellConfiguration.Empty)
             {
                 Name = name;
-                _released = true;
+                _disposed = true;
             }
         }
 
-        public void Release()
+        public void Dispose()
         {
-            if (_released)
+            if (_disposed || !_disposable)
             {
                 return;
             }
 
-            _released = true;
+            _disposed = true;
 
             _settings?.Release();
             _configuration?.Release();
+
+            GC.SuppressFinalize(this);
         }
 
-        ~ShellSettings() => Release();
+        ~ShellSettings()
+        {
+            _disposable = true;
+            Dispose();
+        }
     }
 }

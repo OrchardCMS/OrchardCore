@@ -136,4 +136,22 @@ public static class ShellSettingsExtensions
         settings.State = TenantState.Disabled;
         return settings;
     }
+
+    /// <summary>
+    /// Mark the tenant settings to not be disposable.
+    /// </summary>
+    public static ShellSettings AsNotDisposable(this ShellSettings settings)
+    {
+        settings.Disposable = false;
+        return settings;
+    }
+
+    /// <summary>
+    /// Mark the tenant settings to be disposable.
+    /// </summary>
+    public static ShellSettings AsDisposable(this ShellSettings settings)
+    {
+        settings.Disposable = true;
+        return settings;
+    }
 }
