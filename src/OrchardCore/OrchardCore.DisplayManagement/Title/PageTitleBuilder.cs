@@ -58,12 +58,13 @@ namespace OrchardCore.DisplayManagement.Title
 
             _titleParts.Sort(FlatPositionComparer.Instance);
 
-            var htmlContentBuilder = new HtmlContentBuilder();
-
             if (_titleParts.Count == 0)
             {
                 return HtmlString.Empty;
             }
+
+            // _titleParts.Count * 2 because we add a separator for each entry
+            var htmlContentBuilder = new HtmlContentBuilder(_titleParts.Count * 2);
 
             for (var i = 0; i < _titleParts.Count; i++)
             {
