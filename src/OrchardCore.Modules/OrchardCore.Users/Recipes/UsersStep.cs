@@ -23,7 +23,7 @@ public class UsersStep : IRecipeStepHandler
 
     public async Task ExecuteAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "Users", StringComparison.OrdinalIgnoreCase))
+        if (!String.Equals(context.Name, "Users", StringComparison.OrdinalIgnoreCase))
         {
             return;
         }
@@ -32,7 +32,7 @@ public class UsersStep : IRecipeStepHandler
 
         foreach (var importedUser in model.Users)
         {
-            if (string.IsNullOrWhiteSpace(importedUser.UserName))
+            if (String.IsNullOrWhiteSpace(importedUser.UserName))
             {
                 continue;
             }

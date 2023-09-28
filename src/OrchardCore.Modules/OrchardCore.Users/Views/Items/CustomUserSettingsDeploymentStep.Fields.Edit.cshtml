@@ -1,10 +1,5 @@
 @model CustomUserSettingsDeploymentStepViewModel
 
-@{
-    var settingsTypeNames = Model.SettingsTypeNames;
-    var allSettingsTypeNames = Model.AllSettingsTypeNames;
-}
-
 <h5>@T["Custom User Settings"]</h5>
 
 <div class="mb-3 mt-4 mb-5">
@@ -12,8 +7,8 @@
         <div class="col">
             <div class="form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IncludeAll"
-                           data-reverseToggle=".cssel" />
+                    <input class="form-check-input" asp-for="IncludeAll" role="button" data-bs-toggle="collapse" data-bs-target=".collapse"
+                        aria-expanded="false"/>
                     @T["Include all custom user settings."]
                 </label>
             </div>
@@ -30,9 +25,9 @@
     <div class="row">
         <div class="col-small">
             <ul class="list-group">
-                @foreach (var settingsTypeName in allSettingsTypeNames)
+                @foreach (var settingsTypeName in Model.AllSettingsTypeNames)
                 {
-                    var checkd = settingsTypeNames?.Contains(settingsTypeName);
+                    var checkd = Model.SettingsTypeNames?.Contains(settingsTypeName);
 
                     <li class="list-group-item">
                         <div class="form-check">
@@ -47,18 +42,3 @@
         </div>
     </div>
 </div>
-
-<script at="Foot">
-    window.addEventListener('DOMContentLoaded', () => {
-    var toggles = document.querySelectorAll('[data-reversetoggle]');
-    for (var i = 0; i < toggles.length; i++) {
-        toggles[i].addEventListener('click', (e) => {
-            if (e.target.checked) {
-                document.querySelector(this.getAttribute('data-reversetoggle')).classList.remove('show');
-            } else {
-                document.querySelector(this.getAttribute('data-reversetoggle')).classList.add('show');
-            }
-        });
-    }
-});
-</script>

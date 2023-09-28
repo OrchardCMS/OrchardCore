@@ -36,7 +36,7 @@ public class CustomUserSettingsService
         _settingsTypes = new Lazy<IDictionary<string, ContentTypeDefinition>>(
             () => _contentDefinitionManager
                     .ListTypeDefinitions()
-                    .Where(x => x.GetStereotype() == "CustomUserSettings")
+                    .Where(x => x.StereotypeEquals("CustomUserSettings"))
                     .ToDictionary(x => x.Name));
         _session = session;
     }
@@ -81,7 +81,6 @@ public class CustomUserSettingsService
 
     public async Task<Dictionary<string, ContentItem>> GetSettingsAsync(ContentTypeDefinition settingsType, Func<Task> factoryAsync = null)
     {
-        // foreach user get settings
         var users = await _session.Query<User>().ListAsync();
         var contentItems = new Dictionary<string, ContentItem>();
         foreach (var user in users)

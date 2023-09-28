@@ -15,7 +15,7 @@ namespace OrchardCore.Users.Recipes
     /// </summary>
     public class CustomUserSettingsStep : IRecipeStepHandler
     {
-        private ISession _session;
+        private readonly ISession _session;
 
         public CustomUserSettingsStep(ISession session)
         {
@@ -24,7 +24,7 @@ namespace OrchardCore.Users.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!string.Equals(context.Name, "custom-user-settings", StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(context.Name, "custom-user-settings", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

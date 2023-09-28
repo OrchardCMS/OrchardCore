@@ -40,10 +40,7 @@ namespace OrchardCore.Users.Deployment
         public override async Task<IDisplayResult> UpdateAsync(CustomUserSettingsDeploymentStep step, IUpdateModel updater)
         {
             step.SettingsTypeNames = Array.Empty<string>();
-
-            await updater.TryUpdateModelAsync(
-                                            step,
-                                            Prefix);
+            await updater.TryUpdateModelAsync(step, Prefix);
 
             if (step.IncludeAll)
             {

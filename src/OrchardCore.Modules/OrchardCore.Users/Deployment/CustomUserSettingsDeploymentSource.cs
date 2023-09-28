@@ -32,26 +32,26 @@ public class CustomUserSettingsDeploymentSource : IDeploymentSource
             : _customUserSettingsService.GetSettingsTypes(customUserSettingsStep.SettingsTypeNames).ToArray();
 
         // Todo: check permissions for each settings type
-        var bigArray = new JArray();
+        var userData = new JArray();
         var allUsers = await _session.Query<User>().ListAsync();
 
         foreach (var user in allUsers)
         {
-            var myArray = new JArray();
+            var userSettingsData = new JArray();
             foreach (var settingsType in settingsTypes)
             {
                 var userSetting = await _customUserSettingsService.GetSettingsAsync(user, settingsType);
-                myArray.Add(JObject.FromObject(userSetting));
+                userSettingsData.Add(JObject.FromObject(userSetting));
             }
 
-            bigArray.Add(new JObject(
+            userData.Add(new JObject(
                 new JProperty("userId", user.UserId),
-                new JProperty("user-custom-user-settings", myArray)));
+                new JProperty("user-custom-user-settings", userSettingsData)));
         }
 
         // Adding custom user settings
         result.Steps.Add(new JObject(
             new JProperty("name", "custom-user-settings"),
-            new JProperty("custom-user-settings", bigArray)));
+            new JProperty("custom-user-settings", userData)));
     }
 }
