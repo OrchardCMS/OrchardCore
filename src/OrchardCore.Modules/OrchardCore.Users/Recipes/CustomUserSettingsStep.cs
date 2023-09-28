@@ -47,8 +47,8 @@ public class CustomUserSettingsStep : IRecipeStepHandler
                 .Value
                 ?.ToString();
 
-            var iUser = allUsers.FirstOrDefault(u => u.UserId == userId);
-            if (iUser is not User _)
+            var user = allUsers.FirstOrDefault(u => u.UserId == userId);
+            if (user is not User _)
             {
                 continue;
             }
