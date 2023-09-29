@@ -1,4 +1,5 @@
 using System;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Environment.Shell;
@@ -19,6 +20,11 @@ public static class ShellSettingsExtensions
     /// Whether the tenant is initializing or not.
     /// </summary>
     public static bool IsInitializing(this ShellSettings settings) => settings is { State: TenantState.Initializing };
+
+    /// <summary>
+    /// Whether or not the tenant has valid settings that have not been and are not candidate to be disposed.
+    /// </summary>
+    public static bool IsValid(this ShellSettings settings) => settings is { Disposed: false, Disposable: false };
 
     /// <summary>
     /// Whether the tenant is running or not.
@@ -138,7 +144,7 @@ public static class ShellSettingsExtensions
     }
 
     /// <summary>
-    /// Mark the tenant settings to not be disposable.
+    /// Mark the settings not to be disposed when the shell is disposed.
     /// </summary>
     public static ShellSettings AsNotDisposable(this ShellSettings settings)
     {
@@ -147,7 +153,7 @@ public static class ShellSettingsExtensions
     }
 
     /// <summary>
-    /// Mark the tenant settings to be disposable.
+    /// Mark the settings to be also disposed when the shell is disposed.
     /// </summary>
     public static ShellSettings AsDisposable(this ShellSettings settings)
     {

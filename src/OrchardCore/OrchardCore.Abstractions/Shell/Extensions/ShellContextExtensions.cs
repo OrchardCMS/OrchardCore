@@ -15,9 +15,9 @@ public static class ShellContextExtensions
     public static bool IsPreCreated(this ShellContext context) => context is ShellContext.PlaceHolder { PreCreated: true };
 
     /// <summary>
-    /// Whether or not the tenant has valid settings that have not been released.
+    /// Whether or not the tenant has valid settings that have not been and are not candidate to be disposed.
     /// </summary>
-    public static bool HasSettings(this ShellContext context) => context is { Settings.Disposed: false };
+    public static bool HasSettings(this ShellContext context) => context is { Settings: { Disposed: false, Disposable: false } };
 
     /// <summary>
     /// Whether or not the tenant container has been built on a first demand.

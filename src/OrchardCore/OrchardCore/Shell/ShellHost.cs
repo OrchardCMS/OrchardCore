@@ -96,7 +96,7 @@ namespace OrchardCore.Environment.Shell
                     {
                         if (!_shellContexts.TryGetValue(settings.Name, out shell))
                         {
-                            if (settings.Disposable || settings.Disposed)
+                            if (!settings.IsValid())
                             {
                                 settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
                             }
@@ -316,7 +316,14 @@ namespace OrchardCore.Environment.Shell
             if (_shellContexts.TryRemove(settings.Name, out var context))
             {
                 context.Settings.AsDisposable();
-                await context.ReleaseAsync();
+                if (context.IsPlaceholder())
+                {
+                    context.Settings.Dispose();
+                }
+                else
+                {
+                    await context.ReleaseAsync();
+                }
             }
 
             _shellSettings.TryRemove(settings.Name, out _);
