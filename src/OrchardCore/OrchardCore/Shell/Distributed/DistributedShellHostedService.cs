@@ -110,7 +110,8 @@ namespace OrchardCore.Environment.Shell.Distributed
                         defaultTenantSyncingSeconds = 0;
 
                         // Load the settings of the default tenant that may have been setup by another instance.
-                        using var loadedDefaultSettings = (await _shellSettingsManager.LoadSettingsAsync(ShellSettings.DefaultShellName))
+                        using var loadedDefaultSettings = (await _shellSettingsManager
+                            .LoadSettingsAsync(ShellSettings.DefaultShellName))
                             .AsDisposable();
 
                         if (loadedDefaultSettings.IsRunning())
@@ -189,7 +190,9 @@ namespace OrchardCore.Environment.Shell.Distributed
                         // Load all new created tenants.
                         foreach (var tenant in tenantsToCreate)
                         {
-                            loadedSettings.Add(await _shellSettingsManager.LoadSettingsAsync(tenant));
+                            loadedSettings.Add((await _shellSettingsManager
+                                .LoadSettingsAsync(tenant))
+                                .AsDisposable());
                         }
 
                         // Retrieve all removed tenants that are not yet removed locally.
@@ -284,10 +287,9 @@ namespace OrchardCore.Environment.Shell.Distributed
                         }
                         finally
                         {
-                            // New settings loaded from the config can be disposed.
+                            // Dispose settings loaded from the configuration.
                             if (tenantsToCreate.Contains(settings.Name))
                             {
-                                settings.AsDisposable();
                                 settings.Dispose();
                             }
 
@@ -329,7 +331,8 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
 
             // If there is no default tenant or it is not running, nothing to do.
-            using var defaultSettings = (await _shellSettingsManager.LoadSettingsAsync(ShellSettings.DefaultShellName))
+            using var defaultSettings = (await _shellSettingsManager
+                .LoadSettingsAsync(ShellSettings.DefaultShellName))
                 .AsDisposable();
 
             if (!defaultSettings.IsRunning())
