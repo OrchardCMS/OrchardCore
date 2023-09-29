@@ -70,6 +70,13 @@ namespace OrchardCore.Environment.Shell.Builders
             /// Whether or not the tenant has been pre-created on first loading.
             /// </summary>
             public bool PreCreated { get; init; }
+
+            public override Task ReleaseAsync()
+            {
+                Settings.Dispose();
+                Settings = new ShellSettings.PlaceHolder(Settings.Name);
+                return Task.CompletedTask;
+            }
         }
 
         /// <summary>
@@ -110,7 +117,7 @@ namespace OrchardCore.Environment.Shell.Builders
         /// <summary>
         /// Marks the <see cref="ShellContext"/> as released and then a candidate to be disposed.
         /// </summary>
-        public Task ReleaseAsync() => ReleaseInternalAsync();
+        public virtual Task ReleaseAsync() => ReleaseInternalAsync();
 
         internal Task ReleaseFromLastScopeAsync() => ReleaseInternalAsync(ReleaseMode.FromLastScope);
 

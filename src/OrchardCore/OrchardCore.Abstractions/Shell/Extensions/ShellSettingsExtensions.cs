@@ -22,11 +22,6 @@ public static class ShellSettingsExtensions
     public static bool IsInitializing(this ShellSettings settings) => settings is { State: TenantState.Initializing };
 
     /// <summary>
-    /// Whether or not the tenant has valid settings that have not been and are not candidate to be disposed.
-    /// </summary>
-    public static bool IsValid(this ShellSettings settings) => settings is { Disposed: false, Disposable: false };
-
-    /// <summary>
     /// Whether the tenant is running or not.
     /// </summary>
     public static bool IsRunning(this ShellSettings settings) => settings is { State: TenantState.Running };
@@ -45,6 +40,11 @@ public static class ShellSettingsExtensions
     /// Whether the tenant is removable or not.
     /// </summary>
     public static bool IsRemovable(this ShellSettings settings) => settings.IsUninitialized() || settings.IsDisabled();
+
+    /// <summary>
+    /// Whether or not the tenant configuration has not been and is not a candidate to be disposed.
+    /// </summary>
+    public static bool HasConfiguration(this ShellSettings settings) => settings is { Disposed: false, Disposable: false };
 
     /// <summary>
     /// Whether or not the tenant has the provided url prefix.

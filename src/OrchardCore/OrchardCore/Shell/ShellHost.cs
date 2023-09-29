@@ -96,7 +96,7 @@ namespace OrchardCore.Environment.Shell
                     {
                         if (!_shellContexts.TryGetValue(settings.Name, out shell))
                         {
-                            if (!settings.IsValid())
+                            if (!settings.HasConfiguration())
                             {
                                 settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
                             }
@@ -192,7 +192,7 @@ namespace OrchardCore.Environment.Shell
                 return;
             }
 
-            if (ReloadingAsync is not null && eventSource && !settings.IsInitializing())
+            if (ReloadingAsync is not null && eventSource)
             {
                 foreach (var d in ReloadingAsync.GetInvocationList())
                 {
@@ -207,6 +207,7 @@ namespace OrchardCore.Environment.Shell
                 return;
             }
 
+            // Reload the shell settings from the configuration.
             settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
 
             var count = 0;
@@ -215,16 +216,8 @@ namespace OrchardCore.Environment.Shell
                 if (_shellContexts.TryRemove(settings.Name, out var context))
                 {
                     _runningShellTable.Remove(settings);
-
                     context.Settings.AsDisposable();
-                    if (context.IsPlaceholder())
-                    {
-                        context.Settings.Dispose();
-                    }
-                    else
-                    {
-                        await context.ReleaseAsync();
-                    }
+                    await context.ReleaseAsync();
                 }
 
                 // Add a 'PlaceHolder' allowing to retrieve the settings until the shell will be rebuilt.
@@ -241,20 +234,15 @@ namespace OrchardCore.Environment.Shell
                     _runningShellTable.Add(settings);
                 }
 
-                if (settings.IsInitializing())
-                {
-                    return;
-                }
-
                 // Consistency: We may have been the last to add the shell but not with the last settings.
-                using var loaded = (await _shellSettingsManager
-                    .LoadSettingsAsync(settings.Name))
-                    .AsDisposable();
-
+                var loaded = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
                 if (settings.VersionId == loaded.VersionId)
                 {
+                    loaded.AsDisposable().Dispose();
                     return;
                 }
+
+                settings = loaded;
             }
 
             throw new ShellHostReloadException(
@@ -316,14 +304,7 @@ namespace OrchardCore.Environment.Shell
             if (_shellContexts.TryRemove(settings.Name, out var context))
             {
                 context.Settings.AsDisposable();
-                if (context.IsPlaceholder())
-                {
-                    context.Settings.Dispose();
-                }
-                else
-                {
-                    await context.ReleaseAsync();
-                }
+                await context.ReleaseAsync();
             }
 
             _shellSettings.TryRemove(settings.Name, out _);
