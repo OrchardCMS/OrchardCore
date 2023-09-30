@@ -5,7 +5,7 @@ namespace OrchardCore.Notifications;
 public interface INotificationService
 {
     /// <summary>
-    /// Attempts to sent the given message to the given notifiable object.
+    /// Attempts to send the given message to the given notifiable object.
     /// </summary>
     /// <param name="notify"></param>
     /// <param name="message"></param>
