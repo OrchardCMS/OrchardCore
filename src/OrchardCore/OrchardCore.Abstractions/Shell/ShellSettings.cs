@@ -164,7 +164,7 @@ namespace OrchardCore.Environment.Shell
         public class PlaceHolder : ShellSettings
         {
             /// <summary>
-            /// Initializes a placeHolder used for shell disposing.
+            /// Initializes a placeHolder with an empty configuration.
             /// </summary>
             public PlaceHolder(string name)
                 : base(Configuration.ShellConfiguration.Empty,

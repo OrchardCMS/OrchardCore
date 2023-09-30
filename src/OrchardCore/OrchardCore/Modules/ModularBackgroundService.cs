@@ -103,7 +103,7 @@ namespace OrchardCore.Modules
         {
             await GetShellsToRun(runningShells).ForEachAsync(async tenant =>
             {
-                if (!_shellHost.TryGetShellContext(tenant, out var shell))
+                if (!_shellHost.TryGetShellContext(tenant, out var shell) || !shell.Settings.IsRunning())
                 {
                     return;
                 }
@@ -219,7 +219,7 @@ namespace OrchardCore.Modules
 
             await GetShellsToUpdate(previousShells, runningShells).ForEachAsync(async tenant =>
             {
-                if (!_shellHost.TryGetShellContext(tenant, out var shell))
+                if (!_shellHost.TryGetShellContext(tenant, out var shell) || !shell.Settings.IsRunning())
                 {
                     return;
                 }
@@ -348,16 +348,16 @@ namespace OrchardCore.Modules
             var previous = previousShells.Select(shell => shell.Tenant);
 
             var released = new List<string>();
-            foreach (var shell in previousShells)
+            foreach (var (tenant, utcTicks) in previousShells)
             {
-                if (_shellHost.TryGetShellContext(shell.Tenant, out var existing) &&
-                    existing.UtcTicks == shell.UtcTicks &&
+                if (_shellHost.TryGetShellContext(tenant, out var existing) &&
+                    existing.UtcTicks == utcTicks &&
                     !existing.Released)
                 {
                     continue;
                 }
 
-                released.Add(shell.Tenant);
+                released.Add(tenant);
             }
 
             if (released.Count > 0)

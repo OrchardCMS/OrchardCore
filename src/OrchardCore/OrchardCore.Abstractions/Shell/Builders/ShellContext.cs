@@ -70,13 +70,6 @@ namespace OrchardCore.Environment.Shell.Builders
             /// Whether or not the tenant has been pre-created on first loading.
             /// </summary>
             public bool PreCreated { get; init; }
-
-            public override Task ReleaseAsync()
-            {
-                Settings.Dispose();
-                Settings = new ShellSettings.PlaceHolder(Settings.Name);
-                return Task.CompletedTask;
-            }
         }
 
         /// <summary>
@@ -117,7 +110,7 @@ namespace OrchardCore.Environment.Shell.Builders
         /// <summary>
         /// Marks the <see cref="ShellContext"/> as released and then a candidate to be disposed.
         /// </summary>
-        public virtual Task ReleaseAsync() => ReleaseInternalAsync();
+        public Task ReleaseAsync() => ReleaseInternalAsync();
 
         internal Task ReleaseFromLastScopeAsync() => ReleaseInternalAsync(ReleaseMode.FromLastScope);
 
@@ -125,6 +118,14 @@ namespace OrchardCore.Environment.Shell.Builders
 
         internal async Task ReleaseInternalAsync(ReleaseMode mode = ReleaseMode.Normal)
         {
+            // A 'PlaceHolder' is always released.
+            if (this is PlaceHolder)
+            {
+                // But still try to dispose the settings.
+                Terminate();
+                return;
+            }
+
             if (_released)
             {
                 // Prevent infinite loops with circular dependencies
@@ -292,7 +293,6 @@ namespace OrchardCore.Environment.Shell.Builders
             Pipeline = null;
 
             Settings.Dispose();
-
             Settings = new ShellSettings.PlaceHolder(Settings.Name);
         }
 
