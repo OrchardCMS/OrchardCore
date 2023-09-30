@@ -144,7 +144,7 @@ public static class ShellSettingsExtensions
     }
 
     /// <summary>
-    /// Mark the tenant settings to be disposable.
+    /// Marks the tenant settings to be disposable.
     /// </summary>
     public static ShellSettings AsDisposable(this ShellSettings settings)
     {

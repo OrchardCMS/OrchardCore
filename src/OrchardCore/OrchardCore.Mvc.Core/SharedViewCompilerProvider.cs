@@ -12,7 +12,7 @@ namespace OrchardCore.Mvc
     {
         private readonly object _synLock = new();
         private static IViewCompiler _compiler;
-        private IServiceProvider _services;
+        private readonly IServiceProvider _services;
 
         public SharedViewCompilerProvider(IServiceProvider services)
         {

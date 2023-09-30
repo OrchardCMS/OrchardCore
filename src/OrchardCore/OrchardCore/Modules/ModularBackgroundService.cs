@@ -103,7 +103,7 @@ namespace OrchardCore.Modules
         {
             await GetShellsToRun(runningShells).ForEachAsync(async tenant =>
             {
-                if (!_shellHost.TryGetShellContext(tenant, out var shell) || shell.Released)
+                if (!_shellHost.TryGetShellContext(tenant, out var shell))
                 {
                     return;
                 }
@@ -219,7 +219,7 @@ namespace OrchardCore.Modules
 
             await GetShellsToUpdate(previousShells, runningShells).ForEachAsync(async tenant =>
             {
-                if (!_shellHost.TryGetShellContext(tenant, out var shell) || shell.Released)
+                if (!_shellHost.TryGetShellContext(tenant, out var shell))
                 {
                     return;
                 }
