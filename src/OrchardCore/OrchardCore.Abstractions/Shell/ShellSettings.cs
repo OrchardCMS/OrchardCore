@@ -75,7 +75,7 @@ namespace OrchardCore.Environment.Shell
         public bool Disposable
         {
             get => _disposable;
-            set => _disposable = value;
+            internal set => _disposable = value;
         }
 
         /// <summary>

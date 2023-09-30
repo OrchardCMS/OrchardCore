@@ -144,16 +144,7 @@ public static class ShellSettingsExtensions
     }
 
     /// <summary>
-    /// Mark the settings not to be disposed when the shell is disposed.
-    /// </summary>
-    public static ShellSettings AsNotDisposable(this ShellSettings settings)
-    {
-        settings.Disposable = false;
-        return settings;
-    }
-
-    /// <summary>
-    /// Mark the settings to be also disposed when the shell is disposed.
+    /// Mark the tenant settings to be disposable.
     /// </summary>
     public static ShellSettings AsDisposable(this ShellSettings settings)
     {

@@ -127,17 +127,12 @@ namespace OrchardCore.Environment.Shell.Builders
                 startup.ConfigureServices(featureAwareServiceCollection);
             }
 
-            if (settings.Disposable)
-            {
-                // Here the settings should not be disposed.
-                settings.AsNotDisposable();
-                await shellServiceProvider.DisposeAsync();
-                settings.AsDisposable();
-            }
-            else
-            {
-                await shellServiceProvider.DisposeAsync();
-            }
+            // Here the settings should not be disposed by the container.
+            var disposable = settings.Disposable;
+            settings.Disposable = false;
+
+            await shellServiceProvider.DisposeAsync();
+            settings.Disposable = disposable;
 
             // Rebuild the service provider from the updated collection.
             shellServiceProvider = tenantServiceCollection.BuildServiceProvider(true);

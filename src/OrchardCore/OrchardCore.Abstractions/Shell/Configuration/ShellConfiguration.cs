@@ -109,7 +109,7 @@ namespace OrchardCore.Environment.Shell.Configuration
                 _updatableData = new UpdatableDataProvider(_initialData ?? Enumerable.Empty<KeyValuePair<string, string>>());
 
                 _configuration = builder
-                    .AddConfiguration(new ConfigurationRoot(new[] { _updatableData }), shouldDisposeConfiguration: true)
+                    .AddConfiguration(new ConfigurationRoot(new[] { _updatableData }))
                     .Build();
             }
             finally
