@@ -42,9 +42,9 @@ public static class ShellSettingsExtensions
     public static bool IsRemovable(this ShellSettings settings) => settings.IsUninitialized() || settings.IsDisabled();
 
     /// <summary>
-    /// Whether or not the tenant configuration has not been and is not a candidate to be disposed.
+    /// Whether or not the tenant configuration has not been disposed.
     /// </summary>
-    public static bool HasConfiguration(this ShellSettings settings) => settings is { Disposed: false, Disposable: false };
+    public static bool HasConfiguration(this ShellSettings settings) => settings is { Disposed: false };
 
     /// <summary>
     /// Whether or not the tenant has the provided url prefix.

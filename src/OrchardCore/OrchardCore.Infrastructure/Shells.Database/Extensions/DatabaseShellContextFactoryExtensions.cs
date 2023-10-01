@@ -9,7 +9,8 @@ namespace OrchardCore.Shells.Database.Extensions
 {
     public static class DatabaseShellContextFactoryExtensions
     {
-        internal static Task<ShellContext> GetDatabaseContextAsync(this IShellContextFactory shellContextFactory, DatabaseShellsStorageOptions options)
+        internal async static Task<ShellContext> GetDatabaseContextAsync(
+            this IShellContextFactory shellContextFactory, DatabaseShellsStorageOptions options)
         {
             if (options.DatabaseProvider is null)
             {
@@ -18,7 +19,6 @@ namespace OrchardCore.Shells.Database.Extensions
 
             var settings = new ShellSettings()
                 .AsDefaultShell()
-                .AsDisposable()
                 .AsRunning();
 
             settings["DatabaseProvider"] = options.DatabaseProvider;
@@ -26,7 +26,9 @@ namespace OrchardCore.Shells.Database.Extensions
             settings["TablePrefix"] = options.TablePrefix;
             settings["Schema"] = options.Schema;
 
-            return shellContextFactory.CreateDescribedContextAsync(settings, new ShellDescriptor());
+            return (await shellContextFactory
+                .CreateDescribedContextAsync(settings, new ShellDescriptor()))
+                .SettingsAsDisposable();
         }
     }
 }

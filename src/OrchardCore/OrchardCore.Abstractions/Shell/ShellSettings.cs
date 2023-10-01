@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using OrchardCore.Environment.Shell.Configuration;
@@ -183,6 +182,10 @@ namespace OrchardCore.Environment.Shell
             }
 
             _disposed = true;
+
+            // Usually marked as disposable and then disposed by the parent shell on reloading,
+            // or on releasing an isolated shell whose loaded settings are also kept isolated,
+            // or explicitly if only loaded to manage config values but not tied to a shell.
 
             _settings?.Release();
             _configuration?.Release();

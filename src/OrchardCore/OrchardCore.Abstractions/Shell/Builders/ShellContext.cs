@@ -63,7 +63,6 @@ namespace OrchardCore.Environment.Shell.Builders
             public PlaceHolder()
             {
                 _released = true;
-                _disposed = true;
             }
 
             /// <summary>
@@ -122,7 +121,7 @@ namespace OrchardCore.Environment.Shell.Builders
             if (this is PlaceHolder)
             {
                 // But still try to dispose the settings.
-                Terminate();
+                await DisposeAsync();
                 return;
             }
 
@@ -291,6 +290,9 @@ namespace OrchardCore.Environment.Shell.Builders
             IsActivated = false;
             Blueprint = null;
             Pipeline = null;
+
+            // If disposable the settings are first disposed by the container as a disposable service,
+            // unless if there is no service provider e.g. if the shell is disabled or a place holder.
 
             Settings.Dispose();
             Settings = new ShellSettings.PlaceHolder(Settings.Name);

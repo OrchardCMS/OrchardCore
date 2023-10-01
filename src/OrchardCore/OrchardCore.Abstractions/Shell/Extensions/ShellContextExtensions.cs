@@ -15,11 +15,6 @@ public static class ShellContextExtensions
     public static bool IsPreCreated(this ShellContext context) => context is ShellContext.PlaceHolder { PreCreated: true };
 
     /// <summary>
-    /// Whether or not the tenant configuration has not been and is not a candidate to be disposed.
-    /// </summary>
-    public static bool HasConfiguration(this ShellContext context) => context is { Settings: { Disposed: false, Disposable: false } };
-
-    /// <summary>
     /// Whether or not the tenant container has been built on a first demand.
     /// </summary>
     public static bool HasServices(this ShellContext context) => context is { ServiceProvider: not null };
@@ -33,4 +28,13 @@ public static class ShellContextExtensions
     /// Whether or not the tenant is in use in at least one active scope.
     /// </summary>
     public static bool IsActive(this ShellContext context) => context is { ActiveScopes: > 0 };
+
+    /// <summary>
+    /// Marks the settings of this tenant to be disposable.
+    /// </summary>
+    public static ShellContext SettingsAsDisposable(this ShellContext context)
+    {
+        context.Settings.AsDisposable();
+        return context;
+    }
 }
