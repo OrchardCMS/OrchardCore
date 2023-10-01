@@ -340,7 +340,7 @@ namespace OrchardCore.Environment.Shell.Distributed
 
             // Create a local distributed context because it is not yet initialized.
             var context = _context = (await CreateDistributedContextAsync(defaultSettings))
-                .SettingsAsDisposable();
+                .WithDisposableSettings();
 
             if (context is null)
             {

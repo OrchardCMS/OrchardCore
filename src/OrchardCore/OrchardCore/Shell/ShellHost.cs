@@ -216,7 +216,7 @@ namespace OrchardCore.Environment.Shell
                 if (_shellContexts.TryRemove(settings.Name, out var context))
                 {
                     _runningShellTable.Remove(settings);
-                    await context.SettingsAsDisposable().ReleaseAsync();
+                    await context.WithDisposableSettings().ReleaseAsync();
                 }
 
                 // Add a 'PlaceHolder' allowing to retrieve the settings until the shell will be rebuilt.
@@ -302,7 +302,7 @@ namespace OrchardCore.Environment.Shell
 
             if (_shellContexts.TryRemove(settings.Name, out var context))
             {
-                await context.SettingsAsDisposable().ReleaseAsync();
+                await context.WithDisposableSettings().ReleaseAsync();
             }
 
             _shellSettings.TryRemove(settings.Name, out _);

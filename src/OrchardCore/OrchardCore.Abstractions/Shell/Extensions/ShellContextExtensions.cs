@@ -32,7 +32,7 @@ public static class ShellContextExtensions
     /// <summary>
     /// Marks the settings of this tenant to be disposable.
     /// </summary>
-    public static ShellContext SettingsAsDisposable(this ShellContext context)
+    public static ShellContext WithDisposableSettings(this ShellContext context)
     {
         context.Settings.AsDisposable();
         return context;

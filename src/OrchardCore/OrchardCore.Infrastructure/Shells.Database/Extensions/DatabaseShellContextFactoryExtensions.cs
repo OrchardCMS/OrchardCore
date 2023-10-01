@@ -28,7 +28,7 @@ namespace OrchardCore.Shells.Database.Extensions
 
             return (await shellContextFactory
                 .CreateDescribedContextAsync(settings, new ShellDescriptor()))
-                .SettingsAsDisposable();
+                .WithDisposableSettings();
         }
     }
 }
