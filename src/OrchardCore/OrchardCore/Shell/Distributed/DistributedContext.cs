@@ -38,12 +38,6 @@ namespace OrchardCore.Environment.Shell.Distributed
 
         public IDistributedCache DistributedCache { get; }
 
-        public DistributedContext WithDisposableSettings()
-        {
-            _context.Settings.AsDisposable();
-            return this;
-        }
-
         public DistributedContext Acquire()
         {
             // Don't acquire a released context.

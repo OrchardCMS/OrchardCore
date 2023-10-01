@@ -26,6 +26,7 @@ namespace OrchardCore.Environment.Shell
 
         private readonly ShellConfiguration _settings;
         private readonly ShellConfiguration _configuration;
+        internal volatile int _shellCreating;
         private bool _disposable;
         private bool _disposed;
 
@@ -176,16 +177,17 @@ namespace OrchardCore.Environment.Shell
 
         public void Dispose()
         {
-            if (_disposed || !_disposable)
+            // Marked as disposable to be then disposed on reloading the parent shell context,
+            // or on releasing an isolated shell whose loaded settings are also kept isolated,
+            // or explicitly if only loaded to manage config values but never tied to a shell,
+            // but the settings are never disposed while being used to create a shell context.
+
+            if (_disposed || !_disposable || _shellCreating > 0)
             {
                 return;
             }
 
             _disposed = true;
-
-            // Usually marked as disposable and then disposed by the parent shell on reloading,
-            // or on releasing an isolated shell whose loaded settings are also kept isolated,
-            // or explicitly if only loaded to manage config values but not tied to a shell.
 
             _settings?.Release();
             _configuration?.Release();

@@ -291,9 +291,6 @@ namespace OrchardCore.Environment.Shell.Builders
             Blueprint = null;
             Pipeline = null;
 
-            // If disposable the settings are first disposed by the container as a disposable service,
-            // unless if there is no service provider e.g. if the shell is disabled or a place holder.
-
             Settings.Dispose();
             Settings = new ShellSettings.PlaceHolder(Settings.Name);
         }

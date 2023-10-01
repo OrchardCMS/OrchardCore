@@ -331,20 +331,21 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
 
             // If there is no default tenant or it is not running, nothing to do.
-            var defaultSettings = (await _shellSettingsManager.LoadSettingsAsync(ShellSettings.DefaultShellName));
+            var defaultSettings = (await _shellSettingsManager
+                .LoadSettingsAsync(ShellSettings.DefaultShellName))
+                .AsDisposable();
+
             if (!defaultSettings.IsRunning())
             {
-                defaultSettings.AsDisposable().Dispose();
+                defaultSettings.Dispose();
                 return;
             }
 
             // Create a local distributed context because it is not yet initialized.
-            var context = _context = (await CreateDistributedContextAsync(defaultSettings))
-                .WithDisposableSettings();
-
+            var context = _context = await CreateDistributedContextAsync(defaultSettings);
             if (context is null)
             {
-                defaultSettings.AsDisposable().Dispose();
+                defaultSettings.Dispose();
                 return;
             }
 
@@ -690,6 +691,7 @@ namespace OrchardCore.Environment.Shell.Distributed
 
             // Check if the default tenant descriptor was updated or if the settings was released.
             if (_context.Context.Blueprint.Descriptor.SerialNumber != descriptor.SerialNumber ||
+                _context.Context.Settings.VersionId != defaultContext.Settings.VersionId ||
                 !_context.Context.Settings.HasConfiguration())
             {
                 // Creates a new context based on the default settings and descriptor.

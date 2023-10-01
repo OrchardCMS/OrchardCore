@@ -28,13 +28,4 @@ public static class ShellContextExtensions
     /// Whether or not the tenant is in use in at least one active scope.
     /// </summary>
     public static bool IsActive(this ShellContext context) => context is { ActiveScopes: > 0 };
-
-    /// <summary>
-    /// Marks the settings of this tenant to be disposable.
-    /// </summary>
-    public static ShellContext WithDisposableSettings(this ShellContext context)
-    {
-        context.Settings.AsDisposable();
-        return context;
-    }
 }

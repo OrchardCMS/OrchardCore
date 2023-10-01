@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -34,22 +35,34 @@ namespace OrchardCore.Environment.Shell.Builders
                 _logger.LogInformation("Creating shell context for tenant '{TenantName}'", settings.Name);
             }
 
-            var describedContext = await CreateDescribedContextAsync(settings, new ShellDescriptor());
+            // During context creation intermediate containers are created and then disposed
+            // but they should not dispose the settings (if marked as a disposable service).
 
-            ShellDescriptor currentDescriptor = null;
-            await (await describedContext.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
+            // Prevent the settings from being disposed.
+            Interlocked.Increment(ref settings._shellCreating);
+            try
             {
-                var shellDescriptorManager = scope.ServiceProvider.GetService<IShellDescriptorManager>();
-                currentDescriptor = await shellDescriptorManager.GetShellDescriptorAsync();
-            });
+                var describedContext = await CreateDescribedContextAsync(settings, new ShellDescriptor());
 
-            if (currentDescriptor is not null)
-            {
-                await describedContext.DisposeAsync();
-                return await CreateDescribedContextAsync(settings, currentDescriptor);
+                ShellDescriptor currentDescriptor = null;
+                await (await describedContext.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
+                {
+                    var shellDescriptorManager = scope.ServiceProvider.GetService<IShellDescriptorManager>();
+                    currentDescriptor = await shellDescriptorManager.GetShellDescriptorAsync();
+                });
+
+                if (currentDescriptor is not null)
+                {
+                    await describedContext.DisposeAsync();
+                    return await CreateDescribedContextAsync(settings, currentDescriptor);
+                }
+
+                return describedContext;
             }
-
-            return describedContext;
+            finally
+            {
+                Interlocked.Decrement(ref settings._shellCreating);
+            }
         }
 
         Task<ShellContext> IShellContextFactory.CreateSetupContextAsync(ShellSettings settings)
@@ -71,23 +84,35 @@ namespace OrchardCore.Environment.Shell.Builders
                 _logger.LogDebug("Creating described context for tenant '{TenantName}'", settings.Name);
             }
 
-            await settings.EnsureConfigurationAsync();
+            // During context creation intermediate containers are created and then disposed
+            // but they should not dispose the settings (if marked as a disposable service).
 
-            var blueprint = await _compositionStrategy.ComposeAsync(settings, shellDescriptor);
-            var provider = await _shellContainerFactory.CreateContainerAsync(settings, blueprint);
-
-            var options = provider.GetService<IOptions<ShellContainerOptions>>().Value;
-            foreach (var initializeAsync in options.Initializers)
+            // Prevent the settings from being disposed.
+            Interlocked.Increment(ref settings._shellCreating);
+            try
             {
-                await initializeAsync(provider);
+                await settings.EnsureConfigurationAsync();
+
+                var blueprint = await _compositionStrategy.ComposeAsync(settings, shellDescriptor);
+                var provider = await _shellContainerFactory.CreateContainerAsync(settings, blueprint);
+
+                var options = provider.GetService<IOptions<ShellContainerOptions>>().Value;
+                foreach (var initializeAsync in options.Initializers)
+                {
+                    await initializeAsync(provider);
+                }
+
+                return new ShellContext
+                {
+                    Settings = settings,
+                    Blueprint = blueprint,
+                    ServiceProvider = provider
+                };
             }
-
-            return new ShellContext
+            finally
             {
-                Settings = settings,
-                Blueprint = blueprint,
-                ServiceProvider = provider
-            };
+                Interlocked.Decrement(ref settings._shellCreating);
+            }
         }
 
         /// <summary>
