@@ -290,12 +290,7 @@ namespace OrchardCore.Environment.Shell.Builders
             IsActivated = false;
             Blueprint = null;
             Pipeline = null;
-
-            if (Settings.Disposable)
-            {
-                Settings.Dispose();
-                Settings = new ShellSettings.PlaceHolder(Settings.Name);
-            }
+            Settings.Dispose();
         }
 
         ~ShellContext() => Close();

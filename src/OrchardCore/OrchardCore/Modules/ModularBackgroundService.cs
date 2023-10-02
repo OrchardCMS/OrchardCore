@@ -103,6 +103,7 @@ namespace OrchardCore.Modules
         {
             await GetShellsToRun(runningShells).ForEachAsync(async tenant =>
             {
+                // Check if the shell is still registered and running.
                 if (!_shellHost.TryGetShellContext(tenant, out var shell) || !shell.Settings.IsRunning())
                 {
                     return;
@@ -219,6 +220,7 @@ namespace OrchardCore.Modules
 
             await GetShellsToUpdate(previousShells, runningShells).ForEachAsync(async tenant =>
             {
+                // Check if the shell is still registered and running.
                 if (!_shellHost.TryGetShellContext(tenant, out var shell) || !shell.Settings.IsRunning())
                 {
                     return;

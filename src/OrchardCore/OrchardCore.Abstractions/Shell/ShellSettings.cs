@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using OrchardCore.Environment.Shell.Configuration;
@@ -128,19 +129,7 @@ namespace OrchardCore.Environment.Shell
         [JsonConverter(typeof(StringEnumConverter))]
         public TenantState State
         {
-            get
-            {
-                var state = _settings["State"];
-                if (state is null)
-                {
-                    return TenantState.Uninitialized;
-                }
-
-                return Enum.IsDefined(typeof(TenantState), state)
-                    ? Enum.Parse<TenantState>(state)
-                    : TenantState.Uninitialized;
-            }
-
+            get => _settings.GetValue<TenantState>("State");
             set => _settings["State"] = value.ToString();
         }
 
@@ -162,23 +151,6 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         public Task EnsureConfigurationAsync() => _configuration.EnsureConfigurationAsync();
 
-        /// <summary>
-        /// PlaceHolder class used for shell disposing.
-        /// </summary>
-        public class PlaceHolder : ShellSettings
-        {
-            /// <summary>
-            /// Initializes a placeHolder with an empty configuration.
-            /// </summary>
-            public PlaceHolder(string name)
-                : base(Configuration.ShellConfiguration.Empty,
-                      Configuration.ShellConfiguration.Empty)
-            {
-                Name = name;
-                _disposed = true;
-            }
-        }
-
         public void Dispose()
         {
             // Marked as disposable to be then disposed on reloading the parent shell context,
@@ -195,7 +167,6 @@ namespace OrchardCore.Environment.Shell
 
             _settings?.Release();
             _configuration?.Release();
-
             GC.SuppressFinalize(this);
         }
 
