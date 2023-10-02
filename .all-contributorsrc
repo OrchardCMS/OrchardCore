@@ -2780,6 +2780,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "emrahtokalak",
+      "name": "Emrah Tokalak",
+      "avatar_url": "https://avatars.githubusercontent.com/u/90242?v=4",
+      "profile": "http://emrahtokalak.com/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
