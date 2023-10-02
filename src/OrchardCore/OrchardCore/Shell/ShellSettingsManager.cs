@@ -12,7 +12,7 @@ using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Environment.Shell
 {
-    public sealed class ShellSettingsManager : IShellSettingsManager, IDisposable
+    public sealed class ShellSettingsManager : IShellSettingsManager
     {
         private readonly IConfiguration _applicationConfiguration;
         private readonly IShellsConfigurationSources _tenantsConfigSources;
@@ -20,7 +20,6 @@ namespace OrchardCore.Environment.Shell
         private readonly IShellsSettingsSources _settingsSources;
 
         private IConfiguration _configuration;
-        private IConfigurationRoot _configurationRoot;
         private IEnumerable<string> _configuredTenants;
         private readonly SemaphoreSlim _semaphore = new(1);
 
@@ -292,8 +291,7 @@ namespace OrchardCore.Environment.Shell
                 configurationBuilder.AddConfiguration(new ConfigurationRoot(lastProviders));
             }
 
-            var configurationRoot = configurationBuilder.Build();
-            var configuration = configurationRoot.GetSection("OrchardCore");
+            var configuration = configurationBuilder.Build().GetSection("OrchardCore");
 
             _configuredTenants = configuration.GetChildren()
                 .Where(section => Enum.TryParse<TenantState>(section["State"], ignoreCase: true, out _))
@@ -317,9 +315,6 @@ namespace OrchardCore.Environment.Shell
             };
 
             _configuration = configuration;
-            _configurationRoot = configurationRoot;
         }
-
-        public void Dispose() => (_configurationRoot as IDisposable)?.Dispose();
     }
 }

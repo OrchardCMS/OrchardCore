@@ -120,7 +120,7 @@ namespace OrchardCore.Modules
                         break;
                     }
 
-                    var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
+                    var shellScope = await _shellHost.GetScopeAsync(shell.Settings.Name);
                     if (!_options.ShellWarmup && !shellScope.ShellContext.HasPipeline())
                     {
                         break;
@@ -234,7 +234,7 @@ namespace OrchardCore.Modules
                 // Create a new 'HttpContext' to be used in the background.
                 _httpContextAccessor.HttpContext = shell.CreateHttpContext();
 
-                var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
+                var shellScope = await _shellHost.GetScopeAsync(shell.Settings.Name);
                 if (!_options.ShellWarmup && !shellScope.ShellContext.HasPipeline())
                 {
                     return;
