@@ -130,7 +130,11 @@ namespace OrchardCore.Environment.Shell
         {
             get
             {
-                var state = _settings["State"] ?? string.Empty;
+                var state = _settings["State"];
+                if (state is null)
+                {
+                    return TenantState.Uninitialized;
+                }
 
                 return Enum.IsDefined(typeof(TenantState), state)
                     ? Enum.Parse<TenantState>(state)
