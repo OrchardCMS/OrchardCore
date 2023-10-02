@@ -613,6 +613,12 @@ namespace OrchardCore.Environment.Shell.Distributed
         /// </summary>
         private async Task<ShellDescriptor> GetDefaultShellDescriptorAsync(ShellContext defaultContext)
         {
+            // Check if the configuration has been disposed.
+            if (!defaultContext.Settings.HasConfiguration())
+            {
+                return null;
+            }
+
             // Capture the descriptor as the blueprint may be set to null right after.
             var descriptor = defaultContext.Blueprint?.Descriptor;
 
@@ -684,14 +690,13 @@ namespace OrchardCore.Environment.Shell.Distributed
 
             // If no descriptor.
             if (descriptor is null)
-            {
+            {   
                 // Nothing to create.
                 return null;
             }
 
-            // Check if the default tenant descriptor was updated or if the settings was updated.
+            // Check if the default tenant descriptor or tenant configuration was updated.
             if (_context.Context.Blueprint.Descriptor.SerialNumber != descriptor.SerialNumber ||
-                _context.Context.Settings.VersionId != defaultContext.Settings.VersionId ||
                 !_context.Context.Settings.HasConfiguration())
             {
                 // Creates a new context based on the default settings and descriptor.
