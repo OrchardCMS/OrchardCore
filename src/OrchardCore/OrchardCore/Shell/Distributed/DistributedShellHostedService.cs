@@ -689,7 +689,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                 return null;
             }
 
-            // Check if the default tenant descriptor was updated or if the settings was released.
+            // Check if the default tenant descriptor was updated or if the settings was updated.
             if (_context.Context.Blueprint.Descriptor.SerialNumber != descriptor.SerialNumber ||
                 _context.Context.Settings.VersionId != defaultContext.Settings.VersionId ||
                 !_context.Context.Settings.HasConfiguration())
