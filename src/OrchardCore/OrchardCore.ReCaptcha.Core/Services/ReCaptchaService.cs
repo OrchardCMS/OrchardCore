@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -14,16 +15,19 @@ namespace OrchardCore.ReCaptcha.Services
 {
     public class ReCaptchaService
     {
-        private readonly ReCaptchaClient _reCaptchaClient;
         private readonly ReCaptchaSettings _settings;
         private readonly IEnumerable<IDetectRobots> _robotDetectors;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
         protected readonly IStringLocalizer S;
 
-        public ReCaptchaService(ReCaptchaClient reCaptchaClient, IOptions<ReCaptchaSettings> optionsAccessor, IEnumerable<IDetectRobots> robotDetectors, IHttpContextAccessor httpContextAccessor, ILogger<ReCaptchaService> logger, IStringLocalizer<ReCaptchaService> stringLocalizer)
+        public ReCaptchaService(
+            IOptions<ReCaptchaSettings> optionsAccessor,
+            IEnumerable<IDetectRobots> robotDetectors,
+            IHttpContextAccessor httpContextAccessor,
+            ILogger<ReCaptchaService> logger,
+            IStringLocalizer<ReCaptchaService> stringLocalizer)
         {
-            _reCaptchaClient = reCaptchaClient;
             _settings = optionsAccessor.Value;
             _robotDetectors = robotDetectors;
             _httpContextAccessor = httpContextAccessor;
@@ -65,7 +69,8 @@ namespace OrchardCore.ReCaptcha.Services
         /// <returns></returns>
         public async Task<bool> VerifyCaptchaResponseAsync(string reCaptchaResponse)
         {
-            return !string.IsNullOrWhiteSpace(reCaptchaResponse) && await _reCaptchaClient.VerifyAsync(reCaptchaResponse, _settings.SecretKey);
+            var reCaptchaClient = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<ReCaptchaClient>();
+            return !string.IsNullOrWhiteSpace(reCaptchaResponse) && await reCaptchaClient.VerifyAsync(reCaptchaResponse, _settings.SecretKey);
         }
 
         /// <summary>
