@@ -330,18 +330,19 @@ namespace OrchardCore.Environment.Shell.Distributed
                 return;
             }
 
-            // If there is no default tenant or it is not running, nothing to do.
+            // Load a first isolated configuration as the default context it is not yet initialized.
             var defaultSettings = (await _shellSettingsManager
                 .LoadSettingsAsync(ShellSettings.DefaultShellName))
                 .AsDisposable();
 
+            // If there is no default tenant or it is not running, nothing to do.
             if (!defaultSettings.IsRunning())
             {
                 defaultSettings.Dispose();
                 return;
             }
 
-            // Create a local distributed context because it is not yet initialized.
+            // Create a distributed context based on the isolated default settings.
             var context = _context = await CreateDistributedContextAsync(defaultSettings);
             if (context is null)
             {
@@ -349,8 +350,11 @@ namespace OrchardCore.Environment.Shell.Distributed
                 return;
             }
 
+            // Mark the context as using the first isolated configuration.
+            context.HasIsolatedConfiguration = true;
+
             // If the required distributed features are not enabled, nothing to do.
-            var distributedCache = context?.DistributedCache;
+            var distributedCache = context.DistributedCache;
             if (distributedCache is null)
             {
                 return;
@@ -465,6 +469,13 @@ namespace OrchardCore.Environment.Shell.Distributed
 
             // Acquire the distributed context or create a new one if not yet built.
             await using var context = await AcquireOrCreateDistributedContextAsync(defaultContext);
+
+            // If the context still use the first isolated configuration.
+            if (context is not null && context.HasIsolatedConfiguration)
+            {
+                // Reset the serial number so that a new context will be built.
+                context.Context.Blueprint.Descriptor.SerialNumber = 0;
+            }
 
             // If the required distributed features are not enabled, nothing to do.
             var distributedCache = context?.DistributedCache;

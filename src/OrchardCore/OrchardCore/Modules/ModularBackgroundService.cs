@@ -120,9 +120,17 @@ namespace OrchardCore.Modules
                         break;
                     }
 
-                    var shellScope = await _shellHost.GetScopeAsync(shell.Settings.Name);
+                    // Try to create a shell scope on this shell context.
+                    var (shellScope, success) = await _shellHost.TryGetScopeAsync(shell.Settings.Name);
+                    if (!success)
+                    {
+                        break;
+                    }
+
+                    // Check if the shell has no pipeline and should not be warmed up.
                     if (!_options.ShellWarmup && !shellScope.ShellContext.HasPipeline())
                     {
+                        await shellScope.TerminateShellAsync();
                         break;
                     }
 
@@ -220,25 +228,33 @@ namespace OrchardCore.Modules
 
             await GetShellsToUpdate(previousShells, runningShells).ForEachAsync(async tenant =>
             {
+                if (stoppingToken.IsCancellationRequested)
+                {
+                    return;
+                }
+
                 // Check if the shell is still registered and running.
                 if (!_shellHost.TryGetShellContext(tenant, out var shell) || !shell.Settings.IsRunning())
                 {
                     return;
                 }
 
-                if (stoppingToken.IsCancellationRequested)
+                // Try to create a shell scope on this shell context.
+                var (shellScope, success) = await _shellHost.TryGetScopeAsync(shell.Settings.Name);
+                if (!success)
                 {
+                    return;
+                }
+
+                // Check if the shell has no pipeline and should not be warmed up.
+                if (!_options.ShellWarmup && !shellScope.ShellContext.HasPipeline())
+                {
+                    await shellScope.TerminateShellAsync();
                     return;
                 }
 
                 // Create a new 'HttpContext' to be used in the background.
                 _httpContextAccessor.HttpContext = shell.CreateHttpContext();
-
-                var shellScope = await _shellHost.GetScopeAsync(shell.Settings.Name);
-                if (!_options.ShellWarmup && !shellScope.ShellContext.HasPipeline())
-                {
-                    return;
-                }
 
                 await shellScope.UsingAsync(async scope =>
                 {

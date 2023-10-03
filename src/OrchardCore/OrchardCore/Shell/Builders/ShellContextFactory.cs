@@ -35,10 +35,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 _logger.LogInformation("Creating shell context for tenant '{TenantName}'", settings.Name);
             }
 
-            // During context creation intermediate containers are created and then disposed
-            // but they should not dispose the settings (if marked as a disposable service).
-
-            // Prevent the settings from being disposed.
+            // Prevent settings from being disposed when an intermediate container is disposed.
             Interlocked.Increment(ref settings._shellCreating);
             try
             {
@@ -84,10 +81,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 _logger.LogDebug("Creating described context for tenant '{TenantName}'", settings.Name);
             }
 
-            // During context creation intermediate containers are created and then disposed
-            // but they should not dispose the settings (if marked as a disposable service).
-
-            // Prevent the settings from being disposed.
+            // Prevent settings from being disposed when an intermediate container is disposed.
             Interlocked.Increment(ref settings._shellCreating);
             try
             {

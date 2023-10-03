@@ -153,11 +153,8 @@ namespace OrchardCore.Environment.Shell
 
         public void Dispose()
         {
-            // Marked as disposable to be then disposed on reloading the parent shell context,
-            // or on releasing an isolated shell whose loaded settings are also kept isolated,
-            // or explicitly if only loaded to manage config values but never tied to a shell,
-            // but the settings are never disposed while being used to create a shell context.
-
+            // Usually marked as disposable on reloading the parent shell, or
+            // explicitly if not tied to a shell or only to an isolated shell.
             if (_disposed || !_disposable || _shellCreating > 0)
             {
                 return;
