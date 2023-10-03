@@ -30,6 +30,11 @@ namespace OrchardCore.Settings.Drivers
 
         public override Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
         {
+            if (!IsGeneralGroup(context))
+            {
+                return Task.FromResult<IDisplayResult>(null);
+            }
+
             context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__General");
 
             var result = Combine(
@@ -49,43 +54,45 @@ namespace OrchardCore.Settings.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(ISite site, UpdateEditorContext context)
         {
-            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
+            if (!IsGeneralGroup(context))
             {
-                var model = new SiteSettingsViewModel();
+                return null;
+            }
 
-                if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+            var model = new SiteSettingsViewModel();
+
+            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+            {
+                site.SiteName = model.SiteName;
+                site.PageTitleFormat = model.PageTitleFormat;
+                site.BaseUrl = model.BaseUrl;
+                site.TimeZoneId = model.TimeZone;
+                site.PageSize = model.PageSize.Value;
+                site.UseCdn = model.UseCdn;
+                site.CdnBaseUrl = model.CdnBaseUrl;
+                site.ResourceDebugMode = model.ResourceDebugMode;
+                site.AppendVersion = model.AppendVersion;
+                site.CacheMode = model.CacheMode;
+
+                if (model.PageSize.Value < 1)
                 {
-                    site.SiteName = model.SiteName;
-                    site.PageTitleFormat = model.PageTitleFormat;
-                    site.BaseUrl = model.BaseUrl;
-                    site.TimeZoneId = model.TimeZone;
-                    site.PageSize = model.PageSize.Value;
-                    site.UseCdn = model.UseCdn;
-                    site.CdnBaseUrl = model.CdnBaseUrl;
-                    site.ResourceDebugMode = model.ResourceDebugMode;
-                    site.AppendVersion = model.AppendVersion;
-                    site.CacheMode = model.CacheMode;
-
-                    if (model.PageSize.Value < 1)
-                    {
-                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be greater than zero."]);
-                    }
-
-                    if (site.MaxPageSize > 0 && model.PageSize.Value > site.MaxPageSize)
-                    {
-                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be less than or equal to {0}.", site.MaxPageSize]);
-                    }
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be greater than zero."]);
                 }
 
-                if (!String.IsNullOrEmpty(site.BaseUrl) && !Uri.TryCreate(site.BaseUrl, UriKind.Absolute, out _))
+                if (site.MaxPageSize > 0 && model.PageSize.Value > site.MaxPageSize)
                 {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.BaseUrl), S["The Base url must be a fully qualified URL."]);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be less than or equal to {0}.", site.MaxPageSize]);
                 }
+            }
 
-                if (context.Updater.ModelState.IsValid)
-                {
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
+            if (!String.IsNullOrEmpty(site.BaseUrl) && !Uri.TryCreate(site.BaseUrl, UriKind.Absolute, out _))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.BaseUrl), S["The Base url must be a fully qualified URL."]);
+            }
+
+            if (context.Updater.ModelState.IsValid)
+            {
+                await _shellHost.ReleaseShellContextAsync(_shellSettings);
             }
 
             return await EditAsync(site, context);
@@ -104,5 +111,8 @@ namespace OrchardCore.Settings.Drivers
             model.AppendVersion = site.AppendVersion;
             model.CacheMode = site.CacheMode;
         }
+
+        private static bool IsGeneralGroup(BuildEditorContext context)
+            => context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase);
     }
 }
