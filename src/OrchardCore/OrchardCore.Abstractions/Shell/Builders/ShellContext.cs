@@ -290,6 +290,8 @@ namespace OrchardCore.Environment.Shell.Builders
             IsActivated = false;
             Blueprint = null;
             Pipeline = null;
+
+            _semaphore.Dispose();
             Settings.Dispose();
         }
 
