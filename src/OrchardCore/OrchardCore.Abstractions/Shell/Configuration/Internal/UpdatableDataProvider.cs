@@ -9,7 +9,7 @@ using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.Environment.Shell.Configuration.Internal
 {
-    internal class UpdatableDataProvider : IConfigurationProvider, IEnumerable<KeyValuePair<string, string>>
+    internal class UpdatableDataProvider : IConfigurationProvider, IConfigurationSource, IEnumerable<KeyValuePair<string, string>>
     {
         public UpdatableDataProvider(IEnumerable<KeyValuePair<string, string>> initialData)
         {
@@ -52,5 +52,7 @@ namespace OrchardCore.Environment.Shell.Configuration.Internal
         public IChangeToken GetReloadToken() => NullChangeToken.Singleton;
 
         public override string ToString() => $"{GetType().Name}";
+
+        public IConfigurationProvider Build(IConfigurationBuilder builder) => this;
     }
 }
