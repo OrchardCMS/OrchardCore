@@ -250,7 +250,6 @@ namespace OrchardCore.Setup.Services
             await (await _shellHost.GetScopeAsync(shellSettings.Name)).UsingAsync(async scope =>
             {
                 var handlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();
-
                 await handlers.InvokeAsync((handler) => handler.SucceededAsync(), _logger);
             });
 
