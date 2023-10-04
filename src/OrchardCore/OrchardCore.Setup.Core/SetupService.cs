@@ -152,7 +152,9 @@ namespace OrchardCore.Setup.Services
 
             _httpContextAccessor.HttpContext.Features.Set(recipeEnvironmentFeature);
 
-            var shellSettings = new ShellSettings(context.ShellSettings).ConfigureDatabaseTableOptions();
+            // Create local settings but that will be registered during the setup recipe in place of the current settings
+            // that should be marked as disposable so that they will be disposed when the parent context will be disposed.
+            var shellSettings = new ShellSettings(context.ShellSettings.AsDisposable()).ConfigureDatabaseTableOptions();
             if (string.IsNullOrWhiteSpace(shellSettings["DatabaseProvider"]))
             {
                 shellSettings["DatabaseProvider"] = context.Properties.TryGetValue(SetupConstants.DatabaseProvider, out var databaseProvider) ? databaseProvider?.ToString() : string.Empty;

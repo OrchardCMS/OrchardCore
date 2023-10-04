@@ -432,7 +432,8 @@ namespace OrchardCore.Environment.Shell
                 defaultSettings = _shellSettingsManager
                     .CreateDefaultSettings()
                     .AsDefaultShell()
-                    .AsUninitialized();
+                    .AsUninitialized()
+                    .AsDisposable();
 
                 await UpdateShellSettingsAsync(defaultSettings);
             }

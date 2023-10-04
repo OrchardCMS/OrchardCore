@@ -82,7 +82,11 @@ namespace OrchardCore.Tenants.Services
                 if (existingShellSettings is null)
                 {
                     // Set the settings to be validated.
-                    shellSettings = _shellSettingsManager.CreateDefaultSettings();
+                    shellSettings = _shellSettingsManager
+                        .CreateDefaultSettings()
+                        .AsUninitialized()
+                        .AsDisposable();
+
                     shellSettings.Name = model.Name;
                 }
                 else if (existingShellSettings.IsDefaultShell())
@@ -108,6 +112,11 @@ namespace OrchardCore.Tenants.Services
             {
                 var validationContext = new DbConnectionValidatorContext(shellSettings, model);
                 await ValidateConnectionAsync(validationContext, errors);
+
+                if (model.IsNewTenant && existingShellSettings is null)
+                {
+                    shellSettings.Dispose();
+                }
             }
 
             return errors;

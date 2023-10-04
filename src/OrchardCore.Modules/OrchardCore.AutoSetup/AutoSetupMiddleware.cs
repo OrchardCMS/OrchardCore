@@ -209,7 +209,8 @@ namespace OrchardCore.AutoSetup
         {
             var shellSettings = _shellSettingsManager
                 .CreateDefaultSettings()
-                .AsUninitialized();
+                .AsUninitialized()
+                .AsDisposable();
 
             shellSettings.Name = setupOptions.ShellName;
             shellSettings.RequestUrlHost = setupOptions.RequestUrlHost;
