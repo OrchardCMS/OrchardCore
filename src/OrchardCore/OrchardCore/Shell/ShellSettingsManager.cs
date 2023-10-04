@@ -12,7 +12,7 @@ using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Environment.Shell
 {
-    public sealed class ShellSettingsManager : IShellSettingsManager
+    public class ShellSettingsManager : IShellSettingsManager
     {
         private readonly IConfiguration _applicationConfiguration;
         private readonly IShellsConfigurationSources _tenantsConfigSources;
@@ -305,7 +305,7 @@ namespace OrchardCore.Environment.Shell
                 try
                 {
                     var builder = new ConfigurationBuilder().AddConfiguration(_configuration);
-                    builder.AddConfiguration(_configuration.GetSection(tenant));
+                    builder.AddConfiguration(configuration.GetSection(tenant));
                     return await builder.AddSourcesAsync(tenant, _tenantConfigSources);
                 }
                 finally

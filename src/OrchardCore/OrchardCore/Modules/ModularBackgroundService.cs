@@ -363,9 +363,9 @@ namespace OrchardCore.Modules
 
         private string[] GetShellsToUpdate((string Tenant, long UtcTicks)[] previousShells, (string Tenant, long UtcTicks)[] runningShells)
         {
-            var previous = previousShells.Select(shell => shell.Tenant);
+            var previousTenants = previousShells.Select(shell => shell.Tenant);
 
-            var released = new List<string>();
+            var releasedTenants = new List<string>();
             foreach (var (tenant, utcTicks) in previousShells)
             {
                 if (_shellHost.TryGetShellContext(tenant, out var existing) &&
@@ -375,25 +375,25 @@ namespace OrchardCore.Modules
                     continue;
                 }
 
-                released.Add(tenant);
+                releasedTenants.Add(tenant);
             }
 
-            if (released.Count > 0)
+            if (releasedTenants.Count > 0)
             {
-                UpdateSchedulers(released.ToArray(), s => s.Released = true);
+                UpdateSchedulers(releasedTenants.ToArray(), s => s.Released = true);
             }
 
-            var changed = _changeTokens.Where(t => t.Value.HasChanged).Select(t => t.Key).ToArray();
-            if (changed.Length > 0)
+            var changedTenants = _changeTokens.Where(t => t.Value.HasChanged).Select(t => t.Key).ToArray();
+            if (changedTenants.Length > 0)
             {
-                UpdateSchedulers(changed, s => s.Updated = false);
+                UpdateSchedulers(changedTenants, s => s.Updated = false);
             }
 
-            var valid = previous.Except(released).Except(changed);
-            var running = runningShells.Select(shell => shell.Tenant);
-            var tenantsToUpdate = running.Except(valid).ToArray();
+            var runningTenants = runningShells.Select(shell => shell.Tenant);
+            var validTenants = previousTenants.Except(releasedTenants).Except(changedTenants);
+            var tenantsToUpdate = runningTenants.Except(validTenants).ToArray();
 
-            return running.Where(s => tenantsToUpdate.Contains(s)).ToArray();
+            return runningTenants.Where(s => tenantsToUpdate.Contains(s)).ToArray();
         }
 
         private BackgroundTaskScheduler[] GetSchedulersToRun(string tenant) => _schedulers

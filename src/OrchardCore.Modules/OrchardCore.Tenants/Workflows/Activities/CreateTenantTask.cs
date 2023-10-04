@@ -178,7 +178,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
             var reloadedSettings = ShellHost.GetSettings(tenantName);
 
             workflowContext.LastResult = reloadedSettings;
-            workflowContext.CorrelationId = tenantName;
+            workflowContext.CorrelationId = reloadedSettings.Name;
 
             return Outcomes("Done");
         }
