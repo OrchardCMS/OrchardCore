@@ -18,11 +18,9 @@ namespace OrchardCore.Environment.Shell.Configuration
     {
         private IConfigurationRoot _configuration;
         private UpdatableDataProvider _updatableData;
-        private readonly IEnumerable<KeyValuePair<string, string>> _initialData;
 
         private readonly string _name;
         private readonly Func<string, Task<IConfigurationBuilder>> _configBuilderFactory;
-        private readonly IConfiguration _initialConfiguration;
         private readonly SemaphoreSlim _semaphore = new(1);
         private bool _released;
 
@@ -32,16 +30,18 @@ namespace OrchardCore.Environment.Shell.Configuration
 
         public ShellConfiguration(IConfigurationBuilder builder)
         {
-            _updatableData = new UpdatableDataProvider(_initialData ?? Enumerable.Empty<KeyValuePair<string, string>>());
-
-            _configuration = builder
-                .Add(_updatableData)
-                .Build();
+            _updatableData = new UpdatableDataProvider();
+            _configuration = builder.Add(_updatableData).Build();
         }
 
         public ShellConfiguration(IConfiguration configuration)
         {
-            _initialConfiguration = configuration;
+            _updatableData = new UpdatableDataProvider();
+
+            _configuration = new ConfigurationBuilder()
+                .AddConfiguration(configuration)
+                .Add(_updatableData)
+                .Build();
         }
 
         public ShellConfiguration(string name, Func<string, Task<IConfigurationBuilder>> factory)
@@ -60,16 +60,18 @@ namespace OrchardCore.Environment.Shell.Configuration
 
             if (configuration._configuration is not null)
             {
-                _initialConfiguration = configuration._configuration;
-                _initialData = configuration._updatableData.ToArray();
+                _updatableData = new UpdatableDataProvider(configuration._updatableData.ToArray());
+
+                _configuration = new ConfigurationBuilder()
+                    .AddConfiguration(configuration._configuration, shouldDisposeConfiguration: true)
+                    .Add(_updatableData)
+                    .Build();
 
                 return;
             }
 
             if (name is null)
             {
-                _initialConfiguration = configuration._initialConfiguration;
-                _initialData = configuration._initialData;
                 return;
             }
 
@@ -105,16 +107,8 @@ namespace OrchardCore.Environment.Shell.Configuration
                     await _configBuilderFactory.Invoke(_name)
                     : new ConfigurationBuilder();
 
-                if (_initialConfiguration is not null)
-                {
-                    builder.AddConfiguration(_initialConfiguration, shouldDisposeConfiguration: true);
-                }
-
-                _updatableData = new UpdatableDataProvider(_initialData ?? Enumerable.Empty<KeyValuePair<string, string>>());
-
-                _configuration = builder
-                    .Add(_updatableData)
-                    .Build();
+                _updatableData = new UpdatableDataProvider();
+                _configuration = builder.Add(_updatableData).Build();
             }
             finally
             {

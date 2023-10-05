@@ -11,14 +11,15 @@ namespace OrchardCore.Environment.Shell.Configuration.Internal
 {
     internal class UpdatableDataProvider : IConfigurationProvider, IConfigurationSource, IEnumerable<KeyValuePair<string, string>>
     {
+        public UpdatableDataProvider() => Data = new(StringComparer.OrdinalIgnoreCase);
+
         public UpdatableDataProvider(IEnumerable<KeyValuePair<string, string>> initialData)
         {
-            Data = new ConcurrentDictionary<string, string>(initialData, StringComparer.OrdinalIgnoreCase);
+            initialData ??= Enumerable.Empty<KeyValuePair<string, string>>();
+            Data = new(initialData, StringComparer.OrdinalIgnoreCase);
         }
 
-        protected IDictionary<string, string> Data { get; set; }
-
-        public void Add(string key, string value) => Data.Add(key, value);
+        protected ConcurrentDictionary<string, string> Data { get; set; }
 
         public IEnumerator<KeyValuePair<string, string>> GetEnumerator() => Data.GetEnumerator();
 
