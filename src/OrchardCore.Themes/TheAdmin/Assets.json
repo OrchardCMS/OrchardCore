@@ -22,6 +22,17 @@
   },
   {
     "generateSourceMaps": false,
+    "generateRTL": false,
+    "inputs": [
+      "Assets/scss/login.scss"
+    ],
+    "watch": [
+      "Assets/scss/componenets/_validations.scss"
+    ],
+    "output": "wwwroot/css/login.css"
+  },
+  {
+    "generateSourceMaps": false,
     "inputs": [
       "Assets/js/header/global/*.js",
       "Assets/js/header/*.js"

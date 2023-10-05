@@ -42,5 +42,5 @@
 }
 
 .CodeMirror-focused .CodeMirror-activeline-background {
-    background: rgba(100, 100, 100, 0.1) !important;
+    background: rgba(var(--bs-secondary-bg-rgb), 0.1) !important;
 }
