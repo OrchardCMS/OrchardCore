@@ -3,7 +3,7 @@
 
 @include color-mode(dark) {
     --oc-scrollbar-color: #76787A;
-    --oc-admin-menu-bg-color: var(--bs-dark-bg);
+    --oc-admin-menu-bg-color: var(--bs-dark);
 
     @import "badge";
     @import "bootstrap-select";
