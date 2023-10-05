@@ -30,6 +30,15 @@ namespace OrchardCore.Environment.Shell.Configuration
         {
         }
 
+        public ShellConfiguration(IConfigurationBuilder builder)
+        {
+            _updatableData = new UpdatableDataProvider(_initialData ?? Enumerable.Empty<KeyValuePair<string, string>>());
+
+            _configuration = builder
+                .Add(_updatableData)
+                .Build();
+        }
+
         public ShellConfiguration(IConfiguration configuration)
         {
             _initialConfiguration = configuration;

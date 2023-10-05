@@ -70,8 +70,7 @@ namespace OrchardCore.Environment.Shell
                     var tenantSettings = new ConfigurationBuilder()
                         .AddConfiguration(_configuration)
                         .AddConfiguration(_configuration.GetSection(tenant))
-                        .AddConfiguration(tenantsSettings.GetSection(tenant))
-                        .Build();
+                        .AddConfiguration(tenantsSettings.GetSection(tenant));
 
                     var settings = new ShellConfiguration(tenantSettings);
                     var configuration = new ShellConfiguration(tenant, _tenantConfigBuilderFactory);
@@ -130,8 +129,7 @@ namespace OrchardCore.Environment.Shell
                 var tenantSettings = new ConfigurationBuilder()
                     .AddConfiguration(_configuration)
                     .AddConfiguration(_configuration.GetSection(tenant))
-                    .AddConfiguration(tenantsSettings.GetSection(tenant))
-                    .Build();
+                    .AddConfiguration(tenantsSettings.GetSection(tenant));
 
                 var settings = new ShellConfiguration(tenantSettings);
                 var configuration = new ShellConfiguration(tenant, _tenantConfigBuilderFactory);
@@ -266,27 +264,17 @@ namespace OrchardCore.Environment.Shell
                 return;
             }
 
-            var providers = new List<IConfigurationProvider>();
-            var lastProviders = new List<IConfigurationProvider>();
-            var appConfigurationBuilder = new ConfigurationBuilder();
+            var lastProviders = (_applicationConfiguration as IConfigurationRoot)?.Providers
+                .Where(p => p is EnvironmentVariablesConfigurationProvider ||
+                            p is CommandLineConfigurationProvider)
+                .ToArray()
+                ?? Array.Empty<IConfigurationProvider>();
 
-            var applicationProviders = (_applicationConfiguration as IConfigurationRoot)?.Providers;
-            foreach (var provider in applicationProviders)
-            {
-                if (provider is EnvironmentVariablesConfigurationProvider || provider is CommandLineConfigurationProvider)
-                {
-                    lastProviders.Add(provider);
-                    continue;
-                }
-
-                providers.Add(provider);
-            }
-
-            var configurationBuilder = await appConfigurationBuilder
-                .AddConfiguration(new ConfigurationRoot(providers))
+            var configurationBuilder = await new ConfigurationBuilder()
+                .AddConfiguration(_applicationConfiguration)
                 .AddSourcesAsync(_tenantsConfigSources);
 
-            if (lastProviders.Count > 0)
+            if (lastProviders.Length > 0)
             {
                 configurationBuilder.AddConfiguration(new ConfigurationRoot(lastProviders));
             }
@@ -304,9 +292,10 @@ namespace OrchardCore.Environment.Shell
                 await _tenantConfigSemaphore.WaitAsync();
                 try
                 {
-                    var builder = new ConfigurationBuilder().AddConfiguration(_configuration);
-                    builder.AddConfiguration(configuration.GetSection(tenant));
-                    return await builder.AddSourcesAsync(tenant, _tenantConfigSources);
+                    return await new ConfigurationBuilder()
+                        .AddConfiguration(_configuration)
+                        .AddConfiguration(_configuration.GetSection(tenant))
+                        .AddSourcesAsync(tenant, _tenantConfigSources);
                 }
                 finally
                 {
