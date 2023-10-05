@@ -15,3 +15,10 @@
         scrollbar-width: thin;
     }
 }
+
+.dropdown-item {
+    &:hover,
+    &:focus {
+        text-decoration: none;
+    }
+}

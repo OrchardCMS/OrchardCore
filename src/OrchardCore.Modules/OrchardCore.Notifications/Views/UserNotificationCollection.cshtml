@@ -1,8 +1,9 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 
 @model ShapeViewModel<UserNotificationCollectionViewModel>
-<li class="nav-item dropdown text-end">
-    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+<li class="nav-item">
+    <div class="dropdown">
+        <button type="button" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
         @if (Model.Value.TotalUnread > 0)
         {
             var notifications = T.Plural(Model.Value.TotalUnread, "notification", "notifications");
@@ -22,12 +23,12 @@
         {
             <i class="fa-regular fa-bell" aria-hidden="true" data-bs-toggle="tooltip" data-bs-original-title="@T["You have no unread notifications"]"></i>
         }
-    </a>
-    <div class="dropdown-menu dropdown-menu-end notification-navbar scrollable" style="max-width: 20rem;">
+    </button>
+        <ul class="dropdown-menu dropdown-menu-end notification-navbar scrollable position-absolute" style="max-width: 20rem;">
         @if (Model.Value.Notifications.Count > 0)
         {
             var maxCount = Math.Min(Model.Value.MaxVisibleNotifications, Model.Value.Notifications.Count);
-            <div style="max-height: 30rem; overflow-y: auto;">
+            <li style="max-height: 30rem; overflow-y: auto;">
                 @for (int i = 0; i < maxCount; i++)
                 {
                     var notification = Model.Value.Notifications[i];
@@ -36,10 +37,15 @@
                         @await DisplayAsync(notification)
                     </div>
                 }
-            </div>
-            <div><hr class="dropdown-divider"></div>
+            </li>
+            <li>
+                <hr class="dropdown-divider">
+            </li>
         }
-        <div><a class="dropdown-item fw-bold" asp-action="List" asp-controller="Admin" asp-area="OrchardCore.Notifications">@T["Notification Center"]</a></div>
+        <li>
+            <a class="dropdown-item fw-bold" asp-action="List" asp-controller="Admin" asp-area="OrchardCore.Notifications">@T["Notification Center"]</a>
+        </li>
+    </ul>
     </div>
 </li>
 
