@@ -44,7 +44,6 @@ span.field-validation-error {
 .field-validation-valid {
   display: none;
 }
-
 .input-validation-error {
   border-color: var(--bs-form-invalid-border-color);
   padding-right: calc(1.5em + 0.75rem);
@@ -105,3 +104,4 @@ textarea.form-control.input-validation-error {
 .input-group > .form-floating:not(:focus-within).input-validation-error {
   z-index: 4;
 }
+=======
