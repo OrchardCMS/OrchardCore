@@ -9272,7 +9272,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
 }
 
 html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label {
-  background-color: #f8f9fa !important;
+  background-color: var(--oc-admin-menu-bg-color, #f8f9fa) !important;
 }
 
 .leftbar-compactor {
@@ -9751,7 +9751,7 @@ textarea.form-control.input-validation-error {
 
 [data-bs-theme=dark] {
   --oc-scrollbar-color: #76787A;
-  --oc-admin-menu-bg-color: var(--bs-dark-bg);
+  --oc-admin-menu-bg-color: var(--bs-dark);
 }
 [data-bs-theme=dark] .ta-badge {
   background-color: var(--bs-dark);
