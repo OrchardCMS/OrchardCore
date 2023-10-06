@@ -79,6 +79,11 @@ namespace OrchardCore.Email
         /// </summary>
         public int ProxyPort { get; set; }
 
+        /// <summary>
+        /// Gets or sets whether the SSL certificate should be ignored once its invalid.
+        /// </summary>
+        public bool IgnoreInvalidSslCertificate { get; set; }
+
         /// <inheritdocs />
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
