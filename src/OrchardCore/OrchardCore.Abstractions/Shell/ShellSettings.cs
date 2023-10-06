@@ -153,6 +153,12 @@ namespace OrchardCore.Environment.Shell
 
         public void Dispose()
         {
+            Close();
+            GC.SuppressFinalize(this);
+        }
+
+        public void Close()
+        {
             // Usually marked as disposable on reloading the parent shell, or
             // explicitly if not tied to a shell or only to an isolated shell.
             if (_disposed || !_disposable || _shellCreating > 0)
@@ -164,13 +170,13 @@ namespace OrchardCore.Environment.Shell
 
             _settings?.Release();
             _configuration?.Release();
-            GC.SuppressFinalize(this);
         }
 
         ~ShellSettings()
         {
             _disposable = true;
-            Dispose();
+            _shellCreating = 0;
+            Close();
         }
     }
 }

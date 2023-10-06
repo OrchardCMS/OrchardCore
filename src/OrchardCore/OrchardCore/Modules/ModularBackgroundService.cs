@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Settings;
 
@@ -134,14 +135,25 @@ namespace OrchardCore.Modules
                         break;
                     }
 
-                    var distributedLock = shellScope.ShellContext.ServiceProvider.GetRequiredService<IDistributedLock>();
-
-                    // Try to acquire a lock before using the scope, so that a next process gets the last committed data.
-                    (var locker, var locked) = await distributedLock.TryAcquireBackgroundTaskLockAsync(scheduler.Settings);
-                    if (!locked)
+                    var locked = false;
+                    ILocker locker = null;
+                    try
                     {
-                        _logger.LogInformation("Timeout to acquire a lock on background task '{TaskName}' on tenant '{TenantName}'.", scheduler.Name, tenant);
-                        return;
+                        // Try to acquire a lock before using the scope, so that a next process gets the last committed data.
+                        var distributedLock = shellScope.ShellContext.ServiceProvider.GetRequiredService<IDistributedLock>();
+                        (locker, locked) = await distributedLock.TryAcquireBackgroundTaskLockAsync(scheduler.Settings);
+                        if (!locked)
+                        {
+                            await shellScope.TerminateShellAsync();
+                            _logger.LogInformation("Timeout to acquire a lock on background task '{TaskName}' on tenant '{TenantName}'.", scheduler.Name, tenant);
+                            break;
+                        }
+                    }
+                    catch (Exception ex) when (!ex.IsFatal())
+                    {
+                        await shellScope.TerminateShellAsync();
+                        _logger.LogError(ex, "Failed to acquire a lock on background task '{TaskName}' on tenant '{TenantName}'.", scheduler.Name, tenant);
+                        break;
                     }
 
                     await using var acquiredLock = locker;
