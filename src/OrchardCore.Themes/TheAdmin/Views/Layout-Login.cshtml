@@ -26,11 +26,13 @@
 </head>
 <body>
     <div class="d-flex align-items-center justify-content-center h-100">
-        @await RenderSectionAsync("Header", required: false)
-        @await RenderSectionAsync("Messages", required: false)
+        <div class="container-fluid">
+            @await RenderSectionAsync("Header", required: false)
+            @await RenderSectionAsync("Messages", required: false)
 
-        <div class="auth-wrapper">
-            @await RenderBodyAsync()
+            <div class="auth-wrapper">
+                @await RenderBodyAsync()
+            </div>
         </div>
     </div>
 

@@ -880,8 +880,9 @@ body:not(.left-sidebar-compact) {
 
 // fixing a flickering that occurs on compact leftbar while icons load.
 html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label {
-    background-color: $gray-100 !important;
+    background-color: var(--oc-admin-menu-bg-color, $gray-100) !important;
 }
+
 // Layout 5 : leftbar compactor button
 // -----------------------------------
 .leftbar-compactor {
