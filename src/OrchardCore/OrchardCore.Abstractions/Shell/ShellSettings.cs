@@ -68,11 +68,13 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Whether this instance has been disposed or not.
         /// </summary>
+        [JsonIgnore]
         public bool Disposed => _disposed;
 
         /// <summary>
         /// Whether this instance is disposable or not.
         /// </summary>
+        [JsonIgnore]
         public bool Disposable
         {
             get => _disposable;
