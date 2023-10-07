@@ -40,7 +40,6 @@ jobs:
       run: |
         dotnet build -c Release -f net8.0 -p:Version=${{ steps.get_version.outputs.VERSION }}
         dotnet build -c Release -f net7.0 -p:Version=${{ steps.get_version.outputs.VERSION }}
-        dotnet build -c Release -f net6.0 -p:Version=${{ steps.get_version.outputs.VERSION }}
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
