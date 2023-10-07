@@ -1,0 +1,12 @@
+/* The light theme is also the default theme. */
+/* Do not wrap the these classes for the light theme specific. */
+
+.card {
+    --bs-card-bg: var(--bs-light);
+}
+
+.navbar-main {
+    background-color: var(--bs-light);
+}
+
+@import "theme-helpers";

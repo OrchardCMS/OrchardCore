@@ -41,5 +41,27 @@
       "Assets/js/header/**/*.js"
     ],
     "output": "wwwroot/js/TheAdmin-header.js"
+  },
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/js/header/global/*.js",
+      "Assets/js/header/theme/*.js"
+    ],
+    "watch": [
+      "Assets/js/header/**/*.js"
+    ],
+    "output": "wwwroot/js/TheAdmin-header.js"
+  },
+
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/js/header/*.js"
+    ],
+    "watch": [
+      "Assets/js/header/*.js"
+    ],
+    "output": "wwwroot/js/TheAdmin-menu.js"
   }
 ]
