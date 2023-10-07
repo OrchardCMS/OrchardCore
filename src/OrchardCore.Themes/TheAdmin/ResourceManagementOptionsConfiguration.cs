@@ -11,27 +11,22 @@ namespace OrchardCore.Themes.TheAdmin
         {
             _manifest = new ResourceManifest();
 
-            // See https://github.com/marella/material-icons for usage
-            _manifest
-                .DefineStyle("material-icons")
-                .SetCdn("https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp")
-                .SetUrl("~/TheAdmin/fonts/material-icons/material-icons.min.css", "~/TheAdmin/fonts/material-icons/material-icons.css")
-                .SetVersion("1.12.0");
-
             _manifest
                 .DefineScript("admin")
-                .SetDependencies("jQuery")
+                .SetDependencies("bootstrap", "admin-head", "jQuery")
                 .SetUrl("~/TheAdmin/js/TheAdmin.min.js", "~/TheAdmin/js/TheAdmin.js")
                 .SetVersion("1.0.0");
 
             _manifest
                 .DefineScript("admin-head")
                 .SetUrl("~/TheAdmin/js/TheAdmin-header.min.js", "~/TheAdmin/js/TheAdmin-header.js")
+                .SetDependencies("js-cookie")
                 .SetVersion("1.0.0");
 
             _manifest
                 .DefineStyle("admin")
                 .SetUrl("~/TheAdmin/css/TheAdmin.min.css", "~/TheAdmin/css/TheAdmin.css")
+                .SetDependencies("bootstrap")
                 .SetVersion("1.0.0");
         }
 

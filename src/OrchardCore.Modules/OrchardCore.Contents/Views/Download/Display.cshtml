@@ -27,7 +27,7 @@
 
     <button class="btn btn-success download" type="submit">@T["Download"]</button>
 
-    @if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+    @if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
     {
         <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
     }

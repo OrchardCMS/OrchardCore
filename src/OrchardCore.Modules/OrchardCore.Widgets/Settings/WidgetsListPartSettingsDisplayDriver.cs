@@ -16,7 +16,7 @@ namespace OrchardCore.Widgets.Settings
             {
                 var settings = contentTypePartDefinition.GetSettings<WidgetsListPartSettings>();
 
-                model.Zones = String.Join(", ", settings.Zones);
+                model.Zones = string.Join(", ", settings.Zones);
                 model.WidgetsListPartSettings = settings;
             }).Location("Content");
         }

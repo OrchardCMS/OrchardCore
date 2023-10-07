@@ -4,318 +4,325 @@
 */
 
 /* ===========================================================
- * trumbowyg.allowTagsFromPaste.js v1.0.2
- * It cleans tags from pasted text, whilst allowing several specified tags
+ * trumbowyg.base64.js v1.0
+ * Base64 plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
  * ===========================================================
- * Author	: Fathi Anshory (0x00000F5C)
- * Twitter	: @fscchannl
- * Notes:
- *  - removeformatPasted must be set to FALSE since it was applied prior to pasteHandlers, or else it will be useless
- *	- It is most advisable to use along with the cleanpaste plugin, or else you'd end up with dirty markup
+ * Author : Cyril Biencourt (lizardK)
  */
 
 (function ($) {
   'use strict';
 
-  var defaultOptions = {
-    // When empty, all tags are allowed making this plugin useless
-    // If you want to remove all tags, use removeformatPasted core option instead
-    allowedTags: [],
-    // List of tags which can be allowed
-    removableTags: ['a', 'abbr', 'address', 'b', 'bdi', 'bdo', 'blockquote', 'br', 'cite', 'code', 'del', 'dfn', 'details', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'ins', 'kbd', 'mark', 'meter', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'small', 'span', 'strong', 'sub', 'summary', 'sup', 'time', 'u', 'var', 'wbr', 'img', 'map', 'area', 'canvas', 'figcaption', 'figure', 'picture', 'audio', 'source', 'track', 'video', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'table', 'caption', 'th', 'tr', 'td', 'thead', 'tbody', 'tfoot', 'col', 'colgroup', 'style', 'div', 'p', 'form', 'input', 'textarea', 'button', 'select', 'optgroup', 'option', 'label', 'fieldset', 'legend', 'datalist', 'keygen', 'output', 'iframe', 'link', 'nav', 'header', 'hgroup', 'footer', 'main', 'section', 'article', 'aside', 'dialog', 'script', 'noscript', 'embed', 'object', 'param']
+  var isSupported = function isSupported() {
+    return typeof FileReader !== 'undefined';
   };
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      allowTagsFromPaste: {
-        init: function init(trumbowyg) {
-          if (!trumbowyg.o.plugins.allowTagsFromPaste) {
-            return;
-          }
-
-          // Force disable remove format pasted
-          trumbowyg.o.removeformatPasted = false;
-          var allowedTags = trumbowyg.o.plugins.allowTagsFromPaste.allowedTags || defaultOptions.allowedTags;
-          var removableTags = trumbowyg.o.plugins.allowTagsFromPaste.removableTags || defaultOptions.removableTags;
-          if (allowedTags.length === 0) {
-            return;
-          }
-
-          // Get list of tags to remove
-          var tagsToRemove = $(removableTags).not(allowedTags).get();
-          trumbowyg.pasteHandlers.push(function () {
-            setTimeout(function () {
-              var processNodes = trumbowyg.$ed.html();
-              $.each(tagsToRemove, function (iterator, tagName) {
-                processNodes = processNodes.replace(new RegExp('<\\/?' + tagName + '(\\s[^>]*)?>', 'gi'), '');
-              });
-              trumbowyg.$ed.html(processNodes);
-            }, 0);
-          });
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.allowTagsFromPaste.js v1.0.2
- * It cleans tags from pasted text, whilst allowing several specified tags
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author	: Fathi Anshory (0x00000F5C)
- * Twitter	: @fscchannl
- * Notes:
- *  - removeformatPasted must be set to FALSE since it was applied prior to pasteHandlers, or else it will be useless
- *	- It is most advisable to use along with the cleanpaste plugin, or else you'd end up with dirty markup
- */
-!function (e) {
-  "use strict";
-
-  var a = {
-    allowedTags: [],
-    removableTags: ["a", "abbr", "address", "b", "bdi", "bdo", "blockquote", "br", "cite", "code", "del", "dfn", "details", "em", "h1", "h2", "h3", "h4", "h5", "h6", "hr", "i", "ins", "kbd", "mark", "meter", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp", "small", "span", "strong", "sub", "summary", "sup", "time", "u", "var", "wbr", "img", "map", "area", "canvas", "figcaption", "figure", "picture", "audio", "source", "track", "video", "ul", "ol", "li", "dl", "dt", "dd", "table", "caption", "th", "tr", "td", "thead", "tbody", "tfoot", "col", "colgroup", "style", "div", "p", "form", "input", "textarea", "button", "select", "optgroup", "option", "label", "fieldset", "legend", "datalist", "keygen", "output", "iframe", "link", "nav", "header", "hgroup", "footer", "main", "section", "article", "aside", "dialog", "script", "noscript", "embed", "object", "param"]
+  var isValidImage = function isValidImage(type) {
+    return /^data:image\/[a-z]?/i.test(type);
   };
-  e.extend(!0, e.trumbowyg, {
-    plugins: {
-      allowTagsFromPaste: {
-        init: function init(t) {
-          if (t.o.plugins.allowTagsFromPaste) {
-            t.o.removeformatPasted = !1;
-            var o = t.o.plugins.allowTagsFromPaste.allowedTags || a.allowedTags,
-              r = t.o.plugins.allowTagsFromPaste.removableTags || a.removableTags;
-            if (0 !== o.length) {
-              var s = e(r).not(o).get();
-              t.pasteHandlers.push(function () {
-                setTimeout(function () {
-                  var a = t.$ed.html();
-                  e.each(s, function (e, t) {
-                    a = a.replace(new RegExp("<\\/?" + t + "(\\s[^>]*)?>", "gi"), "");
-                  }), t.$ed.html(a);
-                }, 0);
-              });
-            }
-          }
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.emoji.js v0.1
- * Emoji picker plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Nicolas Pion
- *          Twitter : @nicolas_pion
- */
-
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    emojiList: ['&#x2049', '&#x2122', '&#x2139', '&#x2194', '&#x2195', '&#x2196', '&#x2197', '&#x2198', '&#x2199', '&#x2328', '&#x2600', '&#x2601', '&#x2602', '&#x2603', '&#x2604', '&#x2611', '&#x2614', '&#x2615', '&#x2618', '&#x2620', '&#x2622', '&#x2623', '&#x2626', '&#x2638', '&#x2639', '&#x2640', '&#x2642', '&#x2648', '&#x2649', '&#x2650', '&#x2651', '&#x2652', '&#x2653', '&#x2660', '&#x2663', '&#x2665', '&#x2666', '&#x2668', '&#x2692', '&#x2693', '&#x2694', '&#x2695', '&#x2696', '&#x2697', '&#x2699', '&#x2702', '&#x2705', '&#x2708', '&#x2709', '&#x2712', '&#x2714', '&#x2716', '&#x2721', '&#x2728', '&#x2733', '&#x2734', '&#x2744', '&#x2747', '&#x2753', '&#x2754', '&#x2755', '&#x2757', '&#x2763', '&#x2764', '&#x2795', '&#x2796', '&#x2797', '&#x2934', '&#x2935', '&#x3030', '&#x3297', '&#x3299', '&#x1F600', '&#x1F603', '&#x1F604', '&#x1F601', '&#x1F606', '&#x1F605', '&#x1F602', '&#x1F923', '&#x263A', '&#x1F60A', '&#x1F607', '&#x1F642', '&#x1F643', '&#x1F609', '&#x1F60C', '&#x1F972', '&#x1F60D', '&#x1F970', '&#x1F618', '&#x1F617', '&#x1F619', '&#x1F61A', '&#x1F60B', '&#x1F61B', '&#x1F61D', '&#x1F61C', '&#x1F92A', '&#x1F928', '&#x1F9D0', '&#x1F913', '&#x1F60E', '&#x1F929', '&#x1F973', '&#x1F60F', '&#x1F612', '&#x1F61E', '&#x1F614', '&#x1F61F', '&#x1F615', '&#x1F641', '&#x1F623', '&#x1F616', '&#x1F62B', '&#x1F629', '&#x1F97A', '&#x1F622', '&#x1F62D', '&#x1F624', '&#x1F62E', '&#x1F620', '&#x1F621', '&#x1F92C', '&#x1F92F', '&#x1F633', '&#x1F636', '&#x1F975', '&#x1F976', '&#x1F631', '&#x1F628', '&#x1F630', '&#x1F625', '&#x1F613', '&#x1F917', '&#x1F914', '&#x1F92D', '&#x1F971', '&#x1F92B', '&#x1F925', '&#x1F610', '&#x1F611', '&#x1F62C', '&#x1F644', '&#x1F62F', '&#x1F626', '&#x1F627', '&#x1F632', '&#x1F634', '&#x1F924', '&#x1F62A', '&#x1F635', '&#x1F910', '&#x1F974', '&#x1F922', '&#x1F92E', '&#x1F927', '&#x1F637', '&#x1F912', '&#x1F915', '&#x1F911', '&#x1F920', '&#x1F978', '&#x1F608', '&#x1F47F', '&#x1F479', '&#x1F47A', '&#x1F921', '&#x1F4A9', '&#x1F47B', '&#x1F480', '&#x1F47D', '&#x1F47E', '&#x1F916', '&#x1F383', '&#x1F63A', '&#x1F638', '&#x1F639', '&#x1F63B', '&#x1F63C', '&#x1F63D', '&#x1F640', '&#x1F63F', '&#x1F63E', '&#x1F932', '&#x1F450', '&#x1F64C', '&#x1F44F', '&#x1F91D', '&#x1F44D', '&#x1F44E', '&#x1F44A', '&#x270A', '&#x1F91B', '&#x1F91C', '&#x1F91E', '&#x270C', '&#x1F91F', '&#x1F918', '&#x1F44C', '&#x1F90F', '&#x1F90C', '&#x1F448', '&#x1F449', '&#x1F446', '&#x1F447', '&#x261D', '&#x270B', '&#x1F91A', '&#x1F590', '&#x1F596', '&#x1F44B', '&#x1F919', '&#x1F4AA', '&#x1F9BE', '&#x1F595', '&#x270D', '&#x1F64F', '&#x1F9B6', '&#x1F9B5', '&#x1F9BF', '&#x1F484', '&#x1F48B', '&#x1F444', '&#x1F9B7', '&#x1F445', '&#x1F442', '&#x1F9BB', '&#x1F443', '&#x1F463', '&#x1F441', '&#x1F440', '&#x1F9E0', '&#x1FAC0', '&#x1FAC1', '&#x1F9B4', '&#x1F5E3', '&#x1F464', '&#x1F465', '&#x1FAC2', '&#x1F476', '&#x1F467', '&#x1F9D2', '&#x1F466', '&#x1F469', '&#x1F9D1', '&#x1F468', '&#x1F471', '&#x1F9D4', '&#x1F475', '&#x1F9D3', '&#x1F474', '&#x1F472', '&#x1F473', '&#x1F9D5', '&#x1F46E', '&#x1F477', '&#x1F482', '&#x1F575', '&#x1F470', '&#x1F935', '&#x1F478', '&#x1F934', '&#x1F9B8', '&#x1F9B9', '&#x1F977', '&#x1F936', '&#x1F385', '&#x1F9D9', '&#x1F9DD', '&#x1F9DB', '&#x1F9DF', '&#x1F9DE', '&#x1F9DC', '&#x1F9DA', '&#x1F47C', '&#x1F930', '&#x1F931', '&#x1F647', '&#x1F481', '&#x1F645', '&#x1F646', '&#x1F64B', '&#x1F9CF', '&#x1F926', '&#x1F937', '&#x1F64E', '&#x1F64D', '&#x1F487', '&#x1F486', '&#x1F9D6', '&#x1F485', '&#x1F933', '&#x1F483', '&#x1F57A', '&#x1F46F', '&#x1F574', '&#x1F6B6', '&#x1F9CE', '&#x1F3C3', '&#x1F9CD', '&#x1F46B', '&#x1F46D', '&#x1F46C', '&#x1F491', '&#x1F48F', '&#x1F46A', '&#x1F9F6', '&#x1F9F5', '&#x1F9E5', '&#x1F97C', '&#x1F9BA', '&#x1F45A', '&#x1F455', '&#x1F456', '&#x1FA72', '&#x1FA73', '&#x1F454', '&#x1F457', '&#x1F459', '&#x1FA71', '&#x1F458', '&#x1F97B', '&#x1F97F', '&#x1F460', '&#x1F461', '&#x1F462', '&#x1F45E', '&#x1F45F', '&#x1F97E', '&#x1FA74', '&#x1F9E6', '&#x1F9E4', '&#x1F9E3', '&#x1F3A9', '&#x1F9E2', '&#x1F452', '&#x1F393', '&#x26D1', '&#x1FA96', '&#x1F451', '&#x1F48D', '&#x1F45D', '&#x1F45B', '&#x1F45C', '&#x1F4BC', '&#x1F392', '&#x1F9F3', '&#x1F453', '&#x1F576', '&#x1F97D', '&#x1F302', '&#x1F9B1', '&#x1F9B0', '&#x1F9B3', '&#x1F9B2', '&#x1F436', '&#x1F431', '&#x1F42D', '&#x1F439', '&#x1F430', '&#x1F98A', '&#x1F43B', '&#x1F43C', '&#x1F428', '&#x1F42F', '&#x1F981', '&#x1F42E', '&#x1F437', '&#x1F43D', '&#x1F438', '&#x1F435', '&#x1F648', '&#x1F649', '&#x1F64A', '&#x1F412', '&#x1F414', '&#x1F427', '&#x1F426', '&#x1F424', '&#x1F423', '&#x1F425', '&#x1F986', '&#x1F9A4', '&#x1F985', '&#x1F989', '&#x1F987', '&#x1F43A', '&#x1F417', '&#x1F434', '&#x1F984', '&#x1F41D', '&#x1F41B', '&#x1F98B', '&#x1F40C', '&#x1FAB1', '&#x1F41E', '&#x1F41C', '&#x1FAB0', '&#x1F99F', '&#x1FAB3', '&#x1FAB2', '&#x1F997', '&#x1F577', '&#x1F578', '&#x1F982', '&#x1F422', '&#x1F40D', '&#x1F98E', '&#x1F996', '&#x1F995', '&#x1F419', '&#x1F991', '&#x1F990', '&#x1F99E', '&#x1F980', '&#x1F421', '&#x1F420', '&#x1F41F', '&#x1F9AD', '&#x1F42C', '&#x1F433', '&#x1F40B', '&#x1F988', '&#x1F40A', '&#x1F405', '&#x1F406', '&#x1F993', '&#x1F98D', '&#x1F9A7', '&#x1F418', '&#x1F9A3', '&#x1F9AC', '&#x1F99B', '&#x1F98F', '&#x1F42A', '&#x1F42B', '&#x1F992', '&#x1F998', '&#x1F403', '&#x1F402', '&#x1F404', '&#x1F40E', '&#x1F416', '&#x1F40F', '&#x1F411', '&#x1F999', '&#x1F410', '&#x1F98C', '&#x1F415', '&#x1F429', '&#x1F9AE', '&#x1F408', '&#x1F413', '&#x1F983', '&#x1F99A', '&#x1F99C', '&#x1F9A2', '&#x1F9A9', '&#x1F54A', '&#x1F407', '&#x1F99D', '&#x1F9A8', '&#x1F9A1', '&#x1F9AB', '&#x1F9A6', '&#x1F9A5', '&#x1F401', '&#x1F400', '&#x1F43F', '&#x1F994', '&#x1F43E', '&#x1F409', '&#x1F432', '&#x1F335', '&#x1F384', '&#x1F332', '&#x1F333', '&#x1F334', '&#x1F331', '&#x1F33F', '&#x1F340', '&#x1F38D', '&#x1F38B', '&#x1F343', '&#x1F342', '&#x1F341', '&#x1FAB6', '&#x1F344', '&#x1F41A', '&#x1FAA8', '&#x1FAB5', '&#x1F33E', '&#x1FAB4', '&#x1F490', '&#x1F337', '&#x1F339', '&#x1F940', '&#x1F33A', '&#x1F338', '&#x1F33C', '&#x1F33B', '&#x1F31E', '&#x1F31D', '&#x1F31B', '&#x1F31C', '&#x1F31A', '&#x1F315', '&#x1F316', '&#x1F317', '&#x1F318', '&#x1F311', '&#x1F312', '&#x1F313', '&#x1F314', '&#x1F319', '&#x1F30E', '&#x1F30D', '&#x1F30F', '&#x1FA90', '&#x1F4AB', '&#x2B50', '&#x1F31F', '&#x26A1', '&#x1F4A5', '&#x1F525', '&#x1F32A', '&#x1F308', '&#x1F324', '&#x26C5', '&#x1F325', '&#x1F326', '&#x1F327', '&#x26C8', '&#x1F329', '&#x1F328', '&#x26C4', '&#x1F32C', '&#x1F4A8', '&#x1F4A7', '&#x1F4A6', '&#x1F30A', '&#x1F32B', '&#x1F34F', '&#x1F34E', '&#x1F350', '&#x1F34A', '&#x1F34B', '&#x1F34C', '&#x1F349', '&#x1F347', '&#x1FAD0', '&#x1F353', '&#x1F348', '&#x1F352', '&#x1F351', '&#x1F96D', '&#x1F34D', '&#x1F965', '&#x1F95D', '&#x1F345', '&#x1F346', '&#x1F951', '&#x1FAD2', '&#x1F966', '&#x1F96C', '&#x1FAD1', '&#x1F952', '&#x1F336', '&#x1F33D', '&#x1F955', '&#x1F9C4', '&#x1F9C5', '&#x1F954', '&#x1F360', '&#x1F950', '&#x1F96F', '&#x1F35E', '&#x1F956', '&#x1FAD3', '&#x1F968', '&#x1F9C0', '&#x1F95A', '&#x1F373', '&#x1F9C8', '&#x1F95E', '&#x1F9C7', '&#x1F953', '&#x1F969', '&#x1F357', '&#x1F356', '&#x1F32D', '&#x1F354', '&#x1F35F', '&#x1F355', '&#x1F96A', '&#x1F959', '&#x1F9C6', '&#x1F32E', '&#x1F32F', '&#x1FAD4', '&#x1F957', '&#x1F958', '&#x1FAD5', '&#x1F96B', '&#x1F35D', '&#x1F35C', '&#x1F372', '&#x1F35B', '&#x1F363', '&#x1F371', '&#x1F95F', '&#x1F9AA', '&#x1F364', '&#x1F359', '&#x1F35A', '&#x1F358', '&#x1F365', '&#x1F960', '&#x1F96E', '&#x1F362', '&#x1F361', '&#x1F367', '&#x1F368', '&#x1F366', '&#x1F967', '&#x1F9C1', '&#x1F370', '&#x1F382', '&#x1F36E', '&#x1F36D', '&#x1F36C', '&#x1F36B', '&#x1F37F', '&#x1F369', '&#x1F36A', '&#x1F330', '&#x1F95C', '&#x1F36F', '&#x1F95B', '&#x1F37C', '&#x1F375', '&#x1FAD6', '&#x1F9C9', '&#x1F9CB', '&#x1F9C3', '&#x1F964', '&#x1F376', '&#x1F37A', '&#x1F37B', '&#x1F942', '&#x1F377', '&#x1F943', '&#x1F378', '&#x1F379', '&#x1F37E', '&#x1F9CA', '&#x1F944', '&#x1F374', '&#x1F37D', '&#x1F963', '&#x1F961', '&#x1F962', '&#x1F9C2', '&#x26BD', '&#x1F3C0', '&#x1F3C8', '&#x26BE', '&#x1F94E', '&#x1F3BE', '&#x1F3D0', '&#x1F3C9', '&#x1F94F', '&#x1FA83', '&#x1F3B1', '&#x1FA80', '&#x1F3D3', '&#x1F3F8', '&#x1F3D2', '&#x1F3D1', '&#x1F94D', '&#x1F3CF', '&#x1F945', '&#x26F3', '&#x1FA81', '&#x1F3F9', '&#x1F3A3', '&#x1F93F', '&#x1F94A', '&#x1F94B', '&#x1F3BD', '&#x1F6F9', '&#x1F6FC', '&#x1F6F7', '&#x26F8', '&#x1F94C', '&#x1F3BF', '&#x26F7', '&#x1F3C2', '&#x1FA82', '&#x1F3CB', '&#x1F93C', '&#x1F938', '&#x26F9', '&#x1F93A', '&#x1F93E', '&#x1F3CC', '&#x1F3C7', '&#x1F9D8', '&#x1F3C4', '&#x1F3CA', '&#x1F93D', '&#x1F6A3', '&#x1F9D7', '&#x1F6B5', '&#x1F6B4', '&#x1F3C6', '&#x1F947', '&#x1F948', '&#x1F949', '&#x1F3C5', '&#x1F396', '&#x1F3F5', '&#x1F397', '&#x1F3AB', '&#x1F39F', '&#x1F3AA', '&#x1F939', '&#x1F3AD', '&#x1FA70', '&#x1F3A8', '&#x1F3AC', '&#x1F3A4', '&#x1F3A7', '&#x1F3BC', '&#x1F3B9', '&#x1F941', '&#x1FA98', '&#x1F3B7', '&#x1F3BA', '&#x1F3B8', '&#x1FA95', '&#x1F3BB', '&#x1FA97', '&#x1F3B2', '&#x265F', '&#x1F3AF', '&#x1F3B3', '&#x1F3AE', '&#x1F3B0', '&#x1F9E9', '&#x1F697', '&#x1F695', '&#x1F699', '&#x1F6FB', '&#x1F68C', '&#x1F68E', '&#x1F3CE', '&#x1F693', '&#x1F691', '&#x1F692', '&#x1F690', '&#x1F69A', '&#x1F69B', '&#x1F69C', '&#x1F9AF', '&#x1F9BD', '&#x1F9BC', '&#x1F6F4', '&#x1F6B2', '&#x1F6F5', '&#x1F3CD', '&#x1F6FA', '&#x1F6A8', '&#x1F694', '&#x1F68D', '&#x1F698', '&#x1F696', '&#x1F6A1', '&#x1F6A0', '&#x1F69F', '&#x1F683', '&#x1F68B', '&#x1F69E', '&#x1F69D', '&#x1F684', '&#x1F685', '&#x1F688', '&#x1F682', '&#x1F686', '&#x1F687', '&#x1F68A', '&#x1F689', '&#x1F6EB', '&#x1F6EC', '&#x1F6E9', '&#x1F4BA', '&#x1F6F0', '&#x1F680', '&#x1F6F8', '&#x1F681', '&#x1F6F6', '&#x26F5', '&#x1F6A4', '&#x1F6E5', '&#x1F6F3', '&#x26F4', '&#x1F6A2', '&#x26FD', '&#x1F6A7', '&#x1F6A6', '&#x1F6A5', '&#x1F68F', '&#x1F5FA', '&#x1F5FF', '&#x1F5FD', '&#x1F5FC', '&#x1F3F0', '&#x1F3EF', '&#x1F3DF', '&#x1F3A1', '&#x1F3A2', '&#x1F3A0', '&#x26F2', '&#x26F1', '&#x1F3D6', '&#x1F3DD', '&#x1F3DC', '&#x1F30B', '&#x26F0', '&#x1F3D4', '&#x1F5FB', '&#x1F3D5', '&#x26FA', '&#x1F3E0', '&#x1F3E1', '&#x1F3D8', '&#x1F3DA', '&#x1F6D6', '&#x1F3D7', '&#x1F3ED', '&#x1F3E2', '&#x1F3EC', '&#x1F3E3', '&#x1F3E4', '&#x1F3E5', '&#x1F3E6', '&#x1F3E8', '&#x1F3EA', '&#x1F3EB', '&#x1F3E9', '&#x1F492', '&#x1F3DB', '&#x26EA', '&#x1F54C', '&#x1F54D', '&#x1F6D5', '&#x1F54B', '&#x26E9', '&#x1F6E4', '&#x1F6E3', '&#x1F5FE', '&#x1F391', '&#x1F3DE', '&#x1F305', '&#x1F304', '&#x1F320', '&#x1F387', '&#x1F386', '&#x1F307', '&#x1F306', '&#x1F3D9', '&#x1F303', '&#x1F30C', '&#x1F309', '&#x1F301', '&#x231A', '&#x1F4F1', '&#x1F4F2', '&#x1F4BB', '&#x1F5A5', '&#x1F5A8', '&#x1F5B1', '&#x1F5B2', '&#x1F579', '&#x1F5DC', '&#x1F4BD', '&#x1F4BE', '&#x1F4BF', '&#x1F4C0', '&#x1F4FC', '&#x1F4F7', '&#x1F4F8', '&#x1F4F9', '&#x1F3A5', '&#x1F4FD', '&#x1F39E', '&#x1F4DE', '&#x260E', '&#x1F4DF', '&#x1F4E0', '&#x1F4FA', '&#x1F4FB', '&#x1F399', '&#x1F39A', '&#x1F39B', '&#x1F9ED', '&#x23F1', '&#x23F2', '&#x23F0', '&#x1F570', '&#x231B', '&#x23F3', '&#x1F4E1', '&#x1F50B', '&#x1F50C', '&#x1F4A1', '&#x1F526', '&#x1F56F', '&#x1FA94', '&#x1F9EF', '&#x1F6E2', '&#x1F4B8', '&#x1F4B5', '&#x1F4B4', '&#x1F4B6', '&#x1F4B7', '&#x1FA99', '&#x1F4B0', '&#x1F4B3', '&#x1F48E', '&#x1FA9C', '&#x1F9F0', '&#x1FA9B', '&#x1F527', '&#x1F528', '&#x1F6E0', '&#x26CF', '&#x1F529', '&#x1F9F1', '&#x26D3', '&#x1FA9D', '&#x1FAA2', '&#x1F9F2', '&#x1F52B', '&#x1F4A3', '&#x1F9E8', '&#x1FA93', '&#x1FA9A', '&#x1F52A', '&#x1F5E1', '&#x1F6E1', '&#x1F6AC', '&#x26B0', '&#x1FAA6', '&#x26B1', '&#x1F3FA', '&#x1FA84', '&#x1F52E', '&#x1F4FF', '&#x1F9FF', '&#x1F488', '&#x1F52D', '&#x1F52C', '&#x1F573', '&#x1FA9F', '&#x1FA79', '&#x1FA7A', '&#x1F48A', '&#x1F489', '&#x1FA78', '&#x1F9EC', '&#x1F9A0', '&#x1F9EB', '&#x1F9EA', '&#x1F321', '&#x1FAA4', '&#x1F9F9', '&#x1F9FA', '&#x1FAA1', '&#x1F9FB', '&#x1F6BD', '&#x1FAA0', '&#x1FAA3', '&#x1F6B0', '&#x1F6BF', '&#x1F6C1', '&#x1F6C0', '&#x1FAA5', '&#x1F9FC', '&#x1FA92', '&#x1F9FD', '&#x1F9F4', '&#x1F6CE', '&#x1F511', '&#x1F5DD', '&#x1F6AA', '&#x1FA91', '&#x1FA9E', '&#x1F6CB', '&#x1F6CF', '&#x1F6CC', '&#x1F9F8', '&#x1F5BC', '&#x1F6CD', '&#x1F6D2', '&#x1F381', '&#x1F388', '&#x1F38F', '&#x1F380', '&#x1F38A', '&#x1F389', '&#x1FA85', '&#x1FA86', '&#x1F38E', '&#x1F3EE', '&#x1F390', '&#x1F9E7', '&#x1F4E9', '&#x1F4E8', '&#x1F4E7', '&#x1F48C', '&#x1F4E5', '&#x1F4E4', '&#x1F4E6', '&#x1F3F7', '&#x1F4EA', '&#x1F4EB', '&#x1F4EC', '&#x1F4ED', '&#x1F4EE', '&#x1F4EF', '&#x1FAA7', '&#x1F4DC', '&#x1F4C3', '&#x1F4C4', '&#x1F4D1', '&#x1F9FE', '&#x1F4CA', '&#x1F4C8', '&#x1F4C9', '&#x1F5D2', '&#x1F5D3', '&#x1F4C6', '&#x1F4C5', '&#x1F5D1', '&#x1F4C7', '&#x1F5C3', '&#x1F5F3', '&#x1F5C4', '&#x1F4CB', '&#x1F4C1', '&#x1F4C2', '&#x1F5C2', '&#x1F5DE', '&#x1F4F0', '&#x1F4D3', '&#x1F4D4', '&#x1F4D2', '&#x1F4D5', '&#x1F4D7', '&#x1F4D8', '&#x1F4D9', '&#x1F4DA', '&#x1F4D6', '&#x1F516', '&#x1F9F7', '&#x1F517', '&#x1F4CE', '&#x1F587', '&#x1F4D0', '&#x1F4CF', '&#x1F9EE', '&#x1F4CC', '&#x1F4CD', '&#x1F58A', '&#x1F58B', '&#x1F58C', '&#x1F58D', '&#x1F4DD', '&#x270F', '&#x1F50D', '&#x1F50E', '&#x1F50F', '&#x1F510', '&#x1F512', '&#x1F513', '&#x1F9E1', '&#x1F49B', '&#x1F49A', '&#x1F499', '&#x1F49C', '&#x1F5A4', '&#x1F90E', '&#x1F90D', '&#x1F494', '&#x1F495', '&#x1F49E', '&#x1F493', '&#x1F497', '&#x1F496', '&#x1F498', '&#x1F49D', '&#x1F49F', '&#x262E', '&#x271D', '&#x262A', '&#x1F549', '&#x1F52F', '&#x1F54E', '&#x262F', '&#x1F6D0', '&#x26CE', '&#x264A', '&#x264B', '&#x264C', '&#x264D', '&#x264E', '&#x264F', '&#x1F194', '&#x269B', '&#x1F251', '&#x1F4F4', '&#x1F4F3', '&#x1F236', '&#x1F21A', '&#x1F238', '&#x1F23A', '&#x1F237', '&#x1F19A', '&#x1F4AE', '&#x1F250', '&#x1F234', '&#x1F235', '&#x1F239', '&#x1F232', '&#x1F170', '&#x1F171', '&#x1F18E', '&#x1F191', '&#x1F17E', '&#x1F198', '&#x274C', '&#x2B55', '&#x1F6D1', '&#x26D4', '&#x1F4DB', '&#x1F6AB', '&#x1F4AF', '&#x1F4A2', '&#x1F6B7', '&#x1F6AF', '&#x1F6B3', '&#x1F6B1', '&#x1F51E', '&#x1F4F5', '&#x1F6AD', '&#x203C', '&#x1F505', '&#x1F506', '&#x303D', '&#x26A0', '&#x1F6B8', '&#x1F531', '&#x269C', '&#x1F530', '&#x267B', '&#x1F22F', '&#x1F4B9', '&#x274E', '&#x1F310', '&#x1F4A0', '&#x24C2', '&#x1F300', '&#x1F4A4', '&#x1F3E7', '&#x1F6BE', '&#x267F', '&#x1F17F', '&#x1F233', '&#x1F202', '&#x1F6C2', '&#x1F6C3', '&#x1F6C4', '&#x1F6C5', '&#x1F6D7', '&#x1F6B9', '&#x1F6BA', '&#x1F6BC', '&#x1F6BB', '&#x1F6AE', '&#x1F3A6', '&#x1F4F6', '&#x1F201', '&#x1F523', '&#x1F524', '&#x1F521', '&#x1F520', '&#x1F196', '&#x1F197', '&#x1F199', '&#x1F192', '&#x1F195', '&#x1F193', '&#x0030', '&#x0031', '&#x0032', '&#x0033', '&#x0034', '&#x0035', '&#x0036', '&#x0037', '&#x0038', '&#x0039', '&#x1F51F', '&#x1F522', '&#x0023', '&#x002A', '&#x23CF', '&#x25B6', '&#x23F8', '&#x23EF', '&#x23F9', '&#x23FA', '&#x23ED', '&#x23EE', '&#x23E9', '&#x23EA', '&#x23EB', '&#x23EC', '&#x25C0', '&#x1F53C', '&#x1F53D', '&#x27A1', '&#x2B05', '&#x2B06', '&#x2B07', '&#x21AA', '&#x21A9', '&#x1F500', '&#x1F501', '&#x1F502', '&#x1F504', '&#x1F503', '&#x1F3B5', '&#x1F3B6', '&#x267E', '&#x1F4B2', '&#x1F4B1', '&#x00A9', '&#x00AE', '&#x27B0', '&#x27BF', '&#x1F51A', '&#x1F519', '&#x1F51B', '&#x1F51D', '&#x1F51C', '&#x1F518', '&#x26AA', '&#x26AB', '&#x1F534', '&#x1F535', '&#x1F7E4', '&#x1F7E3', '&#x1F7E2', '&#x1F7E1', '&#x1F7E0', '&#x1F53A', '&#x1F53B', '&#x1F538', '&#x1F539', '&#x1F536', '&#x1F537', '&#x1F533', '&#x1F532', '&#x25AA', '&#x25AB', '&#x25FE', '&#x25FD', '&#x25FC', '&#x25FB', '&#x2B1B', '&#x2B1C', '&#x1F7E7', '&#x1F7E6', '&#x1F7E5', '&#x1F7EB', '&#x1F7EA', '&#x1F7E9', '&#x1F7E8', '&#x1F508', '&#x1F507', '&#x1F509', '&#x1F50A', '&#x1F514', '&#x1F515', '&#x1F4E3', '&#x1F4E2', '&#x1F5E8', '&#x1F4AC', '&#x1F4AD', '&#x1F5EF', '&#x1F0CF', '&#x1F3B4', '&#x1F004', '&#x1F550', '&#x1F551', '&#x1F552', '&#x1F553', '&#x1F554', '&#x1F555', '&#x1F556', '&#x1F557', '&#x1F558', '&#x1F559', '&#x1F55A', '&#x1F55B', '&#x1F55C', '&#x1F55D', '&#x1F55E', '&#x1F55F', '&#x1F560', '&#x1F561', '&#x1F562', '&#x1F563', '&#x1F564', '&#x1F565', '&#x1F566', '&#x1F567', '&#x26A7', '&#x1F3F3', '&#x1F3F4', '&#x1F3C1', '&#x1F6A9', '&#x1F1E6', '&#x1F1E9', '&#x1F1E7', '&#x1F1EE', '&#x1F1FB', '&#x1F1F0', '&#x1F1E8', '&#x1F1F9', '&#x1F1ED', '&#x1F1EA', '&#x1F1F8', '&#x1F1EC', '&#x1F1EB', '&#x1F1F5', '&#x1F1EF', '&#x1F38C', '&#x1F1FD', '&#x1F1F1', '&#x1F1F2', '&#x1F1FE', '&#x1F1F3', '&#x1F1F4', '&#x1F1F6', '&#x1F1F7', '&#x1F1FC', '&#x1F1FF', '&#x1F1FA', '&#x1F3FB', '&#x1F3FC', '&#x1F3FD', '&#x1F3FE', '&#x1F3FF']
-  };
-
-  // Add all emoji in a dropdown
   $.extend(true, $.trumbowyg, {
     langs: {
       // jshint camelcase:false
       en: {
-        emoji: 'Add an emoji'
+        base64: 'Image as base64',
+        file: 'File',
+        errFileReaderNotSupported: 'FileReader is not supported by your browser.',
+        errInvalidImage: 'Invalid image file.'
       },
       az: {
-        emoji: 'Emoji yerləşdir'
+        base64: 'base64 olaraq şəkil',
+        file: 'Fayl',
+        errFileReaderNotSupported: 'FileReader brauzeriniz tərəfindən dəstəklənmir.',
+        errInvalidImage: 'Yanlış şəkil faylı.'
       },
-      ca: {
-        emoji: 'Afegir una emoticona'
+      by: {
+        base64: 'Выява (фармат base64)',
+        file: 'Файл',
+        errFileReaderNotSupported: 'FileReader не падтрымліваецца вашым браўзэрам.',
+        errInvalidImage: 'Несапраўдны файл выявы.'
+      },
+      cs: {
+        base64: 'Vložit obrázek',
+        file: 'Soubor'
       },
       da: {
-        emoji: 'Tilføj et humørikon'
-      },
-      de: {
-        emoji: 'Emoticon einfügen'
-      },
-      es: {
-        emoji: 'Añadir un emoticono'
+        base64: 'Billede som base64',
+        file: 'Fil',
+        errFileReaderNotSupported: 'FileReader er ikke understøttet af din browser.',
+        errInvalidImage: 'Ugyldig billedfil.'
       },
       et: {
-        emoji: 'Lisa emotikon'
+        base64: 'Pilt base64 formaadis',
+        file: 'Fail',
+        errFileReaderNotSupported: 'Teie veebilehitseja ei toeta FileReader funktsiooni.',
+        errInvalidImage: 'Vigane pildifail.'
       },
       fr: {
-        emoji: 'Ajouter un emoji'
+        base64: 'Image en base64',
+        file: 'Fichier',
+        errFileReaderNotSupported: 'FileReader n\'est pas supporté par votre navigateur.',
+        errInvalidImage: 'Fichier image invalide.'
       },
       hu: {
-        emoji: 'Emoji beszúrás'
+        base64: 'Kép beszúrás inline',
+        file: 'Fájl',
+        errFileReaderNotSupported: 'Ez a böngésző nem támogatja a FileReader funkciót.',
+        errInvalidImage: 'Érvénytelen képfájl.'
       },
       ja: {
-        emoji: '絵文字の挿入'
+        base64: '画像 (Base64形式)',
+        file: 'ファイル',
+        errFileReaderNotSupported: 'あなたのブラウザーはFileReaderをサポートしていません',
+        errInvalidImage: '画像形式が正しくありません'
       },
       ko: {
-        emoji: '이모지 넣기'
+        base64: '그림 넣기(base64)',
+        file: '파일',
+        errFileReaderNotSupported: 'FileReader가 현재 브라우저를 지원하지 않습니다.',
+        errInvalidImage: '유효하지 않은 파일'
+      },
+      nl: {
+        base64: 'Afbeelding inline',
+        file: 'Bestand',
+        errFileReaderNotSupported: 'Uw browser ondersteunt deze functionaliteit niet.',
+        errInvalidImage: 'De gekozen afbeelding is ongeldig.'
+      },
+      pt_br: {
+        base64: 'Imagem em base64',
+        file: 'Arquivo',
+        errFileReaderNotSupported: 'FileReader não é suportado pelo seu navegador.',
+        errInvalidImage: 'Arquivo de imagem inválido.'
       },
       ru: {
-        emoji: 'Вставить emoji'
+        base64: 'Изображение как код в base64',
+        file: 'Файл',
+        errFileReaderNotSupported: 'FileReader не поддерживается вашим браузером.',
+        errInvalidImage: 'Недопустимый файл изображения.'
       },
       sl: {
-        emoji: 'Vstavi emotikon'
+        base64: 'Slika kot base64',
+        file: 'Datoteka',
+        errFileReaderNotSupported: 'FileReader ni podprt v tem brskalniku.',
+        errInvalidImage: 'Neveljavna datoteka s sliko.'
       },
       tr: {
-        emoji: 'Emoji ekle'
+        base64: 'Base64 olarak resim',
+        file: 'Dosya',
+        errFileReaderNotSupported: 'FileReader tarayıcınız tarafından desteklenmiyor.',
+        errInvalidImage: 'Geçersiz resim dosyası.'
       },
       zh_cn: {
-        emoji: '添加表情'
+        base64: '图片（Base64编码）',
+        file: '文件'
+      },
+      zh_tw: {
+        base64: '圖片(base64編碼)',
+        file: '檔案',
+        errFileReaderNotSupported: '你的瀏覽器不支援FileReader',
+        errInvalidImage: '不正確的檔案格式'
       }
     },
     // jshint camelcase:true
+
     plugins: {
-      emoji: {
+      base64: {
+        shouldInit: isSupported,
         init: function init(trumbowyg) {
-          trumbowyg.o.plugins.emoji = trumbowyg.o.plugins.emoji || defaultOptions;
-          var emojiBtnDef = {
-            dropdown: buildDropdown(trumbowyg)
+          var btnDef = {
+            isSupported: isSupported,
+            fn: function fn() {
+              trumbowyg.saveRange();
+              var file;
+              var $modal = trumbowyg.openModalInsert(
+              // Title
+              trumbowyg.lang.base64,
+              // Fields
+              {
+                file: {
+                  type: 'file',
+                  required: true,
+                  attributes: {
+                    accept: 'image/*'
+                  }
+                },
+                alt: {
+                  label: 'description',
+                  value: trumbowyg.getRangeText()
+                }
+              },
+              // Callback
+              function (values) {
+                var fReader = new FileReader();
+                fReader.onloadend = function (e) {
+                  if (isValidImage(e.target.result)) {
+                    trumbowyg.execCmd('insertImage', fReader.result, false, true);
+                    $(['img[src="', fReader.result, '"]:not([alt])'].join(''), trumbowyg.$box).attr('alt', values.alt);
+                    trumbowyg.closeModal();
+                  } else {
+                    trumbowyg.addErrorOnModalField($('input[type=file]', $modal), trumbowyg.lang.errInvalidImage);
+                  }
+                };
+                fReader.readAsDataURL(file);
+              });
+              $('input[type=file]').on('change', function (e) {
+                file = e.target.files[0];
+              });
+            }
           };
-          trumbowyg.addBtnDef('emoji', emojiBtnDef);
+          trumbowyg.addBtnDef('base64', btnDef);
         }
       }
     }
   });
-  function buildDropdown(trumbowyg) {
-    var dropdown = [];
-    $.each(trumbowyg.o.plugins.emoji.emojiList, function (i, emoji) {
-      if ($.isArray(emoji)) {
-        // Custom emoji behaviour
-        var emojiCode = emoji[0],
-          emojiUrl = emoji[1],
-          emojiHtml = '<img src="' + emojiUrl + '" alt="' + emojiCode + '">',
-          customEmojiBtnName = 'emoji-' + emojiCode.replace(/:/g, ''),
-          customEmojiBtnDef = {
-            hasIcon: false,
-            text: emojiHtml,
-            fn: function fn() {
-              trumbowyg.execCmd('insertImage', emojiUrl, false, true);
-              return true;
-            }
-          };
-        trumbowyg.addBtnDef(customEmojiBtnName, customEmojiBtnDef);
-        dropdown.push(customEmojiBtnName);
-      } else {
-        // Default behaviour
-        var btn = emoji.replace(/:/g, ''),
-          defaultEmojiBtnName = 'emoji-' + btn,
-          defaultEmojiBtnDef = {
-            text: emoji,
-            fn: function fn() {
-              var encodedEmoji = String.fromCodePoint(emoji.replace('&#', '0'));
-              trumbowyg.execCmd('insertText', encodedEmoji);
-              return true;
-            }
-          };
-        trumbowyg.addBtnDef(defaultEmojiBtnName, defaultEmojiBtnDef);
-        dropdown.push(defaultEmojiBtnName);
-      }
-    });
-    return dropdown;
-  }
 })(jQuery);
 /* ===========================================================
- * trumbowyg.emoji.js v0.1
- * Emoji picker plugin for Trumbowyg
+ * trumbowyg.base64.js v1.0
+ * Base64 plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
  * ===========================================================
- * Author : Nicolas Pion
- *          Twitter : @nicolas_pion
+ * Author : Cyril Biencourt (lizardK)
  */
-!function (x) {
+!function (e) {
   "use strict";
 
-  var F = {
-    emojiList: ["&#x2049", "&#x2122", "&#x2139", "&#x2194", "&#x2195", "&#x2196", "&#x2197", "&#x2198", "&#x2199", "&#x2328", "&#x2600", "&#x2601", "&#x2602", "&#x2603", "&#x2604", "&#x2611", "&#x2614", "&#x2615", "&#x2618", "&#x2620", "&#x2622", "&#x2623", "&#x2626", "&#x2638", "&#x2639", "&#x2640", "&#x2642", "&#x2648", "&#x2649", "&#x2650", "&#x2651", "&#x2652", "&#x2653", "&#x2660", "&#x2663", "&#x2665", "&#x2666", "&#x2668", "&#x2692", "&#x2693", "&#x2694", "&#x2695", "&#x2696", "&#x2697", "&#x2699", "&#x2702", "&#x2705", "&#x2708", "&#x2709", "&#x2712", "&#x2714", "&#x2716", "&#x2721", "&#x2728", "&#x2733", "&#x2734", "&#x2744", "&#x2747", "&#x2753", "&#x2754", "&#x2755", "&#x2757", "&#x2763", "&#x2764", "&#x2795", "&#x2796", "&#x2797", "&#x2934", "&#x2935", "&#x3030", "&#x3297", "&#x3299", "&#x1F600", "&#x1F603", "&#x1F604", "&#x1F601", "&#x1F606", "&#x1F605", "&#x1F602", "&#x1F923", "&#x263A", "&#x1F60A", "&#x1F607", "&#x1F642", "&#x1F643", "&#x1F609", "&#x1F60C", "&#x1F972", "&#x1F60D", "&#x1F970", "&#x1F618", "&#x1F617", "&#x1F619", "&#x1F61A", "&#x1F60B", "&#x1F61B", "&#x1F61D", "&#x1F61C", "&#x1F92A", "&#x1F928", "&#x1F9D0", "&#x1F913", "&#x1F60E", "&#x1F929", "&#x1F973", "&#x1F60F", "&#x1F612", "&#x1F61E", "&#x1F614", "&#x1F61F", "&#x1F615", "&#x1F641", "&#x1F623", "&#x1F616", "&#x1F62B", "&#x1F629", "&#x1F97A", "&#x1F622", "&#x1F62D", "&#x1F624", "&#x1F62E", "&#x1F620", "&#x1F621", "&#x1F92C", "&#x1F92F", "&#x1F633", "&#x1F636", "&#x1F975", "&#x1F976", "&#x1F631", "&#x1F628", "&#x1F630", "&#x1F625", "&#x1F613", "&#x1F917", "&#x1F914", "&#x1F92D", "&#x1F971", "&#x1F92B", "&#x1F925", "&#x1F610", "&#x1F611", "&#x1F62C", "&#x1F644", "&#x1F62F", "&#x1F626", "&#x1F627", "&#x1F632", "&#x1F634", "&#x1F924", "&#x1F62A", "&#x1F635", "&#x1F910", "&#x1F974", "&#x1F922", "&#x1F92E", "&#x1F927", "&#x1F637", "&#x1F912", "&#x1F915", "&#x1F911", "&#x1F920", "&#x1F978", "&#x1F608", "&#x1F47F", "&#x1F479", "&#x1F47A", "&#x1F921", "&#x1F4A9", "&#x1F47B", "&#x1F480", "&#x1F47D", "&#x1F47E", "&#x1F916", "&#x1F383", "&#x1F63A", "&#x1F638", "&#x1F639", "&#x1F63B", "&#x1F63C", "&#x1F63D", "&#x1F640", "&#x1F63F", "&#x1F63E", "&#x1F932", "&#x1F450", "&#x1F64C", "&#x1F44F", "&#x1F91D", "&#x1F44D", "&#x1F44E", "&#x1F44A", "&#x270A", "&#x1F91B", "&#x1F91C", "&#x1F91E", "&#x270C", "&#x1F91F", "&#x1F918", "&#x1F44C", "&#x1F90F", "&#x1F90C", "&#x1F448", "&#x1F449", "&#x1F446", "&#x1F447", "&#x261D", "&#x270B", "&#x1F91A", "&#x1F590", "&#x1F596", "&#x1F44B", "&#x1F919", "&#x1F4AA", "&#x1F9BE", "&#x1F595", "&#x270D", "&#x1F64F", "&#x1F9B6", "&#x1F9B5", "&#x1F9BF", "&#x1F484", "&#x1F48B", "&#x1F444", "&#x1F9B7", "&#x1F445", "&#x1F442", "&#x1F9BB", "&#x1F443", "&#x1F463", "&#x1F441", "&#x1F440", "&#x1F9E0", "&#x1FAC0", "&#x1FAC1", "&#x1F9B4", "&#x1F5E3", "&#x1F464", "&#x1F465", "&#x1FAC2", "&#x1F476", "&#x1F467", "&#x1F9D2", "&#x1F466", "&#x1F469", "&#x1F9D1", "&#x1F468", "&#x1F471", "&#x1F9D4", "&#x1F475", "&#x1F9D3", "&#x1F474", "&#x1F472", "&#x1F473", "&#x1F9D5", "&#x1F46E", "&#x1F477", "&#x1F482", "&#x1F575", "&#x1F470", "&#x1F935", "&#x1F478", "&#x1F934", "&#x1F9B8", "&#x1F9B9", "&#x1F977", "&#x1F936", "&#x1F385", "&#x1F9D9", "&#x1F9DD", "&#x1F9DB", "&#x1F9DF", "&#x1F9DE", "&#x1F9DC", "&#x1F9DA", "&#x1F47C", "&#x1F930", "&#x1F931", "&#x1F647", "&#x1F481", "&#x1F645", "&#x1F646", "&#x1F64B", "&#x1F9CF", "&#x1F926", "&#x1F937", "&#x1F64E", "&#x1F64D", "&#x1F487", "&#x1F486", "&#x1F9D6", "&#x1F485", "&#x1F933", "&#x1F483", "&#x1F57A", "&#x1F46F", "&#x1F574", "&#x1F6B6", "&#x1F9CE", "&#x1F3C3", "&#x1F9CD", "&#x1F46B", "&#x1F46D", "&#x1F46C", "&#x1F491", "&#x1F48F", "&#x1F46A", "&#x1F9F6", "&#x1F9F5", "&#x1F9E5", "&#x1F97C", "&#x1F9BA", "&#x1F45A", "&#x1F455", "&#x1F456", "&#x1FA72", "&#x1FA73", "&#x1F454", "&#x1F457", "&#x1F459", "&#x1FA71", "&#x1F458", "&#x1F97B", "&#x1F97F", "&#x1F460", "&#x1F461", "&#x1F462", "&#x1F45E", "&#x1F45F", "&#x1F97E", "&#x1FA74", "&#x1F9E6", "&#x1F9E4", "&#x1F9E3", "&#x1F3A9", "&#x1F9E2", "&#x1F452", "&#x1F393", "&#x26D1", "&#x1FA96", "&#x1F451", "&#x1F48D", "&#x1F45D", "&#x1F45B", "&#x1F45C", "&#x1F4BC", "&#x1F392", "&#x1F9F3", "&#x1F453", "&#x1F576", "&#x1F97D", "&#x1F302", "&#x1F9B1", "&#x1F9B0", "&#x1F9B3", "&#x1F9B2", "&#x1F436", "&#x1F431", "&#x1F42D", "&#x1F439", "&#x1F430", "&#x1F98A", "&#x1F43B", "&#x1F43C", "&#x1F428", "&#x1F42F", "&#x1F981", "&#x1F42E", "&#x1F437", "&#x1F43D", "&#x1F438", "&#x1F435", "&#x1F648", "&#x1F649", "&#x1F64A", "&#x1F412", "&#x1F414", "&#x1F427", "&#x1F426", "&#x1F424", "&#x1F423", "&#x1F425", "&#x1F986", "&#x1F9A4", "&#x1F985", "&#x1F989", "&#x1F987", "&#x1F43A", "&#x1F417", "&#x1F434", "&#x1F984", "&#x1F41D", "&#x1F41B", "&#x1F98B", "&#x1F40C", "&#x1FAB1", "&#x1F41E", "&#x1F41C", "&#x1FAB0", "&#x1F99F", "&#x1FAB3", "&#x1FAB2", "&#x1F997", "&#x1F577", "&#x1F578", "&#x1F982", "&#x1F422", "&#x1F40D", "&#x1F98E", "&#x1F996", "&#x1F995", "&#x1F419", "&#x1F991", "&#x1F990", "&#x1F99E", "&#x1F980", "&#x1F421", "&#x1F420", "&#x1F41F", "&#x1F9AD", "&#x1F42C", "&#x1F433", "&#x1F40B", "&#x1F988", "&#x1F40A", "&#x1F405", "&#x1F406", "&#x1F993", "&#x1F98D", "&#x1F9A7", "&#x1F418", "&#x1F9A3", "&#x1F9AC", "&#x1F99B", "&#x1F98F", "&#x1F42A", "&#x1F42B", "&#x1F992", "&#x1F998", "&#x1F403", "&#x1F402", "&#x1F404", "&#x1F40E", "&#x1F416", "&#x1F40F", "&#x1F411", "&#x1F999", "&#x1F410", "&#x1F98C", "&#x1F415", "&#x1F429", "&#x1F9AE", "&#x1F408", "&#x1F413", "&#x1F983", "&#x1F99A", "&#x1F99C", "&#x1F9A2", "&#x1F9A9", "&#x1F54A", "&#x1F407", "&#x1F99D", "&#x1F9A8", "&#x1F9A1", "&#x1F9AB", "&#x1F9A6", "&#x1F9A5", "&#x1F401", "&#x1F400", "&#x1F43F", "&#x1F994", "&#x1F43E", "&#x1F409", "&#x1F432", "&#x1F335", "&#x1F384", "&#x1F332", "&#x1F333", "&#x1F334", "&#x1F331", "&#x1F33F", "&#x1F340", "&#x1F38D", "&#x1F38B", "&#x1F343", "&#x1F342", "&#x1F341", "&#x1FAB6", "&#x1F344", "&#x1F41A", "&#x1FAA8", "&#x1FAB5", "&#x1F33E", "&#x1FAB4", "&#x1F490", "&#x1F337", "&#x1F339", "&#x1F940", "&#x1F33A", "&#x1F338", "&#x1F33C", "&#x1F33B", "&#x1F31E", "&#x1F31D", "&#x1F31B", "&#x1F31C", "&#x1F31A", "&#x1F315", "&#x1F316", "&#x1F317", "&#x1F318", "&#x1F311", "&#x1F312", "&#x1F313", "&#x1F314", "&#x1F319", "&#x1F30E", "&#x1F30D", "&#x1F30F", "&#x1FA90", "&#x1F4AB", "&#x2B50", "&#x1F31F", "&#x26A1", "&#x1F4A5", "&#x1F525", "&#x1F32A", "&#x1F308", "&#x1F324", "&#x26C5", "&#x1F325", "&#x1F326", "&#x1F327", "&#x26C8", "&#x1F329", "&#x1F328", "&#x26C4", "&#x1F32C", "&#x1F4A8", "&#x1F4A7", "&#x1F4A6", "&#x1F30A", "&#x1F32B", "&#x1F34F", "&#x1F34E", "&#x1F350", "&#x1F34A", "&#x1F34B", "&#x1F34C", "&#x1F349", "&#x1F347", "&#x1FAD0", "&#x1F353", "&#x1F348", "&#x1F352", "&#x1F351", "&#x1F96D", "&#x1F34D", "&#x1F965", "&#x1F95D", "&#x1F345", "&#x1F346", "&#x1F951", "&#x1FAD2", "&#x1F966", "&#x1F96C", "&#x1FAD1", "&#x1F952", "&#x1F336", "&#x1F33D", "&#x1F955", "&#x1F9C4", "&#x1F9C5", "&#x1F954", "&#x1F360", "&#x1F950", "&#x1F96F", "&#x1F35E", "&#x1F956", "&#x1FAD3", "&#x1F968", "&#x1F9C0", "&#x1F95A", "&#x1F373", "&#x1F9C8", "&#x1F95E", "&#x1F9C7", "&#x1F953", "&#x1F969", "&#x1F357", "&#x1F356", "&#x1F32D", "&#x1F354", "&#x1F35F", "&#x1F355", "&#x1F96A", "&#x1F959", "&#x1F9C6", "&#x1F32E", "&#x1F32F", "&#x1FAD4", "&#x1F957", "&#x1F958", "&#x1FAD5", "&#x1F96B", "&#x1F35D", "&#x1F35C", "&#x1F372", "&#x1F35B", "&#x1F363", "&#x1F371", "&#x1F95F", "&#x1F9AA", "&#x1F364", "&#x1F359", "&#x1F35A", "&#x1F358", "&#x1F365", "&#x1F960", "&#x1F96E", "&#x1F362", "&#x1F361", "&#x1F367", "&#x1F368", "&#x1F366", "&#x1F967", "&#x1F9C1", "&#x1F370", "&#x1F382", "&#x1F36E", "&#x1F36D", "&#x1F36C", "&#x1F36B", "&#x1F37F", "&#x1F369", "&#x1F36A", "&#x1F330", "&#x1F95C", "&#x1F36F", "&#x1F95B", "&#x1F37C", "&#x1F375", "&#x1FAD6", "&#x1F9C9", "&#x1F9CB", "&#x1F9C3", "&#x1F964", "&#x1F376", "&#x1F37A", "&#x1F37B", "&#x1F942", "&#x1F377", "&#x1F943", "&#x1F378", "&#x1F379", "&#x1F37E", "&#x1F9CA", "&#x1F944", "&#x1F374", "&#x1F37D", "&#x1F963", "&#x1F961", "&#x1F962", "&#x1F9C2", "&#x26BD", "&#x1F3C0", "&#x1F3C8", "&#x26BE", "&#x1F94E", "&#x1F3BE", "&#x1F3D0", "&#x1F3C9", "&#x1F94F", "&#x1FA83", "&#x1F3B1", "&#x1FA80", "&#x1F3D3", "&#x1F3F8", "&#x1F3D2", "&#x1F3D1", "&#x1F94D", "&#x1F3CF", "&#x1F945", "&#x26F3", "&#x1FA81", "&#x1F3F9", "&#x1F3A3", "&#x1F93F", "&#x1F94A", "&#x1F94B", "&#x1F3BD", "&#x1F6F9", "&#x1F6FC", "&#x1F6F7", "&#x26F8", "&#x1F94C", "&#x1F3BF", "&#x26F7", "&#x1F3C2", "&#x1FA82", "&#x1F3CB", "&#x1F93C", "&#x1F938", "&#x26F9", "&#x1F93A", "&#x1F93E", "&#x1F3CC", "&#x1F3C7", "&#x1F9D8", "&#x1F3C4", "&#x1F3CA", "&#x1F93D", "&#x1F6A3", "&#x1F9D7", "&#x1F6B5", "&#x1F6B4", "&#x1F3C6", "&#x1F947", "&#x1F948", "&#x1F949", "&#x1F3C5", "&#x1F396", "&#x1F3F5", "&#x1F397", "&#x1F3AB", "&#x1F39F", "&#x1F3AA", "&#x1F939", "&#x1F3AD", "&#x1FA70", "&#x1F3A8", "&#x1F3AC", "&#x1F3A4", "&#x1F3A7", "&#x1F3BC", "&#x1F3B9", "&#x1F941", "&#x1FA98", "&#x1F3B7", "&#x1F3BA", "&#x1F3B8", "&#x1FA95", "&#x1F3BB", "&#x1FA97", "&#x1F3B2", "&#x265F", "&#x1F3AF", "&#x1F3B3", "&#x1F3AE", "&#x1F3B0", "&#x1F9E9", "&#x1F697", "&#x1F695", "&#x1F699", "&#x1F6FB", "&#x1F68C", "&#x1F68E", "&#x1F3CE", "&#x1F693", "&#x1F691", "&#x1F692", "&#x1F690", "&#x1F69A", "&#x1F69B", "&#x1F69C", "&#x1F9AF", "&#x1F9BD", "&#x1F9BC", "&#x1F6F4", "&#x1F6B2", "&#x1F6F5", "&#x1F3CD", "&#x1F6FA", "&#x1F6A8", "&#x1F694", "&#x1F68D", "&#x1F698", "&#x1F696", "&#x1F6A1", "&#x1F6A0", "&#x1F69F", "&#x1F683", "&#x1F68B", "&#x1F69E", "&#x1F69D", "&#x1F684", "&#x1F685", "&#x1F688", "&#x1F682", "&#x1F686", "&#x1F687", "&#x1F68A", "&#x1F689", "&#x1F6EB", "&#x1F6EC", "&#x1F6E9", "&#x1F4BA", "&#x1F6F0", "&#x1F680", "&#x1F6F8", "&#x1F681", "&#x1F6F6", "&#x26F5", "&#x1F6A4", "&#x1F6E5", "&#x1F6F3", "&#x26F4", "&#x1F6A2", "&#x26FD", "&#x1F6A7", "&#x1F6A6", "&#x1F6A5", "&#x1F68F", "&#x1F5FA", "&#x1F5FF", "&#x1F5FD", "&#x1F5FC", "&#x1F3F0", "&#x1F3EF", "&#x1F3DF", "&#x1F3A1", "&#x1F3A2", "&#x1F3A0", "&#x26F2", "&#x26F1", "&#x1F3D6", "&#x1F3DD", "&#x1F3DC", "&#x1F30B", "&#x26F0", "&#x1F3D4", "&#x1F5FB", "&#x1F3D5", "&#x26FA", "&#x1F3E0", "&#x1F3E1", "&#x1F3D8", "&#x1F3DA", "&#x1F6D6", "&#x1F3D7", "&#x1F3ED", "&#x1F3E2", "&#x1F3EC", "&#x1F3E3", "&#x1F3E4", "&#x1F3E5", "&#x1F3E6", "&#x1F3E8", "&#x1F3EA", "&#x1F3EB", "&#x1F3E9", "&#x1F492", "&#x1F3DB", "&#x26EA", "&#x1F54C", "&#x1F54D", "&#x1F6D5", "&#x1F54B", "&#x26E9", "&#x1F6E4", "&#x1F6E3", "&#x1F5FE", "&#x1F391", "&#x1F3DE", "&#x1F305", "&#x1F304", "&#x1F320", "&#x1F387", "&#x1F386", "&#x1F307", "&#x1F306", "&#x1F3D9", "&#x1F303", "&#x1F30C", "&#x1F309", "&#x1F301", "&#x231A", "&#x1F4F1", "&#x1F4F2", "&#x1F4BB", "&#x1F5A5", "&#x1F5A8", "&#x1F5B1", "&#x1F5B2", "&#x1F579", "&#x1F5DC", "&#x1F4BD", "&#x1F4BE", "&#x1F4BF", "&#x1F4C0", "&#x1F4FC", "&#x1F4F7", "&#x1F4F8", "&#x1F4F9", "&#x1F3A5", "&#x1F4FD", "&#x1F39E", "&#x1F4DE", "&#x260E", "&#x1F4DF", "&#x1F4E0", "&#x1F4FA", "&#x1F4FB", "&#x1F399", "&#x1F39A", "&#x1F39B", "&#x1F9ED", "&#x23F1", "&#x23F2", "&#x23F0", "&#x1F570", "&#x231B", "&#x23F3", "&#x1F4E1", "&#x1F50B", "&#x1F50C", "&#x1F4A1", "&#x1F526", "&#x1F56F", "&#x1FA94", "&#x1F9EF", "&#x1F6E2", "&#x1F4B8", "&#x1F4B5", "&#x1F4B4", "&#x1F4B6", "&#x1F4B7", "&#x1FA99", "&#x1F4B0", "&#x1F4B3", "&#x1F48E", "&#x1FA9C", "&#x1F9F0", "&#x1FA9B", "&#x1F527", "&#x1F528", "&#x1F6E0", "&#x26CF", "&#x1F529", "&#x1F9F1", "&#x26D3", "&#x1FA9D", "&#x1FAA2", "&#x1F9F2", "&#x1F52B", "&#x1F4A3", "&#x1F9E8", "&#x1FA93", "&#x1FA9A", "&#x1F52A", "&#x1F5E1", "&#x1F6E1", "&#x1F6AC", "&#x26B0", "&#x1FAA6", "&#x26B1", "&#x1F3FA", "&#x1FA84", "&#x1F52E", "&#x1F4FF", "&#x1F9FF", "&#x1F488", "&#x1F52D", "&#x1F52C", "&#x1F573", "&#x1FA9F", "&#x1FA79", "&#x1FA7A", "&#x1F48A", "&#x1F489", "&#x1FA78", "&#x1F9EC", "&#x1F9A0", "&#x1F9EB", "&#x1F9EA", "&#x1F321", "&#x1FAA4", "&#x1F9F9", "&#x1F9FA", "&#x1FAA1", "&#x1F9FB", "&#x1F6BD", "&#x1FAA0", "&#x1FAA3", "&#x1F6B0", "&#x1F6BF", "&#x1F6C1", "&#x1F6C0", "&#x1FAA5", "&#x1F9FC", "&#x1FA92", "&#x1F9FD", "&#x1F9F4", "&#x1F6CE", "&#x1F511", "&#x1F5DD", "&#x1F6AA", "&#x1FA91", "&#x1FA9E", "&#x1F6CB", "&#x1F6CF", "&#x1F6CC", "&#x1F9F8", "&#x1F5BC", "&#x1F6CD", "&#x1F6D2", "&#x1F381", "&#x1F388", "&#x1F38F", "&#x1F380", "&#x1F38A", "&#x1F389", "&#x1FA85", "&#x1FA86", "&#x1F38E", "&#x1F3EE", "&#x1F390", "&#x1F9E7", "&#x1F4E9", "&#x1F4E8", "&#x1F4E7", "&#x1F48C", "&#x1F4E5", "&#x1F4E4", "&#x1F4E6", "&#x1F3F7", "&#x1F4EA", "&#x1F4EB", "&#x1F4EC", "&#x1F4ED", "&#x1F4EE", "&#x1F4EF", "&#x1FAA7", "&#x1F4DC", "&#x1F4C3", "&#x1F4C4", "&#x1F4D1", "&#x1F9FE", "&#x1F4CA", "&#x1F4C8", "&#x1F4C9", "&#x1F5D2", "&#x1F5D3", "&#x1F4C6", "&#x1F4C5", "&#x1F5D1", "&#x1F4C7", "&#x1F5C3", "&#x1F5F3", "&#x1F5C4", "&#x1F4CB", "&#x1F4C1", "&#x1F4C2", "&#x1F5C2", "&#x1F5DE", "&#x1F4F0", "&#x1F4D3", "&#x1F4D4", "&#x1F4D2", "&#x1F4D5", "&#x1F4D7", "&#x1F4D8", "&#x1F4D9", "&#x1F4DA", "&#x1F4D6", "&#x1F516", "&#x1F9F7", "&#x1F517", "&#x1F4CE", "&#x1F587", "&#x1F4D0", "&#x1F4CF", "&#x1F9EE", "&#x1F4CC", "&#x1F4CD", "&#x1F58A", "&#x1F58B", "&#x1F58C", "&#x1F58D", "&#x1F4DD", "&#x270F", "&#x1F50D", "&#x1F50E", "&#x1F50F", "&#x1F510", "&#x1F512", "&#x1F513", "&#x1F9E1", "&#x1F49B", "&#x1F49A", "&#x1F499", "&#x1F49C", "&#x1F5A4", "&#x1F90E", "&#x1F90D", "&#x1F494", "&#x1F495", "&#x1F49E", "&#x1F493", "&#x1F497", "&#x1F496", "&#x1F498", "&#x1F49D", "&#x1F49F", "&#x262E", "&#x271D", "&#x262A", "&#x1F549", "&#x1F52F", "&#x1F54E", "&#x262F", "&#x1F6D0", "&#x26CE", "&#x264A", "&#x264B", "&#x264C", "&#x264D", "&#x264E", "&#x264F", "&#x1F194", "&#x269B", "&#x1F251", "&#x1F4F4", "&#x1F4F3", "&#x1F236", "&#x1F21A", "&#x1F238", "&#x1F23A", "&#x1F237", "&#x1F19A", "&#x1F4AE", "&#x1F250", "&#x1F234", "&#x1F235", "&#x1F239", "&#x1F232", "&#x1F170", "&#x1F171", "&#x1F18E", "&#x1F191", "&#x1F17E", "&#x1F198", "&#x274C", "&#x2B55", "&#x1F6D1", "&#x26D4", "&#x1F4DB", "&#x1F6AB", "&#x1F4AF", "&#x1F4A2", "&#x1F6B7", "&#x1F6AF", "&#x1F6B3", "&#x1F6B1", "&#x1F51E", "&#x1F4F5", "&#x1F6AD", "&#x203C", "&#x1F505", "&#x1F506", "&#x303D", "&#x26A0", "&#x1F6B8", "&#x1F531", "&#x269C", "&#x1F530", "&#x267B", "&#x1F22F", "&#x1F4B9", "&#x274E", "&#x1F310", "&#x1F4A0", "&#x24C2", "&#x1F300", "&#x1F4A4", "&#x1F3E7", "&#x1F6BE", "&#x267F", "&#x1F17F", "&#x1F233", "&#x1F202", "&#x1F6C2", "&#x1F6C3", "&#x1F6C4", "&#x1F6C5", "&#x1F6D7", "&#x1F6B9", "&#x1F6BA", "&#x1F6BC", "&#x1F6BB", "&#x1F6AE", "&#x1F3A6", "&#x1F4F6", "&#x1F201", "&#x1F523", "&#x1F524", "&#x1F521", "&#x1F520", "&#x1F196", "&#x1F197", "&#x1F199", "&#x1F192", "&#x1F195", "&#x1F193", "&#x0030", "&#x0031", "&#x0032", "&#x0033", "&#x0034", "&#x0035", "&#x0036", "&#x0037", "&#x0038", "&#x0039", "&#x1F51F", "&#x1F522", "&#x0023", "&#x002A", "&#x23CF", "&#x25B6", "&#x23F8", "&#x23EF", "&#x23F9", "&#x23FA", "&#x23ED", "&#x23EE", "&#x23E9", "&#x23EA", "&#x23EB", "&#x23EC", "&#x25C0", "&#x1F53C", "&#x1F53D", "&#x27A1", "&#x2B05", "&#x2B06", "&#x2B07", "&#x21AA", "&#x21A9", "&#x1F500", "&#x1F501", "&#x1F502", "&#x1F504", "&#x1F503", "&#x1F3B5", "&#x1F3B6", "&#x267E", "&#x1F4B2", "&#x1F4B1", "&#x00A9", "&#x00AE", "&#x27B0", "&#x27BF", "&#x1F51A", "&#x1F519", "&#x1F51B", "&#x1F51D", "&#x1F51C", "&#x1F518", "&#x26AA", "&#x26AB", "&#x1F534", "&#x1F535", "&#x1F7E4", "&#x1F7E3", "&#x1F7E2", "&#x1F7E1", "&#x1F7E0", "&#x1F53A", "&#x1F53B", "&#x1F538", "&#x1F539", "&#x1F536", "&#x1F537", "&#x1F533", "&#x1F532", "&#x25AA", "&#x25AB", "&#x25FE", "&#x25FD", "&#x25FC", "&#x25FB", "&#x2B1B", "&#x2B1C", "&#x1F7E7", "&#x1F7E6", "&#x1F7E5", "&#x1F7EB", "&#x1F7EA", "&#x1F7E9", "&#x1F7E8", "&#x1F508", "&#x1F507", "&#x1F509", "&#x1F50A", "&#x1F514", "&#x1F515", "&#x1F4E3", "&#x1F4E2", "&#x1F5E8", "&#x1F4AC", "&#x1F4AD", "&#x1F5EF", "&#x1F0CF", "&#x1F3B4", "&#x1F004", "&#x1F550", "&#x1F551", "&#x1F552", "&#x1F553", "&#x1F554", "&#x1F555", "&#x1F556", "&#x1F557", "&#x1F558", "&#x1F559", "&#x1F55A", "&#x1F55B", "&#x1F55C", "&#x1F55D", "&#x1F55E", "&#x1F55F", "&#x1F560", "&#x1F561", "&#x1F562", "&#x1F563", "&#x1F564", "&#x1F565", "&#x1F566", "&#x1F567", "&#x26A7", "&#x1F3F3", "&#x1F3F4", "&#x1F3C1", "&#x1F6A9", "&#x1F1E6", "&#x1F1E9", "&#x1F1E7", "&#x1F1EE", "&#x1F1FB", "&#x1F1F0", "&#x1F1E8", "&#x1F1F9", "&#x1F1ED", "&#x1F1EA", "&#x1F1F8", "&#x1F1EC", "&#x1F1EB", "&#x1F1F5", "&#x1F1EF", "&#x1F38C", "&#x1F1FD", "&#x1F1F1", "&#x1F1F2", "&#x1F1FE", "&#x1F1F3", "&#x1F1F4", "&#x1F1F6", "&#x1F1F7", "&#x1F1FC", "&#x1F1FF", "&#x1F1FA", "&#x1F3FB", "&#x1F3FC", "&#x1F3FD", "&#x1F3FE", "&#x1F3FF"]
+  var a = function a() {
+    return "undefined" != typeof FileReader;
   };
-  function A(F) {
-    var A = [];
-    return x.each(F.o.plugins.emoji.emojiList, function (E, B) {
-      if (x.isArray(B)) {
-        var C = B[0],
-          D = B[1],
-          e = '<img src="' + D + '" alt="' + C + '">',
-          i = "emoji-" + C.replace(/:/g, ""),
-          o = {
-            hasIcon: !1,
-            text: e,
-            fn: function fn() {
-              return F.execCmd("insertImage", D, !1, !0), !0;
-            }
-          };
-        F.addBtnDef(i, o), A.push(i);
-      } else {
-        var n = "emoji-" + B.replace(/:/g, ""),
-          m = {
-            text: B,
-            fn: function fn() {
-              var x = String.fromCodePoint(B.replace("&#", "0"));
-              return F.execCmd("insertText", x), !0;
-            }
-          };
-        F.addBtnDef(n, m), A.push(n);
-      }
-    }), A;
-  }
-  x.extend(!0, x.trumbowyg, {
+  e.extend(!0, e.trumbowyg, {
     langs: {
       en: {
-        emoji: "Add an emoji"
+        base64: "Image as base64",
+        file: "File",
+        errFileReaderNotSupported: "FileReader is not supported by your browser.",
+        errInvalidImage: "Invalid image file."
       },
       az: {
-        emoji: "Emoji yerləşdir"
+        base64: "base64 olaraq şəkil",
+        file: "Fayl",
+        errFileReaderNotSupported: "FileReader brauzeriniz tərəfindən dəstəklənmir.",
+        errInvalidImage: "Yanlış şəkil faylı."
       },
-      ca: {
-        emoji: "Afegir una emoticona"
+      by: {
+        base64: "Выява (фармат base64)",
+        file: "Файл",
+        errFileReaderNotSupported: "FileReader не падтрымліваецца вашым браўзэрам.",
+        errInvalidImage: "Несапраўдны файл выявы."
+      },
+      cs: {
+        base64: "Vložit obrázek",
+        file: "Soubor"
       },
       da: {
-        emoji: "Tilføj et humørikon"
-      },
-      de: {
-        emoji: "Emoticon einfügen"
-      },
-      es: {
-        emoji: "Añadir un emoticono"
+        base64: "Billede som base64",
+        file: "Fil",
+        errFileReaderNotSupported: "FileReader er ikke understøttet af din browser.",
+        errInvalidImage: "Ugyldig billedfil."
       },
       et: {
-        emoji: "Lisa emotikon"
+        base64: "Pilt base64 formaadis",
+        file: "Fail",
+        errFileReaderNotSupported: "Teie veebilehitseja ei toeta FileReader funktsiooni.",
+        errInvalidImage: "Vigane pildifail."
       },
       fr: {
-        emoji: "Ajouter un emoji"
+        base64: "Image en base64",
+        file: "Fichier",
+        errFileReaderNotSupported: "FileReader n'est pas supporté par votre navigateur.",
+        errInvalidImage: "Fichier image invalide."
       },
       hu: {
-        emoji: "Emoji beszúrás"
+        base64: "Kép beszúrás inline",
+        file: "Fájl",
+        errFileReaderNotSupported: "Ez a böngésző nem támogatja a FileReader funkciót.",
+        errInvalidImage: "Érvénytelen képfájl."
       },
       ja: {
-        emoji: "絵文字の挿入"
+        base64: "画像 (Base64形式)",
+        file: "ファイル",
+        errFileReaderNotSupported: "あなたのブラウザーはFileReaderをサポートしていません",
+        errInvalidImage: "画像形式が正しくありません"
       },
       ko: {
-        emoji: "이모지 넣기"
+        base64: "그림 넣기(base64)",
+        file: "파일",
+        errFileReaderNotSupported: "FileReader가 현재 브라우저를 지원하지 않습니다.",
+        errInvalidImage: "유효하지 않은 파일"
+      },
+      nl: {
+        base64: "Afbeelding inline",
+        file: "Bestand",
+        errFileReaderNotSupported: "Uw browser ondersteunt deze functionaliteit niet.",
+        errInvalidImage: "De gekozen afbeelding is ongeldig."
+      },
+      pt_br: {
+        base64: "Imagem em base64",
+        file: "Arquivo",
+        errFileReaderNotSupported: "FileReader não é suportado pelo seu navegador.",
+        errInvalidImage: "Arquivo de imagem inválido."
       },
       ru: {
-        emoji: "Вставить emoji"
+        base64: "Изображение как код в base64",
+        file: "Файл",
+        errFileReaderNotSupported: "FileReader не поддерживается вашим браузером.",
+        errInvalidImage: "Недопустимый файл изображения."
       },
       sl: {
-        emoji: "Vstavi emotikon"
+        base64: "Slika kot base64",
+        file: "Datoteka",
+        errFileReaderNotSupported: "FileReader ni podprt v tem brskalniku.",
+        errInvalidImage: "Neveljavna datoteka s sliko."
       },
       tr: {
-        emoji: "Emoji ekle"
+        base64: "Base64 olarak resim",
+        file: "Dosya",
+        errFileReaderNotSupported: "FileReader tarayıcınız tarafından desteklenmiyor.",
+        errInvalidImage: "Geçersiz resim dosyası."
       },
       zh_cn: {
-        emoji: "添加表情"
+        base64: "图片（Base64编码）",
+        file: "文件"
+      },
+      zh_tw: {
+        base64: "圖片(base64編碼)",
+        file: "檔案",
+        errFileReaderNotSupported: "你的瀏覽器不支援FileReader",
+        errInvalidImage: "不正確的檔案格式"
       }
     },
     plugins: {
-      emoji: {
-        init: function init(x) {
-          x.o.plugins.emoji = x.o.plugins.emoji || F;
-          var E = {
-            dropdown: A(x)
+      base64: {
+        shouldInit: a,
+        init: function init(r) {
+          var i = {
+            isSupported: a,
+            fn: function fn() {
+              var a;
+              r.saveRange();
+              var i = r.openModalInsert(r.lang.base64, {
+                file: {
+                  type: "file",
+                  required: !0,
+                  attributes: {
+                    accept: "image/*"
+                  }
+                },
+                alt: {
+                  label: "description",
+                  value: r.getRangeText()
+                }
+              }, function (l) {
+                var t = new FileReader();
+                t.onloadend = function (a) {
+                  var d;
+                  d = a.target.result, /^data:image\/[a-z]?/i.test(d) ? (r.execCmd("insertImage", t.result, !1, !0), e(['img[src="', t.result, '"]:not([alt])'].join(""), r.$box).attr("alt", l.alt), r.closeModal()) : r.addErrorOnModalField(e("input[type=file]", i), r.lang.errInvalidImage);
+                }, t.readAsDataURL(a);
+              });
+              e("input[type=file]").on("change", function (e) {
+                a = e.target.files[0];
+              });
+            }
           };
-          x.addBtnDef("emoji", E);
+          r.addBtnDef("base64", i);
         }
       }
     }
@@ -505,6 +512,103 @@
               var l;
             }, 0);
           });
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.allowTagsFromPaste.js v1.0.2
+ * It cleans tags from pasted text, whilst allowing several specified tags
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author	: Fathi Anshory (0x00000F5C)
+ * Twitter	: @fscchannl
+ * Notes:
+ *  - removeformatPasted must be set to FALSE since it was applied prior to pasteHandlers, or else it will be useless
+ *	- It is most advisable to use along with the cleanpaste plugin, or else you'd end up with dirty markup
+ */
+
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    // When empty, all tags are allowed making this plugin useless
+    // If you want to remove all tags, use removeformatPasted core option instead
+    allowedTags: [],
+    // List of tags which can be allowed
+    removableTags: ['a', 'abbr', 'address', 'b', 'bdi', 'bdo', 'blockquote', 'br', 'cite', 'code', 'del', 'dfn', 'details', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'ins', 'kbd', 'mark', 'meter', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'small', 'span', 'strong', 'sub', 'summary', 'sup', 'time', 'u', 'var', 'wbr', 'img', 'map', 'area', 'canvas', 'figcaption', 'figure', 'picture', 'audio', 'source', 'track', 'video', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'table', 'caption', 'th', 'tr', 'td', 'thead', 'tbody', 'tfoot', 'col', 'colgroup', 'style', 'div', 'p', 'form', 'input', 'textarea', 'button', 'select', 'optgroup', 'option', 'label', 'fieldset', 'legend', 'datalist', 'keygen', 'output', 'iframe', 'link', 'nav', 'header', 'hgroup', 'footer', 'main', 'section', 'article', 'aside', 'dialog', 'script', 'noscript', 'embed', 'object', 'param']
+  };
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      allowTagsFromPaste: {
+        init: function init(trumbowyg) {
+          if (!trumbowyg.o.plugins.allowTagsFromPaste) {
+            return;
+          }
+
+          // Force disable remove format pasted
+          trumbowyg.o.removeformatPasted = false;
+          var allowedTags = trumbowyg.o.plugins.allowTagsFromPaste.allowedTags || defaultOptions.allowedTags;
+          var removableTags = trumbowyg.o.plugins.allowTagsFromPaste.removableTags || defaultOptions.removableTags;
+          if (allowedTags.length === 0) {
+            return;
+          }
+
+          // Get list of tags to remove
+          var tagsToRemove = $(removableTags).not(allowedTags).get();
+          trumbowyg.pasteHandlers.push(function () {
+            setTimeout(function () {
+              var processNodes = trumbowyg.$ed.html();
+              $.each(tagsToRemove, function (iterator, tagName) {
+                processNodes = processNodes.replace(new RegExp('<\\/?' + tagName + '(\\s[^>]*)?>', 'gi'), '');
+              });
+              trumbowyg.$ed.html(processNodes);
+            }, 0);
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.allowTagsFromPaste.js v1.0.2
+ * It cleans tags from pasted text, whilst allowing several specified tags
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author	: Fathi Anshory (0x00000F5C)
+ * Twitter	: @fscchannl
+ * Notes:
+ *  - removeformatPasted must be set to FALSE since it was applied prior to pasteHandlers, or else it will be useless
+ *	- It is most advisable to use along with the cleanpaste plugin, or else you'd end up with dirty markup
+ */
+!function (e) {
+  "use strict";
+
+  var a = {
+    allowedTags: [],
+    removableTags: ["a", "abbr", "address", "b", "bdi", "bdo", "blockquote", "br", "cite", "code", "del", "dfn", "details", "em", "h1", "h2", "h3", "h4", "h5", "h6", "hr", "i", "ins", "kbd", "mark", "meter", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp", "small", "span", "strong", "sub", "summary", "sup", "time", "u", "var", "wbr", "img", "map", "area", "canvas", "figcaption", "figure", "picture", "audio", "source", "track", "video", "ul", "ol", "li", "dl", "dt", "dd", "table", "caption", "th", "tr", "td", "thead", "tbody", "tfoot", "col", "colgroup", "style", "div", "p", "form", "input", "textarea", "button", "select", "optgroup", "option", "label", "fieldset", "legend", "datalist", "keygen", "output", "iframe", "link", "nav", "header", "hgroup", "footer", "main", "section", "article", "aside", "dialog", "script", "noscript", "embed", "object", "param"]
+  };
+  e.extend(!0, e.trumbowyg, {
+    plugins: {
+      allowTagsFromPaste: {
+        init: function init(t) {
+          if (t.o.plugins.allowTagsFromPaste) {
+            t.o.removeformatPasted = !1;
+            var o = t.o.plugins.allowTagsFromPaste.allowedTags || a.allowedTags,
+              r = t.o.plugins.allowTagsFromPaste.removableTags || a.removableTags;
+            if (0 !== o.length) {
+              var s = e(r).not(o).get();
+              t.pasteHandlers.push(function () {
+                setTimeout(function () {
+                  var a = t.$ed.html();
+                  e.each(s, function (e, t) {
+                    a = a.replace(new RegExp("<\\/?" + t + "(\\s[^>]*)?>", "gi"), "");
+                  }), t.$ed.html(a);
+                }, 0);
+              });
+            }
+          }
         }
       }
     }
@@ -1002,325 +1106,221 @@
   });
 }(jQuery);
 /* ===========================================================
- * trumbowyg.base64.js v1.0
- * Base64 plugin for Trumbowyg
+ * trumbowyg.emoji.js v0.1
+ * Emoji picker plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
  * ===========================================================
- * Author : Cyril Biencourt (lizardK)
+ * Author : Nicolas Pion
+ *          Twitter : @nicolas_pion
  */
 
 (function ($) {
   'use strict';
 
-  var isSupported = function isSupported() {
-    return typeof FileReader !== 'undefined';
+  var defaultOptions = {
+    emojiList: ['&#x2049', '&#x2122', '&#x2139', '&#x2194', '&#x2195', '&#x2196', '&#x2197', '&#x2198', '&#x2199', '&#x2328', '&#x2600', '&#x2601', '&#x2602', '&#x2603', '&#x2604', '&#x2611', '&#x2614', '&#x2615', '&#x2618', '&#x2620', '&#x2622', '&#x2623', '&#x2626', '&#x2638', '&#x2639', '&#x2640', '&#x2642', '&#x2648', '&#x2649', '&#x2650', '&#x2651', '&#x2652', '&#x2653', '&#x2660', '&#x2663', '&#x2665', '&#x2666', '&#x2668', '&#x2692', '&#x2693', '&#x2694', '&#x2695', '&#x2696', '&#x2697', '&#x2699', '&#x2702', '&#x2705', '&#x2708', '&#x2709', '&#x2712', '&#x2714', '&#x2716', '&#x2721', '&#x2728', '&#x2733', '&#x2734', '&#x2744', '&#x2747', '&#x2753', '&#x2754', '&#x2755', '&#x2757', '&#x2763', '&#x2764', '&#x2795', '&#x2796', '&#x2797', '&#x2934', '&#x2935', '&#x3030', '&#x3297', '&#x3299', '&#x1F600', '&#x1F603', '&#x1F604', '&#x1F601', '&#x1F606', '&#x1F605', '&#x1F602', '&#x1F923', '&#x263A', '&#x1F60A', '&#x1F607', '&#x1F642', '&#x1F643', '&#x1F609', '&#x1F60C', '&#x1F972', '&#x1F60D', '&#x1F970', '&#x1F618', '&#x1F617', '&#x1F619', '&#x1F61A', '&#x1F60B', '&#x1F61B', '&#x1F61D', '&#x1F61C', '&#x1F92A', '&#x1F928', '&#x1F9D0', '&#x1F913', '&#x1F60E', '&#x1F929', '&#x1F973', '&#x1F60F', '&#x1F612', '&#x1F61E', '&#x1F614', '&#x1F61F', '&#x1F615', '&#x1F641', '&#x1F623', '&#x1F616', '&#x1F62B', '&#x1F629', '&#x1F97A', '&#x1F622', '&#x1F62D', '&#x1F624', '&#x1F62E', '&#x1F620', '&#x1F621', '&#x1F92C', '&#x1F92F', '&#x1F633', '&#x1F636', '&#x1F975', '&#x1F976', '&#x1F631', '&#x1F628', '&#x1F630', '&#x1F625', '&#x1F613', '&#x1F917', '&#x1F914', '&#x1F92D', '&#x1F971', '&#x1F92B', '&#x1F925', '&#x1F610', '&#x1F611', '&#x1F62C', '&#x1F644', '&#x1F62F', '&#x1F626', '&#x1F627', '&#x1F632', '&#x1F634', '&#x1F924', '&#x1F62A', '&#x1F635', '&#x1F910', '&#x1F974', '&#x1F922', '&#x1F92E', '&#x1F927', '&#x1F637', '&#x1F912', '&#x1F915', '&#x1F911', '&#x1F920', '&#x1F978', '&#x1F608', '&#x1F47F', '&#x1F479', '&#x1F47A', '&#x1F921', '&#x1F4A9', '&#x1F47B', '&#x1F480', '&#x1F47D', '&#x1F47E', '&#x1F916', '&#x1F383', '&#x1F63A', '&#x1F638', '&#x1F639', '&#x1F63B', '&#x1F63C', '&#x1F63D', '&#x1F640', '&#x1F63F', '&#x1F63E', '&#x1F932', '&#x1F450', '&#x1F64C', '&#x1F44F', '&#x1F91D', '&#x1F44D', '&#x1F44E', '&#x1F44A', '&#x270A', '&#x1F91B', '&#x1F91C', '&#x1F91E', '&#x270C', '&#x1F91F', '&#x1F918', '&#x1F44C', '&#x1F90F', '&#x1F90C', '&#x1F448', '&#x1F449', '&#x1F446', '&#x1F447', '&#x261D', '&#x270B', '&#x1F91A', '&#x1F590', '&#x1F596', '&#x1F44B', '&#x1F919', '&#x1F4AA', '&#x1F9BE', '&#x1F595', '&#x270D', '&#x1F64F', '&#x1F9B6', '&#x1F9B5', '&#x1F9BF', '&#x1F484', '&#x1F48B', '&#x1F444', '&#x1F9B7', '&#x1F445', '&#x1F442', '&#x1F9BB', '&#x1F443', '&#x1F463', '&#x1F441', '&#x1F440', '&#x1F9E0', '&#x1FAC0', '&#x1FAC1', '&#x1F9B4', '&#x1F5E3', '&#x1F464', '&#x1F465', '&#x1FAC2', '&#x1F476', '&#x1F467', '&#x1F9D2', '&#x1F466', '&#x1F469', '&#x1F9D1', '&#x1F468', '&#x1F471', '&#x1F9D4', '&#x1F475', '&#x1F9D3', '&#x1F474', '&#x1F472', '&#x1F473', '&#x1F9D5', '&#x1F46E', '&#x1F477', '&#x1F482', '&#x1F575', '&#x1F470', '&#x1F935', '&#x1F478', '&#x1F934', '&#x1F9B8', '&#x1F9B9', '&#x1F977', '&#x1F936', '&#x1F385', '&#x1F9D9', '&#x1F9DD', '&#x1F9DB', '&#x1F9DF', '&#x1F9DE', '&#x1F9DC', '&#x1F9DA', '&#x1F47C', '&#x1F930', '&#x1F931', '&#x1F647', '&#x1F481', '&#x1F645', '&#x1F646', '&#x1F64B', '&#x1F9CF', '&#x1F926', '&#x1F937', '&#x1F64E', '&#x1F64D', '&#x1F487', '&#x1F486', '&#x1F9D6', '&#x1F485', '&#x1F933', '&#x1F483', '&#x1F57A', '&#x1F46F', '&#x1F574', '&#x1F6B6', '&#x1F9CE', '&#x1F3C3', '&#x1F9CD', '&#x1F46B', '&#x1F46D', '&#x1F46C', '&#x1F491', '&#x1F48F', '&#x1F46A', '&#x1F9F6', '&#x1F9F5', '&#x1F9E5', '&#x1F97C', '&#x1F9BA', '&#x1F45A', '&#x1F455', '&#x1F456', '&#x1FA72', '&#x1FA73', '&#x1F454', '&#x1F457', '&#x1F459', '&#x1FA71', '&#x1F458', '&#x1F97B', '&#x1F97F', '&#x1F460', '&#x1F461', '&#x1F462', '&#x1F45E', '&#x1F45F', '&#x1F97E', '&#x1FA74', '&#x1F9E6', '&#x1F9E4', '&#x1F9E3', '&#x1F3A9', '&#x1F9E2', '&#x1F452', '&#x1F393', '&#x26D1', '&#x1FA96', '&#x1F451', '&#x1F48D', '&#x1F45D', '&#x1F45B', '&#x1F45C', '&#x1F4BC', '&#x1F392', '&#x1F9F3', '&#x1F453', '&#x1F576', '&#x1F97D', '&#x1F302', '&#x1F9B1', '&#x1F9B0', '&#x1F9B3', '&#x1F9B2', '&#x1F436', '&#x1F431', '&#x1F42D', '&#x1F439', '&#x1F430', '&#x1F98A', '&#x1F43B', '&#x1F43C', '&#x1F428', '&#x1F42F', '&#x1F981', '&#x1F42E', '&#x1F437', '&#x1F43D', '&#x1F438', '&#x1F435', '&#x1F648', '&#x1F649', '&#x1F64A', '&#x1F412', '&#x1F414', '&#x1F427', '&#x1F426', '&#x1F424', '&#x1F423', '&#x1F425', '&#x1F986', '&#x1F9A4', '&#x1F985', '&#x1F989', '&#x1F987', '&#x1F43A', '&#x1F417', '&#x1F434', '&#x1F984', '&#x1F41D', '&#x1F41B', '&#x1F98B', '&#x1F40C', '&#x1FAB1', '&#x1F41E', '&#x1F41C', '&#x1FAB0', '&#x1F99F', '&#x1FAB3', '&#x1FAB2', '&#x1F997', '&#x1F577', '&#x1F578', '&#x1F982', '&#x1F422', '&#x1F40D', '&#x1F98E', '&#x1F996', '&#x1F995', '&#x1F419', '&#x1F991', '&#x1F990', '&#x1F99E', '&#x1F980', '&#x1F421', '&#x1F420', '&#x1F41F', '&#x1F9AD', '&#x1F42C', '&#x1F433', '&#x1F40B', '&#x1F988', '&#x1F40A', '&#x1F405', '&#x1F406', '&#x1F993', '&#x1F98D', '&#x1F9A7', '&#x1F418', '&#x1F9A3', '&#x1F9AC', '&#x1F99B', '&#x1F98F', '&#x1F42A', '&#x1F42B', '&#x1F992', '&#x1F998', '&#x1F403', '&#x1F402', '&#x1F404', '&#x1F40E', '&#x1F416', '&#x1F40F', '&#x1F411', '&#x1F999', '&#x1F410', '&#x1F98C', '&#x1F415', '&#x1F429', '&#x1F9AE', '&#x1F408', '&#x1F413', '&#x1F983', '&#x1F99A', '&#x1F99C', '&#x1F9A2', '&#x1F9A9', '&#x1F54A', '&#x1F407', '&#x1F99D', '&#x1F9A8', '&#x1F9A1', '&#x1F9AB', '&#x1F9A6', '&#x1F9A5', '&#x1F401', '&#x1F400', '&#x1F43F', '&#x1F994', '&#x1F43E', '&#x1F409', '&#x1F432', '&#x1F335', '&#x1F384', '&#x1F332', '&#x1F333', '&#x1F334', '&#x1F331', '&#x1F33F', '&#x1F340', '&#x1F38D', '&#x1F38B', '&#x1F343', '&#x1F342', '&#x1F341', '&#x1FAB6', '&#x1F344', '&#x1F41A', '&#x1FAA8', '&#x1FAB5', '&#x1F33E', '&#x1FAB4', '&#x1F490', '&#x1F337', '&#x1F339', '&#x1F940', '&#x1F33A', '&#x1F338', '&#x1F33C', '&#x1F33B', '&#x1F31E', '&#x1F31D', '&#x1F31B', '&#x1F31C', '&#x1F31A', '&#x1F315', '&#x1F316', '&#x1F317', '&#x1F318', '&#x1F311', '&#x1F312', '&#x1F313', '&#x1F314', '&#x1F319', '&#x1F30E', '&#x1F30D', '&#x1F30F', '&#x1FA90', '&#x1F4AB', '&#x2B50', '&#x1F31F', '&#x26A1', '&#x1F4A5', '&#x1F525', '&#x1F32A', '&#x1F308', '&#x1F324', '&#x26C5', '&#x1F325', '&#x1F326', '&#x1F327', '&#x26C8', '&#x1F329', '&#x1F328', '&#x26C4', '&#x1F32C', '&#x1F4A8', '&#x1F4A7', '&#x1F4A6', '&#x1F30A', '&#x1F32B', '&#x1F34F', '&#x1F34E', '&#x1F350', '&#x1F34A', '&#x1F34B', '&#x1F34C', '&#x1F349', '&#x1F347', '&#x1FAD0', '&#x1F353', '&#x1F348', '&#x1F352', '&#x1F351', '&#x1F96D', '&#x1F34D', '&#x1F965', '&#x1F95D', '&#x1F345', '&#x1F346', '&#x1F951', '&#x1FAD2', '&#x1F966', '&#x1F96C', '&#x1FAD1', '&#x1F952', '&#x1F336', '&#x1F33D', '&#x1F955', '&#x1F9C4', '&#x1F9C5', '&#x1F954', '&#x1F360', '&#x1F950', '&#x1F96F', '&#x1F35E', '&#x1F956', '&#x1FAD3', '&#x1F968', '&#x1F9C0', '&#x1F95A', '&#x1F373', '&#x1F9C8', '&#x1F95E', '&#x1F9C7', '&#x1F953', '&#x1F969', '&#x1F357', '&#x1F356', '&#x1F32D', '&#x1F354', '&#x1F35F', '&#x1F355', '&#x1F96A', '&#x1F959', '&#x1F9C6', '&#x1F32E', '&#x1F32F', '&#x1FAD4', '&#x1F957', '&#x1F958', '&#x1FAD5', '&#x1F96B', '&#x1F35D', '&#x1F35C', '&#x1F372', '&#x1F35B', '&#x1F363', '&#x1F371', '&#x1F95F', '&#x1F9AA', '&#x1F364', '&#x1F359', '&#x1F35A', '&#x1F358', '&#x1F365', '&#x1F960', '&#x1F96E', '&#x1F362', '&#x1F361', '&#x1F367', '&#x1F368', '&#x1F366', '&#x1F967', '&#x1F9C1', '&#x1F370', '&#x1F382', '&#x1F36E', '&#x1F36D', '&#x1F36C', '&#x1F36B', '&#x1F37F', '&#x1F369', '&#x1F36A', '&#x1F330', '&#x1F95C', '&#x1F36F', '&#x1F95B', '&#x1F37C', '&#x1F375', '&#x1FAD6', '&#x1F9C9', '&#x1F9CB', '&#x1F9C3', '&#x1F964', '&#x1F376', '&#x1F37A', '&#x1F37B', '&#x1F942', '&#x1F377', '&#x1F943', '&#x1F378', '&#x1F379', '&#x1F37E', '&#x1F9CA', '&#x1F944', '&#x1F374', '&#x1F37D', '&#x1F963', '&#x1F961', '&#x1F962', '&#x1F9C2', '&#x26BD', '&#x1F3C0', '&#x1F3C8', '&#x26BE', '&#x1F94E', '&#x1F3BE', '&#x1F3D0', '&#x1F3C9', '&#x1F94F', '&#x1FA83', '&#x1F3B1', '&#x1FA80', '&#x1F3D3', '&#x1F3F8', '&#x1F3D2', '&#x1F3D1', '&#x1F94D', '&#x1F3CF', '&#x1F945', '&#x26F3', '&#x1FA81', '&#x1F3F9', '&#x1F3A3', '&#x1F93F', '&#x1F94A', '&#x1F94B', '&#x1F3BD', '&#x1F6F9', '&#x1F6FC', '&#x1F6F7', '&#x26F8', '&#x1F94C', '&#x1F3BF', '&#x26F7', '&#x1F3C2', '&#x1FA82', '&#x1F3CB', '&#x1F93C', '&#x1F938', '&#x26F9', '&#x1F93A', '&#x1F93E', '&#x1F3CC', '&#x1F3C7', '&#x1F9D8', '&#x1F3C4', '&#x1F3CA', '&#x1F93D', '&#x1F6A3', '&#x1F9D7', '&#x1F6B5', '&#x1F6B4', '&#x1F3C6', '&#x1F947', '&#x1F948', '&#x1F949', '&#x1F3C5', '&#x1F396', '&#x1F3F5', '&#x1F397', '&#x1F3AB', '&#x1F39F', '&#x1F3AA', '&#x1F939', '&#x1F3AD', '&#x1FA70', '&#x1F3A8', '&#x1F3AC', '&#x1F3A4', '&#x1F3A7', '&#x1F3BC', '&#x1F3B9', '&#x1F941', '&#x1FA98', '&#x1F3B7', '&#x1F3BA', '&#x1F3B8', '&#x1FA95', '&#x1F3BB', '&#x1FA97', '&#x1F3B2', '&#x265F', '&#x1F3AF', '&#x1F3B3', '&#x1F3AE', '&#x1F3B0', '&#x1F9E9', '&#x1F697', '&#x1F695', '&#x1F699', '&#x1F6FB', '&#x1F68C', '&#x1F68E', '&#x1F3CE', '&#x1F693', '&#x1F691', '&#x1F692', '&#x1F690', '&#x1F69A', '&#x1F69B', '&#x1F69C', '&#x1F9AF', '&#x1F9BD', '&#x1F9BC', '&#x1F6F4', '&#x1F6B2', '&#x1F6F5', '&#x1F3CD', '&#x1F6FA', '&#x1F6A8', '&#x1F694', '&#x1F68D', '&#x1F698', '&#x1F696', '&#x1F6A1', '&#x1F6A0', '&#x1F69F', '&#x1F683', '&#x1F68B', '&#x1F69E', '&#x1F69D', '&#x1F684', '&#x1F685', '&#x1F688', '&#x1F682', '&#x1F686', '&#x1F687', '&#x1F68A', '&#x1F689', '&#x1F6EB', '&#x1F6EC', '&#x1F6E9', '&#x1F4BA', '&#x1F6F0', '&#x1F680', '&#x1F6F8', '&#x1F681', '&#x1F6F6', '&#x26F5', '&#x1F6A4', '&#x1F6E5', '&#x1F6F3', '&#x26F4', '&#x1F6A2', '&#x26FD', '&#x1F6A7', '&#x1F6A6', '&#x1F6A5', '&#x1F68F', '&#x1F5FA', '&#x1F5FF', '&#x1F5FD', '&#x1F5FC', '&#x1F3F0', '&#x1F3EF', '&#x1F3DF', '&#x1F3A1', '&#x1F3A2', '&#x1F3A0', '&#x26F2', '&#x26F1', '&#x1F3D6', '&#x1F3DD', '&#x1F3DC', '&#x1F30B', '&#x26F0', '&#x1F3D4', '&#x1F5FB', '&#x1F3D5', '&#x26FA', '&#x1F3E0', '&#x1F3E1', '&#x1F3D8', '&#x1F3DA', '&#x1F6D6', '&#x1F3D7', '&#x1F3ED', '&#x1F3E2', '&#x1F3EC', '&#x1F3E3', '&#x1F3E4', '&#x1F3E5', '&#x1F3E6', '&#x1F3E8', '&#x1F3EA', '&#x1F3EB', '&#x1F3E9', '&#x1F492', '&#x1F3DB', '&#x26EA', '&#x1F54C', '&#x1F54D', '&#x1F6D5', '&#x1F54B', '&#x26E9', '&#x1F6E4', '&#x1F6E3', '&#x1F5FE', '&#x1F391', '&#x1F3DE', '&#x1F305', '&#x1F304', '&#x1F320', '&#x1F387', '&#x1F386', '&#x1F307', '&#x1F306', '&#x1F3D9', '&#x1F303', '&#x1F30C', '&#x1F309', '&#x1F301', '&#x231A', '&#x1F4F1', '&#x1F4F2', '&#x1F4BB', '&#x1F5A5', '&#x1F5A8', '&#x1F5B1', '&#x1F5B2', '&#x1F579', '&#x1F5DC', '&#x1F4BD', '&#x1F4BE', '&#x1F4BF', '&#x1F4C0', '&#x1F4FC', '&#x1F4F7', '&#x1F4F8', '&#x1F4F9', '&#x1F3A5', '&#x1F4FD', '&#x1F39E', '&#x1F4DE', '&#x260E', '&#x1F4DF', '&#x1F4E0', '&#x1F4FA', '&#x1F4FB', '&#x1F399', '&#x1F39A', '&#x1F39B', '&#x1F9ED', '&#x23F1', '&#x23F2', '&#x23F0', '&#x1F570', '&#x231B', '&#x23F3', '&#x1F4E1', '&#x1F50B', '&#x1F50C', '&#x1F4A1', '&#x1F526', '&#x1F56F', '&#x1FA94', '&#x1F9EF', '&#x1F6E2', '&#x1F4B8', '&#x1F4B5', '&#x1F4B4', '&#x1F4B6', '&#x1F4B7', '&#x1FA99', '&#x1F4B0', '&#x1F4B3', '&#x1F48E', '&#x1FA9C', '&#x1F9F0', '&#x1FA9B', '&#x1F527', '&#x1F528', '&#x1F6E0', '&#x26CF', '&#x1F529', '&#x1F9F1', '&#x26D3', '&#x1FA9D', '&#x1FAA2', '&#x1F9F2', '&#x1F52B', '&#x1F4A3', '&#x1F9E8', '&#x1FA93', '&#x1FA9A', '&#x1F52A', '&#x1F5E1', '&#x1F6E1', '&#x1F6AC', '&#x26B0', '&#x1FAA6', '&#x26B1', '&#x1F3FA', '&#x1FA84', '&#x1F52E', '&#x1F4FF', '&#x1F9FF', '&#x1F488', '&#x1F52D', '&#x1F52C', '&#x1F573', '&#x1FA9F', '&#x1FA79', '&#x1FA7A', '&#x1F48A', '&#x1F489', '&#x1FA78', '&#x1F9EC', '&#x1F9A0', '&#x1F9EB', '&#x1F9EA', '&#x1F321', '&#x1FAA4', '&#x1F9F9', '&#x1F9FA', '&#x1FAA1', '&#x1F9FB', '&#x1F6BD', '&#x1FAA0', '&#x1FAA3', '&#x1F6B0', '&#x1F6BF', '&#x1F6C1', '&#x1F6C0', '&#x1FAA5', '&#x1F9FC', '&#x1FA92', '&#x1F9FD', '&#x1F9F4', '&#x1F6CE', '&#x1F511', '&#x1F5DD', '&#x1F6AA', '&#x1FA91', '&#x1FA9E', '&#x1F6CB', '&#x1F6CF', '&#x1F6CC', '&#x1F9F8', '&#x1F5BC', '&#x1F6CD', '&#x1F6D2', '&#x1F381', '&#x1F388', '&#x1F38F', '&#x1F380', '&#x1F38A', '&#x1F389', '&#x1FA85', '&#x1FA86', '&#x1F38E', '&#x1F3EE', '&#x1F390', '&#x1F9E7', '&#x1F4E9', '&#x1F4E8', '&#x1F4E7', '&#x1F48C', '&#x1F4E5', '&#x1F4E4', '&#x1F4E6', '&#x1F3F7', '&#x1F4EA', '&#x1F4EB', '&#x1F4EC', '&#x1F4ED', '&#x1F4EE', '&#x1F4EF', '&#x1FAA7', '&#x1F4DC', '&#x1F4C3', '&#x1F4C4', '&#x1F4D1', '&#x1F9FE', '&#x1F4CA', '&#x1F4C8', '&#x1F4C9', '&#x1F5D2', '&#x1F5D3', '&#x1F4C6', '&#x1F4C5', '&#x1F5D1', '&#x1F4C7', '&#x1F5C3', '&#x1F5F3', '&#x1F5C4', '&#x1F4CB', '&#x1F4C1', '&#x1F4C2', '&#x1F5C2', '&#x1F5DE', '&#x1F4F0', '&#x1F4D3', '&#x1F4D4', '&#x1F4D2', '&#x1F4D5', '&#x1F4D7', '&#x1F4D8', '&#x1F4D9', '&#x1F4DA', '&#x1F4D6', '&#x1F516', '&#x1F9F7', '&#x1F517', '&#x1F4CE', '&#x1F587', '&#x1F4D0', '&#x1F4CF', '&#x1F9EE', '&#x1F4CC', '&#x1F4CD', '&#x1F58A', '&#x1F58B', '&#x1F58C', '&#x1F58D', '&#x1F4DD', '&#x270F', '&#x1F50D', '&#x1F50E', '&#x1F50F', '&#x1F510', '&#x1F512', '&#x1F513', '&#x1F9E1', '&#x1F49B', '&#x1F49A', '&#x1F499', '&#x1F49C', '&#x1F5A4', '&#x1F90E', '&#x1F90D', '&#x1F494', '&#x1F495', '&#x1F49E', '&#x1F493', '&#x1F497', '&#x1F496', '&#x1F498', '&#x1F49D', '&#x1F49F', '&#x262E', '&#x271D', '&#x262A', '&#x1F549', '&#x1F52F', '&#x1F54E', '&#x262F', '&#x1F6D0', '&#x26CE', '&#x264A', '&#x264B', '&#x264C', '&#x264D', '&#x264E', '&#x264F', '&#x1F194', '&#x269B', '&#x1F251', '&#x1F4F4', '&#x1F4F3', '&#x1F236', '&#x1F21A', '&#x1F238', '&#x1F23A', '&#x1F237', '&#x1F19A', '&#x1F4AE', '&#x1F250', '&#x1F234', '&#x1F235', '&#x1F239', '&#x1F232', '&#x1F170', '&#x1F171', '&#x1F18E', '&#x1F191', '&#x1F17E', '&#x1F198', '&#x274C', '&#x2B55', '&#x1F6D1', '&#x26D4', '&#x1F4DB', '&#x1F6AB', '&#x1F4AF', '&#x1F4A2', '&#x1F6B7', '&#x1F6AF', '&#x1F6B3', '&#x1F6B1', '&#x1F51E', '&#x1F4F5', '&#x1F6AD', '&#x203C', '&#x1F505', '&#x1F506', '&#x303D', '&#x26A0', '&#x1F6B8', '&#x1F531', '&#x269C', '&#x1F530', '&#x267B', '&#x1F22F', '&#x1F4B9', '&#x274E', '&#x1F310', '&#x1F4A0', '&#x24C2', '&#x1F300', '&#x1F4A4', '&#x1F3E7', '&#x1F6BE', '&#x267F', '&#x1F17F', '&#x1F233', '&#x1F202', '&#x1F6C2', '&#x1F6C3', '&#x1F6C4', '&#x1F6C5', '&#x1F6D7', '&#x1F6B9', '&#x1F6BA', '&#x1F6BC', '&#x1F6BB', '&#x1F6AE', '&#x1F3A6', '&#x1F4F6', '&#x1F201', '&#x1F523', '&#x1F524', '&#x1F521', '&#x1F520', '&#x1F196', '&#x1F197', '&#x1F199', '&#x1F192', '&#x1F195', '&#x1F193', '&#x0030', '&#x0031', '&#x0032', '&#x0033', '&#x0034', '&#x0035', '&#x0036', '&#x0037', '&#x0038', '&#x0039', '&#x1F51F', '&#x1F522', '&#x0023', '&#x002A', '&#x23CF', '&#x25B6', '&#x23F8', '&#x23EF', '&#x23F9', '&#x23FA', '&#x23ED', '&#x23EE', '&#x23E9', '&#x23EA', '&#x23EB', '&#x23EC', '&#x25C0', '&#x1F53C', '&#x1F53D', '&#x27A1', '&#x2B05', '&#x2B06', '&#x2B07', '&#x21AA', '&#x21A9', '&#x1F500', '&#x1F501', '&#x1F502', '&#x1F504', '&#x1F503', '&#x1F3B5', '&#x1F3B6', '&#x267E', '&#x1F4B2', '&#x1F4B1', '&#x00A9', '&#x00AE', '&#x27B0', '&#x27BF', '&#x1F51A', '&#x1F519', '&#x1F51B', '&#x1F51D', '&#x1F51C', '&#x1F518', '&#x26AA', '&#x26AB', '&#x1F534', '&#x1F535', '&#x1F7E4', '&#x1F7E3', '&#x1F7E2', '&#x1F7E1', '&#x1F7E0', '&#x1F53A', '&#x1F53B', '&#x1F538', '&#x1F539', '&#x1F536', '&#x1F537', '&#x1F533', '&#x1F532', '&#x25AA', '&#x25AB', '&#x25FE', '&#x25FD', '&#x25FC', '&#x25FB', '&#x2B1B', '&#x2B1C', '&#x1F7E7', '&#x1F7E6', '&#x1F7E5', '&#x1F7EB', '&#x1F7EA', '&#x1F7E9', '&#x1F7E8', '&#x1F508', '&#x1F507', '&#x1F509', '&#x1F50A', '&#x1F514', '&#x1F515', '&#x1F4E3', '&#x1F4E2', '&#x1F5E8', '&#x1F4AC', '&#x1F4AD', '&#x1F5EF', '&#x1F0CF', '&#x1F3B4', '&#x1F004', '&#x1F550', '&#x1F551', '&#x1F552', '&#x1F553', '&#x1F554', '&#x1F555', '&#x1F556', '&#x1F557', '&#x1F558', '&#x1F559', '&#x1F55A', '&#x1F55B', '&#x1F55C', '&#x1F55D', '&#x1F55E', '&#x1F55F', '&#x1F560', '&#x1F561', '&#x1F562', '&#x1F563', '&#x1F564', '&#x1F565', '&#x1F566', '&#x1F567', '&#x26A7', '&#x1F3F3', '&#x1F3F4', '&#x1F3C1', '&#x1F6A9', '&#x1F1E6', '&#x1F1E9', '&#x1F1E7', '&#x1F1EE', '&#x1F1FB', '&#x1F1F0', '&#x1F1E8', '&#x1F1F9', '&#x1F1ED', '&#x1F1EA', '&#x1F1F8', '&#x1F1EC', '&#x1F1EB', '&#x1F1F5', '&#x1F1EF', '&#x1F38C', '&#x1F1FD', '&#x1F1F1', '&#x1F1F2', '&#x1F1FE', '&#x1F1F3', '&#x1F1F4', '&#x1F1F6', '&#x1F1F7', '&#x1F1FC', '&#x1F1FF', '&#x1F1FA', '&#x1F3FB', '&#x1F3FC', '&#x1F3FD', '&#x1F3FE', '&#x1F3FF']
   };
-  var isValidImage = function isValidImage(type) {
-    return /^data:image\/[a-z]?/i.test(type);
-  };
+
+  // Add all emoji in a dropdown
   $.extend(true, $.trumbowyg, {
     langs: {
       // jshint camelcase:false
       en: {
-        base64: 'Image as base64',
-        file: 'File',
-        errFileReaderNotSupported: 'FileReader is not supported by your browser.',
-        errInvalidImage: 'Invalid image file.'
+        emoji: 'Add an emoji'
       },
       az: {
-        base64: 'base64 olaraq şəkil',
-        file: 'Fayl',
-        errFileReaderNotSupported: 'FileReader brauzeriniz tərəfindən dəstəklənmir.',
-        errInvalidImage: 'Yanlış şəkil faylı.'
+        emoji: 'Emoji yerləşdir'
       },
-      by: {
-        base64: 'Выява (фармат base64)',
-        file: 'Файл',
-        errFileReaderNotSupported: 'FileReader не падтрымліваецца вашым браўзэрам.',
-        errInvalidImage: 'Несапраўдны файл выявы.'
-      },
-      cs: {
-        base64: 'Vložit obrázek',
-        file: 'Soubor'
+      ca: {
+        emoji: 'Afegir una emoticona'
       },
       da: {
-        base64: 'Billede som base64',
-        file: 'Fil',
-        errFileReaderNotSupported: 'FileReader er ikke understøttet af din browser.',
-        errInvalidImage: 'Ugyldig billedfil.'
+        emoji: 'Tilføj et humørikon'
+      },
+      de: {
+        emoji: 'Emoticon einfügen'
+      },
+      es: {
+        emoji: 'Añadir un emoticono'
       },
       et: {
-        base64: 'Pilt base64 formaadis',
-        file: 'Fail',
-        errFileReaderNotSupported: 'Teie veebilehitseja ei toeta FileReader funktsiooni.',
-        errInvalidImage: 'Vigane pildifail.'
+        emoji: 'Lisa emotikon'
       },
       fr: {
-        base64: 'Image en base64',
-        file: 'Fichier',
-        errFileReaderNotSupported: 'FileReader n\'est pas supporté par votre navigateur.',
-        errInvalidImage: 'Fichier image invalide.'
+        emoji: 'Ajouter un emoji'
       },
       hu: {
-        base64: 'Kép beszúrás inline',
-        file: 'Fájl',
-        errFileReaderNotSupported: 'Ez a böngésző nem támogatja a FileReader funkciót.',
-        errInvalidImage: 'Érvénytelen képfájl.'
+        emoji: 'Emoji beszúrás'
       },
       ja: {
-        base64: '画像 (Base64形式)',
-        file: 'ファイル',
-        errFileReaderNotSupported: 'あなたのブラウザーはFileReaderをサポートしていません',
-        errInvalidImage: '画像形式が正しくありません'
+        emoji: '絵文字の挿入'
       },
       ko: {
-        base64: '그림 넣기(base64)',
-        file: '파일',
-        errFileReaderNotSupported: 'FileReader가 현재 브라우저를 지원하지 않습니다.',
-        errInvalidImage: '유효하지 않은 파일'
-      },
-      nl: {
-        base64: 'Afbeelding inline',
-        file: 'Bestand',
-        errFileReaderNotSupported: 'Uw browser ondersteunt deze functionaliteit niet.',
-        errInvalidImage: 'De gekozen afbeelding is ongeldig.'
-      },
-      pt_br: {
-        base64: 'Imagem em base64',
-        file: 'Arquivo',
-        errFileReaderNotSupported: 'FileReader não é suportado pelo seu navegador.',
-        errInvalidImage: 'Arquivo de imagem inválido.'
+        emoji: '이모지 넣기'
       },
       ru: {
-        base64: 'Изображение как код в base64',
-        file: 'Файл',
-        errFileReaderNotSupported: 'FileReader не поддерживается вашим браузером.',
-        errInvalidImage: 'Недопустимый файл изображения.'
+        emoji: 'Вставить emoji'
       },
       sl: {
-        base64: 'Slika kot base64',
-        file: 'Datoteka',
-        errFileReaderNotSupported: 'FileReader ni podprt v tem brskalniku.',
-        errInvalidImage: 'Neveljavna datoteka s sliko.'
+        emoji: 'Vstavi emotikon'
       },
       tr: {
-        base64: 'Base64 olarak resim',
-        file: 'Dosya',
-        errFileReaderNotSupported: 'FileReader tarayıcınız tarafından desteklenmiyor.',
-        errInvalidImage: 'Geçersiz resim dosyası.'
+        emoji: 'Emoji ekle'
       },
       zh_cn: {
-        base64: '图片（Base64编码）',
-        file: '文件'
-      },
-      zh_tw: {
-        base64: '圖片(base64編碼)',
-        file: '檔案',
-        errFileReaderNotSupported: '你的瀏覽器不支援FileReader',
-        errInvalidImage: '不正確的檔案格式'
+        emoji: '添加表情'
       }
     },
     // jshint camelcase:true
-
     plugins: {
-      base64: {
-        shouldInit: isSupported,
+      emoji: {
         init: function init(trumbowyg) {
-          var btnDef = {
-            isSupported: isSupported,
-            fn: function fn() {
-              trumbowyg.saveRange();
-              var file;
-              var $modal = trumbowyg.openModalInsert(
-              // Title
-              trumbowyg.lang.base64,
-              // Fields
-              {
-                file: {
-                  type: 'file',
-                  required: true,
-                  attributes: {
-                    accept: 'image/*'
-                  }
-                },
-                alt: {
-                  label: 'description',
-                  value: trumbowyg.getRangeText()
-                }
-              },
-              // Callback
-              function (values) {
-                var fReader = new FileReader();
-                fReader.onloadend = function (e) {
-                  if (isValidImage(e.target.result)) {
-                    trumbowyg.execCmd('insertImage', fReader.result, false, true);
-                    $(['img[src="', fReader.result, '"]:not([alt])'].join(''), trumbowyg.$box).attr('alt', values.alt);
-                    trumbowyg.closeModal();
-                  } else {
-                    trumbowyg.addErrorOnModalField($('input[type=file]', $modal), trumbowyg.lang.errInvalidImage);
-                  }
-                };
-                fReader.readAsDataURL(file);
-              });
-              $('input[type=file]').on('change', function (e) {
-                file = e.target.files[0];
-              });
-            }
+          trumbowyg.o.plugins.emoji = trumbowyg.o.plugins.emoji || defaultOptions;
+          var emojiBtnDef = {
+            dropdown: buildDropdown(trumbowyg)
           };
-          trumbowyg.addBtnDef('base64', btnDef);
+          trumbowyg.addBtnDef('emoji', emojiBtnDef);
         }
       }
     }
   });
+  function buildDropdown(trumbowyg) {
+    var dropdown = [];
+    $.each(trumbowyg.o.plugins.emoji.emojiList, function (i, emoji) {
+      if ($.isArray(emoji)) {
+        // Custom emoji behaviour
+        var emojiCode = emoji[0],
+          emojiUrl = emoji[1],
+          emojiHtml = '<img src="' + emojiUrl + '" alt="' + emojiCode + '">',
+          customEmojiBtnName = 'emoji-' + emojiCode.replace(/:/g, ''),
+          customEmojiBtnDef = {
+            hasIcon: false,
+            text: emojiHtml,
+            fn: function fn() {
+              trumbowyg.execCmd('insertImage', emojiUrl, false, true);
+              return true;
+            }
+          };
+        trumbowyg.addBtnDef(customEmojiBtnName, customEmojiBtnDef);
+        dropdown.push(customEmojiBtnName);
+      } else {
+        // Default behaviour
+        var btn = emoji.replace(/:/g, ''),
+          defaultEmojiBtnName = 'emoji-' + btn,
+          defaultEmojiBtnDef = {
+            text: emoji,
+            fn: function fn() {
+              var encodedEmoji = String.fromCodePoint(emoji.replace('&#', '0'));
+              trumbowyg.execCmd('insertText', encodedEmoji);
+              return true;
+            }
+          };
+        trumbowyg.addBtnDef(defaultEmojiBtnName, defaultEmojiBtnDef);
+        dropdown.push(defaultEmojiBtnName);
+      }
+    });
+    return dropdown;
+  }
 })(jQuery);
 /* ===========================================================
- * trumbowyg.base64.js v1.0
- * Base64 plugin for Trumbowyg
+ * trumbowyg.emoji.js v0.1
+ * Emoji picker plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
  * ===========================================================
- * Author : Cyril Biencourt (lizardK)
+ * Author : Nicolas Pion
+ *          Twitter : @nicolas_pion
  */
-!function (e) {
+!function (x) {
   "use strict";
 
-  var a = function a() {
-    return "undefined" != typeof FileReader;
+  var F = {
+    emojiList: ["&#x2049", "&#x2122", "&#x2139", "&#x2194", "&#x2195", "&#x2196", "&#x2197", "&#x2198", "&#x2199", "&#x2328", "&#x2600", "&#x2601", "&#x2602", "&#x2603", "&#x2604", "&#x2611", "&#x2614", "&#x2615", "&#x2618", "&#x2620", "&#x2622", "&#x2623", "&#x2626", "&#x2638", "&#x2639", "&#x2640", "&#x2642", "&#x2648", "&#x2649", "&#x2650", "&#x2651", "&#x2652", "&#x2653", "&#x2660", "&#x2663", "&#x2665", "&#x2666", "&#x2668", "&#x2692", "&#x2693", "&#x2694", "&#x2695", "&#x2696", "&#x2697", "&#x2699", "&#x2702", "&#x2705", "&#x2708", "&#x2709", "&#x2712", "&#x2714", "&#x2716", "&#x2721", "&#x2728", "&#x2733", "&#x2734", "&#x2744", "&#x2747", "&#x2753", "&#x2754", "&#x2755", "&#x2757", "&#x2763", "&#x2764", "&#x2795", "&#x2796", "&#x2797", "&#x2934", "&#x2935", "&#x3030", "&#x3297", "&#x3299", "&#x1F600", "&#x1F603", "&#x1F604", "&#x1F601", "&#x1F606", "&#x1F605", "&#x1F602", "&#x1F923", "&#x263A", "&#x1F60A", "&#x1F607", "&#x1F642", "&#x1F643", "&#x1F609", "&#x1F60C", "&#x1F972", "&#x1F60D", "&#x1F970", "&#x1F618", "&#x1F617", "&#x1F619", "&#x1F61A", "&#x1F60B", "&#x1F61B", "&#x1F61D", "&#x1F61C", "&#x1F92A", "&#x1F928", "&#x1F9D0", "&#x1F913", "&#x1F60E", "&#x1F929", "&#x1F973", "&#x1F60F", "&#x1F612", "&#x1F61E", "&#x1F614", "&#x1F61F", "&#x1F615", "&#x1F641", "&#x1F623", "&#x1F616", "&#x1F62B", "&#x1F629", "&#x1F97A", "&#x1F622", "&#x1F62D", "&#x1F624", "&#x1F62E", "&#x1F620", "&#x1F621", "&#x1F92C", "&#x1F92F", "&#x1F633", "&#x1F636", "&#x1F975", "&#x1F976", "&#x1F631", "&#x1F628", "&#x1F630", "&#x1F625", "&#x1F613", "&#x1F917", "&#x1F914", "&#x1F92D", "&#x1F971", "&#x1F92B", "&#x1F925", "&#x1F610", "&#x1F611", "&#x1F62C", "&#x1F644", "&#x1F62F", "&#x1F626", "&#x1F627", "&#x1F632", "&#x1F634", "&#x1F924", "&#x1F62A", "&#x1F635", "&#x1F910", "&#x1F974", "&#x1F922", "&#x1F92E", "&#x1F927", "&#x1F637", "&#x1F912", "&#x1F915", "&#x1F911", "&#x1F920", "&#x1F978", "&#x1F608", "&#x1F47F", "&#x1F479", "&#x1F47A", "&#x1F921", "&#x1F4A9", "&#x1F47B", "&#x1F480", "&#x1F47D", "&#x1F47E", "&#x1F916", "&#x1F383", "&#x1F63A", "&#x1F638", "&#x1F639", "&#x1F63B", "&#x1F63C", "&#x1F63D", "&#x1F640", "&#x1F63F", "&#x1F63E", "&#x1F932", "&#x1F450", "&#x1F64C", "&#x1F44F", "&#x1F91D", "&#x1F44D", "&#x1F44E", "&#x1F44A", "&#x270A", "&#x1F91B", "&#x1F91C", "&#x1F91E", "&#x270C", "&#x1F91F", "&#x1F918", "&#x1F44C", "&#x1F90F", "&#x1F90C", "&#x1F448", "&#x1F449", "&#x1F446", "&#x1F447", "&#x261D", "&#x270B", "&#x1F91A", "&#x1F590", "&#x1F596", "&#x1F44B", "&#x1F919", "&#x1F4AA", "&#x1F9BE", "&#x1F595", "&#x270D", "&#x1F64F", "&#x1F9B6", "&#x1F9B5", "&#x1F9BF", "&#x1F484", "&#x1F48B", "&#x1F444", "&#x1F9B7", "&#x1F445", "&#x1F442", "&#x1F9BB", "&#x1F443", "&#x1F463", "&#x1F441", "&#x1F440", "&#x1F9E0", "&#x1FAC0", "&#x1FAC1", "&#x1F9B4", "&#x1F5E3", "&#x1F464", "&#x1F465", "&#x1FAC2", "&#x1F476", "&#x1F467", "&#x1F9D2", "&#x1F466", "&#x1F469", "&#x1F9D1", "&#x1F468", "&#x1F471", "&#x1F9D4", "&#x1F475", "&#x1F9D3", "&#x1F474", "&#x1F472", "&#x1F473", "&#x1F9D5", "&#x1F46E", "&#x1F477", "&#x1F482", "&#x1F575", "&#x1F470", "&#x1F935", "&#x1F478", "&#x1F934", "&#x1F9B8", "&#x1F9B9", "&#x1F977", "&#x1F936", "&#x1F385", "&#x1F9D9", "&#x1F9DD", "&#x1F9DB", "&#x1F9DF", "&#x1F9DE", "&#x1F9DC", "&#x1F9DA", "&#x1F47C", "&#x1F930", "&#x1F931", "&#x1F647", "&#x1F481", "&#x1F645", "&#x1F646", "&#x1F64B", "&#x1F9CF", "&#x1F926", "&#x1F937", "&#x1F64E", "&#x1F64D", "&#x1F487", "&#x1F486", "&#x1F9D6", "&#x1F485", "&#x1F933", "&#x1F483", "&#x1F57A", "&#x1F46F", "&#x1F574", "&#x1F6B6", "&#x1F9CE", "&#x1F3C3", "&#x1F9CD", "&#x1F46B", "&#x1F46D", "&#x1F46C", "&#x1F491", "&#x1F48F", "&#x1F46A", "&#x1F9F6", "&#x1F9F5", "&#x1F9E5", "&#x1F97C", "&#x1F9BA", "&#x1F45A", "&#x1F455", "&#x1F456", "&#x1FA72", "&#x1FA73", "&#x1F454", "&#x1F457", "&#x1F459", "&#x1FA71", "&#x1F458", "&#x1F97B", "&#x1F97F", "&#x1F460", "&#x1F461", "&#x1F462", "&#x1F45E", "&#x1F45F", "&#x1F97E", "&#x1FA74", "&#x1F9E6", "&#x1F9E4", "&#x1F9E3", "&#x1F3A9", "&#x1F9E2", "&#x1F452", "&#x1F393", "&#x26D1", "&#x1FA96", "&#x1F451", "&#x1F48D", "&#x1F45D", "&#x1F45B", "&#x1F45C", "&#x1F4BC", "&#x1F392", "&#x1F9F3", "&#x1F453", "&#x1F576", "&#x1F97D", "&#x1F302", "&#x1F9B1", "&#x1F9B0", "&#x1F9B3", "&#x1F9B2", "&#x1F436", "&#x1F431", "&#x1F42D", "&#x1F439", "&#x1F430", "&#x1F98A", "&#x1F43B", "&#x1F43C", "&#x1F428", "&#x1F42F", "&#x1F981", "&#x1F42E", "&#x1F437", "&#x1F43D", "&#x1F438", "&#x1F435", "&#x1F648", "&#x1F649", "&#x1F64A", "&#x1F412", "&#x1F414", "&#x1F427", "&#x1F426", "&#x1F424", "&#x1F423", "&#x1F425", "&#x1F986", "&#x1F9A4", "&#x1F985", "&#x1F989", "&#x1F987", "&#x1F43A", "&#x1F417", "&#x1F434", "&#x1F984", "&#x1F41D", "&#x1F41B", "&#x1F98B", "&#x1F40C", "&#x1FAB1", "&#x1F41E", "&#x1F41C", "&#x1FAB0", "&#x1F99F", "&#x1FAB3", "&#x1FAB2", "&#x1F997", "&#x1F577", "&#x1F578", "&#x1F982", "&#x1F422", "&#x1F40D", "&#x1F98E", "&#x1F996", "&#x1F995", "&#x1F419", "&#x1F991", "&#x1F990", "&#x1F99E", "&#x1F980", "&#x1F421", "&#x1F420", "&#x1F41F", "&#x1F9AD", "&#x1F42C", "&#x1F433", "&#x1F40B", "&#x1F988", "&#x1F40A", "&#x1F405", "&#x1F406", "&#x1F993", "&#x1F98D", "&#x1F9A7", "&#x1F418", "&#x1F9A3", "&#x1F9AC", "&#x1F99B", "&#x1F98F", "&#x1F42A", "&#x1F42B", "&#x1F992", "&#x1F998", "&#x1F403", "&#x1F402", "&#x1F404", "&#x1F40E", "&#x1F416", "&#x1F40F", "&#x1F411", "&#x1F999", "&#x1F410", "&#x1F98C", "&#x1F415", "&#x1F429", "&#x1F9AE", "&#x1F408", "&#x1F413", "&#x1F983", "&#x1F99A", "&#x1F99C", "&#x1F9A2", "&#x1F9A9", "&#x1F54A", "&#x1F407", "&#x1F99D", "&#x1F9A8", "&#x1F9A1", "&#x1F9AB", "&#x1F9A6", "&#x1F9A5", "&#x1F401", "&#x1F400", "&#x1F43F", "&#x1F994", "&#x1F43E", "&#x1F409", "&#x1F432", "&#x1F335", "&#x1F384", "&#x1F332", "&#x1F333", "&#x1F334", "&#x1F331", "&#x1F33F", "&#x1F340", "&#x1F38D", "&#x1F38B", "&#x1F343", "&#x1F342", "&#x1F341", "&#x1FAB6", "&#x1F344", "&#x1F41A", "&#x1FAA8", "&#x1FAB5", "&#x1F33E", "&#x1FAB4", "&#x1F490", "&#x1F337", "&#x1F339", "&#x1F940", "&#x1F33A", "&#x1F338", "&#x1F33C", "&#x1F33B", "&#x1F31E", "&#x1F31D", "&#x1F31B", "&#x1F31C", "&#x1F31A", "&#x1F315", "&#x1F316", "&#x1F317", "&#x1F318", "&#x1F311", "&#x1F312", "&#x1F313", "&#x1F314", "&#x1F319", "&#x1F30E", "&#x1F30D", "&#x1F30F", "&#x1FA90", "&#x1F4AB", "&#x2B50", "&#x1F31F", "&#x26A1", "&#x1F4A5", "&#x1F525", "&#x1F32A", "&#x1F308", "&#x1F324", "&#x26C5", "&#x1F325", "&#x1F326", "&#x1F327", "&#x26C8", "&#x1F329", "&#x1F328", "&#x26C4", "&#x1F32C", "&#x1F4A8", "&#x1F4A7", "&#x1F4A6", "&#x1F30A", "&#x1F32B", "&#x1F34F", "&#x1F34E", "&#x1F350", "&#x1F34A", "&#x1F34B", "&#x1F34C", "&#x1F349", "&#x1F347", "&#x1FAD0", "&#x1F353", "&#x1F348", "&#x1F352", "&#x1F351", "&#x1F96D", "&#x1F34D", "&#x1F965", "&#x1F95D", "&#x1F345", "&#x1F346", "&#x1F951", "&#x1FAD2", "&#x1F966", "&#x1F96C", "&#x1FAD1", "&#x1F952", "&#x1F336", "&#x1F33D", "&#x1F955", "&#x1F9C4", "&#x1F9C5", "&#x1F954", "&#x1F360", "&#x1F950", "&#x1F96F", "&#x1F35E", "&#x1F956", "&#x1FAD3", "&#x1F968", "&#x1F9C0", "&#x1F95A", "&#x1F373", "&#x1F9C8", "&#x1F95E", "&#x1F9C7", "&#x1F953", "&#x1F969", "&#x1F357", "&#x1F356", "&#x1F32D", "&#x1F354", "&#x1F35F", "&#x1F355", "&#x1F96A", "&#x1F959", "&#x1F9C6", "&#x1F32E", "&#x1F32F", "&#x1FAD4", "&#x1F957", "&#x1F958", "&#x1FAD5", "&#x1F96B", "&#x1F35D", "&#x1F35C", "&#x1F372", "&#x1F35B", "&#x1F363", "&#x1F371", "&#x1F95F", "&#x1F9AA", "&#x1F364", "&#x1F359", "&#x1F35A", "&#x1F358", "&#x1F365", "&#x1F960", "&#x1F96E", "&#x1F362", "&#x1F361", "&#x1F367", "&#x1F368", "&#x1F366", "&#x1F967", "&#x1F9C1", "&#x1F370", "&#x1F382", "&#x1F36E", "&#x1F36D", "&#x1F36C", "&#x1F36B", "&#x1F37F", "&#x1F369", "&#x1F36A", "&#x1F330", "&#x1F95C", "&#x1F36F", "&#x1F95B", "&#x1F37C", "&#x1F375", "&#x1FAD6", "&#x1F9C9", "&#x1F9CB", "&#x1F9C3", "&#x1F964", "&#x1F376", "&#x1F37A", "&#x1F37B", "&#x1F942", "&#x1F377", "&#x1F943", "&#x1F378", "&#x1F379", "&#x1F37E", "&#x1F9CA", "&#x1F944", "&#x1F374", "&#x1F37D", "&#x1F963", "&#x1F961", "&#x1F962", "&#x1F9C2", "&#x26BD", "&#x1F3C0", "&#x1F3C8", "&#x26BE", "&#x1F94E", "&#x1F3BE", "&#x1F3D0", "&#x1F3C9", "&#x1F94F", "&#x1FA83", "&#x1F3B1", "&#x1FA80", "&#x1F3D3", "&#x1F3F8", "&#x1F3D2", "&#x1F3D1", "&#x1F94D", "&#x1F3CF", "&#x1F945", "&#x26F3", "&#x1FA81", "&#x1F3F9", "&#x1F3A3", "&#x1F93F", "&#x1F94A", "&#x1F94B", "&#x1F3BD", "&#x1F6F9", "&#x1F6FC", "&#x1F6F7", "&#x26F8", "&#x1F94C", "&#x1F3BF", "&#x26F7", "&#x1F3C2", "&#x1FA82", "&#x1F3CB", "&#x1F93C", "&#x1F938", "&#x26F9", "&#x1F93A", "&#x1F93E", "&#x1F3CC", "&#x1F3C7", "&#x1F9D8", "&#x1F3C4", "&#x1F3CA", "&#x1F93D", "&#x1F6A3", "&#x1F9D7", "&#x1F6B5", "&#x1F6B4", "&#x1F3C6", "&#x1F947", "&#x1F948", "&#x1F949", "&#x1F3C5", "&#x1F396", "&#x1F3F5", "&#x1F397", "&#x1F3AB", "&#x1F39F", "&#x1F3AA", "&#x1F939", "&#x1F3AD", "&#x1FA70", "&#x1F3A8", "&#x1F3AC", "&#x1F3A4", "&#x1F3A7", "&#x1F3BC", "&#x1F3B9", "&#x1F941", "&#x1FA98", "&#x1F3B7", "&#x1F3BA", "&#x1F3B8", "&#x1FA95", "&#x1F3BB", "&#x1FA97", "&#x1F3B2", "&#x265F", "&#x1F3AF", "&#x1F3B3", "&#x1F3AE", "&#x1F3B0", "&#x1F9E9", "&#x1F697", "&#x1F695", "&#x1F699", "&#x1F6FB", "&#x1F68C", "&#x1F68E", "&#x1F3CE", "&#x1F693", "&#x1F691", "&#x1F692", "&#x1F690", "&#x1F69A", "&#x1F69B", "&#x1F69C", "&#x1F9AF", "&#x1F9BD", "&#x1F9BC", "&#x1F6F4", "&#x1F6B2", "&#x1F6F5", "&#x1F3CD", "&#x1F6FA", "&#x1F6A8", "&#x1F694", "&#x1F68D", "&#x1F698", "&#x1F696", "&#x1F6A1", "&#x1F6A0", "&#x1F69F", "&#x1F683", "&#x1F68B", "&#x1F69E", "&#x1F69D", "&#x1F684", "&#x1F685", "&#x1F688", "&#x1F682", "&#x1F686", "&#x1F687", "&#x1F68A", "&#x1F689", "&#x1F6EB", "&#x1F6EC", "&#x1F6E9", "&#x1F4BA", "&#x1F6F0", "&#x1F680", "&#x1F6F8", "&#x1F681", "&#x1F6F6", "&#x26F5", "&#x1F6A4", "&#x1F6E5", "&#x1F6F3", "&#x26F4", "&#x1F6A2", "&#x26FD", "&#x1F6A7", "&#x1F6A6", "&#x1F6A5", "&#x1F68F", "&#x1F5FA", "&#x1F5FF", "&#x1F5FD", "&#x1F5FC", "&#x1F3F0", "&#x1F3EF", "&#x1F3DF", "&#x1F3A1", "&#x1F3A2", "&#x1F3A0", "&#x26F2", "&#x26F1", "&#x1F3D6", "&#x1F3DD", "&#x1F3DC", "&#x1F30B", "&#x26F0", "&#x1F3D4", "&#x1F5FB", "&#x1F3D5", "&#x26FA", "&#x1F3E0", "&#x1F3E1", "&#x1F3D8", "&#x1F3DA", "&#x1F6D6", "&#x1F3D7", "&#x1F3ED", "&#x1F3E2", "&#x1F3EC", "&#x1F3E3", "&#x1F3E4", "&#x1F3E5", "&#x1F3E6", "&#x1F3E8", "&#x1F3EA", "&#x1F3EB", "&#x1F3E9", "&#x1F492", "&#x1F3DB", "&#x26EA", "&#x1F54C", "&#x1F54D", "&#x1F6D5", "&#x1F54B", "&#x26E9", "&#x1F6E4", "&#x1F6E3", "&#x1F5FE", "&#x1F391", "&#x1F3DE", "&#x1F305", "&#x1F304", "&#x1F320", "&#x1F387", "&#x1F386", "&#x1F307", "&#x1F306", "&#x1F3D9", "&#x1F303", "&#x1F30C", "&#x1F309", "&#x1F301", "&#x231A", "&#x1F4F1", "&#x1F4F2", "&#x1F4BB", "&#x1F5A5", "&#x1F5A8", "&#x1F5B1", "&#x1F5B2", "&#x1F579", "&#x1F5DC", "&#x1F4BD", "&#x1F4BE", "&#x1F4BF", "&#x1F4C0", "&#x1F4FC", "&#x1F4F7", "&#x1F4F8", "&#x1F4F9", "&#x1F3A5", "&#x1F4FD", "&#x1F39E", "&#x1F4DE", "&#x260E", "&#x1F4DF", "&#x1F4E0", "&#x1F4FA", "&#x1F4FB", "&#x1F399", "&#x1F39A", "&#x1F39B", "&#x1F9ED", "&#x23F1", "&#x23F2", "&#x23F0", "&#x1F570", "&#x231B", "&#x23F3", "&#x1F4E1", "&#x1F50B", "&#x1F50C", "&#x1F4A1", "&#x1F526", "&#x1F56F", "&#x1FA94", "&#x1F9EF", "&#x1F6E2", "&#x1F4B8", "&#x1F4B5", "&#x1F4B4", "&#x1F4B6", "&#x1F4B7", "&#x1FA99", "&#x1F4B0", "&#x1F4B3", "&#x1F48E", "&#x1FA9C", "&#x1F9F0", "&#x1FA9B", "&#x1F527", "&#x1F528", "&#x1F6E0", "&#x26CF", "&#x1F529", "&#x1F9F1", "&#x26D3", "&#x1FA9D", "&#x1FAA2", "&#x1F9F2", "&#x1F52B", "&#x1F4A3", "&#x1F9E8", "&#x1FA93", "&#x1FA9A", "&#x1F52A", "&#x1F5E1", "&#x1F6E1", "&#x1F6AC", "&#x26B0", "&#x1FAA6", "&#x26B1", "&#x1F3FA", "&#x1FA84", "&#x1F52E", "&#x1F4FF", "&#x1F9FF", "&#x1F488", "&#x1F52D", "&#x1F52C", "&#x1F573", "&#x1FA9F", "&#x1FA79", "&#x1FA7A", "&#x1F48A", "&#x1F489", "&#x1FA78", "&#x1F9EC", "&#x1F9A0", "&#x1F9EB", "&#x1F9EA", "&#x1F321", "&#x1FAA4", "&#x1F9F9", "&#x1F9FA", "&#x1FAA1", "&#x1F9FB", "&#x1F6BD", "&#x1FAA0", "&#x1FAA3", "&#x1F6B0", "&#x1F6BF", "&#x1F6C1", "&#x1F6C0", "&#x1FAA5", "&#x1F9FC", "&#x1FA92", "&#x1F9FD", "&#x1F9F4", "&#x1F6CE", "&#x1F511", "&#x1F5DD", "&#x1F6AA", "&#x1FA91", "&#x1FA9E", "&#x1F6CB", "&#x1F6CF", "&#x1F6CC", "&#x1F9F8", "&#x1F5BC", "&#x1F6CD", "&#x1F6D2", "&#x1F381", "&#x1F388", "&#x1F38F", "&#x1F380", "&#x1F38A", "&#x1F389", "&#x1FA85", "&#x1FA86", "&#x1F38E", "&#x1F3EE", "&#x1F390", "&#x1F9E7", "&#x1F4E9", "&#x1F4E8", "&#x1F4E7", "&#x1F48C", "&#x1F4E5", "&#x1F4E4", "&#x1F4E6", "&#x1F3F7", "&#x1F4EA", "&#x1F4EB", "&#x1F4EC", "&#x1F4ED", "&#x1F4EE", "&#x1F4EF", "&#x1FAA7", "&#x1F4DC", "&#x1F4C3", "&#x1F4C4", "&#x1F4D1", "&#x1F9FE", "&#x1F4CA", "&#x1F4C8", "&#x1F4C9", "&#x1F5D2", "&#x1F5D3", "&#x1F4C6", "&#x1F4C5", "&#x1F5D1", "&#x1F4C7", "&#x1F5C3", "&#x1F5F3", "&#x1F5C4", "&#x1F4CB", "&#x1F4C1", "&#x1F4C2", "&#x1F5C2", "&#x1F5DE", "&#x1F4F0", "&#x1F4D3", "&#x1F4D4", "&#x1F4D2", "&#x1F4D5", "&#x1F4D7", "&#x1F4D8", "&#x1F4D9", "&#x1F4DA", "&#x1F4D6", "&#x1F516", "&#x1F9F7", "&#x1F517", "&#x1F4CE", "&#x1F587", "&#x1F4D0", "&#x1F4CF", "&#x1F9EE", "&#x1F4CC", "&#x1F4CD", "&#x1F58A", "&#x1F58B", "&#x1F58C", "&#x1F58D", "&#x1F4DD", "&#x270F", "&#x1F50D", "&#x1F50E", "&#x1F50F", "&#x1F510", "&#x1F512", "&#x1F513", "&#x1F9E1", "&#x1F49B", "&#x1F49A", "&#x1F499", "&#x1F49C", "&#x1F5A4", "&#x1F90E", "&#x1F90D", "&#x1F494", "&#x1F495", "&#x1F49E", "&#x1F493", "&#x1F497", "&#x1F496", "&#x1F498", "&#x1F49D", "&#x1F49F", "&#x262E", "&#x271D", "&#x262A", "&#x1F549", "&#x1F52F", "&#x1F54E", "&#x262F", "&#x1F6D0", "&#x26CE", "&#x264A", "&#x264B", "&#x264C", "&#x264D", "&#x264E", "&#x264F", "&#x1F194", "&#x269B", "&#x1F251", "&#x1F4F4", "&#x1F4F3", "&#x1F236", "&#x1F21A", "&#x1F238", "&#x1F23A", "&#x1F237", "&#x1F19A", "&#x1F4AE", "&#x1F250", "&#x1F234", "&#x1F235", "&#x1F239", "&#x1F232", "&#x1F170", "&#x1F171", "&#x1F18E", "&#x1F191", "&#x1F17E", "&#x1F198", "&#x274C", "&#x2B55", "&#x1F6D1", "&#x26D4", "&#x1F4DB", "&#x1F6AB", "&#x1F4AF", "&#x1F4A2", "&#x1F6B7", "&#x1F6AF", "&#x1F6B3", "&#x1F6B1", "&#x1F51E", "&#x1F4F5", "&#x1F6AD", "&#x203C", "&#x1F505", "&#x1F506", "&#x303D", "&#x26A0", "&#x1F6B8", "&#x1F531", "&#x269C", "&#x1F530", "&#x267B", "&#x1F22F", "&#x1F4B9", "&#x274E", "&#x1F310", "&#x1F4A0", "&#x24C2", "&#x1F300", "&#x1F4A4", "&#x1F3E7", "&#x1F6BE", "&#x267F", "&#x1F17F", "&#x1F233", "&#x1F202", "&#x1F6C2", "&#x1F6C3", "&#x1F6C4", "&#x1F6C5", "&#x1F6D7", "&#x1F6B9", "&#x1F6BA", "&#x1F6BC", "&#x1F6BB", "&#x1F6AE", "&#x1F3A6", "&#x1F4F6", "&#x1F201", "&#x1F523", "&#x1F524", "&#x1F521", "&#x1F520", "&#x1F196", "&#x1F197", "&#x1F199", "&#x1F192", "&#x1F195", "&#x1F193", "&#x0030", "&#x0031", "&#x0032", "&#x0033", "&#x0034", "&#x0035", "&#x0036", "&#x0037", "&#x0038", "&#x0039", "&#x1F51F", "&#x1F522", "&#x0023", "&#x002A", "&#x23CF", "&#x25B6", "&#x23F8", "&#x23EF", "&#x23F9", "&#x23FA", "&#x23ED", "&#x23EE", "&#x23E9", "&#x23EA", "&#x23EB", "&#x23EC", "&#x25C0", "&#x1F53C", "&#x1F53D", "&#x27A1", "&#x2B05", "&#x2B06", "&#x2B07", "&#x21AA", "&#x21A9", "&#x1F500", "&#x1F501", "&#x1F502", "&#x1F504", "&#x1F503", "&#x1F3B5", "&#x1F3B6", "&#x267E", "&#x1F4B2", "&#x1F4B1", "&#x00A9", "&#x00AE", "&#x27B0", "&#x27BF", "&#x1F51A", "&#x1F519", "&#x1F51B", "&#x1F51D", "&#x1F51C", "&#x1F518", "&#x26AA", "&#x26AB", "&#x1F534", "&#x1F535", "&#x1F7E4", "&#x1F7E3", "&#x1F7E2", "&#x1F7E1", "&#x1F7E0", "&#x1F53A", "&#x1F53B", "&#x1F538", "&#x1F539", "&#x1F536", "&#x1F537", "&#x1F533", "&#x1F532", "&#x25AA", "&#x25AB", "&#x25FE", "&#x25FD", "&#x25FC", "&#x25FB", "&#x2B1B", "&#x2B1C", "&#x1F7E7", "&#x1F7E6", "&#x1F7E5", "&#x1F7EB", "&#x1F7EA", "&#x1F7E9", "&#x1F7E8", "&#x1F508", "&#x1F507", "&#x1F509", "&#x1F50A", "&#x1F514", "&#x1F515", "&#x1F4E3", "&#x1F4E2", "&#x1F5E8", "&#x1F4AC", "&#x1F4AD", "&#x1F5EF", "&#x1F0CF", "&#x1F3B4", "&#x1F004", "&#x1F550", "&#x1F551", "&#x1F552", "&#x1F553", "&#x1F554", "&#x1F555", "&#x1F556", "&#x1F557", "&#x1F558", "&#x1F559", "&#x1F55A", "&#x1F55B", "&#x1F55C", "&#x1F55D", "&#x1F55E", "&#x1F55F", "&#x1F560", "&#x1F561", "&#x1F562", "&#x1F563", "&#x1F564", "&#x1F565", "&#x1F566", "&#x1F567", "&#x26A7", "&#x1F3F3", "&#x1F3F4", "&#x1F3C1", "&#x1F6A9", "&#x1F1E6", "&#x1F1E9", "&#x1F1E7", "&#x1F1EE", "&#x1F1FB", "&#x1F1F0", "&#x1F1E8", "&#x1F1F9", "&#x1F1ED", "&#x1F1EA", "&#x1F1F8", "&#x1F1EC", "&#x1F1EB", "&#x1F1F5", "&#x1F1EF", "&#x1F38C", "&#x1F1FD", "&#x1F1F1", "&#x1F1F2", "&#x1F1FE", "&#x1F1F3", "&#x1F1F4", "&#x1F1F6", "&#x1F1F7", "&#x1F1FC", "&#x1F1FF", "&#x1F1FA", "&#x1F3FB", "&#x1F3FC", "&#x1F3FD", "&#x1F3FE", "&#x1F3FF"]
   };
-  e.extend(!0, e.trumbowyg, {
+  function A(F) {
+    var A = [];
+    return x.each(F.o.plugins.emoji.emojiList, function (E, B) {
+      if (x.isArray(B)) {
+        var C = B[0],
+          D = B[1],
+          e = '<img src="' + D + '" alt="' + C + '">',
+          i = "emoji-" + C.replace(/:/g, ""),
+          o = {
+            hasIcon: !1,
+            text: e,
+            fn: function fn() {
+              return F.execCmd("insertImage", D, !1, !0), !0;
+            }
+          };
+        F.addBtnDef(i, o), A.push(i);
+      } else {
+        var n = "emoji-" + B.replace(/:/g, ""),
+          m = {
+            text: B,
+            fn: function fn() {
+              var x = String.fromCodePoint(B.replace("&#", "0"));
+              return F.execCmd("insertText", x), !0;
+            }
+          };
+        F.addBtnDef(n, m), A.push(n);
+      }
+    }), A;
+  }
+  x.extend(!0, x.trumbowyg, {
     langs: {
       en: {
-        base64: "Image as base64",
-        file: "File",
-        errFileReaderNotSupported: "FileReader is not supported by your browser.",
-        errInvalidImage: "Invalid image file."
+        emoji: "Add an emoji"
       },
       az: {
-        base64: "base64 olaraq şəkil",
-        file: "Fayl",
-        errFileReaderNotSupported: "FileReader brauzeriniz tərəfindən dəstəklənmir.",
-        errInvalidImage: "Yanlış şəkil faylı."
+        emoji: "Emoji yerləşdir"
       },
-      by: {
-        base64: "Выява (фармат base64)",
-        file: "Файл",
-        errFileReaderNotSupported: "FileReader не падтрымліваецца вашым браўзэрам.",
-        errInvalidImage: "Несапраўдны файл выявы."
-      },
-      cs: {
-        base64: "Vložit obrázek",
-        file: "Soubor"
+      ca: {
+        emoji: "Afegir una emoticona"
       },
       da: {
-        base64: "Billede som base64",
-        file: "Fil",
-        errFileReaderNotSupported: "FileReader er ikke understøttet af din browser.",
-        errInvalidImage: "Ugyldig billedfil."
+        emoji: "Tilføj et humørikon"
+      },
+      de: {
+        emoji: "Emoticon einfügen"
+      },
+      es: {
+        emoji: "Añadir un emoticono"
       },
       et: {
-        base64: "Pilt base64 formaadis",
-        file: "Fail",
-        errFileReaderNotSupported: "Teie veebilehitseja ei toeta FileReader funktsiooni.",
-        errInvalidImage: "Vigane pildifail."
+        emoji: "Lisa emotikon"
       },
       fr: {
-        base64: "Image en base64",
-        file: "Fichier",
-        errFileReaderNotSupported: "FileReader n'est pas supporté par votre navigateur.",
-        errInvalidImage: "Fichier image invalide."
+        emoji: "Ajouter un emoji"
       },
       hu: {
-        base64: "Kép beszúrás inline",
-        file: "Fájl",
-        errFileReaderNotSupported: "Ez a böngésző nem támogatja a FileReader funkciót.",
-        errInvalidImage: "Érvénytelen képfájl."
+        emoji: "Emoji beszúrás"
       },
       ja: {
-        base64: "画像 (Base64形式)",
-        file: "ファイル",
-        errFileReaderNotSupported: "あなたのブラウザーはFileReaderをサポートしていません",
-        errInvalidImage: "画像形式が正しくありません"
+        emoji: "絵文字の挿入"
       },
       ko: {
-        base64: "그림 넣기(base64)",
-        file: "파일",
-        errFileReaderNotSupported: "FileReader가 현재 브라우저를 지원하지 않습니다.",
-        errInvalidImage: "유효하지 않은 파일"
-      },
-      nl: {
-        base64: "Afbeelding inline",
-        file: "Bestand",
-        errFileReaderNotSupported: "Uw browser ondersteunt deze functionaliteit niet.",
-        errInvalidImage: "De gekozen afbeelding is ongeldig."
-      },
-      pt_br: {
-        base64: "Imagem em base64",
-        file: "Arquivo",
-        errFileReaderNotSupported: "FileReader não é suportado pelo seu navegador.",
-        errInvalidImage: "Arquivo de imagem inválido."
+        emoji: "이모지 넣기"
       },
       ru: {
-        base64: "Изображение как код в base64",
-        file: "Файл",
-        errFileReaderNotSupported: "FileReader не поддерживается вашим браузером.",
-        errInvalidImage: "Недопустимый файл изображения."
+        emoji: "Вставить emoji"
       },
       sl: {
-        base64: "Slika kot base64",
-        file: "Datoteka",
-        errFileReaderNotSupported: "FileReader ni podprt v tem brskalniku.",
-        errInvalidImage: "Neveljavna datoteka s sliko."
+        emoji: "Vstavi emotikon"
       },
       tr: {
-        base64: "Base64 olarak resim",
-        file: "Dosya",
-        errFileReaderNotSupported: "FileReader tarayıcınız tarafından desteklenmiyor.",
-        errInvalidImage: "Geçersiz resim dosyası."
+        emoji: "Emoji ekle"
       },
       zh_cn: {
-        base64: "图片（Base64编码）",
-        file: "文件"
-      },
-      zh_tw: {
-        base64: "圖片(base64編碼)",
-        file: "檔案",
-        errFileReaderNotSupported: "你的瀏覽器不支援FileReader",
-        errInvalidImage: "不正確的檔案格式"
+        emoji: "添加表情"
       }
     },
     plugins: {
-      base64: {
-        shouldInit: a,
-        init: function init(r) {
-          var i = {
-            isSupported: a,
-            fn: function fn() {
-              var a;
-              r.saveRange();
-              var i = r.openModalInsert(r.lang.base64, {
-                file: {
-                  type: "file",
-                  required: !0,
-                  attributes: {
-                    accept: "image/*"
-                  }
-                },
-                alt: {
-                  label: "description",
-                  value: r.getRangeText()
-                }
-              }, function (l) {
-                var t = new FileReader();
-                t.onloadend = function (a) {
-                  var d;
-                  d = a.target.result, /^data:image\/[a-z]?/i.test(d) ? (r.execCmd("insertImage", t.result, !1, !0), e(['img[src="', t.result, '"]:not([alt])'].join(""), r.$box).attr("alt", l.alt), r.closeModal()) : r.addErrorOnModalField(e("input[type=file]", i), r.lang.errInvalidImage);
-                }, t.readAsDataURL(a);
-              });
-              e("input[type=file]").on("change", function (e) {
-                a = e.target.files[0];
-              });
-            }
+      emoji: {
+        init: function init(x) {
+          x.o.plugins.emoji = x.o.plugins.emoji || F;
+          var E = {
+            dropdown: A(x)
           };
-          r.addBtnDef("base64", i);
+          x.addBtnDef("emoji", E);
         }
       }
     }
@@ -1580,6 +1580,361 @@
             dropdown: i(e),
             hasIcon: !1,
             text: e.lang.fontFamily
+          });
+        }
+      }
+    }
+  });
+}(jQuery);
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        giphy: 'Insert GIF'
+      },
+      az: {
+        giphy: 'GIF yerləşdir'
+      },
+      by: {
+        giphy: 'Уставіць GIF'
+      },
+      et: {
+        giphy: 'Sisesta GIF'
+      },
+      fr: {
+        giphy: 'Insérer un GIF'
+      },
+      hu: {
+        giphy: 'GIF beszúrás'
+      },
+      ru: {
+        giphy: 'Вставить GIF'
+      },
+      sl: {
+        giphy: 'Vstavi GIF'
+      },
+      tr: {
+        giphy: 'GIF ekle'
+      }
+      // jshint camelcase:true
+    }
+  });
+
+  var giphyLogo = '<svg viewBox="0 0 231 53" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"><path d="M48.32 22.386c0-1.388-.252-1.892-1.767-1.85-3.448.126-6.855.042-10.303.042H25.443c-.927 0-1.346.211-1.305 1.22.085 2.86.085 5.72.043 8.58 0 .883.252 1.169 1.169 1.135 2.018-.084 3.995-.042 6.014 0 1.64 0 4.164-.546 4.752.252.841 1.169.421 3.364.337 5.089-.043.547-.547 1.304-1.094 1.598-2.692 1.556-5.678 2.018-8.747 1.892-5.342-.21-9.336-2.439-11.481-7.527-1.388-3.364-1.725-6.855-1.01-10.43 1.01-4.963 3.407-8.747 8.58-10.051 5.215-1.305 10.136-.547 14.467 2.817 1.219.967 1.798.715 2.691-.294 1.514-1.724 3.154-3.322 4.753-4.963 1.892-1.933 1.892-1.892-.169-3.7C38.429.813 31.238-.617 23.5.224 12.818 1.393 5.248 6.658 1.59 17.045-.177 22.008-.428 27.097.623 32.227c1.682 7.914 5.551 14.12 13.289 17.368 6.898 2.901 14.046 3.448 21.321 1.598 4.331-1.093 8.411-2.608 11.354-6.223 1.136-1.388 1.725-2.902 1.682-4.71l.043-17.873.008-.001zm125.153 3.784l.042-23.046c0-1.136-.168-1.598-1.472-1.556a238.02 238.02 0 0 1-11.017 0c-1.136-.042-1.439.337-1.439 1.439v15.645c0 1.345-.421 1.556-1.641 1.556a422.563 422.563 0 0 0-14.593 0c-1.262.042-1.472-.421-1.439-1.556l.043-15.813c0-.926-.169-1.304-1.17-1.262h-11.513c-.927 0-1.304.169-1.304 1.22v46.764c0 .967.252 1.262 1.219 1.262h11.512c1.169.042 1.262-.462 1.262-1.388l-.042-15.644c0-1.053.251-1.346 1.304-1.346h15.14c1.22 0 1.388.421 1.388 1.472l-.042 15.477c0 1.093.21 1.472 1.388 1.439 3.615-.085 7.233-.085 10.807 0 1.304.042 1.598-.337 1.598-1.598l-.042-23.047.011-.018zM106.565 1.654c-8.369-.211-16.728-.126-25.065-.211-1.346 0-1.767.337-1.767 1.724l.043 23.004v23.215c0 1.009.168 1.439 1.304 1.387a271.22 271.22 0 0 1 11.691 0c1.094 0 1.346-.336 1.346-1.345l-.042-10.64c0-1.052.294-1.345 1.345-1.345 3.322.042 6.645.085 9.967-.085 4.407-.21 8.621-1.219 12.111-4.12 5.551-4.584 7.613-12.701 5.131-20.061-2.313-6.561-8.747-11.354-16.064-11.522v-.001zm-3.028 24.013c-2.818.042-5.594-.043-8.411.042-1.169.042-1.439-.378-1.345-1.439.084-1.556 0-3.069 0-4.626v-5.131c-.043-.841.251-1.094 1.052-1.052 2.986.042 5.929-.085 8.915.042 3.616.126 5.887 2.692 5.846 6.266-.126 3.658-2.313 5.846-6.055 5.887l-.002.011zM229.699 1.569c-4.458 0-8.915-.042-13.415.043-.629 0-1.472.503-1.85 1.052a505.695 505.695 0 0 0-8.957 14.214c-.884 1.472-1.22 1.169-1.977-.084l-8.496-14.089c-.503-.841-1.052-1.136-2.018-1.136l-13.078.043c-.462 0-.967.125-1.439.21.21.378.378.799.629 1.169l17.412 27.167c.462.715.715 1.682.757 2.524v16.653c0 1.052.168 1.514 1.388 1.472 3.784-.084 7.57-.084 11.354 0 1.136.043 1.304-.377 1.304-1.387l-.042-8.58c0-2.734-.084-5.51.042-8.243.043-.926.337-1.933.841-2.649l18.167-27.041c.252-.337.337-.758.547-1.17a3.636 3.636 0 0 0-1.169-.168zM70.104 2.661c0-1.009-.294-1.219-1.262-1.219H57.69c-1.262-.043-1.472.377-1.472 1.513l.042 23.004v23.34c0 1.053.126 1.514 1.346 1.473 3.7-.085 7.444-.043 11.152 0 .966 0 1.387-.085 1.387-1.262l-.042-46.857.001.008z" fill="currentColor" fill-rule="nonzero"/></svg>'; // jshint ignore:line
+
+  var CANCEL_EVENT = 'tbwcancel';
+
+  // Throttle helper
+  function trumbowygThrottle(callback, delay) {
+    var last;
+    var timer;
+    return function () {
+      var context = this;
+      var now = +new Date();
+      var args = arguments;
+      if (last && now < last + delay) {
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+          last = now;
+          callback.apply(context, args);
+        }, delay);
+      } else {
+        last = now;
+        callback.apply(context, args);
+      }
+    };
+  }
+
+  // Fills modal with response gifs
+  function renderGifs(response, $giphyModal, trumbowyg, mustEmpty) {
+    var width = ($giphyModal.width() - 20) / 3;
+    var html = response.data.filter(function (gifData) {
+      // jshint camelcase:false
+      var downsized = gifData.images.downsized || gifData.images.downsized_medium;
+      // jshint camelcase:true
+      return !!downsized.url;
+    }).map(function (gifData) {
+      // jshint camelcase:false
+      var downsized = gifData.images.downsized || gifData.images.downsized_medium;
+      // jshint camelcase:true
+      var image = downsized,
+        imageRatio = image.height / image.width,
+        altText = gifData.title;
+      var imgHtml = '<img src=' + image.url + ' width="' + width + '" height="' + imageRatio * width + '" alt="' + altText + '" loading="lazy" />';
+      return '<div class="img-container">' + imgHtml + '</div>';
+    }).join('');
+    if (mustEmpty === true) {
+      if (html.length === 0) {
+        if ($('.' + trumbowyg.o.prefix + 'giphy-no-result', $giphyModal).length > 0) {
+          return;
+        }
+        html = '<img class="' + trumbowyg.o.prefix + 'giphy-no-result" src="' + trumbowyg.o.plugins.giphy.noResultGifUrl + '"/>';
+      }
+      $giphyModal.empty();
+    }
+    $giphyModal.append(html);
+
+    // Remove gray overlay on image load
+    // moved here from inline callback definition due to CSP issue
+    // Note: this is being done post-factum because load event doesn't bubble up and so can't be delegated
+    var addLoadedClass = function addLoadedClass(img) {
+      img.classList.add('tbw-loaded');
+    };
+    $('img', $giphyModal).each(function () {
+      var img = this;
+      if (img.complete) {
+        // images load instantly when cached and esp. when loaded in previous modal open
+        addLoadedClass(img);
+      } else {
+        img.addEventListener('load', function () {
+          addLoadedClass(this);
+        });
+      }
+    });
+    $('img', $giphyModal).on('click', function () {
+      var src = $(this).attr('src'),
+        alt = $(this).attr('alt');
+      trumbowyg.restoreRange();
+      trumbowyg.execCmd('insertImage', src, false, true);
+
+      // relay alt tag into inserted image
+      if (alt) {
+        var $img = $('img[src="' + src + '"]:not([alt])', trumbowyg.$box);
+        $img.attr('alt', alt);
+        // Note: This seems to fire relatively early and could be wrapped in a setTimeout if needed
+        trumbowyg.syncCode();
+      }
+      $('img', $giphyModal).off();
+      trumbowyg.closeModal();
+    });
+  }
+  var defaultOptions = {
+    rating: 'g',
+    apiKey: null,
+    throttleDelay: 300,
+    noResultGifUrl: 'https://media.giphy.com/media/2Faz9FbRzmwxY0pZS/giphy.gif'
+  };
+
+  // Add dropdown with font sizes
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      giphy: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.giphy = $.extend({}, defaultOptions, trumbowyg.o.plugins.giphy || {});
+          trumbowyg.addBtnDef('giphy', {
+            fn: function fn() {
+              if (trumbowyg.o.plugins.giphy.apiKey === null) {
+                throw new Error('You must set a Giphy API Key');
+              }
+              var BASE_URL = 'https://api.giphy.com/v1/gifs/search?api_key=' + trumbowyg.o.plugins.giphy.apiKey + '&rating=' + trumbowyg.o.plugins.giphy.rating,
+                DEFAULT_URL = BASE_URL.replace('/search', '/trending');
+              var previousAjaxCall = {
+                abort: function abort() {}
+              };
+              var prefix = trumbowyg.o.prefix;
+
+              // Create and open the modal
+              var searchInput = '<input name="" class="' + prefix + 'giphy-search" placeholder="Search a GIF" autofocus="autofocus">',
+                closeButton = '<button class="' + prefix + 'giphy-close" title="' + trumbowyg.lang.close + '"><svg><use xlink:href="' + trumbowyg.svgPath + '#' + prefix + 'close"/></svg></button>',
+                poweredByGiphy = '<div class="' + prefix + 'powered-by-giphy"><span>Powered by</span>' + giphyLogo + '</div>',
+                giphyModalHtml = searchInput + closeButton + poweredByGiphy + '<div class="' + prefix + 'giphy-modal-scroll"><div class="' + prefix + 'giphy-modal"></div></div>';
+              trumbowyg.openModal(null, giphyModalHtml, false).one(CANCEL_EVENT, function () {
+                try {
+                  previousAjaxCall.abort();
+                } catch (e) {}
+                trumbowyg.closeModal();
+              });
+              var $giphyInput = $('.' + prefix + 'giphy-search'),
+                $giphyClose = $('.' + prefix + 'giphy-close'),
+                $giphyModal = $('.' + prefix + 'giphy-modal');
+              var ajaxError = function ajaxError() {
+                if (!navigator.onLine && !$('.' + prefix + 'giphy-offline', $giphyModal).length) {
+                  $giphyModal.empty();
+                  $giphyModal.append('<p class="' + prefix + 'giphy-offline">You are offline</p>');
+                }
+              };
+
+              // Load trending gifs as default
+              $.ajax({
+                url: DEFAULT_URL,
+                dataType: 'json',
+                success: function success(response) {
+                  renderGifs(response, $giphyModal, trumbowyg, true);
+                },
+                error: ajaxError
+              });
+              var searchGifsOnInput = function searchGifsOnInput() {
+                var query = $giphyInput.val();
+                if (query.length === 0) {
+                  return;
+                }
+                try {
+                  previousAjaxCall.abort();
+                } catch (e) {}
+                previousAjaxCall = $.ajax({
+                  url: BASE_URL + '&q=' + encodeURIComponent(query),
+                  dataType: 'json',
+                  success: function success(response) {
+                    renderGifs(response, $giphyModal, trumbowyg, true);
+                  },
+                  error: ajaxError
+                });
+              };
+              var throttledInputRequest = trumbowygThrottle(searchGifsOnInput, trumbowyg.o.plugins.giphy.throttleDelay);
+              $giphyInput.on('input', throttledInputRequest);
+              $giphyInput.focus();
+              $giphyClose.one('click', function () {
+                $giphyModal.trigger(CANCEL_EVENT);
+              });
+            }
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
+!function (i) {
+  "use strict";
+
+  i.extend(!0, i.trumbowyg, {
+    langs: {
+      en: {
+        giphy: "Insert GIF"
+      },
+      az: {
+        giphy: "GIF yerləşdir"
+      },
+      by: {
+        giphy: "Уставіць GIF"
+      },
+      et: {
+        giphy: "Sisesta GIF"
+      },
+      fr: {
+        giphy: "Insérer un GIF"
+      },
+      hu: {
+        giphy: "GIF beszúrás"
+      },
+      ru: {
+        giphy: "Вставить GIF"
+      },
+      sl: {
+        giphy: "Vstavi GIF"
+      },
+      tr: {
+        giphy: "GIF ekle"
+      }
+    }
+  });
+  var e = "tbwcancel";
+  function t(e, t, n, l) {
+    var a = (t.width() - 20) / 3,
+      o = e.data.filter(function (i) {
+        return !!(i.images.downsized || i.images.downsized_medium).url;
+      }).map(function (i) {
+        var e = i.images.downsized || i.images.downsized_medium,
+          t = e.height / e.width,
+          n = i.title;
+        return '<div class="img-container">' + ("<img src=" + e.url + ' width="' + a + '" height="' + t * a + '" alt="' + n + '" loading="lazy" />') + "</div>";
+      }).join("");
+    if (!0 === l) {
+      if (0 === o.length) {
+        if (i("." + n.o.prefix + "giphy-no-result", t).length > 0) return;
+        o = '<img class="' + n.o.prefix + 'giphy-no-result" src="' + n.o.plugins.giphy.noResultGifUrl + '"/>';
+      }
+      t.empty();
+    }
+    t.append(o);
+    var c = function c(i) {
+      i.classList.add("tbw-loaded");
+    };
+    i("img", t).each(function () {
+      var i = this;
+      i.complete ? c(i) : i.addEventListener("load", function () {
+        c(this);
+      });
+    }), i("img", t).on("click", function () {
+      var e = i(this).attr("src"),
+        l = i(this).attr("alt");
+      (n.restoreRange(), n.execCmd("insertImage", e, !1, !0), l) && (i('img[src="' + e + '"]:not([alt])', n.$box).attr("alt", l), n.syncCode());
+      i("img", t).off(), n.closeModal();
+    });
+  }
+  var n = {
+    rating: "g",
+    apiKey: null,
+    throttleDelay: 300,
+    noResultGifUrl: "https://media.giphy.com/media/2Faz9FbRzmwxY0pZS/giphy.gif"
+  };
+  i.extend(!0, i.trumbowyg, {
+    plugins: {
+      giphy: {
+        init: function init(l) {
+          l.o.plugins.giphy = i.extend({}, n, l.o.plugins.giphy || {}), l.addBtnDef("giphy", {
+            fn: function fn() {
+              if (null === l.o.plugins.giphy.apiKey) throw new Error("You must set a Giphy API Key");
+              var n = "https://api.giphy.com/v1/gifs/search?api_key=" + l.o.plugins.giphy.apiKey + "&rating=" + l.o.plugins.giphy.rating,
+                a = n.replace("/search", "/trending"),
+                o = {
+                  abort: function abort() {}
+                },
+                c = l.o.prefix,
+                r = '<input name="" class="' + c + 'giphy-search" placeholder="Search a GIF" autofocus="autofocus">' + ('<button class="' + c + 'giphy-close" title="' + l.lang.close + '"><svg><use xlink:href="' + l.svgPath + "#" + c + 'close"/></svg></button>') + ('<div class="' + c + 'powered-by-giphy"><span>Powered by</span><svg viewBox="0 0 231 53" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"><path d="M48.32 22.386c0-1.388-.252-1.892-1.767-1.85-3.448.126-6.855.042-10.303.042H25.443c-.927 0-1.346.211-1.305 1.22.085 2.86.085 5.72.043 8.58 0 .883.252 1.169 1.169 1.135 2.018-.084 3.995-.042 6.014 0 1.64 0 4.164-.546 4.752.252.841 1.169.421 3.364.337 5.089-.043.547-.547 1.304-1.094 1.598-2.692 1.556-5.678 2.018-8.747 1.892-5.342-.21-9.336-2.439-11.481-7.527-1.388-3.364-1.725-6.855-1.01-10.43 1.01-4.963 3.407-8.747 8.58-10.051 5.215-1.305 10.136-.547 14.467 2.817 1.219.967 1.798.715 2.691-.294 1.514-1.724 3.154-3.322 4.753-4.963 1.892-1.933 1.892-1.892-.169-3.7C38.429.813 31.238-.617 23.5.224 12.818 1.393 5.248 6.658 1.59 17.045-.177 22.008-.428 27.097.623 32.227c1.682 7.914 5.551 14.12 13.289 17.368 6.898 2.901 14.046 3.448 21.321 1.598 4.331-1.093 8.411-2.608 11.354-6.223 1.136-1.388 1.725-2.902 1.682-4.71l.043-17.873.008-.001zm125.153 3.784l.042-23.046c0-1.136-.168-1.598-1.472-1.556a238.02 238.02 0 0 1-11.017 0c-1.136-.042-1.439.337-1.439 1.439v15.645c0 1.345-.421 1.556-1.641 1.556a422.563 422.563 0 0 0-14.593 0c-1.262.042-1.472-.421-1.439-1.556l.043-15.813c0-.926-.169-1.304-1.17-1.262h-11.513c-.927 0-1.304.169-1.304 1.22v46.764c0 .967.252 1.262 1.219 1.262h11.512c1.169.042 1.262-.462 1.262-1.388l-.042-15.644c0-1.053.251-1.346 1.304-1.346h15.14c1.22 0 1.388.421 1.388 1.472l-.042 15.477c0 1.093.21 1.472 1.388 1.439 3.615-.085 7.233-.085 10.807 0 1.304.042 1.598-.337 1.598-1.598l-.042-23.047.011-.018zM106.565 1.654c-8.369-.211-16.728-.126-25.065-.211-1.346 0-1.767.337-1.767 1.724l.043 23.004v23.215c0 1.009.168 1.439 1.304 1.387a271.22 271.22 0 0 1 11.691 0c1.094 0 1.346-.336 1.346-1.345l-.042-10.64c0-1.052.294-1.345 1.345-1.345 3.322.042 6.645.085 9.967-.085 4.407-.21 8.621-1.219 12.111-4.12 5.551-4.584 7.613-12.701 5.131-20.061-2.313-6.561-8.747-11.354-16.064-11.522v-.001zm-3.028 24.013c-2.818.042-5.594-.043-8.411.042-1.169.042-1.439-.378-1.345-1.439.084-1.556 0-3.069 0-4.626v-5.131c-.043-.841.251-1.094 1.052-1.052 2.986.042 5.929-.085 8.915.042 3.616.126 5.887 2.692 5.846 6.266-.126 3.658-2.313 5.846-6.055 5.887l-.002.011zM229.699 1.569c-4.458 0-8.915-.042-13.415.043-.629 0-1.472.503-1.85 1.052a505.695 505.695 0 0 0-8.957 14.214c-.884 1.472-1.22 1.169-1.977-.084l-8.496-14.089c-.503-.841-1.052-1.136-2.018-1.136l-13.078.043c-.462 0-.967.125-1.439.21.21.378.378.799.629 1.169l17.412 27.167c.462.715.715 1.682.757 2.524v16.653c0 1.052.168 1.514 1.388 1.472 3.784-.084 7.57-.084 11.354 0 1.136.043 1.304-.377 1.304-1.387l-.042-8.58c0-2.734-.084-5.51.042-8.243.043-.926.337-1.933.841-2.649l18.167-27.041c.252-.337.337-.758.547-1.17a3.636 3.636 0 0 0-1.169-.168zM70.104 2.661c0-1.009-.294-1.219-1.262-1.219H57.69c-1.262-.043-1.472.377-1.472 1.513l.042 23.004v23.34c0 1.053.126 1.514 1.346 1.473 3.7-.085 7.444-.043 11.152 0 .966 0 1.387-.085 1.387-1.262l-.042-46.857.001.008z" fill="currentColor" fill-rule="nonzero"/></svg></div>') + '<div class="' + c + 'giphy-modal-scroll"><div class="' + c + 'giphy-modal"></div></div>';
+              l.openModal(null, r, !1).one(e, function () {
+                try {
+                  o.abort();
+                } catch (i) {}
+                l.closeModal();
+              });
+              var s = i("." + c + "giphy-search"),
+                g = i("." + c + "giphy-close"),
+                p = i("." + c + "giphy-modal"),
+                h = function h() {
+                  navigator.onLine || i("." + c + "giphy-offline", p).length || (p.empty(), p.append('<p class="' + c + 'giphy-offline">You are offline</p>'));
+                };
+              i.ajax({
+                url: a,
+                dataType: "json",
+                success: function success(i) {
+                  t(i, p, l, !0);
+                },
+                error: h
+              });
+              var u,
+                d,
+                y,
+                f,
+                m = (u = function u() {
+                  var e = s.val();
+                  if (0 !== e.length) {
+                    try {
+                      o.abort();
+                    } catch (i) {}
+                    o = i.ajax({
+                      url: n + "&q=" + encodeURIComponent(e),
+                      dataType: "json",
+                      success: function success(i) {
+                        t(i, p, l, !0);
+                      },
+                      error: h
+                    });
+                  }
+                }, d = l.o.plugins.giphy.throttleDelay, function () {
+                  var i = this,
+                    e = +new Date(),
+                    t = arguments;
+                  y && e < y + d ? (clearTimeout(f), f = setTimeout(function () {
+                    y = e, u.apply(i, t);
+                  }, d)) : (y = e, u.apply(i, t));
+                });
+              s.on("input", m), s.focus(), g.one("click", function () {
+                p.trigger(e);
+              });
+            }
           });
         }
       }
@@ -2309,356 +2664,242 @@
     }
   });
 }(jQuery);
+/*/* ===========================================================
+ * trumbowyg.history.js v1.0
+ * history plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Sven Dunemann [dunemann@forelabs.eu]
+ */
+
 (function ($) {
   'use strict';
 
   $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        giphy: 'Insert GIF'
-      },
-      az: {
-        giphy: 'GIF yerləşdir'
-      },
-      by: {
-        giphy: 'Уставіць GIF'
-      },
-      et: {
-        giphy: 'Sisesta GIF'
-      },
-      fr: {
-        giphy: 'Insérer un GIF'
-      },
-      hu: {
-        giphy: 'GIF beszúrás'
-      },
-      ru: {
-        giphy: 'Вставить GIF'
-      },
-      sl: {
-        giphy: 'Vstavi GIF'
-      },
-      tr: {
-        giphy: 'GIF ekle'
-      }
-      // jshint camelcase:true
-    }
-  });
-
-  var giphyLogo = '<svg viewBox="0 0 231 53" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"><path d="M48.32 22.386c0-1.388-.252-1.892-1.767-1.85-3.448.126-6.855.042-10.303.042H25.443c-.927 0-1.346.211-1.305 1.22.085 2.86.085 5.72.043 8.58 0 .883.252 1.169 1.169 1.135 2.018-.084 3.995-.042 6.014 0 1.64 0 4.164-.546 4.752.252.841 1.169.421 3.364.337 5.089-.043.547-.547 1.304-1.094 1.598-2.692 1.556-5.678 2.018-8.747 1.892-5.342-.21-9.336-2.439-11.481-7.527-1.388-3.364-1.725-6.855-1.01-10.43 1.01-4.963 3.407-8.747 8.58-10.051 5.215-1.305 10.136-.547 14.467 2.817 1.219.967 1.798.715 2.691-.294 1.514-1.724 3.154-3.322 4.753-4.963 1.892-1.933 1.892-1.892-.169-3.7C38.429.813 31.238-.617 23.5.224 12.818 1.393 5.248 6.658 1.59 17.045-.177 22.008-.428 27.097.623 32.227c1.682 7.914 5.551 14.12 13.289 17.368 6.898 2.901 14.046 3.448 21.321 1.598 4.331-1.093 8.411-2.608 11.354-6.223 1.136-1.388 1.725-2.902 1.682-4.71l.043-17.873.008-.001zm125.153 3.784l.042-23.046c0-1.136-.168-1.598-1.472-1.556a238.02 238.02 0 0 1-11.017 0c-1.136-.042-1.439.337-1.439 1.439v15.645c0 1.345-.421 1.556-1.641 1.556a422.563 422.563 0 0 0-14.593 0c-1.262.042-1.472-.421-1.439-1.556l.043-15.813c0-.926-.169-1.304-1.17-1.262h-11.513c-.927 0-1.304.169-1.304 1.22v46.764c0 .967.252 1.262 1.219 1.262h11.512c1.169.042 1.262-.462 1.262-1.388l-.042-15.644c0-1.053.251-1.346 1.304-1.346h15.14c1.22 0 1.388.421 1.388 1.472l-.042 15.477c0 1.093.21 1.472 1.388 1.439 3.615-.085 7.233-.085 10.807 0 1.304.042 1.598-.337 1.598-1.598l-.042-23.047.011-.018zM106.565 1.654c-8.369-.211-16.728-.126-25.065-.211-1.346 0-1.767.337-1.767 1.724l.043 23.004v23.215c0 1.009.168 1.439 1.304 1.387a271.22 271.22 0 0 1 11.691 0c1.094 0 1.346-.336 1.346-1.345l-.042-10.64c0-1.052.294-1.345 1.345-1.345 3.322.042 6.645.085 9.967-.085 4.407-.21 8.621-1.219 12.111-4.12 5.551-4.584 7.613-12.701 5.131-20.061-2.313-6.561-8.747-11.354-16.064-11.522v-.001zm-3.028 24.013c-2.818.042-5.594-.043-8.411.042-1.169.042-1.439-.378-1.345-1.439.084-1.556 0-3.069 0-4.626v-5.131c-.043-.841.251-1.094 1.052-1.052 2.986.042 5.929-.085 8.915.042 3.616.126 5.887 2.692 5.846 6.266-.126 3.658-2.313 5.846-6.055 5.887l-.002.011zM229.699 1.569c-4.458 0-8.915-.042-13.415.043-.629 0-1.472.503-1.85 1.052a505.695 505.695 0 0 0-8.957 14.214c-.884 1.472-1.22 1.169-1.977-.084l-8.496-14.089c-.503-.841-1.052-1.136-2.018-1.136l-13.078.043c-.462 0-.967.125-1.439.21.21.378.378.799.629 1.169l17.412 27.167c.462.715.715 1.682.757 2.524v16.653c0 1.052.168 1.514 1.388 1.472 3.784-.084 7.57-.084 11.354 0 1.136.043 1.304-.377 1.304-1.387l-.042-8.58c0-2.734-.084-5.51.042-8.243.043-.926.337-1.933.841-2.649l18.167-27.041c.252-.337.337-.758.547-1.17a3.636 3.636 0 0 0-1.169-.168zM70.104 2.661c0-1.009-.294-1.219-1.262-1.219H57.69c-1.262-.043-1.472.377-1.472 1.513l.042 23.004v23.34c0 1.053.126 1.514 1.346 1.473 3.7-.085 7.444-.043 11.152 0 .966 0 1.387-.085 1.387-1.262l-.042-46.857.001.008z" fill="currentColor" fill-rule="nonzero"/></svg>'; // jshint ignore:line
-
-  var CANCEL_EVENT = 'tbwcancel';
-
-  // Throttle helper
-  function trumbowygThrottle(callback, delay) {
-    var last;
-    var timer;
-    return function () {
-      var context = this;
-      var now = +new Date();
-      var args = arguments;
-      if (last && now < last + delay) {
-        clearTimeout(timer);
-        timer = setTimeout(function () {
-          last = now;
-          callback.apply(context, args);
-        }, delay);
-      } else {
-        last = now;
-        callback.apply(context, args);
-      }
-    };
-  }
-
-  // Fills modal with response gifs
-  function renderGifs(response, $giphyModal, trumbowyg, mustEmpty) {
-    var width = ($giphyModal.width() - 20) / 3;
-    var html = response.data.filter(function (gifData) {
-      // jshint camelcase:false
-      var downsized = gifData.images.downsized || gifData.images.downsized_medium;
-      // jshint camelcase:true
-      return !!downsized.url;
-    }).map(function (gifData) {
-      // jshint camelcase:false
-      var downsized = gifData.images.downsized || gifData.images.downsized_medium;
-      // jshint camelcase:true
-      var image = downsized,
-        imageRatio = image.height / image.width,
-        altText = gifData.title;
-      var imgHtml = '<img src=' + image.url + ' width="' + width + '" height="' + imageRatio * width + '" alt="' + altText + '" loading="lazy" />';
-      return '<div class="img-container">' + imgHtml + '</div>';
-    }).join('');
-    if (mustEmpty === true) {
-      if (html.length === 0) {
-        if ($('.' + trumbowyg.o.prefix + 'giphy-no-result', $giphyModal).length > 0) {
-          return;
-        }
-        html = '<img class="' + trumbowyg.o.prefix + 'giphy-no-result" src="' + trumbowyg.o.plugins.giphy.noResultGifUrl + '"/>';
-      }
-      $giphyModal.empty();
-    }
-    $giphyModal.append(html);
-
-    // Remove gray overlay on image load
-    // moved here from inline callback definition due to CSP issue
-    // Note: this is being done post-factum because load event doesn't bubble up and so can't be delegated
-    var addLoadedClass = function addLoadedClass(img) {
-      img.classList.add('tbw-loaded');
-    };
-    $('img', $giphyModal).each(function () {
-      var img = this;
-      if (img.complete) {
-        // images load instantly when cached and esp. when loaded in previous modal open
-        addLoadedClass(img);
-      } else {
-        img.addEventListener('load', function () {
-          addLoadedClass(this);
-        });
-      }
-    });
-    $('img', $giphyModal).on('click', function () {
-      var src = $(this).attr('src'),
-        alt = $(this).attr('alt');
-      trumbowyg.restoreRange();
-      trumbowyg.execCmd('insertImage', src, false, true);
-
-      // relay alt tag into inserted image
-      if (alt) {
-        var $img = $('img[src="' + src + '"]:not([alt])', trumbowyg.$box);
-        $img.attr('alt', alt);
-        // Note: This seems to fire relatively early and could be wrapped in a setTimeout if needed
-        trumbowyg.syncCode();
-      }
-      $('img', $giphyModal).off();
-      trumbowyg.closeModal();
-    });
-  }
-  var defaultOptions = {
-    rating: 'g',
-    apiKey: null,
-    throttleDelay: 300,
-    noResultGifUrl: 'https://media.giphy.com/media/2Faz9FbRzmwxY0pZS/giphy.gif'
-  };
-
-  // Add dropdown with font sizes
-  $.extend(true, $.trumbowyg, {
     plugins: {
-      giphy: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.giphy = $.extend({}, defaultOptions, trumbowyg.o.plugins.giphy || {});
-          trumbowyg.addBtnDef('giphy', {
+      history: {
+        destroy: function destroy(t) {
+          t.$c.off('tbwinit.history tbwchange.history');
+        },
+        init: function init(t) {
+          t.o.plugins.history = $.extend(true, {
+            _stack: [],
+            _index: -1,
+            _focusEl: undefined
+          }, t.o.plugins.history || {});
+          var btnBuildDefRedo = {
+            title: t.lang.redo,
+            ico: 'redo',
+            key: 'Y',
             fn: function fn() {
-              if (trumbowyg.o.plugins.giphy.apiKey === null) {
-                throw new Error('You must set a Giphy API Key');
+              if (t.o.plugins.history._index < t.o.plugins.history._stack.length - 1) {
+                t.o.plugins.history._index += 1;
+                var index = t.o.plugins.history._index;
+                var newState = t.o.plugins.history._stack[index];
+                t.execCmd('html', newState);
+                // because of some semantic optimisations we have to save the state back
+                // to history
+                t.o.plugins.history._stack[index] = t.$ed.html();
+                carretToEnd();
+                toggleButtonStates();
               }
-              var BASE_URL = 'https://api.giphy.com/v1/gifs/search?api_key=' + trumbowyg.o.plugins.giphy.apiKey + '&rating=' + trumbowyg.o.plugins.giphy.rating,
-                DEFAULT_URL = BASE_URL.replace('/search', '/trending');
-              var previousAjaxCall = {
-                abort: function abort() {}
-              };
-              var prefix = trumbowyg.o.prefix;
-
-              // Create and open the modal
-              var searchInput = '<input name="" class="' + prefix + 'giphy-search" placeholder="Search a GIF" autofocus="autofocus">',
-                closeButton = '<button class="' + prefix + 'giphy-close" title="' + trumbowyg.lang.close + '"><svg><use xlink:href="' + trumbowyg.svgPath + '#' + prefix + 'close"/></svg></button>',
-                poweredByGiphy = '<div class="' + prefix + 'powered-by-giphy"><span>Powered by</span>' + giphyLogo + '</div>',
-                giphyModalHtml = searchInput + closeButton + poweredByGiphy + '<div class="' + prefix + 'giphy-modal-scroll"><div class="' + prefix + 'giphy-modal"></div></div>';
-              trumbowyg.openModal(null, giphyModalHtml, false).one(CANCEL_EVENT, function () {
-                try {
-                  previousAjaxCall.abort();
-                } catch (e) {}
-                trumbowyg.closeModal();
-              });
-              var $giphyInput = $('.' + prefix + 'giphy-search'),
-                $giphyClose = $('.' + prefix + 'giphy-close'),
-                $giphyModal = $('.' + prefix + 'giphy-modal');
-              var ajaxError = function ajaxError() {
-                if (!navigator.onLine && !$('.' + prefix + 'giphy-offline', $giphyModal).length) {
-                  $giphyModal.empty();
-                  $giphyModal.append('<p class="' + prefix + 'giphy-offline">You are offline</p>');
-                }
-              };
-
-              // Load trending gifs as default
-              $.ajax({
-                url: DEFAULT_URL,
-                dataType: 'json',
-                success: function success(response) {
-                  renderGifs(response, $giphyModal, trumbowyg, true);
-                },
-                error: ajaxError
-              });
-              var searchGifsOnInput = function searchGifsOnInput() {
-                var query = $giphyInput.val();
-                if (query.length === 0) {
-                  return;
-                }
-                try {
-                  previousAjaxCall.abort();
-                } catch (e) {}
-                previousAjaxCall = $.ajax({
-                  url: BASE_URL + '&q=' + encodeURIComponent(query),
-                  dataType: 'json',
-                  success: function success(response) {
-                    renderGifs(response, $giphyModal, trumbowyg, true);
-                  },
-                  error: ajaxError
-                });
-              };
-              var throttledInputRequest = trumbowygThrottle(searchGifsOnInput, trumbowyg.o.plugins.giphy.throttleDelay);
-              $giphyInput.on('input', throttledInputRequest);
-              $giphyInput.focus();
-              $giphyClose.one('click', function () {
-                $giphyModal.trigger(CANCEL_EVENT);
-              });
             }
-          });
+          };
+          var btnBuildDefUndo = {
+            title: t.lang.undo,
+            ico: 'undo',
+            key: 'Z',
+            fn: function fn() {
+              if (t.o.plugins.history._index > 0) {
+                t.o.plugins.history._index -= 1;
+                var index = t.o.plugins.history._index,
+                  newState = t.o.plugins.history._stack[index];
+                t.execCmd('html', newState);
+                // because of some semantic optimisations we have to save the state back
+                // to history
+                t.o.plugins.history._stack[index] = t.$ed.html();
+                carretToEnd();
+                toggleButtonStates();
+              }
+            }
+          };
+          var pushToHistory = function pushToHistory() {
+            var index = t.o.plugins.history._index,
+              stack = t.o.plugins.history._stack,
+              latestState = stack.slice(-1)[0] || '<p></p>',
+              prevState = stack[index],
+              newState = t.$ed.html(),
+              focusEl = t.doc.getSelection().focusNode,
+              focusElText = '',
+              latestStateTagsList,
+              newStateTagsList,
+              prevFocusEl = t.o.plugins.history._focusEl;
+            latestStateTagsList = $('<div>' + latestState + '</div>').find('*').map(function () {
+              return this.localName;
+            });
+            newStateTagsList = $('<div>' + newState + '</div>').find('*').map(function () {
+              return this.localName;
+            });
+            if (focusEl) {
+              t.o.plugins.history._focusEl = focusEl;
+              focusElText = focusEl.outerHTML || focusEl.textContent;
+            }
+            if (newState !== prevState) {
+              // a new stack entry is defined when current insert ends on a whitespace character
+              // or count of node elements has been changed
+              // or focused element differs from previous one
+              if (focusElText.slice(-1).match(/\s/) || !arraysAreIdentical(latestStateTagsList, newStateTagsList) || t.o.plugins.history._index <= 0 || focusEl !== prevFocusEl) {
+                t.o.plugins.history._index += 1;
+                // remove newer entries in history when something new was added
+                // because timeline was changes with interaction
+                t.o.plugins.history._stack = stack.slice(0, t.o.plugins.history._index);
+                // now add new state to modified history
+                t.o.plugins.history._stack.push(newState);
+              } else {
+                // modify last stack entry
+                t.o.plugins.history._stack[index] = newState;
+              }
+              toggleButtonStates();
+            }
+          };
+          var toggleButtonStates = function toggleButtonStates() {
+            var index = t.o.plugins.history._index,
+              stackSize = t.o.plugins.history._stack.length,
+              undoState = index > 0,
+              redoState = stackSize !== 0 && index !== stackSize - 1;
+            toggleButtonState('historyUndo', undoState);
+            toggleButtonState('historyRedo', redoState);
+          };
+          var toggleButtonState = function toggleButtonState(btn, enable) {
+            var button = t.$box.find('.trumbowyg-' + btn + '-button');
+            if (enable) {
+              button.removeClass('trumbowyg-disable');
+            } else if (!button.hasClass('trumbowyg-disable')) {
+              button.addClass('trumbowyg-disable');
+            }
+          };
+          var arraysAreIdentical = function arraysAreIdentical(a, b) {
+            if (a === b) {
+              return true;
+            }
+            if (a == null || b == null) {
+              return false;
+            }
+            if (a.length !== b.length) {
+              return false;
+            }
+            for (var i = 0; i < a.length; i += 1) {
+              if (a[i] !== b[i]) {
+                return false;
+              }
+            }
+            return true;
+          };
+          var carretToEnd = function carretToEnd() {
+            var node = t.doc.getSelection().focusNode,
+              range = t.doc.createRange();
+            if (node.childNodes.length > 0) {
+              range.setStartAfter(node.childNodes[node.childNodes.length - 1]);
+              range.setEndAfter(node.childNodes[node.childNodes.length - 1]);
+              t.doc.getSelection().removeAllRanges();
+              t.doc.getSelection().addRange(range);
+            }
+          };
+          t.$c.on('tbwinit.history tbwchange.history', pushToHistory);
+          t.addBtnDef('historyRedo', btnBuildDefRedo);
+          t.addBtnDef('historyUndo', btnBuildDefUndo);
         }
       }
     }
   });
 })(jQuery);
+/*/* ===========================================================
+ * trumbowyg.history.js v1.0
+ * history plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Sven Dunemann [dunemann@forelabs.eu]
+ */
 !function (i) {
   "use strict";
 
   i.extend(!0, i.trumbowyg, {
-    langs: {
-      en: {
-        giphy: "Insert GIF"
-      },
-      az: {
-        giphy: "GIF yerləşdir"
-      },
-      by: {
-        giphy: "Уставіць GIF"
-      },
-      et: {
-        giphy: "Sisesta GIF"
-      },
-      fr: {
-        giphy: "Insérer un GIF"
-      },
-      hu: {
-        giphy: "GIF beszúrás"
-      },
-      ru: {
-        giphy: "Вставить GIF"
-      },
-      sl: {
-        giphy: "Vstavi GIF"
-      },
-      tr: {
-        giphy: "GIF ekle"
-      }
-    }
-  });
-  var e = "tbwcancel";
-  function t(e, t, n, l) {
-    var a = (t.width() - 20) / 3,
-      o = e.data.filter(function (i) {
-        return !!(i.images.downsized || i.images.downsized_medium).url;
-      }).map(function (i) {
-        var e = i.images.downsized || i.images.downsized_medium,
-          t = e.height / e.width,
-          n = i.title;
-        return '<div class="img-container">' + ("<img src=" + e.url + ' width="' + a + '" height="' + t * a + '" alt="' + n + '" loading="lazy" />') + "</div>";
-      }).join("");
-    if (!0 === l) {
-      if (0 === o.length) {
-        if (i("." + n.o.prefix + "giphy-no-result", t).length > 0) return;
-        o = '<img class="' + n.o.prefix + 'giphy-no-result" src="' + n.o.plugins.giphy.noResultGifUrl + '"/>';
-      }
-      t.empty();
-    }
-    t.append(o);
-    var c = function c(i) {
-      i.classList.add("tbw-loaded");
-    };
-    i("img", t).each(function () {
-      var i = this;
-      i.complete ? c(i) : i.addEventListener("load", function () {
-        c(this);
-      });
-    }), i("img", t).on("click", function () {
-      var e = i(this).attr("src"),
-        l = i(this).attr("alt");
-      (n.restoreRange(), n.execCmd("insertImage", e, !1, !0), l) && (i('img[src="' + e + '"]:not([alt])', n.$box).attr("alt", l), n.syncCode());
-      i("img", t).off(), n.closeModal();
-    });
-  }
-  var n = {
-    rating: "g",
-    apiKey: null,
-    throttleDelay: 300,
-    noResultGifUrl: "https://media.giphy.com/media/2Faz9FbRzmwxY0pZS/giphy.gif"
-  };
-  i.extend(!0, i.trumbowyg, {
     plugins: {
-      giphy: {
-        init: function init(l) {
-          l.o.plugins.giphy = i.extend({}, n, l.o.plugins.giphy || {}), l.addBtnDef("giphy", {
-            fn: function fn() {
-              if (null === l.o.plugins.giphy.apiKey) throw new Error("You must set a Giphy API Key");
-              var n = "https://api.giphy.com/v1/gifs/search?api_key=" + l.o.plugins.giphy.apiKey + "&rating=" + l.o.plugins.giphy.rating,
-                a = n.replace("/search", "/trending"),
-                o = {
-                  abort: function abort() {}
-                },
-                c = l.o.prefix,
-                r = '<input name="" class="' + c + 'giphy-search" placeholder="Search a GIF" autofocus="autofocus">' + ('<button class="' + c + 'giphy-close" title="' + l.lang.close + '"><svg><use xlink:href="' + l.svgPath + "#" + c + 'close"/></svg></button>') + ('<div class="' + c + 'powered-by-giphy"><span>Powered by</span><svg viewBox="0 0 231 53" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"><path d="M48.32 22.386c0-1.388-.252-1.892-1.767-1.85-3.448.126-6.855.042-10.303.042H25.443c-.927 0-1.346.211-1.305 1.22.085 2.86.085 5.72.043 8.58 0 .883.252 1.169 1.169 1.135 2.018-.084 3.995-.042 6.014 0 1.64 0 4.164-.546 4.752.252.841 1.169.421 3.364.337 5.089-.043.547-.547 1.304-1.094 1.598-2.692 1.556-5.678 2.018-8.747 1.892-5.342-.21-9.336-2.439-11.481-7.527-1.388-3.364-1.725-6.855-1.01-10.43 1.01-4.963 3.407-8.747 8.58-10.051 5.215-1.305 10.136-.547 14.467 2.817 1.219.967 1.798.715 2.691-.294 1.514-1.724 3.154-3.322 4.753-4.963 1.892-1.933 1.892-1.892-.169-3.7C38.429.813 31.238-.617 23.5.224 12.818 1.393 5.248 6.658 1.59 17.045-.177 22.008-.428 27.097.623 32.227c1.682 7.914 5.551 14.12 13.289 17.368 6.898 2.901 14.046 3.448 21.321 1.598 4.331-1.093 8.411-2.608 11.354-6.223 1.136-1.388 1.725-2.902 1.682-4.71l.043-17.873.008-.001zm125.153 3.784l.042-23.046c0-1.136-.168-1.598-1.472-1.556a238.02 238.02 0 0 1-11.017 0c-1.136-.042-1.439.337-1.439 1.439v15.645c0 1.345-.421 1.556-1.641 1.556a422.563 422.563 0 0 0-14.593 0c-1.262.042-1.472-.421-1.439-1.556l.043-15.813c0-.926-.169-1.304-1.17-1.262h-11.513c-.927 0-1.304.169-1.304 1.22v46.764c0 .967.252 1.262 1.219 1.262h11.512c1.169.042 1.262-.462 1.262-1.388l-.042-15.644c0-1.053.251-1.346 1.304-1.346h15.14c1.22 0 1.388.421 1.388 1.472l-.042 15.477c0 1.093.21 1.472 1.388 1.439 3.615-.085 7.233-.085 10.807 0 1.304.042 1.598-.337 1.598-1.598l-.042-23.047.011-.018zM106.565 1.654c-8.369-.211-16.728-.126-25.065-.211-1.346 0-1.767.337-1.767 1.724l.043 23.004v23.215c0 1.009.168 1.439 1.304 1.387a271.22 271.22 0 0 1 11.691 0c1.094 0 1.346-.336 1.346-1.345l-.042-10.64c0-1.052.294-1.345 1.345-1.345 3.322.042 6.645.085 9.967-.085 4.407-.21 8.621-1.219 12.111-4.12 5.551-4.584 7.613-12.701 5.131-20.061-2.313-6.561-8.747-11.354-16.064-11.522v-.001zm-3.028 24.013c-2.818.042-5.594-.043-8.411.042-1.169.042-1.439-.378-1.345-1.439.084-1.556 0-3.069 0-4.626v-5.131c-.043-.841.251-1.094 1.052-1.052 2.986.042 5.929-.085 8.915.042 3.616.126 5.887 2.692 5.846 6.266-.126 3.658-2.313 5.846-6.055 5.887l-.002.011zM229.699 1.569c-4.458 0-8.915-.042-13.415.043-.629 0-1.472.503-1.85 1.052a505.695 505.695 0 0 0-8.957 14.214c-.884 1.472-1.22 1.169-1.977-.084l-8.496-14.089c-.503-.841-1.052-1.136-2.018-1.136l-13.078.043c-.462 0-.967.125-1.439.21.21.378.378.799.629 1.169l17.412 27.167c.462.715.715 1.682.757 2.524v16.653c0 1.052.168 1.514 1.388 1.472 3.784-.084 7.57-.084 11.354 0 1.136.043 1.304-.377 1.304-1.387l-.042-8.58c0-2.734-.084-5.51.042-8.243.043-.926.337-1.933.841-2.649l18.167-27.041c.252-.337.337-.758.547-1.17a3.636 3.636 0 0 0-1.169-.168zM70.104 2.661c0-1.009-.294-1.219-1.262-1.219H57.69c-1.262-.043-1.472.377-1.472 1.513l.042 23.004v23.34c0 1.053.126 1.514 1.346 1.473 3.7-.085 7.444-.043 11.152 0 .966 0 1.387-.085 1.387-1.262l-.042-46.857.001.008z" fill="currentColor" fill-rule="nonzero"/></svg></div>') + '<div class="' + c + 'giphy-modal-scroll"><div class="' + c + 'giphy-modal"></div></div>';
-              l.openModal(null, r, !1).one(e, function () {
-                try {
-                  o.abort();
-                } catch (i) {}
-                l.closeModal();
-              });
-              var s = i("." + c + "giphy-search"),
-                g = i("." + c + "giphy-close"),
-                p = i("." + c + "giphy-modal"),
-                h = function h() {
-                  navigator.onLine || i("." + c + "giphy-offline", p).length || (p.empty(), p.append('<p class="' + c + 'giphy-offline">You are offline</p>'));
-                };
-              i.ajax({
-                url: a,
-                dataType: "json",
-                success: function success(i) {
-                  t(i, p, l, !0);
-                },
-                error: h
-              });
-              var u,
-                d,
-                y,
-                f,
-                m = (u = function u() {
-                  var e = s.val();
-                  if (0 !== e.length) {
-                    try {
-                      o.abort();
-                    } catch (i) {}
-                    o = i.ajax({
-                      url: n + "&q=" + encodeURIComponent(e),
-                      dataType: "json",
-                      success: function success(i) {
-                        t(i, p, l, !0);
-                      },
-                      error: h
-                    });
-                  }
-                }, d = l.o.plugins.giphy.throttleDelay, function () {
-                  var i = this,
-                    e = +new Date(),
-                    t = arguments;
-                  y && e < y + d ? (clearTimeout(f), f = setTimeout(function () {
-                    y = e, u.apply(i, t);
-                  }, d)) : (y = e, u.apply(i, t));
-                });
-              s.on("input", m), s.focus(), g.one("click", function () {
-                p.trigger(e);
-              });
-            }
-          });
+      history: {
+        destroy: function destroy(i) {
+          i.$c.off("tbwinit.history tbwchange.history");
+        },
+        init: function init(t) {
+          t.o.plugins.history = i.extend(!0, {
+            _stack: [],
+            _index: -1,
+            _focusEl: void 0
+          }, t.o.plugins.history || {});
+          var o = {
+              title: t.lang.redo,
+              ico: "redo",
+              key: "Y",
+              fn: function fn() {
+                if (t.o.plugins.history._index < t.o.plugins.history._stack.length - 1) {
+                  t.o.plugins.history._index += 1;
+                  var i = t.o.plugins.history._index,
+                    o = t.o.plugins.history._stack[i];
+                  t.execCmd("html", o), t.o.plugins.history._stack[i] = t.$ed.html(), r(), s();
+                }
+              }
+            },
+            n = {
+              title: t.lang.undo,
+              ico: "undo",
+              key: "Z",
+              fn: function fn() {
+                if (t.o.plugins.history._index > 0) {
+                  t.o.plugins.history._index -= 1;
+                  var i = t.o.plugins.history._index,
+                    o = t.o.plugins.history._stack[i];
+                  t.execCmd("html", o), t.o.plugins.history._stack[i] = t.$ed.html(), r(), s();
+                }
+              }
+            },
+            s = function s() {
+              var i = t.o.plugins.history._index,
+                o = t.o.plugins.history._stack.length,
+                n = 0 !== o && i !== o - 1;
+              e("historyUndo", i > 0), e("historyRedo", n);
+            },
+            e = function e(i, o) {
+              var n = t.$box.find(".trumbowyg-" + i + "-button");
+              o ? n.removeClass("trumbowyg-disable") : n.hasClass("trumbowyg-disable") || n.addClass("trumbowyg-disable");
+            },
+            l = function l(i, t) {
+              if (i === t) return !0;
+              if (null == i || null == t) return !1;
+              if (i.length !== t.length) return !1;
+              for (var o = 0; o < i.length; o += 1) if (i[o] !== t[o]) return !1;
+              return !0;
+            },
+            r = function r() {
+              var i = t.doc.getSelection().focusNode,
+                o = t.doc.createRange();
+              i.childNodes.length > 0 && (o.setStartAfter(i.childNodes[i.childNodes.length - 1]), o.setEndAfter(i.childNodes[i.childNodes.length - 1]), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(o));
+            };
+          t.$c.on("tbwinit.history tbwchange.history", function () {
+            var o,
+              n,
+              e = t.o.plugins.history._index,
+              r = t.o.plugins.history._stack,
+              d = r.slice(-1)[0] || "<p></p>",
+              u = r[e],
+              h = t.$ed.html(),
+              c = t.doc.getSelection().focusNode,
+              g = "",
+              a = t.o.plugins.history._focusEl;
+            o = i("<div>" + d + "</div>").find("*").map(function () {
+              return this.localName;
+            }), n = i("<div>" + h + "</div>").find("*").map(function () {
+              return this.localName;
+            }), c && (t.o.plugins.history._focusEl = c, g = c.outerHTML || c.textContent), h !== u && (g.slice(-1).match(/\s/) || !l(o, n) || t.o.plugins.history._index <= 0 || c !== a ? (t.o.plugins.history._index += 1, t.o.plugins.history._stack = r.slice(0, t.o.plugins.history._index), t.o.plugins.history._stack.push(h)) : t.o.plugins.history._stack[e] = h, s());
+          }), t.addBtnDef("historyRedo", o), t.addBtnDef("historyUndo", n);
         }
       }
     }
@@ -3419,247 +3660,6 @@
     }
   });
 }(jQuery);
-/*/* ===========================================================
- * trumbowyg.history.js v1.0
- * history plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Sven Dunemann [dunemann@forelabs.eu]
- */
-
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      history: {
-        destroy: function destroy(t) {
-          t.$c.off('tbwinit.history tbwchange.history');
-        },
-        init: function init(t) {
-          t.o.plugins.history = $.extend(true, {
-            _stack: [],
-            _index: -1,
-            _focusEl: undefined
-          }, t.o.plugins.history || {});
-          var btnBuildDefRedo = {
-            title: t.lang.redo,
-            ico: 'redo',
-            key: 'Y',
-            fn: function fn() {
-              if (t.o.plugins.history._index < t.o.plugins.history._stack.length - 1) {
-                t.o.plugins.history._index += 1;
-                var index = t.o.plugins.history._index;
-                var newState = t.o.plugins.history._stack[index];
-                t.execCmd('html', newState);
-                // because of some semantic optimisations we have to save the state back
-                // to history
-                t.o.plugins.history._stack[index] = t.$ed.html();
-                carretToEnd();
-                toggleButtonStates();
-              }
-            }
-          };
-          var btnBuildDefUndo = {
-            title: t.lang.undo,
-            ico: 'undo',
-            key: 'Z',
-            fn: function fn() {
-              if (t.o.plugins.history._index > 0) {
-                t.o.plugins.history._index -= 1;
-                var index = t.o.plugins.history._index,
-                  newState = t.o.plugins.history._stack[index];
-                t.execCmd('html', newState);
-                // because of some semantic optimisations we have to save the state back
-                // to history
-                t.o.plugins.history._stack[index] = t.$ed.html();
-                carretToEnd();
-                toggleButtonStates();
-              }
-            }
-          };
-          var pushToHistory = function pushToHistory() {
-            var index = t.o.plugins.history._index,
-              stack = t.o.plugins.history._stack,
-              latestState = stack.slice(-1)[0] || '<p></p>',
-              prevState = stack[index],
-              newState = t.$ed.html(),
-              focusEl = t.doc.getSelection().focusNode,
-              focusElText = '',
-              latestStateTagsList,
-              newStateTagsList,
-              prevFocusEl = t.o.plugins.history._focusEl;
-            latestStateTagsList = $('<div>' + latestState + '</div>').find('*').map(function () {
-              return this.localName;
-            });
-            newStateTagsList = $('<div>' + newState + '</div>').find('*').map(function () {
-              return this.localName;
-            });
-            if (focusEl) {
-              t.o.plugins.history._focusEl = focusEl;
-              focusElText = focusEl.outerHTML || focusEl.textContent;
-            }
-            if (newState !== prevState) {
-              // a new stack entry is defined when current insert ends on a whitespace character
-              // or count of node elements has been changed
-              // or focused element differs from previous one
-              if (focusElText.slice(-1).match(/\s/) || !arraysAreIdentical(latestStateTagsList, newStateTagsList) || t.o.plugins.history._index <= 0 || focusEl !== prevFocusEl) {
-                t.o.plugins.history._index += 1;
-                // remove newer entries in history when something new was added
-                // because timeline was changes with interaction
-                t.o.plugins.history._stack = stack.slice(0, t.o.plugins.history._index);
-                // now add new state to modified history
-                t.o.plugins.history._stack.push(newState);
-              } else {
-                // modify last stack entry
-                t.o.plugins.history._stack[index] = newState;
-              }
-              toggleButtonStates();
-            }
-          };
-          var toggleButtonStates = function toggleButtonStates() {
-            var index = t.o.plugins.history._index,
-              stackSize = t.o.plugins.history._stack.length,
-              undoState = index > 0,
-              redoState = stackSize !== 0 && index !== stackSize - 1;
-            toggleButtonState('historyUndo', undoState);
-            toggleButtonState('historyRedo', redoState);
-          };
-          var toggleButtonState = function toggleButtonState(btn, enable) {
-            var button = t.$box.find('.trumbowyg-' + btn + '-button');
-            if (enable) {
-              button.removeClass('trumbowyg-disable');
-            } else if (!button.hasClass('trumbowyg-disable')) {
-              button.addClass('trumbowyg-disable');
-            }
-          };
-          var arraysAreIdentical = function arraysAreIdentical(a, b) {
-            if (a === b) {
-              return true;
-            }
-            if (a == null || b == null) {
-              return false;
-            }
-            if (a.length !== b.length) {
-              return false;
-            }
-            for (var i = 0; i < a.length; i += 1) {
-              if (a[i] !== b[i]) {
-                return false;
-              }
-            }
-            return true;
-          };
-          var carretToEnd = function carretToEnd() {
-            var node = t.doc.getSelection().focusNode,
-              range = t.doc.createRange();
-            if (node.childNodes.length > 0) {
-              range.setStartAfter(node.childNodes[node.childNodes.length - 1]);
-              range.setEndAfter(node.childNodes[node.childNodes.length - 1]);
-              t.doc.getSelection().removeAllRanges();
-              t.doc.getSelection().addRange(range);
-            }
-          };
-          t.$c.on('tbwinit.history tbwchange.history', pushToHistory);
-          t.addBtnDef('historyRedo', btnBuildDefRedo);
-          t.addBtnDef('historyUndo', btnBuildDefUndo);
-        }
-      }
-    }
-  });
-})(jQuery);
-/*/* ===========================================================
- * trumbowyg.history.js v1.0
- * history plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Sven Dunemann [dunemann@forelabs.eu]
- */
-!function (i) {
-  "use strict";
-
-  i.extend(!0, i.trumbowyg, {
-    plugins: {
-      history: {
-        destroy: function destroy(i) {
-          i.$c.off("tbwinit.history tbwchange.history");
-        },
-        init: function init(t) {
-          t.o.plugins.history = i.extend(!0, {
-            _stack: [],
-            _index: -1,
-            _focusEl: void 0
-          }, t.o.plugins.history || {});
-          var o = {
-              title: t.lang.redo,
-              ico: "redo",
-              key: "Y",
-              fn: function fn() {
-                if (t.o.plugins.history._index < t.o.plugins.history._stack.length - 1) {
-                  t.o.plugins.history._index += 1;
-                  var i = t.o.plugins.history._index,
-                    o = t.o.plugins.history._stack[i];
-                  t.execCmd("html", o), t.o.plugins.history._stack[i] = t.$ed.html(), r(), s();
-                }
-              }
-            },
-            n = {
-              title: t.lang.undo,
-              ico: "undo",
-              key: "Z",
-              fn: function fn() {
-                if (t.o.plugins.history._index > 0) {
-                  t.o.plugins.history._index -= 1;
-                  var i = t.o.plugins.history._index,
-                    o = t.o.plugins.history._stack[i];
-                  t.execCmd("html", o), t.o.plugins.history._stack[i] = t.$ed.html(), r(), s();
-                }
-              }
-            },
-            s = function s() {
-              var i = t.o.plugins.history._index,
-                o = t.o.plugins.history._stack.length,
-                n = 0 !== o && i !== o - 1;
-              e("historyUndo", i > 0), e("historyRedo", n);
-            },
-            e = function e(i, o) {
-              var n = t.$box.find(".trumbowyg-" + i + "-button");
-              o ? n.removeClass("trumbowyg-disable") : n.hasClass("trumbowyg-disable") || n.addClass("trumbowyg-disable");
-            },
-            l = function l(i, t) {
-              if (i === t) return !0;
-              if (null == i || null == t) return !1;
-              if (i.length !== t.length) return !1;
-              for (var o = 0; o < i.length; o += 1) if (i[o] !== t[o]) return !1;
-              return !0;
-            },
-            r = function r() {
-              var i = t.doc.getSelection().focusNode,
-                o = t.doc.createRange();
-              i.childNodes.length > 0 && (o.setStartAfter(i.childNodes[i.childNodes.length - 1]), o.setEndAfter(i.childNodes[i.childNodes.length - 1]), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(o));
-            };
-          t.$c.on("tbwinit.history tbwchange.history", function () {
-            var o,
-              n,
-              e = t.o.plugins.history._index,
-              r = t.o.plugins.history._stack,
-              d = r.slice(-1)[0] || "<p></p>",
-              u = r[e],
-              h = t.$ed.html(),
-              c = t.doc.getSelection().focusNode,
-              g = "",
-              a = t.o.plugins.history._focusEl;
-            o = i("<div>" + d + "</div>").find("*").map(function () {
-              return this.localName;
-            }), n = i("<div>" + h + "</div>").find("*").map(function () {
-              return this.localName;
-            }), c && (t.o.plugins.history._focusEl = c, g = c.outerHTML || c.textContent), h !== u && (g.slice(-1).match(/\s/) || !l(o, n) || t.o.plugins.history._index <= 0 || c !== a ? (t.o.plugins.history._index += 1, t.o.plugins.history._stack = r.slice(0, t.o.plugins.history._index), t.o.plugins.history._stack.push(h)) : t.o.plugins.history._stack[e] = h, s());
-          }), t.addBtnDef("historyRedo", o), t.addBtnDef("historyUndo", n);
-        }
-      }
-    }
-  });
-}(jQuery);
 /* ===========================================================
  * trumbowyg.mathMl.js v1.0
  * MathML plugin for Trumbowyg
@@ -3950,6 +3950,220 @@
   });
 }(jQuery);
 /* ===========================================================
+ * trumbowyg.mention.js v0.1
+ * Mention plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Viper
+ *          Github: https://github.com/Globulopolis
+ *          Website: http://киноархив.com
+ */
+
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    source: [],
+    formatDropdownItem: formatDropdownItem,
+    formatResult: formatResult
+  };
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        mention: 'Mention'
+      },
+      az: {
+        mention: 'Bildirmək'
+      },
+      by: {
+        mention: 'Згадаць'
+      },
+      da: {
+        mention: 'Nævn'
+      },
+      et: {
+        mention: 'Maini'
+      },
+      fr: {
+        mention: 'Mentionner'
+      },
+      hu: {
+        mention: 'Említ'
+      },
+      ko: {
+        mention: '언급'
+      },
+      pt_br: {
+        mention: 'Menção'
+      },
+      ru: {
+        mention: 'Упомянуть'
+      },
+      sl: {
+        mention: 'Omeni'
+      },
+      tr: {
+        mention: 'Bahset'
+      },
+      zh_tw: {
+        mention: '標記'
+      }
+      // jshint camelcase:true
+    },
+
+    plugins: {
+      mention: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.mention = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.mention || {});
+          var btnDef = {
+            dropdown: buildDropdown(trumbowyg.o.plugins.mention.source, trumbowyg)
+          };
+          trumbowyg.addBtnDef('mention', btnDef);
+        }
+      }
+    }
+  });
+
+  /**
+   * Build dropdown list
+   *
+   * @param {Array}   items      Items
+   * @param {object}  trumbowyg  Editor
+   *
+   * @return {Array}
+   */
+  function buildDropdown(items, trumbowyg) {
+    var dropdown = [];
+    $.each(items, function (i, item) {
+      var btn = 'mention-' + i,
+        btnDef = {
+          hasIcon: false,
+          text: trumbowyg.o.plugins.mention.formatDropdownItem(item),
+          fn: function fn() {
+            trumbowyg.execCmd('insertHTML', trumbowyg.o.plugins.mention.formatResult(item));
+            return true;
+          }
+        };
+      trumbowyg.addBtnDef(btn, btnDef);
+      dropdown.push(btn);
+    });
+    return dropdown;
+  }
+
+  /**
+   * Format item in dropdown.
+   *
+   * @param   {object}  item  Item object.
+   *
+   * @return  {string}
+   */
+  function formatDropdownItem(item) {
+    return item.login;
+  }
+
+  /**
+   * Format result pasted in editor.
+   *
+   * @param   {object}  item  Item object.
+   *
+   * @return  {string}
+   */
+  function formatResult(item) {
+    return '@' + item.login + ' ';
+  }
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.mention.js v0.1
+ * Mention plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Viper
+ *          Github: https://github.com/Globulopolis
+ *          Website: http://киноархив.com
+ */
+!function (n) {
+  "use strict";
+
+  var t = {
+    source: [],
+    formatDropdownItem: function formatDropdownItem(n) {
+      return n.login;
+    },
+    formatResult: function formatResult(n) {
+      return "@" + n.login + " ";
+    }
+  };
+  function o(t, o) {
+    var e = [];
+    return n.each(t, function (n, t) {
+      var i = "mention-" + n,
+        m = {
+          hasIcon: !1,
+          text: o.o.plugins.mention.formatDropdownItem(t),
+          fn: function fn() {
+            return o.execCmd("insertHTML", o.o.plugins.mention.formatResult(t)), !0;
+          }
+        };
+      o.addBtnDef(i, m), e.push(i);
+    }), e;
+  }
+  n.extend(!0, n.trumbowyg, {
+    langs: {
+      en: {
+        mention: "Mention"
+      },
+      az: {
+        mention: "Bildirmək"
+      },
+      by: {
+        mention: "Згадаць"
+      },
+      da: {
+        mention: "Nævn"
+      },
+      et: {
+        mention: "Maini"
+      },
+      fr: {
+        mention: "Mentionner"
+      },
+      hu: {
+        mention: "Említ"
+      },
+      ko: {
+        mention: "언급"
+      },
+      pt_br: {
+        mention: "Menção"
+      },
+      ru: {
+        mention: "Упомянуть"
+      },
+      sl: {
+        mention: "Omeni"
+      },
+      tr: {
+        mention: "Bahset"
+      },
+      zh_tw: {
+        mention: "標記"
+      }
+    },
+    plugins: {
+      mention: {
+        init: function init(e) {
+          e.o.plugins.mention = n.extend(!0, {}, t, e.o.plugins.mention || {});
+          var i = {
+            dropdown: o(e.o.plugins.mention.source, e)
+          };
+          e.addBtnDef("mention", i);
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
  * trumbowyg.noembed.js v1.0
  * noEmbed plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -4193,220 +4407,6 @@
   });
 }(jQuery);
 /* ===========================================================
- * trumbowyg.mention.js v0.1
- * Mention plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Viper
- *          Github: https://github.com/Globulopolis
- *          Website: http://киноархив.com
- */
-
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    source: [],
-    formatDropdownItem: formatDropdownItem,
-    formatResult: formatResult
-  };
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        mention: 'Mention'
-      },
-      az: {
-        mention: 'Bildirmək'
-      },
-      by: {
-        mention: 'Згадаць'
-      },
-      da: {
-        mention: 'Nævn'
-      },
-      et: {
-        mention: 'Maini'
-      },
-      fr: {
-        mention: 'Mentionner'
-      },
-      hu: {
-        mention: 'Említ'
-      },
-      ko: {
-        mention: '언급'
-      },
-      pt_br: {
-        mention: 'Menção'
-      },
-      ru: {
-        mention: 'Упомянуть'
-      },
-      sl: {
-        mention: 'Omeni'
-      },
-      tr: {
-        mention: 'Bahset'
-      },
-      zh_tw: {
-        mention: '標記'
-      }
-      // jshint camelcase:true
-    },
-
-    plugins: {
-      mention: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.mention = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.mention || {});
-          var btnDef = {
-            dropdown: buildDropdown(trumbowyg.o.plugins.mention.source, trumbowyg)
-          };
-          trumbowyg.addBtnDef('mention', btnDef);
-        }
-      }
-    }
-  });
-
-  /**
-   * Build dropdown list
-   *
-   * @param {Array}   items      Items
-   * @param {object}  trumbowyg  Editor
-   *
-   * @return {Array}
-   */
-  function buildDropdown(items, trumbowyg) {
-    var dropdown = [];
-    $.each(items, function (i, item) {
-      var btn = 'mention-' + i,
-        btnDef = {
-          hasIcon: false,
-          text: trumbowyg.o.plugins.mention.formatDropdownItem(item),
-          fn: function fn() {
-            trumbowyg.execCmd('insertHTML', trumbowyg.o.plugins.mention.formatResult(item));
-            return true;
-          }
-        };
-      trumbowyg.addBtnDef(btn, btnDef);
-      dropdown.push(btn);
-    });
-    return dropdown;
-  }
-
-  /**
-   * Format item in dropdown.
-   *
-   * @param   {object}  item  Item object.
-   *
-   * @return  {string}
-   */
-  function formatDropdownItem(item) {
-    return item.login;
-  }
-
-  /**
-   * Format result pasted in editor.
-   *
-   * @param   {object}  item  Item object.
-   *
-   * @return  {string}
-   */
-  function formatResult(item) {
-    return '@' + item.login + ' ';
-  }
-})(jQuery);
-/* ===========================================================
- * trumbowyg.mention.js v0.1
- * Mention plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Viper
- *          Github: https://github.com/Globulopolis
- *          Website: http://киноархив.com
- */
-!function (n) {
-  "use strict";
-
-  var t = {
-    source: [],
-    formatDropdownItem: function formatDropdownItem(n) {
-      return n.login;
-    },
-    formatResult: function formatResult(n) {
-      return "@" + n.login + " ";
-    }
-  };
-  function o(t, o) {
-    var e = [];
-    return n.each(t, function (n, t) {
-      var i = "mention-" + n,
-        m = {
-          hasIcon: !1,
-          text: o.o.plugins.mention.formatDropdownItem(t),
-          fn: function fn() {
-            return o.execCmd("insertHTML", o.o.plugins.mention.formatResult(t)), !0;
-          }
-        };
-      o.addBtnDef(i, m), e.push(i);
-    }), e;
-  }
-  n.extend(!0, n.trumbowyg, {
-    langs: {
-      en: {
-        mention: "Mention"
-      },
-      az: {
-        mention: "Bildirmək"
-      },
-      by: {
-        mention: "Згадаць"
-      },
-      da: {
-        mention: "Nævn"
-      },
-      et: {
-        mention: "Maini"
-      },
-      fr: {
-        mention: "Mentionner"
-      },
-      hu: {
-        mention: "Említ"
-      },
-      ko: {
-        mention: "언급"
-      },
-      pt_br: {
-        mention: "Menção"
-      },
-      ru: {
-        mention: "Упомянуть"
-      },
-      sl: {
-        mention: "Omeni"
-      },
-      tr: {
-        mention: "Bahset"
-      },
-      zh_tw: {
-        mention: "標記"
-      }
-    },
-    plugins: {
-      mention: {
-        init: function init(e) {
-          e.o.plugins.mention = n.extend(!0, {}, t, e.o.plugins.mention || {});
-          var i = {
-            dropdown: o(e.o.plugins.mention.source, e)
-          };
-          e.addBtnDef("mention", i);
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
  * trumbowyg.pasteembed.js v1.0
  * Url paste to iframe with noembed. Plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -4621,390 +4621,6 @@
               i && (t.stopPropagation(), t.preventDefault());
             } catch (e) {}
           });
-        }
-      }
-    }
-  });
-}(jQuery);
-;
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    minSize: 32,
-    step: 4
-  };
-  function preventDefault(e) {
-    e.stopPropagation();
-    e.preventDefault();
-  }
-  var ResizeWithCanvas = function ResizeWithCanvas(trumbowyg) {
-    // variable to create canvas and save img in resize mode
-    this.resizeCanvas = document.createElement('canvas');
-    // to allow canvas to get focus
-    this.resizeCanvas.setAttribute('tabindex', '0');
-    this.resizeCanvas.id = 'trumbowyg-resizimg-' + +new Date();
-    this.ctx = null;
-    this.resizeImg = null;
-    this.pressEscape = function (obj) {
-      obj.reset();
-    };
-    this.pressBackspaceOrDelete = function (obj) {
-      $(obj.resizeCanvas).remove();
-      obj.resizeImg = null;
-      if (trumbowyg !== null) {
-        trumbowyg.syncCode();
-        // notify changes
-        trumbowyg.$c.trigger('tbwchange');
-      }
-    };
-
-    // PRIVATE FUNCTION
-    var focusedNow = false;
-    var isCursorSeResize = false;
-
-    // calculate offset to change mouse over square in the canvas
-    var offsetX, offsetY;
-    var reOffset = function reOffset(canvas) {
-      var BB = canvas.getBoundingClientRect();
-      offsetX = BB.left;
-      offsetY = BB.top;
-    };
-    var updateCanvas = function updateCanvas(canvas, ctx, img, canvasWidth, canvasHeight) {
-      ctx.translate(0.5, 0.5);
-      ctx.lineWidth = 1;
-
-      // image
-      ctx.drawImage(img, 5, 5, canvasWidth - 10, canvasHeight - 10);
-
-      // border
-      ctx.beginPath();
-      ctx.rect(5, 5, canvasWidth - 10, canvasHeight - 10);
-      ctx.stroke();
-
-      // square in the angle
-      ctx.beginPath();
-      ctx.fillStyle = 'rgb(255, 255, 255)';
-      ctx.rect(canvasWidth - 10, canvasHeight - 10, 9, 9);
-      ctx.fill();
-      ctx.stroke();
-
-      // get the offset to change the mouse cursor
-      reOffset(canvas);
-      return ctx;
-    };
-
-    // PUBLIC FUNCTION
-    // necessary to correctly print cursor over square. Called once for instance. Useless with trumbowyg.
-    this.init = function () {
-      var _this = this;
-      $(window).on('scroll resize', function () {
-        _this.reCalcOffset();
-      });
-    };
-    this.reCalcOffset = function () {
-      reOffset(this.resizeCanvas);
-    };
-    this.canvasId = function () {
-      return this.resizeCanvas.id;
-    };
-    this.isActive = function () {
-      return this.resizeImg !== null;
-    };
-    this.isFocusedNow = function () {
-      return focusedNow;
-    };
-    this.blurNow = function () {
-      focusedNow = false;
-    };
-
-    // restore image in the HTML of the editor
-    this.reset = function () {
-      if (this.resizeImg === null) {
-        return;
-      }
-
-      // set style of image to avoid issue on resize because this attribute have priority over width and height attribute
-      this.resizeImg.setAttribute('style', 'width: 100%; max-width: ' + (this.resizeCanvas.clientWidth - 10) + 'px; height: auto; max-height: ' + (this.resizeCanvas.clientHeight - 10) + 'px;');
-      $(this.resizeCanvas).replaceWith($(this.resizeImg));
-
-      // reset canvas style
-      this.resizeCanvas.removeAttribute('style');
-      this.resizeImg = null;
-    };
-
-    // setup canvas with points and border to allow the resizing operation
-    this.setup = function (img, resizableOptions) {
-      this.resizeImg = img;
-      if (!this.resizeCanvas.getContext) {
-        return false;
-      }
-      focusedNow = true;
-
-      // draw canvas
-      this.resizeCanvas.width = $(this.resizeImg).width() + 10;
-      this.resizeCanvas.height = $(this.resizeImg).height() + 10;
-      this.resizeCanvas.style.margin = '-5px';
-      this.ctx = this.resizeCanvas.getContext('2d');
-
-      // replace image with canvas
-      $(this.resizeImg).replaceWith($(this.resizeCanvas));
-      updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height);
-
-      // enable resize
-      $(this.resizeCanvas).resizableSafe(resizableOptions).on('mousedown', preventDefault);
-      var _this = this;
-      $(this.resizeCanvas).on('mousemove', function (e) {
-        var mouseX = Math.round(e.clientX - offsetX);
-        var mouseY = Math.round(e.clientY - offsetY);
-        var wasCursorSeResize = isCursorSeResize;
-        _this.ctx.rect(_this.resizeCanvas.width - 10, _this.resizeCanvas.height - 10, 9, 9);
-        isCursorSeResize = _this.ctx.isPointInPath(mouseX, mouseY);
-        if (wasCursorSeResize !== isCursorSeResize) {
-          this.style.cursor = isCursorSeResize ? 'se-resize' : 'default';
-        }
-      }).on('keydown', function (e) {
-        if (!_this.isActive()) {
-          return;
-        }
-        var x = e.keyCode;
-        if (x === 27) {
-          // ESC
-          _this.pressEscape(_this);
-        } else if (x === 8 || x === 46) {
-          // BACKSPACE or DELETE
-          _this.pressBackspaceOrDelete(_this);
-        }
-      }).on('focus', preventDefault).on('blur', function () {
-        _this.reset();
-        // save changes
-        if (trumbowyg !== null) {
-          trumbowyg.syncCode();
-          // notify changes
-          trumbowyg.$c.trigger('tbwchange');
-        }
-      });
-      this.resizeCanvas.focus();
-      return true;
-    };
-
-    // update the canvas after the resizing
-    this.refresh = function () {
-      if (!this.resizeCanvas.getContext) {
-        return;
-      }
-      this.resizeCanvas.width = this.resizeCanvas.clientWidth;
-      this.resizeCanvas.height = this.resizeCanvas.clientHeight;
-      updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height);
-    };
-  };
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      resizimg: {
-        destroyResizable: function destroyResizable() {},
-        init: function init(trumbowyg) {
-          var destroyResizable = this.destroyResizable;
-
-          // object to interact with canvas
-          var resizeWithCanvas = new ResizeWithCanvas(trumbowyg);
-          this.destroyResizable = function () {
-            // clean html code
-            trumbowyg.$ed.find('canvas.resizable').resizableSafe('destroy').off('mousedown', preventDefault).removeClass('resizable');
-            resizeWithCanvas.reset();
-            trumbowyg.syncCode();
-          };
-          trumbowyg.o.plugins.resizimg = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.resizimg || {}, {
-            resizable: {
-              resizeWidth: false,
-              onDragStart: function onDragStart(ev, $el) {
-                var opt = trumbowyg.o.plugins.resizimg;
-                var x = ev.pageX - $el.offset().left;
-                var y = ev.pageY - $el.offset().top;
-                if (x < $el.width() - opt.minSize || y < $el.height() - opt.minSize) {
-                  return false;
-                }
-              },
-              onDrag: function onDrag(ev, $el, newWidth, newHeight) {
-                var opt = trumbowyg.o.plugins.resizimg;
-                if (newHeight < opt.minSize) {
-                  newHeight = opt.minSize;
-                }
-                newHeight -= newHeight % opt.step;
-                $el.height(newHeight);
-                return false;
-              },
-              onDragEnd: function onDragEnd() {
-                // resize update canvas information
-                resizeWithCanvas.refresh();
-                trumbowyg.syncCode();
-              }
-            }
-          });
-          function initResizable() {
-            trumbowyg.$ed.find('img').off('click').on('click', function (e) {
-              // if I'm already do a resize, reset it
-              if (resizeWithCanvas.isActive()) {
-                resizeWithCanvas.reset();
-              }
-              // initialize resize of image
-              resizeWithCanvas.setup(this, trumbowyg.o.plugins.resizimg.resizable);
-              preventDefault(e);
-            });
-          }
-          trumbowyg.$c.on('tbwinit', function () {
-            initResizable();
-
-            // disable resize when click on other items
-            trumbowyg.$ed.on('click', function (e) {
-              // check if I've clicked out of canvas or image to reset it
-              if ($(e.target).is('img') || e.target.id === resizeWithCanvas.canvasId()) {
-                return;
-              }
-              preventDefault(e);
-              resizeWithCanvas.reset();
-              //sync
-              trumbowyg.syncCode();
-              // notify changes
-              trumbowyg.$c.trigger('tbwchange');
-            });
-            trumbowyg.$ed.on('scroll', function () {
-              resizeWithCanvas.reCalcOffset();
-            });
-          });
-          trumbowyg.$c.on('tbwfocus tbwchange', initResizable);
-          trumbowyg.$c.on('tbwresize', function () {
-            resizeWithCanvas.reCalcOffset();
-          });
-
-          // Destroy
-          trumbowyg.$c.on('tbwblur', function () {
-            // when canvas is created the tbwblur is called
-            // this code avoid to destroy the canvas that allow the image resizing
-            if (resizeWithCanvas.isFocusedNow()) {
-              resizeWithCanvas.blurNow();
-            } else {
-              destroyResizable();
-            }
-          });
-        },
-        destroy: function destroy() {
-          this.destroyResizable();
-        }
-      }
-    }
-  });
-})(jQuery);
-!function (e) {
-  "use strict";
-
-  var i = {
-    minSize: 32,
-    step: 4
-  };
-  function t(e) {
-    e.stopPropagation(), e.preventDefault();
-  }
-  var s = function s(i) {
-    this.resizeCanvas = document.createElement("canvas"), this.resizeCanvas.setAttribute("tabindex", "0"), this.resizeCanvas.id = "trumbowyg-resizimg-" + +new Date(), this.ctx = null, this.resizeImg = null, this.pressEscape = function (e) {
-      e.reset();
-    }, this.pressBackspaceOrDelete = function (t) {
-      e(t.resizeCanvas).remove(), t.resizeImg = null, null !== i && (i.syncCode(), i.$c.trigger("tbwchange"));
-    };
-    var s,
-      n,
-      r = !1,
-      a = !1,
-      o = function o(e) {
-        var i = e.getBoundingClientRect();
-        s = i.left, n = i.top;
-      },
-      h = function h(e, i, t, s, n) {
-        return i.translate(.5, .5), i.lineWidth = 1, i.drawImage(t, 5, 5, s - 10, n - 10), i.beginPath(), i.rect(5, 5, s - 10, n - 10), i.stroke(), i.beginPath(), i.fillStyle = "rgb(255, 255, 255)", i.rect(s - 10, n - 10, 9, 9), i.fill(), i.stroke(), o(e), i;
-      };
-    // necessary to correctly print cursor over square. Called once for instance. Useless with trumbowyg.
-    this.init = function () {
-      var i = this;
-      e(window).on("scroll resize", function () {
-        i.reCalcOffset();
-      });
-    }, this.reCalcOffset = function () {
-      o(this.resizeCanvas);
-    }, this.canvasId = function () {
-      return this.resizeCanvas.id;
-    }, this.isActive = function () {
-      return null !== this.resizeImg;
-    }, this.isFocusedNow = function () {
-      return r;
-    }, this.blurNow = function () {
-      r = !1;
-    }, this.reset = function () {
-      null !== this.resizeImg && (this.resizeImg.setAttribute("style", "width: 100%; max-width: " + (this.resizeCanvas.clientWidth - 10) + "px; height: auto; max-height: " + (this.resizeCanvas.clientHeight - 10) + "px;"), e(this.resizeCanvas).replaceWith(e(this.resizeImg)), this.resizeCanvas.removeAttribute("style"), this.resizeImg = null);
-    }, this.setup = function (o, c) {
-      if (this.resizeImg = o, !this.resizeCanvas.getContext) return !1;
-      r = !0, this.resizeCanvas.width = e(this.resizeImg).width() + 10, this.resizeCanvas.height = e(this.resizeImg).height() + 10, this.resizeCanvas.style.margin = "-5px", this.ctx = this.resizeCanvas.getContext("2d"), e(this.resizeImg).replaceWith(e(this.resizeCanvas)), h(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height), e(this.resizeCanvas).resizableSafe(c).on("mousedown", t);
-      var u = this;
-      return e(this.resizeCanvas).on("mousemove", function (e) {
-        var i = Math.round(e.clientX - s),
-          t = Math.round(e.clientY - n),
-          r = a;
-        u.ctx.rect(u.resizeCanvas.width - 10, u.resizeCanvas.height - 10, 9, 9), r !== (a = u.ctx.isPointInPath(i, t)) && (this.style.cursor = a ? "se-resize" : "default");
-      }).on("keydown", function (e) {
-        if (u.isActive()) {
-          var i = e.keyCode;
-          27 === i ? u.pressEscape(u) : 8 !== i && 46 !== i || u.pressBackspaceOrDelete(u);
-        }
-      }).on("focus", t).on("blur", function () {
-        u.reset(), null !== i && (i.syncCode(), i.$c.trigger("tbwchange"));
-      }), this.resizeCanvas.focus(), !0;
-    }, this.refresh = function () {
-      this.resizeCanvas.getContext && (this.resizeCanvas.width = this.resizeCanvas.clientWidth, this.resizeCanvas.height = this.resizeCanvas.clientHeight, h(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height));
-    };
-  };
-  e.extend(!0, e.trumbowyg, {
-    plugins: {
-      resizimg: {
-        destroyResizable: function destroyResizable() {},
-        init: function init(n) {
-          var r = this.destroyResizable,
-            a = new s(n);
-          function o() {
-            n.$ed.find("img").off("click").on("click", function (e) {
-              a.isActive() && a.reset(), a.setup(this, n.o.plugins.resizimg.resizable), t(e);
-            });
-          }
-          this.destroyResizable = function () {
-            n.$ed.find("canvas.resizable").resizableSafe("destroy").off("mousedown", t).removeClass("resizable"), a.reset(), n.syncCode();
-          }, n.o.plugins.resizimg = e.extend(!0, {}, i, n.o.plugins.resizimg || {}, {
-            resizable: {
-              resizeWidth: !1,
-              onDragStart: function onDragStart(e, i) {
-                var t = n.o.plugins.resizimg,
-                  s = e.pageX - i.offset().left,
-                  r = e.pageY - i.offset().top;
-                if (s < i.width() - t.minSize || r < i.height() - t.minSize) return !1;
-              },
-              onDrag: function onDrag(e, i, t, s) {
-                var r = n.o.plugins.resizimg;
-                return s < r.minSize && (s = r.minSize), s -= s % r.step, i.height(s), !1;
-              },
-              onDragEnd: function onDragEnd() {
-                a.refresh(), n.syncCode();
-              }
-            }
-          }), n.$c.on("tbwinit", function () {
-            o(), n.$ed.on("click", function (i) {
-              e(i.target).is("img") || i.target.id === a.canvasId() || (t(i), a.reset(), n.syncCode(), n.$c.trigger("tbwchange"));
-            }), n.$ed.on("scroll", function () {
-              a.reCalcOffset();
-            });
-          }), n.$c.on("tbwfocus tbwchange", o), n.$c.on("tbwresize", function () {
-            a.reCalcOffset();
-          }), n.$c.on("tbwblur", function () {
-            a.isFocusedNow() ? a.blurNow() : r();
-          });
-        },
-        destroy: function destroy() {
-          this.destroyResizable();
         }
       }
     }
@@ -7767,7 +7383,557 @@
     }
   });
 }(jQuery);
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+/* ===========================================================
+ * trumbowyg.specialchars.js v0.99
+ * Unicode characters picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Renaud Hoyoux (geektortoise)
+*/
+
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    symbolList: [
+    // currencies
+    '0024', '20AC', '00A3', '00A2', '00A5', '00A4', '2030', null,
+    // legal signs
+    '00A9', '00AE', '2122', null,
+    // textual sign
+    '00A7', '00B6', '00C6', '00E6', '0152', '0153', null, '2022', '25CF', '2023', '25B6', '2B29', '25C6', null,
+    //maths
+    '00B1', '00D7', '00F7', '21D2', '21D4', '220F', '2211', '2243', '2264', '2265']
+  };
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      en: {
+        specialChars: 'Special characters'
+      },
+      az: {
+        specialChars: 'Xüsusi simvollar'
+      },
+      by: {
+        specialChars: 'Спецыяльныя сімвалы'
+      },
+      et: {
+        specialChars: 'Erimärgid'
+      },
+      fr: {
+        specialChars: 'Caractères spéciaux'
+      },
+      hu: {
+        specialChars: 'Speciális karakterek'
+      },
+      ko: {
+        specialChars: '특수문자'
+      },
+      ru: {
+        specialChars: 'Специальные символы'
+      },
+      sl: {
+        specialChars: 'Posebni znaki'
+      },
+      tr: {
+        specialChars: 'Özel karakterler'
+      }
+    },
+    plugins: {
+      specialchars: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.specialchars = trumbowyg.o.plugins.specialchars || defaultOptions;
+          var specialCharsBtnDef = {
+            dropdown: buildDropdown(trumbowyg)
+          };
+          trumbowyg.addBtnDef('specialChars', specialCharsBtnDef);
+        }
+      }
+    }
+  });
+  function buildDropdown(trumbowyg) {
+    var dropdown = [];
+    $.each(trumbowyg.o.plugins.specialchars.symbolList, function (i, symbol) {
+      if (symbol === null) {
+        symbol = '&nbsp';
+      } else {
+        symbol = '&#x' + symbol;
+      }
+      var btn = symbol.replace(/:/g, ''),
+        defaultSymbolBtnName = 'symbol-' + btn,
+        defaultSymbolBtnDef = {
+          text: symbol,
+          hasIcon: false,
+          fn: function fn() {
+            var encodedSymbol = String.fromCodePoint(parseInt(symbol.replace('&#', '0')));
+            trumbowyg.execCmd('insertText', encodedSymbol);
+            return true;
+          }
+        };
+      trumbowyg.addBtnDef(defaultSymbolBtnName, defaultSymbolBtnDef);
+      dropdown.push(defaultSymbolBtnName);
+    });
+    return dropdown;
+  }
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.specialchars.js v0.99
+ * Unicode characters picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Renaud Hoyoux (geektortoise)
+*/
+!function (a) {
+  "use strict";
+
+  var s = {
+    symbolList: ["0024", "20AC", "00A3", "00A2", "00A5", "00A4", "2030", null, "00A9", "00AE", "2122", null, "00A7", "00B6", "00C6", "00E6", "0152", "0153", null, "2022", "25CF", "2023", "25B6", "2B29", "25C6", null, "00B1", "00D7", "00F7", "21D2", "21D4", "220F", "2211", "2243", "2264", "2265"]
+  };
+  function r(s) {
+    var r = [];
+    return a.each(s.o.plugins.specialchars.symbolList, function (a, e) {
+      var i = "symbol-" + (e = null === e ? "&nbsp" : "&#x" + e).replace(/:/g, ""),
+        l = {
+          text: e,
+          hasIcon: !1,
+          fn: function fn() {
+            var a = String.fromCodePoint(parseInt(e.replace("&#", "0")));
+            return s.execCmd("insertText", a), !0;
+          }
+        };
+      s.addBtnDef(i, l), r.push(i);
+    }), r;
+  }
+  a.extend(!0, a.trumbowyg, {
+    langs: {
+      en: {
+        specialChars: "Special characters"
+      },
+      az: {
+        specialChars: "Xüsusi simvollar"
+      },
+      by: {
+        specialChars: "Спецыяльныя сімвалы"
+      },
+      et: {
+        specialChars: "Erimärgid"
+      },
+      fr: {
+        specialChars: "Caractères spéciaux"
+      },
+      hu: {
+        specialChars: "Speciális karakterek"
+      },
+      ko: {
+        specialChars: "특수문자"
+      },
+      ru: {
+        specialChars: "Специальные символы"
+      },
+      sl: {
+        specialChars: "Posebni znaki"
+      },
+      tr: {
+        specialChars: "Özel karakterler"
+      }
+    },
+    plugins: {
+      specialchars: {
+        init: function init(a) {
+          a.o.plugins.specialchars = a.o.plugins.specialchars || s;
+          var e = {
+            dropdown: r(a)
+          };
+          a.addBtnDef("specialChars", e);
+        }
+      }
+    }
+  });
+}(jQuery);
+;
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    minSize: 32,
+    step: 4
+  };
+  function preventDefault(e) {
+    e.stopPropagation();
+    e.preventDefault();
+  }
+  var ResizeWithCanvas = function ResizeWithCanvas(trumbowyg) {
+    // variable to create canvas and save img in resize mode
+    this.resizeCanvas = document.createElement('canvas');
+    // to allow canvas to get focus
+    this.resizeCanvas.setAttribute('tabindex', '0');
+    this.resizeCanvas.id = 'trumbowyg-resizimg-' + +new Date();
+    this.ctx = null;
+    this.resizeImg = null;
+    this.pressEscape = function (obj) {
+      obj.reset();
+    };
+    this.pressBackspaceOrDelete = function (obj) {
+      $(obj.resizeCanvas).remove();
+      obj.resizeImg = null;
+      if (trumbowyg !== null) {
+        trumbowyg.syncCode();
+        // notify changes
+        trumbowyg.$c.trigger('tbwchange');
+      }
+    };
+
+    // PRIVATE FUNCTION
+    var focusedNow = false;
+    var isCursorSeResize = false;
+
+    // calculate offset to change mouse over square in the canvas
+    var offsetX, offsetY;
+    var reOffset = function reOffset(canvas) {
+      var BB = canvas.getBoundingClientRect();
+      offsetX = BB.left;
+      offsetY = BB.top;
+    };
+    var updateCanvas = function updateCanvas(canvas, ctx, img, canvasWidth, canvasHeight) {
+      ctx.translate(0.5, 0.5);
+      ctx.lineWidth = 1;
+
+      // image
+      ctx.drawImage(img, 5, 5, canvasWidth - 10, canvasHeight - 10);
+
+      // border
+      ctx.beginPath();
+      ctx.rect(5, 5, canvasWidth - 10, canvasHeight - 10);
+      ctx.stroke();
+
+      // square in the angle
+      ctx.beginPath();
+      ctx.fillStyle = 'rgb(255, 255, 255)';
+      ctx.rect(canvasWidth - 10, canvasHeight - 10, 9, 9);
+      ctx.fill();
+      ctx.stroke();
+
+      // get the offset to change the mouse cursor
+      reOffset(canvas);
+      return ctx;
+    };
+
+    // PUBLIC FUNCTION
+    // necessary to correctly print cursor over square. Called once for instance. Useless with trumbowyg.
+    this.init = function () {
+      var _this = this;
+      $(window).on('scroll resize', function () {
+        _this.reCalcOffset();
+      });
+    };
+    this.reCalcOffset = function () {
+      reOffset(this.resizeCanvas);
+    };
+    this.canvasId = function () {
+      return this.resizeCanvas.id;
+    };
+    this.isActive = function () {
+      return this.resizeImg !== null;
+    };
+    this.isFocusedNow = function () {
+      return focusedNow;
+    };
+    this.blurNow = function () {
+      focusedNow = false;
+    };
+
+    // restore image in the HTML of the editor
+    this.reset = function () {
+      if (this.resizeImg === null) {
+        return;
+      }
+
+      // set style of image to avoid issue on resize because this attribute have priority over width and height attribute
+      this.resizeImg.setAttribute('style', 'width: 100%; max-width: ' + (this.resizeCanvas.clientWidth - 10) + 'px; height: auto; max-height: ' + (this.resizeCanvas.clientHeight - 10) + 'px;');
+      $(this.resizeCanvas).replaceWith($(this.resizeImg));
+
+      // reset canvas style
+      this.resizeCanvas.removeAttribute('style');
+      this.resizeImg = null;
+    };
+
+    // setup canvas with points and border to allow the resizing operation
+    this.setup = function (img, resizableOptions) {
+      this.resizeImg = img;
+      if (!this.resizeCanvas.getContext) {
+        return false;
+      }
+      focusedNow = true;
+
+      // draw canvas
+      this.resizeCanvas.width = $(this.resizeImg).width() + 10;
+      this.resizeCanvas.height = $(this.resizeImg).height() + 10;
+      this.resizeCanvas.style.margin = '-5px';
+      this.ctx = this.resizeCanvas.getContext('2d');
+
+      // replace image with canvas
+      $(this.resizeImg).replaceWith($(this.resizeCanvas));
+      updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height);
+
+      // enable resize
+      $(this.resizeCanvas).resizableSafe(resizableOptions).on('mousedown', preventDefault);
+      var _this = this;
+      $(this.resizeCanvas).on('mousemove', function (e) {
+        var mouseX = Math.round(e.clientX - offsetX);
+        var mouseY = Math.round(e.clientY - offsetY);
+        var wasCursorSeResize = isCursorSeResize;
+        _this.ctx.rect(_this.resizeCanvas.width - 10, _this.resizeCanvas.height - 10, 9, 9);
+        isCursorSeResize = _this.ctx.isPointInPath(mouseX, mouseY);
+        if (wasCursorSeResize !== isCursorSeResize) {
+          this.style.cursor = isCursorSeResize ? 'se-resize' : 'default';
+        }
+      }).on('keydown', function (e) {
+        if (!_this.isActive()) {
+          return;
+        }
+        var x = e.keyCode;
+        if (x === 27) {
+          // ESC
+          _this.pressEscape(_this);
+        } else if (x === 8 || x === 46) {
+          // BACKSPACE or DELETE
+          _this.pressBackspaceOrDelete(_this);
+        }
+      }).on('focus', preventDefault).on('blur', function () {
+        _this.reset();
+        // save changes
+        if (trumbowyg !== null) {
+          trumbowyg.syncCode();
+          // notify changes
+          trumbowyg.$c.trigger('tbwchange');
+        }
+      });
+      this.resizeCanvas.focus();
+      return true;
+    };
+
+    // update the canvas after the resizing
+    this.refresh = function () {
+      if (!this.resizeCanvas.getContext) {
+        return;
+      }
+      this.resizeCanvas.width = this.resizeCanvas.clientWidth;
+      this.resizeCanvas.height = this.resizeCanvas.clientHeight;
+      updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height);
+    };
+  };
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      resizimg: {
+        destroyResizable: function destroyResizable() {},
+        init: function init(trumbowyg) {
+          var destroyResizable = this.destroyResizable;
+
+          // object to interact with canvas
+          var resizeWithCanvas = new ResizeWithCanvas(trumbowyg);
+          this.destroyResizable = function () {
+            // clean html code
+            trumbowyg.$ed.find('canvas.resizable').resizableSafe('destroy').off('mousedown', preventDefault).removeClass('resizable');
+            resizeWithCanvas.reset();
+            trumbowyg.syncCode();
+          };
+          trumbowyg.o.plugins.resizimg = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.resizimg || {}, {
+            resizable: {
+              resizeWidth: false,
+              onDragStart: function onDragStart(ev, $el) {
+                var opt = trumbowyg.o.plugins.resizimg;
+                var x = ev.pageX - $el.offset().left;
+                var y = ev.pageY - $el.offset().top;
+                if (x < $el.width() - opt.minSize || y < $el.height() - opt.minSize) {
+                  return false;
+                }
+              },
+              onDrag: function onDrag(ev, $el, newWidth, newHeight) {
+                var opt = trumbowyg.o.plugins.resizimg;
+                if (newHeight < opt.minSize) {
+                  newHeight = opt.minSize;
+                }
+                newHeight -= newHeight % opt.step;
+                $el.height(newHeight);
+                return false;
+              },
+              onDragEnd: function onDragEnd() {
+                // resize update canvas information
+                resizeWithCanvas.refresh();
+                trumbowyg.syncCode();
+              }
+            }
+          });
+          function initResizable() {
+            trumbowyg.$ed.find('img').off('click').on('click', function (e) {
+              // if I'm already do a resize, reset it
+              if (resizeWithCanvas.isActive()) {
+                resizeWithCanvas.reset();
+              }
+              // initialize resize of image
+              resizeWithCanvas.setup(this, trumbowyg.o.plugins.resizimg.resizable);
+              preventDefault(e);
+            });
+          }
+          trumbowyg.$c.on('tbwinit', function () {
+            initResizable();
+
+            // disable resize when click on other items
+            trumbowyg.$ed.on('click', function (e) {
+              // check if I've clicked out of canvas or image to reset it
+              if ($(e.target).is('img') || e.target.id === resizeWithCanvas.canvasId()) {
+                return;
+              }
+              preventDefault(e);
+              resizeWithCanvas.reset();
+              //sync
+              trumbowyg.syncCode();
+              // notify changes
+              trumbowyg.$c.trigger('tbwchange');
+            });
+            trumbowyg.$ed.on('scroll', function () {
+              resizeWithCanvas.reCalcOffset();
+            });
+          });
+          trumbowyg.$c.on('tbwfocus tbwchange', initResizable);
+          trumbowyg.$c.on('tbwresize', function () {
+            resizeWithCanvas.reCalcOffset();
+          });
+
+          // Destroy
+          trumbowyg.$c.on('tbwblur', function () {
+            // when canvas is created the tbwblur is called
+            // this code avoid to destroy the canvas that allow the image resizing
+            if (resizeWithCanvas.isFocusedNow()) {
+              resizeWithCanvas.blurNow();
+            } else {
+              destroyResizable();
+            }
+          });
+        },
+        destroy: function destroy() {
+          this.destroyResizable();
+        }
+      }
+    }
+  });
+})(jQuery);
+!function (e) {
+  "use strict";
+
+  var i = {
+    minSize: 32,
+    step: 4
+  };
+  function t(e) {
+    e.stopPropagation(), e.preventDefault();
+  }
+  var s = function s(i) {
+    this.resizeCanvas = document.createElement("canvas"), this.resizeCanvas.setAttribute("tabindex", "0"), this.resizeCanvas.id = "trumbowyg-resizimg-" + +new Date(), this.ctx = null, this.resizeImg = null, this.pressEscape = function (e) {
+      e.reset();
+    }, this.pressBackspaceOrDelete = function (t) {
+      e(t.resizeCanvas).remove(), t.resizeImg = null, null !== i && (i.syncCode(), i.$c.trigger("tbwchange"));
+    };
+    var s,
+      n,
+      r = !1,
+      a = !1,
+      o = function o(e) {
+        var i = e.getBoundingClientRect();
+        s = i.left, n = i.top;
+      },
+      h = function h(e, i, t, s, n) {
+        return i.translate(.5, .5), i.lineWidth = 1, i.drawImage(t, 5, 5, s - 10, n - 10), i.beginPath(), i.rect(5, 5, s - 10, n - 10), i.stroke(), i.beginPath(), i.fillStyle = "rgb(255, 255, 255)", i.rect(s - 10, n - 10, 9, 9), i.fill(), i.stroke(), o(e), i;
+      };
+    // necessary to correctly print cursor over square. Called once for instance. Useless with trumbowyg.
+    this.init = function () {
+      var i = this;
+      e(window).on("scroll resize", function () {
+        i.reCalcOffset();
+      });
+    }, this.reCalcOffset = function () {
+      o(this.resizeCanvas);
+    }, this.canvasId = function () {
+      return this.resizeCanvas.id;
+    }, this.isActive = function () {
+      return null !== this.resizeImg;
+    }, this.isFocusedNow = function () {
+      return r;
+    }, this.blurNow = function () {
+      r = !1;
+    }, this.reset = function () {
+      null !== this.resizeImg && (this.resizeImg.setAttribute("style", "width: 100%; max-width: " + (this.resizeCanvas.clientWidth - 10) + "px; height: auto; max-height: " + (this.resizeCanvas.clientHeight - 10) + "px;"), e(this.resizeCanvas).replaceWith(e(this.resizeImg)), this.resizeCanvas.removeAttribute("style"), this.resizeImg = null);
+    }, this.setup = function (o, c) {
+      if (this.resizeImg = o, !this.resizeCanvas.getContext) return !1;
+      r = !0, this.resizeCanvas.width = e(this.resizeImg).width() + 10, this.resizeCanvas.height = e(this.resizeImg).height() + 10, this.resizeCanvas.style.margin = "-5px", this.ctx = this.resizeCanvas.getContext("2d"), e(this.resizeImg).replaceWith(e(this.resizeCanvas)), h(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height), e(this.resizeCanvas).resizableSafe(c).on("mousedown", t);
+      var u = this;
+      return e(this.resizeCanvas).on("mousemove", function (e) {
+        var i = Math.round(e.clientX - s),
+          t = Math.round(e.clientY - n),
+          r = a;
+        u.ctx.rect(u.resizeCanvas.width - 10, u.resizeCanvas.height - 10, 9, 9), r !== (a = u.ctx.isPointInPath(i, t)) && (this.style.cursor = a ? "se-resize" : "default");
+      }).on("keydown", function (e) {
+        if (u.isActive()) {
+          var i = e.keyCode;
+          27 === i ? u.pressEscape(u) : 8 !== i && 46 !== i || u.pressBackspaceOrDelete(u);
+        }
+      }).on("focus", t).on("blur", function () {
+        u.reset(), null !== i && (i.syncCode(), i.$c.trigger("tbwchange"));
+      }), this.resizeCanvas.focus(), !0;
+    }, this.refresh = function () {
+      this.resizeCanvas.getContext && (this.resizeCanvas.width = this.resizeCanvas.clientWidth, this.resizeCanvas.height = this.resizeCanvas.clientHeight, h(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height));
+    };
+  };
+  e.extend(!0, e.trumbowyg, {
+    plugins: {
+      resizimg: {
+        destroyResizable: function destroyResizable() {},
+        init: function init(n) {
+          var r = this.destroyResizable,
+            a = new s(n);
+          function o() {
+            n.$ed.find("img").off("click").on("click", function (e) {
+              a.isActive() && a.reset(), a.setup(this, n.o.plugins.resizimg.resizable), t(e);
+            });
+          }
+          this.destroyResizable = function () {
+            n.$ed.find("canvas.resizable").resizableSafe("destroy").off("mousedown", t).removeClass("resizable"), a.reset(), n.syncCode();
+          }, n.o.plugins.resizimg = e.extend(!0, {}, i, n.o.plugins.resizimg || {}, {
+            resizable: {
+              resizeWidth: !1,
+              onDragStart: function onDragStart(e, i) {
+                var t = n.o.plugins.resizimg,
+                  s = e.pageX - i.offset().left,
+                  r = e.pageY - i.offset().top;
+                if (s < i.width() - t.minSize || r < i.height() - t.minSize) return !1;
+              },
+              onDrag: function onDrag(e, i, t, s) {
+                var r = n.o.plugins.resizimg;
+                return s < r.minSize && (s = r.minSize), s -= s % r.step, i.height(s), !1;
+              },
+              onDragEnd: function onDragEnd() {
+                a.refresh(), n.syncCode();
+              }
+            }
+          }), n.$c.on("tbwinit", function () {
+            o(), n.$ed.on("click", function (i) {
+              e(i.target).is("img") || i.target.id === a.canvasId() || (t(i), a.reset(), n.syncCode(), n.$c.trigger("tbwchange"));
+            }), n.$ed.on("scroll", function () {
+              a.reCalcOffset();
+            });
+          }), n.$c.on("tbwfocus tbwchange", o), n.$c.on("tbwresize", function () {
+            a.reCalcOffset();
+          }), n.$c.on("tbwblur", function () {
+            a.isFocusedNow() ? a.blurNow() : r();
+          });
+        },
+        destroy: function destroy() {
+          this.destroyResizable();
+        }
+      }
+    }
+  });
+}(jQuery);
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 /* ===========================================================
  * trumbowyg.upload.js v1.2
  * Upload plugin for Trumbowyg
@@ -8063,7 +8229,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     }
   }
 })(jQuery);
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 /* ===========================================================
  * trumbowyg.upload.js v1.2
  * Upload plugin for Trumbowyg
@@ -8296,172 +8462,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             }
           };
           e.addBtnDef("upload", l);
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.specialchars.js v0.99
- * Unicode characters picker plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Renaud Hoyoux (geektortoise)
-*/
-
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    symbolList: [
-    // currencies
-    '0024', '20AC', '00A3', '00A2', '00A5', '00A4', '2030', null,
-    // legal signs
-    '00A9', '00AE', '2122', null,
-    // textual sign
-    '00A7', '00B6', '00C6', '00E6', '0152', '0153', null, '2022', '25CF', '2023', '25B6', '2B29', '25C6', null,
-    //maths
-    '00B1', '00D7', '00F7', '21D2', '21D4', '220F', '2211', '2243', '2264', '2265']
-  };
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      en: {
-        specialChars: 'Special characters'
-      },
-      az: {
-        specialChars: 'Xüsusi simvollar'
-      },
-      by: {
-        specialChars: 'Спецыяльныя сімвалы'
-      },
-      et: {
-        specialChars: 'Erimärgid'
-      },
-      fr: {
-        specialChars: 'Caractères spéciaux'
-      },
-      hu: {
-        specialChars: 'Speciális karakterek'
-      },
-      ko: {
-        specialChars: '특수문자'
-      },
-      ru: {
-        specialChars: 'Специальные символы'
-      },
-      sl: {
-        specialChars: 'Posebni znaki'
-      },
-      tr: {
-        specialChars: 'Özel karakterler'
-      }
-    },
-    plugins: {
-      specialchars: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.specialchars = trumbowyg.o.plugins.specialchars || defaultOptions;
-          var specialCharsBtnDef = {
-            dropdown: buildDropdown(trumbowyg)
-          };
-          trumbowyg.addBtnDef('specialChars', specialCharsBtnDef);
-        }
-      }
-    }
-  });
-  function buildDropdown(trumbowyg) {
-    var dropdown = [];
-    $.each(trumbowyg.o.plugins.specialchars.symbolList, function (i, symbol) {
-      if (symbol === null) {
-        symbol = '&nbsp';
-      } else {
-        symbol = '&#x' + symbol;
-      }
-      var btn = symbol.replace(/:/g, ''),
-        defaultSymbolBtnName = 'symbol-' + btn,
-        defaultSymbolBtnDef = {
-          text: symbol,
-          hasIcon: false,
-          fn: function fn() {
-            var encodedSymbol = String.fromCodePoint(parseInt(symbol.replace('&#', '0')));
-            trumbowyg.execCmd('insertText', encodedSymbol);
-            return true;
-          }
-        };
-      trumbowyg.addBtnDef(defaultSymbolBtnName, defaultSymbolBtnDef);
-      dropdown.push(defaultSymbolBtnName);
-    });
-    return dropdown;
-  }
-})(jQuery);
-/* ===========================================================
- * trumbowyg.specialchars.js v0.99
- * Unicode characters picker plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Renaud Hoyoux (geektortoise)
-*/
-!function (a) {
-  "use strict";
-
-  var s = {
-    symbolList: ["0024", "20AC", "00A3", "00A2", "00A5", "00A4", "2030", null, "00A9", "00AE", "2122", null, "00A7", "00B6", "00C6", "00E6", "0152", "0153", null, "2022", "25CF", "2023", "25B6", "2B29", "25C6", null, "00B1", "00D7", "00F7", "21D2", "21D4", "220F", "2211", "2243", "2264", "2265"]
-  };
-  function r(s) {
-    var r = [];
-    return a.each(s.o.plugins.specialchars.symbolList, function (a, e) {
-      var i = "symbol-" + (e = null === e ? "&nbsp" : "&#x" + e).replace(/:/g, ""),
-        l = {
-          text: e,
-          hasIcon: !1,
-          fn: function fn() {
-            var a = String.fromCodePoint(parseInt(e.replace("&#", "0")));
-            return s.execCmd("insertText", a), !0;
-          }
-        };
-      s.addBtnDef(i, l), r.push(i);
-    }), r;
-  }
-  a.extend(!0, a.trumbowyg, {
-    langs: {
-      en: {
-        specialChars: "Special characters"
-      },
-      az: {
-        specialChars: "Xüsusi simvollar"
-      },
-      by: {
-        specialChars: "Спецыяльныя сімвалы"
-      },
-      et: {
-        specialChars: "Erimärgid"
-      },
-      fr: {
-        specialChars: "Caractères spéciaux"
-      },
-      hu: {
-        specialChars: "Speciális karakterek"
-      },
-      ko: {
-        specialChars: "특수문자"
-      },
-      ru: {
-        specialChars: "Специальные символы"
-      },
-      sl: {
-        specialChars: "Posebni znaki"
-      },
-      tr: {
-        specialChars: "Özel karakterler"
-      }
-    },
-    plugins: {
-      specialchars: {
-        init: function init(a) {
-          a.o.plugins.specialchars = a.o.plugins.specialchars || s;
-          var e = {
-            dropdown: r(a)
-          };
-          a.addBtnDef("specialChars", e);
         }
       }
     }

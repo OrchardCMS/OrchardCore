@@ -141,7 +141,7 @@ internal class ShellDbTablesInfo : ISchemaBuilder
             var indexTypeName = index.Type.Name;
             var indexTable = TableNameConvention.GetIndexTable(index.Type, index.Collection);
 
-            if (String.IsNullOrEmpty(Dialect.CascadeConstraintsString))
+            if (string.IsNullOrEmpty(Dialect.CascadeConstraintsString))
             {
                 DropForeignKey(indexTable, "FK_" + (index.Collection ?? "") + indexTypeName);
             }
@@ -158,7 +158,7 @@ internal class ShellDbTablesInfo : ISchemaBuilder
             var documentTable = TableNameConvention.GetDocumentTable(index.Collection);
 
             var bridgeTable = indexTable + "_" + documentTable;
-            if (String.IsNullOrEmpty(Dialect.CascadeConstraintsString))
+            if (string.IsNullOrEmpty(Dialect.CascadeConstraintsString))
             {
                 DropForeignKey(bridgeTable, "FK_" + bridgeTable + "_Id");
                 DropForeignKey(bridgeTable, "FK_" + bridgeTable + "_DocumentId");
@@ -173,7 +173,7 @@ internal class ShellDbTablesInfo : ISchemaBuilder
     {
         // Always try to remove the main 'Document' table that may have been
         // auto created on 'YesSql' side, even if no document was persisted.
-        DocumentTables.Add(TableNameConvention.GetDocumentTable(String.Empty));
+        DocumentTables.Add(TableNameConvention.GetDocumentTable(string.Empty));
 
         foreach (var name in DocumentTables)
         {

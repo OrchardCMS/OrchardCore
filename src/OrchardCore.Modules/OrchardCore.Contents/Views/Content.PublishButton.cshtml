@@ -2,13 +2,13 @@
     var returnUrl = Context.Request.Query["returnUrl"];
 }
 
-@if (String.IsNullOrWhiteSpace(returnUrl))
+@if (string.IsNullOrWhiteSpace(returnUrl))
 {
-    <button type="submit" name="submit.Publish" class="btn btn-success publish" value="submit.Publish">@T["Publish"]</button>
+    <button type="submit" name="submit.Publish" class="btn btn-success publish mb-1" value="submit.Publish">@T["Publish"]</button>
 }
 else
 {
-    <div class="btn-group">
+    <div class="btn-group mb-1">
         <button class="btn btn-success publish" type="submit" name="submit.Publish" value="submit.Publish">@T["Publish"]</button>
         <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-reference="parent" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class="visually-hidden">@T["Toggle Dropdown"]</span>

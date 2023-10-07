@@ -113,8 +113,8 @@ namespace OrchardCore.DynamicCache.Liquid
                 var debugContent = new StringWriter();
                 debugContent.WriteLine();
                 debugContent.WriteLine($"<!-- CACHE BLOCK: {cacheContext.CacheId} ({Guid.NewGuid()})");
-                debugContent.WriteLine($"         VARY BY: {String.Join(", ", cacheContext.Contexts)}");
-                debugContent.WriteLine($"    DEPENDENCIES: {String.Join(", ", cacheContext.Tags)}");
+                debugContent.WriteLine($"         VARY BY: {string.Join(", ", cacheContext.Contexts)}");
+                debugContent.WriteLine($"    DEPENDENCIES: {string.Join(", ", cacheContext.Tags)}");
                 debugContent.WriteLine($"      EXPIRES ON: {cacheContext.ExpiresOn}");
                 debugContent.WriteLine($"   EXPIRES AFTER: {cacheContext.ExpiresAfter}");
                 debugContent.WriteLine($" EXPIRES SLIDING: {cacheContext.ExpiresSliding}");

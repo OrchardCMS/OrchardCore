@@ -14,7 +14,7 @@
         <div class="@Orchard.GetEndCssClasses()">
             <input asp-for="Title" class="form-control content-preview-text content-caption-text" disabled="@(Model.Settings?.Options == TitlePartOptions.GeneratedDisabled)" autofocus="autofocus" dir="@culture.GetLanguageDirection()" />
             <span asp-validation-for="Title"></span>
-            @if (!String.IsNullOrWhiteSpace(Model.Settings?.Pattern))
+            @if (!string.IsNullOrWhiteSpace(Model.Settings?.Pattern))
             {
                 switch (Model.Settings?.Options)
                 {

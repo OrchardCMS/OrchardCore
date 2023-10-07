@@ -101,7 +101,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (contentItem == null)
             {
-                if (String.IsNullOrEmpty(model?.ContentType) || _contentDefinitionManager.GetTypeDefinition(model.ContentType) == null)
+                if (string.IsNullOrEmpty(model?.ContentType) || _contentDefinitionManager.GetTypeDefinition(model.ContentType) == null)
                 {
                     return BadRequest();
                 }
@@ -131,7 +131,7 @@ namespace OrchardCore.Contents.Controllers
                     return ValidationProblem(new ValidationProblemDetails(ModelState)
                     {
                         Title = S["One or more validation errors occurred."],
-                        Detail = String.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
+                        Detail = string.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
                         Status = (int)HttpStatusCode.BadRequest,
                     });
                 }
@@ -161,7 +161,7 @@ namespace OrchardCore.Contents.Controllers
                     return ValidationProblem(new ValidationProblemDetails(ModelState)
                     {
                         Title = S["One or more validation errors occurred."],
-                        Detail = String.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
+                        Detail = string.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
                         Status = (int)HttpStatusCode.BadRequest,
                     });
                 }
@@ -192,7 +192,7 @@ namespace OrchardCore.Contents.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError(String.Empty, error.ErrorMessage);
+                    ModelState.AddModelError(string.Empty, error.ErrorMessage);
                 }
             }
         }

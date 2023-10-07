@@ -16,7 +16,7 @@ namespace OrchardCore.Features
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
@@ -25,7 +25,7 @@ namespace OrchardCore.Features
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Features"], S["Features"].PrefixPosition(), deployment => deployment
                         // Since features admin accepts tenant, always pass empty string to create valid link for current tenant.
-                        .Action("Features", "Admin", new { area = FeaturesConstants.FeatureId, tenant = String.Empty })
+                        .Action("Features", "Admin", new { area = FeaturesConstants.FeatureId, tenant = string.Empty })
                         .Permission(Permissions.ManageFeatures)
                         .LocalNav()
                     )

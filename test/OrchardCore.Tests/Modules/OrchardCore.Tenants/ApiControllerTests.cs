@@ -112,7 +112,7 @@ public class ApiControllerTests
         var defaultShellSettings = new ShellSettings()
             .AsDefaultShell()
             .AsRunning();
-            
+
         var shellHostMock = new Mock<IShellHost>();
         shellHostMock
             .Setup(host => host.UpdateShellSettingsAsync(It.IsAny<ShellSettings>()))

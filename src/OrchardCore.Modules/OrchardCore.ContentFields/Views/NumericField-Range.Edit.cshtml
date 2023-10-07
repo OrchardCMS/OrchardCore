@@ -32,7 +32,7 @@
                 <input id="@(id)-range" class="form-control-range" type="range" min="@min" max="@max" step="@step" oninput="numericFieldRange('@(id)', value);" onchange="numericFieldRange('@(id)', value);" />
             </div>
         </div>
-        @if (!String.IsNullOrEmpty(settings.Hint))
+        @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
         }

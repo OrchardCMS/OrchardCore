@@ -59,7 +59,7 @@ namespace OrchardCore.ContentManagement.Display
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType)
                 ?? throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
 
-            var actualDisplayType = String.IsNullOrEmpty(displayType) ? "Detail" : displayType;
+            var actualDisplayType = string.IsNullOrEmpty(displayType) ? "Detail" : displayType;
             var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);
 
             var actualShapeType = "Content";

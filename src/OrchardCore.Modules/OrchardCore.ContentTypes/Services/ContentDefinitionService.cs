@@ -100,12 +100,12 @@ namespace OrchardCore.ContentTypes.Services
 
         public ContentTypeDefinition AddType(string name, string displayName)
         {
-            if (String.IsNullOrWhiteSpace(displayName))
+            if (string.IsNullOrWhiteSpace(displayName))
             {
                 throw new ArgumentException("The 'displayName' can't be null or empty.", nameof(displayName));
             }
 
-            if (String.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(name))
             {
                 name = GenerateContentTypeNameFromDisplayName(displayName);
             }
@@ -115,7 +115,7 @@ namespace OrchardCore.ContentTypes.Services
                 {
                     throw new ArgumentException("Content type name must start with a letter", nameof(name));
                 }
-                if (!String.Equals(name, name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+                if (!string.Equals(name, name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
                 {
                     throw new ArgumentException("Content type name contains invalid characters", nameof(name));
                 }
@@ -286,7 +286,7 @@ namespace OrchardCore.ContentTypes.Services
             if (_contentDefinitionManager.LoadPartDefinition(name) != null)
                 throw new Exception(S["Cannot add part named '{0}'. It already exists.", name]);
 
-            if (!String.IsNullOrEmpty(name))
+            if (!string.IsNullOrEmpty(name))
             {
                 _contentDefinitionManager.AlterPartDefinition(name, builder => builder.Attachable());
                 var partDefinition = _contentDefinitionManager.LoadPartDefinition(name);
@@ -329,7 +329,7 @@ namespace OrchardCore.ContentTypes.Services
 
         public void AddFieldToPart(string fieldName, string displayName, string fieldTypeName, string partName)
         {
-            if (String.IsNullOrEmpty(fieldName))
+            if (string.IsNullOrEmpty(fieldName))
             {
                 throw new ArgumentException("The 'fieldName' can't be null or empty.", nameof(fieldName));
             }
@@ -465,7 +465,7 @@ namespace OrchardCore.ContentTypes.Services
                 fieldDefinitions = part.Fields.ToArray();
             }
 
-            while (fieldDefinitions.Any(x => String.Equals(displayName.Trim(), x.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
+            while (fieldDefinitions.Any(x => string.Equals(displayName.Trim(), x.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
                 displayName = VersionName(displayName);
 
             return displayName;
@@ -476,19 +476,19 @@ namespace OrchardCore.ContentTypes.Services
             int version;
             var nameParts = name.Split('-', StringSplitOptions.RemoveEmptyEntries);
 
-            if (nameParts.Length > 1 && Int32.TryParse(nameParts.Last(), out version))
+            if (nameParts.Length > 1 && int.TryParse(nameParts.Last(), out version))
             {
                 version = version > 0 ? ++version : 2;
 
                 // This could unintentionally chomp something that looks like a version.
-                name = String.Join("-", nameParts.Take(nameParts.Length - 1));
+                name = string.Join("-", nameParts.Take(nameParts.Length - 1));
             }
             else
             {
                 version = 2;
             }
 
-            return String.Format("{0}-{1}", name, version);
+            return string.Format("{0}-{1}", name, version);
         }
     }
 }

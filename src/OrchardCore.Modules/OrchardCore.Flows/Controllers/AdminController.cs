@@ -38,7 +38,7 @@ namespace OrchardCore.Flows.Controllers
 
         public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string contentItemsName, string targetId, bool flowmetadata, string parentContentType, string partName)
         {
-            if (String.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(id))
             {
                 return NotFound();
             }

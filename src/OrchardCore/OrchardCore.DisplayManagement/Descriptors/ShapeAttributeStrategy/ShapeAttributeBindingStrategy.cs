@@ -182,27 +182,27 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
 
         private static Func<DisplayContext, object> BindParameter(ParameterInfo parameter)
         {
-            if (String.Equals(parameter.Name, "Shape", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(parameter.Name, "Shape", StringComparison.OrdinalIgnoreCase))
             {
                 return d => d.Value;
             }
 
-            if (String.Equals(parameter.Name, "DisplayAsync", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(parameter.Name, "DisplayAsync", StringComparison.OrdinalIgnoreCase))
             {
                 return d => d.DisplayHelper;
             }
 
-            if (String.Equals(parameter.Name, "New", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(parameter.Name, "New", StringComparison.OrdinalIgnoreCase))
             {
                 return d => d.ServiceProvider.GetService<IShapeFactory>();
             }
 
-            if (String.Equals(parameter.Name, "ShapeFactory", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(parameter.Name, "ShapeFactory", StringComparison.OrdinalIgnoreCase))
             {
                 return d => d.ServiceProvider.GetService<IShapeFactory>();
             }
 
-            if (String.Equals(parameter.Name, "Html", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(parameter.Name, "Html", StringComparison.OrdinalIgnoreCase))
             {
                 return d =>
                 {
@@ -213,12 +213,12 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
                 };
             }
 
-            if (String.Equals(parameter.Name, "DisplayContext", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(parameter.Name, "DisplayContext", StringComparison.OrdinalIgnoreCase))
             {
                 return d => d;
             }
 
-            if (String.Equals(parameter.Name, "Url", StringComparison.OrdinalIgnoreCase) && typeof(IUrlHelper).IsAssignableFrom(parameter.ParameterType))
+            if (string.Equals(parameter.Name, "Url", StringComparison.OrdinalIgnoreCase) && typeof(IUrlHelper).IsAssignableFrom(parameter.ParameterType))
             {
                 return d =>
                 {

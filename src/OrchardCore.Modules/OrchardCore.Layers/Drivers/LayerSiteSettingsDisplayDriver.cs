@@ -36,7 +36,7 @@ namespace OrchardCore.Layers.Drivers
 
             return Initialize<LayerSettingsViewModel>("LayerSettings_Edit", model =>
                 {
-                    model.Zones = String.Join(", ", settings.Zones);
+                    model.Zones = string.Join(", ", settings.Zones);
                 }).Location("Content:3").OnGroup(GroupId);
         }
 
@@ -55,7 +55,7 @@ namespace OrchardCore.Layers.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                settings.Zones = (model.Zones ?? String.Empty).Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+                settings.Zones = (model.Zones ?? string.Empty).Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
             }
 
             return await EditAsync(settings, context);

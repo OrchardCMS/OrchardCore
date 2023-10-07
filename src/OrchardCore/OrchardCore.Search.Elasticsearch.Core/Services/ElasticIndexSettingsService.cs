@@ -72,7 +72,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         {
             var document = await GetDocumentAsync();
 
-            if (document.ElasticIndexSettings.TryGetValue(indexName, out var settings) && !String.IsNullOrEmpty(settings.QueryAnalyzerName))
+            if (document.ElasticIndexSettings.TryGetValue(indexName, out var settings) && !string.IsNullOrEmpty(settings.QueryAnalyzerName))
             {
                 return settings.QueryAnalyzerName;
             }

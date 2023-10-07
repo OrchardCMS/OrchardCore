@@ -64,22 +64,22 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             var shape = await shapeFactory.CreateAsync<object>(type, customAttributes == null ? Arguments.Empty : Arguments.From(customAttributes));
 
-            if (!String.IsNullOrEmpty(id))
+            if (!string.IsNullOrEmpty(id))
             {
                 shape.Id = id;
             }
 
-            if (!String.IsNullOrEmpty(alternate))
+            if (!string.IsNullOrEmpty(alternate))
             {
                 shape.Metadata.Alternates.Add(alternate);
             }
 
-            if (!String.IsNullOrEmpty(wrapper))
+            if (!string.IsNullOrEmpty(wrapper))
             {
                 shape.Metadata.Wrappers.Add(wrapper);
             }
 
-            if (!String.IsNullOrWhiteSpace(cacheId))
+            if (!string.IsNullOrWhiteSpace(cacheId))
             {
                 var metadata = shape.Metadata;
 
@@ -95,13 +95,13 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                     metadata.Cache().WithExpirySliding(cacheSlidingDuration.Value);
                 }
 
-                if (!String.IsNullOrWhiteSpace(cacheContext))
+                if (!string.IsNullOrWhiteSpace(cacheContext))
                 {
                     var contexts = cacheContext.Split(_separators, StringSplitOptions.RemoveEmptyEntries);
                     metadata.Cache().AddContext(contexts);
                 }
 
-                if (!String.IsNullOrWhiteSpace(cacheTag))
+                if (!string.IsNullOrWhiteSpace(cacheTag))
                 {
                     var tags = cacheTag.Split(_separators, StringSplitOptions.RemoveEmptyEntries);
                     metadata.Cache().AddTag(tags);

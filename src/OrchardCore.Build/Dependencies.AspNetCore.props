@@ -25,13 +25,13 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="$(TargetFramework) == 'net7.0'">
-    <AspNetCorePackagesVersion>7.0.9</AspNetCorePackagesVersion>
-    <MicrosoftExtensionsPackagesVersion>7.0.9</MicrosoftExtensionsPackagesVersion>
+    <AspNetCorePackagesVersion>7.0.11</AspNetCorePackagesVersion>
+    <MicrosoftExtensionsPackagesVersion>7.0.11</MicrosoftExtensionsPackagesVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(TargetFramework) == 'net6.0'">
-    <AspNetCorePackagesVersion>6.0.21</AspNetCorePackagesVersion>
-    <MicrosoftExtensionsPackagesVersion>6.0.21</MicrosoftExtensionsPackagesVersion>
+    <AspNetCorePackagesVersion>6.0.22</AspNetCorePackagesVersion>
+    <MicrosoftExtensionsPackagesVersion>6.0.22</MicrosoftExtensionsPackagesVersion>
   </PropertyGroup>
 
   <!-- 'Microsoft.AspNetCore' packages that are not included in the ASP.NET Core shared framework -->
