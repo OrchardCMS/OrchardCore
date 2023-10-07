@@ -10,23 +10,18 @@ namespace OrchardCore.Modules
 {
     /// <summary>
     /// Handles a request by forwarding it to the tenant specific pipeline.
-    /// It also initializes the middlewares for the requested tenant on the first request.
+    /// It also initializes the middleware for the requested tenant on the first request.
     /// </summary>
     public class ModularTenantRouterMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IFeatureCollection _features;
         private readonly ILogger _logger;
-
-        private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new();
 
         public ModularTenantRouterMiddleware(
             RequestDelegate next,
-            IFeatureCollection features,
             ILogger<ModularTenantRouterMiddleware> logger)
         {
             _next = next;
-            _features = features;
             _logger = logger;
         }
 
