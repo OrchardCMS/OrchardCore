@@ -175,7 +175,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
             shellSettings["Secret"] = Guid.NewGuid().ToString();
 
             await ShellHost.UpdateShellSettingsAsync(shellSettings);
-            var reloadedSettings = ShellHost.GetSettings(tenantName);
+            var reloadedSettings = ShellHost.GetSettings(shellSettings.Name);
 
             workflowContext.LastResult = reloadedSettings;
             workflowContext.CorrelationId = reloadedSettings.Name;

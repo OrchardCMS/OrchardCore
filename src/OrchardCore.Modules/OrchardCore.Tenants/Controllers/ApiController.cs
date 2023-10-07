@@ -125,14 +125,15 @@ namespace OrchardCore.Tenants.Controllers
                     shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
 
                     await _shellHost.UpdateShellSettingsAsync(shellSettings);
+                    var reloadedSettings = _shellHost.GetSettings(shellSettings.Name);
 
-                    var token = CreateSetupToken(shellSettings);
+                    var token = CreateSetupToken(reloadedSettings);
 
-                    return Ok(GetEncodedUrl(shellSettings, token));
+                    return Ok(GetEncodedUrl(reloadedSettings, token));
                 }
                 else
                 {
-                    // Site already exists, return 201 for indempotency purposes.
+                    // Site already exists, return 201 for idempotency purposes.
 
                     var token = CreateSetupToken(settings);
 

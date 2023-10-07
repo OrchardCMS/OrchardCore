@@ -339,7 +339,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                 return;
             }
 
-            // Create a distributed context based on the isolated default settings.
+            // Create a distributed context based on the first isolated configuration.
             var context = _context = await CreateDistributedContextAsync(defaultSettings);
             if (context is null)
             {

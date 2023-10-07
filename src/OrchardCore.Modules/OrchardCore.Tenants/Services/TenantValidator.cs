@@ -109,8 +109,9 @@ namespace OrchardCore.Tenants.Services
 
             if (shellSettings is not null)
             {
-                // 
+                // A newly loaded settings from the configuration should be disposed.
                 using var disposable = existingShellSettings is null ? shellSettings : null;
+
                 var validationContext = new DbConnectionValidatorContext(shellSettings, model);
                 await ValidateConnectionAsync(validationContext, errors);
             }
