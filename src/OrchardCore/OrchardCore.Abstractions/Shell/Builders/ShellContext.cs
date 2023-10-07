@@ -253,7 +253,6 @@ namespace OrchardCore.Environment.Shell.Builders
 
             _disposed = true;
 
-            // Disposes all the services registered for this shell.
             if (ServiceProvider is IDisposable disposable)
             {
                 disposable.Dispose();
@@ -271,7 +270,6 @@ namespace OrchardCore.Environment.Shell.Builders
 
             _disposed = true;
 
-            // Disposes all the services registered for this shell.
             if (ServiceProvider is IAsyncDisposable asyncDisposable)
             {
                 await asyncDisposable.DisposeAsync();
@@ -291,8 +289,8 @@ namespace OrchardCore.Environment.Shell.Builders
             Blueprint = null;
             Pipeline = null;
 
-            _semaphore.Dispose();
-            Settings.Dispose();
+            Settings?.Dispose();
+            _semaphore?.Dispose();
         }
 
         ~ShellContext() => Close();

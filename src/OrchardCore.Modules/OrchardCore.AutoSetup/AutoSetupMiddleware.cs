@@ -207,7 +207,7 @@ namespace OrchardCore.AutoSetup
         /// <returns>The <see cref="ShellSettings"/>.</returns>
         public async Task<ShellSettings> CreateTenantSettingsAsync(TenantSetupOptions setupOptions)
         {
-            var shellSettings = _shellSettingsManager
+            using var shellSettings = _shellSettingsManager
                 .CreateDefaultSettings()
                 .AsUninitialized()
                 .AsDisposable();

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -110,13 +109,10 @@ namespace OrchardCore.Tenants.Services
 
             if (shellSettings is not null)
             {
+                // 
+                using var disposable = existingShellSettings is null ? shellSettings : null;
                 var validationContext = new DbConnectionValidatorContext(shellSettings, model);
                 await ValidateConnectionAsync(validationContext, errors);
-
-                if (model.IsNewTenant && existingShellSettings is null)
-                {
-                    shellSettings.Dispose();
-                }
             }
 
             return errors;

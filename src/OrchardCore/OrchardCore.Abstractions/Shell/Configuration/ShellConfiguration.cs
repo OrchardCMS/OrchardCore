@@ -160,8 +160,8 @@ namespace OrchardCore.Environment.Shell.Configuration
 
             _released = true;
 
-            _semaphore.Dispose();
             (_configuration as IDisposable)?.Dispose();
+            _semaphore?.Dispose();
         }
     }
 }

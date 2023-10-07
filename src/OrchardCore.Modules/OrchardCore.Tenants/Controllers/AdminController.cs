@@ -351,7 +351,7 @@ namespace OrchardCore.Tenants.Controllers
             if (ModelState.IsValid)
             {
                 // Creates a default shell settings based on the configuration.
-                var shellSettings = _shellSettingsManager
+                using var shellSettings = _shellSettingsManager
                     .CreateDefaultSettings()
                     .AsUninitialized()
                     .AsDisposable();

@@ -206,6 +206,9 @@ namespace OrchardCore.Environment.Shell.Distributed
                     // Keep in sync all tenants by checking their specific identifiers.
                     foreach (var settings in loadedSettings)
                     {
+                        // Newly loaded settings from the configuration should be disposed.
+                        using var disposable = tenantsToCreate.Contains(settings.Name) ? settings : null;
+
                         // Wait for the min idle time after the max busy time.
                         if (!await TryWaitAfterBusyTime(stoppingToken))
                         {
@@ -287,12 +290,6 @@ namespace OrchardCore.Environment.Shell.Distributed
                         }
                         finally
                         {
-                            // Dispose settings loaded from the configuration.
-                            if (tenantsToCreate.Contains(settings.Name))
-                            {
-                                settings.Dispose();
-                            }
-
                             semaphore.Release();
                         }
                     }
