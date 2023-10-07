@@ -89,7 +89,7 @@ namespace OrchardCore.Media.Services
         // Newly added files
         private async Task MoveNewFilesToContentItemDirAndUpdatePathsAsync(List<EditMediaFieldItemInfo> items, ContentItem contentItem)
         {
-            foreach (var item in items.Where(i => !i.IsRemoved && !String.IsNullOrEmpty(i.Path)))
+            foreach (var item in items.Where(i => !i.IsRemoved && !string.IsNullOrEmpty(i.Path)))
             {
                 var fileInfo = await _fileStore.GetFileInfoAsync(item.Path);
 

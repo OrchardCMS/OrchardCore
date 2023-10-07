@@ -21,7 +21,7 @@ namespace OrchardCore.ContentFields.GraphQL.Types
         public override object ParseValue(object value)
         {
             var timespan = value?.ToString().StripQuotes();
-            return String.IsNullOrWhiteSpace(timespan)
+            return string.IsNullOrWhiteSpace(timespan)
                 ? null
                 : (TimeSpan?)TimeSpan.Parse(timespan, CultureInfo.CurrentCulture);
         }
@@ -42,7 +42,7 @@ namespace OrchardCore.ContentFields.GraphQL.Types
     {
         public static string StripQuotes(this string value)
         {
-            if (!String.IsNullOrEmpty(value) && value.Length > 2 && value.StartsWith('\"') && value.EndsWith('\"'))
+            if (!string.IsNullOrEmpty(value) && value.Length > 2 && value.StartsWith('\"') && value.EndsWith('\"'))
             {
                 return value[1..^1];
             }

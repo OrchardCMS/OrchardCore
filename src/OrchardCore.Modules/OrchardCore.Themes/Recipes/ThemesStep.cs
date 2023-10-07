@@ -25,19 +25,19 @@ namespace OrchardCore.Themes.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "Themes", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "Themes", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
 
             var model = context.Step.ToObject<ThemeStepModel>();
 
-            if (!String.IsNullOrEmpty(model.Site))
+            if (!string.IsNullOrEmpty(model.Site))
             {
                 await _siteThemeService.SetSiteThemeAsync(model.Site);
             }
 
-            if (!String.IsNullOrEmpty(model.Admin))
+            if (!string.IsNullOrEmpty(model.Admin))
             {
                 await _adminThemeService.SetAdminThemeAsync(model.Admin);
             }

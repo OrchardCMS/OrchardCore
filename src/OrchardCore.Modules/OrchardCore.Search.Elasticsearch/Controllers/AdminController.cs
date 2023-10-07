@@ -105,7 +105,7 @@ namespace OrchardCore.Search.Elasticsearch
             var count = indexes.Count();
             var results = indexes;
 
-            if (!String.IsNullOrWhiteSpace(options.Search))
+            if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 results = results.Where(q => q.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase));
             }
@@ -145,7 +145,7 @@ namespace OrchardCore.Search.Elasticsearch
 
         public async Task<ActionResult> Edit(string indexName = null)
         {
-            var IsCreate = String.IsNullOrWhiteSpace(indexName);
+            var IsCreate = string.IsNullOrWhiteSpace(indexName);
             var settings = new ElasticIndexSettings();
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
@@ -229,7 +229,7 @@ namespace OrchardCore.Search.Elasticsearch
                         QueryAnalyzerName = model.AnalyzerName,
                         IndexLatest = model.IndexLatest,
                         IndexedContentTypes = indexedContentTypes,
-                        Culture = model.Culture ?? String.Empty,
+                        Culture = model.Culture ?? string.Empty,
                         StoreSourceData = model.StoreSourceData
                     };
 
@@ -256,7 +256,7 @@ namespace OrchardCore.Search.Elasticsearch
                         AnalyzerName = model.AnalyzerName,
                         IndexLatest = model.IndexLatest,
                         IndexedContentTypes = indexedContentTypes,
-                        Culture = model.Culture ?? String.Empty,
+                        Culture = model.Culture ?? string.Empty,
                         StoreSourceData = model.StoreSourceData
                     };
 
@@ -406,7 +406,7 @@ namespace OrchardCore.Search.Elasticsearch
 
         public Task<IActionResult> Query(string indexName, string query)
         {
-            query = String.IsNullOrWhiteSpace(query) ? String.Empty : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query));
+            query = string.IsNullOrWhiteSpace(query) ? string.Empty : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query));
             return Query(new AdminQueryViewModel
             {
                 IndexName = indexName,
@@ -430,7 +430,7 @@ namespace OrchardCore.Search.Elasticsearch
                 return RedirectToAction("Index");
             }
 
-            if (String.IsNullOrEmpty(model.IndexName))
+            if (string.IsNullOrEmpty(model.IndexName))
             {
                 model.IndexName = model.Indices[0];
             }
@@ -440,12 +440,12 @@ namespace OrchardCore.Search.Elasticsearch
                 return NotFound();
             }
 
-            if (String.IsNullOrWhiteSpace(model.DecodedQuery))
+            if (string.IsNullOrWhiteSpace(model.DecodedQuery))
             {
                 return View(model);
             }
 
-            if (String.IsNullOrEmpty(model.Parameters))
+            if (string.IsNullOrEmpty(model.Parameters))
             {
                 model.Parameters = "{ }";
             }
@@ -545,7 +545,7 @@ namespace OrchardCore.Search.Elasticsearch
                 ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexedContentTypes), S["At least one content type selection is required."]);
             }
 
-            if (String.IsNullOrWhiteSpace(model.IndexName))
+            if (string.IsNullOrWhiteSpace(model.IndexName))
             {
                 ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["The index name is required."]);
             }

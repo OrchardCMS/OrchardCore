@@ -252,7 +252,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 var options = serviceProvider.GetRequiredService<IOptions<StaticFileOptions>>().Value;
                 options = new StaticFileOptions
                 {
-                    RequestPath = String.Empty,
+                    RequestPath = string.Empty,
                     FileProvider = fileProvider,
                     RedirectToAppendTrailingSlash = options.RedirectToAppendTrailingSlash,
                     ContentTypeProvider = options.ContentTypeProvider,
@@ -298,7 +298,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 collection.AddRouting();
             },
-            order: Int32.MinValue + 100);
+            order: int.MinValue + 100);
         }
 
         /// <summary>
@@ -332,7 +332,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     collection.Remove(descriptor);
                 }
             },
-            order: Int32.MinValue + 100);
+            order: int.MinValue + 100);
         }
 
         /// <summary>
@@ -361,7 +361,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 // Configure ApiExplorer at the tenant level.
                 collection.AddEndpointsApiExplorer();
             },
-            order: Int32.MinValue + 100);
+            order: int.MinValue + 100);
         }
 
         /// <summary>
@@ -417,7 +417,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             if (options.SameSite == SameSiteMode.None)
             {
-                if (String.IsNullOrEmpty(userAgent))
+                if (string.IsNullOrEmpty(userAgent))
                 {
                     return;
                 }

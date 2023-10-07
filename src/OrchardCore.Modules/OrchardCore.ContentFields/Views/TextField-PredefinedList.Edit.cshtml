@@ -5,12 +5,12 @@
     var listSettings = Model.PartFieldDefinition.GetSettings<TextFieldPredefinedListEditorSettings>();
 
     var options = new List<SelectListItem>();
-    var selectedValue = String.IsNullOrEmpty(Model.Text) ? listSettings.DefaultValue : Model.Text;
+    var selectedValue = string.IsNullOrEmpty(Model.Text) ? listSettings.DefaultValue : Model.Text;
 
     foreach (var option in listSettings.Options)
     {
         var isSelected = option.Value == selectedValue
-            || (String.IsNullOrEmpty(option.Value) && String.IsNullOrEmpty(selectedValue));
+            || (string.IsNullOrEmpty(option.Value) && string.IsNullOrEmpty(selectedValue));
 
         options.Add(new SelectListItem { Text = option.Name, Value = option.Value, Selected = isSelected });
     }
@@ -37,7 +37,7 @@
             <select class="form-select content-preview-select" asp-for="Text" asp-items="options"></select>
         }
 
-        @if (!String.IsNullOrEmpty(settings.Hint))
+        @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
         }

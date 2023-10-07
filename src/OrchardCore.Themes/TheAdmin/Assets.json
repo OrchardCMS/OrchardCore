@@ -1,41 +1,45 @@
 [
   {
     "generateSourceMaps": false,
-    "generateRTL": true,
+    "generateRTL": false,
     "inputs": [
-      "Assets/scss/admin.scss"
+      "Assets/scss/index.scss"
+    ],
+    "watch": [
+      "Assets/scss/**/*.scss"
     ],
     "output": "wwwroot/css/TheAdmin.css"
   },
   {
     "generateSourceMaps": false,
     "inputs": [
-      "node_modules/@popperjs/core/dist/umd/popper.js",
-      "node_modules/bootstrap/dist/js/bootstrap.js",
+      "Assets/js/*.js"
+    ],
+    "watch": [
       "Assets/js/*.js"
     ],
     "output": "wwwroot/js/TheAdmin.js"
   },
   {
     "generateSourceMaps": false,
+    "generateRTL": false,
     "inputs": [
-      "Assets/js/header/userPreferencesLoader.js"
+      "Assets/scss/login.scss"
     ],
-    "output": "wwwroot/js/TheAdmin-header.js"
+    "watch": [
+      "Assets/scss/componenets/_validations.scss"
+    ],
+    "output": "wwwroot/css/login.css"
   },
   {
     "generateSourceMaps": false,
     "inputs": [
-      "node_modules/material-icons/iconfont/material-icons.scss"
+      "Assets/js/header/global/*.js",
+      "Assets/js/header/*.js"
     ],
-    "output": "wwwroot/fonts/material-icons/material-icons.css"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/material-icons/iconfont/*.woff",
-      "node_modules/material-icons/iconfont/*.woff2"
+    "watch": [
+      "Assets/js/header/**/*.js"
     ],
-    "output": "wwwroot/fonts/material-icons/@"
+    "output": "wwwroot/js/TheAdmin-header.js"
   }
 ]

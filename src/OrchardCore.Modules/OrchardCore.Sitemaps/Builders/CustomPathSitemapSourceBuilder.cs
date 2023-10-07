@@ -35,7 +35,7 @@ namespace OrchardCore.Sitemaps.Builders
 
         private static bool BuildUrl(SitemapBuilderContext context, CustomPathSitemapSource source, XElement url)
         {
-            if (String.IsNullOrEmpty(source.Path))
+            if (string.IsNullOrEmpty(source.Path))
                 return false;
 
             // Add ~/ to the path, because the it is inserted without leading /.

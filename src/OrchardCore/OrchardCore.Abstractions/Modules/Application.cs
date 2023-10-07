@@ -16,7 +16,7 @@ namespace OrchardCore.Modules
 
         public const string ModuleName = "Application Main Feature";
         public const string ModuleDescription = "Provides components defined at the application level.";
-        public static readonly string ModulePriority = Int32.MinValue.ToString();
+        public static readonly string ModulePriority = int.MinValue.ToString();
         public const string ModuleCategory = "Application";
 
         public const string DefaultFeatureId = "Application.Default";
@@ -49,7 +49,7 @@ namespace OrchardCore.Modules
         {
             if (!_modulesByName.TryGetValue(name, out var module))
             {
-                return new Module(String.Empty);
+                return new Module(string.Empty);
             }
 
             return module;

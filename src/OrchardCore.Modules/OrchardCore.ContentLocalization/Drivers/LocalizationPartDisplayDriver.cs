@@ -17,17 +17,17 @@ namespace OrchardCore.ContentLocalization.Drivers
     public class LocalizationPartDisplayDriver : ContentPartDisplayDriver<LocalizationPart>
     {
         private readonly IContentLocalizationManager _contentLocalizationManager;
-        private readonly IIdGenerator _iidGenerator;
+        private readonly IIdGenerator _idGenerator;
         private readonly ILocalizationService _localizationService;
 
         public LocalizationPartDisplayDriver(
             IContentLocalizationManager contentLocalizationManager,
-            IIdGenerator iidGenerator,
+            IIdGenerator idGenerator,
             ILocalizationService localizationService
         )
         {
             _contentLocalizationManager = contentLocalizationManager;
-            _iidGenerator = iidGenerator;
+            _idGenerator = idGenerator;
             _localizationService = localizationService;
         }
 
@@ -53,9 +53,9 @@ namespace OrchardCore.ContentLocalization.Drivers
             model.Culture = viewModel.Culture ?? "";
 
             // Need to do this here to support displaying the message to save before localizing when the item has not been saved yet.
-            if (String.IsNullOrEmpty(model.LocalizationSet))
+            if (string.IsNullOrEmpty(model.LocalizationSet))
             {
-                model.LocalizationSet = _iidGenerator.GenerateUniqueId();
+                model.LocalizationSet = _idGenerator.GenerateUniqueId();
             }
             return Edit(model);
         }

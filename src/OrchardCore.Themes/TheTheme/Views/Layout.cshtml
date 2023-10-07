@@ -1,3 +1,10 @@
+@using OrchardCore.DisplayManagement
+@using OrchardCore.DisplayManagement.ModelBinding
+@using OrchardCore.Users.Models
+
+@inject IDisplayManager<UserMenu> DisplayManager
+@inject IUpdateModelAccessor UpdateModelAccessor
+
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()">
 <head>
@@ -22,8 +29,13 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbar">
-                <menu alias="alias:main-menu" cache-id="main-menu" cache-fixed-duration="00:05:00" cache-tag="alias:main-menu" />
-                <shape type="LoginMenu" />
+                <div class="d-flex justify-content-between align-items-center">
+                    <menu alias="alias:main-menu" cache-id="main-menu" cache-fixed-duration="00:05:00" cache-tag="alias:main-menu" />
+                    <ul class="navbar-nav user-top-navbar">
+                        @await RenderSectionAsync("NavbarTop", required: false)
+                        @await DisplayAsync(await DisplayManager.BuildDisplayAsync(new UserMenu(), UpdateModelAccessor.ModelUpdater))
+                    </ul>
+                </div>
             </div>
         </div>
     </nav>

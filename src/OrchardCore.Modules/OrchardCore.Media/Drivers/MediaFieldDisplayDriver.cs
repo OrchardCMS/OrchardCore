@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -21,9 +21,9 @@ namespace OrchardCore.Media.Drivers
 {
     public class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaField>
     {
-        private static readonly JsonSerializerSettings _settings = new()
+        private static readonly JsonSerializerOptions _settings = new()
         {
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         };
 
         private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
@@ -58,53 +58,37 @@ namespace OrchardCore.Media.Drivers
             return Initialize<EditMediaFieldViewModel>(GetEditorShapeType(context), model =>
             {
                 var settings = context.PartFieldDefinition.GetSettings<MediaFieldSettings>();
-                if (settings.AllowMediaText)
+
+                for (var i = 0; i < itemPaths.Length; i++)
                 {
-                    if (field.MediaTexts != null)
+                    if (settings.AllowMediaText && i < field.MediaTexts?.Length)
                     {
-                        for (var i = 0; i < itemPaths.Length; i++)
+                        itemPaths[i].MediaText = field.MediaTexts[i];
+                    }
+
+                    if (settings.AllowAnchors)
+                    {
+                        var anchors = field.GetAnchors();
+                        if (anchors != null && i < anchors.Length)
                         {
-                            if (i >= 0 && i < field.MediaTexts.Length)
-                            {
-                                itemPaths[i].MediaText = field.MediaTexts[i];
-                            }
+                            itemPaths[i].Anchor = anchors[i];
                         }
+                    }
+
+                    var filenames = field.GetAttachedFileNames();
+                    if (filenames != null && i < filenames.Length)
+                    {
+                        itemPaths[i].AttachedFileName = filenames[i];
                     }
                 }
 
-                if (settings.AllowAnchors)
-                {
-                    var anchors = field.GetAnchors();
-                    if (anchors != null)
-                    {
-                        for (var i = 0; i < itemPaths.Length; i++)
-                        {
-                            if (i >= 0 && i < anchors.Length)
-                            {
-                                itemPaths[i].Anchor = anchors[i];
-                            }
-                        }
-                    }
-                }
-
-                var filenames = field.GetAttachedFileNames();
-                if (filenames != null)
-                {
-                    for (var i = 0; i < itemPaths.Length; i++)
-                    {
-                        if (i >= 0 && i < filenames.Length)
-                        {
-                            itemPaths[i].AttachedFileName = filenames[i];
-                        }
-                    }
-                }
-
-                model.Paths = JsonConvert.SerializeObject(itemPaths, _settings);
+                model.Paths = JsonSerializer.Serialize(itemPaths, _settings);
                 model.TempUploadFolder = _attachedMediaFieldFileService.MediaFieldsTempSubFolder;
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
                 model.AllowMediaText = settings.AllowMediaText;
+                model.AllowedExtensions = settings.AllowedExtensions ?? Array.Empty<string>();
             });
         }
 
@@ -115,12 +99,12 @@ namespace OrchardCore.Media.Drivers
             if (await updater.TryUpdateModelAsync(model, Prefix, f => f.Paths))
             {
                 // Deserializing an empty string doesn't return an array
-                var items = String.IsNullOrWhiteSpace(model.Paths)
+                var items = string.IsNullOrWhiteSpace(model.Paths)
                     ? new List<EditMediaFieldItemInfo>()
-                    : JsonConvert.DeserializeObject<EditMediaFieldItemInfo[]>(model.Paths, _settings).ToList();
+                    : JsonSerializer.Deserialize<List<EditMediaFieldItemInfo>>(model.Paths, _settings);
 
                 // If it's an attached media field editor the files are automatically handled by _attachedMediaFieldFileService.
-                if (String.Equals(context.PartFieldDefinition.Editor(), "Attached", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(context.PartFieldDefinition.Editor(), "Attached", StringComparison.OrdinalIgnoreCase))
                 {
                     try
                     {
@@ -137,6 +121,19 @@ namespace OrchardCore.Media.Drivers
                 field.Paths = items.Where(p => !p.IsRemoved).Select(p => p.Path).ToArray() ?? Array.Empty<string>();
 
                 var settings = context.PartFieldDefinition.GetSettings<MediaFieldSettings>();
+
+                if (settings.AllowedExtensions?.Length > 0)
+                {
+                    for (var i = 0; i < field.Paths.Length; i++)
+                    {
+                        var extension = Path.GetExtension(field.Paths[i]);
+
+                        if (!settings.AllowedExtensions.Contains(extension))
+                        {
+                            updater.ModelState.AddModelError(Prefix, nameof(model.Paths), S["Media extension is not allowed. Only media with '{0}' extensions are allowed.", string.Join(", ", settings.AllowedExtensions)]);
+                        }
+                    }
+                }
 
                 if (settings.Required && field.Paths.Length < 1)
                 {
@@ -165,7 +162,6 @@ namespace OrchardCore.Media.Drivers
                 {
                     field.Content.Remove("Anchors");
                 }
-
             }
 
             return Edit(field, context);

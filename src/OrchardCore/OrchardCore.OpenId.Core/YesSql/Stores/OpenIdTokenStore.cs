@@ -74,12 +74,12 @@ namespace OrchardCore.OpenId.YesSql.Stores
         public virtual IAsyncEnumerable<TToken> FindAsync(
             string subject, string client, CancellationToken cancellationToken)
         {
-            if (String.IsNullOrEmpty(subject))
+            if (string.IsNullOrEmpty(subject))
             {
                 throw new ArgumentException("The subject cannot be null or empty.", nameof(subject));
             }
 
-            if (String.IsNullOrEmpty(client))
+            if (string.IsNullOrEmpty(client))
             {
                 throw new ArgumentException("The client cannot be null or empty.", nameof(client));
             }
@@ -94,17 +94,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
         public virtual IAsyncEnumerable<TToken> FindAsync(
             string subject, string client, string status, CancellationToken cancellationToken)
         {
-            if (String.IsNullOrEmpty(subject))
+            if (string.IsNullOrEmpty(subject))
             {
                 throw new ArgumentException("The subject cannot be null or empty.", nameof(subject));
             }
 
-            if (String.IsNullOrEmpty(client))
+            if (string.IsNullOrEmpty(client))
             {
                 throw new ArgumentException("The client identifier cannot be null or empty.", nameof(client));
             }
 
-            if (String.IsNullOrEmpty(status))
+            if (string.IsNullOrEmpty(status))
             {
                 throw new ArgumentException("The status cannot be null or empty.", nameof(status));
             }
@@ -119,22 +119,22 @@ namespace OrchardCore.OpenId.YesSql.Stores
         public virtual IAsyncEnumerable<TToken> FindAsync(
             string subject, string client, string status, string type, CancellationToken cancellationToken)
         {
-            if (String.IsNullOrEmpty(subject))
+            if (string.IsNullOrEmpty(subject))
             {
                 throw new ArgumentException("The subject cannot be null or empty.", nameof(subject));
             }
 
-            if (String.IsNullOrEmpty(client))
+            if (string.IsNullOrEmpty(client))
             {
                 throw new ArgumentException("The client identifier cannot be null or empty.", nameof(client));
             }
 
-            if (String.IsNullOrEmpty(status))
+            if (string.IsNullOrEmpty(status))
             {
                 throw new ArgumentException("The status cannot be null or empty.", nameof(status));
             }
 
-            if (String.IsNullOrEmpty(type))
+            if (string.IsNullOrEmpty(type))
             {
                 throw new ArgumentException("The type cannot be null or empty.", nameof(type));
             }
@@ -149,7 +149,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TToken> FindByApplicationIdAsync(string identifier, CancellationToken cancellationToken)
         {
-            if (String.IsNullOrEmpty(identifier))
+            if (string.IsNullOrEmpty(identifier))
             {
                 throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
             }
@@ -162,7 +162,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TToken> FindByAuthorizationIdAsync(string identifier, CancellationToken cancellationToken)
         {
-            if (String.IsNullOrEmpty(identifier))
+            if (string.IsNullOrEmpty(identifier))
             {
                 throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
             }
@@ -175,7 +175,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual async ValueTask<TToken> FindByReferenceIdAsync(string identifier, CancellationToken cancellationToken)
         {
-            if (String.IsNullOrEmpty(identifier))
+            if (string.IsNullOrEmpty(identifier))
             {
                 throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
             }
@@ -188,7 +188,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual async ValueTask<TToken> FindByIdAsync(string identifier, CancellationToken cancellationToken)
         {
-            if (String.IsNullOrEmpty(identifier))
+            if (string.IsNullOrEmpty(identifier))
             {
                 throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
             }
@@ -201,20 +201,20 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual async ValueTask<TToken> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
         {
-            if (String.IsNullOrEmpty(identifier))
+            if (string.IsNullOrEmpty(identifier))
             {
                 throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
             }
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.GetAsync<TToken>(Int64.Parse(identifier, CultureInfo.InvariantCulture), collection: OpenIdCollection);
+            return await _session.GetAsync<TToken>(long.Parse(identifier, CultureInfo.InvariantCulture), collection: OpenIdCollection);
         }
 
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TToken> FindBySubjectAsync(string subject, CancellationToken cancellationToken)
         {
-            if (String.IsNullOrEmpty(subject))
+            if (string.IsNullOrEmpty(subject))
             {
                 throw new ArgumentException("The subject cannot be null or empty.", nameof(subject));
             }
@@ -478,7 +478,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 throw new ArgumentNullException(nameof(token));
             }
 
-            if (String.IsNullOrEmpty(identifier))
+            if (string.IsNullOrEmpty(identifier))
             {
                 token.ApplicationId = null;
             }
@@ -498,7 +498,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 throw new ArgumentNullException(nameof(token));
             }
 
-            if (String.IsNullOrEmpty(identifier))
+            if (string.IsNullOrEmpty(identifier))
             {
                 token.AuthorizationId = null;
             }

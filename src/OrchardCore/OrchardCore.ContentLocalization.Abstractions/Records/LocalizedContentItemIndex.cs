@@ -92,7 +92,7 @@ namespace OrchardCore.ContentLocalization.Records
                     var partRemoved = _partRemoved.Contains(contentItem.ContentItemId);
 
                     var part = contentItem.As<LocalizationPart>();
-                    if (!partRemoved && (part == null || String.IsNullOrEmpty(part.LocalizationSet) || part.Culture == null))
+                    if (!partRemoved && (part == null || string.IsNullOrEmpty(part.LocalizationSet) || part.Culture == null))
                     {
                         return null;
                     }

@@ -60,7 +60,7 @@ namespace OrchardCore.Environment.Extensions
         {
             EnsureInitialized();
 
-            if (!String.IsNullOrEmpty(extensionId) && _extensions.TryGetValue(extensionId, out var extension))
+            if (!string.IsNullOrEmpty(extensionId) && _extensions.TryGetValue(extensionId, out var extension))
             {
                 return extension.ExtensionInfo;
             }

@@ -91,7 +91,7 @@ namespace OrchardCore.OpenId.Services
 
             var results = ImmutableArray.CreateBuilder<ValidationResult>();
 
-            if (!(settings.Authority == null ^ String.IsNullOrEmpty(settings.Tenant)))
+            if (!(settings.Authority == null ^ string.IsNullOrEmpty(settings.Tenant)))
             {
                 results.Add(new ValidationResult(S["Either a tenant or an authority must be registered."], new[]
                 {
@@ -110,7 +110,7 @@ namespace OrchardCore.OpenId.Services
                     }));
                 }
 
-                if (!String.IsNullOrEmpty(settings.Authority.Query) || !String.IsNullOrEmpty(settings.Authority.Fragment))
+                if (!string.IsNullOrEmpty(settings.Authority.Query) || !string.IsNullOrEmpty(settings.Authority.Fragment))
                 {
                     results.Add(new ValidationResult(S["The authority cannot contain a query string or a fragment."], new[]
                     {
@@ -130,7 +130,7 @@ namespace OrchardCore.OpenId.Services
                     }));
                 }
 
-                if (!String.IsNullOrEmpty(settings.MetadataAddress.Query) || !String.IsNullOrEmpty(settings.MetadataAddress.Fragment))
+                if (!string.IsNullOrEmpty(settings.MetadataAddress.Query) || !string.IsNullOrEmpty(settings.MetadataAddress.Fragment))
                 {
                     results.Add(new ValidationResult(S["The metadata address cannot contain a query string or a fragment."], new[]
                     {
@@ -138,7 +138,7 @@ namespace OrchardCore.OpenId.Services
                     }));
                 }
 
-                if (!String.IsNullOrEmpty(settings.Tenant))
+                if (!string.IsNullOrEmpty(settings.Tenant))
                 {
                     results.Add(new ValidationResult(S["No metatada address can be set when using another tenant."], new[]
                     {
@@ -147,7 +147,7 @@ namespace OrchardCore.OpenId.Services
                 }
             }
 
-            if (!String.IsNullOrEmpty(settings.Tenant) && !String.IsNullOrEmpty(settings.Audience))
+            if (!string.IsNullOrEmpty(settings.Tenant) && !string.IsNullOrEmpty(settings.Audience))
             {
                 results.Add(new ValidationResult(S["No audience can be set when using another tenant."], new[]
                 {
@@ -155,7 +155,7 @@ namespace OrchardCore.OpenId.Services
                 }));
             }
 
-            if (settings.Authority != null && String.IsNullOrEmpty(settings.Audience))
+            if (settings.Authority != null && string.IsNullOrEmpty(settings.Audience))
             {
                 results.Add(new ValidationResult(S["An audience must be set when configuring the authority."], new[]
                 {
@@ -171,7 +171,7 @@ namespace OrchardCore.OpenId.Services
                 }));
             }
 
-            if (!String.IsNullOrEmpty(settings.Audience) &&
+            if (!string.IsNullOrEmpty(settings.Audience) &&
                 settings.Audience.StartsWith(OpenIdConstants.Prefixes.Tenant, StringComparison.OrdinalIgnoreCase))
             {
                 results.Add(new ValidationResult(S["The audience cannot start with the special 'oct:' prefix."], new[]
@@ -182,8 +182,8 @@ namespace OrchardCore.OpenId.Services
 
             // If a tenant was specified, ensure it is valid, that the OpenID server feature
             // was enabled and that at least a scope linked with the current tenant exists.
-            if (!String.IsNullOrEmpty(settings.Tenant) &&
-                !String.Equals(settings.Tenant, _shellSettings.Name))
+            if (!string.IsNullOrEmpty(settings.Tenant) &&
+                !string.Equals(settings.Tenant, _shellSettings.Name))
             {
                 if (!_shellHost.TryGetSettings(settings.Tenant, out var shellSettings))
                 {

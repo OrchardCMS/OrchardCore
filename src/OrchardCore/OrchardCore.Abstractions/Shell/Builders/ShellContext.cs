@@ -71,7 +71,7 @@ namespace OrchardCore.Environment.Shell.Builders
             }
 
             /// <summary>
-            /// Wether or not the tenant has been pre-created on first loading.
+            /// Whether or not the tenant has been pre-created on first loading.
             /// </summary>
             public bool PreCreated { get; init; }
         }

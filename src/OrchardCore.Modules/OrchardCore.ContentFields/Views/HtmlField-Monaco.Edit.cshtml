@@ -13,7 +13,7 @@
         @await DisplayAsync(await New.ShortcodeModal())
         <div id="@Html.IdFor(x => x.Html)_editor" asp-for="Text" style="min-height: 400px;" class="form-control" dir="@culture.GetLanguageDirection()"></div>
         <textarea asp-for="Html" hidden>@Html.Raw(Model.Html)</textarea>
-        @if (!String.IsNullOrEmpty(settings.Hint))
+        @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
         }
@@ -31,13 +31,13 @@
             }
             settings.language = 'html';
 
-            var html = document.getElementsByTagName("html")[0];
+            var html = document.documentElement;
             const mutationObserver = new MutationObserver(setTheme);
             mutationObserver.observe(html, { attributes: true });
 
             function setTheme() {
-                var theme = html.dataset.theme;
-                if (theme === "darkmode") {
+                var theme = html.dataset.bsTheme;
+                if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     monaco.editor.setTheme('vs-dark')
                 } else {
                     monaco.editor.setTheme('vs')

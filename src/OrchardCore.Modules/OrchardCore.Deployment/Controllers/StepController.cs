@@ -138,7 +138,7 @@ namespace OrchardCore.Deployment.Controllers
                 return NotFound();
             }
 
-            var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => String.Equals(x.Id, stepId, StringComparison.OrdinalIgnoreCase));
+            var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => string.Equals(x.Id, stepId, StringComparison.OrdinalIgnoreCase));
 
             if (step == null)
             {
@@ -174,7 +174,7 @@ namespace OrchardCore.Deployment.Controllers
                 return NotFound();
             }
 
-            var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => String.Equals(x.Id, model.DeploymentStepId, StringComparison.OrdinalIgnoreCase));
+            var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => string.Equals(x.Id, model.DeploymentStepId, StringComparison.OrdinalIgnoreCase));
 
             if (step == null)
             {
@@ -213,7 +213,7 @@ namespace OrchardCore.Deployment.Controllers
                 return NotFound();
             }
 
-            var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => String.Equals(x.Id, stepId, StringComparison.OrdinalIgnoreCase));
+            var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => string.Equals(x.Id, stepId, StringComparison.OrdinalIgnoreCase));
 
             if (step == null)
             {

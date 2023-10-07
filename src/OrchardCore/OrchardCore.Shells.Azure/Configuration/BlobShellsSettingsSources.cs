@@ -13,7 +13,7 @@ namespace OrchardCore.Shells.Azure.Configuration
 {
     public class BlobShellsSettingsSources : IShellsSettingsSources
     {
-        private const string _tenantsBlobName = "tenants.json";
+        private const string TenantsBlobName = "tenants.json";
 
         private readonly IShellsFileStore _shellsFileStore;
         private readonly BlobShellStorageOptions _blobOptions;
@@ -26,17 +26,17 @@ namespace OrchardCore.Shells.Azure.Configuration
         {
             _shellsFileStore = shellsFileStore;
             _blobOptions = blobOptions;
-            _tenantsFileSystemName = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, _tenantsBlobName);
+            _tenantsFileSystemName = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, TenantsBlobName);
         }
 
         public async Task AddSourcesAsync(IConfigurationBuilder builder)
         {
-            var fileInfo = await _shellsFileStore.GetFileInfoAsync(_tenantsBlobName);
+            var fileInfo = await _shellsFileStore.GetFileInfoAsync(TenantsBlobName);
             if (fileInfo == null && _blobOptions.MigrateFromFiles)
             {
                 if (await TryMigrateFromFileAsync())
                 {
-                    fileInfo = await _shellsFileStore.GetFileInfoAsync(_tenantsBlobName);
+                    fileInfo = await _shellsFileStore.GetFileInfoAsync(TenantsBlobName);
                 }
                 else
                 {
@@ -46,7 +46,7 @@ namespace OrchardCore.Shells.Azure.Configuration
 
             if (fileInfo != null)
             {
-                var stream = await _shellsFileStore.GetFileStreamAsync(_tenantsBlobName);
+                var stream = await _shellsFileStore.GetFileStreamAsync(TenantsBlobName);
                 builder.AddJsonStream(stream);
             }
         }
@@ -57,11 +57,11 @@ namespace OrchardCore.Shells.Azure.Configuration
         {
             JObject tenantsSettings;
 
-            var fileInfo = await _shellsFileStore.GetFileInfoAsync(_tenantsBlobName);
+            var fileInfo = await _shellsFileStore.GetFileInfoAsync(TenantsBlobName);
 
             if (fileInfo != null)
             {
-                using var stream = await _shellsFileStore.GetFileStreamAsync(_tenantsBlobName);
+                using var stream = await _shellsFileStore.GetFileStreamAsync(TenantsBlobName);
                 using var streamReader = new StreamReader(stream);
                 using var reader = new JsonTextReader(streamReader);
                 tenantsSettings = await JObject.LoadAsync(reader);
@@ -95,17 +95,17 @@ namespace OrchardCore.Shells.Azure.Configuration
             await jsonWriter.FlushAsync();
 
             memoryStream.Position = 0;
-            await _shellsFileStore.CreateFileFromStreamAsync(_tenantsBlobName, memoryStream);
+            await _shellsFileStore.CreateFileFromStreamAsync(TenantsBlobName, memoryStream);
         }
 
         public async Task RemoveAsync(string tenant)
         {
-            var fileInfo = await _shellsFileStore.GetFileInfoAsync(_tenantsBlobName);
+            var fileInfo = await _shellsFileStore.GetFileInfoAsync(TenantsBlobName);
 
             if (fileInfo != null)
             {
                 JObject tenantsSettings;
-                using (var stream = await _shellsFileStore.GetFileStreamAsync(_tenantsBlobName))
+                using (var stream = await _shellsFileStore.GetFileStreamAsync(TenantsBlobName))
                 {
                     using var streamReader = new StreamReader(stream);
                     using var reader = new JsonTextReader(streamReader);
@@ -121,7 +121,7 @@ namespace OrchardCore.Shells.Azure.Configuration
                 await tenantsSettings.WriteToAsync(jsonWriter);
                 await jsonWriter.FlushAsync();
                 memoryStream.Position = 0;
-                await _shellsFileStore.CreateFileFromStreamAsync(_tenantsBlobName, memoryStream);
+                await _shellsFileStore.CreateFileFromStreamAsync(TenantsBlobName, memoryStream);
             }
         }
 
@@ -133,7 +133,7 @@ namespace OrchardCore.Shells.Azure.Configuration
             }
 
             using var file = File.OpenRead(_tenantsFileSystemName);
-            await _shellsFileStore.CreateFileFromStreamAsync(_tenantsBlobName, file);
+            await _shellsFileStore.CreateFileFromStreamAsync(TenantsBlobName, file);
 
             return true;
         }

@@ -22,13 +22,13 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             _rules = tagMatchingRules.ToArray();
         }
 
-        public string Name { get; } = String.Empty;
-        public string AssemblyName { get; } = String.Empty;
+        public string Name { get; } = string.Empty;
+        public string AssemblyName { get; } = string.Empty;
 
         private static bool Predicate(TagMatchingRuleDescriptor rule, string helper, IEnumerable<string> arguments)
         {
             // Does it match the required tag name
-            if (rule.TagName != "*" && !String.Equals(rule.TagName, helper, StringComparison.OrdinalIgnoreCase))
+            if (rule.TagName != "*" && !string.Equals(rule.TagName, helper, StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }
@@ -43,7 +43,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             var allRequired = rule.Attributes.All(attr => arguments.Any(name =>
             {
                 // Exact match
-                if (String.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }
@@ -51,7 +51,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 // Check by replacing all '_' with '-', e.g. asp_src will map to asp-src
                 name = name.Replace('_', '-');
 
-                if (String.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }

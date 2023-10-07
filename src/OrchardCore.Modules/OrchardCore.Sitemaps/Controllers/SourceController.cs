@@ -142,7 +142,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 return NotFound();
             }
 
-            var source = sitemap.SitemapSources.FirstOrDefault(x => String.Equals(x.Id, sourceId, StringComparison.OrdinalIgnoreCase));
+            var source = sitemap.SitemapSources.FirstOrDefault(x => string.Equals(x.Id, sourceId, StringComparison.OrdinalIgnoreCase));
 
             if (source == null)
             {
@@ -177,7 +177,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 return NotFound();
             }
 
-            var source = sitemap.SitemapSources.FirstOrDefault(x => String.Equals(x.Id, model.SitemapSourceId, StringComparison.OrdinalIgnoreCase));
+            var source = sitemap.SitemapSources.FirstOrDefault(x => string.Equals(x.Id, model.SitemapSourceId, StringComparison.OrdinalIgnoreCase));
 
             if (source == null)
             {
@@ -216,7 +216,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 return NotFound();
             }
 
-            var source = sitemap.SitemapSources.FirstOrDefault(x => String.Equals(x.Id, sourceId, StringComparison.OrdinalIgnoreCase));
+            var source = sitemap.SitemapSources.FirstOrDefault(x => string.Equals(x.Id, sourceId, StringComparison.OrdinalIgnoreCase));
 
             if (source == null)
             {
