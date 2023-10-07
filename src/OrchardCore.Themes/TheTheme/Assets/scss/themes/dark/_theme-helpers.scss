@@ -11,10 +11,6 @@
     background-color: rgba(var(--bs-body-bg-rgb), var(--bs-bg-opacity, 1));
 }
 
-.text-bg-navbar {
-    @extend .text-bg-theme;
-}
-
 .btn-theme {
     color: #fff;
     background-color: #212529;

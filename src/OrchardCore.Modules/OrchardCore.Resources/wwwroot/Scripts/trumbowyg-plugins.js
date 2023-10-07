@@ -1333,6 +1333,266 @@
     langs: {
       // jshint camelcase:false
       en: {
+        fontFamily: 'Font'
+      },
+      az: {
+        fontFamily: 'Şrift'
+      },
+      by: {
+        fontFamily: 'Шрыфт'
+      },
+      ca: {
+        fontFamily: 'Font'
+      },
+      da: {
+        fontFamily: 'Skrifttype'
+      },
+      de: {
+        fontFamily: 'Schriftart'
+      },
+      es: {
+        fontFamily: 'Fuente'
+      },
+      et: {
+        fontFamily: 'Font'
+      },
+      fr: {
+        fontFamily: 'Police'
+      },
+      hu: {
+        fontFamily: 'Betűtípus'
+      },
+      ko: {
+        fontFamily: '글꼴'
+      },
+      nl: {
+        fontFamily: 'Lettertype'
+      },
+      pt_br: {
+        fontFamily: 'Fonte'
+      },
+      ru: {
+        fontFamily: 'Шрифт'
+      },
+      sl: {
+        fontFamily: 'Pisava'
+      },
+      tr: {
+        fontFamily: 'Yazı tipi'
+      },
+      zh_tw: {
+        fontFamily: '字體'
+      }
+    }
+  });
+  // jshint camelcase:true
+
+  var defaultOptions = {
+    fontList: [{
+      name: 'Arial',
+      family: 'Arial, Helvetica, sans-serif'
+    }, {
+      name: 'Arial Black',
+      family: 'Arial Black, Gadget, sans-serif'
+    }, {
+      name: 'Comic Sans',
+      family: 'Comic Sans MS, Textile, cursive, sans-serif'
+    }, {
+      name: 'Courier New',
+      family: 'Courier New, Courier, monospace'
+    }, {
+      name: 'Georgia',
+      family: 'Georgia, serif'
+    }, {
+      name: 'Impact',
+      family: 'Impact, Charcoal, sans-serif'
+    }, {
+      name: 'Lucida Console',
+      family: 'Lucida Console, Monaco, monospace'
+    }, {
+      name: 'Lucida Sans',
+      family: 'Lucida Sans Uncide, Lucida Grande, sans-serif'
+    }, {
+      name: 'Palatino',
+      family: 'Palatino Linotype, Book Antiqua, Palatino, serif'
+    }, {
+      name: 'Tahoma',
+      family: 'Tahoma, Geneva, sans-serif'
+    }, {
+      name: 'Times New Roman',
+      family: 'Times New Roman, Times, serif'
+    }, {
+      name: 'Trebuchet',
+      family: 'Trebuchet MS, Helvetica, sans-serif'
+    }, {
+      name: 'Verdana',
+      family: 'Verdana, Geneva, sans-serif'
+    }]
+  };
+
+  // Add dropdown with web safe fonts
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      fontfamily: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.fontfamily = $.extend({}, defaultOptions, trumbowyg.o.plugins.fontfamily || {});
+          trumbowyg.addBtnDef('fontfamily', {
+            dropdown: buildDropdown(trumbowyg),
+            hasIcon: false,
+            text: trumbowyg.lang.fontFamily
+          });
+        }
+      }
+    }
+  });
+  function buildDropdown(trumbowyg) {
+    var dropdown = [];
+    $.each(trumbowyg.o.plugins.fontfamily.fontList, function (index, font) {
+      trumbowyg.addBtnDef('fontfamily_' + index, {
+        title: '<span style="font-family: ' + font.family + ';">' + font.name + '</span>',
+        hasIcon: false,
+        fn: function fn() {
+          trumbowyg.execCmd('fontName', font.family, true);
+        }
+      });
+      dropdown.push('fontfamily_' + index);
+    });
+    return dropdown;
+  }
+})(jQuery);
+!function (a) {
+  "use strict";
+
+  a.extend(!0, a.trumbowyg, {
+    langs: {
+      en: {
+        fontFamily: "Font"
+      },
+      az: {
+        fontFamily: "Şrift"
+      },
+      by: {
+        fontFamily: "Шрыфт"
+      },
+      ca: {
+        fontFamily: "Font"
+      },
+      da: {
+        fontFamily: "Skrifttype"
+      },
+      de: {
+        fontFamily: "Schriftart"
+      },
+      es: {
+        fontFamily: "Fuente"
+      },
+      et: {
+        fontFamily: "Font"
+      },
+      fr: {
+        fontFamily: "Police"
+      },
+      hu: {
+        fontFamily: "Betűtípus"
+      },
+      ko: {
+        fontFamily: "글꼴"
+      },
+      nl: {
+        fontFamily: "Lettertype"
+      },
+      pt_br: {
+        fontFamily: "Fonte"
+      },
+      ru: {
+        fontFamily: "Шрифт"
+      },
+      sl: {
+        fontFamily: "Pisava"
+      },
+      tr: {
+        fontFamily: "Yazı tipi"
+      },
+      zh_tw: {
+        fontFamily: "字體"
+      }
+    }
+  });
+  var n = {
+    fontList: [{
+      name: "Arial",
+      family: "Arial, Helvetica, sans-serif"
+    }, {
+      name: "Arial Black",
+      family: "Arial Black, Gadget, sans-serif"
+    }, {
+      name: "Comic Sans",
+      family: "Comic Sans MS, Textile, cursive, sans-serif"
+    }, {
+      name: "Courier New",
+      family: "Courier New, Courier, monospace"
+    }, {
+      name: "Georgia",
+      family: "Georgia, serif"
+    }, {
+      name: "Impact",
+      family: "Impact, Charcoal, sans-serif"
+    }, {
+      name: "Lucida Console",
+      family: "Lucida Console, Monaco, monospace"
+    }, {
+      name: "Lucida Sans",
+      family: "Lucida Sans Uncide, Lucida Grande, sans-serif"
+    }, {
+      name: "Palatino",
+      family: "Palatino Linotype, Book Antiqua, Palatino, serif"
+    }, {
+      name: "Tahoma",
+      family: "Tahoma, Geneva, sans-serif"
+    }, {
+      name: "Times New Roman",
+      family: "Times New Roman, Times, serif"
+    }, {
+      name: "Trebuchet",
+      family: "Trebuchet MS, Helvetica, sans-serif"
+    }, {
+      name: "Verdana",
+      family: "Verdana, Geneva, sans-serif"
+    }]
+  };
+  function i(n) {
+    var i = [];
+    return a.each(n.o.plugins.fontfamily.fontList, function (a, e) {
+      n.addBtnDef("fontfamily_" + a, {
+        title: '<span style="font-family: ' + e.family + ';">' + e.name + "</span>",
+        hasIcon: !1,
+        fn: function fn() {
+          n.execCmd("fontName", e.family, !0);
+        }
+      }), i.push("fontfamily_" + a);
+    }), i;
+  }
+  a.extend(!0, a.trumbowyg, {
+    plugins: {
+      fontfamily: {
+        init: function init(e) {
+          e.o.plugins.fontfamily = a.extend({}, n, e.o.plugins.fontfamily || {}), e.addBtnDef("fontfamily", {
+            dropdown: i(e),
+            hasIcon: !1,
+            text: e.lang.fontFamily
+          });
+        }
+      }
+    }
+  });
+}(jQuery);
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
         fontsize: 'Font size',
         fontsizes: {
           'x-small': 'Extra small',
@@ -2043,266 +2303,6 @@
         init: function init(l) {
           l.o.plugins.fontsize = e.extend({}, t, l.o.plugins.fontsize || {}), l.addBtnDef("fontsize", {
             dropdown: a(l)
-          });
-        }
-      }
-    }
-  });
-}(jQuery);
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        fontFamily: 'Font'
-      },
-      az: {
-        fontFamily: 'Şrift'
-      },
-      by: {
-        fontFamily: 'Шрыфт'
-      },
-      ca: {
-        fontFamily: 'Font'
-      },
-      da: {
-        fontFamily: 'Skrifttype'
-      },
-      de: {
-        fontFamily: 'Schriftart'
-      },
-      es: {
-        fontFamily: 'Fuente'
-      },
-      et: {
-        fontFamily: 'Font'
-      },
-      fr: {
-        fontFamily: 'Police'
-      },
-      hu: {
-        fontFamily: 'Betűtípus'
-      },
-      ko: {
-        fontFamily: '글꼴'
-      },
-      nl: {
-        fontFamily: 'Lettertype'
-      },
-      pt_br: {
-        fontFamily: 'Fonte'
-      },
-      ru: {
-        fontFamily: 'Шрифт'
-      },
-      sl: {
-        fontFamily: 'Pisava'
-      },
-      tr: {
-        fontFamily: 'Yazı tipi'
-      },
-      zh_tw: {
-        fontFamily: '字體'
-      }
-    }
-  });
-  // jshint camelcase:true
-
-  var defaultOptions = {
-    fontList: [{
-      name: 'Arial',
-      family: 'Arial, Helvetica, sans-serif'
-    }, {
-      name: 'Arial Black',
-      family: 'Arial Black, Gadget, sans-serif'
-    }, {
-      name: 'Comic Sans',
-      family: 'Comic Sans MS, Textile, cursive, sans-serif'
-    }, {
-      name: 'Courier New',
-      family: 'Courier New, Courier, monospace'
-    }, {
-      name: 'Georgia',
-      family: 'Georgia, serif'
-    }, {
-      name: 'Impact',
-      family: 'Impact, Charcoal, sans-serif'
-    }, {
-      name: 'Lucida Console',
-      family: 'Lucida Console, Monaco, monospace'
-    }, {
-      name: 'Lucida Sans',
-      family: 'Lucida Sans Uncide, Lucida Grande, sans-serif'
-    }, {
-      name: 'Palatino',
-      family: 'Palatino Linotype, Book Antiqua, Palatino, serif'
-    }, {
-      name: 'Tahoma',
-      family: 'Tahoma, Geneva, sans-serif'
-    }, {
-      name: 'Times New Roman',
-      family: 'Times New Roman, Times, serif'
-    }, {
-      name: 'Trebuchet',
-      family: 'Trebuchet MS, Helvetica, sans-serif'
-    }, {
-      name: 'Verdana',
-      family: 'Verdana, Geneva, sans-serif'
-    }]
-  };
-
-  // Add dropdown with web safe fonts
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      fontfamily: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.fontfamily = $.extend({}, defaultOptions, trumbowyg.o.plugins.fontfamily || {});
-          trumbowyg.addBtnDef('fontfamily', {
-            dropdown: buildDropdown(trumbowyg),
-            hasIcon: false,
-            text: trumbowyg.lang.fontFamily
-          });
-        }
-      }
-    }
-  });
-  function buildDropdown(trumbowyg) {
-    var dropdown = [];
-    $.each(trumbowyg.o.plugins.fontfamily.fontList, function (index, font) {
-      trumbowyg.addBtnDef('fontfamily_' + index, {
-        title: '<span style="font-family: ' + font.family + ';">' + font.name + '</span>',
-        hasIcon: false,
-        fn: function fn() {
-          trumbowyg.execCmd('fontName', font.family, true);
-        }
-      });
-      dropdown.push('fontfamily_' + index);
-    });
-    return dropdown;
-  }
-})(jQuery);
-!function (a) {
-  "use strict";
-
-  a.extend(!0, a.trumbowyg, {
-    langs: {
-      en: {
-        fontFamily: "Font"
-      },
-      az: {
-        fontFamily: "Şrift"
-      },
-      by: {
-        fontFamily: "Шрыфт"
-      },
-      ca: {
-        fontFamily: "Font"
-      },
-      da: {
-        fontFamily: "Skrifttype"
-      },
-      de: {
-        fontFamily: "Schriftart"
-      },
-      es: {
-        fontFamily: "Fuente"
-      },
-      et: {
-        fontFamily: "Font"
-      },
-      fr: {
-        fontFamily: "Police"
-      },
-      hu: {
-        fontFamily: "Betűtípus"
-      },
-      ko: {
-        fontFamily: "글꼴"
-      },
-      nl: {
-        fontFamily: "Lettertype"
-      },
-      pt_br: {
-        fontFamily: "Fonte"
-      },
-      ru: {
-        fontFamily: "Шрифт"
-      },
-      sl: {
-        fontFamily: "Pisava"
-      },
-      tr: {
-        fontFamily: "Yazı tipi"
-      },
-      zh_tw: {
-        fontFamily: "字體"
-      }
-    }
-  });
-  var n = {
-    fontList: [{
-      name: "Arial",
-      family: "Arial, Helvetica, sans-serif"
-    }, {
-      name: "Arial Black",
-      family: "Arial Black, Gadget, sans-serif"
-    }, {
-      name: "Comic Sans",
-      family: "Comic Sans MS, Textile, cursive, sans-serif"
-    }, {
-      name: "Courier New",
-      family: "Courier New, Courier, monospace"
-    }, {
-      name: "Georgia",
-      family: "Georgia, serif"
-    }, {
-      name: "Impact",
-      family: "Impact, Charcoal, sans-serif"
-    }, {
-      name: "Lucida Console",
-      family: "Lucida Console, Monaco, monospace"
-    }, {
-      name: "Lucida Sans",
-      family: "Lucida Sans Uncide, Lucida Grande, sans-serif"
-    }, {
-      name: "Palatino",
-      family: "Palatino Linotype, Book Antiqua, Palatino, serif"
-    }, {
-      name: "Tahoma",
-      family: "Tahoma, Geneva, sans-serif"
-    }, {
-      name: "Times New Roman",
-      family: "Times New Roman, Times, serif"
-    }, {
-      name: "Trebuchet",
-      family: "Trebuchet MS, Helvetica, sans-serif"
-    }, {
-      name: "Verdana",
-      family: "Verdana, Geneva, sans-serif"
-    }]
-  };
-  function i(n) {
-    var i = [];
-    return a.each(n.o.plugins.fontfamily.fontList, function (a, e) {
-      n.addBtnDef("fontfamily_" + a, {
-        title: '<span style="font-family: ' + e.family + ';">' + e.name + "</span>",
-        hasIcon: !1,
-        fn: function fn() {
-          n.execCmd("fontName", e.family, !0);
-        }
-      }), i.push("fontfamily_" + a);
-    }), i;
-  }
-  a.extend(!0, a.trumbowyg, {
-    plugins: {
-      fontfamily: {
-        init: function init(e) {
-          e.o.plugins.fontfamily = a.extend({}, n, e.o.plugins.fontfamily || {}), e.addBtnDef("fontfamily", {
-            dropdown: i(e),
-            hasIcon: !1,
-            text: e.lang.fontFamily
           });
         }
       }
@@ -3279,6 +3279,295 @@
     }
   });
 }(jQuery);
+/* ===========================================================
+ * trumbowyg.mathMl.js v1.0
+ * MathML plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : loclamor
+ */
+
+/* globals MathJax */
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        mathml: 'Insert Formulas',
+        formulas: 'Formulas',
+        inline: 'Inline'
+      },
+      az: {
+        mathml: 'Düstur əlavə et',
+        formulas: 'Düsturlar',
+        inline: 'Sətir içi'
+      },
+      by: {
+        mathml: 'Уставіць формулу',
+        formulas: 'Формула',
+        inline: 'Inline-элемент'
+      },
+      ca: {
+        mathml: 'Inserir Fórmula',
+        formulas: 'Fórmula',
+        inline: 'En línia'
+      },
+      da: {
+        mathml: 'Indsæt formler',
+        formulas: 'Formler',
+        inline: 'Inline'
+      },
+      es: {
+        mathml: 'Insertar Fórmula',
+        formulas: 'Fórmula',
+        inline: 'En línea'
+      },
+      et: {
+        mathml: 'Sisesta valem',
+        formulas: 'Valemid',
+        inline: 'Teksti sees'
+      },
+      fr: {
+        mathml: 'Inserer une formule',
+        formulas: 'Formule',
+        inline: 'En ligne'
+      },
+      hu: {
+        mathml: 'Formulák beszúrás',
+        formulas: 'Formulák',
+        inline: 'Inline'
+      },
+      ko: {
+        mathml: '수식 넣기',
+        formulas: '수식',
+        inline: '글 안에 넣기'
+      },
+      pt_br: {
+        mathml: 'Inserir fórmulas',
+        formulas: 'Fórmulas',
+        inline: 'Em linha'
+      },
+      ru: {
+        mathml: 'Вставить формулу',
+        formulas: 'Формула',
+        inline: 'Строчный элемент'
+      },
+      sl: {
+        mathml: 'Vstavi matematični izraz',
+        formulas: 'Formula',
+        inline: 'V vrstici'
+      },
+      tr: {
+        mathml: 'Formül Ekle',
+        formulas: 'Formüller',
+        inline: 'Satır içi'
+      },
+      zh_tw: {
+        mathml: '插入方程式',
+        formulas: '方程式',
+        inline: '內嵌'
+      }
+    },
+    // jshint camelcase:true
+
+    plugins: {
+      mathml: {
+        init: function init(trumbowyg) {
+          var mathMlOptions = {
+            formulas: {
+              label: trumbowyg.lang.formulas,
+              required: true,
+              value: ''
+            },
+            inline: {
+              label: trumbowyg.lang.inline,
+              attributes: {
+                checked: true
+              },
+              type: 'checkbox',
+              required: false
+            }
+          };
+          var mathmlCallback = function mathmlCallback(v) {
+            var delimiter = v.inline ? '$' : '$$';
+            if (trumbowyg.currentMathNode) {
+              $(trumbowyg.currentMathNode).html(delimiter + ' ' + v.formulas + ' ' + delimiter).attr('formulas', v.formulas).attr('inline', v.inline ? 'true' : 'false');
+            } else {
+              var html = '<span contenteditable="false" formulas="' + v.formulas + '" inline="' + (v.inline ? 'true' : 'false') + '" >' + delimiter + ' ' + v.formulas + ' ' + delimiter + '</span>';
+              var node = $(html)[0];
+              node.onclick = openModal;
+              trumbowyg.range.deleteContents();
+              trumbowyg.range.insertNode(node);
+            }
+            trumbowyg.currentMathNode = false;
+            MathJax.Hub.Queue(['Typeset', MathJax.Hub]);
+            return true;
+          };
+          var openModal = function openModal() {
+            trumbowyg.currentMathNode = this;
+            mathMlOptions.formulas.value = $(this).attr('formulas');
+            if ($(this).attr('inline') === 'true') {
+              mathMlOptions.inline.attributes.checked = true;
+            } else {
+              delete mathMlOptions.inline.attributes.checked;
+            }
+            trumbowyg.openModalInsert(trumbowyg.lang.mathml, mathMlOptions, mathmlCallback);
+          };
+          var btnDef = {
+            fn: function fn() {
+              trumbowyg.saveRange();
+              mathMlOptions.formulas.value = trumbowyg.getRangeText();
+              mathMlOptions.inline.attributes.checked = true;
+              trumbowyg.openModalInsert(trumbowyg.lang.mathml, mathMlOptions, mathmlCallback);
+            }
+          };
+          trumbowyg.$ta.on('tbwinit', function () {
+            var nodes = trumbowyg.$ed.find('[formulas]');
+            nodes.each(function (i, elem) {
+              elem.onclick = openModal;
+            });
+          });
+          trumbowyg.addBtnDef('mathml', btnDef);
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.mathMl.js v1.0
+ * MathML plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : loclamor
+ */
+!function (e) {
+  "use strict";
+
+  e.extend(!0, e.trumbowyg, {
+    langs: {
+      en: {
+        mathml: "Insert Formulas",
+        formulas: "Formulas",
+        inline: "Inline"
+      },
+      az: {
+        mathml: "Düstur əlavə et",
+        formulas: "Düsturlar",
+        inline: "Sətir içi"
+      },
+      by: {
+        mathml: "Уставіць формулу",
+        formulas: "Формула",
+        inline: "Inline-элемент"
+      },
+      ca: {
+        mathml: "Inserir Fórmula",
+        formulas: "Fórmula",
+        inline: "En línia"
+      },
+      da: {
+        mathml: "Indsæt formler",
+        formulas: "Formler",
+        inline: "Inline"
+      },
+      es: {
+        mathml: "Insertar Fórmula",
+        formulas: "Fórmula",
+        inline: "En línea"
+      },
+      et: {
+        mathml: "Sisesta valem",
+        formulas: "Valemid",
+        inline: "Teksti sees"
+      },
+      fr: {
+        mathml: "Inserer une formule",
+        formulas: "Formule",
+        inline: "En ligne"
+      },
+      hu: {
+        mathml: "Formulák beszúrás",
+        formulas: "Formulák",
+        inline: "Inline"
+      },
+      ko: {
+        mathml: "수식 넣기",
+        formulas: "수식",
+        inline: "글 안에 넣기"
+      },
+      pt_br: {
+        mathml: "Inserir fórmulas",
+        formulas: "Fórmulas",
+        inline: "Em linha"
+      },
+      ru: {
+        mathml: "Вставить формулу",
+        formulas: "Формула",
+        inline: "Строчный элемент"
+      },
+      sl: {
+        mathml: "Vstavi matematični izraz",
+        formulas: "Formula",
+        inline: "V vrstici"
+      },
+      tr: {
+        mathml: "Formül Ekle",
+        formulas: "Formüller",
+        inline: "Satır içi"
+      },
+      zh_tw: {
+        mathml: "插入方程式",
+        formulas: "方程式",
+        inline: "內嵌"
+      }
+    },
+    plugins: {
+      mathml: {
+        init: function init(l) {
+          var n = {
+              formulas: {
+                label: l.lang.formulas,
+                required: !0,
+                value: ""
+              },
+              inline: {
+                label: l.lang.inline,
+                attributes: {
+                  checked: !0
+                },
+                type: "checkbox",
+                required: !1
+              }
+            },
+            a = function a(n) {
+              var a = n.inline ? "$" : "$$";
+              if (l.currentMathNode) e(l.currentMathNode).html(a + " " + n.formulas + " " + a).attr("formulas", n.formulas).attr("inline", n.inline ? "true" : "false");else {
+                var r = '<span contenteditable="false" formulas="' + n.formulas + '" inline="' + (n.inline ? "true" : "false") + '" >' + a + " " + n.formulas + " " + a + "</span>",
+                  i = e(r)[0];
+                i.onclick = t, l.range.deleteContents(), l.range.insertNode(i);
+              }
+              return l.currentMathNode = !1, MathJax.Hub.Queue(["Typeset", MathJax.Hub]), !0;
+            },
+            t = function t() {
+              l.currentMathNode = this, n.formulas.value = e(this).attr("formulas"), "true" === e(this).attr("inline") ? n.inline.attributes.checked = !0 : delete n.inline.attributes.checked, l.openModalInsert(l.lang.mathml, n, a);
+            },
+            r = {
+              fn: function fn() {
+                l.saveRange(), n.formulas.value = l.getRangeText(), n.inline.attributes.checked = !0, l.openModalInsert(l.lang.mathml, n, a);
+              }
+            };
+          l.$ta.on("tbwinit", function () {
+            l.$ed.find("[formulas]").each(function (e, l) {
+              l.onclick = t;
+            });
+          }), l.addBtnDef("mathml", r);
+        }
+      }
+    }
+  });
+}(jQuery);
 (function ($) {
   'use strict';
 
@@ -3655,295 +3944,6 @@
           t.o.plugins.lineheight = e.extend({}, i, t.o.plugins.lineheight || {}), t.addBtnDef("lineheight", {
             dropdown: n(t)
           });
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.mathMl.js v1.0
- * MathML plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : loclamor
- */
-
-/* globals MathJax */
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        mathml: 'Insert Formulas',
-        formulas: 'Formulas',
-        inline: 'Inline'
-      },
-      az: {
-        mathml: 'Düstur əlavə et',
-        formulas: 'Düsturlar',
-        inline: 'Sətir içi'
-      },
-      by: {
-        mathml: 'Уставіць формулу',
-        formulas: 'Формула',
-        inline: 'Inline-элемент'
-      },
-      ca: {
-        mathml: 'Inserir Fórmula',
-        formulas: 'Fórmula',
-        inline: 'En línia'
-      },
-      da: {
-        mathml: 'Indsæt formler',
-        formulas: 'Formler',
-        inline: 'Inline'
-      },
-      es: {
-        mathml: 'Insertar Fórmula',
-        formulas: 'Fórmula',
-        inline: 'En línea'
-      },
-      et: {
-        mathml: 'Sisesta valem',
-        formulas: 'Valemid',
-        inline: 'Teksti sees'
-      },
-      fr: {
-        mathml: 'Inserer une formule',
-        formulas: 'Formule',
-        inline: 'En ligne'
-      },
-      hu: {
-        mathml: 'Formulák beszúrás',
-        formulas: 'Formulák',
-        inline: 'Inline'
-      },
-      ko: {
-        mathml: '수식 넣기',
-        formulas: '수식',
-        inline: '글 안에 넣기'
-      },
-      pt_br: {
-        mathml: 'Inserir fórmulas',
-        formulas: 'Fórmulas',
-        inline: 'Em linha'
-      },
-      ru: {
-        mathml: 'Вставить формулу',
-        formulas: 'Формула',
-        inline: 'Строчный элемент'
-      },
-      sl: {
-        mathml: 'Vstavi matematični izraz',
-        formulas: 'Formula',
-        inline: 'V vrstici'
-      },
-      tr: {
-        mathml: 'Formül Ekle',
-        formulas: 'Formüller',
-        inline: 'Satır içi'
-      },
-      zh_tw: {
-        mathml: '插入方程式',
-        formulas: '方程式',
-        inline: '內嵌'
-      }
-    },
-    // jshint camelcase:true
-
-    plugins: {
-      mathml: {
-        init: function init(trumbowyg) {
-          var mathMlOptions = {
-            formulas: {
-              label: trumbowyg.lang.formulas,
-              required: true,
-              value: ''
-            },
-            inline: {
-              label: trumbowyg.lang.inline,
-              attributes: {
-                checked: true
-              },
-              type: 'checkbox',
-              required: false
-            }
-          };
-          var mathmlCallback = function mathmlCallback(v) {
-            var delimiter = v.inline ? '$' : '$$';
-            if (trumbowyg.currentMathNode) {
-              $(trumbowyg.currentMathNode).html(delimiter + ' ' + v.formulas + ' ' + delimiter).attr('formulas', v.formulas).attr('inline', v.inline ? 'true' : 'false');
-            } else {
-              var html = '<span contenteditable="false" formulas="' + v.formulas + '" inline="' + (v.inline ? 'true' : 'false') + '" >' + delimiter + ' ' + v.formulas + ' ' + delimiter + '</span>';
-              var node = $(html)[0];
-              node.onclick = openModal;
-              trumbowyg.range.deleteContents();
-              trumbowyg.range.insertNode(node);
-            }
-            trumbowyg.currentMathNode = false;
-            MathJax.Hub.Queue(['Typeset', MathJax.Hub]);
-            return true;
-          };
-          var openModal = function openModal() {
-            trumbowyg.currentMathNode = this;
-            mathMlOptions.formulas.value = $(this).attr('formulas');
-            if ($(this).attr('inline') === 'true') {
-              mathMlOptions.inline.attributes.checked = true;
-            } else {
-              delete mathMlOptions.inline.attributes.checked;
-            }
-            trumbowyg.openModalInsert(trumbowyg.lang.mathml, mathMlOptions, mathmlCallback);
-          };
-          var btnDef = {
-            fn: function fn() {
-              trumbowyg.saveRange();
-              mathMlOptions.formulas.value = trumbowyg.getRangeText();
-              mathMlOptions.inline.attributes.checked = true;
-              trumbowyg.openModalInsert(trumbowyg.lang.mathml, mathMlOptions, mathmlCallback);
-            }
-          };
-          trumbowyg.$ta.on('tbwinit', function () {
-            var nodes = trumbowyg.$ed.find('[formulas]');
-            nodes.each(function (i, elem) {
-              elem.onclick = openModal;
-            });
-          });
-          trumbowyg.addBtnDef('mathml', btnDef);
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.mathMl.js v1.0
- * MathML plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : loclamor
- */
-!function (e) {
-  "use strict";
-
-  e.extend(!0, e.trumbowyg, {
-    langs: {
-      en: {
-        mathml: "Insert Formulas",
-        formulas: "Formulas",
-        inline: "Inline"
-      },
-      az: {
-        mathml: "Düstur əlavə et",
-        formulas: "Düsturlar",
-        inline: "Sətir içi"
-      },
-      by: {
-        mathml: "Уставіць формулу",
-        formulas: "Формула",
-        inline: "Inline-элемент"
-      },
-      ca: {
-        mathml: "Inserir Fórmula",
-        formulas: "Fórmula",
-        inline: "En línia"
-      },
-      da: {
-        mathml: "Indsæt formler",
-        formulas: "Formler",
-        inline: "Inline"
-      },
-      es: {
-        mathml: "Insertar Fórmula",
-        formulas: "Fórmula",
-        inline: "En línea"
-      },
-      et: {
-        mathml: "Sisesta valem",
-        formulas: "Valemid",
-        inline: "Teksti sees"
-      },
-      fr: {
-        mathml: "Inserer une formule",
-        formulas: "Formule",
-        inline: "En ligne"
-      },
-      hu: {
-        mathml: "Formulák beszúrás",
-        formulas: "Formulák",
-        inline: "Inline"
-      },
-      ko: {
-        mathml: "수식 넣기",
-        formulas: "수식",
-        inline: "글 안에 넣기"
-      },
-      pt_br: {
-        mathml: "Inserir fórmulas",
-        formulas: "Fórmulas",
-        inline: "Em linha"
-      },
-      ru: {
-        mathml: "Вставить формулу",
-        formulas: "Формула",
-        inline: "Строчный элемент"
-      },
-      sl: {
-        mathml: "Vstavi matematični izraz",
-        formulas: "Formula",
-        inline: "V vrstici"
-      },
-      tr: {
-        mathml: "Formül Ekle",
-        formulas: "Formüller",
-        inline: "Satır içi"
-      },
-      zh_tw: {
-        mathml: "插入方程式",
-        formulas: "方程式",
-        inline: "內嵌"
-      }
-    },
-    plugins: {
-      mathml: {
-        init: function init(l) {
-          var n = {
-              formulas: {
-                label: l.lang.formulas,
-                required: !0,
-                value: ""
-              },
-              inline: {
-                label: l.lang.inline,
-                attributes: {
-                  checked: !0
-                },
-                type: "checkbox",
-                required: !1
-              }
-            },
-            a = function a(n) {
-              var a = n.inline ? "$" : "$$";
-              if (l.currentMathNode) e(l.currentMathNode).html(a + " " + n.formulas + " " + a).attr("formulas", n.formulas).attr("inline", n.inline ? "true" : "false");else {
-                var r = '<span contenteditable="false" formulas="' + n.formulas + '" inline="' + (n.inline ? "true" : "false") + '" >' + a + " " + n.formulas + " " + a + "</span>",
-                  i = e(r)[0];
-                i.onclick = t, l.range.deleteContents(), l.range.insertNode(i);
-              }
-              return l.currentMathNode = !1, MathJax.Hub.Queue(["Typeset", MathJax.Hub]), !0;
-            },
-            t = function t() {
-              l.currentMathNode = this, n.formulas.value = e(this).attr("formulas"), "true" === e(this).attr("inline") ? n.inline.attributes.checked = !0 : delete n.inline.attributes.checked, l.openModalInsert(l.lang.mathml, n, a);
-            },
-            r = {
-              fn: function fn() {
-                l.saveRange(), n.formulas.value = l.getRangeText(), n.inline.attributes.checked = !0, l.openModalInsert(l.lang.mathml, n, a);
-              }
-            };
-          l.$ta.on("tbwinit", function () {
-            l.$ed.find("[formulas]").each(function (e, l) {
-              l.onclick = t;
-            });
-          }), l.addBtnDef("mathml", r);
         }
       }
     }
@@ -4407,6 +4407,80 @@
   });
 }(jQuery);
 /* ===========================================================
+ * trumbowyg.pasteimage.js v1.0
+ * Basic base64 paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ */
+
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      pasteImage: {
+        init: function init(trumbowyg) {
+          trumbowyg.pasteHandlers.push(function (pasteEvent) {
+            try {
+              var items = (pasteEvent.originalEvent || pasteEvent).clipboardData.items,
+                mustPreventDefault = false,
+                reader;
+              for (var i = items.length - 1; i >= 0; i -= 1) {
+                if (items[i].type.match(/^image\//)) {
+                  reader = new FileReader();
+                  /* jshint -W083 */
+                  reader.onloadend = function (event) {
+                    trumbowyg.execCmd('insertImage', event.target.result, false, true);
+                  };
+                  /* jshint +W083 */
+                  reader.readAsDataURL(items[i].getAsFile());
+                  mustPreventDefault = true;
+                }
+              }
+              if (mustPreventDefault) {
+                pasteEvent.stopPropagation();
+                pasteEvent.preventDefault();
+              }
+            } catch (c) {}
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.pasteimage.js v1.0
+ * Basic base64 paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ */
+!function (e) {
+  "use strict";
+
+  e.extend(!0, e.trumbowyg, {
+    plugins: {
+      pasteImage: {
+        init: function init(e) {
+          e.pasteHandlers.push(function (t) {
+            try {
+              for (var a, n = (t.originalEvent || t).clipboardData.items, i = !1, r = n.length - 1; r >= 0; r -= 1) n[r].type.match(/^image\//) && ((a = new FileReader()).onloadend = function (t) {
+                e.execCmd("insertImage", t.target.result, !1, !0);
+              }, a.readAsDataURL(n[r].getAsFile()), i = !0);
+              i && (t.stopPropagation(), t.preventDefault());
+            } catch (e) {}
+          });
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
  * trumbowyg.pasteembed.js v1.0
  * Url paste to iframe with noembed. Plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -4546,80 +4620,6 @@
                 });
               }
             } catch (t) {}
-          });
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.pasteimage.js v1.0
- * Basic base64 paste plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Alexandre Demode (Alex-D)
- *          Twitter : @AlexandreDemode
- *          Website : alex-d.fr
- */
-
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      pasteImage: {
-        init: function init(trumbowyg) {
-          trumbowyg.pasteHandlers.push(function (pasteEvent) {
-            try {
-              var items = (pasteEvent.originalEvent || pasteEvent).clipboardData.items,
-                mustPreventDefault = false,
-                reader;
-              for (var i = items.length - 1; i >= 0; i -= 1) {
-                if (items[i].type.match(/^image\//)) {
-                  reader = new FileReader();
-                  /* jshint -W083 */
-                  reader.onloadend = function (event) {
-                    trumbowyg.execCmd('insertImage', event.target.result, false, true);
-                  };
-                  /* jshint +W083 */
-                  reader.readAsDataURL(items[i].getAsFile());
-                  mustPreventDefault = true;
-                }
-              }
-              if (mustPreventDefault) {
-                pasteEvent.stopPropagation();
-                pasteEvent.preventDefault();
-              }
-            } catch (c) {}
-          });
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.pasteimage.js v1.0
- * Basic base64 paste plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Alexandre Demode (Alex-D)
- *          Twitter : @AlexandreDemode
- *          Website : alex-d.fr
- */
-!function (e) {
-  "use strict";
-
-  e.extend(!0, e.trumbowyg, {
-    plugins: {
-      pasteImage: {
-        init: function init(e) {
-          e.pasteHandlers.push(function (t) {
-            try {
-              for (var a, n = (t.originalEvent || t).clipboardData.items, i = !1, r = n.length - 1; r >= 0; r -= 1) n[r].type.match(/^image\//) && ((a = new FileReader()).onloadend = function (t) {
-                e.execCmd("insertImage", t.target.result, !1, !0);
-              }, a.readAsDataURL(n[r].getAsFile()), i = !0);
-              i && (t.stopPropagation(), t.preventDefault());
-            } catch (e) {}
           });
         }
       }
