@@ -3,7 +3,7 @@
 <h5>@T["Content type"]</h5>
 
 <div class="mb-3" asp-validation-class-for="SelectedOperation">
-    <div class="w-sm-75 w-md-50 w-lg-25 pe-md-3">
+    <div class="w-sm-75 w-lg-75 w-xl-50">
         <label asp-for="SelectedOperation">@T["Operation"]</label>
         @await Component.InvokeAsync("SelectStringOperation", new { selectedOperation = Model.SelectedOperation, htmlName = Html.NameFor(m => m.SelectedOperation) })
         <span asp-validation-for="SelectedOperation"></span>
@@ -12,7 +12,7 @@
 </div>
 
 <div class="mb-3" asp-validation-class-for="Value">
-    <div class="w-sm-75 w-md-50 w-lg-25 pe-md-3">
+    <div class="w-sm-75 w-lg-75 w-xl-50">
         <label asp-for="Value">@T["Value"]</label>
         <input asp-for="Value" class="form-control" type="text" />
         <span asp-validation-for="Value"></span>

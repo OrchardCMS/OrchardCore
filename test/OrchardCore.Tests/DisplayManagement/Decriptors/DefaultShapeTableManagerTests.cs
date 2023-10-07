@@ -35,7 +35,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, Array.Empty<string>(), false, false, false) }
+                        { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, Array.Empty<string>(), false, false, false) }
                     };
 
                 Features = features;
@@ -69,7 +69,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, Array.Empty<string>(), false, false, false) }
+                        { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, Array.Empty<string>(), false, false, false) }
                     };
 
                 Features = features;
@@ -96,7 +96,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 Features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, new string[] { baseTheme.Id }, false, false, false) }
+                        { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, new string[] { baseTheme.Id }, false, false, false) }
                     };
 
                 Id = name;
@@ -312,7 +312,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
         {
             var manager = _serviceProvider.GetService<IShapeTableManager>();
             var shapeTable1 = manager.GetShapeTable(null);
-            var shapeTable2 = manager.GetShapeTable(String.Empty);
+            var shapeTable2 = manager.GetShapeTable(string.Empty);
             Assert.NotNull(shapeTable1.Descriptors["Hello"]);
             Assert.NotNull(shapeTable2.Descriptors["Hello"]);
         }
@@ -355,14 +355,14 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
         [Fact]
         public void DescribedPlacementIsReturnedIfNotNull()
         {
-            var shapeDetail = new ShapePlacementContext("Foo", "Detail", String.Empty, null);
-            var shapeSummary = new ShapePlacementContext("Foo", "Summary", String.Empty, null);
-            var shapeTitle = new ShapePlacementContext("Foo", "Title", String.Empty, null);
+            var shapeDetail = new ShapePlacementContext("Foo", "Detail", string.Empty, null);
+            var shapeSummary = new ShapePlacementContext("Foo", "Summary", string.Empty, null);
+            var shapeTitle = new ShapePlacementContext("Foo", "Title", string.Empty, null);
 
             _serviceProvider.GetService<TestShapeProvider>().Discover =
                 builder => builder.Describe("Hello1").From(TestFeature())
                     .Placement(ctx => ctx.DisplayType == "Detail" ? new PlacementInfo { Location = "Main" } : null)
-                    .Placement(ctx => ctx.DisplayType == "Summary" ? new PlacementInfo { Location = String.Empty } : null);
+                    .Placement(ctx => ctx.DisplayType == "Summary" ? new PlacementInfo { Location = string.Empty } : null);
 
             var manager = _serviceProvider.GetService<IShapeTableManager>();
             var hello = manager.GetShapeTable(null).Descriptors["Hello1"];
@@ -385,14 +385,14 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
         [Fact]
         public void TwoArgumentVariationDoesSameThing()
         {
-            var shapeDetail = new ShapePlacementContext("Foo", "Detail", String.Empty, null);
-            var shapeSummary = new ShapePlacementContext("Foo", "Summary", String.Empty, null);
-            var shapeTitle = new ShapePlacementContext("Foo", "Title", String.Empty, null);
+            var shapeDetail = new ShapePlacementContext("Foo", "Detail", string.Empty, null);
+            var shapeSummary = new ShapePlacementContext("Foo", "Summary", string.Empty, null);
+            var shapeTitle = new ShapePlacementContext("Foo", "Title", string.Empty, null);
 
             _serviceProvider.GetService<TestShapeProvider>().Discover =
                 builder => builder.Describe("Hello2").From(TestFeature())
                     .Placement(ctx => ctx.DisplayType == "Detail", new PlacementInfo { Location = "Main" })
-                    .Placement(ctx => ctx.DisplayType == "Summary", new PlacementInfo { Location = String.Empty });
+                    .Placement(ctx => ctx.DisplayType == "Summary", new PlacementInfo { Location = string.Empty });
 
             var manager = _serviceProvider.GetService<IShapeTableManager>();
             var hello = manager.GetShapeTable(null).Descriptors["Hello2"];

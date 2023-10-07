@@ -78,6 +78,16 @@ namespace OrchardCore.Media
         /// </summary>
         public StaticFileOptions StaticFileOptions { get; set; }
 
+        /// <summary>
+        /// The maximum chunk size when uploading files in bytes. If 0, no chunked upload is used. Defaults to 100 MB.
+        /// </summary>
+        public int MaxUploadChunkSize { get; set; }
+
+        /// <summary>
+        /// The lifetime of temporary files created during upload. Defaults to 1 hour.
+        /// </summary>
+        public TimeSpan TemporaryFileLifetime { get; set; }
+
         public const string EncryptedCommandCacheKeyPrefix = "MediaCommands:";
     }
 }

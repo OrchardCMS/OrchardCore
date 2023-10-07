@@ -120,7 +120,7 @@ namespace OrchardCore.Email.Workflows.Activities
                 IsHtmlBody = IsHtmlBody
             };
 
-            if (!String.IsNullOrWhiteSpace(sender))
+            if (!string.IsNullOrWhiteSpace(sender))
             {
                 message.Sender = sender.Trim();
             }

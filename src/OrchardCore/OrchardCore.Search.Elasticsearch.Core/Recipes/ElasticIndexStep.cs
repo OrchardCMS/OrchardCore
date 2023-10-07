@@ -28,7 +28,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "ElasticIndexSettings", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "ElasticIndexSettings", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

@@ -9,7 +9,7 @@
 
 <div class="mb-3">
     <span class="hint">@T["The site settings to add as part of the plan."]</span>
-    <ul class="list-group w-md-50">
+    <ul class="list-group w-sm-75 w-lg-75 w-xl-50">
         @foreach (var setting in typeof(SiteSettings).GetProperties(BindingFlags.Public | BindingFlags.Instance))
         {
             if (setting.GetCustomAttributes(false).OfType<JsonIgnoreAttribute>().Any())

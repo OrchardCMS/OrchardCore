@@ -101,7 +101,7 @@ namespace OrchardCore.Contents.Controllers
             }
 
             // The parameter contentTypeId is used by the AdminMenus. Pass it to the options.
-            if (!String.IsNullOrEmpty(contentTypeId))
+            if (!string.IsNullOrEmpty(contentTypeId))
             {
                 options.SelectedContentType = contentTypeId;
             }
@@ -110,7 +110,7 @@ namespace OrchardCore.Contents.Controllers
             // The options must still be bound so that options that are not filters are still bound.
             options.FilterResult = queryFilterResult;
 
-            var hasSelectedContentType = !String.IsNullOrEmpty(options.SelectedContentType);
+            var hasSelectedContentType = !string.IsNullOrEmpty(options.SelectedContentType);
 
             if (hasSelectedContentType)
             {
@@ -126,7 +126,7 @@ namespace OrchardCore.Contents.Controllers
                 options.CreatableTypes = await GetCreatableTypeOptionsAsync(options.CanCreateSelectedContentType, contentTypeDefinition);
             }
 
-            if (!hasSelectedContentType && !String.IsNullOrEmpty(stereotype))
+            if (!hasSelectedContentType && !string.IsNullOrEmpty(stereotype))
             {
                 // When a stereotype is provided via the query parameter or options a placeholder node is used to apply a filter.
                 options.FilterResult.TryAddOrReplace(new StereotypeFilterNode(stereotype));
@@ -182,7 +182,7 @@ namespace OrchardCore.Contents.Controllers
             };
 
             if (options.ContentTypeOptions == null
-                && (String.IsNullOrEmpty(options.SelectedContentType) || String.IsNullOrEmpty(contentTypeId)))
+                && (string.IsNullOrEmpty(options.SelectedContentType) || string.IsNullOrEmpty(contentTypeId)))
             {
                 options.ContentTypeOptions = await GetListableContentTypeOptionsAsync(contentTypeDefinitions, options.SelectedContentType, true);
             }
@@ -221,7 +221,7 @@ namespace OrchardCore.Contents.Controllers
             options.ContentItemsCount = contentItemSummaries.Count;
             options.TotalItemCount = pagerShape.TotalItemCount;
 
-            var header = await _contentOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, String.Empty, String.Empty);
+            var header = await _contentOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
             var shapeViewModel = await _shapeFactory.CreateAsync<ListContentsViewModel>("ContentsAdminList", viewModel =>
             {
@@ -239,13 +239,13 @@ namespace OrchardCore.Contents.Controllers
         public async Task<ActionResult> ListFilterPOST(ContentOptionsViewModel options)
         {
             // When the user has typed something into the search input no further evaluation of the form post is required.
-            if (!String.Equals(options.SearchText, options.OriginalSearchText, StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(options.SearchText, options.OriginalSearchText, StringComparison.OrdinalIgnoreCase))
             {
                 return RedirectToAction(nameof(List), new RouteValueDictionary { { "q", options.SearchText } });
             }
 
             // Evaluate the values provided in the form post and map them to the filter result and route values.
-            await _contentOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false, String.Empty, String.Empty);
+            await _contentOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
             // The route value must always be added after the editors have updated the models.
             options.RouteValues.TryAdd("q", options.FilterResult.ToString());
@@ -317,7 +317,7 @@ namespace OrchardCore.Contents.Controllers
 
         public async Task<IActionResult> Create(string id)
         {
-            if (String.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(id))
             {
                 return NotFound();
             }
@@ -345,7 +345,7 @@ namespace OrchardCore.Contents.Controllers
 
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-                await _notifier.SuccessAsync(String.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
+                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
                     ? H["Your content draft has been saved."]
                     : H["Your {0} draft has been saved.", typeDefinition.DisplayName]);
             });
@@ -355,7 +355,7 @@ namespace OrchardCore.Contents.Controllers
         [FormValueRequired("submit.Publish")]
         public async Task<IActionResult> CreateAndPublishPOST(string id, [Bind(Prefix = "submit.Publish")] string submitPublish, string returnUrl)
         {
-            if (String.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(id))
             {
                 return NotFound();
             }
@@ -373,7 +373,7 @@ namespace OrchardCore.Contents.Controllers
 
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-                await _notifier.SuccessAsync(String.IsNullOrWhiteSpace(typeDefinition.DisplayName)
+                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
                     ? H["Your content has been published."]
                     : H["Your {0} has been published.", typeDefinition.DisplayName]);
             });
@@ -428,7 +428,7 @@ namespace OrchardCore.Contents.Controllers
 
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-                await _notifier.SuccessAsync(String.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
+                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
                     ? H["Your content draft has been saved."]
                     : H["Your {0} draft has been saved.", typeDefinition.DisplayName]);
             });
@@ -458,7 +458,7 @@ namespace OrchardCore.Contents.Controllers
 
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-                await _notifier.SuccessAsync(String.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
+                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
                     ? H["Your content has been published."]
                     : H["Your {0} has been published.", typeDefinition.DisplayName]);
             });
@@ -515,7 +515,7 @@ namespace OrchardCore.Contents.Controllers
 
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-                await _notifier.SuccessAsync(String.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
+                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
                     ? H["The draft has been removed."]
                     : H["The {0} draft has been removed.", typeDefinition.DisplayName]);
             }
@@ -539,7 +539,7 @@ namespace OrchardCore.Contents.Controllers
 
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-                await _notifier.SuccessAsync(String.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
+                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
                     ? H["That content has been removed."]
                     : H["That {0} has been removed.", typeDefinition.DisplayName]);
             }
@@ -565,7 +565,7 @@ namespace OrchardCore.Contents.Controllers
 
             var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-            if (String.IsNullOrEmpty(typeDefinition?.DisplayName))
+            if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
             {
                 await _notifier.SuccessAsync(H["That content has been published."]);
             }
@@ -595,7 +595,7 @@ namespace OrchardCore.Contents.Controllers
 
             var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
-            if (String.IsNullOrEmpty(typeDefinition?.DisplayName))
+            if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
             {
                 await _notifier.SuccessAsync(H["The content has been unpublished."]);
             }
@@ -631,14 +631,14 @@ namespace OrchardCore.Contents.Controllers
 
             await conditionallyPublish(contentItem);
 
-            if (!String.IsNullOrEmpty(returnUrl) && !stayOnSamePage)
+            if (!string.IsNullOrEmpty(returnUrl) && !stayOnSamePage)
             {
                 return this.LocalRedirect(returnUrl, true);
             }
 
             var adminRouteValues = (await _contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).AdminRouteValues;
 
-            if (!String.IsNullOrEmpty(returnUrl))
+            if (!string.IsNullOrEmpty(returnUrl))
             {
                 adminRouteValues.Add("returnUrl", returnUrl);
             }
@@ -710,7 +710,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (showSelectAll)
             {
-                items.Add(new SelectListItem(S["All content types"], String.Empty));
+                items.Add(new SelectListItem(S["All content types"], string.Empty));
             };
 
             foreach (var definition in definitions)
@@ -721,7 +721,7 @@ namespace OrchardCore.Contents.Controllers
                     continue;
                 }
 
-                items.Add(new SelectListItem(definition.DisplayName, definition.Name, String.Equals(definition.Name, selectedContentType)));
+                items.Add(new SelectListItem(definition.DisplayName, definition.Name, string.Equals(definition.Name, selectedContentType)));
             }
 
             return items;

@@ -45,7 +45,7 @@ namespace OrchardCore.ContentFields.Settings
                 {
                     settings.DefaultValue = model.DefaultValue;
                     settings.Editor = model.Editor;
-                    settings.Options = String.IsNullOrWhiteSpace(model.Options)
+                    settings.Options = string.IsNullOrWhiteSpace(model.Options)
                         ? Array.Empty<ListValueOption>()
                         : JsonConvert.DeserializeObject<ListValueOption[]>(model.Options);
                 }

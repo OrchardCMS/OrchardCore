@@ -58,17 +58,17 @@
   padding-top: 12px;
 }
 
-:root[data-theme=default] .dashboard-wrapper .card .card-header {
+[data-bs-theme=light] .dashboard-wrapper .card .card-header {
   background-color: #fff !important;
 }
-:root[data-theme=default] .dashboard-wrapper .card .card-footer {
+[data-bs-theme=light] .dashboard-wrapper .card .card-footer {
   background-color: #fff !important;
 }
 
-:root[data-theme=darkmode] .dashboard-wrapper .card .card-header {
+[data-bs-theme=dark] .dashboard-wrapper .card .card-header {
   background-color: rgb(24, 26, 27) !important;
 }
-:root[data-theme=darkmode] .dashboard-wrapper .card .card-footer {
+[data-bs-theme=dark] .dashboard-wrapper .card .card-footer {
   background-color: rgb(24, 26, 27) !important;
 }
 

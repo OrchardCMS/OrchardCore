@@ -103,7 +103,7 @@ namespace OrchardCore.Workflows.Controllers
                     break;
             }
 
-            if (!String.IsNullOrWhiteSpace(options.Search))
+            if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 query = query.Where(x => x.Name.Contains(options.Search));
             }
@@ -128,7 +128,7 @@ namespace OrchardCore.Workflows.Controllers
             var sqlBuilder = dialect.CreateBuilder(_session.Store.Configuration.TablePrefix);
             sqlBuilder.Select();
             sqlBuilder.Distinct();
-            sqlBuilder.Selector(nameof(WorkflowIndex.WorkflowTypeId));
+            sqlBuilder.Selector(nameof(WorkflowIndex), nameof(WorkflowIndex.WorkflowTypeId), _session.Store.Configuration.Schema);
             sqlBuilder.Table(nameof(WorkflowIndex), alias: null, _session.Store.Configuration.Schema);
 
             var workflowTypeIdsWithInstances = await connection.QueryAsync<string>(sqlBuilder.ToSqlString());
@@ -367,7 +367,7 @@ namespace OrchardCore.Workflows.Controllers
                 return Forbid();
             }
 
-            var newLocalId = String.IsNullOrWhiteSpace(localId) ? Guid.NewGuid().ToString() : localId;
+            var newLocalId = string.IsNullOrWhiteSpace(localId) ? Guid.NewGuid().ToString() : localId;
             var availableActivities = _activityLibrary.ListActivities();
             var workflowType = await _session.GetAsync<WorkflowType>(id);
 
@@ -433,7 +433,7 @@ namespace OrchardCore.Workflows.Controllers
                 ActivityDesignShapes = activityDesignShapes,
                 ActivityCategories = _activityLibrary.ListCategories().ToList(),
                 LocalId = newLocalId,
-                LoadLocalState = !String.IsNullOrWhiteSpace(localId),
+                LoadLocalState = !string.IsNullOrWhiteSpace(localId),
                 WorkflowCount = workflowCount,
             };
 

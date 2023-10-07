@@ -1,8 +1,7 @@
-
 #customdropzone {
     align-items: center;
     background: rgba(95, 175, 139, 0.8);
-    color: #FFFFFF;
+    color: var(--bs-white, #FFFFFF);
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -18,7 +17,6 @@
     z-index: 50;
     -webkit-transition: opacity 0.3s ease-out;
     -moz-transition: opacity 0.3s ease-out;
-    -ms-transition: opacity 0.3s ease-out;
     -o-transition: opacity 0.3s ease-out;
     transition: opacity 0.3s ease-out;
 }
@@ -28,7 +26,6 @@
     height: 100%;
     -webkit-transition: opacity 0.3s ease-out;
     -moz-transition: opacity 0.3s ease-out;
-    -ms-transition: opacity 0.3s ease-out;
     -o-transition: opacity 0.3s ease-out;
     transition: opacity 0.3s ease-out;
 }

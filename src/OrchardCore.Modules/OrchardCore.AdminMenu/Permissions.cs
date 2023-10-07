@@ -53,8 +53,8 @@ namespace OrchardCore.AdminMenu
         public static Permission CreatePermissionForAdminMenu(string name)
         {
             return new Permission(
-                    String.Format(_viewAdminMenu.Name, name),
-                    String.Format(_viewAdminMenu.Description, name),
+                    string.Format(_viewAdminMenu.Name, name),
+                    string.Format(_viewAdminMenu.Description, name),
                     _viewAdminMenu.ImpliedBy
                 );
         }

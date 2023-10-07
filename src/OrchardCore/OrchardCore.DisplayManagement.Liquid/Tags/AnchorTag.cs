@@ -87,7 +87,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             }
 
             // If "href" is already set, it means the user is attempting to use a normal anchor.
-            if (!String.IsNullOrEmpty(href))
+            if (!string.IsNullOrEmpty(href))
             {
                 if (action != null ||
                     controller != null ||
@@ -134,7 +134,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             {
                 tagBuilder = generator.GeneratePageLink(
                     viewContext,
-                    linkText: String.Empty,
+                    linkText: string.Empty,
                     pageName: page,
                     pageHandler: pageHandler,
                     protocol: protocol,
@@ -147,7 +147,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             {
                 tagBuilder = generator.GenerateRouteLink(
                     viewContext,
-                    linkText: String.Empty,
+                    linkText: string.Empty,
                     routeName: route,
                     protocol: protocol,
                     hostName: host,
@@ -159,7 +159,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             {
                 tagBuilder = generator.GenerateActionLink(
                    viewContext,
-                   linkText: String.Empty,
+                   linkText: string.Empty,
                    actionName: action,
                    controllerName: controller,
                    protocol: protocol,

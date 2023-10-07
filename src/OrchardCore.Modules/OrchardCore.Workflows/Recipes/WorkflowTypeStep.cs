@@ -20,7 +20,7 @@ namespace OrchardCore.Workflows.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "WorkflowType", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "WorkflowType", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

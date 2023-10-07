@@ -98,14 +98,14 @@ namespace OrchardCore.Users.Workflows.Activities
             {
                 form = _httpContextAccessor.HttpContext.Request.Form;
                 email = form["Email"];
-                isValid = !String.IsNullOrWhiteSpace(email);
+                isValid = !string.IsNullOrWhiteSpace(email);
             }
             var outcome = isValid ? "Valid" : "Invalid";
 
             if (isValid)
             {
                 var userName = form["UserName"];
-                if (String.IsNullOrWhiteSpace(userName))
+                if (string.IsNullOrWhiteSpace(userName))
                 {
                     userName = email.Replace('@', '+');
                 }

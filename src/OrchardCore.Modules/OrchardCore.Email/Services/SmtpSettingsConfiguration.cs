@@ -41,7 +41,7 @@ namespace OrchardCore.Email.Services
             options.UserName = settings.UserName;
 
             // Decrypt the password
-            if (!String.IsNullOrWhiteSpace(settings.Password))
+            if (!string.IsNullOrWhiteSpace(settings.Password))
             {
                 try
                 {

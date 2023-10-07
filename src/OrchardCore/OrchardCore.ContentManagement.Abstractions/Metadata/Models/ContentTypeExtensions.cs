@@ -9,24 +9,24 @@ public static class ContentTypeExtensions
     {
         stereotype = contentTypeDefinition.GetStereotype();
 
-        return !String.IsNullOrWhiteSpace(stereotype);
+        return !string.IsNullOrWhiteSpace(stereotype);
     }
 
     public static bool HasStereotype(this ContentTypeDefinition contentTypeDefinition)
-        => !String.IsNullOrEmpty(contentTypeDefinition.GetStereotype());
+        => !string.IsNullOrEmpty(contentTypeDefinition.GetStereotype());
 
     public static bool StereotypeEquals(this ContentTypeDefinition contentTypeDefinition, string stereotype)
         => contentTypeDefinition.StereotypeEquals(stereotype, StringComparison.Ordinal);
 
     public static bool StereotypeEquals(this ContentTypeDefinition contentTypeDefinition, string stereotype, StringComparison stringComparison)
     {
-        if (String.IsNullOrEmpty(stereotype))
+        if (string.IsNullOrEmpty(stereotype))
         {
             throw new ArgumentNullException(nameof(stereotype));
         }
 
         return contentTypeDefinition.TryGetStereotype(out var st)
-            && String.Equals(st, stereotype, stringComparison);
+            && string.Equals(st, stereotype, stringComparison);
     }
 
     public static string GetStereotype(this ContentTypeDefinition contentTypeDefinition)
@@ -48,7 +48,7 @@ public static class ContentTypeExtensions
         => contentTypeDefinition.GetSettings().Securable;
 
     public static bool HasDescription(this ContentTypeDefinition contentTypeDefinition)
-        => !String.IsNullOrWhiteSpace(contentTypeDefinition.GetSettings().Description);
+        => !string.IsNullOrWhiteSpace(contentTypeDefinition.GetSettings().Description);
 
     public static string GetDescription(this ContentTypeDefinition contentTypeDefinition)
         => contentTypeDefinition.GetSettings().Description;

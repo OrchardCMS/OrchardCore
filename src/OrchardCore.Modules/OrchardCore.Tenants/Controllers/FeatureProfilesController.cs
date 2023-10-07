@@ -66,7 +66,7 @@ namespace OrchardCore.Tenants.Controllers
 
             var featureProfiles = featureProfilesDocument.FeatureProfiles.ToList();
 
-            if (!String.IsNullOrWhiteSpace(options.Search))
+            if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 featureProfiles = featureProfiles.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }

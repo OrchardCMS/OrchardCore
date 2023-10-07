@@ -35,7 +35,7 @@ namespace OrchardCore.AuditTrail.Services
 
         public Expression BuildOperation(in BuildExpressionContext context, ConstantExpression constant)
         {
-            if (String.IsNullOrEmpty(Operator))
+            if (string.IsNullOrEmpty(Operator))
             {
                 return constant;
             }
@@ -64,7 +64,7 @@ namespace OrchardCore.AuditTrail.Services
             => BuildOperation(context, Expression.Constant(DateTime.UtcDateTime, typeof(DateTime)));
 
         public override string ToString()
-            => $"{(String.IsNullOrEmpty(Operator) ? String.Empty : Operator)}{DateTime:o}";
+            => $"{(string.IsNullOrEmpty(Operator) ? string.Empty : Operator)}{DateTime:o}";
     }
 
     public class DateNode2 : OperatorNode
@@ -80,7 +80,7 @@ namespace OrchardCore.AuditTrail.Services
             => BuildOperation(context, Expression.Constant(DateTime, typeof(DateTime)));
 
         public override string ToString()
-            => $"{(String.IsNullOrEmpty(Operator) ? String.Empty : Operator)}{DateTime:o}";
+            => $"{(string.IsNullOrEmpty(Operator) ? string.Empty : Operator)}{DateTime:o}";
     }
 
     public class NowNode : OperatorNode
@@ -99,7 +99,7 @@ namespace OrchardCore.AuditTrail.Services
             => BuildOperation(context, Expression.Constant(context.UtcNow.AddDays(Arithmetic.GetValueOrDefault()), typeof(DateTime)));
 
         public override string ToString()
-            => $"{(String.IsNullOrEmpty(Operator) ? String.Empty : Operator)}@now{(Arithmetic.HasValue ? Arithmetic.Value.ToString() : String.Empty)}";
+            => $"{(string.IsNullOrEmpty(Operator) ? string.Empty : Operator)}@now{(Arithmetic.HasValue ? Arithmetic.Value.ToString() : string.Empty)}";
     }
 
     public class TodayNode : NowNode
@@ -113,7 +113,7 @@ namespace OrchardCore.AuditTrail.Services
         }
 
         public override string ToString()
-            => $"{(String.IsNullOrEmpty(Operator) ? String.Empty : Operator)}@today{(Arithmetic.HasValue ? Arithmetic.Value.ToString() : String.Empty)}";
+            => $"{(string.IsNullOrEmpty(Operator) ? string.Empty : Operator)}@today{(Arithmetic.HasValue ? Arithmetic.Value.ToString() : string.Empty)}";
 
     }
 

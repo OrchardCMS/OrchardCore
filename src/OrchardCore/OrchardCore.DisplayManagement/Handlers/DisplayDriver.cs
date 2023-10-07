@@ -117,7 +117,7 @@ namespace OrchardCore.DisplayManagement.Handlers
         {
             Prefix = typeof(TModel).Name;
 
-            if (!String.IsNullOrEmpty(htmlFieldPrefix))
+            if (!string.IsNullOrEmpty(htmlFieldPrefix))
             {
                 Prefix = htmlFieldPrefix + "." + Prefix;
             }

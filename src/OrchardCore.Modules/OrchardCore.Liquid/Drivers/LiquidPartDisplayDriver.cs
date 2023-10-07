@@ -25,9 +25,9 @@ namespace OrchardCore.Liquid.Drivers
         {
             return Combine(
                 Initialize<LiquidPartViewModel>("LiquidPart", m => BuildViewModel(m, liquidPart))
-                    .Location("Detail", "Content:10"),
+                    .Location("Detail", "Content"),
                 Initialize<LiquidPartViewModel>("LiquidPart_Summary", m => BuildViewModel(m, liquidPart))
-                    .Location("Summary", "Content:10")
+                    .Location("Summary", "Content")
             );
         }
 
@@ -42,9 +42,9 @@ namespace OrchardCore.Liquid.Drivers
 
             if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid))
             {
-                if (!String.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplatemanager.Validate(viewModel.Liquid, out var errors))
+                if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplatemanager.Validate(viewModel.Liquid, out var errors))
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Liquid), S["The Liquid Body doesn't contain a valid Liquid expression. Details: {0}", String.Join(" ", errors)]);
+                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Liquid), S["The Liquid Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
                 }
                 else
                 {

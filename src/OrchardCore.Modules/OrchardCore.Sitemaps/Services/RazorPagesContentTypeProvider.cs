@@ -30,7 +30,7 @@ namespace OrchardCore.Sitemaps.Services
             var option = _options.ContentTypeOptions.FirstOrDefault(o => o.ContentType == contentItem.ContentType);
             if (option != null && option.RouteValues != null)
             {
-                var pageName = String.IsNullOrEmpty(option.PageName) ? option.ContentType : option.PageName;
+                var pageName = string.IsNullOrEmpty(option.PageName) ? option.ContentType : option.PageName;
 
                 // When used from outside a razor page name must start with a /
                 if (!pageName.StartsWith('/'))

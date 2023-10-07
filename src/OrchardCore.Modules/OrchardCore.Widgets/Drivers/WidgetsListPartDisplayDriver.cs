@@ -104,7 +104,7 @@ namespace OrchardCore.Widgets.Drivers
                 var contentItem = await _contentManager.NewAsync(contentType);
                 if (part.Widgets.TryGetValue(zone, out var widgets))
                 {
-                    var existingContentItem = widgets.FirstOrDefault(x => String.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
+                    var existingContentItem = widgets.FirstOrDefault(x => string.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
 
                     // When the content item already exists merge its elements to preverse nested content item ids.
                     // All of the data for these merged items is then replaced by the model values on update, while a nested content item id is maintained.

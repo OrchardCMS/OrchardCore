@@ -75,7 +75,7 @@ namespace OrchardCore.AuditTrail.Services
                 .Select(category => new SelectListItem(category.LocalizedName(_serviceProvider), category.Name, category.Name == options.Category))
                 .ToList();
 
-            options.Categories.Insert(0, new SelectListItem(S["All categories"], String.Empty, String.IsNullOrEmpty(options.Category)));
+            options.Categories.Insert(0, new SelectListItem(S["All categories"], string.Empty, string.IsNullOrEmpty(options.Category)));
 
             if (options.CorrelationIdFromRoute)
             {
@@ -95,7 +95,7 @@ namespace OrchardCore.AuditTrail.Services
             var startOfWeek = CultureInfo.CurrentUICulture.DateTimeFormat.FirstDayOfWeek;
             options.AuditTrailDates = new List<SelectListItem>()
             {
-                new SelectListItem(S["Any date"], String.Empty, options.Date == String.Empty),
+                new SelectListItem(S["Any date"], string.Empty, options.Date == string.Empty),
             };
 
             var dateTimeValue = ">@now-1";

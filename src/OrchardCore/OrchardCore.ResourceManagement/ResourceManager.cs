@@ -82,12 +82,12 @@ namespace OrchardCore.ResourceManagement
 
             if (resourcePath.StartsWith("~/", StringComparison.Ordinal))
             {
-                resourcePath = String.Concat(_options.ContentBasePath, resourcePath.AsSpan(1));
+                resourcePath = string.Concat(_options.ContentBasePath, resourcePath.AsSpan(1));
             }
 
             if (resourceDebugPath != null && resourceDebugPath.StartsWith("~/", StringComparison.Ordinal))
             {
-                resourceDebugPath = String.Concat(_options.ContentBasePath, resourceDebugPath.AsSpan(1));
+                resourceDebugPath = string.Concat(_options.ContentBasePath, resourceDebugPath.AsSpan(1));
             }
 
             return RegisterResource(
@@ -180,7 +180,7 @@ namespace OrchardCore.ResourceManagement
         {
             Version lower = null;
             Version upper = null;
-            if (!String.IsNullOrEmpty(settings.Version))
+            if (!string.IsNullOrEmpty(settings.Version))
             {
                 // Specific version, filter.
                 lower = GetLowerBoundVersion(settings.Version);
@@ -190,7 +190,7 @@ namespace OrchardCore.ResourceManagement
             ResourceDefinition resource = null;
             foreach (var r in stream)
             {
-                if (String.Equals(r.Key, name, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(r.Key, name, StringComparison.OrdinalIgnoreCase))
                 {
                     foreach (var resourceDefinition in r.Value)
                     {
@@ -228,7 +228,7 @@ namespace OrchardCore.ResourceManagement
             if (!Version.TryParse(minimumVersion, out var version))
             {
                 // Is is a single number?
-                if (Int32.TryParse(minimumVersion, out var major))
+                if (int.TryParse(minimumVersion, out var major))
                 {
                     return new Version(major + 1, 0, 0);
                 }
@@ -256,7 +256,7 @@ namespace OrchardCore.ResourceManagement
             if (!Version.TryParse(minimumVersion, out var version))
             {
                 // Is is a single number?
-                if (Int32.TryParse(minimumVersion, out var major))
+                if (int.TryParse(minimumVersion, out var major))
                 {
                     return new Version(major, 0, 0);
                 }
@@ -472,7 +472,7 @@ namespace OrchardCore.ResourceManagement
 
             if (href != null && href.StartsWith("~/", StringComparison.Ordinal))
             {
-                link.Href = String.Concat(_options.ContentBasePath, href.AsSpan(1));
+                link.Href = string.Concat(_options.ContentBasePath, href.AsSpan(1));
             }
 
             if (link.AppendVersion)
@@ -506,7 +506,7 @@ namespace OrchardCore.ResourceManagement
 
             var index = meta.Name ?? meta.Property ?? meta.HttpEquiv;
 
-            if (String.IsNullOrEmpty(index))
+            if (string.IsNullOrEmpty(index))
             {
                 return;
             }
@@ -746,7 +746,7 @@ namespace OrchardCore.ResourceManagement
 
         private string GetResourceKey(string releasePath, string debugPath)
         {
-            if (_options.DebugMode && !String.IsNullOrWhiteSpace(debugPath))
+            if (_options.DebugMode && !string.IsNullOrWhiteSpace(debugPath))
             {
                 return debugPath;
             }

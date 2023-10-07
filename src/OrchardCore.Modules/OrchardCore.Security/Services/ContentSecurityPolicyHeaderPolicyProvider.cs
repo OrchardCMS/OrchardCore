@@ -11,7 +11,7 @@ namespace OrchardCore.Security.Services
         {
             if (Options.ContentSecurityPolicy.Length > 0)
             {
-                _policy = String.Join(SecurityHeaderDefaults.PoliciesSeparator, Options.ContentSecurityPolicy);
+                _policy = string.Join(SecurityHeaderDefaults.PoliciesSeparator, Options.ContentSecurityPolicy);
             }
         }
 

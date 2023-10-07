@@ -30,7 +30,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
 
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
-            if (String.IsNullOrEmpty(Name))
+            if (string.IsNullOrEmpty(Name))
             {
                 throw new ArgumentException("The name attribute can't be empty");
             }

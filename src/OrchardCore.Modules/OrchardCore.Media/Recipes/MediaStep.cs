@@ -34,7 +34,7 @@ namespace OrchardCore.Media.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "media", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "media", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -52,17 +52,17 @@ namespace OrchardCore.Media.Recipes
 
                 Stream stream = null;
 
-                if (!String.IsNullOrWhiteSpace(file.Base64))
+                if (!string.IsNullOrWhiteSpace(file.Base64))
                 {
                     stream = new MemoryStream(Convert.FromBase64String(file.Base64));
                 }
-                else if (!String.IsNullOrWhiteSpace(file.SourcePath))
+                else if (!string.IsNullOrWhiteSpace(file.SourcePath))
                 {
                     var fileInfo = context.RecipeDescriptor.FileProvider.GetRelativeFileInfo(context.RecipeDescriptor.BasePath, file.SourcePath);
 
                     stream = fileInfo.CreateReadStream();
                 }
-                else if (!String.IsNullOrWhiteSpace(file.SourceUrl))
+                else if (!string.IsNullOrWhiteSpace(file.SourceUrl))
                 {
                     var response = await _httpClient.GetAsync(file.SourceUrl);
                     if (response.IsSuccessStatusCode)

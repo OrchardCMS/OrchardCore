@@ -40,7 +40,7 @@ namespace OrchardCore.Users.Handlers
 
             if (registrationSettings.UseScriptToGenerateUsername)
             {
-                var context = new { userName = String.Empty, loginProvider = provider, externalClaims = claims };
+                var context = new { userName = string.Empty, loginProvider = provider, externalClaims = claims };
 
                 var script = $"js: function generateUsername(context) {{\n{registrationSettings.GenerateUsernameScript}\n}}\nvar context = {JsonConvert.SerializeObject(context, _jsonSettings)};\ngenerateUsername(context);\nreturn context;";
 
@@ -50,7 +50,7 @@ namespace OrchardCore.Users.Handlers
                     return evaluationResult.userName;
                 }
             }
-            return String.Empty;
+            return string.Empty;
         }
 
         public async Task UpdateRoles(UpdateRolesContext context)

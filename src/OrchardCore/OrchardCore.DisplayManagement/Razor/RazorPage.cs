@@ -12,11 +12,6 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.DisplayManagement.Razor
 {
-    public interface IRazorPage
-    {
-        string ViewLayout { get; set; }
-    }
-
     public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPage<TModel>, IRazorPage
     {
         private IDisplayHelper _displayHelper;
@@ -135,7 +130,7 @@ namespace OrchardCore.DisplayManagement.Razor
                     return layout.Metadata.Type;
                 }
 
-                return String.Empty;
+                return string.Empty;
             }
 
             set
@@ -202,7 +197,7 @@ namespace OrchardCore.DisplayManagement.Razor
         /// <returns>And <see cref="IHtmlContent"/> instance representing the full title.</returns>
         public IHtmlContent RenderTitleSegments(string segment, string position = "0", IHtmlContent separator = null)
         {
-            if (!String.IsNullOrEmpty(segment))
+            if (!string.IsNullOrEmpty(segment))
             {
                 Title.AddSegment(new HtmlContentString(segment), position);
             }

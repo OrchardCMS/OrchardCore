@@ -21,7 +21,7 @@ namespace OrchardCore.Microsoft.Authentication.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, nameof(AzureADSettings), StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, nameof(AzureADSettings), StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
