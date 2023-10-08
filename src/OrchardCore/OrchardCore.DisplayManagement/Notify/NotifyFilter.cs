@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
@@ -9,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.Layout;
 
 namespace OrchardCore.DisplayManagement.Notify
@@ -168,13 +168,14 @@ namespace OrchardCore.DisplayManagement.Notify
 
         private string SerializeNotifyEntry(NotifyEntry[] notifyEntries)
         {
-            var settings = new JsonSerializerSettings();
-            settings.Converters.Add(new NotifyEntryConverter(_htmlEncoder));
+            var serializerOptions = new JsonSerializerOptions();
+            serializerOptions.Converters.Add(new NotifyEntryConverter(_htmlEncoder));
 
             try
             {
+
                 var protector = _dataProtectionProvider.CreateProtector(nameof(NotifyFilter));
-                var signed = protector.Protect(JsonConvert.SerializeObject(notifyEntries, settings));
+                var signed = protector.Protect(JsonSerializer.Serialize(notifyEntries, serializerOptions));
                 return WebUtility.UrlEncode(signed);
             }
             catch
@@ -185,14 +186,14 @@ namespace OrchardCore.DisplayManagement.Notify
 
         private void DeserializeNotifyEntries(string value, out NotifyEntry[] messageEntries)
         {
-            var settings = new JsonSerializerSettings();
-            settings.Converters.Add(new NotifyEntryConverter(_htmlEncoder));
+            var serializerOptions = new JsonSerializerOptions();
+            serializerOptions.Converters.Add(new NotifyEntryConverter(_htmlEncoder));
 
             try
             {
                 var protector = _dataProtectionProvider.CreateProtector(nameof(NotifyFilter));
                 var decoded = protector.Unprotect(WebUtility.UrlDecode(value));
-                messageEntries = JsonConvert.DeserializeObject<NotifyEntry[]>(decoded, settings);
+                messageEntries = JsonSerializer.Deserialize<NotifyEntry[]>(decoded, serializerOptions);
             }
             catch
             {
