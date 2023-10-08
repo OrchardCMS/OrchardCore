@@ -2,13 +2,13 @@ using System;
 using System.IO;
 using System.Text;
 using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Html;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.DisplayManagement.Notify
 {
-    public class NotifyEntryConverter : JsonConverter
+    public class NotifyEntryConverter : JsonConverter<NotifyEntry>
     {
         private readonly HtmlEncoder _htmlEncoder;
 
@@ -17,52 +17,62 @@ namespace OrchardCore.DisplayManagement.Notify
             _htmlEncoder = htmlEncoder;
         }
 
-        public override bool CanConvert(Type objectType)
+        public override bool CanConvert(Type typeToConvert) => typeof(NotifyEntry).IsAssignableFrom(typeToConvert);
+
+        public override NotifyEntry Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            return typeof(NotifyEntry).IsAssignableFrom(objectType);
-        }
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            var jo = JObject.Load(reader);
-
-            NotifyType type;
-
-            var notifyEntry = new NotifyEntry
+            if (reader.TokenType != JsonTokenType.StartObject)
             {
-                Message = new HtmlString(jo.Value<string>("Message")),
-            };
-
-            if (Enum.TryParse(jo.Value<string>("Type"), out type))
-            {
-                notifyEntry.Type = type;
+                throw new JsonException();
             }
 
-            return notifyEntry;
-        }
-
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            var notifyEntry = value as NotifyEntry;
-            if (notifyEntry == null)
+            var notifyEntry = new NotifyEntry();
+            while (reader.Read())
             {
-                return;
+                if (reader.TokenType == JsonTokenType.EndObject)
+                {
+                    return notifyEntry;
+                }
+
+                if (reader.TokenType != JsonTokenType.PropertyName)
+                {
+                    throw new JsonException();
+                }
+
+                var propertyName = reader.GetString();
+                reader.Read();
+
+                switch(propertyName)
+                {
+                    case nameof(notifyEntry.Type):
+                        if (Enum.TryParse(reader.GetString(), out NotifyType type))
+                        {
+                            notifyEntry.Type = type;
+                        }
+                        break;
+                    case nameof(notifyEntry.Message):
+                        notifyEntry.Message = new HtmlString(reader.GetString());
+                        break;
+                }
+
+                return notifyEntry;
             }
 
-            var o = new JObject();
+            throw new JsonException();
+        }
 
+        public override void Write(Utf8JsonWriter writer, NotifyEntry value, JsonSerializerOptions options)
+        {
             // Serialize the message as it's an IHtmlContent
-            var stringBuilder = new StringBuilder();
-            using (var stringWriter = new StringWriter(stringBuilder))
+            using (var stringWriter = new StringWriter(new StringBuilder()))
             {
-                notifyEntry.Message.WriteTo(stringWriter, _htmlEncoder);
+                value.Message.WriteTo(stringWriter, _htmlEncoder);
             }
 
-            // Write all well-known properties
-            o.Add(new JProperty(nameof(NotifyEntry.Type), notifyEntry.Type.ToString()));
-            o.Add(new JProperty(nameof(NotifyEntry.Message), notifyEntry.GetMessageAsString(_htmlEncoder)));
-
-            o.WriteTo(writer);
+            writer.WriteStartObject(nameof(NotifyEntry));
+            writer.WriteString(nameof(NotifyEntry.Type), value.Type.ToString());
+            writer.WriteString(nameof(NotifyEntry.Message), value.GetMessageAsString(_htmlEncoder));
+            writer.WriteEndObject();
         }
     }
 }
