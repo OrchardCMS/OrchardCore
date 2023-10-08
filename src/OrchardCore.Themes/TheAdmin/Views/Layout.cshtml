@@ -24,7 +24,7 @@
     <!-- This script can't wait till the footer -->
     <script asp-name="admin-head" version="1" at="Head"></script>
 
-    <!-- TheAdmin && Bootstrap CSS -->
+    <!-- TheAdmin & Bootstrap CSS -->
     <style media="all" asp-name="admin" version="1"></style>
     <script asp-name="font-awesome" at="Head" version="6"></script>
     <script asp-name="admin" version="1" at="Foot"></script>
@@ -89,11 +89,7 @@
                                 </div>
                             </li>
                         }
-                        <li class="nav-item">
-                            <a href="@Url.Content("~/")" class="nav-link" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@T["Visit Site"]" role="button">
-                                <i class="fa-solid fa-fw fa-external-link" aria-hidden="true"></i>
-                            </a>
-                        </li>
+                        @await DisplayAsync(await New.NavbarLink())
                         <li class="nav-item">
                             @await DisplayAsync(await DisplayManager.BuildDisplayAsync(new UserMenu(), UpdateModelAccessor.ModelUpdater, "DetailAdmin"))
                         </li>
