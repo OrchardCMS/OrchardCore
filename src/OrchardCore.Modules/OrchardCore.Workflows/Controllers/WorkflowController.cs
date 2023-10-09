@@ -15,6 +15,7 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
@@ -42,6 +43,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IUpdateModelAccessor _updateModelAccessor;
         protected readonly dynamic New;
         protected readonly IHtmlLocalizer H;
+        private readonly IDistributedLock _distributedLock;
         protected readonly IStringLocalizer S;
 
         public WorkflowController(
@@ -55,6 +57,7 @@ namespace OrchardCore.Workflows.Controllers
             IShapeFactory shapeFactory,
             INotifier notifier,
             IHtmlLocalizer<WorkflowController> htmlLocalizer,
+            IDistributedLock distributedLock,
             IStringLocalizer<WorkflowController> stringLocalizer,
             IUpdateModelAccessor updateModelAccessor)
         {
@@ -69,6 +72,7 @@ namespace OrchardCore.Workflows.Controllers
             _updateModelAccessor = updateModelAccessor;
             New = shapeFactory;
             H = htmlLocalizer;
+            _distributedLock = distributedLock;
             S = stringLocalizer;
         }
 
@@ -239,6 +243,56 @@ namespace OrchardCore.Workflows.Controllers
             var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
             await _workflowStore.DeleteAsync(workflow);
             await _notifier.SuccessAsync(H["Workflow {0} has been deleted.", id]);
+            return RedirectToAction(nameof(Index), new { workflowTypeId = workflowType.Id });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Start(long id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+            {
+                return Forbid();
+            }
+
+            var workflow = await _workflowStore.GetAsync(id);
+
+            if (workflow == null)
+            {
+                return NotFound();
+            }
+
+            var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
+
+            if (workflowType == null)
+            {
+                return NotFound();
+            }
+
+            // If a singleton, try to acquire a lock per workflow type.
+            (var locker, var locked) = await _distributedLock.TryAcquireWorkflowTypeLockAsync(workflowType);
+            if (!locked)
+            {
+                await _notifier.ErrorAsync(H["Another instance is already running.", id]);
+            }
+            else
+            {
+                await using var acquiredLock = locker;
+
+                // Check if this is a workflow singleton and there's already an halted instance on any activity.
+                if (workflowType.IsSingleton && await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
+                {
+                    await _notifier.ErrorAsync(H["Another instance is already running.", id]);
+                }
+                else
+                {
+                    var input = workflow.State["Input"].ToObject<Dictionary<string, object>>();
+
+                    await _workflowManager.StartWorkflowAsync(workflowType, null, input, workflow.CorrelationId);
+
+                    await _notifier.SuccessAsync(H["Workflow {0} has been restarted.", id]);
+                }
+            }
+
             return RedirectToAction(nameof(Index), new { workflowTypeId = workflowType.Id });
         }
 
