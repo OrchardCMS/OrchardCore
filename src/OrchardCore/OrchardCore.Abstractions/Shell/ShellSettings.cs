@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using OrchardCore.Clusters;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Models;
 
@@ -21,12 +22,18 @@ namespace OrchardCore.Environment.Shell
         public const string DefaultShellName = "Default";
 
         /// <summary>
+        /// The number of tenant cluster slots.
+        /// </summary>
+        public const int ClusterSlotsCount = 16384;
+
+        /// <summary>
         /// The 'RequestUrlHost' string separators allowing to provide multiple hosts.
         /// </summary>
         public static readonly char[] HostSeparators = new[] { ',', ' ' };
 
         private readonly ShellConfiguration _settings;
         private readonly ShellConfiguration _configuration;
+        private int _clusterSlot = -1;
 
         /// <summary>
         /// Initializes a new <see cref="ShellSettings"/>.
@@ -79,6 +86,27 @@ namespace OrchardCore.Environment.Shell
         /// The tenant identifier.
         /// </summary>
         public string TenantId => _settings["TenantId"] ?? _settings["VersionId"];
+
+        /// <summary>
+        /// The tenant cluster slot.
+        /// </summary>
+        [JsonIgnore]
+        public int ClusterSlot
+        {
+            get
+            {
+                if (_clusterSlot == -1)
+                {
+                    var tenantId = TenantId;
+                    if (tenantId is not null)
+                    {
+                        _clusterSlot = Crc16XModem.Compute(tenantId) % ClusterSlotsCount;
+                    }
+                }
+
+                return _clusterSlot;
+            }
+        }
 
         /// <summary>
         /// The tenant request url host, multiple separated hosts may be provided.

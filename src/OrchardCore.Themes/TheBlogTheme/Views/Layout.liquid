@@ -37,6 +37,9 @@
         <div class="row gx-4 gx-lg-5 justify-content-center">
             <div class="col-md-10 col-lg-8 col-xl-7">
 				{% render_section "Messages", required: false %}
+                <div>Host: {{ Request.Host }}</div>
+                <div>X-Original-Host: {{ Request.Headers["X-Original-Host"] }}</div>
+                <div>X-Forwarded-Host: {{ Request.Headers["X-Forwarded-Host"] }}</div>
                 {% render_body %}
             </div>
         </div>

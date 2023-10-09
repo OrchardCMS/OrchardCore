@@ -27,6 +27,9 @@
     </nav>
     {% render_section "Header", required: false %}
 	{% render_section "Messages", required: false %}
+    <div>Host: {{ Request.Host }}</div>
+    <div>X-Original-Host: {{ Request.Headers["X-Original-Host"] }}</div>
+    <div>X-Forwarded-Host: {{ Request.Headers["X-Forwarded-Host"] }}</div>
     {% render_section "Content" %}
     {% render_section "Footer", required: false %}
     {% resources type: "FootScript" %}

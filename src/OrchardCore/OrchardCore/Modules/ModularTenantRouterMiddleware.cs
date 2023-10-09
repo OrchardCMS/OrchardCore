@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Clusters;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
 
@@ -9,17 +10,31 @@ namespace OrchardCore.Modules
 {
     /// <summary>
     /// Handles a request by forwarding it to the tenant specific pipeline.
-    /// It also initializes the middlewares for the requested tenant on the first request.
+    /// It also initializes the middleware for the requested tenant on the first request.
     /// </summary>
     public class ModularTenantRouterMiddleware
     {
+        private readonly RequestDelegate _next;
         private readonly ILogger _logger;
 
-        public ModularTenantRouterMiddleware(RequestDelegate _, ILogger<ModularTenantRouterMiddleware> logger)
-            => _logger = logger;
+        public ModularTenantRouterMiddleware(
+            RequestDelegate next,
+            ILogger<ModularTenantRouterMiddleware> logger)
+        {
+            _next = next;
+            _logger = logger;
+        }
 
         public async Task Invoke(HttpContext httpContext)
         {
+            // Check if this instance is used as a clusters proxy.
+            if (httpContext.TryGetClusterFeature(out _))
+            {
+                // Bypass the routing middleware.
+                await _next(httpContext);
+                return;
+            }
+
             if (_logger.IsEnabled(LogLevel.Information))
             {
                 _logger.LogInformation("Begin Routing Request");
@@ -43,6 +58,9 @@ namespace OrchardCore.Modules
             {
                 await shellContext.BuildPipelineAsync();
             }
+
+            // Update the last request time (done atomically).
+            shellContext.LastRequestTimeUtc = DateTime.UtcNow;
 
             await shellContext.Pipeline.Invoke(httpContext);
         }

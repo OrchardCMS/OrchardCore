@@ -18,6 +18,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
         internal volatile int _refCount;
         internal volatile int _terminated;
+        internal long _requestTicks;
         internal bool _released;
 
         /// <summary>
@@ -39,6 +40,16 @@ namespace OrchardCore.Environment.Shell.Builders
         /// Whether the shell is activated or not.
         /// </summary>
         public bool IsActivated { get; set; }
+
+        /// <summary>
+        /// The UTC date and time of the last request.
+        /// Read and write operations are both atomic.
+        /// </summary>
+        public DateTime LastRequestTimeUtc
+        {
+            get => new(Interlocked.Read(ref _requestTicks));
+            internal set => Interlocked.Exchange(ref _requestTicks, value.Ticks);
+        }
 
         /// <summary>
         /// The Pipeline built for this shell.
