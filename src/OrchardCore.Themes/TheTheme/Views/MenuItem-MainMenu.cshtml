@@ -9,7 +9,8 @@
         tag.AddCssClass("dropdown");
         parentTag = Tag(Model, "ul");
         parentTag.AddCssClass("dropdown-menu");
-    }
+        tag.AddCssClass("text-end");
+    } 
 
     // Morphing the shape to keep Model untouched
     Model.Metadata.Alternates.Clear();
@@ -23,6 +24,7 @@
     else
     {
         Model.Classes.Add("nav-link");
+        Model.Classes.Add("text-end");
         if (Model.HasItems)
         {
             Model.Classes.Add("dropdown-toggle");
