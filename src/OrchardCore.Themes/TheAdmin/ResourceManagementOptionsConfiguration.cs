@@ -24,8 +24,8 @@ namespace OrchardCore.Themes.TheAdmin
                 .SetVersion("1.0.0");
 
             _manifest
-                .DefineScript("admin-menu")
-                .SetUrl("~/TheAdmin/js/TheAdmin-menu.min.js", "~/TheAdmin/js/TheAdmin-menu.js")
+                .DefineScript("admin-main")
+                .SetUrl("~/TheAdmin/js/TheAdmin-main.min.js", "~/TheAdmin/js/TheAdmin-main.js")
                 .SetDependencies("admin-head")
                 .SetVersion("1.0.0");
 

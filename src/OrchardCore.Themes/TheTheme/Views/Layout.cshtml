@@ -21,7 +21,6 @@
 
     <!-- This script can't wait till the footer -->
     <script asp-name="admin-head" version="1" at="Head"></script>
-    <script asp-name="admin-menu" depends-on="admin-head" version="1" at="Head"></script>
 
     <style asp-name="bootstrap" version="5" at="Head"></style>
     <script asp-name="bootstrap" version="5" at="Foot"></script>
@@ -32,15 +31,15 @@
     <resources type="Header" />
     @await RenderSectionAsync("HeadMeta", required: false)
 </head>
-<body dir="@Orchard.CultureDir()">
-    <nav class="navbar navbar-expand-lg fixed-top">
+<body>
+    <nav class="navbar navbar-expand-md fixed-top">
         <div class="container">
             <shape type="Branding" />
             <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar" aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbar">
-                <div class="d-flex justify-content-between align-items-center">
+            <div class="collapse navbar-collapse" id="navbar">
+                <div class="d-flex w-100 align-items-end justify-content-end justify-content-md-between flex-column flex-md-row">
                     <menu alias="alias:main-menu" cache-id="main-menu" cache-fixed-duration="00:05:00" cache-tag="alias:main-menu" />
                     <ul class="navbar-nav user-top-navbar">
                         @await RenderSectionAsync("NavbarTop", required: false)
