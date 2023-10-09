@@ -20,18 +20,12 @@ namespace OrchardCore.Environment.Shell.Configuration
         private UpdatableDataProvider _updatableData;
 
         private readonly string _name;
-        private readonly Func<string, Task<IConfigurationBuilder>> _configBuilderFactory;
+        private readonly Func<string, Action<IConfigurationBuilder>, Task<IConfigurationRoot>> _factoryAsync;
         private readonly SemaphoreSlim _semaphore = new(1);
         private bool _released;
 
         public ShellConfiguration()
         {
-        }
-
-        public ShellConfiguration(IConfigurationBuilder builder)
-        {
-            _updatableData = new UpdatableDataProvider();
-            _configuration = builder.Add(_updatableData).Build();
         }
 
         public ShellConfiguration(IConfiguration configuration)
@@ -44,10 +38,16 @@ namespace OrchardCore.Environment.Shell.Configuration
                 .Build();
         }
 
-        public ShellConfiguration(string name, Func<string, Task<IConfigurationBuilder>> factory)
+        public ShellConfiguration(IConfigurationBuilder builder)
+        {
+            _updatableData = new UpdatableDataProvider();
+            _configuration = builder.Add(_updatableData).Build();
+        }
+
+        public ShellConfiguration(string name, Func<string, Action<IConfigurationBuilder>, Task<IConfigurationRoot>> factoryAsync)
         {
             _name = name;
-            _configBuilderFactory = factory;
+            _factoryAsync = factoryAsync;
         }
 
         public ShellConfiguration(ShellConfiguration configuration) : this(null, configuration)
@@ -75,7 +75,7 @@ namespace OrchardCore.Environment.Shell.Configuration
                 return;
             }
 
-            _configBuilderFactory = configuration._configBuilderFactory;
+            _factoryAsync = configuration._factoryAsync;
         }
 
         private void EnsureConfiguration()
@@ -103,12 +103,11 @@ namespace OrchardCore.Environment.Shell.Configuration
                     return;
                 }
 
-                var builder = _configBuilderFactory is not null ?
-                    await _configBuilderFactory.Invoke(_name)
-                    : new ConfigurationBuilder();
-
                 _updatableData = new UpdatableDataProvider();
-                _configuration = builder.Add(_updatableData).Build();
+
+                _configuration = _factoryAsync is not null
+                    ? await _factoryAsync(_name, builder => builder.Add(_updatableData))
+                    : new ConfigurationBuilder().Add(_updatableData).Build();
             }
             finally
             {
