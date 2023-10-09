@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell.Builders;
@@ -43,7 +44,7 @@ namespace OrchardCore.Environment.Shell.Distributed
         private DistributedContext _context;
 
         private DateTime _busyStartTime;
-        private bool _terminated;
+        private bool _initialized;
 
         public DistributedShellHostedService(
             IShellHost shellHost,
@@ -58,7 +59,6 @@ namespace OrchardCore.Environment.Shell.Distributed
             _shellRemovingManager = shellRemovingManager;
             _logger = logger;
 
-            shellHost.LoadingAsync += LoadingAsync;
             shellHost.ReleasingAsync += ReleasingAsync;
             shellHost.ReloadingAsync += ReloadingAsync;
             shellHost.RemovingAsync += RemovingAsync;
@@ -137,6 +137,17 @@ namespace OrchardCore.Environment.Shell.Distributed
                     if (distributedCache is null)
                     {
                         continue;
+                    }
+
+                    // Initialize the service if not yet done by using the distributed cache.
+                    try
+                    {
+                        await EnsureInitializedAsync(distributedCache);
+                    }
+                    catch (Exception ex) when (!ex.IsFatal())
+                    {
+                        // Get the next idle time before retrying to use the distributed cache.
+                        idleTime = NextIdleTimeBeforeRetry(idleTime, ex);
                     }
 
                     // Try to retrieve the tenant changed global identifier from the distributed cache.
@@ -307,7 +318,11 @@ namespace OrchardCore.Environment.Shell.Distributed
                 }
             }
 
-            _terminated = true;
+            _initialized = false;
+
+            _shellHost.ReleasingAsync -= ReleasingAsync;
+            _shellHost.ReloadingAsync -= ReloadingAsync;
+            _shellHost.RemovingAsync -= RemovingAsync;
 
             if (_context is not null)
             {
@@ -318,41 +333,11 @@ namespace OrchardCore.Environment.Shell.Distributed
         }
 
         /// <summary>
-        /// Called before loading all tenants to initialize the local shell identifiers from the distributed cache.
+        /// Initialize the local shell identifiers from the distributed cache.
         /// </summary>
-        public async Task LoadingAsync()
+        public async Task EnsureInitializedAsync(IDistributedCache distributedCache)
         {
-            if (_terminated)
-            {
-                return;
-            }
-
-            // Load a first isolated configuration as the default context it is not yet initialized.
-            var defaultSettings = (await _shellSettingsManager
-                .LoadSettingsAsync(ShellSettings.DefaultShellName))
-                .AsDisposable();
-
-            // If there is no default tenant or it is not running, nothing to do.
-            if (!defaultSettings.IsRunning())
-            {
-                defaultSettings.Dispose();
-                return;
-            }
-
-            // Create a distributed context based on the first isolated configuration.
-            var context = _context = await CreateDistributedContextAsync(defaultSettings);
-            if (context is null)
-            {
-                defaultSettings.Dispose();
-                return;
-            }
-
-            // Mark the context as using the first isolated configuration.
-            context.HasIsolatedConfiguration = true;
-
-            // If the required distributed features are not enabled, nothing to do.
-            var distributedCache = context.DistributedCache;
-            if (distributedCache is null)
+            if (_initialized)
             {
                 return;
             }
@@ -389,10 +374,12 @@ namespace OrchardCore.Environment.Shell.Distributed
                 // Keep in sync the tenant global identifiers.
                 _shellChangedId = shellChangedId;
                 _shellCountChangedId = shellCountChangedId;
+
+                _initialized = true;
             }
             catch (Exception ex) when (!ex.IsFatal())
             {
-                _logger.LogError(ex, "Unable to read the distributed cache before loading all tenants.");
+                _logger.LogError(ex, "Unable to read the distributed cache while initializing the tenant identifiers.");
             }
         }
 
@@ -401,7 +388,7 @@ namespace OrchardCore.Environment.Shell.Distributed
         /// </summary>
         public async Task ReleasingAsync(string name)
         {
-            if (_terminated)
+            if (!_initialized)
             {
                 return;
             }
@@ -452,7 +439,7 @@ namespace OrchardCore.Environment.Shell.Distributed
         /// </summary>
         public async Task ReloadingAsync(string name)
         {
-            if (_terminated)
+            if (!_initialized)
             {
                 return;
             }
@@ -466,13 +453,6 @@ namespace OrchardCore.Environment.Shell.Distributed
 
             // Acquire the distributed context or create a new one if not yet built.
             await using var context = await AcquireOrCreateDistributedContextAsync(defaultContext);
-
-            // If the context still use the first isolated configuration.
-            if (context is not null && context.HasIsolatedConfiguration)
-            {
-                // Reset the serial number so that a new context will be built.
-                context.Context.Blueprint.Descriptor.SerialNumber = 0;
-            }
 
             // If the required distributed features are not enabled, nothing to do.
             var distributedCache = context?.DistributedCache;
@@ -518,7 +498,7 @@ namespace OrchardCore.Environment.Shell.Distributed
         public async Task RemovingAsync(string name)
         {
             // The 'Default' tenant can't be removed.
-            if (_terminated || name.IsDefaultShellName())
+            if (!_initialized || name.IsDefaultShellName())
             {
                 return;
             }
@@ -562,14 +542,21 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
         }
 
-        private static string ReleaseIdKey(string name) => name + ReleaseIdKeySuffix;
-        private static string ReloadIdKey(string name) => name + ReloadIdKeySuffix;
+        private static string ReleaseIdKey(string name) => $"{name}{ReleaseIdKeySuffix}";
+        private static string ReloadIdKey(string name) => $"{name}{ReloadIdKeySuffix}";
 
         /// <summary>
         /// Creates a distributed context based on the default tenant context.
         /// </summary>
         private async Task<DistributedContext> CreateDistributedContextAsync(ShellContext defaultContext)
         {
+            // Check if the distributed shell feature is enabled.
+            if (!HasDistributedShellFeature(defaultContext))
+            {
+                // Nothing to create.
+                return null;
+            }
+
             // Get the default tenant descriptor.
             var descriptor = await GetDefaultShellDescriptorAsync(defaultContext);
 
@@ -594,21 +581,6 @@ namespace OrchardCore.Environment.Shell.Distributed
             try
             {
                 return new DistributedContext(await _shellContextFactory.CreateDescribedContextAsync(defaultSettings, descriptor));
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Creates a distributed context based on the default tenant settings.
-        /// </summary>
-        private async Task<DistributedContext> CreateDistributedContextAsync(ShellSettings defaultSettings)
-        {
-            try
-            {
-                return new DistributedContext(await _shellContextFactory.CreateShellContextAsync(defaultSettings));
             }
             catch
             {
@@ -679,6 +651,13 @@ namespace OrchardCore.Environment.Shell.Distributed
         /// </summary>
         private async Task<DistributedContext> ReuseOrCreateDistributedContextAsync(ShellContext defaultContext)
         {
+            // Check if the distributed shell feature is enabled.
+            if (!HasDistributedShellFeature(defaultContext))
+            {
+                // Nothing to create.
+                return null;
+            }
+
             // If no context.
             if (_context is null)
             {
@@ -698,7 +677,7 @@ namespace OrchardCore.Environment.Shell.Distributed
 
             // If no descriptor.
             if (descriptor is null)
-            {   
+            {
                 // Nothing to create.
                 return null;
             }
@@ -729,6 +708,25 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
 
             return Task.FromResult(distributedContext);
+        }
+
+        /// <summary>
+        /// Whether the default context has the distributed shell feature enabled or not.
+        /// </summary>
+        private static bool HasDistributedShellFeature(ShellContext defaultContext)
+        {
+            try
+            {
+                if (defaultContext.ServiceProvider?.GetService<DistributedShellMarkerService>() is not null)
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+            }
+
+            return false;
         }
 
         /// <summary>
