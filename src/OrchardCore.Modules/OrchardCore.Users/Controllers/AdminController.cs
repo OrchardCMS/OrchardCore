@@ -90,9 +90,7 @@ namespace OrchardCore.Users.Controllers
         public async Task<ActionResult> Index([ModelBinder(BinderType = typeof(UserFilterEngineModelBinder), Name = "q")] QueryFilterResult<User> queryFilterResult, PagerParameters pagerParameters)
         {
             // Check a dummy user account to see if the current user has permission to view users.
-            var authUser = new User();
-
-            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ListUsers, authUser))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ListUsers, new User()))
             {
                 return Forbid();
             }
@@ -165,7 +163,7 @@ namespace OrchardCore.Users.Controllers
                 new SelectListItem() { Text = S["Delete"], Value = nameof(UsersBulkAction.Delete) }
             };
 
-            var roles = new List<string>();
+            var roleNames = new List<string>();
 
             foreach (var roleName in await _roleService.GetRoleNamesAsync())
             {
@@ -176,7 +174,7 @@ namespace OrchardCore.Users.Controllers
                     continue;
                 }
 
-                roles.Add(roleName);
+                roleNames.Add(roleName);
             }
 
             options.UserRoleFilters = new List<SelectListItem>()
@@ -187,12 +185,12 @@ namespace OrchardCore.Users.Controllers
 
             // TODO Candidate for dynamic localization.
             options.UserRoleFilters.AddRange(
-                roles.Select(role =>
+                roleNames.Select(roleName =>
                     new SelectListItem
                     {
-                        Text = role,
-                        Value = role.Contains(' ') ? "\"" + role + "\"" : role,
-                        Selected = string.Equals(options.SelectedRole?.Trim('"'), role, StringComparison.OrdinalIgnoreCase)
+                        Text = roleName,
+                        Value = roleName.Contains(' ') ? $"\"{roleName}\"" : roleName,
+                        Selected = string.Equals(options.SelectedRole?.Trim('"'), roleName, StringComparison.OrdinalIgnoreCase)
                     })
                 );
 
