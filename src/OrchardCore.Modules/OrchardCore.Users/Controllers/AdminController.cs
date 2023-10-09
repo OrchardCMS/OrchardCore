@@ -144,17 +144,17 @@ namespace OrchardCore.Users.Controllers
                 new SelectListItem() { Text = S["All Users"], Value = nameof(UsersFilter.All), Selected = (options.Filter == UsersFilter.All) },
                 new SelectListItem() { Text = S["Enabled Users"], Value = nameof(UsersFilter.Enabled), Selected = (options.Filter == UsersFilter.Enabled) },
                 new SelectListItem() { Text = S["Disabled Users"], Value = nameof(UsersFilter.Disabled), Selected = (options.Filter == UsersFilter.Disabled) }
-                //new SelectListItem() { Text = S["Approved"], Value = nameof(UsersFilter.Approved) },
-                //new SelectListItem() { Text = S["Email pending"], Value = nameof(UsersFilter.EmailPending) },
-                //new SelectListItem() { Text = S["Pending"], Value = nameof(UsersFilter.Pending) }
+                // new SelectListItem() { Text = S["Approved"], Value = nameof(UsersFilter.Approved) },
+                // new SelectListItem() { Text = S["Email pending"], Value = nameof(UsersFilter.EmailPending) },
+                // new SelectListItem() { Text = S["Pending"], Value = nameof(UsersFilter.Pending) }
             };
 
             options.UserSorts = new List<SelectListItem>()
             {
                 new SelectListItem() { Text = S["Name"], Value = nameof(UsersOrder.Name), Selected = (options.Order == UsersOrder.Name) },
                 new SelectListItem() { Text = S["Email"], Value = nameof(UsersOrder.Email), Selected = (options.Order == UsersOrder.Email) },
-                //new SelectListItem() { Text = S["Created date"], Value = nameof(UsersOrder.CreatedUtc) },
-                //new SelectListItem() { Text = S["Last Login date"], Value = nameof(UsersOrder.LastLoginUtc) }
+                // new SelectListItem() { Text = S["Created date"], Value = nameof(UsersOrder.CreatedUtc) },
+                // new SelectListItem() { Text = S["Last Login date"], Value = nameof(UsersOrder.LastLoginUtc) }
             };
 
             options.UsersBulkAction = new List<SelectListItem>()
@@ -165,17 +165,36 @@ namespace OrchardCore.Users.Controllers
                 new SelectListItem() { Text = S["Delete"], Value = nameof(UsersBulkAction.Delete) }
             };
 
-            var allRoles = (await _roleService.GetRoleNamesAsync())
-                .Except(RoleHelper.SystemRoleNames, StringComparer.OrdinalIgnoreCase);
+            var roles = new List<string>();
+
+            foreach (var roleName in await _roleService.GetRoleNamesAsync())
+            {
+                var permission = CommonPermissions.CreateListUsersInRolePermission(roleName);
+
+                if (!await _authorizationService.AuthorizeAsync(User, permission))
+                {
+                    continue;
+                }
+
+                roles.Add(roleName);
+            }
 
             options.UserRoleFilters = new List<SelectListItem>()
             {
-                new SelectListItem() { Text = S["All roles"], Value = string.Empty, Selected = (options.SelectedRole == string.Empty) },
+                new SelectListItem() { Text = S["Any role"], Value = string.Empty, Selected = options.SelectedRole == string.Empty },
                 new SelectListItem() { Text = S["Authenticated (no roles)"], Value = "Authenticated", Selected = string.Equals(options.SelectedRole, "Authenticated", StringComparison.OrdinalIgnoreCase) }
             };
 
             // TODO Candidate for dynamic localization.
-            options.UserRoleFilters.AddRange(allRoles.Select(x => new SelectListItem { Text = x, Value = x, Selected = string.Equals(options.SelectedRole, x, StringComparison.OrdinalIgnoreCase) }));
+            options.UserRoleFilters.AddRange(
+                roles.Select(role =>
+                    new SelectListItem
+                    {
+                        Text = role,
+                        Value = role.Contains(' ') ? "\"" + role + "\"" : role,
+                        Selected = string.Equals(options.SelectedRole?.Trim('"'), role, StringComparison.OrdinalIgnoreCase)
+                    })
+                );
 
             // Populate options pager summary values.
             var startIndex = (pagerShape.Page - 1) * (pagerShape.PageSize) + 1;
