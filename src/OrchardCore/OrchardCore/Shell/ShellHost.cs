@@ -186,7 +186,7 @@ namespace OrchardCore.Environment.Shell
         /// <param name="eventSource">Whether the related <see cref="ShellEvent"/> is invoked.</param>
         public async Task ReloadShellContextAsync(ShellSettings settings, bool eventSource = true)
         {
-            // A shell can be released but not reloaded while it is initializing.
+            // A shell can't be reloaded while it is initializing, only released.
             if (settings.IsInitializing())
             {
                 return;
