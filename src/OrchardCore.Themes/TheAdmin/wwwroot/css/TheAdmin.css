@@ -9345,6 +9345,10 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
   min-height: 1rem;
 }
 
+ul.ui-sortable:not(:has(> li)) {
+  border: var(--bs-border-width) dashed var(--bs-border-color) !important;
+}
+
 /* 
     IMPORTANT: Never import Bootstrap directly into the theme. 
     TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
