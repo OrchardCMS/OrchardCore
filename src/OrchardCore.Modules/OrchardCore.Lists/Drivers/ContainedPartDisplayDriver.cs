@@ -122,7 +122,7 @@ namespace OrchardCore.Lists.Drivers
 
                     if (settings != null)
                     {
-                        // Add list part navigation
+                        // Add list part navigation.
                         results.Add(Initialize<ListPartNavigationAdminViewModel>("ListPartNavigationAdmin", async model =>
                         {
                             model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
@@ -143,8 +143,7 @@ namespace OrchardCore.Lists.Drivers
         }
 
         private IDisplayResult GetListPartHeader(string containerId, ListPartSettings listPartSettings)
-        {
-            return Initialize<ListPartHeaderAdminViewModel>("ListPartHeaderAdmin", async model =>
+            => Initialize<ListPartHeaderAdminViewModel>("ListPartHeaderAdmin", async model =>
             {
                 model.ContainerContentItem = await GetContainerAsync(containerId);
 
@@ -154,17 +153,16 @@ namespace OrchardCore.Lists.Drivers
                     model.EnableOrdering = listPartSettings.EnableOrdering;
                 }
             }).Location("Content:1");
-        }
 
         // Initially, attempt to locate a published container.
         // If none is found, try acquiring the most recent unpublished version.
         private async Task<ContentItem> GetContainerAsync(string containerId)
             => await _contentManager.GetAsync(containerId) ?? await _contentManager.GetAsync(containerId, VersionOptions.Latest);
 
-        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ListPartSettings settings) =>
-            settings.ContainedContentTypes
-                ?.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
-                .Where(definition => definition is not null)
-                ?? Enumerable.Empty<ContentTypeDefinition>();
+        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ListPartSettings settings)
+            => settings.ContainedContentTypes
+            ?.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
+            .Where(definition => definition is not null)
+            ?? Enumerable.Empty<ContentTypeDefinition>();
     }
 }
