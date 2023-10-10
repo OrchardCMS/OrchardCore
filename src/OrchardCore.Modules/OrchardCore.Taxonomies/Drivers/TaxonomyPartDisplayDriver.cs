@@ -53,7 +53,7 @@ namespace OrchardCore.Taxonomies.Drivers
             {
                 if (string.IsNullOrWhiteSpace(model.TermContentType))
                 {
-                    updater.ModelState.AddModelError(Prefix, nameof(model.TermContentType), S["The Term Content Type field is required.\"A value is required for '{0}'"]);
+                    updater.ModelState.AddModelError(Prefix, nameof(model.TermContentType), S["The Term Content Type field is required."]);
                 }
 
                 if (!string.IsNullOrWhiteSpace(model.Hierarchy))
