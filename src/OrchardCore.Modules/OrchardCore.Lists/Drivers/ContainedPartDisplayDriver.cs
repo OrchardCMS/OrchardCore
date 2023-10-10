@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -127,7 +126,7 @@ namespace OrchardCore.Lists.Drivers
                         results.Add(Initialize<ListPartNavigationAdminViewModel>("ListPartNavigationAdmin", async model =>
                         {
                             model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
-                            model.Container = await _contentManager.GetAsync(containerId, VersionOptions.Latest);
+                            model.Container = await GetContainerAsync(containerId);
                             model.EnableOrdering = settings.EnableOrdering;
                             model.ContainerContentTypeDefinition = definition;
                         }).Location("Content:1.5"));
@@ -147,14 +146,7 @@ namespace OrchardCore.Lists.Drivers
         {
             return Initialize<ListPartHeaderAdminViewModel>("ListPartHeaderAdmin", async model =>
             {
-                var container = await _contentManager.GetAsync(containerId);
-
-                if (container == null)
-                {
-                    return;
-                }
-
-                model.ContainerContentItem = container;
+                model.ContainerContentItem = await GetContainerAsync(containerId);
 
                 if (listPartSettings != null)
                 {
@@ -163,6 +155,11 @@ namespace OrchardCore.Lists.Drivers
                 }
             }).Location("Content:1");
         }
+
+        // Initially, attempt to locate a published container.
+        // If none is found, try acquiring the most recent unpublished version.
+        private async Task<ContentItem> GetContainerAsync(string containerId)
+            => await _contentManager.GetAsync(containerId) ?? await _contentManager.GetAsync(containerId, VersionOptions.Latest);
 
         private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ListPartSettings settings) =>
             settings.ContainedContentTypes
