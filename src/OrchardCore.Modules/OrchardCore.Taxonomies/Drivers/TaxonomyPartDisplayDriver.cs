@@ -48,7 +48,7 @@ namespace OrchardCore.Taxonomies.Drivers
         public override async Task<IDisplayResult> UpdateAsync(TaxonomyPart part, IUpdateModel updater)
         {
             var model = new TaxonomyPartEditViewModel();
-#
+
             if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy, t => t.TermContentType))
             {
                 if (string.IsNullOrWhiteSpace(model.TermContentType))
