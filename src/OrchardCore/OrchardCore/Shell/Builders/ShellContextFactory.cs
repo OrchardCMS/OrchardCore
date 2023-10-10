@@ -35,31 +35,22 @@ namespace OrchardCore.Environment.Shell.Builders
                 _logger.LogInformation("Creating shell context for tenant '{TenantName}'", settings.Name);
             }
 
-            // Prevent settings from being disposed when an intermediate container is disposed.
-            Interlocked.Increment(ref settings._shellCreating);
-            try
+            var describedContext = await CreateDescribedContextAsync(settings, new ShellDescriptor());
+
+            ShellDescriptor currentDescriptor = null;
+            await (await describedContext.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
             {
-                var describedContext = await CreateDescribedContextAsync(settings, new ShellDescriptor());
+                var shellDescriptorManager = scope.ServiceProvider.GetService<IShellDescriptorManager>();
+                currentDescriptor = await shellDescriptorManager.GetShellDescriptorAsync();
+            });
 
-                ShellDescriptor currentDescriptor = null;
-                await (await describedContext.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
-                {
-                    var shellDescriptorManager = scope.ServiceProvider.GetService<IShellDescriptorManager>();
-                    currentDescriptor = await shellDescriptorManager.GetShellDescriptorAsync();
-                });
-
-                if (currentDescriptor is not null)
-                {
-                    await describedContext.DisposeAsync();
-                    return await CreateDescribedContextAsync(settings, currentDescriptor);
-                }
-
-                return describedContext;
-            }
-            finally
+            if (currentDescriptor is not null)
             {
-                Interlocked.Decrement(ref settings._shellCreating);
+                await describedContext.WithOwnSettings(false).DisposeAsync();
+                return await CreateDescribedContextAsync(settings, currentDescriptor);
             }
+
+            return describedContext;
         }
 
         Task<ShellContext> IShellContextFactory.CreateSetupContextAsync(ShellSettings settings)

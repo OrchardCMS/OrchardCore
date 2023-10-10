@@ -107,6 +107,11 @@ namespace OrchardCore.Environment.Shell.Builders
         public int ActiveScopes => _refCount;
 
         /// <summary>
+        /// Whether this instance references its own <see cref="Settings"/> or not.
+        /// </summary>
+        public bool OwnSettings { get; internal set; } = true;
+
+        /// <summary>
         /// Marks the <see cref="ShellContext"/> as released and then a candidate to be disposed.
         /// </summary>
         public Task ReleaseAsync() => ReleaseInternalAsync();
@@ -289,8 +294,14 @@ namespace OrchardCore.Environment.Shell.Builders
             Blueprint = null;
             Pipeline = null;
 
-            Settings?.Dispose();
             _semaphore?.Dispose();
+
+            if (!OwnSettings)
+            {
+                return;
+            }
+
+            Settings?.Dispose();
         }
 
         ~ShellContext() => Close();

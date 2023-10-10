@@ -38,8 +38,6 @@ namespace OrchardCore.Environment.Shell.Distributed
 
         public IDistributedCache DistributedCache { get; }
 
-        public bool HasIsolatedConfiguration { get; internal set; }
-
         public DistributedContext Acquire()
         {
             // Don't acquire a released context.

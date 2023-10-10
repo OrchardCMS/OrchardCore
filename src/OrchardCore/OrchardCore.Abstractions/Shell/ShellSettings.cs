@@ -28,7 +28,6 @@ namespace OrchardCore.Environment.Shell
         private readonly ShellConfiguration _settings;
         private readonly ShellConfiguration _configuration;
         internal volatile int _shellCreating;
-        private bool _disposable;
         private bool _disposed;
 
         /// <summary>
@@ -75,11 +74,7 @@ namespace OrchardCore.Environment.Shell
         /// Whether this instance is disposable or not.
         /// </summary>
         [JsonIgnore]
-        public bool Disposable
-        {
-            get => _disposable;
-            internal set => _disposable = value;
-        }
+        public bool Disposable { get; internal set; }
 
         /// <summary>
         /// The tenant version identifier.
@@ -156,7 +151,7 @@ namespace OrchardCore.Environment.Shell
         public void Dispose()
         {
             // Disposable on reloading or if never registered.
-            if (!_disposable || _shellCreating > 0)
+            if (!Disposable || _shellCreating > 0)
             {
                 return;
             }
