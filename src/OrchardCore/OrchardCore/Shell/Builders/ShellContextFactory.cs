@@ -46,7 +46,8 @@ namespace OrchardCore.Environment.Shell.Builders
 
             if (currentDescriptor is not null)
             {
-                await describedContext.WithOwnSettings(false).DisposeAsync();
+                // Mark as using shared setting that should not be disposed.
+                await describedContext.WithSharedSettings().DisposeAsync();
                 return await CreateDescribedContextAsync(settings, currentDescriptor);
             }
 

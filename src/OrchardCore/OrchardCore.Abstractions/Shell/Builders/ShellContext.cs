@@ -20,6 +20,9 @@ namespace OrchardCore.Environment.Shell.Builders
         internal volatile int _terminated;
         internal bool _released;
 
+        /// <summary>
+        /// Initializes a new <see cref="ShellContext"/>.
+        /// </summary>
         public ShellContext() => UtcTicks = DateTime.UtcNow.Ticks;
 
         /// <summary>
@@ -107,9 +110,9 @@ namespace OrchardCore.Environment.Shell.Builders
         public int ActiveScopes => _refCount;
 
         /// <summary>
-        /// Whether this instance references its own <see cref="Settings"/> or not.
+        /// Whether or not this instance uses shared <see cref="Settings"/> that should not be disposed.
         /// </summary>
-        public bool OwnSettings { get; internal set; } = true;
+        public bool SharedSettings { get; internal set; }
 
         /// <summary>
         /// Marks the <see cref="ShellContext"/> as released and then a candidate to be disposed.
@@ -296,7 +299,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
             _semaphore?.Dispose();
 
-            if (!OwnSettings)
+            if (SharedSettings)
             {
                 return;
             }

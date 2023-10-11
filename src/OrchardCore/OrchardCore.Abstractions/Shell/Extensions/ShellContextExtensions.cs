@@ -30,11 +30,23 @@ public static class ShellContextExtensions
     public static bool IsActive(this ShellContext context) => context is { ActiveScopes: > 0 };
 
     /// <summary>
-    /// Defines whether this instance references its own <see cref="ShellContext.Settings"/> or not.
+    /// Marks this instance as using unshared <see cref="ShellContext.Settings"/> that can be disposed.
     /// </summary>
-    public static ShellContext WithOwnSettings(this ShellContext context, bool ownSettings)
+    /// <remarks>
+    /// This is the default but can be used if <see cref="WithSharedSettings"/> may have been called.
+    /// </remarks>
+    public static ShellContext WithoutSharedSettings(this ShellContext context)
     {
-        context.OwnSettings = ownSettings;
+        context.SharedSettings = false;
+        return context;
+    }
+
+    /// <summary>
+    /// Marks this instance as using shared <see cref="ShellContext.Settings"/> that should not be disposed.
+    /// </summary>
+    public static ShellContext WithSharedSettings(this ShellContext context)
+    {
+        context.SharedSettings = true;
         return context;
     }
 }

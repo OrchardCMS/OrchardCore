@@ -341,7 +341,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                 return;
             }
 
-            // Load a first isolated configuration as the default context it is not yet initialized.
+            // Load a first isolated configuration before the default context is initialized.
             var defaultSettings = (await _shellSettingsManager
                 .LoadSettingsAsync(ShellSettings.DefaultShellName))
                 .AsDisposable();
@@ -353,8 +353,10 @@ namespace OrchardCore.Environment.Shell.Distributed
                 return;
             }
 
-            // Create a distributed context based on the first isolated configuration.
-            var context = _context = await CreateDistributedContextAsync(defaultSettings, ownSettings: true);
+            // Create a distributed context based on the first loaded isolated configuration.
+            var context = _context = (await CreateDistributedContextAsync(defaultSettings))
+                ?.WithoutSharedSettings();
+
             if (context is null)
             {
                 defaultSettings.Dispose();
@@ -478,8 +480,8 @@ namespace OrchardCore.Environment.Shell.Distributed
             // Acquire the distributed context or create a new one if not yet built.
             await using var context = await AcquireOrCreateDistributedContextAsync(defaultContext);
 
-            // If the context still owns the first isolated configuration.
-            if (context is not null && context.Context.OwnSettings)
+            // If the context still uses the first isolated configuration.
+            if (context is not null && !context.Context.SharedSettings)
             {
                 // Reset the serial number so that a new context will be built.
                 context.Context.Blueprint.Descriptor.SerialNumber = 0;
@@ -682,9 +684,7 @@ namespace OrchardCore.Environment.Shell.Distributed
         /// <summary>
         /// Creates a distributed context based on the default tenant settings.
         /// </summary>
-        private async Task<DistributedContext> CreateDistributedContextAsync(
-            ShellSettings defaultSettings,
-            bool ownSettings = false)
+        private async Task<DistributedContext> CreateDistributedContextAsync(ShellSettings defaultSettings)
         {
             // Get the default tenant descriptor.
             var descriptor = await GetDefaultShellDescriptorAsync(defaultSettings);
@@ -697,16 +697,13 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
 
             // Creates a new context based on the default settings and descriptor.
-            return await CreateDistributedContextAsync(defaultSettings, descriptor, ownSettings);
+            return await CreateDistributedContextAsync(defaultSettings, descriptor);
         }
 
         /// <summary>
         /// Creates a distributed context based on the default tenant settings and descriptor.
         /// </summary>
-        private async Task<DistributedContext> CreateDistributedContextAsync(
-            ShellSettings defaultSettings,
-            ShellDescriptor descriptor,
-            bool ownSettings = false)
+        private async Task<DistributedContext> CreateDistributedContextAsync(ShellSettings defaultSettings, ShellDescriptor descriptor)
         {
             // Using the current shell descriptor prevents a database access, and a race condition
             // when resolving `IStore` while the default tenant is activating and does migrations.
@@ -714,7 +711,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             {
                 return new DistributedContext((await _shellContextFactory
                     .CreateDescribedContextAsync(defaultSettings, descriptor))
-                    .WithOwnSettings(ownSettings));
+                    .WithSharedSettings());
             }
             catch
             {

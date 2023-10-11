@@ -9,32 +9,44 @@ namespace OrchardCore.Environment.Shell;
 public static class ShellContextFactoryExtensions
 {
     /// <summary>
-    /// Creates an isolated maximum shell context composed of all installed features. 
+    /// Creates a maximum shell context composed of all installed features, and
+    /// marked by default as using shared settings that should not be disposed. 
     /// </summary>
     public static async Task<ShellContext> CreateMaximumContextAsync(
-        this IShellContextFactory shellContextFactory, ShellSettings shellSettings, bool ownSettings = false)
+        this IShellContextFactory shellContextFactory, ShellSettings shellSettings, bool sharedSettings = true)
     {
         var shellDescriptor = await shellContextFactory.GetShellDescriptorAsync(shellSettings);
         if (shellDescriptor is null)
         {
-            return await shellContextFactory.CreateMinimumContextAsync(shellSettings, ownSettings);
+            return await shellContextFactory.CreateMinimumContextAsync(shellSettings, sharedSettings);
         }
 
         shellDescriptor = new ShellDescriptor { Features = shellDescriptor.Installed };
 
-        return (await shellContextFactory
-            .CreateDescribedContextAsync(shellSettings, shellDescriptor))
-            .WithOwnSettings(ownSettings);
+        var context = await shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor);
+        if (sharedSettings)
+        {
+            context.WithSharedSettings();
+        }
+
+        return context;
     }
 
     /// <summary>
-    /// Creates an isolated minimum shell context without any feature. 
+    /// Creates a minimum shell context without any feature, and marked
+    /// by default as using shared settings that should not be disposed. 
     /// </summary>
     public static async Task<ShellContext> CreateMinimumContextAsync(
-        this IShellContextFactory shellContextFactory, ShellSettings shellSettings, bool ownSettings = false) =>
-            (await shellContextFactory
-                .CreateDescribedContextAsync(shellSettings, new ShellDescriptor()))
-                .WithOwnSettings(ownSettings);
+        this IShellContextFactory shellContextFactory, ShellSettings shellSettings, bool sharedSettings = true)
+    {
+        var context = await shellContextFactory.CreateDescribedContextAsync(shellSettings, new ShellDescriptor());
+        if (sharedSettings)
+        {
+            context.WithSharedSettings();
+        }
+
+        return context;
+    }
 
     /// <summary>
     /// Gets the shell descriptor from the store.
