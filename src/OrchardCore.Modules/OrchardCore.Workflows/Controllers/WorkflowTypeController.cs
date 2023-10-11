@@ -128,7 +128,7 @@ namespace OrchardCore.Workflows.Controllers
             var sqlBuilder = dialect.CreateBuilder(_session.Store.Configuration.TablePrefix);
             sqlBuilder.Select();
             sqlBuilder.Distinct();
-            sqlBuilder.Selector(nameof(WorkflowIndex.WorkflowTypeId));
+            sqlBuilder.Selector(nameof(WorkflowIndex), nameof(WorkflowIndex.WorkflowTypeId), _session.Store.Configuration.Schema);
             sqlBuilder.Table(nameof(WorkflowIndex), alias: null, _session.Store.Configuration.Schema);
 
             var workflowTypeIdsWithInstances = await connection.QueryAsync<string>(sqlBuilder.ToSqlString());
