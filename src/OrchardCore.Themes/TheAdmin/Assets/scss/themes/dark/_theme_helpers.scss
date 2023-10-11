@@ -1,14 +1,14 @@
 .bg-theme {
-    background-color: rgba(var(--bs-body-bg-rgb), var(--bs-bg-opacity, 1));
+    background-color: rgba(var(--bs-body-bg-rgb), var(--bs-bg-opacity, 1)) !important;
 }
 
 .text-theme {
-    color: var(--bs-body-color);
+    color: var(--bs-body-color) !important;
 }
 
 .text-bg-theme {
-    color: var(--bs-body-color);
-    background-color: rgba(var(--bs-body-bg-rgb), var(--bs-bg-opacity, 1));
+    color: var(--bs-body-color) !important;
+    background-color: rgba(var(--bs-body-bg-rgb), var(--bs-bg-opacity, 1)) !important;
 }
 
 .btn-theme {
