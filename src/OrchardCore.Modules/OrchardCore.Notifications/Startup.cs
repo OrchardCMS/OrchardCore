@@ -1,10 +1,10 @@
 using System;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Admin.Models;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
@@ -14,7 +14,6 @@ using OrchardCore.Navigation.Core;
 using OrchardCore.Notifications.Activities;
 using OrchardCore.Notifications.Controllers;
 using OrchardCore.Notifications.Drivers;
-using OrchardCore.Notifications.Filters;
 using OrchardCore.Notifications.Handlers;
 using OrchardCore.Notifications.Indexes;
 using OrchardCore.Notifications.Migrations;
@@ -22,6 +21,7 @@ using OrchardCore.Notifications.Models;
 using OrchardCore.Notifications.Services;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Themes.Drivers;
 using OrchardCore.Users.Models;
 using OrchardCore.Workflows.Helpers;
 using YesSql.Filters.Query;
@@ -68,11 +68,7 @@ public class Startup : StartupBase
 
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, NotificationOptionsConfiguration>();
         services.AddScoped<IDisplayDriver<User>, UserNotificationPreferencesPartDisplayDriver>();
-
-        services.Configure<MvcOptions>((options) =>
-        {
-            options.Filters.Add(typeof(NotificationResultFilter));
-        });
+        services.AddScoped<IDisplayDriver<Navbar>, NotificationNavbarDisplayDriver>();
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

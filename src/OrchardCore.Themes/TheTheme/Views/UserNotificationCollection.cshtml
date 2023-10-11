@@ -1,21 +1,27 @@
 @using Microsoft.AspNetCore.Mvc.Localization
+@using OrchardCore.DisplayManagement.ModelBinding
 @using OrchardCore.DisplayManagement.Views
+@using OrchardCore.DisplayManagement
 @using OrchardCore.Notifications.ViewModels
+@using OrchardCore.Notifications
 
-@model ShapeViewModel<UserNotificationCollectionViewModel>
+@inject IDisplayManager<Notification> NotificationDisplayDriver
+@inject IUpdateModelAccessor UpdateModelAccessor
+
+@model UserNotificationCollectionViewModel
+
 <li class="nav-item nav-item dropdown text-end">
     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-        @if (Model.Value.TotalUnread > 0)
+        @if (Model.TotalUnread > 0)
         {
-            var notifications = T.Plural(Model.Value.TotalUnread, "notification", "notifications");
             LocalizedHtmlString title;
-            if (Model.Value.TotalUnread > Model.Value.MaxVisibleNotifications)
+            if (Model.TotalUnread > Model.MaxVisibleNotifications)
             {
-                title = T["You have more than {0} unread {1}", Model.Value.MaxVisibleNotifications, notifications];
+                title = T["You have more than {0} unread notifications", Model.MaxVisibleNotifications];
             }
             else
             {
-                title = T["You have {0} unread {1}", Model.Value.TotalUnread, notifications];
+                title = T.Plural(Model.TotalUnread, "You have {1} unread notification", "You have {0} unread notifications", Model.TotalUnread);
             }
 
             <i class="fa-solid fa-bell" aria-hidden="true" data-bs-toggle="tooltip" data-bs-original-title="@title"></i>
@@ -26,13 +32,15 @@
         }
     </a>
     <ul class="dropdown-menu dropdown-menu-end notification-navbar scrollable" style="max-width: 20rem;">
-        @if (Model.Value.Notifications.Count > 0)
+        @if (Model.Notifications.Count > 0)
         {
-            var maxCount = Math.Min(Model.Value.MaxVisibleNotifications, Model.Value.Notifications.Count);
+            var maxCount = Math.Min(Model.MaxVisibleNotifications, Model.Notifications.Count);
             <li style="max-height: 30rem; overflow-y: auto;">
                 @for (int i = 0; i < maxCount; i++)
                 {
-                    var notification = Model.Value.Notifications[i];
+                    var notification = Model.Notifications[i];
+                    dynamic shape = await NotificationDisplayDriver.BuildDisplayAsync(notification, UpdateModelAccessor.ModelUpdater, "Header");
+                    shape.Notification = notification;
 
                     <div class="@(i == maxCount - 1 ? string.Empty : "border-bottom")">
                         @await DisplayAsync(notification)
