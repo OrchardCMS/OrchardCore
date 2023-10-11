@@ -709,9 +709,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             // when resolving `IStore` while the default tenant is activating and does migrations.
             try
             {
-                return new DistributedContext((await _shellContextFactory
-                    .CreateDescribedContextAsync(defaultSettings, descriptor))
-                    .WithSharedSettings());
+                return new DistributedContext(await _shellContextFactory.CreateDescribedContextAsync(defaultSettings, descriptor);
             }
             catch
             {
