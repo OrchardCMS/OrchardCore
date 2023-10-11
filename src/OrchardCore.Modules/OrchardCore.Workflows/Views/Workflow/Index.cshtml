@@ -95,7 +95,7 @@
                             <div class="float-end">
                                 @if (restartable)
                                 {
-                                    <a asp-action="Start" asp-route-id="@entry.Workflow.Id" class="btn btn-warning btn-sm" data-title="@T["Restart"]" data-message="@T["Are you sure you want to restart this workflow instance?"]" data-url-af="RemoveUrl UnsafeUrl">@T["Restart"]</a>
+                                    <a asp-action="Restart" asp-route-id="@entry.Workflow.Id" class="btn btn-warning btn-sm" data-title="@T["Restart"]" data-message="@T["Are you sure you want to restart this workflow instance?"]" data-url-af="RemoveUrl UnsafeUrl">@T["Restart"]</a>
                                 }
                                 <a asp-action="Delete" asp-route-id="@entry.Workflow.Id" class="btn btn-danger btn-sm" data-message="@T["Are you sure you want to delete this workflow instance?"]" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                             </div>

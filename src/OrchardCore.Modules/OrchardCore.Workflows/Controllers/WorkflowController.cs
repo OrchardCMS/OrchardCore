@@ -247,7 +247,7 @@ namespace OrchardCore.Workflows.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Start(long id)
+        public async Task<IActionResult> Restart(long id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
             {
