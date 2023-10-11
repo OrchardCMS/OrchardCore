@@ -25,9 +25,20 @@
     <script asp-name="admin-main" version="1" at="Head"></script>
 
     <!-- TheAdmin & Bootstrap CSS -->
-    <style media="all" asp-name="admin" version="1"></style>
+    @if (Orchard.IsRightToLeft())
+    {
+        <style asp-name="bootstrap-rtl" version="5" at="Head"></style>
+        <style media="all" asp-name="admin" version="1" depends-on="bootstrap-rtl" at="Head"></style>
+    }
+    else
+    {
+        <style asp-name="bootstrap" version="5" at="Head"></style>
+        <style media="all" asp-name="admin" version="1" depends-on="bootstrap" at="Head"></style>
+    }
+
     <script asp-name="font-awesome" at="Head" version="6"></script>
     <script asp-name="admin" version="1" at="Foot"></script>
+
     <resources type="Header" />
 
     @await RenderSectionAsync("HeadMeta", required: false)

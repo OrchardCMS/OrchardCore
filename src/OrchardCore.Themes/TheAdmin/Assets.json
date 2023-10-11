@@ -1,7 +1,7 @@
 [
   {
     "generateSourceMaps": false,
-    "generateRTL": false,
+    "generateRTL": true,
     "inputs": [
       "Assets/scss/index.scss"
     ],

@@ -14,6 +14,11 @@ public static class RazorHelperExtensions
         return CultureInfo.CurrentUICulture.GetLanguageDirection();
     }
 
+    public static bool IsRightToLeft(this IOrchardHelper _)
+    {
+        return CultureInfo.CurrentUICulture.IsRightToLeft();
+    }
+
     /// <summary>
     /// Returns the current culture name.
     /// </summary>

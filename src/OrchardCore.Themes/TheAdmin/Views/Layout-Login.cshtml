@@ -1,5 +1,5 @@
 @using OrchardCore.Environment.Shell
-@using OrchardCore.Themes.Services;
+@using OrchardCore.Themes.Services
 
 @inject ThemeTogglerService ThemeTogglerService
 
@@ -16,8 +16,16 @@
     <script asp-name="admin-head" version="1" at="Head"></script>
 
     <!-- Bootstrap CSS -->
-    <style asp-name="bootstrap" version="5"></style>
-    <style asp-name="TheAdminLogin" depends-on="bootstrap" asp-src="~/TheAdmin/css/login.min.css" debug-src="~/TheAdmin/css/login.css" at="Foot"></style>
+    @if (Orchard.IsRightToLeft())
+    {
+        <style asp-name="bootstrap-rtl" version="5" at="Head"></style>
+        <style asp-name="TheAdminLogin" depends-on="bootstrap-rtl" asp-src="~/TheAdmin/css/login.min.css" debug-src="~/TheAdmin/css/login.css" at="Foot"></style>
+    }
+    else
+    {
+        <style asp-name="bootstrap" version="5" at="Head"></style>
+        <style asp-name="TheAdminLogin" depends-on="bootstrap" asp-src="~/TheAdmin/css/login.min.css" debug-src="~/TheAdmin/css/login.css" at="Foot"></style>
+    }
 
     <script asp-name="font-awesome" at="Foot" version="6"></script>
 
