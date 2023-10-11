@@ -285,9 +285,7 @@ namespace OrchardCore.Workflows.Controllers
                 }
                 else
                 {
-                    var input = workflow.State["Input"].ToObject<Dictionary<string, object>>();
-
-                    await _workflowManager.StartWorkflowAsync(workflowType, null, input, workflow.CorrelationId);
+                    await _workflowManager.RestartWorkflowAsync(workflow, workflowType);
 
                     await _notifier.SuccessAsync(H["Workflow {0} has been restarted.", id]);
                 }

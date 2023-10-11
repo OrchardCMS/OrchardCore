@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
@@ -71,9 +72,43 @@ namespace OrchardCore.Contents.Workflows.Activities
             return Outcomes("Done");
         }
 
+        public override async Task OnWorkflowRestartingAsync(WorkflowExecutionContext workflowContext, CancellationToken cancellationToken = default)
+        {
+            ContentItem contentItem = null;
+
+            if (workflowContext.Input.TryGetValue(ContentEventConstants.ContentEventInputKey, out var contentEvent))
+            {
+                var contentEventContext = ((JObject)contentEvent).ToObject<ContentEventContext>();
+
+                if (contentEventContext?.ContentItemVersionId != null)
+                {
+                    contentItem = await ContentManager.GetVersionAsync(contentEventContext.ContentItemVersionId);
+                }
+                if (contentItem == null && contentEventContext?.ContentItemId != null)
+                {
+                    contentItem = await ContentManager.GetAsync(contentEventContext.ContentItemId);
+                }
+            }
+
+            if (contentItem == null && workflowContext.Input.TryGetValue(ContentEventConstants.ContentItemInputKey, out var contentItemEvent))
+            {
+                var item = ((JObject)contentItemEvent).ToObject<ContentItem>();
+
+                if (item?.ContentItemId != null)
+                {
+                    contentItem = await ContentManager.GetAsync(item.ContentItemId);
+                }
+            }
+
+            if (contentItem != null)
+            {
+                workflowContext.Input[ContentEventConstants.ContentItemInputKey] = contentItem;
+            }
+        }
+
         protected virtual async Task<IContent> GetContentAsync(WorkflowExecutionContext workflowContext)
         {
-            IContent content = null;
+            IContent content;
 
             // Try to evaluate a content item from the Content expression, if provided.
             if (!string.IsNullOrWhiteSpace(Content.Expression))
@@ -98,37 +133,9 @@ namespace OrchardCore.Contents.Workflows.Activities
             }
             else
             {
-                try
-                {
-                    // If no expression was provided, see if the content item was provided as an input or as a property.
-                    content ??= workflowContext.Input.GetValue<IContent>(ContentEventConstants.ContentItemInputKey)
-                        ?? workflowContext.Properties.GetValue<IContent>(ContentEventConstants.ContentItemInputKey);
-                }
-                catch
-                {
-                    if (workflowContext.Input.TryGetValue(ContentEventConstants.ContentEventInputKey, out var contentEvent))
-                    {
-                        var contentEventContext = ((JObject)contentEvent).ToObject<ContentEventContext>();
-
-                        if (contentEventContext?.ContentItemId != null)
-                        {
-                            var contentItem = await ContentManager.GetAsync(contentEventContext.ContentItemId);
-                            workflowContext.Input[ContentEventConstants.ContentItemInputKey] = contentItem;
-                            content = contentItem;
-                        }
-                    }
-                    else if (workflowContext.Input.TryGetValue(ContentEventConstants.ContentItemInputKey, out var contentItemEvent))
-                    {
-                        var item = ((JObject)contentItemEvent).ToObject<ContentItem>();
-
-                        if (item?.ContentItemId != null)
-                        {
-                            var contentItem = await ContentManager.GetAsync(item.ContentItemId);
-                            workflowContext.Input[ContentEventConstants.ContentItemInputKey] = contentItem;
-                            content = contentItem;
-                        }
-                    }
-                }
+                // If no expression was provided, see if the content item was provided as an input or as a property.
+                content = workflowContext.Input.GetValue<IContent>(ContentEventConstants.ContentItemInputKey)
+                    ?? workflowContext.Properties.GetValue<IContent>(ContentEventConstants.ContentItemInputKey);
             }
 
             if (content != null && content.ContentItem.ContentItemId != null)
