@@ -73,12 +73,12 @@ public class Migrations : DataMigration
 
         SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table =>
         {
-            table.DropIndex($"IDX_PublishLaterPartIndex_ScheduledPublishDateTimeUtc");
+            table.DropIndex("IDX_PublishLaterPartIndex_ScheduledPublishDateTimeUtc");
         });
 
         SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table =>
         {
-            table.CreateIndex($"IDX_PublishLaterPartIndex_ScheduledPublishDateTimeUtc",
+            table.CreateIndex("IDX_PublishLaterPartIndex_ScheduledPublishDateTimeUtc",
                 "Id",
                 "DocumentId",
                 "ContentItemId",
