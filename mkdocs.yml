@@ -8,6 +8,7 @@ theme:
     - header.autohide
     - navigation.instant
     - navigation.tabs
+    - content.tabs.link
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
