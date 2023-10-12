@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -35,16 +36,15 @@ namespace OrchardCore.Environment.Shell.Configuration
             var tenantFolder = Path.Combine(_container, tenant);
             var appsettings = Path.Combine(tenantFolder, "appsettings.json");
 
-            JObject config;
+            IDictionary<string, string> config;
             if (File.Exists(appsettings))
             {
-                using var streamReader = File.OpenText(appsettings);
-                using var jsonReader = new JsonTextReader(streamReader);
-                config = await JObject.LoadAsync(jsonReader);
+                using var streamReader = File.OpenRead(appsettings);
+                config = JsonConfigurationFileParser.Parse(streamReader);
             }
             else
             {
-                config = new JObject();
+                config = new Dictionary<string, string>();
             }
 
             foreach (var key in data.Keys)
@@ -63,7 +63,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
             using var streamWriter = File.CreateText(appsettings);
             using var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented };
-            await config.WriteToAsync(jsonWriter);
+            await JObject.FromObject(config).WriteToAsync(jsonWriter);
         }
 
         public Task RemoveAsync(string tenant)
