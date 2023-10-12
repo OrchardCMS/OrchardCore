@@ -169,6 +169,7 @@ nav:
           - Rules: docs/reference/modules/Rules/README.md
           - Shortcodes: docs/reference/modules/Shortcodes/README.md
           - Sitemaps: docs/reference/modules/Sitemaps/README.md
+          - SMS: docs/reference/modules/Sms/README.md
           - Spatial: docs/reference/modules/Spatial/README.md
           - XML-RPC: docs/reference/modules/XmlRpc/README.md
           - Menu: docs/reference/modules/Menu/README.md
@@ -187,6 +188,7 @@ nav:
               - Overview: docs/reference/modules/Users/README.md
               - Custom User Settings: docs/reference/modules/Users/CustomUserSettings/README.md
               - Notifications: docs/reference/modules/Notifications/README.md
+              - Ticket store: docs/reference/modules/Users/TicketStore.md
           - Home Route: docs/reference/modules/HomeRoute/README.md
           - Feeds: docs/reference/modules/Feeds/README.md
       - Core Modules:
