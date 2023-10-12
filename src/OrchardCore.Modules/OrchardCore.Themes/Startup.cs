@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Admin.Models;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
@@ -14,6 +15,7 @@ using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Themes.Controllers;
 using OrchardCore.Themes.Deployment;
+using OrchardCore.Themes.Drivers;
 using OrchardCore.Themes.Recipes;
 using OrchardCore.Themes.Services;
 
@@ -46,6 +48,7 @@ namespace OrchardCore.Themes
             services.AddTransient<IDeploymentSource, ThemesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ThemesDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, ThemesDeploymentStepDriver>();
+            services.AddScoped<IDisplayDriver<Navbar>, ToggleThemeNavbarDisplayDriver>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
