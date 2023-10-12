@@ -180,21 +180,21 @@ namespace OrchardCore.Environment.Shell
 
                 await _tenantsSettingsSources.SaveAsync(settings.Name, tenantSettings.ToObject<Dictionary<string, string>>());
 
-                var tenantConfig = new JObject();
-
-                var sections = settings.ShellConfiguration.GetChildren()
-                    .Where(s => !s.GetChildren().Any())
-                    .ToArray();
-
-                foreach (var section in sections)
+                var tenantConfig = new Dictionary<string, string>();
+                foreach (var config in settings.ShellConfiguration.AsEnumerable())
                 {
-                    if (settings[section.Key] != configuration[section.Key])
+                    if (settings.ShellConfiguration.GetSection(config.Key).GetChildren().Any())
                     {
-                        tenantConfig[section.Key] = settings[section.Key];
+                        continue;
+                    }
+
+                    if (settings[config.Key] != configuration[config.Key])
+                    {
+                        tenantConfig[config.Key] = settings[config.Key];
                     }
                     else
                     {
-                        tenantConfig[section.Key] = null;
+                        tenantConfig[config.Key] = null;
                     }
                 }
 
@@ -203,7 +203,7 @@ namespace OrchardCore.Environment.Shell
                 await _tenantConfigSemaphore.WaitAsync();
                 try
                 {
-                    await _tenantConfigSources.SaveAsync(settings.Name, tenantConfig.ToObject<Dictionary<string, string>>());
+                    await _tenantConfigSources.SaveAsync(settings.Name, tenantConfig);
                 }
                 finally
                 {
