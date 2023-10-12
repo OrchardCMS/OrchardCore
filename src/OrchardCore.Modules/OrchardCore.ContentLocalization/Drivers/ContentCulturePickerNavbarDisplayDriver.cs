@@ -37,7 +37,6 @@ public class ContentCulturePickerNavbarDisplayDriver : DisplayDriver<Navbar>
             .Get<IRequestCultureFeature>()?.RequestCulture?.Culture ?? CultureInfo.CurrentUICulture;
 
         }).RenderWhen(() => Task.FromResult(supportedCultures.Count() > 1))
-        .Location("Detail", "Content:5")
-        .Differentiator("CulturePicker");
+        .Location("Detail", "Content:5");
     }
 }

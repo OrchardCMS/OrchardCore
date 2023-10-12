@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace OrchardCore.Notifications.ViewModels;
 
-public class UserNotificationCollectionViewModel
+public class UserNotificationNavbarViewModel
 {
     public int TotalUnread { get; set; }
 

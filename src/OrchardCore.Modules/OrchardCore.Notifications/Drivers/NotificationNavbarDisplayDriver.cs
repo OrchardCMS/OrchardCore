@@ -4,14 +4,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Admin.Models;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Notifications;
 using OrchardCore.Notifications.Indexes;
 using OrchardCore.Notifications.ViewModels;
 using YesSql;
 
-namespace OrchardCore.Themes.Drivers;
+namespace OrchardCore.Notifications.Drivers;
 
 public class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
 {
@@ -32,9 +30,9 @@ public class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
         _session = session;
     }
 
-    public override IDisplayResult Display(Navbar model, IUpdateModel updater)
+    public override IDisplayResult Display(Navbar model)
     {
-        return Initialize<UserNotificationCollectionViewModel>("UserNotificationCollection", async model =>
+        return Initialize<UserNotificationNavbarViewModel>("UserNotificationNavbar", async model =>
         {
             var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var notifications = (await _session.Query<Notification, NotificationIndex>(x => x.UserId == userId && !x.IsRead, collection: NotificationConstants.NotificationCollection)
@@ -48,7 +46,6 @@ public class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
 
         }).Location("Detail", "Content:9")
         .Location("DetailAdmin", "Content:9")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, NotificationPermissions.ManageNotifications))
-        .Differentiator("UserNotification");
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, NotificationPermissions.ManageNotifications));
     }
 }

@@ -36,7 +36,6 @@ using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Setup.Events;
 using OrchardCore.Sms;
-using OrchardCore.Themes.Drivers;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Drivers;

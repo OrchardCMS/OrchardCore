@@ -20,7 +20,6 @@ public class ToggleThemeNavbarDisplayDriver : DisplayDriver<Navbar>
         return View("ToggleTheme", model)
             .RenderWhen(async () => (await _siteService.GetSiteSettingsAsync()).As<AdminSettings>().DisplayThemeToggler)
             .Location("Detail", "Content:10")
-            .Location("DetailAdmin", "Content:10")
-            .Differentiator("Toggler");
+            .Location("DetailAdmin", "Content:10");
     }
 }

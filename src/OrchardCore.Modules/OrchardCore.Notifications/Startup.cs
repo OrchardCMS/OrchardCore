@@ -21,7 +21,6 @@ using OrchardCore.Notifications.Models;
 using OrchardCore.Notifications.Services;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Themes.Drivers;
 using OrchardCore.Users.Models;
 using OrchardCore.Workflows.Helpers;
 using YesSql.Filters.Query;

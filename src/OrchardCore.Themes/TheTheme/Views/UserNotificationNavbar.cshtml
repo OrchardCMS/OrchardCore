@@ -1,12 +1,15 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @using OrchardCore.DisplayManagement.ModelBinding
+@using OrchardCore.DisplayManagement
+@using OrchardCore.Notifications
+@using OrchardCore.Notifications.ViewModels
 
 @inject IDisplayManager<Notification> NotificationDisplayDriver
 @inject IUpdateModelAccessor UpdateModelAccessor
 
-@model UserNotificationCollectionViewModel
+@model UserNotificationNavbarViewModel
 
-<li class="nav-item">
+<li class="nav-item nav-item dropdown text-end">
     <div class="dropdown">
         <button type="button" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
             @if (Model.TotalUnread > 0)
