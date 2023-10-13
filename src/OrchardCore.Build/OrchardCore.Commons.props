@@ -4,7 +4,7 @@
 
   <PropertyGroup>
     <LangVersion>10.0</LangVersion>
-    <VersionPrefix>1.7.0</VersionPrefix>
+    <VersionPrefix>1.7.1</VersionPrefix>
     <VersionSuffix></VersionSuffix>
     <VersionSuffix Condition="'$(VersionSuffix)'!='' AND '$(BuildNumber)' != ''">$(VersionSuffix)-$(BuildNumber)</VersionSuffix>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
