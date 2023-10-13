@@ -98,22 +98,55 @@ namespace OrchardCore.Environment.Shell.Configuration
             return Task.CompletedTask;
         }
 
-        private static JObject ConfigToJObject(IConfiguration configuration)
+        private static JToken ConfigToJObject(IConfiguration configuration)
         {
-            var jConfiguration = new JObject();
+            JArray jArray = null;
+            JObject jObject = null;
+
             foreach (var child in configuration.GetChildren())
             {
-                if (child.GetChildren().Any())
+                if (int.TryParse(child.Key, out _))
                 {
-                    jConfiguration.Add(child.Key, ConfigToJObject(child));
+                    jArray ??= new JArray();
+                    if (child.GetChildren().Any())
+                    {
+                        jArray.Add(ConfigToJObject(child));
+                    }
+                    else
+                    {
+                        jArray.Add(child.Value);
+                    }
                 }
                 else
                 {
-                    jConfiguration.Add(child.Key, child.Value);
+                    jObject ??= new JObject();
+                    if (child.GetChildren().Any())
+                    {
+                        jObject.Add(child.Key, ConfigToJObject(child));
+                    }
+                    else
+                    {
+                        jObject.Add(child.Key, child.Value);
+                    }
                 }
             }
 
-            return jConfiguration;
+            if (jArray is not null)
+            {
+                if (configuration is IConfigurationRoot)
+                {
+                    throw new InvalidOperationException("Can't define an array from the root.");
+                }
+
+                if (jObject is not null)
+                {
+                    throw new InvalidOperationException("Can't use a numeric key inside an object.");
+                }
+
+                return jArray;
+            }
+
+            return jObject;
         }
     }
 }
