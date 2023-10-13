@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell.Configuration.Internal;
 
 namespace OrchardCore.Environment.Shell.Configuration
@@ -42,8 +39,15 @@ namespace OrchardCore.Environment.Shell.Configuration
             IDictionary<string, string> configData;
             if (File.Exists(appsettings))
             {
-                using var streamReader = File.OpenRead(appsettings);
-                configData = JsonConfigurationFileParser.Parse(streamReader);
+                try
+                {
+                    using var streamReader = File.OpenRead(appsettings);
+                    configData = JsonConfigurationFileParser.Parse(streamReader);
+                }
+                catch (System.Text.Json.JsonException e)
+                {
+                    throw new FormatException("Could not parse the JSON file.", e);
+                }
             }
             else
             {
@@ -62,12 +66,7 @@ namespace OrchardCore.Environment.Shell.Configuration
                 }
             }
 
-            var configuration = new ConfigurationBuilder()
-                .Add(new UpdatableDataProvider(configData))
-                .Build();
-
-            using var disposable = configuration as IDisposable;
-            var jConfiguration = ConfigToJObject(configuration);
+            var jConfiguration = configData.ToJObject();
 
             Directory.CreateDirectory(tenantFolder);
 
@@ -96,52 +95,6 @@ namespace OrchardCore.Environment.Shell.Configuration
             }
 
             return Task.CompletedTask;
-        }
-
-        private static JToken ConfigToJObject(IConfiguration configuration)
-        {
-            JArray jArray = null;
-            JObject jObject = null;
-
-            foreach (var child in configuration.GetChildren())
-            {
-                if (int.TryParse(child.Key, out _))
-                {
-                    jArray ??= new JArray();
-                    if (child.GetChildren().Any())
-                    {
-                        jArray.Add(ConfigToJObject(child));
-                    }
-                    else
-                    {
-                        jArray.Add(child.Value);
-                    }
-                }
-                else
-                {
-                    jObject ??= new JObject();
-                    if (child.GetChildren().Any())
-                    {
-                        jObject.Add(child.Key, ConfigToJObject(child));
-                    }
-                    else
-                    {
-                        jObject.Add(child.Key, child.Value);
-                    }
-                }
-            }
-
-            if (jArray is not null)
-            {
-                if (jObject is not null)
-                {
-                    throw new InvalidOperationException("Can't use a numeric key inside an object.");
-                }
-
-                return jArray;
-            }
-
-            return jObject ?? new JObject();
         }
     }
 }

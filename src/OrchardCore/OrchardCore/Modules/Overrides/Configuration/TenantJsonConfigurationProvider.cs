@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text.Json;
+using OrchardCore.Environment.Shell.Configuration.Internal;
 
 namespace Microsoft.Extensions.Configuration.Json
 {
