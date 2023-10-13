@@ -133,11 +133,6 @@ namespace OrchardCore.Environment.Shell.Configuration
 
             if (jArray is not null)
             {
-                if (configuration is IConfigurationRoot)
-                {
-                    throw new InvalidOperationException("Can't define an array from the root.");
-                }
-
                 if (jObject is not null)
                 {
                     throw new InvalidOperationException("Can't use a numeric key inside an object.");
