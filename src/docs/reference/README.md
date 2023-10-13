@@ -40,6 +40,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
   - [Overview](modules/Users/README.md)
   - [Custom User Settings](modules/Users/CustomUserSettings/README.md)
   - [Notifications](modules/Notifications/README.md)
+  - [Ticket store](modules/Users/TicketStore.md)
 - [OpenId](modules/OpenId/README.md)
 - [Roles](modules/Roles/README.md)
 
@@ -117,6 +118,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - [Redis](modules/Redis/README.md)
 - [Deployment](modules/Deployment/README.md)
 - [Remote Deployment](modules/Deployment.Remote/README.md)
+- [Sms](modules/Sms/README.md)
 
 ### Localization
 

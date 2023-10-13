@@ -5,7 +5,7 @@
 @using OrchardCore.Users.Models
 
 @inject ThemeTogglerService ThemeTogglerService
-@inject IDisplayManager<UserMenu> DisplayManager
+@inject IDisplayManager<Navbar> DisplayManager
 @inject IUpdateModelAccessor UpdateModelAccessor
 @{
     var adminSettings = Site.As<AdminSettings>();
@@ -49,17 +49,7 @@
                             }
                         </div>
                     </div>
-                    <ul class="navbar-nav user-top-navbar ms-auto d-flex flex-row">
-                        @await RenderSectionAsync("NavbarTop", required: false)
-                        @if (adminSettings.DisplayThemeToggler)
-                        {
-                            @await DisplayAsync(await New.ToggleTheme())
-                        }
-                        @await DisplayAsync(await New.NavbarLink())
-                        <li class="nav-item">
-                            @await DisplayAsync(await DisplayManager.BuildDisplayAsync(new UserMenu(), UpdateModelAccessor.ModelUpdater, "DetailAdmin"))
-                        </li>
-                    </ul>
+                    @await DisplayAsync(await DisplayManager.BuildDisplayAsync(new Navbar(), UpdateModelAccessor.ModelUpdater, "DetailAdmin"))
                 </div>
             </div>
         </nav>

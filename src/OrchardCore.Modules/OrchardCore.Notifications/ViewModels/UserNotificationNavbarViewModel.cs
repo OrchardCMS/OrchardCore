@@ -2,11 +2,11 @@ using System.Collections.Generic;
 
 namespace OrchardCore.Notifications.ViewModels;
 
-public class UserNotificationCollectionViewModel
+public class UserNotificationNavbarViewModel
 {
     public int TotalUnread { get; set; }
 
     public int MaxVisibleNotifications { get; set; }
 
-    public List<dynamic> Notifications { get; set; }
+    public List<Notification> Notifications { get; set; }
 }

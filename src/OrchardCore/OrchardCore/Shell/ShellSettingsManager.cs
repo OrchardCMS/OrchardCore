@@ -56,6 +56,7 @@ namespace OrchardCore.Environment.Shell
             try
             {
                 await EnsureConfigurationAsync();
+                await ReloadTenantsSettingsAsync();
 
                 var tenants = _tenantsSettingsRoot.GetChildren().Select(section => section.Key);
                 var allTenants = _configuredTenants.Concat(tenants).Distinct().ToArray();
@@ -94,8 +95,7 @@ namespace OrchardCore.Environment.Shell
             try
             {
                 await EnsureConfigurationAsync();
-
-                _tenantsSettingsRoot.Reload();
+                await ReloadTenantsSettingsAsync();
 
                 var tenants = _tenantsSettingsRoot.GetChildren().Select(section => section.Key);
                 return _configuredTenants.Concat(tenants).Distinct().ToArray();
@@ -112,8 +112,7 @@ namespace OrchardCore.Environment.Shell
             try
             {
                 await EnsureConfigurationAsync();
-
-                _tenantsSettingsRoot.Reload();
+                await ReloadTenantsSettingsAsync();
 
                 var tenantSettingsBuilder = new ConfigurationBuilder()
                     .AddConfiguration(_configuration)
@@ -277,10 +276,6 @@ namespace OrchardCore.Environment.Shell
                 .Distinct()
                 .ToArray();
 
-            _tenantsSettingsRoot = (await new ConfigurationBuilder()
-                .AddSourcesAsync(_tenantsSettingsSources))
-                .Build();
-
             _tenantConfigFactoryAsync = async (tenant, configure) =>
             {
                 await _tenantConfigSemaphore.WaitAsync();
@@ -302,6 +297,15 @@ namespace OrchardCore.Environment.Shell
             };
 
             _configuration = configuration;
+        }
+
+        private async Task ReloadTenantsSettingsAsync()
+        {
+            using var disposable = _tenantsSettingsRoot as IDisposable;
+
+            _tenantsSettingsRoot = (await new ConfigurationBuilder()
+                .AddSourcesAsync(_tenantsSettingsSources))
+                .Build();
         }
 
         public void Dispose()
