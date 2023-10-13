@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
@@ -7,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Environment.Shell.Configuration.Internal;
 
 namespace OrchardCore.Environment.Shell.Configuration
 {
@@ -36,34 +39,41 @@ namespace OrchardCore.Environment.Shell.Configuration
             var tenantFolder = Path.Combine(_container, tenant);
             var appsettings = Path.Combine(tenantFolder, "appsettings.json");
 
-            IDictionary<string, string> config;
+            IDictionary<string, string> configData;
             if (File.Exists(appsettings))
             {
                 using var streamReader = File.OpenRead(appsettings);
-                config = JsonConfigurationFileParser.Parse(streamReader);
+                configData = JsonConfigurationFileParser.Parse(streamReader);
             }
             else
             {
-                config = new Dictionary<string, string>();
+                configData = new Dictionary<string, string>();
             }
 
             foreach (var key in data.Keys)
             {
                 if (data[key] != null)
                 {
-                    config[key] = data[key];
+                    configData[key] = data[key];
                 }
                 else
                 {
-                    config.Remove(key);
+                    configData.Remove(key);
                 }
             }
+
+            var configuration = new ConfigurationBuilder()
+                .Add(new UpdatableDataProvider(configData))
+                .Build();
+
+            using var disposable = configuration as IDisposable;
+            var jConfiguration = ConfigToJObject(configuration);
 
             Directory.CreateDirectory(tenantFolder);
 
             using var streamWriter = File.CreateText(appsettings);
             using var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented };
-            await JObject.FromObject(config).WriteToAsync(jsonWriter);
+            await jConfiguration.WriteToAsync(jsonWriter);
         }
 
         public Task RemoveAsync(string tenant)
@@ -86,6 +96,24 @@ namespace OrchardCore.Environment.Shell.Configuration
             }
 
             return Task.CompletedTask;
+        }
+
+        private static JObject ConfigToJObject(IConfiguration configuration)
+        {
+            var jConfiguration = new JObject();
+            foreach (var child in configuration.GetChildren())
+            {
+                if (child.GetChildren().Any())
+                {
+                    jConfiguration.Add(child.Key, ConfigToJObject(child));
+                }
+                else
+                {
+                    jConfiguration.Add(child.Key, child.Value);
+                }
+            }
+
+            return jConfiguration;
         }
     }
 }
