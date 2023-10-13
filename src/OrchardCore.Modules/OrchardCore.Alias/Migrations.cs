@@ -29,12 +29,10 @@ namespace OrchardCore.Alias
                 .Column<bool>("Published", c => c.WithDefault(true))
             );
 
-            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
-            // DocumentId (2) + Alias (734) + ContentItemId (26) + Published (1) + Latest (1) = 768
             SchemaBuilder.AlterIndexTable<AliasPartIndex>(table => table
                 .CreateIndex("IDX_AliasPartIndex_DocumentId",
                     "DocumentId",
-                    "Alias(734)",
+                    "Alias",
                     "ContentItemId",
                     "Published",
                     "Latest")
@@ -72,7 +70,7 @@ namespace OrchardCore.Alias
 
                 .CreateIndex("IDX_AliasPartIndex_DocumentId",
                     "DocumentId",
-                    "Alias(734)")
+                    "Alias")
             );
 
             return 3;
