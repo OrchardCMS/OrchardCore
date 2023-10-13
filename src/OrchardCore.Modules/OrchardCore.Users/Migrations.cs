@@ -67,15 +67,15 @@ namespace OrchardCore.Users
             );
 
             SchemaBuilder.CreateMapIndexTable<UserByClaimIndex>(table => table
-               .Column<string>(nameof(UserByClaimIndex.ClaimType))
-               .Column<string>(nameof(UserByClaimIndex.ClaimValue)),
+               .Column<string>("ClaimType")
+               .Column<string>("ClaimValue"),
                 null);
 
             SchemaBuilder.AlterIndexTable<UserByClaimIndex>(table => table
                 .CreateIndex("IDX_UserByClaimIndex_DocumentId",
                     "DocumentId",
-                    nameof(UserByClaimIndex.ClaimType),
-                    nameof(UserByClaimIndex.ClaimValue))
+                    "ClaimType",
+                    "ClaimValue")
             );
 
             // Shortcut other migration steps on new content definition schemas.
@@ -96,8 +96,8 @@ namespace OrchardCore.Users
         public int UpdateFrom2()
         {
             SchemaBuilder.CreateMapIndexTable<UserByClaimIndex>(table => table
-               .Column<string>(nameof(UserByClaimIndex.ClaimType))
-               .Column<string>(nameof(UserByClaimIndex.ClaimValue)),
+               .Column<string>("ClaimType")
+               .Column<string>("ClaimValue"),
                 null);
 
             return 3;
@@ -107,7 +107,7 @@ namespace OrchardCore.Users
         public int UpdateFrom3()
         {
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .AddColumn<bool>(nameof(UserIndex.IsEnabled), c => c.NotNull().WithDefault(true)));
+                .AddColumn<bool>("IsEnabled", c => c.NotNull().WithDefault(true)));
 
             return 4;
         }
@@ -198,8 +198,8 @@ namespace OrchardCore.Users
             SchemaBuilder.AlterIndexTable<UserByClaimIndex>(table => table
                 .CreateIndex("IDX_UserByClaimIndex_DocumentId",
                     "DocumentId",
-                    nameof(UserByClaimIndex.ClaimType),
-                    nameof(UserByClaimIndex.ClaimValue))
+                    "ClaimType",
+                    "ClaimValue")
             );
 
             return 9;
@@ -219,13 +219,13 @@ namespace OrchardCore.Users
         public int UpdateFrom10()
         {
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .AddColumn<bool>(nameof(UserIndex.IsLockoutEnabled), c => c.NotNull().WithDefault(false)));
+                .AddColumn<bool>("IsLockoutEnabled", c => c.NotNull().WithDefault(false)));
 
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .AddColumn<DateTime?>(nameof(UserIndex.LockoutEndUtc), c => c.Nullable()));
+                .AddColumn<DateTime?>("LockoutEndUtc", c => c.Nullable()));
 
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .AddColumn<int>(nameof(UserIndex.AccessFailedCount), c => c.NotNull().WithDefault(0)));
+                .AddColumn<int>("AccessFailedCount", c => c.NotNull().WithDefault(0)));
 
             return 11;
         }
