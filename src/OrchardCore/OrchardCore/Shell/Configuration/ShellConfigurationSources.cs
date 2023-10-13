@@ -141,7 +141,7 @@ namespace OrchardCore.Environment.Shell.Configuration
                 return jArray;
             }
 
-            return jObject;
+            return jObject ?? new JObject();
         }
     }
 }
