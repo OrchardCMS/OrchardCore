@@ -42,7 +42,7 @@
                         dynamic shape = await NotificationDisplayDriver.BuildDisplayAsync(notification, UpdateModelAccessor.ModelUpdater, "Header");
                         shape.Notification = notification;
                         <div class="@(i == maxCount - 1 ? string.Empty : "border-bottom")">
-                            @await DisplayAsync(notification)
+                            @await DisplayAsync(shape)
                         </div>
                     }
                 </li>
