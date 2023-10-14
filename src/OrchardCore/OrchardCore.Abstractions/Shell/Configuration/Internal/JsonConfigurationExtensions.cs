@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 
@@ -18,6 +20,13 @@ public static class JsonConfigurationExtensions
 
         return configuration.ToJObject();
     }
+
+    public static IDictionary<string, string> ToConfigurationData(this JObject jConfiguration)
+    {
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(jConfiguration.ToString()));
+        return JsonConfigurationParser.Parse(stream);
+    }
+
 
     public static JObject ToJObject(this IConfiguration configuration)
     {

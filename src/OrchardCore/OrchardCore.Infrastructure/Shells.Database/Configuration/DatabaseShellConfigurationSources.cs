@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -88,7 +87,6 @@ namespace OrchardCore.Shells.Database.Configuration
             await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
-
                 var document = await session.Query<DatabaseShellConfigurations>().FirstOrDefaultAsync();
 
                 JObject configurations;
@@ -102,18 +100,9 @@ namespace OrchardCore.Shells.Database.Configuration
                     configurations = new JObject();
                 }
 
-                var config = configurations.GetValue(tenant) as JObject ?? new JObject();
-
-                IDictionary<string, string> configData;
-                try
-                {
-                    var stream = new MemoryStream(Encoding.UTF8.GetBytes(config.ToString()));
-                    configData = JsonConfigurationParser.Parse(stream);
-                }
-                catch (Exception ex)
-                {
-                    throw new FormatException("Could not parse the JSON document.", ex);
-                }
+                var configData = (configurations
+                    .GetValue(tenant) as JObject ?? new JObject())
+                    .ToConfigurationData();
 
                 foreach (var key in data.Keys)
                 {
@@ -128,9 +117,10 @@ namespace OrchardCore.Shells.Database.Configuration
                 }
 
                 var jConfiguration = configData.ToJObject();
-                configurations[tenant] = jConfiguration;
 
+                configurations[tenant] = jConfiguration;
                 document.ShellConfigurations = configurations;
+
                 session.Save(document, checkConcurrency: true);
             });
         }

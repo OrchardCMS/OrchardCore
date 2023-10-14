@@ -1,12 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Configuration.Internal;
@@ -59,31 +56,17 @@ namespace OrchardCore.Shells.Azure.Configuration
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)
         {
             var appsettings = IFileStoreExtensions.Combine(null, _container, tenant, "appsettings.json");
-
-            JObject config;
             var fileInfo = await _shellsFileStore.GetFileInfoAsync(appsettings);
 
+            IDictionary<string, string> configData;
             if (fileInfo != null)
             {
                 using var stream = await _shellsFileStore.GetFileStreamAsync(appsettings);
-                using var streamReader = new StreamReader(stream);
-                using var reader = new JsonTextReader(streamReader);
-                config = await JObject.LoadAsync(reader);
+                configData = JsonConfigurationParser.Parse(stream);
             }
             else
             {
-                config = new JObject();
-            }
-
-            IDictionary<string, string> configData;
-            try
-            {
-                var stream = new MemoryStream(Encoding.UTF8.GetBytes(config.ToString()));
-                configData = JsonConfigurationParser.Parse(stream);
-            }
-            catch (Exception ex)
-            {
-                throw new FormatException("Could not parse the JSON document.", ex);
+                configData = new Dictionary<string, string>();
             }
 
             foreach (var key in data.Keys)
@@ -106,8 +89,8 @@ namespace OrchardCore.Shells.Azure.Configuration
 
             await jConfiguration.WriteToAsync(jsonWriter);
             await jsonWriter.FlushAsync();
-
             memoryStream.Position = 0;
+
             await _shellsFileStore.CreateFileFromStreamAsync(appsettings, memoryStream);
         }
 

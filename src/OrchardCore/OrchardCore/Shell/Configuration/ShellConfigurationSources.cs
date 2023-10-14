@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -39,15 +38,8 @@ namespace OrchardCore.Environment.Shell.Configuration
             IDictionary<string, string> configData;
             if (File.Exists(appsettings))
             {
-                try
-                {
-                    using var stream = File.OpenRead(appsettings);
-                    configData = JsonConfigurationParser.Parse(stream);
-                }
-                catch (Exception ex)
-                {
-                    throw new FormatException("Could not parse the JSON file.", ex);
-                }
+                using var stream = File.OpenRead(appsettings);
+                configData = JsonConfigurationParser.Parse(stream);
             }
             else
             {
@@ -72,6 +64,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
             using var streamWriter = File.CreateText(appsettings);
             using var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented };
+
             await jConfiguration.WriteToAsync(jsonWriter);
         }
 
