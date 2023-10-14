@@ -24,7 +24,7 @@ public static class JsonConfigurationExtensions
         var jToken = ToJToken(configuration);
         if (jToken is not JObject jObject)
         {
-            throw new FormatException($"Top level JSON element must be an object.");
+            throw new FormatException($"Top level JSON element must be an object. Instead, {jToken.Type} was found.");
         }
 
         return jObject;
@@ -37,9 +37,24 @@ public static class JsonConfigurationExtensions
 
         foreach (var child in configuration.GetChildren())
         {
-            if (int.TryParse(child.Key, out _))
+            if (int.TryParse(child.Key, out var index))
             {
+                if (jObject is not null)
+                {
+                    throw new FormatException($"Can't use the numeric key '{child.Key}' inside an object.");
+                }
+
                 jArray ??= new JArray();
+                if (index > jArray.Count)
+                {
+                    // OC: Inserting null values is useful to override arrays,
+                    // it allows to keep non null items at the right position.
+                    for (var i = jArray.Count; i < index; i++)
+                    {
+                        jArray.Add(JValue.CreateNull());
+                    }
+                }
+
                 if (child.GetChildren().Any())
                 {
                     jArray.Add(ToJToken(child));
@@ -51,6 +66,11 @@ public static class JsonConfigurationExtensions
             }
             else
             {
+                if (jArray is not null)
+                {
+                    throw new FormatException($"Can't use the non numeric key '{child.Key}' inside an array.");
+                }
+
                 jObject ??= new JObject();
                 if (child.GetChildren().Any())
                 {
@@ -61,11 +81,6 @@ public static class JsonConfigurationExtensions
                     jObject.Add(child.Key, child.Value);
                 }
             }
-        }
-
-        if (jArray is not null && jObject is not null)
-        {
-            throw new InvalidOperationException("Can't use a numeric key inside an object.");
         }
 
         return jArray as JToken ?? jObject ?? new JObject();

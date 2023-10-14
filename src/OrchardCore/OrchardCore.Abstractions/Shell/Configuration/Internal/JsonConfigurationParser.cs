@@ -35,9 +35,9 @@ public sealed class JsonConfigurationParser
         {
             if (doc.RootElement.ValueKind != JsonValueKind.Object)
             {
-                // throw new FormatException(SR.Format(SR.Error_InvalidTopLevelJSONElement, doc.RootElement.ValueKind));
                 throw new FormatException($"Top-level JSON element must be an object. Instead, '{doc.RootElement.ValueKind}' was found.");
             }
+
             VisitObjectElement(doc.RootElement);
         }
 
@@ -61,12 +61,12 @@ public sealed class JsonConfigurationParser
 
     private void VisitArrayElement(JsonElement element)
     {
-        int index = 0;
+        var index = 0;
 
         foreach (var arrayElement in element.EnumerateArray())
         {
             EnterContext(index.ToString());
-            VisitValue(arrayElement);
+            VisitValue(arrayElement, visitArray: true);
             ExitContext();
             index++;
         }
@@ -82,7 +82,7 @@ public sealed class JsonConfigurationParser
         }
     }
 
-    private void VisitValue(JsonElement value)
+    private void VisitValue(JsonElement value, bool visitArray = false)
     {
         Debug.Assert(_paths.Count > 0);
 
@@ -101,6 +101,14 @@ public sealed class JsonConfigurationParser
             case JsonValueKind.True:
             case JsonValueKind.False:
             case JsonValueKind.Null:
+
+                // OC: Inserting null values is useful to override arrays,
+                // it allows to keep non null items at the right position.
+                if (visitArray && value.ValueKind == JsonValueKind.Null)
+                {
+                    break;
+                }
+
                 var key = _paths.Peek();
                 if (_data.ContainsKey(key))
                 {
