@@ -104,14 +104,12 @@ public sealed class JsonConfigurationParser
                 var key = _paths.Peek();
                 if (_data.ContainsKey(key))
                 {
-                    // throw new FormatException(SR.Format(SR.Error_KeyIsDuplicated, key));
                     throw new FormatException($"A duplicate key '{key}' was found.");
                 }
                 _data[key] = value.ToString();
                 break;
 
             default:
-                // throw new FormatException(SR.Format(SR.Error_UnsupportedJSONToken, value.ValueKind));
                 throw new FormatException($"Unsupported JSON token '{value.ValueKind}' was found.");
         }
     }

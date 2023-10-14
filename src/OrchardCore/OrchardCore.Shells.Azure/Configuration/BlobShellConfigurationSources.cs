@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -7,6 +9,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Environment.Shell.Configuration.Internal;
 using OrchardCore.FileStorage;
 using OrchardCore.Shells.Azure.Services;
 
@@ -72,23 +75,36 @@ namespace OrchardCore.Shells.Azure.Configuration
                 config = new JObject();
             }
 
+            IDictionary<string, string> configData;
+            try
+            {
+                var stream = new MemoryStream(Encoding.UTF8.GetBytes(config.ToString()));
+                configData = JsonConfigurationParser.Parse(stream);
+            }
+            catch (Exception ex)
+            {
+                throw new FormatException("Could not parse the JSON document.", ex);
+            }
+
             foreach (var key in data.Keys)
             {
-                if (data[key] != null)
+                if (data[key] is not null)
                 {
-                    config[key] = data[key];
+                    configData[key] = data[key];
                 }
                 else
                 {
-                    config.Remove(key);
+                    configData.Remove(key);
                 }
             }
+
+            var jConfiguration = configData.ToJObject();
 
             using var memoryStream = new MemoryStream();
             using var streamWriter = new StreamWriter(memoryStream);
             using var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented };
 
-            await config.WriteToAsync(jsonWriter);
+            await jConfiguration.WriteToAsync(jsonWriter);
             await jsonWriter.FlushAsync();
 
             memoryStream.Position = 0;
