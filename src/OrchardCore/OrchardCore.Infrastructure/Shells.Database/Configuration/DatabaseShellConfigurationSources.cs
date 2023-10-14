@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -10,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Environment.Shell.Configuration.Internal;
 using OrchardCore.Shells.Database.Extensions;
 using OrchardCore.Shells.Database.Models;
 using YesSql;
@@ -102,22 +104,33 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 var config = configurations.GetValue(tenant) as JObject ?? new JObject();
 
+                IDictionary<string, string> configData;
+                try
+                {
+                    var stream = new MemoryStream(Encoding.UTF8.GetBytes(config.ToString()));
+                    configData = JsonConfigurationParser.Parse(stream);
+                }
+                catch (Exception ex)
+                {
+                    throw new FormatException("Could not parse the JSON document.", ex);
+                }
+
                 foreach (var key in data.Keys)
                 {
                     if (data[key] is not null)
                     {
-                        config[key] = data[key];
+                        configData[key] = data[key];
                     }
                     else
                     {
-                        config.Remove(key);
+                        configData.Remove(key);
                     }
                 }
 
-                configurations[tenant] = config;
+                var jConfiguration = configData.ToJObject();
+                configurations[tenant] = jConfiguration;
 
                 document.ShellConfigurations = configurations;
-
                 session.Save(document, checkConcurrency: true);
             });
         }

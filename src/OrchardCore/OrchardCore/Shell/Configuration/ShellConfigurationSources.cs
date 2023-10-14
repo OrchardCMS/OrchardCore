@@ -41,12 +41,12 @@ namespace OrchardCore.Environment.Shell.Configuration
             {
                 try
                 {
-                    using var streamReader = File.OpenRead(appsettings);
-                    configData = JsonConfigurationFileParser.Parse(streamReader);
+                    using var stream = File.OpenRead(appsettings);
+                    configData = JsonConfigurationParser.Parse(stream);
                 }
-                catch (System.Text.Json.JsonException e)
+                catch (Exception ex)
                 {
-                    throw new FormatException("Could not parse the JSON file.", e);
+                    throw new FormatException("Could not parse the JSON file.", ex);
                 }
             }
             else

@@ -24,7 +24,7 @@ namespace Microsoft.Extensions.Configuration.Json
         {
             try
             {
-                Data = JsonConfigurationFileParser.Parse(stream);
+                Data = JsonConfigurationParser.Parse(stream);
             }
             catch (JsonException e)
             {

@@ -12,15 +12,15 @@ using Microsoft.Extensions.Configuration;
 
 namespace OrchardCore.Environment.Shell.Configuration.Internal;
 
-public sealed class JsonConfigurationFileParser
+public sealed class JsonConfigurationParser
 {
-    private JsonConfigurationFileParser() { }
+    private JsonConfigurationParser() { }
 
     private readonly Dictionary<string, string?> _data = new(StringComparer.OrdinalIgnoreCase);
     private readonly Stack<string> _paths = new();
 
     public static IDictionary<string, string?> Parse(Stream input)
-        => new JsonConfigurationFileParser().ParseStream(input);
+        => new JsonConfigurationParser().ParseStream(input);
 
     private Dictionary<string, string?> ParseStream(Stream input)
     {
