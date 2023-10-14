@@ -62,7 +62,7 @@ namespace OrchardCore.Shells.Azure.Configuration
             if (fileInfo != null)
             {
                 using var stream = await _shellsFileStore.GetFileStreamAsync(appsettings);
-                configData = JsonConfigurationParser.Parse(stream);
+                configData = await JsonConfigurationParser.ParseAsync(stream);
             }
             else
             {

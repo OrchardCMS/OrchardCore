@@ -39,7 +39,7 @@ namespace OrchardCore.Environment.Shell.Configuration
             if (File.Exists(appsettings))
             {
                 using var stream = File.OpenRead(appsettings);
-                configData = JsonConfigurationParser.Parse(stream);
+                configData = await JsonConfigurationParser.ParseAsync(stream);
             }
             else
             {

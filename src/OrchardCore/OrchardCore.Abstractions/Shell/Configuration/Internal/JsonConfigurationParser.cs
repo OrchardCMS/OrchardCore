@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
 #nullable enable
@@ -19,7 +20,11 @@ public sealed class JsonConfigurationParser
     public static IDictionary<string, string?> Parse(Stream input)
         => new JsonConfigurationParser().ParseStream(input);
 
-    private Dictionary<string, string?> ParseStream(Stream input)
+    // OC: Async version.
+    public static Task<IDictionary<string, string?>> ParseAsync(Stream input)
+        => new JsonConfigurationParser().ParseStreamAsync(input);
+
+    private IDictionary<string, string?> ParseStream(Stream input)
     {
         var jsonDocumentOptions = new JsonDocumentOptions
         {
@@ -31,6 +36,35 @@ public sealed class JsonConfigurationParser
         {
             using (var reader = new StreamReader(input))
             using (var doc = JsonDocument.Parse(reader.ReadToEnd(), jsonDocumentOptions))
+            {
+                if (doc.RootElement.ValueKind != JsonValueKind.Object)
+                {
+                    throw new FormatException($"Top-level JSON element must be an object. Instead, '{doc.RootElement.ValueKind}' was found.");
+                }
+
+                VisitObjectElement(doc.RootElement);
+            }
+
+            return _data;
+        }
+        catch (JsonException e)
+        {
+            throw new FormatException("Could not parse the JSON document.", e);
+        }
+    }
+
+    // OC: Async version.
+    private async Task<IDictionary<string, string?>> ParseStreamAsync(Stream input)
+    {
+        var jsonDocumentOptions = new JsonDocumentOptions
+        {
+            CommentHandling = JsonCommentHandling.Skip,
+            AllowTrailingCommas = true,
+        };
+
+        try
+        {
+            using (var doc = await JsonDocument.ParseAsync(input, jsonDocumentOptions))
             {
                 if (doc.RootElement.ValueKind != JsonValueKind.Object)
                 {

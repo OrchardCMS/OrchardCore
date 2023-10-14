@@ -100,9 +100,9 @@ namespace OrchardCore.Shells.Database.Configuration
                     configurations = new JObject();
                 }
 
-                var configData = (configurations
+                var configData = await (configurations
                     .GetValue(tenant) as JObject ?? new JObject())
-                    .ToConfigurationData();
+                    .ToConfigurationDataAsync();
 
                 foreach (var key in data.Keys)
                 {
