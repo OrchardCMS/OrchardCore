@@ -57,7 +57,6 @@ namespace OrchardCore.Shells.Database.Configuration
             {
                 var shellSettings = new JObject { [tenant] = document.ShellsSettings[tenant] };
                 var shellSettingsString = await shellSettings.ToStringAsync(Formatting.None);
-
                 builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(shellSettingsString)));
             }
         }

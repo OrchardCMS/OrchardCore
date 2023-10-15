@@ -66,7 +66,6 @@ namespace OrchardCore.Shells.Azure.Configuration
                 using var stream = await _shellsFileStore.GetFileStreamAsync(TenantsBlobName);
                 using var streamReader = new StreamReader(stream);
                 using var jsonReader = new JsonTextReader(streamReader);
-
                 tenantsSettings = await JObject.LoadAsync(jsonReader);
             }
             else
