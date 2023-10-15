@@ -1,6 +1,6 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Deployment;
 
@@ -24,7 +24,7 @@ namespace OrchardCore.AdminMenu.Deployment
                 return;
             }
 
-            var data = new JArray();
+            var data = new JsonArray();
             result.Steps.Add(new JObject(
                 new JProperty("name", "AdminMenu"),
                 new JProperty("data", data)
@@ -36,7 +36,7 @@ namespace OrchardCore.AdminMenu.Deployment
             foreach (var adminMenu in (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu)
             {
                 var objectData = JObject.FromObject(adminMenu, serializer);
-                data.Add(objectData);
+                data.Add<AdminMenu>(adminMenu);
             }
 
             return;

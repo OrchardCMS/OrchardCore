@@ -1,7 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
+using System.Text.Json.Nodes;
 using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.DisplayManagement.Shapes
@@ -28,14 +27,14 @@ namespace OrchardCore.DisplayManagement.Shapes
             _shape = shape;
         }
 
-        public JObject Serialize()
+        public JsonObject Serialize()
         {
             if (_shape == null)
             {
-                return new JObject();
+                return new JsonObject();
             }
 
-            var jObject = new JObject();
+            var jObject = new JsonObject();
 
             // Provides a convenient identifier in console.
             var displayText = _shape.Metadata.Name;
@@ -51,23 +50,23 @@ namespace OrchardCore.DisplayManagement.Shapes
 
             jObject.Add("Shape", displayText);
 
-            var metadata = JObject.FromObject(_shape.Metadata, _shapeJsonSerializer);
+            var metadata = JsonObject.FromObject(_shape.Metadata, _shapeJsonSerializer);
 
             jObject.Add(nameof(ShapeMetadata), metadata);
 
             if (_shape.Classes != null && _shape.Classes.Any())
             {
-                jObject.Add(nameof(_shape.Classes), JArray.FromObject(_shape.Classes, _shapeJsonSerializer));
+                jObject.Add(nameof(_shape.Classes), JsonArray.FromObject(_shape.Classes, _shapeJsonSerializer));
             }
 
             if (_shape.Attributes != null && _shape.Attributes.Any())
             {
-                jObject.Add(nameof(_shape.Attributes), JObject.FromObject(_shape.Attributes, _shapeJsonSerializer));
+                jObject.Add(nameof(_shape.Attributes), JsonObject.FromObject(_shape.Attributes, _shapeJsonSerializer));
             }
 
             if (_shape.Properties != null && _shape.Properties.Any())
             {
-                jObject.Add(nameof(_shape.Properties), JObject.FromObject(_shape.Properties, _shapeJsonSerializer));
+                jObject.Add(nameof(_shape.Properties), JsonObject.FromObject(_shape.Properties, _shapeJsonSerializer));
                 FindShapesInProperties(_shape);
             }
 
@@ -85,7 +84,7 @@ namespace OrchardCore.DisplayManagement.Shapes
                         jItems.Add(jItem);
                     }
                 }
-                jObject.Add(nameof(actualShape.Items), jItems);
+                JsonObject.Add(nameof(actualShape.Items), jItems);
             }
 
             return jObject;

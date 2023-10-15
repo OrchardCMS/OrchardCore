@@ -1,14 +1,14 @@
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
 namespace OrchardCore.Recipes.Models
 {
     public class ConfigurationContext
     {
-        protected ConfigurationContext(JObject configurationElement)
+        protected ConfigurationContext(JsonObject configurationElement)
         {
             ConfigurationElement = configurationElement;
         }
 
-        public JObject ConfigurationElement { get; set; }
+        public JsonObject ConfigurationElement { get; set; }
     }
 }

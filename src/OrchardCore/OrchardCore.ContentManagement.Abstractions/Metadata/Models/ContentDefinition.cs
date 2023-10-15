@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Nodes;
 using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.ContentManagement.Metadata.Models
@@ -14,7 +14,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         /// <summary>
         /// Do not access this property directly. Migrate to use GetSettings and PopulateSettings.
         /// </summary>
-        public JObject Settings { get; protected set; }
+        public JsonObject Settings { get; protected set; }
 
         public T GetSettings<T>() where T : new()
         {

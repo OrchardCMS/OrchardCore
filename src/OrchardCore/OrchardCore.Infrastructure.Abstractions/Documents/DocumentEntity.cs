@@ -1,4 +1,4 @@
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using OrchardCore.Data.Documents;
 
 namespace OrchardCore.Documents
@@ -8,6 +8,6 @@ namespace OrchardCore.Documents
     /// </summary>
     public class DocumentEntity : Document, IDocumentEntity
     {
-        public JObject Properties { get; set; } = new JObject();
+        public JsonObject Properties { get; set; } = new JsonObject();
     }
 }
