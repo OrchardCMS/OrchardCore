@@ -1,6 +1,4 @@
-using System;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Templates.Models;
@@ -22,18 +20,10 @@ namespace OrchardCore.Templates.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!string.Equals(context.Name, "AdminTemplates", StringComparison.OrdinalIgnoreCase))
+            if (context.TryGetStepPropertyIfNameMatches<Template>("AdminTemplates", out var templates))
             {
-                return;
-            }
-
-            if (context.Step.Property("AdminTemplates").Value is JObject templates)
-            {
-                foreach (var property in templates.Properties())
+                foreach (var (name, value) in templates)
                 {
-                    var name = property.Name;
-                    var value = property.Value.ToObject<Template>();
-
                     await _adminTemplatesManager.UpdateTemplateAsync(name, value);
                 }
             }

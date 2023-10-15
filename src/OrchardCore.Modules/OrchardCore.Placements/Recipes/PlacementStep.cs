@@ -1,6 +1,4 @@
-using System;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using OrchardCore.Placements.Services;
 using OrchardCore.Recipes.Models;
@@ -22,18 +20,10 @@ namespace OrchardCore.Placements.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!string.Equals(context.Name, "Placements", StringComparison.OrdinalIgnoreCase))
+            if (context.TryGetStepPropertyIfNameMatches<PlacementNode[]>("Placements", out var templates))
             {
-                return;
-            }
-
-            if (context.Step.Property("Placements").Value is JObject templates)
-            {
-                foreach (var property in templates.Properties())
+                foreach (var (name, value) in templates)
                 {
-                    var name = property.Name;
-                    var value = property.Value.ToObject<PlacementNode[]>();
-
                     await _placementsManager.UpdateShapePlacementsAsync(name, value);
                 }
             }

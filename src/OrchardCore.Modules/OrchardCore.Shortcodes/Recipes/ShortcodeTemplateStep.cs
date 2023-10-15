@@ -1,6 +1,4 @@
-using System;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Shortcodes.Models;
@@ -22,18 +20,10 @@ namespace OrchardCore.Shortcodes.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!string.Equals(context.Name, "ShortcodeTemplates", StringComparison.OrdinalIgnoreCase))
+            if (context.TryGetStepPropertyIfNameMatches<ShortcodeTemplate>("ShortcodeTemplates", out var templates))
             {
-                return;
-            }
-
-            if (context.Step.Property("ShortcodeTemplates").Value is JObject templates)
-            {
-                foreach (var property in templates.Properties())
+                foreach (var (name, value) in templates)
                 {
-                    var name = property.Name;
-                    var value = property.Value.ToObject<ShortcodeTemplate>();
-
                     await _templatesManager.UpdateShortcodeTemplateAsync(name, value);
                 }
             }

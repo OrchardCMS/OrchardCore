@@ -22,18 +22,10 @@ namespace OrchardCore.Templates.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!string.Equals(context.Name, "Templates", StringComparison.OrdinalIgnoreCase))
+            if (context.TryGetStepPropertyIfNameMatches<Template>("Templates", out var templates))
             {
-                return;
-            }
-
-            if (context.Step.Property("Templates").Value is JObject templates)
-            {
-                foreach (var property in templates.Properties())
+                foreach (var (name, value) in templates)
                 {
-                    var name = property.Name;
-                    var value = property.Value.ToObject<Template>();
-
                     await _templatesManager.UpdateTemplateAsync(name, value);
                 }
             }
