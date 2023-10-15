@@ -78,7 +78,7 @@ namespace OrchardCore.ContentManagement.Metadata
         /// <typeparam name="TSettings"></typeparam>
         /// <param name="manager"></param>
         public static void MigratePartSettings<TPart, TSettings>(this IContentDefinitionManager manager)
-            where TPart : ContentPart where TSettings : class
+            where TPart : ContentPart where TSettings : class, new()
         {
             var contentTypes = manager.LoadTypeDefinitions();
 
@@ -87,7 +87,7 @@ namespace OrchardCore.ContentManagement.Metadata
                 var partDefinition = contentType.Parts.FirstOrDefault(x => x.PartDefinition.Name == typeof(TPart).Name);
                 if (partDefinition != null)
                 {
-                    var existingSettings = partDefinition.Settings.ToObject<TSettings>();
+                    var existingSettings = partDefinition.GetSettings<TSettings>();
 
                     // Remove existing properties from JObject
                     var properties = typeof(TSettings).GetProperties();
@@ -116,7 +116,7 @@ namespace OrchardCore.ContentManagement.Metadata
         /// <typeparam name="TSettings"></typeparam>
         /// <param name="manager"></param>
         public static void MigrateFieldSettings<TField, TSettings>(this IContentDefinitionManager manager)
-            where TField : ContentField where TSettings : class
+            where TField : ContentField where TSettings : class, new()
         {
             var partDefinitions = manager.LoadPartDefinitions();
             foreach (var partDefinition in partDefinitions)
@@ -125,7 +125,7 @@ namespace OrchardCore.ContentManagement.Metadata
                 {
                     foreach (var fieldDefinition in partDefinition.Fields.Where(x => x.FieldDefinition.Name == typeof(TField).Name))
                     {
-                        var existingFieldSettings = fieldDefinition.Settings.ToObject<TSettings>();
+                        var existingFieldSettings = fieldDefinition.GetSettings<TSettings>();
 
                         // Do this before creating builder, so settings are removed from the builder settings object.
                         // Remove existing properties from JObject

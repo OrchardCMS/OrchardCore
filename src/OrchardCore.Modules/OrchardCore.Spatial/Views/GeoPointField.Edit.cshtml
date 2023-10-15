@@ -4,7 +4,7 @@
 @using OrchardCore
 @model EditGeoPointFieldViewModel
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<GeoPointFieldSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<GeoPointFieldSettings>();
     var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 

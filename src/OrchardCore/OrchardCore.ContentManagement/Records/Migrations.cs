@@ -103,7 +103,7 @@ namespace OrchardCore.ContentManagement.Records
             var contentTypeDefinitions = _contentDefinitionManager.LoadTypeDefinitions();
             foreach (var contentTypeDefinition in contentTypeDefinitions)
             {
-                var existingContentTypeSettings = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>();
+                var existingContentTypeSettings = contentTypeDefinition.GetSettings<ContentTypeSettings>();
 
                 // Do this before creating builder, so settings are removed from the builder settings object.
                 // Remove existing properties from JObject
@@ -119,7 +119,7 @@ namespace OrchardCore.ContentManagement.Records
 
                     foreach (var contentTypePartDefinition in contentTypeDefinition.Parts)
                     {
-                        var existingTypePartSettings = contentTypePartDefinition.Settings.ToObject<ContentTypePartSettings>();
+                        var existingTypePartSettings = contentTypePartDefinition.GetSettings<ContentTypePartSettings>();
 
                         // Remove existing properties from JObject
                         var contentTypePartSettingsProperties = existingTypePartSettings.GetType().GetProperties();
@@ -146,7 +146,7 @@ namespace OrchardCore.ContentManagement.Records
             var partDefinitions = _contentDefinitionManager.LoadPartDefinitions();
             foreach (var partDefinition in partDefinitions)
             {
-                var existingPartSettings = partDefinition.Settings.ToObject<ContentPartSettings>();
+                var existingPartSettings = partDefinition.GetSettings<ContentPartSettings>();
 
                 // Do this before creating builder, so settings are removed from the builder settings object.
                 // Remove existing properties from JObject
@@ -161,7 +161,7 @@ namespace OrchardCore.ContentManagement.Records
                     partBuilder.WithSettings(existingPartSettings);
                     foreach (var fieldDefinition in partDefinition.Fields)
                     {
-                        var existingFieldSettings = fieldDefinition.Settings.ToObject<ContentPartFieldSettings>();
+                        var existingFieldSettings = fieldDefinition.GetSettings<ContentPartFieldSettings>();
 
                         // Do this before creating builder, so settings are removed from the builder settings object.
                         // Remove existing properties from JObject

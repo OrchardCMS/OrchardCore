@@ -3,7 +3,7 @@
 @using System.Globalization
 @model EditGeoPointFieldViewModel
 @{
-    var settings = Model.PartFieldDefinition.Settings.ToObject<GeoPointFieldSettings>();
+    var settings = Model.PartFieldDefinition.GetSettings<GeoPointFieldSettings>();
 }
 
 <div class="form-row" id="GeoPointFields">
