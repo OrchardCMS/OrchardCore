@@ -44,7 +44,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
             foreach (var key in data.Keys)
             {
-                if (data[key] != null)
+                if (data[key] is not null)
                 {
                     settings[key] = data[key];
                 }

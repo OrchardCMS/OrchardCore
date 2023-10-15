@@ -24,9 +24,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
         public Task AddSourcesAsync(string tenant, IConfigurationBuilder builder)
         {
-            builder
-                .AddTenantJsonFile(Path.Combine(_container, tenant, "appsettings.json"), optional: true);
-
+            builder.AddTenantJsonFile(Path.Combine(_container, tenant, "appsettings.json"), optional: true);
             return Task.CompletedTask;
         }
 
@@ -48,7 +46,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
             foreach (var key in data.Keys)
             {
-                if (data[key] != null)
+                if (data[key] is not null)
                 {
                     configData[key] = data[key];
                 }

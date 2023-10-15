@@ -93,5 +93,19 @@ namespace Microsoft.Extensions.Configuration
         /// <returns>The <see cref="IConfigurationBuilder"/>.</returns>
         public static IConfigurationBuilder AddTenantJsonFile(this IConfigurationBuilder builder, Action<TenantJsonConfigurationSource>? configureSource)
             => builder.Add(configureSource);
+
+        /// <summary>
+        /// Adds a JSON configuration source to <paramref name="builder"/>.
+        /// </summary>
+        /// <param name="builder">The <see cref="IConfigurationBuilder"/> to add to.</param>
+        /// <param name="stream">The <see cref="Stream"/> to read the json configuration data from.</param>
+        /// <returns>The <see cref="IConfigurationBuilder"/>.</returns>
+        public static IConfigurationBuilder AddTenantJsonStream(this IConfigurationBuilder builder, Stream stream)
+        {
+            // ThrowHelper.ThrowIfNull(builder);
+            ArgumentNullException.ThrowIfNull(builder);
+
+            return builder.Add<TenantJsonStreamConfigurationSource>(s => s.Stream = stream);
+        }
     }
 }
