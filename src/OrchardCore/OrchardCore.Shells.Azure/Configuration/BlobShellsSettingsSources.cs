@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -7,6 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Environment.Shell.Configuration.Internal;
 using OrchardCore.Shells.Azure.Services;
 
 namespace OrchardCore.Shells.Azure.Configuration
@@ -63,8 +65,9 @@ namespace OrchardCore.Shells.Azure.Configuration
             {
                 using var stream = await _shellsFileStore.GetFileStreamAsync(TenantsBlobName);
                 using var streamReader = new StreamReader(stream);
-                using var reader = new JsonTextReader(streamReader);
-                tenantsSettings = await JObject.LoadAsync(reader);
+                using var jsonReader = new JsonTextReader(streamReader);
+
+                tenantsSettings = await JObject.LoadAsync(jsonReader);
             }
             else
             {
@@ -87,14 +90,9 @@ namespace OrchardCore.Shells.Azure.Configuration
 
             tenantsSettings[tenant] = settings;
 
-            using var memoryStream = new MemoryStream();
-            using var streamWriter = new StreamWriter(memoryStream);
-            using var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented };
+            var tenantsSettingsString = await tenantsSettings.ToStringAsync(Formatting.None);
+            using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(tenantsSettingsString));
 
-            await tenantsSettings.WriteToAsync(jsonWriter);
-            await jsonWriter.FlushAsync();
-
-            memoryStream.Position = 0;
             await _shellsFileStore.CreateFileFromStreamAsync(TenantsBlobName, memoryStream);
         }
 
@@ -114,13 +112,9 @@ namespace OrchardCore.Shells.Azure.Configuration
 
                 tenantsSettings.Remove(tenant);
 
-                using var memoryStream = new MemoryStream();
-                using var streamWriter = new StreamWriter(memoryStream);
-                using var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented };
+                var tenantsSettingsString = await tenantsSettings.ToStringAsync(Formatting.None);
+                using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(tenantsSettingsString));
 
-                await tenantsSettings.WriteToAsync(jsonWriter);
-                await jsonWriter.FlushAsync();
-                memoryStream.Position = 0;
                 await _shellsFileStore.CreateFileFromStreamAsync(TenantsBlobName, memoryStream);
             }
         }

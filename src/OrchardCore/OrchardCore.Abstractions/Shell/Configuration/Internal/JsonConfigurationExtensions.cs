@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 
@@ -11,30 +7,6 @@ namespace OrchardCore.Environment.Shell.Configuration.Internal;
 
 public static class JsonConfigurationExtensions
 {
-    public static JObject ToJObject(this IDictionary<string, string> configData)
-    {
-        var configuration = new ConfigurationBuilder()
-            .Add(new UpdatableDataProvider(configData))
-            .Build();
-
-        using var disposable = configuration as IDisposable;
-
-        return configuration.ToJObject();
-    }
-
-    public static IDictionary<string, string> ToConfigurationData(this JObject jConfiguration)
-    {
-        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(jConfiguration.ToString()));
-        return JsonConfigurationParser.Parse(stream);
-    }
-
-
-    public static Task<IDictionary<string, string>> ToConfigurationDataAsync(this JObject jConfiguration)
-    {
-        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(jConfiguration.ToString()));
-        return JsonConfigurationParser.ParseAsync(stream);
-    }
-
     public static JObject ToJObject(this IConfiguration configuration)
     {
         var jToken = ToJToken(configuration);
@@ -63,7 +35,7 @@ public static class JsonConfigurationExtensions
                 jArray ??= new JArray();
                 if (index > jArray.Count)
                 {
-                    // OC: Inserting null values is useful to override arrays,
+                    // Inserting null values is useful to override arrays items,
                     // it allows to keep non null items at the right position.
                     for (var i = jArray.Count; i < index; i++)
                     {

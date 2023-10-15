@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Environment.Shell.Configuration.Internal;
 using OrchardCore.Shells.Database.Extensions;
 using OrchardCore.Shells.Database.Models;
 using YesSql;
@@ -44,7 +45,9 @@ namespace OrchardCore.Shells.Database.Configuration
             var document = await GetDocumentAsync();
             if (document.ShellsSettings is not null)
             {
-                builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(document.ShellsSettings.ToString(Formatting.None))));
+                var shellsSettingsString = await document.ShellsSettings.ToStringAsync(Formatting.None);
+
+                builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(shellsSettingsString)));
             }
         }
 
@@ -53,12 +56,10 @@ namespace OrchardCore.Shells.Database.Configuration
             var document = await GetDocumentAsync();
             if (document.ShellsSettings is not null && document.ShellsSettings.ContainsKey(tenant))
             {
-                var shellSettings = new JObject
-                {
-                    [tenant] = document.ShellsSettings[tenant]
-                };
+                var shellSettings = new JObject { [tenant] = document.ShellsSettings[tenant] };
+                var shellSettingsString = await shellSettings.ToStringAsync(Formatting.None);
 
-                builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(shellSettings.ToString(Formatting.None))));
+                builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(shellSettingsString)));
             }
         }
 
@@ -97,7 +98,6 @@ namespace OrchardCore.Shells.Database.Configuration
                 }
 
                 tenantsSettings[tenant] = settings;
-
                 document.ShellsSettings = tenantsSettings;
 
                 session.Save(document, checkConcurrency: true);

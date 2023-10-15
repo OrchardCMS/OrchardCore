@@ -20,7 +20,6 @@ public sealed class JsonConfigurationParser
     public static IDictionary<string, string?> Parse(Stream input)
         => new JsonConfigurationParser().ParseStream(input);
 
-    // OC: Async version.
     public static Task<IDictionary<string, string?>> ParseAsync(Stream input)
         => new JsonConfigurationParser().ParseStreamAsync(input);
 
@@ -53,7 +52,6 @@ public sealed class JsonConfigurationParser
         }
     }
 
-    // OC: Async version.
     private async Task<IDictionary<string, string?>> ParseStreamAsync(Stream input)
     {
         var jsonDocumentOptions = new JsonDocumentOptions
@@ -140,7 +138,7 @@ public sealed class JsonConfigurationParser
             case JsonValueKind.False:
             case JsonValueKind.Null:
 
-                // OC: Inserting null values is useful to override arrays,
+                // Skipping null values is useful to override array items,
                 // it allows to keep non null items at the right position.
                 if (visitArray && value.ValueKind == JsonValueKind.Null)
                 {

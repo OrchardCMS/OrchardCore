@@ -32,6 +32,7 @@ namespace OrchardCore.Environment.Shell.Configuration
             {
                 using var streamReader = File.OpenText(_tenants);
                 using var jsonReader = new JsonTextReader(streamReader);
+
                 tenantsSettings = await JObject.LoadAsync(jsonReader);
             }
             else
@@ -57,6 +58,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
             using var streamWriter = File.CreateText(_tenants);
             using var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented };
+
             await tenantsSettings.WriteToAsync(jsonWriter);
         }
 
@@ -75,6 +77,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
                 using var streamWriter = File.CreateText(_tenants);
                 using var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented };
+
                 await tenantsSettings.WriteToAsync(jsonWriter);
             }
         }

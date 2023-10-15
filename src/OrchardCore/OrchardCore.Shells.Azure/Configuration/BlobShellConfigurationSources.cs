@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -46,6 +47,7 @@ namespace OrchardCore.Shells.Azure.Configuration
                     fileInfo = await _shellsFileStore.GetFileInfoAsync(appSettings);
                 }
             }
+
             if (fileInfo != null)
             {
                 var stream = await _shellsFileStore.GetFileStreamAsync(appSettings);
@@ -83,13 +85,8 @@ namespace OrchardCore.Shells.Azure.Configuration
 
             var jConfiguration = configData.ToJObject();
 
-            using var memoryStream = new MemoryStream();
-            using var streamWriter = new StreamWriter(memoryStream);
-            using var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented };
-
-            await jConfiguration.WriteToAsync(jsonWriter);
-            await jsonWriter.FlushAsync();
-            memoryStream.Position = 0;
+            var configurationString = await jConfiguration.ToStringAsync(Formatting.None);
+            using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(configurationString));
 
             await _shellsFileStore.CreateFileFromStreamAsync(appsettings, memoryStream);
         }

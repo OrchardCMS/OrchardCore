@@ -77,7 +77,9 @@ namespace OrchardCore.Shells.Database.Configuration
             var configuration = configurations.GetValue(tenant) as JObject;
             if (configuration is not null)
             {
-                builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(configuration.ToString(Formatting.None))));
+                var configurationString = await configuration.ToStringAsync(Formatting.None);
+
+                builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(configurationString)));
             }
         }
 
