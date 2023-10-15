@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
@@ -25,10 +26,7 @@ namespace OrchardCore.Queries.Deployment
 
             var queries = await _queryManager.ListQueriesAsync();
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "Queries"),
-                new JProperty("Queries", queries.Select(JObject.FromObject))
-            ));
+            result.AddSimpleStepAndSerializeValue("Queries", "Queries", queries);
         }
     }
 }

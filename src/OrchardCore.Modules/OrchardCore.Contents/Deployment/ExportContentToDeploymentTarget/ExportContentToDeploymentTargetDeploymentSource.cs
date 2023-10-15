@@ -38,11 +38,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
             }
 
             var data = new JsonArray();
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "Content",
-                ["data"] = data,
-            });
+            result.AddSimpleStep("Content", "data", data);
 
             var model = new ExportContentToDeploymentTargetModel();
             await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(model, "ExportContentToDeploymentTarget", m => m.ItemIds, m => m.Latest, m => m.ContentItemId);

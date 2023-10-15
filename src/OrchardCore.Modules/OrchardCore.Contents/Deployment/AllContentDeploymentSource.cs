@@ -27,11 +27,7 @@ namespace OrchardCore.Contents.Deployment
             }
 
             var data = new JsonArray();
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "Content",
-                ["data"] = data,
-            });
+            result.AddSimpleStep("Content", "data", data);
 
             foreach (var contentItem in await _session.Query<ContentItem, ContentItemIndex>(x => x.Published).ListAsync())
             {

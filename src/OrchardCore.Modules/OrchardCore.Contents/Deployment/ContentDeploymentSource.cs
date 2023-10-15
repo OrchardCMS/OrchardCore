@@ -54,13 +54,7 @@ namespace OrchardCore.Contents.Deployment
 
             if (data.Any())
             {
-                var jobj = new JsonObject
-                {
-                    ["name"] = "content",
-                    ["data"] = data
-                };
-
-                result.Steps.Add(jobj);
+                result.AddSimpleStep("Content", "data", data);
             }
         }
     }

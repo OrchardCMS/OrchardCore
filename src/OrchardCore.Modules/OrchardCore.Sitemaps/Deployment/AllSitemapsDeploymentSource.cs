@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Sitemaps.Services;
 
@@ -29,12 +28,9 @@ namespace OrchardCore.Sitemaps.Deployment
 
             var sitemaps = await _sitemapManager.GetSitemapsAsync();
 
-            var jArray = JArray.FromObject(sitemaps, _serializer);
+            var jArray = System.Text.Json.JsonSerializer(sitemaps, _serializer);
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "Sitemaps"),
-                new JProperty("data", jArray)
-            ));
+            result.AddSimpleStep("Sitemaps", "data", jArray);
         }
     }
 }

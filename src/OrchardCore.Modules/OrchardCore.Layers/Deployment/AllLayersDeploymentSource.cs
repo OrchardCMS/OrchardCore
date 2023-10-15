@@ -36,21 +36,13 @@ namespace OrchardCore.Layers.Deployment
             }
 
             var layers = await _layerService.GetLayersAsync();
-
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "Layers",
-                ["Layers"] = new JsonArray(layers.Layers.Select(layer => JsonSerializer.SerializeToNode(layer, _jsonSerializer)))
-            });
+            var layersJson = layers.Layers.Select(layer => JsonSerializer.SerializeToNode(layer, _jsonSerializer)).ToArray();
+            result.AddSimpleStep("Layers", "Layers", new JsonArray(layersJson));
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
 
             // Adding Layer settings
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "Settings",
-                ["LayerSettings"] = JsonSerializer.SerializeToNode(siteSettings.As<LayerSettings>())
-            });
+            result.AddSimpleStepAndSerializeValue("Settings", "LayerSettings", siteSettings.As<LayerSettings>());
         }
     }
 }

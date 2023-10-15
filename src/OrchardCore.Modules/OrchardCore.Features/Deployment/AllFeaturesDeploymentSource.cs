@@ -1,6 +1,8 @@
+using System;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Features.Services;
 
@@ -25,15 +27,23 @@ namespace OrchardCore.Features.Deployment
             }
 
             var features = await _moduleService.GetAvailableFeaturesAsync();
-            var featureStep = new JObject(
-                new JProperty("name", "Feature"),
-                new JProperty("enable", features.Where(f => f.IsEnabled).Select(f => f.Descriptor.Id).ToArray())
-            );
+            var enable = features.Where(f => f.IsEnabled).Select(f => f.Descriptor.Id).ToArray();
+            var disable = allFeaturesStep.IgnoreDisabledFeatures
+                ? Array.Empty<string>()
+                : features.Where(f => !f.IsEnabled).Select(f => f.Descriptor.Id).ToArray();
 
-            if (!allFeaturesStep.IgnoreDisabledFeatures)
+            var featureStep = new JsonObject { ["name"] = "Feature" };
+
+            if (disable.Any())
             {
-                featureStep.Property("enable").AddAfterSelf(new JProperty("disable", features.Where(f => !f.IsEnabled).Select(f => f.Descriptor.Id).ToArray()));
+                featureStep["disable"] = JsonSerializer.SerializeToNode(disable);
             }
+
+            if (enable.Any())
+            {
+                featureStep["enable"] = JsonSerializer.SerializeToNode(enable);
+            }
+
             result.Steps.Add(featureStep);
         }
     }

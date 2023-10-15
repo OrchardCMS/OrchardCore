@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
@@ -51,10 +53,7 @@ namespace OrchardCore.Media.Deployment
             }
 
             // Adding media files
-            result.Steps.Add(new JObject(
-                new JProperty("name", "media"),
-                new JProperty("Files", JArray.FromObject(output))
-            ));
+            result.AddSimpleStepAndSerializeValue("media", "Files", output);
         }
 
         private class MediaDeploymentStepModel

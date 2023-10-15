@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Search.Lucene.Model;
 
@@ -27,7 +26,7 @@ namespace OrchardCore.Search.Lucene.Deployment
 
             var indexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
 
-            var data = new JArray();
+            var data = new List<Dictionary<string, LuceneIndexSettings>>();
             var indicesToAdd = luceneIndexStep.IncludeAll ? indexSettings.Select(x => x.IndexName).ToArray() : luceneIndexStep.IndexNames;
 
             foreach (var index in indexSettings)
@@ -39,15 +38,12 @@ namespace OrchardCore.Search.Lucene.Deployment
                         { index.IndexName, index },
                     };
 
-                    data.Add(JObject.FromObject(indexSettingsDict));
+                    data.Add(indexSettingsDict);
                 }
             }
 
             // Adding Lucene settings
-            result.Steps.Add(new JObject(
-                new JProperty("name", "lucene-index"),
-                new JProperty("Indices", data)
-            ));
+            result.AddSimpleStepAndSerializeValue("lucene-index", "Indices", data);
         }
     }
 }

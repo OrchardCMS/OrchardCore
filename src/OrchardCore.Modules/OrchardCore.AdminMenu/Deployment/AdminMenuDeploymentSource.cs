@@ -25,10 +25,7 @@ namespace OrchardCore.AdminMenu.Deployment
             }
 
             var data = new JsonArray();
-            result.Steps.Add(new JObject(
-                new JProperty("name", "AdminMenu"),
-                new JProperty("data", data)
-            ));
+            result.AddSimpleStep("AdminMenu", "data", data);
 
             // For each AdminNode, store info about its concrete type: linkAdminNode, contentTypesAdminNode etc...
             var serializer = new JsonSerializer { TypeNameHandling = TypeNameHandling.Auto };

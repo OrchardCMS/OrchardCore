@@ -1,6 +1,9 @@
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
 
@@ -34,11 +37,14 @@ namespace OrchardCore.ContentTypes.Deployment
                 : contentTypeDefinitionRecord.ContentPartDefinitionRecords
                         .Where(x => contentDefinitionStep.ContentParts.Contains(x.Name));
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "ContentDefinition"),
-                new JProperty("ContentTypes", JArray.FromObject(contentTypes)),
-                new JProperty("ContentParts", JArray.FromObject(contentParts))
-            ));
+            AddContentTypeAndPartStep(result, "ContentDefinition", contentTypes, contentParts);
         }
+
+        public static void AddContentTypeAndPartStep(DeploymentPlanResult result, string name, IEnumerable contentTypes, IEnumerable contentParts) =>
+            result.AddStep(name, new[]
+            {
+                new KeyValuePair<string, JsonNode>("ContentTypes", JsonSerializer.SerializeToNode(contentTypes)),
+                new KeyValuePair<string, JsonNode>("ContentParts", JsonSerializer.SerializeToNode(contentParts)),
+            });
     }
 }

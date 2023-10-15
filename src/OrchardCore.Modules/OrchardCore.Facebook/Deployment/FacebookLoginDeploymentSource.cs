@@ -1,5 +1,5 @@
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Facebook.Services;
 
@@ -18,18 +18,15 @@ namespace OrchardCore.Facebook.Deployment
         {
             var facebookLoginStep = step as FacebookLoginDeploymentStep;
 
-            if (facebookLoginStep == null)
+            if (facebookLoginStep == null || await _facebookService.GetSettingsAsync() is not { } settings)
             {
                 return;
             }
 
-            var settings = await _facebookService.GetSettingsAsync();
+            var jObject = JsonSerializer.SerializeToNode(settings)!.AsObject();
 
             // The 'name' property should match the related recipe step name.
-            var jObject = new JObject(new JProperty("name", "FacebookCoreSettings"));
-
-            // Merge settings as the recipe step doesn't use a child property.
-            jObject.Merge(JObject.FromObject(settings));
+            jObject["name"] = "FacebookCoreSettings";
 
             result.Steps.Add(jObject);
         }

@@ -1,6 +1,7 @@
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Templates.Models;
 using OrchardCore.Templates.Services;
@@ -25,7 +26,7 @@ namespace OrchardCore.Templates.Deployment
                 return;
             }
 
-            var templateObjects = new JObject();
+            var templateObjects = new JsonObject();
             var templates = await _templatesManager.GetTemplatesDocumentAsync();
 
             if (allTemplatesStep.ExportAsFiles)
@@ -35,21 +36,18 @@ namespace OrchardCore.Templates.Deployment
                     var fileName = "Templates/" + template.Key.Replace("__", "-").Replace("_", ".") + ".liquid";
                     var templateValue = new Template { Description = template.Value.Description, Content = $"[file:text('{fileName}')]" };
                     await result.FileBuilder.SetFileAsync(fileName, Encoding.UTF8.GetBytes(template.Value.Content));
-                    templateObjects[template.Key] = JObject.FromObject(templateValue);
+                    templateObjects[template.Key] = JsonSerializer.SerializeToNode(templateValue);
                 }
             }
             else
             {
                 foreach (var template in templates.Templates)
                 {
-                    templateObjects[template.Key] = JObject.FromObject(template.Value);
+                    templateObjects[template.Key] = JsonSerializer.SerializeToNode(template.Value);
                 }
             }
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "Templates"),
-                new JProperty("Templates", templateObjects)
-            ));
+            result.AddSimpleStep("Templates", "Templates", templateObjects);
         }
     }
 }

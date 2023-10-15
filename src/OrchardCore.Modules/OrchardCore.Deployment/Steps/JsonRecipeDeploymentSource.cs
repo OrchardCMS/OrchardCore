@@ -1,5 +1,5 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Deployment.Steps
 {
@@ -12,7 +12,7 @@ namespace OrchardCore.Deployment.Steps
                 return Task.CompletedTask;
             }
 
-            result.Steps.Add(JObject.Parse(jsonRecipeStep.Json));
+            result.Steps.Add(JsonNode.Parse(jsonRecipeStep.Json)!.AsObject());
 
             return Task.CompletedTask;
         }

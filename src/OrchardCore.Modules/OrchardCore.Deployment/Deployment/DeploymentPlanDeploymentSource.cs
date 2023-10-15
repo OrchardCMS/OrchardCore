@@ -49,10 +49,7 @@ namespace OrchardCore.Deployment.Deployment
                          }).ToArray();
 
             // Adding deployment plans.
-            result.Steps.Add(new JObject(
-                new JProperty("name", "deployment"),
-                new JProperty("Plans", JArray.FromObject(plans))
-            ));
+            result.AddSimpleStepAndSerializeValue("deployment", "Plans", plans);
         }
 
         /// <summary>

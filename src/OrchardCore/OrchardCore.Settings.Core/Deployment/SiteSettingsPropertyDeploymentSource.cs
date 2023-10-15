@@ -1,6 +1,6 @@
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Entities;
 
@@ -24,20 +24,17 @@ namespace OrchardCore.Settings.Deployment
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-
-            var settingJProperty = new JProperty(typeof(TModel).Name, JObject.FromObject(siteSettings.As<TModel>()));
+            var name = typeof(TModel).Name;
+            var value = JsonSerializer.SerializeToNode(siteSettings.As<TModel>());
 
             var settingsStepJObject = result.Steps.FirstOrDefault(s => s["name"]?.ToString() == "Settings");
             if (settingsStepJObject != null)
             {
-                settingsStepJObject.Add(settingJProperty);
+                settingsStepJObject[name] = value;
             }
             else
             {
-                result.Steps.Add(new JObject(
-                    new JProperty("name", "Settings"),
-                    new JProperty(settingJProperty)
-                ));
+                result.AddSimpleStep("Settings", name, value);
             }
         }
     }

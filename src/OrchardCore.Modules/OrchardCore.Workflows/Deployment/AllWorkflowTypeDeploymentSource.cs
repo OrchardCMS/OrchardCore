@@ -1,5 +1,6 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Workflows.Services;
 
@@ -23,22 +24,18 @@ namespace OrchardCore.Workflows.Deployment
                 return;
             }
 
-            var data = new JArray();
-            result.Steps.Add(new JObject(
-                new JProperty("name", "WorkflowType"),
-                new JProperty("data", data)
-            ));
+            var data = new JsonArray();
+            result.AddSimpleStep("WorkflowType", "data", data);
 
             foreach (var workflow in await _workflowTypeStore.ListAsync())
             {
-                var objectData = JObject.FromObject(workflow);
-
-                // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql
-                objectData.Remove(nameof(workflow.Id));
-                data.Add(objectData);
+                if (JsonSerializer.SerializeToNode(workflow) is JsonObject objectData)
+                {
+                    // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql
+                    objectData.Remove(nameof(workflow.Id));
+                    data.Add(objectData);
+                }
             }
-
-            return;
         }
     }
 }

@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
@@ -32,7 +33,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
                 return;
             }
 
-            var jContentItem = JsonSerializer.SerializeToNode(contentItem);
+            var jContentItem = JsonSerializer.SerializeToNode(contentItem)!.AsObject();
             jContentItem.Remove(nameof(ContentItem.Id));
 
             var contentStep = result.Steps.FirstOrDefault(s => s["name"]?.ToString() == "Content");
@@ -42,13 +43,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
             }
             else
             {
-                result.Steps.Add(new JObject(
-                    new JProperty("name", "Content"),
-                    new JProperty("data", new JArray()
-                    {
-                        jContentItem
-                    })
-                ));
+                result.AddSimpleStep("Content", "data", new JsonArray { jContentItem });
             }
         }
     }

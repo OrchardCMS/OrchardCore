@@ -1,5 +1,6 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Placements.Services;
 
@@ -23,18 +24,15 @@ namespace OrchardCore.Placements.Deployment
                 return;
             }
 
-            var placementObjects = new JObject();
+            var placementObjects = new JsonObject();
             var placements = await _placementsManager.ListShapePlacementsAsync();
 
             foreach (var placement in placements)
             {
-                placementObjects[placement.Key] = JArray.FromObject(placement.Value);
+                placementObjects[placement.Key] = JsonSerializer.SerializeToNode(placement.Value);
             }
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "Placements"),
-                new JProperty("Placements", placementObjects)
-            ));
+            result.AddSimpleStep("Placements", "Placements", placementObjects);
         }
     }
 }

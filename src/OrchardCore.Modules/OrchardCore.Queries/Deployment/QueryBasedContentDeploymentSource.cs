@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
 
@@ -25,7 +26,7 @@ namespace OrchardCore.Queries.Deployment
                 return;
             }
 
-            var data = new JArray();
+            var data = new JsonArray();
 
             var query = await _queryManager.GetQueryAsync(queryDeploymentStep.QueryName);
 
@@ -48,7 +49,7 @@ namespace OrchardCore.Queries.Deployment
 
             foreach (var contentItem in results.Items)
             {
-                var objectData = JObject.FromObject(contentItem);
+                var objectData = JsonSerializer.SerializeToNode(contentItem)!.AsObject();
 
                 // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql.
                 objectData.Remove(nameof(ContentItem.Id));
@@ -66,15 +67,9 @@ namespace OrchardCore.Queries.Deployment
                 data.Add(objectData);
             }
 
-            if (data.HasValues)
+            if (data.Any())
             {
-                var jobj = new JObject
-                {
-                    ["name"] = "content",
-                    ["data"] = data
-                };
-
-                result.Steps.Add(jobj);
+                result.AddSimpleStep("Content", "data", data);
             }
         }
 
@@ -82,7 +77,7 @@ namespace OrchardCore.Queries.Deployment
         {
             try
             {
-                queryParameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters) ?? new();
+                queryParameters = JsonSerializer.Deserialize<Dictionary<string, object>>(parameters) ?? new();
                 return true;
             }
             catch (JsonException)

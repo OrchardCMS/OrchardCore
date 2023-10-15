@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Admin;
@@ -27,11 +28,12 @@ namespace OrchardCore.Themes.Deployment
                 return;
             }
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "Themes"),
-                new JProperty(nameof(ThemeStepModel.Site), await _siteThemeService.GetSiteThemeNameAsync()),
-                new JProperty(nameof(ThemeStepModel.Admin), await _adminThemeService.GetAdminThemeNameAsync())
-            ));
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "Themes",
+                [nameof(ThemeStepModel.Site)] = await _siteThemeService.GetSiteThemeNameAsync(),
+                [nameof(ThemeStepModel.Admin)] = await _adminThemeService.GetAdminThemeNameAsync(),
+            });
         }
     }
 }

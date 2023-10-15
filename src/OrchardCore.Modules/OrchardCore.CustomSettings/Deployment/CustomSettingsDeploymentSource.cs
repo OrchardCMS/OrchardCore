@@ -25,7 +25,7 @@ namespace OrchardCore.CustomSettings.Deployment
                 return;
             }
 
-            var settingsList = new List<KeyValuePair<string, JsonNode>> { new("name", "custom-settings") };
+            var settingsList = new List<KeyValuePair<string, JsonNode>>();
 
             var settingsTypes = customSettingsStep.IncludeAll
                 ? _customSettingsService.GetAllSettingsTypes().ToArray()
@@ -46,7 +46,7 @@ namespace OrchardCore.CustomSettings.Deployment
             }
 
             // Adding custom settings
-            result.Steps.Add(new JsonObject(settingsList));
+            result.AddStep("custom-settings", settingsList);
         }
     }
 }

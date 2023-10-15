@@ -1,6 +1,5 @@
-using System;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.OpenId.Recipes;
 using OrchardCore.OpenId.Services;
@@ -66,14 +65,10 @@ namespace OrchardCore.OpenId.Deployment
 
             // Use nameof(OpenIdServerSettings) as name,
             // to match the recipe step.
-            var obj = new JObject(
-                new JProperty(
-                    "name",
-                    nameof(OpenIdServerSettings)));
+            var stepJson = JsonSerializer.SerializeToNode(settingsModel)!.AsObject();
+            stepJson["name"] = nameof(OpenIdServerSettings);
 
-            obj.Merge(JObject.FromObject(settingsModel));
-
-            result.Steps.Add(obj);
+            result.Steps.Add(stepJson);
         }
     }
 }

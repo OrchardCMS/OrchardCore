@@ -1,16 +1,14 @@
 using System;
+using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Deployment
 {
     public class ElasticIndexRebuildDeploymentSource : IDeploymentSource
     {
-        public ElasticIndexRebuildDeploymentSource()
-        {
-        }
-
         public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
             var elasticIndexRebuildStep = step as ElasticIndexRebuildDeploymentStep;
@@ -21,11 +19,11 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
 
             var indicesToRebuild = elasticIndexRebuildStep.IncludeAll ? Array.Empty<string>() : elasticIndexRebuildStep.Indices;
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "elastic-index-rebuild"),
-                new JProperty("includeAll", elasticIndexRebuildStep.IncludeAll),
-                new JProperty("Indices", new JArray(indicesToRebuild))
-            ));
+            result.AddStep("elastic-index-rebuild", new []
+            {
+                new KeyValuePair<string, JsonNode>("includeAll", elasticIndexRebuildStep.IncludeAll),
+                new KeyValuePair<string, JsonNode>("Indices", JsonSerializer.SerializeToNode(indicesToRebuild)),
+            });
 
             return Task.CompletedTask;
         }

@@ -25,10 +25,7 @@ namespace OrchardCore.Search.Lucene.Deployment
             var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
 
             // Adding Lucene settings
-            result.Steps.Add(new JObject(
-                new JProperty("name", "Settings"),
-                new JProperty("LuceneSettings", JObject.FromObject(luceneSettings))
-            ));
+            result.AddSimpleStepAndSerializeValue("Settings", "LuceneSettings", luceneSettings);
         }
     }
 }

@@ -25,10 +25,7 @@ namespace OrchardCore.Media.Deployment
 
             var mediaProfiles = await _mediaProfilesManager.GetMediaProfilesDocumentAsync();
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "MediaProfiles"),
-                new JProperty("MediaProfiles", JsonSerializer.SerializeToNode(mediaProfiles.MediaProfiles))
-            ));
+            result.AddSimpleStepAndSerializeValue("MediaProfiles", "MediaProfiles", mediaProfiles.MediaProfiles);
         }
     }
 }

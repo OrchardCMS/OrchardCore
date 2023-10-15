@@ -34,11 +34,7 @@ namespace OrchardCore.ContentTypes.Deployment
                 : contentTypeDefinitionRecord.ContentPartDefinitionRecords
                         .Where(x => replaceContentDefinitionStep.ContentParts.Contains(x.Name));
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "ReplaceContentDefinition"),
-                new JProperty("ContentTypes", JArray.FromObject(contentTypes)),
-                new JProperty("ContentParts", JArray.FromObject(contentParts))
-            ));
+            ContentDefinitionDeploymentSource.AddContentTypeAndPartStep(result, "ReplaceContentDefinition", contentTypes, contentParts);
         }
     }
 }
