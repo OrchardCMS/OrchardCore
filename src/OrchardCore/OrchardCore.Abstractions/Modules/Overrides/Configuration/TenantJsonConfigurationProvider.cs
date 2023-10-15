@@ -30,7 +30,10 @@ namespace Microsoft.Extensions.Configuration.Json
             base.Dispose(true);
 
             // OC: Will be part of 'FileConfigurationProvider' in a future version.
-            (Source.FileProvider as IDisposable)?.Dispose();
+            // if (Source.OwnsFileProvider)
+            {
+                (Source.FileProvider as IDisposable)?.Dispose();
+            }
         }
     }
 }
