@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Nodes;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.ContentManagement.Metadata.Models
 {
@@ -29,15 +29,9 @@ namespace OrchardCore.ContentManagement.Metadata.Models
             {
                 var typeName = typeof(T).Name;
 
-                JToken value;
-                if (Settings.TryGetValue(typeName, out value))
-                {
-                    result = value.ToObject<T>();
-                }
-                else
-                {
-                    result = new T();
-                }
+                result = Settings.TryGetPropertyValue(typeName, out var value)
+                    ? value.Deserialize<T>()
+                    : new T();
 
                 namedSettings = new Dictionary<Type, object>(_namedSettings)
                 {
@@ -59,9 +53,9 @@ namespace OrchardCore.ContentManagement.Metadata.Models
 
             var typeName = typeof(T).Name;
 
-            JToken value;
-            if (Settings.TryGetValue(typeName, out value))
+            if (Settings.TryGetPropertyValue(typeName, out var value) && value != null)
             {
+                // TODO https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/migrate-from-newtonsoft?pivots=dotnet-7-0#populate-existing-objects
                 JsonConvert.PopulateObject(value.ToString(), target);
                 _namedSettings = new Dictionary<Type, object>();
             }
