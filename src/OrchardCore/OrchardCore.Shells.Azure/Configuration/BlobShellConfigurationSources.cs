@@ -58,6 +58,7 @@ namespace OrchardCore.Shells.Azure.Configuration
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)
         {
             var appsettings = IFileStoreExtensions.Combine(null, _container, tenant, "appsettings.json");
+
             var fileInfo = await _shellsFileStore.GetFileInfoAsync(appsettings);
 
             IDictionary<string, string> configData;

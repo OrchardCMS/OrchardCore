@@ -46,7 +46,6 @@ namespace OrchardCore.Shells.Database.Configuration
             if (document.ShellsSettings is not null)
             {
                 var shellsSettingsString = await document.ShellsSettings.ToStringAsync(Formatting.None);
-
                 builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(shellsSettingsString)));
             }
         }
@@ -98,6 +97,7 @@ namespace OrchardCore.Shells.Database.Configuration
                 }
 
                 tenantsSettings[tenant] = settings;
+
                 document.ShellsSettings = tenantsSettings;
 
                 session.Save(document, checkConcurrency: true);

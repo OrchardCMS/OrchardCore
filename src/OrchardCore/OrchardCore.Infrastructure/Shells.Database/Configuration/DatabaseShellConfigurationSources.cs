@@ -78,7 +78,6 @@ namespace OrchardCore.Shells.Database.Configuration
             if (configuration is not null)
             {
                 var configurationString = await configuration.ToStringAsync(Formatting.None);
-
                 builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(configurationString)));
             }
         }
@@ -89,6 +88,7 @@ namespace OrchardCore.Shells.Database.Configuration
             await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
+
                 var document = await session.Query<DatabaseShellConfigurations>().FirstOrDefaultAsync();
 
                 JObject configurations;
