@@ -11,7 +11,7 @@ public static class ConfigurationJObjectExtensions
     public static async Task<string> ToStringAsync(this JObject jConfiguration, Formatting formatting = Formatting.Indented)
     {
         using var sw = new StringWriter(CultureInfo.InvariantCulture);
-        using var jw = new JsonTextWriter(sw) { Formatting = Formatting.None };
+        using var jw = new JsonTextWriter(sw) { Formatting = formatting };
 
         await jConfiguration.WriteToAsync(jw);
 

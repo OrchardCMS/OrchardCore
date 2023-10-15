@@ -13,19 +13,19 @@ public static class ConfigurationDataExtensions
 {
     public static JObject ToJObject(this IDictionary<string, string> configurationData)
     {
-        var config = new ConfigurationBuilder()
+        var configuration = new ConfigurationBuilder()
             .Add(new UpdatableDataProvider(configurationData))
             .Build();
 
-        using var disposable = config as IDisposable;
+        using var disposable = configuration as IDisposable;
 
-        return config.ToJObject();
+        return configuration.ToJObject();
     }
 
     public static async Task<IDictionary<string, string>> ToConfigurationDataAsync(this JObject jConfiguration)
     {
-        var configString = await jConfiguration.ToStringAsync(Formatting.None);
-        using var ms = new MemoryStream(Encoding.UTF8.GetBytes(configString));
+        var configurationString = await jConfiguration.ToStringAsync(Formatting.None);
+        using var ms = new MemoryStream(Encoding.UTF8.GetBytes(configurationString));
 
         return await JsonConfigurationParser.ParseAsync(ms);
     }
