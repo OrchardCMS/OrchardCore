@@ -25,6 +25,7 @@
     <label asp-for="TermContentType" class="@Orchard.GetLabelCssClasses()">@T["Term Content Type"]</label>
     <div class="@Orchard.GetEndCssClasses()">
         <select asp-for="TermContentType" class="form-select" asp-items="@(new SelectList(termContentTypes, "Name", "DisplayName"))">
+            <option value="">@T["Select a term content type"]</option>
         </select>
     </div>
     <span asp-validation-for="TermContentType"></span>
@@ -38,11 +39,11 @@
             @if (termContentType != null)
             {
                 <a class="btn btn-primary btn-sm"
-           asp-route-action="Create"
-           asp-route-controller="Admin"
-           asp-route-id="@Model.TaxonomyPart.TermContentType"
-           asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
-           asp-route-area="OrchardCore.Taxonomies">
+                   asp-route-action="Create"
+                   asp-route-controller="Admin"
+                   asp-route-id="@Model.TaxonomyPart.TermContentType"
+                   asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
+                   asp-route-area="OrchardCore.Taxonomies">
                     @T["Add {0}", termContentType.DisplayName]
                 </a>
             }

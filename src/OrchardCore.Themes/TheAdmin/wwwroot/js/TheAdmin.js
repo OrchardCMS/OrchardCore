@@ -1589,51 +1589,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   Sortable.version = '1.4.2';
   return Sortable;
 });
-(function () {
-  'use strict';
-
-  var showActiveTheme = function showActiveTheme(theme) {
-    var focus = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-    var themeSwitcher = document.querySelector('#bd-theme');
-    if (!themeSwitcher) {
-      return;
-    }
-    var themeSwitcherText = document.querySelector('#bd-theme-text');
-    var activeThemeIcon = document.querySelector('.theme-icon-active');
-    var btnToActive = document.querySelector("[data-bs-theme-value=\"".concat(theme, "\"]"));
-    var svgOfActiveBtn = btnToActive.querySelector('.theme-icon');
-    btnToActive.classList.add('active');
-    btnToActive.setAttribute('aria-pressed', 'true');
-    activeThemeIcon.innerHTML = svgOfActiveBtn.innerHTML;
-    var themeSwitcherLabel = "".concat(themeSwitcherText.textContent, " (").concat(btnToActive.dataset.bsThemeValue, ")");
-    themeSwitcher.setAttribute('aria-label', themeSwitcherLabel);
-    var btnsToInactive = document.querySelectorAll("[data-bs-theme-value]:not([data-bs-theme-value=\"".concat(theme, "\"])"));
-    for (var i = 0; i < btnsToInactive.length; i++) {
-      btnsToInactive[i].classList.remove('active');
-      btnsToInactive[i].setAttribute('aria-pressed', 'false');
-    }
-    if (focus) {
-      themeSwitcher.focus();
-    }
-  };
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
-    var storedTheme = getStoredTheme();
-    if (storedTheme !== lightThemeName && storedTheme !== darkThemeName) {
-      setTheme(getPreferredTheme());
-    }
-  });
-  window.addEventListener('DOMContentLoaded', function () {
-    showActiveTheme(getPreferredTheme());
-    document.querySelectorAll('[data-bs-theme-value]').forEach(function (toggle) {
-      toggle.addEventListener('click', function () {
-        var theme = toggle.getAttribute('data-bs-theme-value');
-        setStoredTheme(theme);
-        setTheme(theme);
-        showActiveTheme(theme, true);
-      });
-    });
-  });
-})();
 // Each time the sidebar status is modified, that is persisted to localStorage.
 // When the page is loaded again, userPreferencesLoader.js will read that info to 
 // restore the sidebar to the previous state.

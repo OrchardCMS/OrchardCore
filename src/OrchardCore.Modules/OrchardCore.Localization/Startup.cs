@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
-using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.Admin.Models;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Localization.Drivers;
@@ -92,7 +92,7 @@ namespace OrchardCore.Localization
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IShapeTableProvider, AdminCulturePickerShapes>();
+            services.AddScoped<IDisplayDriver<Navbar>, AdminCulturePickerNavbarDisplayDriver>();
 
             services.Configure<RequestLocalizationOptions>(options =>
                 options.AddInitialRequestCultureProvider(new AdminCookieCultureProvider(_shellSettings, _adminOptions)));

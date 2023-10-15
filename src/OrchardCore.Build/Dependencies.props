@@ -14,7 +14,7 @@
     <PackageManagement Include="AWSSDK.SecurityToken" Version="3.7.101.60" />
     <PackageManagement Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
     <PackageManagement Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.3.2" />
-    <PackageManagement Include="Azure.Identity" Version="1.10.1" />
+    <PackageManagement Include="Azure.Identity" Version="1.10.2" />
     <PackageManagement Include="Azure.Storage.Blobs" Version="12.18.0" />
     <PackageManagement Include="BenchmarkDotNet" Version="0.13.9" />
     <PackageManagement Include="Castle.Core" Version="5.1.1" />
@@ -48,8 +48,8 @@
     <PackageManagement Include="NJsonSchema" Version="10.9.0" />
     <PackageManagement Include="NLog.Web.AspNetCore" Version="5.3.4" />
     <PackageManagement Include="NodaTime" Version="3.1.9" />
-    <PackageManagement Include="OpenIddict.AspNetCore" Version="4.8.0" />
-    <PackageManagement Include="OpenIddict.Core" Version="4.8.0" />
+    <PackageManagement Include="OpenIddict.AspNetCore" Version="4.9.0" />
+    <PackageManagement Include="OpenIddict.Core" Version="4.9.0" />
     <PackageManagement Include="OrchardCore.Translations.All" Version="1.7.1" />
     <PackageManagement Include="PdfPig" Version="0.1.8" />
     <PackageManagement Include="Serilog.AspNetCore" Version="7.0.0" />
@@ -61,11 +61,11 @@
     <PackageManagement Include="xunit" Version="2.5.1" />
     <PackageManagement Include="xunit.analyzers" Version="1.3.0" />
     <PackageManagement Include="xunit.runner.visualstudio" Version="2.5.1" />
-    <PackageManagement Include="YesSql" Version="3.3.0" />
-    <PackageManagement Include="YesSql.Abstractions" Version="3.3.0" />
-    <PackageManagement Include="YesSql.Core" Version="3.3.0" />
-    <PackageManagement Include="YesSql.Filters.Abstractions" Version="3.3.0" />
-    <PackageManagement Include="YesSql.Filters.Query" Version="3.3.0" />
+    <PackageManagement Include="YesSql" Version="3.4.0" />
+    <PackageManagement Include="YesSql.Abstractions" Version="3.4.0" />
+    <PackageManagement Include="YesSql.Core" Version="3.4.0" />
+    <PackageManagement Include="YesSql.Filters.Abstractions" Version="3.4.0" />
+    <PackageManagement Include="YesSql.Filters.Query" Version="3.4.0" />
     <PackageManagement Include="ZString" Version="2.5.1" />
   </ItemGroup>
 </Project>
