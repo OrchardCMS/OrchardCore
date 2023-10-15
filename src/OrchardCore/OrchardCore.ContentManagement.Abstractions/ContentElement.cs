@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace OrchardCore.ContentManagement
 {
@@ -12,23 +12,24 @@ namespace OrchardCore.ContentManagement
     {
         private Dictionary<string, ContentElement> _elements;
 
-        protected ContentElement() : this(new JObject())
+        protected ContentElement() : this(new JsonObject())
         {
         }
 
-        protected ContentElement(JObject data)
+        protected ContentElement(JsonObject data)
         {
             Data = data;
         }
 
         [JsonIgnore]
-        protected internal Dictionary<string, ContentElement> Elements => _elements ??= new Dictionary<string, ContentElement>();
+        protected internal Dictionary<string, ContentElement> Elements =>
+            _elements ??= new Dictionary<string, ContentElement>();
 
         [JsonIgnore]
-        public dynamic Content { get { return Data; } }
+        public dynamic Content => Data;
 
         [JsonIgnore]
-        internal JObject Data { get; set; }
+        internal JsonObject Data { get; set; }
 
         [JsonIgnore]
         public ContentItem ContentItem { get; set; }
@@ -41,5 +42,14 @@ namespace OrchardCore.ContentManagement
         {
             return Data.ContainsKey(name);
         }
+
+        /// <summary>
+        /// Tries to access a property in the <see cref="Content"/> by name.
+        /// </summary>
+        /// <param name="propertyName">The name of the property to look for.</param>
+        /// <param name="jsonNode">The property value node.</param>
+        /// <returns></returns>
+        public bool TryGetPropertyValue(string propertyName, out JsonNode jsonNode) =>
+            Data.TryGetPropertyValue(propertyName, out jsonNode);
     }
 }

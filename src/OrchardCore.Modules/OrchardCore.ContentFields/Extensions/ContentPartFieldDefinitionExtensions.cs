@@ -1,5 +1,6 @@
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace OrchardCore.ContentManagement.Metadata.Models;
 
@@ -11,16 +12,12 @@ public static class ContentPartFieldDefinitionExtensions
     public static TField GetContentField<TField>(
         this ContentPartFieldDefinition fieldDefinition,
         ContentItem contentItem)
-        where TField : ContentField
-    {
-        if (((JObject)contentItem.Content)[fieldDefinition.PartDefinition.Name] is not JObject jPart ||
-            jPart[fieldDefinition.Name] is not JObject jField)
-        {
-            return null;
-        }
-
-        return jField.ToObject<TField>();
-    }
+        where TField : ContentField =>
+        contentItem.TryGetPropertyValue(fieldDefinition.PartDefinition.Name, out var jPart) &&
+        (jPart as JsonObject)?.TryGetPropertyValue(fieldDefinition.Name, out var jField) == true &&
+        jField is JsonObject
+            ? jField.Deserialize<TField>()
+            : null;
 
     /// <summary>
     /// Returns each field from <paramref name="fieldDefinitions"/> that exists in <paramref name="contentItem"/> in a
