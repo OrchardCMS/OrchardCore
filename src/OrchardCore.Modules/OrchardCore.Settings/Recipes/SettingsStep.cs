@@ -1,7 +1,7 @@
 using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -29,76 +29,78 @@ namespace OrchardCore.Settings.Recipes
             var model = context.Step;
             var site = await _siteService.LoadSiteSettingsAsync();
 
-            foreach (JProperty property in model.Properties())
+            foreach (var (name, value) in model)
             {
-                switch (property.Name)
+                if (value == null) continue;
+
+                switch (name)
                 {
                     case "BaseUrl":
-                        site.BaseUrl = property.Value.ToString();
+                        site.BaseUrl = value.GetValue<string>();
                         break;
 
                     case "Calendar":
-                        site.Calendar = property.Value.ToString();
+                        site.Calendar = value.GetValue<string>();
                         break;
 
                     case "MaxPagedCount":
-                        site.MaxPagedCount = property.Value.Value<int>();
+                        site.MaxPagedCount = value.GetValue<int>();
                         break;
 
                     case "MaxPageSize":
-                        site.MaxPageSize = property.Value.Value<int>();
+                        site.MaxPageSize = value.GetValue<int>();
                         break;
 
                     case "PageSize":
-                        site.PageSize = property.Value.Value<int>();
+                        site.PageSize = value.GetValue<int>();
                         break;
 
                     case "ResourceDebugMode":
-                        site.ResourceDebugMode = (ResourceDebugMode)property.Value.Value<int>();
+                        site.ResourceDebugMode = (ResourceDebugMode)value.GetValue<int>();
                         break;
 
                     case "SiteName":
-                        site.SiteName = property.Value.ToString();
+                        site.SiteName = value.GetValue<string>();
                         break;
 
                     case "PageTitleFormat":
-                        site.PageTitleFormat = property.Value.ToString();
+                        site.PageTitleFormat = value.GetValue<string>();
                         break;
 
                     case "SiteSalt":
-                        site.SiteSalt = property.Value.ToString();
+                        site.SiteSalt = value.GetValue<string>();
                         break;
 
                     case "SuperUser":
-                        site.SuperUser = property.Value.ToString();
+                        site.SuperUser = value.GetValue<string>();
                         break;
 
                     case "TimeZoneId":
-                        site.TimeZoneId = property.Value.ToString();
+                        site.TimeZoneId = value.GetValue<string>();
                         break;
 
                     case "UseCdn":
-                        site.UseCdn = property.Value.Value<bool>();
+                        site.UseCdn = value.GetValue<bool>();
                         break;
 
                     case "CdnBaseUrl":
-                        site.CdnBaseUrl = property.Value.ToString();
+                        site.CdnBaseUrl = value.GetValue<string>();
                         break;
 
                     case "AppendVersion":
-                        site.AppendVersion = property.Value.Value<bool>();
+                        site.AppendVersion = value.GetValue<bool>();
                         break;
 
                     case "HomeRoute":
-                        site.HomeRoute = property.Value.ToObject<RouteValueDictionary>();
+                        site.HomeRoute = value.Deserialize<RouteValueDictionary>();
                         break;
 
                     case "CacheMode":
-                        site.CacheMode = (CacheMode)property.Value.Value<int>();
+                        site.CacheMode = (CacheMode)value.GetValue<int>();
                         break;
 
                     default:
-                        site.Properties[property.Name] = property.Value;
+                        site.Properties[name] = value;
                         break;
                 }
             }

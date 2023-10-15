@@ -1,11 +1,9 @@
-@using Newtonsoft.Json.Linq
-
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 @inject OrchardCore.DisplayManagement.ModelBinding.IUpdateModelAccessor ModelUpdaterAccessor
 
 @{
     ContentItem contentItem = Model.ContentItem;
-    JArray termsArray = contentItem.Content.Terms;
+    var terms = contentItem.GetArrayProperty<ContentItem>("Terms");
     var index = 0;
 }
 
@@ -47,14 +45,13 @@
         </div>
     </div>
 
-    @if (termsArray != null)
+    @if (terms.Any())
     {
         var updater = ModelUpdaterAccessor.ModelUpdater;
 
         <ol class="menu-item menu-item-links">
-            @foreach (JObject termObject in termsArray)
+            @foreach (var term in terms)
             {
-                var term = termObject.ToObject<ContentItem>();
                 dynamic termShape = await ContentItemDisplayManager.BuildDisplayAsync(term, updater, "TermAdmin");
                 termShape.TaxonomyPart = Model.TaxonomyPart;
                 termShape.Index = Model.Index + "-" + index++;

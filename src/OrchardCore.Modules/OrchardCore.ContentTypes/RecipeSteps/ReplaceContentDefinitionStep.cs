@@ -26,7 +26,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps
                 return Task.CompletedTask;
             }
 
-            var step = context.Step.ToObject<ReplaceContentDefinitionStepModel>();
+            var step = context.GetStep<ReplaceContentDefinitionStepModel>();
 
             // Delete existing parts first, as deleting them later will clear any imported content types using them.
             foreach (var contentPart in step.ContentParts)

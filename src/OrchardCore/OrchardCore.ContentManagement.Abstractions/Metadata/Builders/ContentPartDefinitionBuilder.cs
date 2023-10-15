@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -12,7 +14,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
     {
         private readonly ContentPartDefinition _part;
         private readonly IList<ContentPartFieldDefinition> _fields;
-        private readonly JObject _settings;
+        private readonly JsonObject _settings;
 
         public ContentPartDefinition Current { get; private set; }
 
@@ -28,13 +30,13 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             if (existing == null)
             {
                 _fields = new List<ContentPartFieldDefinition>();
-                _settings = new JObject();
+                _settings = new JsonObject();
             }
             else
             {
                 Name = existing.Name;
                 _fields = existing.Fields.ToList();
-                _settings = new JObject(existing.Settings);
+                _settings = new JsonObject(existing.Settings);
             }
         }
 
@@ -81,7 +83,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
-        public ContentPartDefinitionBuilder MergeSettings(JObject settings)
+        public ContentPartDefinitionBuilder MergeSettings(JsonObject settings)
         {
             _settings.Merge(settings, ContentBuilderSettings.JsonMergeSettings);
             return this;
@@ -89,15 +91,15 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentPartDefinitionBuilder MergeSettings<T>(Action<T> setting) where T : class, new()
         {
-            var existingJObject = _settings[typeof(T).Name] as JObject;
+            var existingJObject = _settings[typeof(T).Name];
             // If existing settings do not exist, create.
             if (existingJObject == null)
             {
-                existingJObject = JObject.FromObject(new T(), ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+                existingJObject = JsonSerializer.SerializeToNode(new T(), ContentBuilderSettings.IgnoreDefaultValuesSerializer);
                 _settings[typeof(T).Name] = existingJObject;
             }
 
-            var settingsToMerge = existingJObject.ToObject<T>();
+            var settingsToMerge = existingJObject.Deserialize<T>();
             setting(settingsToMerge);
             _settings[typeof(T).Name] = JObject.FromObject(settingsToMerge, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
             return this;

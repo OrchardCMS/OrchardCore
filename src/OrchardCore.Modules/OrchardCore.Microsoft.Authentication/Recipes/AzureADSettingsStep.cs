@@ -26,7 +26,7 @@ namespace OrchardCore.Microsoft.Authentication.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<AzureADSettingsStepModel>();
+            var model = context.GetStep<AzureADSettingsStepModel>();
             var settings = await _azureADService.LoadSettingsAsync();
 
             settings.AppId = model.AppId;

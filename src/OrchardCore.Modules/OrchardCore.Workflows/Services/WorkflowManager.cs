@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Activities;
@@ -68,10 +69,10 @@ namespace OrchardCore.Workflows.Services
             {
                 WorkflowTypeId = workflowType.WorkflowTypeId,
                 Status = WorkflowStatus.Idle,
-                State = JObject.FromObject(new WorkflowState
+                State = JsonSerializer.SerializeToNode(new WorkflowState
                 {
                     ActivityStates = workflowType.Activities.Select(x => x).ToDictionary(x => x.ActivityId, x => x.Properties)
-                }),
+                }).AsObject(),
                 CorrelationId = correlationId,
                 LockTimeout = workflowType.LockTimeout,
                 LockExpiration = workflowType.LockExpiration,
@@ -84,12 +85,12 @@ namespace OrchardCore.Workflows.Services
 
         public async Task<WorkflowExecutionContext> CreateWorkflowExecutionContextAsync(WorkflowType workflowType, Workflow workflow, IDictionary<string, object> input = null)
         {
-            var state = workflow.State.ToObject<WorkflowState>();
+            var state = workflow.State.Deserialize<WorkflowState>();
             var activityQuery = await Task.WhenAll(workflowType.Activities.Select(x =>
             {
                 if (!state.ActivityStates.TryGetValue(x.ActivityId, out var activityState))
                 {
-                    activityState = new JObject();
+                    activityState = new JsonObject();
                 }
 
                 return CreateActivityExecutionContextAsync(x, activityState);
@@ -103,7 +104,7 @@ namespace OrchardCore.Workflows.Services
             return new WorkflowExecutionContext(workflowType, workflow, mergedInput, output, properties, executedActivities, lastResult, activityQuery);
         }
 
-        public Task<ActivityContext> CreateActivityExecutionContextAsync(ActivityRecord activityRecord, JObject properties)
+        public Task<ActivityContext> CreateActivityExecutionContextAsync(ActivityRecord activityRecord, JsonObject properties)
         {
             var activity = _activityLibrary.InstantiateActivity<IActivity>(activityRecord.Name, properties);
 
@@ -487,7 +488,7 @@ namespace OrchardCore.Workflows.Services
 
         private async Task PersistAsync(WorkflowExecutionContext workflowContext)
         {
-            var state = workflowContext.Workflow.State.ToObject<WorkflowState>();
+            var state = workflowContext.Workflow.State.Deserialize<WorkflowState>();
 
             state.Input = await SerializeAsync(workflowContext.Input);
             state.Output = await SerializeAsync(workflowContext.Output);
@@ -496,7 +497,7 @@ namespace OrchardCore.Workflows.Services
             state.ExecutedActivities = workflowContext.ExecutedActivities.ToList();
             state.ActivityStates = workflowContext.Activities.ToDictionary(x => x.Key, x => x.Value.Activity.Properties);
 
-            workflowContext.Workflow.State = JObject.FromObject(state);
+            workflowContext.Workflow.State = JsonSerializer.SerializeToNode(state)?.AsObject();
             await _workflowStore.SaveAsync(workflowContext.Workflow);
         }
 

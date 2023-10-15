@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Liquid;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Services;
@@ -114,9 +115,9 @@ namespace OrchardCore.Media.Filters
                 {
                     anchor = null;
 
-                    if (obj is JObject jObject)
+                    if (obj is JsonObject jObject)
                     {
-                        anchor = jObject.ToObject<Anchor>();
+                        anchor = jObject.Deserialize<Anchor>();
                     }
                 }
                 if (anchor != null)

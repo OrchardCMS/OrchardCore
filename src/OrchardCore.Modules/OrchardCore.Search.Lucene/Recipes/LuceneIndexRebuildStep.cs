@@ -20,7 +20,7 @@ namespace OrchardCore.Search.Lucene.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<LuceneIndexRebuildStepModel>();
+            var model = context.GetStep<LuceneIndexRebuildStepModel>();
 
             if (model.IncludeAll || model.Indices.Length > 0)
             {

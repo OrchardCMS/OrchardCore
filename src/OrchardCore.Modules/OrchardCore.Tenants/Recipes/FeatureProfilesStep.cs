@@ -22,18 +22,10 @@ namespace OrchardCore.Tenants.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!string.Equals(context.Name, "FeatureProfiles", StringComparison.OrdinalIgnoreCase))
+            if (context.TryGetStepPropertyIfNameMatches<FeatureProfile>("FeatureProfiles", out var featureProfiles))
             {
-                return;
-            }
-
-            if (context.Step.Property("FeatureProfiles")?.Value is JObject featureProfiles)
-            {
-                foreach (var property in featureProfiles.Properties())
+                foreach (var (name, value) in featureProfiles)
                 {
-                    var name = property.Name;
-                    var value = property.Value.ToObject<FeatureProfile>();
-
                     await _featureProfilesManager.UpdateFeatureProfileAsync(name, value);
                 }
             }

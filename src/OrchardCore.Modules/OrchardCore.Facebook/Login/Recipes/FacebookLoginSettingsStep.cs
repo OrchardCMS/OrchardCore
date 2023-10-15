@@ -26,7 +26,7 @@ namespace OrchardCore.Facebook.Login.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<FacebookLoginSettingsStepModel>();
+            var model = context.GetStep<FacebookLoginSettingsStepModel>();
             var settings = await _loginService.LoadSettingsAsync();
 
             settings.CallbackPath = model.CallbackPath;

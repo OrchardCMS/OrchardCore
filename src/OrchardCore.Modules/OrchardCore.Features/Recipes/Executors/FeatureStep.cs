@@ -26,9 +26,9 @@ namespace OrchardCore.Features.Recipes.Executors
                 return;
             }
 
-            var step = context.Step.ToObject<FeatureStepModel>();
+            var step = context.GetStep<FeatureStepModel>();
 
-            var features = (await _shellFeaturesManager.GetAvailableFeaturesAsync());
+            var features = await _shellFeaturesManager.GetAvailableFeaturesAsync();
 
             var featuresToDisable = features.Where(x => step.Disable?.Contains(x.Id) == true).ToList();
             var featuresToEnable = features.Where(x => step.Enable?.Contains(x.Id) == true).ToList();

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,7 +35,7 @@ namespace OrchardCore.Deployment.Recipes
 
             var deploymentStepFactories = _serviceProvider.GetServices<IDeploymentStepFactory>().ToDictionary(f => f.Name);
 
-            var model = context.Step.ToObject<DeploymentPlansModel>();
+            var model = context.GetStep<DeploymentPlansModel>();
 
             var unknownTypes = new List<string>();
             var deploymentPlans = new List<DeploymentPlan>();
@@ -50,7 +51,7 @@ namespace OrchardCore.Deployment.Recipes
                 {
                     if (deploymentStepFactories.TryGetValue(step.Type, out var deploymentStepFactory))
                     {
-                        var deploymentStep = (DeploymentStep)step.Step.ToObject(deploymentStepFactory.Create().GetType());
+                        var deploymentStep = (DeploymentStep)step.Step.Deserialize(deploymentStepFactory.Create().GetType());
 
                         deploymentPlan.DeploymentSteps.Add(deploymentStep);
                     }

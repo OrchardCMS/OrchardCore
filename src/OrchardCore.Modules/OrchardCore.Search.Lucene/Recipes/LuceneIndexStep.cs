@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.Recipes.Models;
@@ -33,12 +34,13 @@ namespace OrchardCore.Search.Lucene.Recipes
                 return;
             }
 
-            var indices = context.Step["Indices"];
-            if (indices != null)
+            if (context.Step["Indices"] is JsonArray indices)
             {
                 foreach (var index in indices)
                 {
-                    var luceneIndexSettings = index.ToObject<Dictionary<string, LuceneIndexSettings>>().FirstOrDefault();
+                    var luceneIndexSettings = index
+                        .Deserialize<Dictionary<string, LuceneIndexSettings>>()
+                        .FirstOrDefault();
 
                     if (!_luceneIndexManager.Exists(luceneIndexSettings.Key))
                     {

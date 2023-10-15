@@ -25,7 +25,7 @@ namespace OrchardCore.Facebook.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<FacebookCoreSettingsStepModel>();
+            var model = context.GetStep<FacebookCoreSettingsStepModel>();
             var settings = await _facebookService.GetSettingsAsync();
 
             settings.AppId = model.AppId;

@@ -26,7 +26,7 @@ namespace OrchardCore.OpenId.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<OpenIdClientSettingsStepModel>();
+            var model = context.GetStep<OpenIdClientSettingsStepModel>();
             var settings = await _clientService.LoadSettingsAsync();
 
             settings.Scopes = model.Scopes.Split(' ', ',');

@@ -30,7 +30,7 @@ namespace OrchardCore.Themes.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<ThemeStepModel>();
+            var model = context.GetStep<ThemeStepModel>();
 
             if (!string.IsNullOrEmpty(model.Site))
             {

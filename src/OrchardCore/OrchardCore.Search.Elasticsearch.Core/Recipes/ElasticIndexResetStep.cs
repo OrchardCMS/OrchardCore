@@ -22,7 +22,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<ElasticIndexResetDeploymentStep>();
+            var model = context.GetStep<ElasticIndexResetDeploymentStep>();
 
             if (model != null && (model.IncludeAll || model.Indices.Length > 0))
             {

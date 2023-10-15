@@ -1,10 +1,10 @@
-using System;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
@@ -135,7 +135,7 @@ namespace OrchardCore.Taxonomies.Controllers
             else
             {
                 // Look for the target taxonomy item in the hierarchy.
-                var parentTaxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
+                var parentTaxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>(), taxonomyItemId);
 
                 // Couldn't find targeted taxonomy item.
                 if (parentTaxonomyItem == null)
@@ -143,14 +143,13 @@ namespace OrchardCore.Taxonomies.Controllers
                     return NotFound();
                 }
 
-                var taxonomyItems = parentTaxonomyItem?.Terms as JArray;
-
-                if (taxonomyItems == null)
+                if (parentTaxonomyItem.Terms is not JsonArray taxonomyItems)
                 {
-                    parentTaxonomyItem["Terms"] = taxonomyItems = new JArray();
+                    taxonomyItems = new JsonArray();
+                    parentTaxonomyItem["Terms"] = taxonomyItems;
                 }
 
-                taxonomyItems.Add(JObject.FromObject(contentItem));
+                taxonomyItems.Add(JsonSerializer.SerializeToNode(contentItem));
             }
 
             _session.Save(taxonomy);
@@ -178,7 +177,7 @@ namespace OrchardCore.Taxonomies.Controllers
             }
 
             // Look for the target taxonomy item in the hierarchy.
-            JObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
+            var taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>(), taxonomyItemId);
 
             // Couldn't find targeted taxonomy item.
             if (taxonomyItem == null)
@@ -186,7 +185,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 return NotFound();
             }
 
-            var contentItem = taxonomyItem.ToObject<ContentItem>();
+            var contentItem = taxonomyItem.Deserialize<ContentItem>();
             contentItem.Weld<TermPart>();
             contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
@@ -231,7 +230,7 @@ namespace OrchardCore.Taxonomies.Controllers
             }
 
             // Look for the target taxonomy item in the hierarchy.
-            JObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
+            var taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>(), taxonomyItemId);
 
             // Couldn't find targeted taxonomy item.
             if (taxonomyItem == null)
@@ -239,7 +238,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 return NotFound();
             }
 
-            var existing = taxonomyItem.ToObject<ContentItem>();
+            var existing = taxonomyItem.Deserialize<ContentItem>();
 
             // Create a new item to take into account the current type definition.
             var contentItem = await _contentManager.NewAsync(existing.ContentType);
@@ -305,7 +304,7 @@ namespace OrchardCore.Taxonomies.Controllers
             }
 
             // Look for the target taxonomy item in the hierarchy.
-            var taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
+            var taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>(), taxonomyItemId);
 
             // Couldn't find targeted taxonomy item.
             if (taxonomyItem == null)
@@ -321,26 +320,25 @@ namespace OrchardCore.Taxonomies.Controllers
             return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
         }
 
-        private JObject FindTaxonomyItem(JObject contentItem, string taxonomyItemId)
+        private JsonObject FindTaxonomyItem(ContentElement contentItem, string taxonomyItemId) =>
+            FindTaxonomyItem((JsonObject)contentItem.Content, taxonomyItemId);
+
+        private JsonObject FindTaxonomyItem(JsonObject data, string taxonomyItemId)
         {
-            if (contentItem["ContentItemId"]?.Value<string>() == taxonomyItemId)
+            if (data["ContentItemId"]?.GetValue<string>() == taxonomyItemId)
             {
-                return contentItem;
+                return data;
             }
 
-            if (contentItem.GetValue("Terms") == null)
+            if (data["Terms"] is not JsonArray taxonomyItems)
             {
                 return null;
             }
 
-            var taxonomyItems = (JArray)contentItem["Terms"];
-
-            JObject result;
-
-            foreach (var taxonomyItem in taxonomyItems.Cast<JObject>())
+            foreach (var taxonomyItem in taxonomyItems.Cast<JsonObject>())
             {
                 // Search in inner taxonomy items.
-                result = FindTaxonomyItem(taxonomyItem, taxonomyItemId);
+                var result = FindTaxonomyItem(taxonomyItem, taxonomyItemId);
 
                 if (result != null)
                 {

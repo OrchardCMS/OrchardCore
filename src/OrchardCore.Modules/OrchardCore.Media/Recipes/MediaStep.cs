@@ -39,7 +39,7 @@ namespace OrchardCore.Media.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<MediaStepModel>();
+            var model = context.GetStep<MediaStepModel>();
 
             foreach (var file in model.Files)
             {

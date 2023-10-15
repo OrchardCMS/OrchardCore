@@ -2,6 +2,7 @@ using System;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -54,7 +55,7 @@ namespace OrchardCore.OpenId.Services
         {
             if (container.Properties.TryGetValue(nameof(OpenIdValidationSettings), out var settings))
             {
-                return settings.ToObject<OpenIdValidationSettings>();
+                return settings.Deserialize<OpenIdValidationSettings>();
             }
 
             // If the OpenID validation settings haven't been populated yet, assume the validation
@@ -78,7 +79,7 @@ namespace OrchardCore.OpenId.Services
             }
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Properties[nameof(OpenIdValidationSettings)] = JObject.FromObject(settings);
+            container.Properties[nameof(OpenIdValidationSettings)] = JsonSerializer.SerializeToNode(settings);
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 

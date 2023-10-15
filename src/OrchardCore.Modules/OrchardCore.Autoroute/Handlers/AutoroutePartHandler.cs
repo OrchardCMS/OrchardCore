@@ -203,7 +203,7 @@ namespace OrchardCore.Autoroute.Handlers
 
                 foreach (var jItem in jItems.Cast<JObject>())
                 {
-                    var contentItem = jItem.ToObject<ContentItem>();
+                    var contentItem = jItem.Deserialize<ContentItem>();
                     var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
 
                     if (!handlerAspect.Disabled)
@@ -251,7 +251,7 @@ namespace OrchardCore.Autoroute.Handlers
 
                 foreach (var jItem in jItems.Cast<JObject>())
                 {
-                    var contentItem = jItem.ToObject<ContentItem>();
+                    var contentItem = jItem.Deserialize<ContentItem>();
                     var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
 
                     if (!handlerAspect.Disabled)
@@ -283,7 +283,7 @@ namespace OrchardCore.Autoroute.Handlers
 
                 foreach (var jItem in jItems.Cast<JObject>())
                 {
-                    var contentItem = jItem.ToObject<ContentItem>();
+                    var contentItem = jItem.Deserialize<ContentItem>();
                     var containedAutoroutePart = contentItem.As<AutoroutePart>();
 
                     // This is only relevant if the content items have an autoroute part as we adjust the part value as required to guarantee a unique route.

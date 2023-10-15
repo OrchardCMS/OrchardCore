@@ -37,7 +37,7 @@ namespace OrchardCore.Recipes.RecipeSteps
                 return;
             }
 
-            var step = context.Step.ToObject<CommandStepModel>();
+            var step = context.GetStep<CommandStepModel>();
 
             foreach (var command in step.Commands)
             {

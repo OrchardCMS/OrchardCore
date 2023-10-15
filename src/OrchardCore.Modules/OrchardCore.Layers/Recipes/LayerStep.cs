@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
 using OrchardCore.Recipes.Models;
@@ -46,7 +46,7 @@ namespace OrchardCore.Layers.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<LayersStepModel>();
+            var model = context.GetStep<LayersStepModel>();
 
             var allLayers = await _layerService.LoadLayersAsync();
 
@@ -94,7 +94,7 @@ namespace OrchardCore.Layers.Recipes
                         var name = jCondition["Name"].ToString();
                         if (factories.TryGetValue(name, out var factory))
                         {
-                            var factoryCondition = (Condition)jCondition.ToObject(factory.Create().GetType(), _jsonSerializer);
+                            var factoryCondition = (Condition)jCondition.Deserialize(factory.Create().GetType(), _jsonSerializer);
 
                             layer.LayerRule.Conditions.Add(factoryCondition);
                         }

@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -27,7 +28,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps
                 return Task.CompletedTask;
             }
 
-            var step = context.Step.ToObject<ContentDefinitionStepModel>();
+            var step = context.GetStep<ContentDefinitionStepModel>();
 
             foreach (var contentType in step.ContentTypes)
             {

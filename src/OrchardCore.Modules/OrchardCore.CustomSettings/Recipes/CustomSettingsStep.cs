@@ -26,17 +26,11 @@ namespace OrchardCore.CustomSettings.Recipes
                 return;
             }
 
-            var model = context.Step;
-
-            var customSettingsList = (from property in model.Properties()
-                                      where property.Name != "name"
-                                      select property).ToArray();
-
             var siteSettings = await _siteService.LoadSiteSettingsAsync();
 
-            foreach (var customSettings in customSettingsList)
+            foreach (var customSettings in context.Step.Where(property => property.Key != "name"))
             {
-                siteSettings.Properties[customSettings.Name] = customSettings.Value;
+                siteSettings.Properties[customSettings.Key] = customSettings.Value;
             }
 
             await _siteService.UpdateSiteSettingsAsync(siteSettings);

@@ -26,7 +26,7 @@ namespace OrchardCore.ContentTypes
         {
             if (context.Name == "ReplaceContentDefinition" || context.Name == "ContentDefinition")
             {
-                var step = context.Step.ToObject<ContentDefinitionStepModel>();
+                var step = context.GetStep<ContentDefinitionStepModel>();
 
                 foreach (var contentType in step.ContentTypes)
                 {

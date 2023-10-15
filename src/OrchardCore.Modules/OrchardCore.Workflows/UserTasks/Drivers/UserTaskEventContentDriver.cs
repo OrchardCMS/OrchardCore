@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -101,7 +102,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
             var userRoles = user.Claims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value).ToList();
             var actionsQuery =
                 from workflow in workflows
-                let workflowState = workflow.State.ToObject<WorkflowState>()
+                let workflowState = workflow.State.Deserialize<WorkflowState>()
                 from blockingActivity in workflow.BlockingActivities
                 where blockingActivity.Name == nameof(UserTaskEvent)
                 from action in GetUserTaskActions(workflowState, blockingActivity.ActivityId, userRoles)

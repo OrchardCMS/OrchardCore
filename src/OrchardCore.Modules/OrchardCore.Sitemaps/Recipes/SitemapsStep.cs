@@ -1,8 +1,8 @@
 using System;
+using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Sitemaps.Models;
@@ -15,7 +15,7 @@ namespace OrchardCore.Sitemaps.Recipes
     /// </summary>
     public class SitemapsStep : IRecipeStepHandler
     {
-        private static readonly JsonSerializer _serializer = new()
+        private static readonly JsonSerializerOptions _options = new()
         {
             TypeNameHandling = TypeNameHandling.Auto
         };
@@ -34,11 +34,11 @@ namespace OrchardCore.Sitemaps.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<SitemapStepModel>();
+            var model = context.GetStep<SitemapStepModel>();
 
-            foreach (var token in model.Data.Cast<JObject>())
+            foreach (var token in model.Data.Cast<JsonObject>())
             {
-                var sitemap = token.ToObject<SitemapType>(_serializer);
+                var sitemap = token.Deserialize<SitemapType>(_options);
                 await _sitemapManager.UpdateSitemapAsync(sitemap);
             }
         }

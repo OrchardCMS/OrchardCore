@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,8 +22,8 @@ namespace OrchardCore.Contents.Recipes
                 return Task.CompletedTask;
             }
 
-            var model = context.Step.ToObject<ContentStepModel>();
-            var contentItems = model.Data.ToObject<ContentItem[]>();
+            var model = context.GetStep<ContentStepModel>();
+            var contentItems = model.Data.Deserialize<ContentItem[]>();
 
             // If the shell is activated there is no migration in progress.
             if (ShellScope.Context.IsActivated)

@@ -26,7 +26,7 @@ namespace OrchardCore.OpenId.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<OpenIdApplicationStepModel>();
+            var model = context.GetStep<OpenIdApplicationStepModel>();
             var app = await _applicationManager.FindByClientIdAsync(model.ClientId);
 
             var settings = new OpenIdApplicationSettings()

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Workflows.Activities;
@@ -42,7 +43,7 @@ namespace OrchardCore.Workflows.Services
             return (T)library.InstantiateActivity(name);
         }
 
-        public static T InstantiateActivity<T>(this IActivityLibrary library, string name, JObject properties) where T : IActivity
+        public static T InstantiateActivity<T>(this IActivityLibrary library, string name, JsonObject properties) where T : IActivity
         {
             var activity = InstantiateActivity<T>(library, name);
 

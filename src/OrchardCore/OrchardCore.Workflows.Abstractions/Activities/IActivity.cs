@@ -1,8 +1,8 @@
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
@@ -14,7 +14,7 @@ namespace OrchardCore.Workflows.Activities
         string Name { get; }
         LocalizedString DisplayText { get; }
         LocalizedString Category { get; }
-        new JObject Properties { get; set; }
+        new JsonObject Properties { get; set; }
         bool HasEditor { get; }
 
         /// <summary>

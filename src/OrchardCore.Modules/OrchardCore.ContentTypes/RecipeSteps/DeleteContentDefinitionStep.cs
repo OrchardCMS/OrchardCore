@@ -25,7 +25,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps
                 return Task.CompletedTask;
             }
 
-            var step = context.Step.ToObject<DeleteContentDefinitionStepModel>();
+            var step = context.GetStep<DeleteContentDefinitionStepModel>();
 
             foreach (var contentType in step.ContentTypes)
             {

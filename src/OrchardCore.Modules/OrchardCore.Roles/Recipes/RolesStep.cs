@@ -28,7 +28,7 @@ namespace OrchardCore.Roles.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<RolesStepModel>();
+            var model = context.GetStep<RolesStepModel>();
 
             foreach (var importedRole in model.Roles)
             {

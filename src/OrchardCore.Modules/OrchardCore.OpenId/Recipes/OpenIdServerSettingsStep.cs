@@ -25,7 +25,7 @@ namespace OrchardCore.OpenId.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<OpenIdServerSettingsStepModel>();
+            var model = context.GetStep<OpenIdServerSettingsStepModel>();
             var settings = await _serverService.LoadSettingsAsync();
 
             settings.AccessTokenFormat = model.AccessTokenFormat;

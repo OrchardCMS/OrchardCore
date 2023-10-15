@@ -1,7 +1,8 @@
 using System;
+using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Workflows.Models;
@@ -25,11 +26,11 @@ namespace OrchardCore.Workflows.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<WorkflowStepModel>();
+            var model = context.GetStep<WorkflowStepModel>();
 
-            foreach (var token in model.Data.Cast<JObject>())
+            foreach (var token in model.Data.Cast<JsonObject>())
             {
-                var workflow = token.ToObject<WorkflowType>();
+                var workflow = token.Deserialize<WorkflowType>();
 
                 var existing = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
 

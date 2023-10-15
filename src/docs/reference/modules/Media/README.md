@@ -452,7 +452,7 @@ The `Anchors[]` is a less well known property of a `MediaField` and can be acces
 
     ``` html
     var anchors = @Model.Field.GetAnchors();
-    var anchors = (Anchor[])Model.ContentItem.Content.Blog.Image.Anchors.ToObject<Anchor[]>();
+    var anchors = (Anchor[])Model.ContentItem.Content.Blog.Image.Anchors.Deserialize<Anchor[]>();
     ```
 
 The `Anchors[]` is kept in sync with the `Paths[]` array and the index for a given path represents the index of a `Anchor` value.

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -91,12 +92,11 @@ namespace OrchardCore.Users.Drivers
 
         private async Task<ContentItem> GetUserSettingsAsync(User user, ContentTypeDefinition settingsType, Action isNew = null)
         {
-            JToken property;
             ContentItem contentItem;
 
-            if (user.Properties.TryGetValue(settingsType.Name, out property))
+            if (user.Properties.TryGetPropertyValue(settingsType.Name, out var property))
             {
-                var existing = property.ToObject<ContentItem>();
+                var existing = property.Deserialize<ContentItem>();
 
                 // Create a new item to take into account the current type definition.
                 contentItem = await _contentManager.NewAsync(existing.ContentType);

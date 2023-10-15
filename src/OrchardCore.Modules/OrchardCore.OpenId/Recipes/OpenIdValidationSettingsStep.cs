@@ -24,7 +24,7 @@ namespace OrchardCore.OpenId.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<OpenIdValidationSettingsStepModel>();
+            var model = context.GetStep<OpenIdValidationSettingsStepModel>();
             var settings = await _validationService.LoadSettingsAsync();
 
             settings.Tenant = model.Tenant;
