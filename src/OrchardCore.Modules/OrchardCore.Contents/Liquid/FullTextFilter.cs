@@ -1,10 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Models;
 using OrchardCore.Liquid;
@@ -29,7 +29,7 @@ namespace OrchardCore.Contents.Liquid
                 var contentItems = new List<ContentItem>();
                 foreach (var objValue in input.Enumerate(ctx))
                 {
-                    var contentItem = GetContentItem(objValue);
+                    var contentItem = ContentItem.Parse(objValue);
                     if (contentItem != null)
                     {
                         if (!_fullTextRecursionHelper.IsRecursive(contentItem))
@@ -56,7 +56,7 @@ namespace OrchardCore.Contents.Liquid
             }
             else
             {
-                var contentItem = GetContentItem(input);
+                var contentItem = ContentItem.Parse(input.ToObjectValue());
 
                 if (contentItem == null || _fullTextRecursionHelper.IsRecursive(contentItem))
                 {
@@ -68,29 +68,6 @@ namespace OrchardCore.Contents.Liquid
                 // Remove empty strings as display text is often unused in contained content items.
                 return new ArrayValue(fullTextAspect.Segments.Where(x => !string.IsNullOrEmpty(x)).Select(x => new StringValue(x)));
             }
-        }
-
-        private static ContentItem GetContentItem(FluidValue input)
-        {
-            var obj = input.ToObjectValue();
-
-            if (obj is not ContentItem contentItem)
-            {
-                contentItem = null;
-
-                if (obj is JObject jObject)
-                {
-                    contentItem = jObject.ToObject<ContentItem>();
-                    // If input is a 'JObject' but which not represents a 'ContentItem',
-                    // a 'ContentItem' is still created but with some null properties.
-                    if (contentItem?.ContentItemId == null)
-                    {
-                        return null;
-                    }
-                }
-            }
-
-            return contentItem;
         }
     }
 }

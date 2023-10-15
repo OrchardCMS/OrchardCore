@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore;
 using OrchardCore.ContentManagement;
 using OrchardCore.Queries;
@@ -23,15 +22,7 @@ public static class ContentQueryOrchardRazorHelperExtensions
         {
             foreach (var result in results)
             {
-                if (result is not ContentItem contentItem)
-                {
-                    contentItem = null;
-
-                    if (result is JObject jObject)
-                    {
-                        contentItem = jObject.ToObject<ContentItem>();
-                    }
-                }
+                var contentItem = ContentItem.Parse(result);
 
                 // If input is a 'JObject' but which not represents a 'ContentItem',
                 // a 'ContentItem' is still created but with some null properties.
@@ -56,15 +47,7 @@ public static class ContentQueryOrchardRazorHelperExtensions
         {
             foreach (var item in queryResult.Items)
             {
-                if (item is not ContentItem contentItem)
-                {
-                    contentItem = null;
-
-                    if (item is JObject jObject)
-                    {
-                        contentItem = jObject.ToObject<ContentItem>();
-                    }
-                }
+                var contentItem = ContentItem.Parse(item);
 
                 // If input is a 'JObject' but which not represents a 'ContentItem',
                 // a 'ContentItem' is still created but with some null properties.

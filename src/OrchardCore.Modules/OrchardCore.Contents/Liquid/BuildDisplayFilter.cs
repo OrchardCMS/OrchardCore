@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement;
@@ -35,17 +34,7 @@ namespace OrchardCore.Contents.Liquid
                 return FluidValue.Create(await task, options);
             }
 
-            var obj = input.ToObjectValue();
-
-            if (obj is not ContentItem contentItem)
-            {
-                contentItem = null;
-
-                if (obj is JObject jObject)
-                {
-                    contentItem = jObject.ToObject<ContentItem>();
-                }
-            }
+            var contentItem = ContentItem.Parse(input.ToObjectValue());
 
             // If input is a 'JObject' but which not represents a 'ContentItem',
             // a 'ContentItem' is still created but with some null properties.

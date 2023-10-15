@@ -1,5 +1,7 @@
 using System;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace OrchardCore.ContentManagement
 {
@@ -77,6 +79,31 @@ namespace OrchardCore.ContentManagement
         public override string ToString()
         {
             return string.IsNullOrWhiteSpace(DisplayText) ? $"{ContentType} ({ContentItemId})" : DisplayText;
+        }
+
+        /// <summary>
+        /// Checks if the provided argument is already a content item, otherwise tries to parse it as JSON.
+        /// </summary>
+        public static ContentItem Parse(object item)
+        {
+            ContentItem result;
+            switch (item)
+            {
+                case ContentItem contentItem:
+                    return contentItem;
+                case JsonObject jsonObject:
+                    result = jsonObject.Deserialize<ContentItem>();
+                    break;
+                case string json when json.TrimStart().StartsWith('{'):
+                    result = JsonSerializer.Deserialize<ContentItem>(json);
+                    break;
+                default:
+                    return null;
+            }
+
+            // If input is JSON which doesn't represent a ContentItem, then the ContentItem is still created but with
+            // some null properties.
+            return result?.ContentItem == null ? null : result;
         }
     }
 }
