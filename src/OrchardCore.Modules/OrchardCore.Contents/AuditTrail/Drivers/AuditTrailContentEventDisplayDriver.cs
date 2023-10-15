@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.AuditTrail.Drivers;
@@ -67,8 +68,8 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
 
                     if (previousContentItem != null)
                     {
-                        var current = JObject.FromObject(contentEvent.ContentItem);
-                        var previous = JObject.FromObject(previousContentItem);
+                        var current = JsonSerializer.SerializeToNode(contentEvent.ContentItem);
+                        var previous = JsonSerializer.SerializeToNode(previousContentItem);
                         previous.Remove(nameof(AuditTrailPart));
                         current.Remove(nameof(AuditTrailPart));
 
@@ -94,8 +95,8 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
 
                     if (previousContentItem != null)
                     {
-                        var current = JObject.FromObject(contentEvent.ContentItem);
-                        var previous = JObject.FromObject(previousContentItem);
+                        var current = JsonSerializer.SerializeToNode(contentEvent.ContentItem);
+                        var previous = JsonSerializer.SerializeToNode(previousContentItem);
                         previous.Remove(nameof(AuditTrailPart));
                         current.Remove(nameof(AuditTrailPart));
 

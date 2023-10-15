@@ -1,5 +1,5 @@
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.CustomSettings.Services;
 using OrchardCore.CustomSettings.ViewModels;
@@ -68,7 +68,7 @@ namespace OrchardCore.CustomSettings.Drivers
 
             await _contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, isNew);
 
-            site.Properties[contentTypeDefinition.Name] = JObject.FromObject(contentItem);
+            site.Properties[contentTypeDefinition.Name] = JsonSerializer.SerializeToNode(contentItem);
 
             return await EditAsync(site, context);
         }

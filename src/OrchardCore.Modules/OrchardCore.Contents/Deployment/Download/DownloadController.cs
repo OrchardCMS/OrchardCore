@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -50,7 +51,7 @@ namespace OrchardCore.Contents.Deployment.Download
             var model = new DisplayJsonContentItemViewModel
             {
                 ContentItem = contentItem,
-                ContentItemJson = JObject.FromObject(contentItem).ToString()
+                ContentItemJson = JsonSerializer.Serialize(contentItem)
             };
 
             return View(model);
@@ -78,9 +79,8 @@ namespace OrchardCore.Contents.Deployment.Download
                 return Forbid();
             }
 
-            var jItem = JObject.FromObject(contentItem);
-
-            return File(Encoding.UTF8.GetBytes(jItem.ToString()), "application/json", $"{contentItem.ContentItemId}.json");
+            var json = JsonSerializer.Serialize(contentItem);
+            return File(Encoding.UTF8.GetBytes(json), "application/json", $"{contentItem.ContentItemId}.json");
         }
     }
 }

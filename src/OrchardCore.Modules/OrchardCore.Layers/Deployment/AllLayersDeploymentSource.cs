@@ -1,7 +1,7 @@
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Entities;
 using OrchardCore.Layers.Models;
@@ -37,18 +37,20 @@ namespace OrchardCore.Layers.Deployment
 
             var layers = await _layerService.GetLayersAsync();
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "Layers"),
-                new JProperty("Layers", layers.Layers.Select(layer => JObject.FromObject(layer, _jsonSerializer)))
-            ));
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "Layers",
+                ["Layers"] = new JsonArray(layers.Layers.Select(layer => JsonSerializer.SerializeToNode(layer, _jsonSerializer)))
+            });
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
 
             // Adding Layer settings
-            result.Steps.Add(new JObject(
-                new JProperty("name", "Settings"),
-                new JProperty("LayerSettings", JObject.FromObject(siteSettings.As<LayerSettings>()))
-            ));
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "Settings",
+                ["LayerSettings"] = JsonSerializer.SerializeToNode(siteSettings.As<LayerSettings>())
+            });
         }
     }
 }

@@ -1,4 +1,6 @@
 using System;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Records;
@@ -73,7 +75,7 @@ namespace OrchardCore.ContentTypes
                     }
                 }
 
-                context.Step = JObject.FromObject(step);
+                context.Step = JsonSerializer.SerializeToNode(step)?.AsObject();
             }
 
             return Task.CompletedTask;

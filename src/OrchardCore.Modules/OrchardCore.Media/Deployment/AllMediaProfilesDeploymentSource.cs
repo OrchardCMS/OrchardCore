@@ -1,5 +1,5 @@
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Media.Services;
 
@@ -27,7 +27,7 @@ namespace OrchardCore.Media.Deployment
 
             result.Steps.Add(new JObject(
                 new JProperty("name", "MediaProfiles"),
-                new JProperty("MediaProfiles", JObject.FromObject(mediaProfiles.MediaProfiles))
+                new JProperty("MediaProfiles", JsonSerializer.SerializeToNode(mediaProfiles.MediaProfiles))
             ));
         }
     }

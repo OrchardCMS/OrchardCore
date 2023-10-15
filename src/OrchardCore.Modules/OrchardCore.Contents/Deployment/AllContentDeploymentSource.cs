@@ -1,5 +1,6 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Deployment;
@@ -25,15 +26,16 @@ namespace OrchardCore.Contents.Deployment
                 return;
             }
 
-            var data = new JArray();
-            result.Steps.Add(new JObject(
-                new JProperty("name", "Content"),
-                new JProperty("data", data)
-            ));
+            var data = new JsonArray();
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "Content",
+                ["data"] = data,
+            });
 
             foreach (var contentItem in await _session.Query<ContentItem, ContentItemIndex>(x => x.Published).ListAsync())
             {
-                var objectData = JObject.FromObject(contentItem);
+                var objectData = JsonSerializer.SerializeToNode(contentItem)!.AsObject();
 
                 // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql
                 objectData.Remove(nameof(ContentItem.Id));
@@ -50,8 +52,6 @@ namespace OrchardCore.Contents.Deployment
                 }
                 data.Add(objectData);
             }
-
-            return;
         }
     }
 }

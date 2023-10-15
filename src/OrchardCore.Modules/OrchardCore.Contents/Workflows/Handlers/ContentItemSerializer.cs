@@ -1,5 +1,6 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Workflows.Models;
 
@@ -16,13 +17,13 @@ namespace OrchardCore.Workflows.Services
 
         public async Task DeserializeValueAsync(SerializeWorkflowValueContext context)
         {
-            if (context.Input is JObject jObject)
+            if (context.Input is JsonObject jObject)
             {
-                var type = jObject.Value<string>("Type");
+                var type = jObject["Type"]?.GetValue<string>();
 
                 if (type == "Content")
                 {
-                    var contentId = jObject.Value<string>("ContentId");
+                    var contentId = jObject["ContentId"]?.GetValue<string>();
                     context.Output = contentId != null ? await _contentManager.GetAsync(contentId, VersionOptions.Latest) : default(IContent);
                 }
             }
@@ -32,7 +33,7 @@ namespace OrchardCore.Workflows.Services
         {
             if (context.Input is IContent content)
             {
-                context.Output = JObject.FromObject(new
+                context.Output = JsonSerializer.SerializeToNode(new
                 {
                     Type = "Content",
                     ContentId = content.ContentItem.ContentItemId
