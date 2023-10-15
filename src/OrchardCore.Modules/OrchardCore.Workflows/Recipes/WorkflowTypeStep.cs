@@ -1,5 +1,5 @@
 using System;
-using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Recipes.Models;
@@ -49,6 +49,6 @@ namespace OrchardCore.Workflows.Recipes
 
     public class WorkflowStepModel
     {
-        public JArray Data { get; set; }
+        public JsonArray Data { get; set; }
     }
 }

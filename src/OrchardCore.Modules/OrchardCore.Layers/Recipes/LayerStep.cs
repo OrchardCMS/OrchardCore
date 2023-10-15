@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
 using OrchardCore.Recipes.Models;
@@ -149,6 +149,6 @@ namespace OrchardCore.Layers.Recipes
     {
         public string Name { get; set; }
         public string ConditionId { get; set; }
-        public JArray Conditions { get; set; }
+        public JsonArray Conditions { get; set; }
     }
 }

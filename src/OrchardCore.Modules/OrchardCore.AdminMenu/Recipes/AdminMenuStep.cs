@@ -1,5 +1,5 @@
 using System;
-using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -51,6 +51,6 @@ namespace OrchardCore.AdminMenu.Recipes
 
     public class AdminMenuStepModel
     {
-        public JArray Data { get; set; }
+        public JsonArray Data { get; set; }
     }
 }
