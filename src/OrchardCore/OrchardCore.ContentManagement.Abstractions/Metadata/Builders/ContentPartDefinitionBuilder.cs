@@ -1,20 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Utilities;
 
 namespace OrchardCore.ContentManagement.Metadata.Builders
 {
-    public class ContentPartDefinitionBuilder
+    public class ContentPartDefinitionBuilder : BuilderBase
     {
         private readonly ContentPartDefinition _part;
         private readonly IList<ContentPartFieldDefinition> _fields;
-        private readonly JsonObject _settings;
 
         public ContentPartDefinition Current { get; private set; }
 
@@ -23,20 +20,18 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         {
         }
 
-        public ContentPartDefinitionBuilder(ContentPartDefinition existing)
+        public ContentPartDefinitionBuilder(ContentPartDefinition existing) : base(existing?.Settings)
         {
             _part = existing;
 
             if (existing == null)
             {
                 _fields = new List<ContentPartFieldDefinition>();
-                _settings = new JsonObject();
             }
             else
             {
                 Name = existing.Name;
                 _fields = existing.Fields.ToList();
-                _settings = new JsonObject(existing.Settings);
             }
         }
 
@@ -79,42 +74,25 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
         public ContentPartDefinitionBuilder WithSetting(string name, string value)
         {
-            _settings[name] = value;
+            WithSettingImpl(name, value);
             return this;
         }
 
         public ContentPartDefinitionBuilder MergeSettings(JsonObject settings)
         {
-            _settings.Merge(settings, ContentBuilderSettings.JsonMergeSettings);
+            MergeSettingsImpl(settings);
             return this;
         }
 
         public ContentPartDefinitionBuilder MergeSettings<T>(Action<T> setting) where T : class, new()
         {
-            var existingJObject = _settings[typeof(T).Name];
-            // If existing settings do not exist, create.
-            if (existingJObject == null)
-            {
-                existingJObject = JsonSerializer.SerializeToNode(new T(), ContentBuilderSettings.IgnoreDefaultValuesSerializer);
-                _settings[typeof(T).Name] = existingJObject;
-            }
-
-            var settingsToMerge = existingJObject.Deserialize<T>();
-            setting(settingsToMerge);
-            _settings[typeof(T).Name] = JObject.FromObject(settingsToMerge, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+            MergeSettingsImpl(setting);
             return this;
         }
 
         public ContentPartDefinitionBuilder WithSettings<T>(T settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
-
-            var jObject = JObject.FromObject(settings, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
-            _settings[typeof(T).Name] = jObject;
-
+            WithSettingsImpl(settings);
             return this;
         }
 
@@ -136,7 +114,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
             else
             {
-                existingField = new ContentPartFieldDefinition(null, fieldName, new JObject());
+                existingField = new ContentPartFieldDefinition(null, fieldName, new JsonObject());
             }
             var configurer = new FieldConfigurerImpl(existingField, _part);
             configuration(configurer);
@@ -158,7 +136,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
             else
             {
-                existingField = new ContentPartFieldDefinition(null, fieldName, new JObject());
+                existingField = new ContentPartFieldDefinition(null, fieldName, new JsonObject());
             }
 
             var configurer = new FieldConfigurerImpl(existingField, _part);

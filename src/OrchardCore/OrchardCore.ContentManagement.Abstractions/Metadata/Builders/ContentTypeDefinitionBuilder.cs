@@ -1,19 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Utilities;
 
 namespace OrchardCore.ContentManagement.Metadata.Builders
 {
-    public class ContentTypeDefinitionBuilder
+    public class ContentTypeDefinitionBuilder : BuilderBase
     {
         private string _name;
         private string _displayName;
         private readonly IList<ContentTypePartDefinition> _parts;
-        private readonly JObject _settings;
 
         public ContentTypeDefinition Current { get; private set; }
 
@@ -22,21 +21,19 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         {
         }
 
-        public ContentTypeDefinitionBuilder(ContentTypeDefinition existing)
+        public ContentTypeDefinitionBuilder(ContentTypeDefinition existing) : base(existing?.Settings)
         {
             Current = existing;
 
             if (existing == null)
             {
                 _parts = new List<ContentTypePartDefinition>();
-                _settings = new JObject();
             }
             else
             {
                 _name = existing.Name;
                 _displayName = existing.DisplayName;
                 _parts = existing.Parts.ToList();
-                _settings = new JObject(existing.Settings);
             }
         }
 
@@ -73,42 +70,25 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
         public ContentTypeDefinitionBuilder WithSetting(string name, object value)
         {
-            _settings[name] = JToken.FromObject(value);
+            WithSettingImpl(name, value);
             return this;
         }
 
-        public ContentTypeDefinitionBuilder MergeSettings(JObject settings)
+        public ContentTypeDefinitionBuilder MergeSettings(JsonObject settings)
         {
-            _settings.Merge(settings, ContentBuilderSettings.JsonMergeSettings);
+            MergeSettingsImpl(settings);
             return this;
         }
 
         public ContentTypeDefinitionBuilder MergeSettings<T>(Action<T> setting) where T : class, new()
         {
-            var existingJObject = _settings[typeof(T).Name] as JObject;
-            // If existing settings do not exist, create.
-            if (existingJObject == null)
-            {
-                existingJObject = JObject.FromObject(new T(), ContentBuilderSettings.IgnoreDefaultValuesSerializer);
-                _settings[typeof(T).Name] = existingJObject;
-            }
-
-            var settingsToMerge = existingJObject.ToObject<T>();
-            setting(settingsToMerge);
-            _settings[typeof(T).Name] = JObject.FromObject(settingsToMerge, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+            MergeSettingsImpl(setting);
             return this;
         }
 
         public ContentTypeDefinitionBuilder WithSettings<T>(T settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
-
-            var jObject = JObject.FromObject(settings, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
-            _settings[typeof(T).Name] = jObject;
-
+            WithSettingsImpl(settings);
             return this;
         }
 
@@ -151,7 +131,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
             else
             {
-                existingPart = new ContentTypePartDefinition(name, partDefinition, new JObject())
+                existingPart = new ContentTypePartDefinition(name, partDefinition, new JsonObject())
                 {
                     ContentTypeDefinition = Current,
                 };
@@ -183,7 +163,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
             else
             {
-                existingPart = new ContentTypePartDefinition(name, partDefinition, new JObject())
+                existingPart = new ContentTypePartDefinition(name, partDefinition, new JsonObject())
                 {
                     ContentTypeDefinition = Current,
                 };
