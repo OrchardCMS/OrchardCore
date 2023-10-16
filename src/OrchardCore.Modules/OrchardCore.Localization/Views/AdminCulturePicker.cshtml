@@ -1,42 +1,38 @@
 @using OrchardCore.Localization
 @using OrchardCore.Environment.Shell
 
-@model AdminCulturePickerViewModel
-
 @inject ShellSettings ShellSettings
 
-@{
-    var cookieName = AdminCookieCultureProvider.MakeCookieName(ShellSettings);
-    var cookiePath = AdminCookieCultureProvider.MakeCookiePath(Context);
-    var selectedCultureName = Model.CurrentCulture.Name;
-}
-
 <li class="nav-item">
-    <select id="oc-admin-culture-picker" class="form-select me-3"
-            data-cookie-name="@cookieName"
-            data-cookie-path="@cookiePath"
-            data-selected-culture="@selectedCultureName">
-
-        @foreach (var culture in Model.SupportedCultures)
-        {
-            <option selected="@(culture.Name == selectedCultureName ? "selected" : null)" value="@culture.Name">@culture.NativeName</option>
-        }
-    </select>
+    <div class="dropdown">
+        <button type="button" class="nav-link dropdown-toggle" id="oc-culture-picker" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-language-current-value="@Model.CurrentCulture.Name" data-cookie-name="@AdminCookieCultureProvider.MakeCookieName(ShellSettings)" data-cookie-path="@AdminCookieCultureProvider.MakeCookiePath(Context)">@Model.CurrentCulture.NativeName</button>
+        <ul class="dropdown-menu dropdown-menu-end position-absolute" aria-labelledby="oc-culture-picker">
+            @foreach (var culture in Model.SupportedCultures)
+            {
+                if (culture.Name != Model.CurrentCulture.Name)
+                {
+                    <li>
+                        <div class="language-menu-item dropdown-item" data-language-value="@culture.Name">@culture.NativeName</div>
+                    </li>
+                }
+            }
+        </ul>
+    </div>
 </li>
 
-<script at="Foot" depends-on="jquery">
-    $(function () {
-        $('#oc-admin-culture-picker').change(function () {
-            var $this = $(this);
-            var culture = $this.val();
-            var selectedCulture = $this.data('selected-culture');
-            if (culture != selectedCulture) {
-                var cookieName = $this.data('cookie-name');
-                var cookiePath = $this.data('cookie-path');
-                var cookieValue = `${cookieName}=c=${culture}|uic=${culture};path=${cookiePath}`;
-                document.cookie = cookieValue;
+<script at="Foot" asp-name="AdminCultureSelector" depends-on="js-cookie">
+    document.addEventListener('DOMContentLoaded', function (e) {
+        const picker = document.getElementById('oc-culture-picker');
+        const cookieName = picker.getAttribute('data-cookie-name');
+        const cookiePath = picker.getAttribute('data-cookie-path');
+        const items = document.getElementsByClassName('language-menu-item');
+        for (let i = 0; i < items.length; i++) {
+            let item = items[i];
+            let culture = item.getAttribute('data-language-value');
+            item.addEventListener('click', function () {
+                Cookies.set(cookieName, `c=${culture}|uic=${culture}`, { path: cookiePath });
                 window.location = window.location.href;
-            }
-        });
+            });
+        }
     });
 </script>
