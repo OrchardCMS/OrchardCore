@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
@@ -95,10 +93,8 @@ namespace OrchardCore.Users.Drivers
         {
             ContentItem contentItem;
 
-            if (user.Properties.TryGetPropertyValue(settingsType.Name, out var property))
+            if (user.TryAs<ContentItem>(settingsType.Name, out var existing))
             {
-                var existing = property.Deserialize<ContentItem>();
-
                 // Create a new item to take into account the current type definition.
                 contentItem = await _contentManager.NewAsync(existing.ContentType);
                 contentItem.Merge(existing);

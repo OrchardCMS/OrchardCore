@@ -30,6 +30,26 @@ namespace OrchardCore.Entities
                 : new T();
 
         /// <summary>
+        /// Tries to extract the specified named property.
+        /// </summary>
+        /// <typeparam name="T">The type of the property to extract.</typeparam>
+        /// <param name="entity">The <see cref="IEntity"/>.</param>
+        /// <param name="name">The name of the property to extract.</param>
+        /// <param name="result">The deserialized instance if the property was found.</param>
+        /// <returns>A value indicating whether the property was found.</returns>
+        public static bool TryAs<T>(this IEntity entity, string name, out T result) where T : new()
+        {
+            if (entity.Properties.TryGetPropertyValue(name, out var value) && value != null)
+            {
+                result = value.Deserialize<T>();
+                return true;
+            }
+
+            result = default;
+            return false;
+        }
+
+        /// <summary>
         /// Indicates if the specified type of property is attached to the <see cref="IEntity"/> instance.
         /// </summary>
         /// <typeparam name="T">The type of the property to check.</typeparam>

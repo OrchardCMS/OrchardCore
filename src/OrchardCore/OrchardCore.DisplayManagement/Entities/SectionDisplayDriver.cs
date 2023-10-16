@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -122,9 +121,7 @@ namespace OrchardCore.DisplayManagement.Entities
 
         private TSection GetSection(TModel model)
         {
-            return model.Properties.TryGetValue(PropertyName, out var property)
-                ? property.ToObject<TSection>()
-                : new TSection();
+            return model.As<TSection>(PropertyName);
         }
     }
 }

@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.Entities;
 using OrchardCore.Settings;
 
 namespace OrchardCore.CustomSettings.Services
@@ -100,10 +100,8 @@ namespace OrchardCore.CustomSettings.Services
         {
             ContentItem contentItem;
 
-            if (site.Properties.TryGetPropertyValue(settingsType.Name, out var property))
+            if (site.TryAs<ContentItem>(settingsType.Name, out var existing))
             {
-                var existing = property.Deserialize<ContentItem>();
-
                 // Create a new item to take into account the current type definition.
                 contentItem = await _contentManager.NewAsync(existing.ContentType);
                 contentItem.Merge(existing);

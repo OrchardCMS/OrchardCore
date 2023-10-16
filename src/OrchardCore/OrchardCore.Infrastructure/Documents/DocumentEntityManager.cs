@@ -16,13 +16,7 @@ namespace OrchardCore.Documents
         public async Task<T> GetAsync<T>(string key) where T : new()
         {
             var document = await _documentManager.GetOrCreateImmutableAsync();
-
-            if (document.Properties.TryGetPropertyValue(key, out var value))
-            {
-                return value.ToObject<T>();
-            }
-
-            return new T();
+            return document.As<T>(key);
         }
 
         public async Task SetAsync<T>(string key, T value) where T : new()
