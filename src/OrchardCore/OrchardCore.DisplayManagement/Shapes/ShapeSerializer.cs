@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.DisplayManagement.Shapes
 {
@@ -50,29 +50,29 @@ namespace OrchardCore.DisplayManagement.Shapes
 
             jObject.Add("Shape", displayText);
 
-            var metadata = JsonObject.FromObject(_shape.Metadata, _shapeJsonSerializer);
+            var metadata = JsonSerializer.SerializeToNode(_shape.Metadata, _shapeJsonSerializer)?.AsObject();
 
             jObject.Add(nameof(ShapeMetadata), metadata);
 
             if (_shape.Classes != null && _shape.Classes.Any())
             {
-                jObject.Add(nameof(_shape.Classes), JsonArray.FromObject(_shape.Classes, _shapeJsonSerializer));
+                jObject.Add(nameof(_shape.Classes), JsonSerializer.SerializeToNode(_shape.Classes, _shapeJsonSerializer));
             }
 
             if (_shape.Attributes != null && _shape.Attributes.Any())
             {
-                jObject.Add(nameof(_shape.Attributes), JsonObject.FromObject(_shape.Attributes, _shapeJsonSerializer));
+                jObject.Add(nameof(_shape.Attributes), JsonSerializer.SerializeToNode(_shape.Attributes, _shapeJsonSerializer));
             }
 
             if (_shape.Properties != null && _shape.Properties.Any())
             {
-                jObject.Add(nameof(_shape.Properties), JsonObject.FromObject(_shape.Properties, _shapeJsonSerializer));
+                jObject.Add(nameof(_shape.Properties), JsonSerializer.SerializeToNode(_shape.Properties, _shapeJsonSerializer));
                 FindShapesInProperties(_shape);
             }
 
             if (_shape is Shape actualShape && actualShape.HasItems && _shapes.Add(actualShape))
             {
-                var jItems = new JArray();
+                var jItems = new JsonArray();
                 // Because items can be mutated during shape execution.
                 var shapeItems = actualShape.Items.ToArray();
                 foreach (var item in shapeItems)
