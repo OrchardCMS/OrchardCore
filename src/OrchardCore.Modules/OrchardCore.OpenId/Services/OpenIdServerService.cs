@@ -15,6 +15,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Settings;
@@ -92,7 +93,7 @@ namespace OrchardCore.OpenId.Services
             }
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Properties[nameof(OpenIdServerSettings)] = JsonSerializer.SerializeToNode(settings);
+            container.Put(nameof(OpenIdServerSettings), settings);
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Dapper;
 using Fluid;
@@ -87,7 +88,7 @@ namespace OrchardCore.Queries.Sql
 
                 foreach (var document in queryResults)
                 {
-                    results.Add(JObject.FromObject(document));
+                    results.Add(JsonSerializer.SerializeToNode(document));
                 }
 
                 sqlQueryResults.Items = results;

@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Data.Documents;
+using OrchardCore.Entities;
 
 namespace OrchardCore.Documents
 {
@@ -17,7 +17,7 @@ namespace OrchardCore.Documents
         {
             var document = await _documentManager.GetOrCreateImmutableAsync();
 
-            if (document.Properties.TryGetValue(key, out var value))
+            if (document.Properties.TryGetPropertyValue(key, out var value))
             {
                 return value.ToObject<T>();
             }
@@ -28,7 +28,7 @@ namespace OrchardCore.Documents
         public async Task SetAsync<T>(string key, T value) where T : new()
         {
             var document = await _documentManager.GetOrCreateMutableAsync();
-            document.Properties[key] = JObject.FromObject(value);
+            document.Put(key, value);
             await _documentManager.UpdateAsync(document);
         }
 

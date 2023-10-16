@@ -54,7 +54,7 @@ namespace OrchardCore.DisplayManagement.Entities
 
             if (context.Updater.ModelState.IsValid)
             {
-                model.Properties[PropertyName] = JObject.FromObject(section);
+                model.Put(PropertyName, section);
             }
 
             return result;

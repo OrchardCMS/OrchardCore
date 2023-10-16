@@ -37,7 +37,7 @@ namespace OrchardCore.Facebook.Services
             }
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Properties[nameof(FacebookSettings)] = JObject.FromObject(settings);
+            container.Put(nameof(FacebookSettings), settings);
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 

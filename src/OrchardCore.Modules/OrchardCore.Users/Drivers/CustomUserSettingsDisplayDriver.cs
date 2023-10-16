@@ -12,6 +12,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Entities;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
 
@@ -79,7 +80,7 @@ namespace OrchardCore.Users.Drivers
                 var isNew = false;
                 var contentItem = await GetUserSettingsAsync(user, contentTypeDefinition, () => isNew = true);
                 await _contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, isNew, context.GroupId, Prefix);
-                user.Properties[contentTypeDefinition.Name] = JObject.FromObject(contentItem);
+                user.Put(contentTypeDefinition.Name, contentItem);
             }
 
             return await EditAsync(user, context);

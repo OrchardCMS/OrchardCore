@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 using OrchardCore.Facebook.Login.Settings;
 using OrchardCore.Settings;
@@ -40,7 +40,7 @@ namespace OrchardCore.Facebook.Login.Services
             }
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Properties[nameof(FacebookLoginSettings)] = JObject.FromObject(settings);
+            container.Put(nameof(FacebookLoginSettings), settings);
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 

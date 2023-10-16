@@ -1,5 +1,5 @@
 using System;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 
 namespace OrchardCore.Entities
 {
@@ -24,17 +24,10 @@ namespace OrchardCore.Entities
         /// <param name="entity">The <see cref="IEntity"/>.</param>
         /// <param name="name">The name of the property to extract.</param>
         /// <returns>A new instance of the requested type if the property was not found.</returns>
-        public static T As<T>(this IEntity entity, string name) where T : new()
-        {
-            JToken value;
-
-            if (entity.Properties.TryGetValue(name, out value))
-            {
-                return value.ToObject<T>();
-            }
-
-            return new T();
-        }
+        public static T As<T>(this IEntity entity, string name) where T : new() =>
+            entity.Properties.TryGetPropertyValue(name, out var value) && value != null
+                ? value.Deserialize<T>()
+                : new T();
 
         /// <summary>
         /// Indicates if the specified type of property is attached to the <see cref="IEntity"/> instance.
@@ -66,7 +59,7 @@ namespace OrchardCore.Entities
 
         public static IEntity Put(this IEntity entity, string name, object property)
         {
-            entity.Properties[name] = JObject.FromObject(property);
+            entity.Properties[name] = JsonSerializer.SerializeToNode(property);
             return entity;
         }
 
@@ -79,17 +72,10 @@ namespace OrchardCore.Entities
         /// <returns>The current <see cref="IEntity"/> instance.</returns>
         public static IEntity Alter<TAspect>(this IEntity entity, string name, Action<TAspect> action) where TAspect : new()
         {
-            JToken value;
-            TAspect obj;
 
-            if (!entity.Properties.TryGetValue(name, out value))
-            {
-                obj = new TAspect();
-            }
-            else
-            {
-                obj = value.ToObject<TAspect>();
-            }
+            var obj = !entity.Properties.TryGetPropertyValue(name, out var value)
+                ? new TAspect()
+                : value.Deserialize<TAspect>();
 
             action?.Invoke(obj);
 

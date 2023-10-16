@@ -9,6 +9,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OpenIddict.Server;
+using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.OpenId.Abstractions.Managers;
@@ -79,7 +80,7 @@ namespace OrchardCore.OpenId.Services
             }
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Properties[nameof(OpenIdValidationSettings)] = JsonSerializer.SerializeToNode(settings);
+            container.Put(nameof(OpenIdValidationSettings), settings);
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 

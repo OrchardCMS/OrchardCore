@@ -5,6 +5,7 @@ using OrchardCore.CustomSettings.Services;
 using OrchardCore.CustomSettings.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Entities;
 using OrchardCore.Settings;
 
 namespace OrchardCore.CustomSettings.Drivers
@@ -68,7 +69,7 @@ namespace OrchardCore.CustomSettings.Drivers
 
             await _contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, isNew);
 
-            site.Properties[contentTypeDefinition.Name] = JsonSerializer.SerializeToNode(contentItem);
+            site.Put(contentTypeDefinition.Name, contentItem);
 
             return await EditAsync(site, context);
         }
