@@ -25,8 +25,8 @@ namespace OrchardCore.OpenId.YesSql.Migrations
         public int Create()
         {
             SchemaBuilder.CreateMapIndexTable<OpenIdApplicationIndex>(table => table
-                .Column<string>(nameof(OpenIdApplicationIndex.ApplicationId), column => column.WithLength(48))
-                .Column<string>(nameof(OpenIdApplicationIndex.ClientId), column => column.Unique()),
+                .Column<string>("ApplicationId", column => column.WithLength(48))
+                .Column<string>("ClientId", column => column.Unique()),
                 collection: OpenIdApplicationCollection);
 
             SchemaBuilder.AlterIndexTable<OpenIdApplicationIndex>(table => table
