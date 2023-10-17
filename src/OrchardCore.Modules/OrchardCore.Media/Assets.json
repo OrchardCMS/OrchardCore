@@ -12,7 +12,6 @@
       "./node_modules/blueimp-file-upload/js/jquery.fileupload.js",
       "./node_modules/blueimp-file-upload/js/jquery.iframe-transport.js",
       "Assets/js/helpers.js",
-      "Assets/js/fontawesome-icons-thumbnails/**/*.js",
       "Assets/js/app/**/*.js"
     ],
     "watch": [
