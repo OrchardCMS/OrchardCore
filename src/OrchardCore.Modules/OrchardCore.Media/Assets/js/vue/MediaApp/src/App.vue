@@ -232,6 +232,7 @@ export default defineComponent({
 
         this.emitter.on('folderSelected', (folder: any) => {
             self.selectedFolder = folder;
+            self.isSelectedAll = false;
         })
 
         this.emitter.on('folderDeleted', () => {
