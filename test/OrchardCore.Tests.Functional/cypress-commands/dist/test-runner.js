@@ -24,12 +24,21 @@ function deleteDirectory(dir) {
   global.log(`${dir} deleted`);
 }
 
-// Copy the migrations recipe
+// Copy the migrations recipe.
 function copyMigrationsRecipeFile(dir) {
-    if (fs.existsSync('./Recipes/migrations.recipe.json')) {
-        fs.copyFile('./Recipes/migrations.recipe.json', `${dir}/Recipes/migrations.recipe.json`);
-        global.log(`migrations recipe copied to ${dir}/Recipes`);
+
+    const recipeFilePath = 'Recipes/migrations.recipe.json';
+
+    if (!fs.existsSync(`./${recipeFilePath}`) || fs.existsSync(`${dir}/${recipeFilePath}`)) {
+        return;
     }
+
+    if (!fs.existsSync(`${dir}/Recipes`)) {
+        fs.mkdirSync(`${dir}/Recipes`);
+    }
+
+    fs.copyFile(`./${recipeFilePath}`, `${dir}/${recipeFilePath}`);
+    global.log(`migrations recipe copied to ${dir}/Recipes`);
 }
 
 // Host the dotnet application, does not rebuild
