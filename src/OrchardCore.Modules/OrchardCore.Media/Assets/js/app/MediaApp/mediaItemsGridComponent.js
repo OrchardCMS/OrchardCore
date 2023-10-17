@@ -14,7 +14,7 @@ Vue.component('media-items-grid', {
                                 :src="buildMediaUrl(media.url, thumbSize)"
                                 :data-mime="media.mime"
                                 :style="{maxHeight: thumbSize +'px', maxWidth: thumbSize +'px'}" />
-                        <i v-else class="fa-regular fa-file display-1" :data-mime="media.mime"></i>
+                        <i v-else :class="getfontAwesomeClassNameForFileName(media.name, \'fa-6x\')" :data-mime="media.mime"></i>
                     </div>
                 <div class="media-container-main-item-title card-body">
                         <a href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button edit-button" v-on:click.stop="renameMedia(media)"><i class="fa-solid fa-edit" aria-hidden="true"></i></a>
@@ -62,6 +62,9 @@ Vue.component('media-items-grid', {
         },
         dragStart: function (media, e) {
             bus.$emit('mediaDragStartRequested', media, e);
+        },
+        getfontAwesomeClassNameForFileName:function getfontAwesomeClassNameForFilename(filename, thumbsize){
+            return getClassNameForFilename(filename) + ' ' + thumbsize;
         }
     }
 });
