@@ -2807,15 +2807,6 @@
       "contributions": [
         "code"
       ]
-    },
-    {
-      "login": "yk",
-      "name": "Yannic Kilcher",
-      "avatar_url": "https://avatars.githubusercontent.com/u/858040?v=4",
-      "profile": "https://github.com/yk",
-      "contributions": [
-        "code"
-      ]
     }
   ],
   "skipCi": true
