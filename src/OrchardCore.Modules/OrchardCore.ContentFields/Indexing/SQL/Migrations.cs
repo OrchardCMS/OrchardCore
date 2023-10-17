@@ -59,7 +59,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
                 .CreateIndex("IDX_TextFieldIndex_DocumentId_Text",
                     "DocumentId",
-                    "Text",// "Text(764)",
+                    "Text(764)",
                     "Published",
                     "Latest")
             );
