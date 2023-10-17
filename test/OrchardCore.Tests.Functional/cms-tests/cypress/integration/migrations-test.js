@@ -13,7 +13,7 @@ describe('Migrations Tests', function () {
 
     it('Displays the home page of the migrations recipe', function () {
         cy.visit(`${tenant.prefix}`);
-        cy.get('.subheading').should('contain.text', 'This is the description of your blog');
+        cy.get('.container').should('contain.text', 'Testing features having database migrations');
     })
 
     it('Migrations admin login should work', function () {
