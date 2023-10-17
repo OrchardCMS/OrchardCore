@@ -18,7 +18,7 @@ Orchard Core consists of two distinct projects:
 
 ## Build Status
 
-Stable (release/1.7.1): 
+Stable (release/1.7.2): 
 
 [![Build status](https://github.com/OrchardCMS/OrchardCore/actions/workflows/release_ci.yml/badge.svg)](https://github.com/OrchardCMS/OrchardCore/actions?query=workflow%3A%22Release+-+CI%22)
 [![NuGet](https://img.shields.io/nuget/v/OrchardCore.Application.Cms.Targets.svg)](https://www.nuget.org/packages/OrchardCore.Application.Cms.Targets)
@@ -30,7 +30,7 @@ Nightly (main):
 
 ## Status
 
-### 1.7.1
+### 1.7.2
 
 The software is finished -- and by finished, we mean there are no show-stopping, little-children-killing bugs in it. That we know of. There are probably numerous lower-priority bugs triaged into the next point release or service pack, as well.
 
