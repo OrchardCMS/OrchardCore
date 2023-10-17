@@ -63,7 +63,10 @@ namespace OrchardCore.Lists
         public int UpdateFrom2()
         {
             SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
-                .CreateIndex("IDX_ContainedPartIndex_DocumentId", "DocumentId", "ListContentItemId", "Order")
+                .CreateIndex("IDX_ContainedPartIndex_DocumentId",
+                "DocumentId",
+                "ListContentItemId",
+                "Order")
             );
 
             return 3;

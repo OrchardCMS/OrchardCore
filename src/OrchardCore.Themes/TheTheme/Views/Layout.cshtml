@@ -22,10 +22,18 @@
     <!-- This script can't wait till the footer -->
     <script asp-name="admin-head" version="1" at="Head"></script>
 
-    <style asp-name="bootstrap" version="5" at="Head"></style>
-    <script asp-name="bootstrap" version="5" at="Foot"></script>
+    @if (Orchard.IsRightToLeft())
+    {
+        <style asp-name="bootstrap-rtl" version="5" at="Head"></style>
+        <style asp-name="TheTheme" depends-on="bootstrap-rtl" asp-src="~/TheTheme/styles/theme.min.css" debug-src="~/TheTheme/styles/theme.css" at="Foot"></style>
+    }
+    else
+    {
+        <style asp-name="bootstrap" version="5" at="Head"></style>
+        <style asp-name="TheTheme" depends-on="bootstrap" asp-src="~/TheTheme/styles/theme.min.css" debug-src="~/TheTheme/styles/theme.css" at="Foot"></style>
+    }
 
-    <style asp-name="TheTheme" depends-on="bootstrap" asp-src="~/TheTheme/styles/theme.min.css" debug-src="~/TheTheme/styles/theme.css" at="Foot"></style>
+    <script asp-name="bootstrap" version="5" at="Foot"></script>
 
     <style asp-name="font-awesome" version="6"></style>
     <resources type="Header" />
