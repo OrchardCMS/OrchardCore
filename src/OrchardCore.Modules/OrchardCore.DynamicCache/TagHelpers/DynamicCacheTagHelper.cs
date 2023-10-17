@@ -36,19 +36,19 @@ namespace OrchardCore.DynamicCache.TagHelpers
         protected HtmlEncoder HtmlEncoder { get; }
 
         /// <summary>
-        /// Gets or sets a <see cref="String" /> identifying this cache entry.
+        /// Gets or sets a <see cref="string" /> identifying this cache entry.
         /// </summary>
         [HtmlAttributeName(CacheIdAttributeName)]
         public string CacheId { get; set; }
 
         /// <summary>
-        /// Gets or sets a <see cref="String" /> to vary the cached result by.
+        /// Gets or sets a <see cref="string" /> to vary the cached result by.
         /// </summary>
         [HtmlAttributeName(VaryByAttributeName)]
         public string VaryBy { get; set; }
 
         /// <summary>
-        /// Gets or sets a <see cref="String" /> with the dependencies to invalidate the cache with.
+        /// Gets or sets a <see cref="string" /> with the dependencies to invalidate the cache with.
         /// </summary>
         [HtmlAttributeName(DependenciesAttributeNAme)]
         public string Dependencies { get; set; }
@@ -120,12 +120,12 @@ namespace OrchardCore.DynamicCache.TagHelpers
             {
                 var cacheContext = new CacheContext(CacheId);
 
-                if (!String.IsNullOrEmpty(VaryBy))
+                if (!string.IsNullOrEmpty(VaryBy))
                 {
                     cacheContext.AddContext(VaryBy.Split(_splitChars, StringSplitOptions.RemoveEmptyEntries));
                 }
 
-                if (!String.IsNullOrEmpty(Dependencies))
+                if (!string.IsNullOrEmpty(Dependencies))
                 {
                     cacheContext.AddTag(Dependencies.Split(_splitChars, StringSplitOptions.RemoveEmptyEntries));
                 }
@@ -211,8 +211,8 @@ namespace OrchardCore.DynamicCache.TagHelpers
                                 // No need to optimize this code as it will be used for debugging purpose.
                                 writer.WriteLine();
                                 writer.WriteLine($"<!-- CACHE BLOCK: {cacheContext.CacheId} ({Guid.NewGuid()})");
-                                writer.WriteLine($"         VARY BY: {String.Join(", ", cacheContext.Contexts)}");
-                                writer.WriteLine($"    DEPENDENCIES: {String.Join(", ", cacheContext.Tags)}");
+                                writer.WriteLine($"         VARY BY: {string.Join(", ", cacheContext.Contexts)}");
+                                writer.WriteLine($"    DEPENDENCIES: {string.Join(", ", cacheContext.Tags)}");
                                 writer.WriteLine($"      EXPIRES ON: {cacheContext.ExpiresOn}");
                                 writer.WriteLine($"   EXPIRES AFTER: {cacheContext.ExpiresAfter}");
                                 writer.WriteLine($" EXPIRES SLIDING: {cacheContext.ExpiresSliding}");

@@ -34,7 +34,7 @@ namespace Microsoft.AspNetCore.Authorization
                 throw new ArgumentNullException(nameof(requiredPermission));
             }
 
-            if (String.IsNullOrWhiteSpace(contentType))
+            if (string.IsNullOrWhiteSpace(contentType))
             {
                 throw new ArgumentException($"{nameof(contentType)} cannot be empty.");
             }

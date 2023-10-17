@@ -29,7 +29,7 @@ namespace OrchardCore.Sitemaps.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "Sitemaps", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "Sitemaps", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

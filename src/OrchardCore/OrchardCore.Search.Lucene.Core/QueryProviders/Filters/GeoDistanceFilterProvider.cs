@@ -94,14 +94,14 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
 
             var distanceString = Regex.Match(distanceValue, @"^((\d+(\.\d*)?)|(\.\d+))").Value;
 
-            if (String.IsNullOrEmpty(distanceString))
+            if (string.IsNullOrEmpty(distanceString))
             {
                 return false;
             }
 
             var distanceUnits = distanceValue[distanceString.Length..].ToLower();
 
-            if (!Double.TryParse(distanceString, out var distance))
+            if (!double.TryParse(distanceString, out var distance))
             {
                 return false;
             }
@@ -165,12 +165,12 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
 
                     if (geoStringSplit.Length == 2)
                     {
-                        if (!Double.TryParse(geoStringSplit[0], out var lat))
+                        if (!double.TryParse(geoStringSplit[0], out var lat))
                         {
                             return false;
                         }
 
-                        if (!Double.TryParse(geoStringSplit[1], out var lon))
+                        if (!double.TryParse(geoStringSplit[1], out var lon))
                         {
                             return false;
                         }

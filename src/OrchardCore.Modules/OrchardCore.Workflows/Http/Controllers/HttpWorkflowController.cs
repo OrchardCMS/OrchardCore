@@ -227,7 +227,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             var input = new Dictionary<string, object> { { "Signal", payload.SignalName } };
 
             // If a specific workflow was provided, then resume that workflow.
-            if (!String.IsNullOrWhiteSpace(payload.WorkflowId))
+            if (!string.IsNullOrWhiteSpace(payload.WorkflowId))
             {
                 var workflow = await _workflowStore.GetAsync(payload.WorkflowId);
                 var signalActivities = workflow?.BlockingActivities.Where(x => x.Name == SignalEvent.EventName).ToList();

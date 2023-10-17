@@ -21,7 +21,7 @@ When receiving an HTTP GET request, the GraphQL query should be specified in the
 
 This request could be sent via an HTTP GET like so:
 
-`http://myapi/graphql?query={me{name}}`
+`https://localhost:44300/api/graphql?query={me{name}}`
 
 Query variables can be sent as a JSON-encoded string in an additional query parameter called variables. If the query contains several named operations, an operationName query parameter can be used to control which one should be executed.
 

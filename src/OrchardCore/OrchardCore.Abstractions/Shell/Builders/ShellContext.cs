@@ -12,13 +12,23 @@ namespace OrchardCore.Environment.Shell.Builders
     /// </summary>
     public class ShellContext : IDisposable, IAsyncDisposable
     {
-        private bool _disposed;
         private List<WeakReference<ShellContext>> _dependents;
         private readonly SemaphoreSlim _semaphore = new(1);
+        private bool _disposed;
 
         internal volatile int _refCount;
         internal volatile int _terminated;
         internal bool _released;
+
+        /// <summary>
+        /// Initializes a new <see cref="ShellContext"/>.
+        /// </summary>
+        public ShellContext() => UtcTicks = DateTime.UtcNow.Ticks;
+
+        /// <summary>
+        /// The creation date and time of this shell context in ticks.
+        /// </summary>
+        public long UtcTicks { get; }
 
         /// <summary>
         /// The <see cref="ShellSettings"/> holding the tenant settings and configuration.
@@ -56,7 +66,6 @@ namespace OrchardCore.Environment.Shell.Builders
             public PlaceHolder()
             {
                 _released = true;
-                _disposed = true;
             }
 
             /// <summary>
@@ -101,7 +110,12 @@ namespace OrchardCore.Environment.Shell.Builders
         public int ActiveScopes => _refCount;
 
         /// <summary>
-        /// Mark the <see cref="ShellContext"/> as released and then a candidate to be disposed.
+        /// Whether or not this instance uses shared <see cref="Settings"/> that should not be disposed.
+        /// </summary>
+        public bool SharedSettings { get; internal set; }
+
+        /// <summary>
+        /// Marks the <see cref="ShellContext"/> as released and then a candidate to be disposed.
         /// </summary>
         public Task ReleaseAsync() => ReleaseInternalAsync();
 
@@ -111,6 +125,14 @@ namespace OrchardCore.Environment.Shell.Builders
 
         internal async Task ReleaseInternalAsync(ReleaseMode mode = ReleaseMode.Normal)
         {
+            // A 'PlaceHolder' is always released.
+            if (this is PlaceHolder)
+            {
+                // But still try to dispose the settings.
+                await DisposeAsync();
+                return;
+            }
+
             if (_released)
             {
                 // Prevent infinite loops with circular dependencies
@@ -239,7 +261,6 @@ namespace OrchardCore.Environment.Shell.Builders
 
             _disposed = true;
 
-            // Disposes all the services registered for this shell.
             if (ServiceProvider is IDisposable disposable)
             {
                 disposable.Dispose();
@@ -257,7 +278,6 @@ namespace OrchardCore.Environment.Shell.Builders
 
             _disposed = true;
 
-            // Disposes all the services registered for this shell.
             if (ServiceProvider is IAsyncDisposable asyncDisposable)
             {
                 await asyncDisposable.DisposeAsync();
@@ -276,6 +296,15 @@ namespace OrchardCore.Environment.Shell.Builders
             IsActivated = false;
             Blueprint = null;
             Pipeline = null;
+
+            _semaphore?.Dispose();
+
+            if (SharedSettings)
+            {
+                return;
+            }
+
+            Settings?.Dispose();
         }
 
         ~ShellContext() => Close();

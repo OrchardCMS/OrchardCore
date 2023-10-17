@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -145,7 +146,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
 
             services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
-            services.AddScoped<IClientIPAddressAccessor, DefaultClientIPAddressAccessor>();
+            services.AddSingleton<IClientIPAddressAccessor, DefaultClientIPAddressAccessor>();
 
             builder.ConfigureServices((services, serviceProvider) =>
             {
@@ -252,7 +253,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 var options = serviceProvider.GetRequiredService<IOptions<StaticFileOptions>>().Value;
                 options = new StaticFileOptions
                 {
-                    RequestPath = String.Empty,
+                    RequestPath = string.Empty,
                     FileProvider = fileProvider,
                     RedirectToAppendTrailingSlash = options.RedirectToAppendTrailingSlash,
                     ContentTypeProvider = options.ContentTypeProvider,
@@ -298,7 +299,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 collection.AddRouting();
             },
-            order: Int32.MinValue + 100);
+            order: int.MinValue + 100);
         }
 
         /// <summary>
@@ -331,8 +332,13 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     collection.Remove(descriptor);
                 }
+
+                // Make the http client factory 'IDisposable'.
+                collection.AddSingleton<TenantHttpClientFactory>();
+                collection.AddSingleton<IHttpClientFactory>(sp => sp.GetRequiredService<TenantHttpClientFactory>());
+                collection.AddSingleton<IHttpMessageHandlerFactory>(sp => sp.GetRequiredService<TenantHttpClientFactory>());
             },
-            order: Int32.MinValue + 100);
+            order: int.MinValue + 100);
         }
 
         /// <summary>
@@ -361,7 +367,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 // Configure ApiExplorer at the tenant level.
                 collection.AddEndpointsApiExplorer();
             },
-            order: Int32.MinValue + 100);
+            order: int.MinValue + 100);
         }
 
         /// <summary>
@@ -417,7 +423,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             if (options.SameSite == SameSiteMode.None)
             {
-                if (String.IsNullOrEmpty(userAgent))
+                if (string.IsNullOrEmpty(userAgent))
                 {
                     return;
                 }

@@ -15,7 +15,7 @@
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 
-    <div class="card mb-3 bg-primary position-sticky action-bar">
+    <div class="card mb-3 text-bg-theme position-sticky action-bar">
         <div class="card-body">
             <div class="row gx-3">
                 <div class="col">
@@ -34,7 +34,7 @@
     <ul class="list-group with-checkbox">
         @if (Model.AdminMenu.Any())
         {
-            <li class="list-group-item bg-primary">
+            <li class="list-group-item text-bg-theme">
                 <div class="row gx-3">
                     <div class="col">
                         <div class="form-check my-1">

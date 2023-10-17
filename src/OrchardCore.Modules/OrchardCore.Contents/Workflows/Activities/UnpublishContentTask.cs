@@ -32,7 +32,7 @@ namespace OrchardCore.Contents.Workflows.Activities
             var content = (await GetContentAsync(workflowContext))
                 ?? throw new InvalidOperationException($"The '{nameof(UnpublishContentTask)}' failed to retrieve the content item.");
 
-            if (String.Equals(InlineEvent.ContentItemId, content.ContentItem.ContentItemId, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(InlineEvent.ContentItemId, content.ContentItem.ContentItemId, StringComparison.OrdinalIgnoreCase))
             {
                 return Outcomes("Noop");
             }

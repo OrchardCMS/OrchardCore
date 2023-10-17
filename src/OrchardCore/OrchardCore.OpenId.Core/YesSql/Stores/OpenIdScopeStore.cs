@@ -72,7 +72,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual async ValueTask<TScope> FindByIdAsync(string identifier, CancellationToken cancellationToken)
         {
-            if (String.IsNullOrEmpty(identifier))
+            if (string.IsNullOrEmpty(identifier))
             {
                 throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
             }
@@ -85,7 +85,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual async ValueTask<TScope> FindByNameAsync(string name, CancellationToken cancellationToken)
         {
-            if (String.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 throw new ArgumentException("The scope name cannot be null or empty.", nameof(name));
             }
@@ -99,7 +99,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         public virtual IAsyncEnumerable<TScope> FindByNamesAsync(
             ImmutableArray<string> names, CancellationToken cancellationToken)
         {
-            if (names.Any(name => String.IsNullOrEmpty(name)))
+            if (names.Any(name => string.IsNullOrEmpty(name)))
             {
                 throw new ArgumentException("Scope names cannot be null or empty.", nameof(names));
             }
@@ -112,20 +112,20 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual async ValueTask<TScope> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
         {
-            if (String.IsNullOrEmpty(identifier))
+            if (string.IsNullOrEmpty(identifier))
             {
                 throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
             }
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.GetAsync<TScope>(Int64.Parse(identifier, CultureInfo.InvariantCulture), collection: OpenIdCollection);
+            return await _session.GetAsync<TScope>(long.Parse(identifier, CultureInfo.InvariantCulture), collection: OpenIdCollection);
         }
 
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TScope> FindByResourceAsync(string resource, CancellationToken cancellationToken)
         {
-            if (String.IsNullOrEmpty(resource))
+            if (string.IsNullOrEmpty(resource))
             {
                 throw new ArgumentException("The resource cannot be null or empty.", nameof(resource));
             }

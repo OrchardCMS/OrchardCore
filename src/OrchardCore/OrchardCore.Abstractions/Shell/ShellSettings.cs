@@ -13,7 +13,7 @@ namespace OrchardCore.Environment.Shell
     /// by regular configuration sources, then by default settings of all tenants are stored in 'App_Data/tenants.json',
     /// while each tenant configuration is stored in the related site folder 'App_Data/Sites/{tenant}/appsettings.json'.
     /// </summary>
-    public class ShellSettings
+    public class ShellSettings : IDisposable
     {
         /// <summary>
         /// The name of the 'Default' tenant.
@@ -27,6 +27,8 @@ namespace OrchardCore.Environment.Shell
 
         private readonly ShellConfiguration _settings;
         private readonly ShellConfiguration _configuration;
+        internal volatile int _shellCreating;
+        private bool _disposed;
 
         /// <summary>
         /// Initializes a new <see cref="ShellSettings"/>.
@@ -61,6 +63,18 @@ namespace OrchardCore.Environment.Shell
         /// The tenant name.
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Whether this instance has been disposed or not.
+        /// </summary>
+        [JsonIgnore]
+        public bool Disposed => _disposed;
+
+        /// <summary>
+        /// Whether this instance is disposable or not.
+        /// </summary>
+        [JsonIgnore]
+        public bool Disposable { get; internal set; }
 
         /// <summary>
         /// The tenant version identifier.
@@ -133,5 +147,32 @@ namespace OrchardCore.Environment.Shell
         /// Ensures that the tenant configuration is initialized.
         /// </summary>
         public Task EnsureConfigurationAsync() => _configuration.EnsureConfigurationAsync();
+
+        public void Dispose()
+        {
+            // Disposable on reloading or if never registered.
+            if (!Disposable || _shellCreating > 0)
+            {
+                return;
+            }
+
+            Close();
+            GC.SuppressFinalize(this);
+        }
+
+        private void Close()
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            _disposed = true;
+
+            _settings?.Release();
+            _configuration?.Release();
+        }
+
+        ~ShellSettings() => Close();
     }
 }

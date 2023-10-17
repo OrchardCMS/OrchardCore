@@ -30,8 +30,9 @@ Create an empty folder, called `OrchardCore.Mvc`, that will contain our projects
 Next, create the "Hello World" module.
 
 ```dotnet new ocmodulemvc -n OrchardCore.Mvc.HelloWorld```
- 
-Add a project reference to the web application that points to the module.
+
+!!! important
+    Add a project reference to the web application that points to the module.
 
 ```dotnet add OrchardCore.Mvc.Web reference OrchardCore.Mvc.HelloWorld```
 

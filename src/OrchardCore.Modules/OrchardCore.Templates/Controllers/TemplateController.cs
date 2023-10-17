@@ -80,7 +80,7 @@ namespace OrchardCore.Templates.Controllers
 
             var templates = templatesDocument.Templates.ToList();
 
-            if (!String.IsNullOrWhiteSpace(options.Search))
+            if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 templates = templates.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
@@ -149,11 +149,11 @@ namespace OrchardCore.Templates.Controllers
 
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrWhiteSpace(model.Name))
+                if (string.IsNullOrWhiteSpace(model.Name))
                 {
                     ModelState.AddModelError(nameof(TemplateViewModel.Name), S["The name is mandatory."]);
                 }
-                else if (String.IsNullOrWhiteSpace(model.Content))
+                else if (string.IsNullOrWhiteSpace(model.Content))
                 {
                     ModelState.AddModelError(nameof(TemplateViewModel.Content), S["The content is mandatory."]);
                 }
@@ -252,7 +252,7 @@ namespace OrchardCore.Templates.Controllers
 
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrWhiteSpace(model.Name))
+                if (string.IsNullOrWhiteSpace(model.Name))
                 {
                     ModelState.AddModelError(nameof(TemplateViewModel.Name), S["The name is mandatory."]);
                 }
@@ -260,7 +260,7 @@ namespace OrchardCore.Templates.Controllers
                 {
                     ModelState.AddModelError(nameof(TemplateViewModel.Name), S["A template with the same name already exists."]);
                 }
-                else if (String.IsNullOrWhiteSpace(model.Content))
+                else if (string.IsNullOrWhiteSpace(model.Content))
                 {
                     ModelState.AddModelError(nameof(TemplateViewModel.Content), S["The content is mandatory."]);
                 }
@@ -377,7 +377,7 @@ namespace OrchardCore.Templates.Controllers
 
         private IActionResult RedirectToReturnUrlOrIndex(string returnUrl)
         {
-            if ((String.IsNullOrEmpty(returnUrl) == false) && (Url.IsLocalUrl(returnUrl)))
+            if ((string.IsNullOrEmpty(returnUrl) == false) && (Url.IsLocalUrl(returnUrl)))
             {
                 return this.Redirect(returnUrl, true);
             }

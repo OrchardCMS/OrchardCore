@@ -127,7 +127,7 @@ namespace OrchardCore.Indexing.Services
             {
                 if (logger.IsEnabled(LogLevel.Debug))
                 {
-                    logger.LogDebug("Updating indexing tasks: {ContentItemIds}", String.Join(", ", tasks.Select(x => x.ContentItemId)));
+                    logger.LogDebug("Updating indexing tasks: {ContentItemIds}", string.Join(", ", tasks.Select(x => x.ContentItemId)));
                 }
 
                 // Page delete statements to prevent the limits from IN sql statements.

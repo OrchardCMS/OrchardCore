@@ -70,7 +70,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            if (String.IsNullOrEmpty(model.Email))
+            if (string.IsNullOrEmpty(model.Email))
             {
                 ModelState.AddModelError("Email", S["Email is required."]);
             }

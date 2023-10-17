@@ -2753,6 +2753,60 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "brutoledo",
+      "name": "Bruno Toledo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5890282?v=4",
+      "profile": "https://github.com/brutoledo",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "dannyd89",
+      "name": "Daniel Draghici",
+      "avatar_url": "https://avatars.githubusercontent.com/u/15252548?v=4",
+      "profile": "https://github.com/dannyd89",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ludovic-th",
+      "name": "ludovic-th",
+      "avatar_url": "https://avatars.githubusercontent.com/u/65158865?v=4",
+      "profile": "https://github.com/ludovic-th",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "emrahtokalak",
+      "name": "Emrah Tokalak",
+      "avatar_url": "https://avatars.githubusercontent.com/u/90242?v=4",
+      "profile": "http://emrahtokalak.com/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "vjacquet",
+      "name": "vjacquet",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6363920?v=4",
+      "profile": "https://github.com/vjacquet",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "yaricrolletservico",
+      "name": "yaricrolletservico",
+      "avatar_url": "https://avatars.githubusercontent.com/u/101557629?v=4",
+      "profile": "https://github.com/yaricrolletservico",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true

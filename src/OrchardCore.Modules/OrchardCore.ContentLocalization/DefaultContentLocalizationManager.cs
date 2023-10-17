@@ -71,13 +71,13 @@ namespace OrchardCore.ContentLocalization
         public async Task<ContentItem> LocalizeAsync(ContentItem content, string targetCulture)
         {
             var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
-            if (!supportedCultures.Any(c => String.Equals(c, targetCulture, StringComparison.OrdinalIgnoreCase)))
+            if (!supportedCultures.Any(c => string.Equals(c, targetCulture, StringComparison.OrdinalIgnoreCase)))
             {
                 throw new InvalidOperationException("Cannot localize an unsupported culture");
             }
 
             var localizationPart = content.As<LocalizationPart>();
-            if (String.IsNullOrEmpty(localizationPart.LocalizationSet))
+            if (string.IsNullOrEmpty(localizationPart.LocalizationSet))
             {
                 // If the source content item is not yet localized, define its defaults.
                 localizationPart.LocalizationSet = _iidGenerator.GenerateUniqueId();

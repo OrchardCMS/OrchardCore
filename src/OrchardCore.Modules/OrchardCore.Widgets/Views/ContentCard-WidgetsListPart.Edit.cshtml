@@ -8,7 +8,7 @@
     var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetStereotype() == "Widget");
 }
 
-<div class="widget widget-editor card@(Model.Inline ? " collapsed" : String.Empty)">
+<div class="widget widget-editor card@(Model.Inline ? " collapsed" : string.Empty)">
     <div class="widget-editor-header card-header text-muted py-1 ps-2 pe-1">
         @if (Model.CanMove != false)
         {

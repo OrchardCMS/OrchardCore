@@ -38,7 +38,7 @@ namespace OrchardCore.DisplayManagement.Implementation
 
             if (binderName.EndsWith("Async", StringComparison.Ordinal))
             {
-                binderName = binder.Name[^"Async".Length..];
+                binderName = binder.Name[..^"Async".Length];
             }
 
             result = ShapeFactoryExtensions

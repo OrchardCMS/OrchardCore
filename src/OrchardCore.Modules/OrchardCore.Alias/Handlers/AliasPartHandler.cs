@@ -42,7 +42,7 @@ namespace OrchardCore.Alias.Handlers
         public override async Task ValidatingAsync(ValidateContentContext context, AliasPart part)
         {
             // Only validate the alias if it's not empty.
-            if (String.IsNullOrWhiteSpace(part.Alias))
+            if (string.IsNullOrWhiteSpace(part.Alias))
             {
                 return;
             }
@@ -56,14 +56,14 @@ namespace OrchardCore.Alias.Handlers
         public async override Task UpdatedAsync(UpdateContentContext context, AliasPart part)
         {
             // Compute the Alias only if it's empty.
-            if (!String.IsNullOrEmpty(part.Alias))
+            if (!string.IsNullOrEmpty(part.Alias))
             {
                 return;
             }
 
             var pattern = GetPattern(part);
 
-            if (!String.IsNullOrEmpty(pattern))
+            if (!string.IsNullOrEmpty(pattern))
             {
                 var model = new AliasPartViewModel()
                 {
@@ -75,7 +75,7 @@ namespace OrchardCore.Alias.Handlers
                 part.Alias = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
                     new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
 
-                part.Alias = part.Alias.Replace("\r", String.Empty).Replace("\n", String.Empty);
+                part.Alias = part.Alias.Replace("\r", string.Empty).Replace("\n", string.Empty);
 
                 if (part.Alias?.Length > AliasPart.MaxAliasLength)
                 {
@@ -125,7 +125,7 @@ namespace OrchardCore.Alias.Handlers
         private string GetPattern(AliasPart part)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(AliasPart)));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(AliasPart)));
             var pattern = contentTypePartDefinition.GetSettings<AliasPartSettings>().Pattern;
 
             return pattern;
@@ -137,7 +137,7 @@ namespace OrchardCore.Alias.Handlers
             var unversionedAlias = alias;
 
             var versionSeparatorPosition = alias.LastIndexOf('-');
-            if (versionSeparatorPosition > -1 && Int32.TryParse(alias[versionSeparatorPosition..].TrimStart('-'), out version))
+            if (versionSeparatorPosition > -1 && int.TryParse(alias[versionSeparatorPosition..].TrimStart('-'), out version))
             {
                 unversionedAlias = alias[..versionSeparatorPosition];
             }

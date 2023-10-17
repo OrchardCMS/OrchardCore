@@ -1,8 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
@@ -31,7 +29,7 @@ namespace OrchardCore.MiniProfiler
             var viewMiniProfilerOnFrontEnd = await _authorizationService.AuthorizeAsync(context.HttpContext.User, Permissions.ViewMiniProfilerOnFrontEnd);
             var viewMiniProfilerOnBackEnd = await _authorizationService.AuthorizeAsync(context.HttpContext.User, Permissions.ViewMiniProfilerOnBackEnd);
             if (
-                    (context.Result is ViewResult || context.Result is PageResult) &&
+                    context.IsViewOrPageResult() &&
                     (
                         (viewMiniProfilerOnFrontEnd && !AdminAttribute.IsApplied(context.HttpContext)) ||
                         (viewMiniProfilerOnBackEnd && AdminAttribute.IsApplied(context.HttpContext))

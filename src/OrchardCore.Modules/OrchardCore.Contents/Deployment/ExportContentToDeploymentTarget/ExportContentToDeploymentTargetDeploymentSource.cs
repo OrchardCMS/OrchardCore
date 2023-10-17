@@ -46,7 +46,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
             var model = new ExportContentToDeploymentTargetModel();
             await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(model, "ExportContentToDeploymentTarget", m => m.ItemIds, m => m.Latest, m => m.ContentItemId);
 
-            if (!String.IsNullOrEmpty(model.ContentItemId))
+            if (!string.IsNullOrEmpty(model.ContentItemId))
             {
                 var contentItem = await _contentManager.GetAsync(model.ContentItemId, model.Latest ? VersionOptions.Latest : VersionOptions.Published);
                 if (contentItem != null)

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -115,12 +114,12 @@ namespace OrchardCore.Email.Workflows.Activities
                 Bcc = bcc?.Trim(),
                 // Email reply-to header https://tools.ietf.org/html/rfc4021#section-2.1.4
                 ReplyTo = replyTo?.Trim(),
-                Subject = subject.Trim(),
+                Subject = subject?.Trim(),
                 Body = body?.Trim(),
                 IsHtmlBody = IsHtmlBody
             };
 
-            if (!String.IsNullOrWhiteSpace(sender))
+            if (!string.IsNullOrWhiteSpace(sender))
             {
                 message.Sender = sender.Trim();
             }

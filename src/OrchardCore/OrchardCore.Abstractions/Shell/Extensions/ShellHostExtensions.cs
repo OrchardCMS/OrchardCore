@@ -1,11 +1,27 @@
 using System;
 using System.Threading.Tasks;
 using OrchardCore.Environment.Shell.Scope;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace OrchardCore.Environment.Shell
 {
     public static class ShellHostExtensions
     {
+        /// <summary>
+        /// Tries to create a standalone service scope that can be used to resolve local services.
+        /// </summary>
+        public static async Task<(ShellScope scope, bool success)> TryGetScopeAsync(this IShellHost shellHost, string tenant)
+        {
+            try
+            {
+                return (await shellHost.GetScopeAsync(shellHost.GetSettings(tenant)), true);
+            }
+            catch
+            {
+                return (null, false);
+            }
+        }
+
         /// <summary>
         /// Creates a standalone service scope that can be used to resolve local services.
         /// </summary>

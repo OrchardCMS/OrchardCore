@@ -103,7 +103,7 @@ namespace OrchardCore.Flows.Drivers
                 contentItem.Owner = GetCurrentOwner();
 
                 // Try to match the requested id with an existing id
-                var existingContentItem = part.ContentItems.FirstOrDefault(x => String.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
+                var existingContentItem = part.ContentItems.FirstOrDefault(x => string.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
 
                 if (existingContentItem == null && !await AuthorizeAsync(contentDefinitionManager, CommonPermissions.EditContent, contentItem))
                 {

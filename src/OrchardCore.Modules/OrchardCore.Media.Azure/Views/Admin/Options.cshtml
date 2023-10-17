@@ -10,7 +10,7 @@
     <label asp-for="ConnectionString" class="col-sm-2 col-form-label">@T["Connection String"]</label>
     <div class="col-sm-10">
         <code>
-            @if (!String.IsNullOrEmpty(Model.ConnectionString))
+            @if (!string.IsNullOrEmpty(Model.ConnectionString))
             {
                 @T["Configured"]
             }

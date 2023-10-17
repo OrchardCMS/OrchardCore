@@ -41,7 +41,7 @@ public class SmsTaskDisplayDriver : ActivityDisplayDriver<SmsTask, SmsTaskViewMo
 
         if (await updater.TryUpdateModelAsync(viewModel, Prefix))
         {
-            if (String.IsNullOrWhiteSpace(viewModel.PhoneNumber))
+            if (string.IsNullOrWhiteSpace(viewModel.PhoneNumber))
             {
                 updater.ModelState.AddModelError(Prefix, nameof(viewModel.PhoneNumber), S["Phone number requires a value."]);
             }
@@ -50,13 +50,13 @@ public class SmsTaskDisplayDriver : ActivityDisplayDriver<SmsTask, SmsTaskViewMo
                 updater.ModelState.AddModelError(Prefix, nameof(viewModel.PhoneNumber), S["Invalid phone number used."]);
             }
 
-            if (String.IsNullOrWhiteSpace(viewModel.Body))
+            if (string.IsNullOrWhiteSpace(viewModel.Body))
             {
                 updater.ModelState.AddModelError(Prefix, nameof(viewModel.Body), S["Message Body requires a value."]);
             }
             else if (!_liquidTemplateManager.Validate(viewModel.Body, out var bodyErrors))
             {
-                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Body), String.Join(' ', bodyErrors));
+                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Body), string.Join(' ', bodyErrors));
             }
 
             activity.PhoneNumber = new WorkflowExpression<string>(viewModel.PhoneNumber);

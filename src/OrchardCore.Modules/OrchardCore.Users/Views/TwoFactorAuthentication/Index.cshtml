@@ -41,7 +41,7 @@
     return;
 }
 
-<div class="card bg-primary">
+<div class="card text-bg-theme">
 
     <div class="card-header">
         <div class="d-flex justify-content-between">
@@ -110,7 +110,7 @@
                 <div class="mb-3">
                     <label asp-for="PreferredProvider">@T["Preferred Two-Factor Method"]</label>
                     <select asp-for="PreferredProvider" asp-items="Model.ValidTwoFactorProviders" class="form-select">
-                        @if (String.IsNullOrEmpty(Model.PreferredProvider))
+                        @if (string.IsNullOrEmpty(Model.PreferredProvider))
                         {
                             <option value="">@T["Select the method"]</option>
                         }

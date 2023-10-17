@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-296-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-302-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -406,6 +406,14 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/BinderDyn"><img src="https://avatars.githubusercontent.com/u/43495737?v=4?s=100" width="100px;" alt="Marvin"/><br /><sub><b>Marvin</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=BinderDyn" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/dministro"><img src="https://avatars.githubusercontent.com/u/15349881?v=4?s=100" width="100px;" alt="József Horváth"/><br /><sub><b>József Horváth</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=dministro" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/brutoledo"><img src="https://avatars.githubusercontent.com/u/5890282?v=4?s=100" width="100px;" alt="Bruno Toledo"/><br /><sub><b>Bruno Toledo</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=brutoledo" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/dannyd89"><img src="https://avatars.githubusercontent.com/u/15252548?v=4?s=100" width="100px;" alt="Daniel Draghici"/><br /><sub><b>Daniel Draghici</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=dannyd89" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/ludovic-th"><img src="https://avatars.githubusercontent.com/u/65158865?v=4?s=100" width="100px;" alt="ludovic-th"/><br /><sub><b>ludovic-th</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=ludovic-th" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="http://emrahtokalak.com/"><img src="https://avatars.githubusercontent.com/u/90242?v=4?s=100" width="100px;" alt="Emrah Tokalak"/><br /><sub><b>Emrah Tokalak</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=emrahtokalak" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/vjacquet"><img src="https://avatars.githubusercontent.com/u/6363920?v=4?s=100" width="100px;" alt="vjacquet"/><br /><sub><b>vjacquet</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=vjacquet" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/yaricrolletservico"><img src="https://avatars.githubusercontent.com/u/101557629?v=4?s=100" width="100px;" alt="yaricrolletservico"/><br /><sub><b>yaricrolletservico</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=yaricrolletservico" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>

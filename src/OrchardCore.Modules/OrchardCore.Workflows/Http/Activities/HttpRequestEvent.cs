@@ -56,7 +56,7 @@ namespace OrchardCore.Workflows.Http.Activities
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var httpRequest = httpContext.Request;
-            var isMatch = String.Equals(HttpMethod, httpRequest.Method, StringComparison.OrdinalIgnoreCase);
+            var isMatch = string.Equals(HttpMethod, httpRequest.Method, StringComparison.OrdinalIgnoreCase);
 
             return isMatch;
         }

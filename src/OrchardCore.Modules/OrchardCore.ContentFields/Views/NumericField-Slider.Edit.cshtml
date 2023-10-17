@@ -39,13 +39,13 @@
                 <span class="ms-1 me-3">@min</span>
             }
 
-            <div id="@(id)-nouislider" class="w-100 w-md-50 mx-3"></div>
+            <div id="@(id)-nouislider" class="w-100 w-lg-75 w-xl-50 mx-3"></div>
             @if (settings.Maximum.HasValue)
             {
                 <span class="ms-3 me-1">@max</span>
             }
         </div>
-        @if (!String.IsNullOrEmpty(settings.Hint))
+        @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
         }
@@ -65,7 +65,7 @@
         range: {
             'min': @min,
             'max': @max
-            }
+                }
     });
 
     slider.noUiSlider.set("@Model.Value");
