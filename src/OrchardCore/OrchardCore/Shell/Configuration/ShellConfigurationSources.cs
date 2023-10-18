@@ -56,14 +56,12 @@ namespace OrchardCore.Environment.Shell.Configuration
                 }
             }
 
-            var jConfiguration = configData.ToJObject();
-
             Directory.CreateDirectory(tenantFolder);
 
             using var streamWriter = File.CreateText(appsettings);
             using var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented };
 
-            await jConfiguration.WriteToAsync(jsonWriter);
+            await configData.ToJObject().WriteToAsync(jsonWriter);
         }
 
         public Task RemoveAsync(string tenant)

@@ -84,9 +84,7 @@ namespace OrchardCore.Shells.Azure.Configuration
                 }
             }
 
-            var jConfiguration = configData.ToJObject();
-
-            var configurationString = await jConfiguration.ToStringAsync(Formatting.None);
+            var configurationString = await configData.ToJObject().ToStringAsync(Formatting.None);
             using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(configurationString));
 
             await _shellsFileStore.CreateFileFromStreamAsync(appsettings, memoryStream);

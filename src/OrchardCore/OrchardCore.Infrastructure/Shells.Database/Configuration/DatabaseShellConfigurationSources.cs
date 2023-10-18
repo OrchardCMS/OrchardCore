@@ -103,7 +103,7 @@ namespace OrchardCore.Shells.Database.Configuration
                 }
 
                 var configData = await (configurations
-                    .GetValue(tenant) as JObject ?? new JObject())
+                    .GetValue(tenant) as JObject)
                     .ToConfigurationDataAsync();
 
                 foreach (var key in data.Keys)
@@ -118,9 +118,7 @@ namespace OrchardCore.Shells.Database.Configuration
                     }
                 }
 
-                var jConfiguration = configData.ToJObject();
-
-                configurations[tenant] = jConfiguration;
+                configurations[tenant] = configData.ToJObject();
                 document.ShellConfigurations = configurations;
 
                 session.Save(document, checkConcurrency: true);
