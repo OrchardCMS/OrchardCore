@@ -2798,6 +2798,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "yaricrolletservico",
+      "name": "yaricrolletservico",
+      "avatar_url": "https://avatars.githubusercontent.com/u/101557629?v=4",
+      "profile": "https://github.com/yaricrolletservico",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true

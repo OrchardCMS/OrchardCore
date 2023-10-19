@@ -44,9 +44,6 @@ jobs:
     - uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0.100-rc.1.23463.5'
-    - name: Fix nuget restore issue
-      run: |
-          apt update && apt --only-upgrade install ca-certificates -y
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
@@ -88,9 +85,6 @@ jobs:
     - uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0.100-rc.1.23463.5'
-    - name: Fix nuget restore issue
-      run: |
-          apt update && apt --only-upgrade install ca-certificates -y
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
@@ -111,16 +105,16 @@ jobs:
     container:
       image: cypress/included:9.6.1
     services:
-      mariadb:
-        image: mariadb:latest
+      mysql:
+        image: mysql:8
         ports:
           - 3306
         env:
           MYSQL_DATABASE: test
           MYSQL_ROOT_PASSWORD: test123
-        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     env:
-      OrchardCore__ConnectionString: "server=mariadb;uid=root;pwd=test123;database=test"
+      OrchardCore__ConnectionString: "server=mysql;uid=root;pwd=test123;database=test"
       OrchardCore__DatabaseProvider: "MySql"
     steps:
     - uses: actions/checkout@v3
@@ -128,9 +122,6 @@ jobs:
     - uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0.100-rc.1.23463.5'
-    - name: Fix nuget restore issue
-      run: |
-          apt update && apt --only-upgrade install ca-certificates -y
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
@@ -167,9 +158,6 @@ jobs:
     - uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0.100-rc.1.23463.5'
-    - name: Fix nuget restore issue
-      run: |
-          apt update && apt --only-upgrade install ca-certificates -y
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional

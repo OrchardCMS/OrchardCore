@@ -62,30 +62,48 @@ themeObserver.observe(document.documentElement, {
   childList: true,
   subtree: true
 });
-// We add some classes to the body tag to restore the sidebar to the state is was before reload.
-// That state was saved to localstorage by userPreferencesPersistor.js
-// We need to apply the classes BEFORE the page is rendered.
-// That is why we use a MutationObserver instead of document.Ready().
-var isCompactExplicit = false;
-var observer = new MutationObserver(function (mutations) {
-  for (var i = 0; i < mutations.length; i++) {
-    for (var j = 0; j < mutations[i].addedNodes.length; j++) {
-      if (mutations[i].addedNodes[j].tagName == 'BODY') {
-        var body = mutations[i].addedNodes[j];
-        var adminPreferences = getAdminPreferences();
-        if (adminPreferences) {
-          isCompactExplicit = adminPreferences.isCompactExplicit;
-          if (adminPreferences != null && adminPreferences.leftSidebarCompact == true) {
-            body.classList.add('left-sidebar-compact');
-          }
-        }
-        observer.disconnect();
-      }
-      ;
+(function () {
+  'use strict';
+
+  var showActiveTheme = function showActiveTheme(theme) {
+    var focus = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+    var themeSwitcher = document.querySelector('#bd-theme');
+    if (!themeSwitcher) {
+      return;
     }
-  }
-});
-observer.observe(document.documentElement, {
-  childList: true,
-  subtree: true
-});
+    var themeSwitcherText = document.querySelector('#bd-theme-text');
+    var activeThemeIcon = document.querySelector('.theme-icon-active');
+    var btnToActive = document.querySelector("[data-bs-theme-value=\"".concat(theme, "\"]"));
+    var svgOfActiveBtn = btnToActive.querySelector('.theme-icon');
+    btnToActive.classList.add('active');
+    btnToActive.setAttribute('aria-pressed', 'true');
+    activeThemeIcon.innerHTML = svgOfActiveBtn.innerHTML;
+    var themeSwitcherLabel = "".concat(themeSwitcherText.textContent, " (").concat(btnToActive.dataset.bsThemeValue, ")");
+    themeSwitcher.setAttribute('aria-label', themeSwitcherLabel);
+    var btnsToInactive = document.querySelectorAll("[data-bs-theme-value]:not([data-bs-theme-value=\"".concat(theme, "\"])"));
+    for (var i = 0; i < btnsToInactive.length; i++) {
+      btnsToInactive[i].classList.remove('active');
+      btnsToInactive[i].setAttribute('aria-pressed', 'false');
+    }
+    if (focus) {
+      themeSwitcher.focus();
+    }
+  };
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+    var storedTheme = getStoredTheme();
+    if (storedTheme !== lightThemeName && storedTheme !== darkThemeName) {
+      setTheme(getPreferredTheme());
+    }
+  });
+  window.addEventListener('DOMContentLoaded', function () {
+    showActiveTheme(getPreferredTheme());
+    document.querySelectorAll('[data-bs-theme-value]').forEach(function (toggle) {
+      toggle.addEventListener('click', function () {
+        var theme = toggle.getAttribute('data-bs-theme-value');
+        setStoredTheme(theme);
+        setTheme(theme);
+        showActiveTheme(theme, true);
+      });
+    });
+  });
+})();

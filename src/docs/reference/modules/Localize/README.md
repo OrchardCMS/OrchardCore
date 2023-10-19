@@ -166,16 +166,3 @@ Then, you will be able to run this command to generate the .po files:
 ``` bash
 extractpo <INTPUT_PATH> <OUTPUT_PATH> [-l|--language {"C#"|"VB"}] [-t|--template {"razor"|"liquid"}]
 ```
-
-### Shapes
-
-#### `AdminCulturePicker`
-
-The `AdminCulturePicker` shape loads data for the `AdminCulturePickerContainer` shape.  
-
-#### `AdminCulturePickerContainer`
-
-The `AdminCulturePickerContainer` shape is used to render the `AdminCulturePicker`.
-
-The `AdminCulturePicker` will be rendered automatically on the admin once you enable the `OrchardCore.Localization.AdminCulturePicker` feature.
-
