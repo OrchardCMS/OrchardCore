@@ -193,7 +193,7 @@ namespace Microsoft.Extensions.Http
                         options.HttpMessageHandlerBuilderActions[i](b);
                     }
 
-                    // OC: 'LoggingBuilderActions' option doesn't exist yet.
+                    // OC: 'options.LoggingBuilderActions' is an internal field.
 
                     // Logging is added separately in the end. But for now it should be still possible to override it via filters...
                     // foreach (Action<HttpMessageHandlerBuilder> action in options.LoggingBuilderActions)

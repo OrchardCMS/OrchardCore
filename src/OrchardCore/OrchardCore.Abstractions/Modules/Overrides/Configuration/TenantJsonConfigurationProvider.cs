@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using OrchardCore.Environment.Shell.Configuration.Internal;
 
@@ -20,20 +19,5 @@ namespace Microsoft.Extensions.Configuration.Json
         /// </summary>
         /// <param name="stream">The stream to read.</param>
         public override void Load(Stream stream) => Data = JsonConfigurationParser.Parse(stream);
-
-        /// <summary>
-        /// Dispose the provider.
-        /// </summary>
-        /// <param name="disposing"><c>true</c> if invoked from <see cref="IDisposable.Dispose"/>.</param>
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(true);
-
-            // OC: Will be part of 'FileConfigurationProvider' in a future version.
-            // if (Source.OwnsFileProvider)
-            {
-                (Source.FileProvider as IDisposable)?.Dispose();
-            }
-        }
     }
 }
