@@ -6,7 +6,6 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -25,8 +24,6 @@ namespace OrchardCore.ReCaptcha.Services
 
         private readonly ReCaptchaSettings _reCaptchaSettings;
         private readonly HttpClient _httpClient;
-        private readonly ReCaptchaSettings _settings;
-
         private readonly IEnumerable<IDetectRobots> _robotDetectors;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
@@ -52,40 +49,33 @@ namespace OrchardCore.ReCaptcha.Services
         /// Flags the behavior as that of a robot.
         /// </summary>
         public void MaybeThisIsARobot()
-        {
-            _robotDetectors.Invoke(i => i.FlagAsRobot(), _logger);
-        }
+            => _robotDetectors.Invoke(i => i.FlagAsRobot(), _logger);
 
         /// <summary>
         /// Determines if the request has been made by a robot.
         /// </summary>
         /// <returns>Yes (true) or no (false).</returns>
         public bool IsThisARobot()
-        {
-            var result = _robotDetectors.Invoke(i => i.DetectRobot(), _logger);
-            return result.Any(a => a.IsRobot);
-        }
+            => _robotDetectors.Invoke(i => i.DetectRobot(), _logger)
+            .Any(a => a.IsRobot);
 
         /// <summary>
         /// Clears all robot markers, we are dealing with a human.
         /// </summary>
         /// <returns></returns>
         public void ThisIsAHuman()
-        {
-            _robotDetectors.Invoke(i => i.IsNotARobot(), _logger);
-        }
+            => _robotDetectors.Invoke(i => i.IsNotARobot(), _logger);
 
         /// <summary>
         /// Verifies the ReCaptcha response with the ReCaptcha webservice.
         /// </summary>
         /// <param name="reCaptchaResponse"></param>
         /// <returns></returns>
-        public Task<bool> VerifyCaptchaResponseAsync(string reCaptchaResponse)
-        {
-            return !string.IsNullOrWhiteSpace(reCaptchaResponse)
+        public async Task<bool> VerifyCaptchaResponseAsync(string reCaptchaResponse)
+            => !string.IsNullOrWhiteSpace(reCaptchaResponse)
                 && _reCaptchaSettings.IsValid()
                 && await VerifyAsync(reCaptchaResponse);
-        }
+
 
         /// <summary>
         /// Validates the captcha that is in the Form of the current request.
@@ -95,7 +85,7 @@ namespace OrchardCore.ReCaptcha.Services
         {
             if (!_reCaptchaSettings.IsValid())
             {
-                _logger.LogWarning("The ReCaptcha settings are not valid");
+                _logger.LogWarning("The ReCaptcha settings are invalid");
                 return false;
             }
 
@@ -112,7 +102,7 @@ namespace OrchardCore.ReCaptcha.Services
 
             if (!isValid)
             {
-                reportError("ReCaptcha", S["Failed to validate captcha"]);
+                reportError("ReCaptcha", S["Failed to validate ReCaptcha"]);
             }
 
             return isValid;
@@ -141,7 +131,7 @@ namespace OrchardCore.ReCaptcha.Services
             }
             catch (HttpRequestException e)
             {
-                _logger.LogError(e, "Could not contact Google to verify captcha.");
+                _logger.LogError(e, "Could not contact Google to verify ReCaptcha.");
             }
 
             return false;
