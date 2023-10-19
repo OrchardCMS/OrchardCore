@@ -1,9 +1,0 @@
-{
-  "dependencies": {
-    "storage1": {
-      "secretStore": null,
-      "type": "storage.emulator",
-      "connectionId": "StorageConnectionString"
-    }
-  }
-}
