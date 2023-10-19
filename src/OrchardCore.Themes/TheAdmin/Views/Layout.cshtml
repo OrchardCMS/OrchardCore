@@ -5,7 +5,7 @@
 @using OrchardCore.Users.Models
 
 @inject ThemeTogglerService ThemeTogglerService
-@inject IDisplayManager<UserMenu> DisplayManager
+@inject IDisplayManager<Navbar> DisplayManager
 @inject IUpdateModelAccessor UpdateModelAccessor
 @{
     var adminSettings = Site.As<AdminSettings>();
@@ -22,12 +22,23 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
 
     <!-- This script can't wait till the footer -->
-    <script asp-name="admin-head" version="1" at="Head"></script>
+    <script asp-name="admin-main" version="1" at="Head"></script>
 
-    <!-- TheAdmin && Bootstrap CSS -->
-    <style media="all" asp-name="admin" version="1"></style>
+    <style asp-name="TheAdminLayout" asp-src="~/TheAdmin/css/admin-layout.min.css" debug-src="~/TheAdmin/css/admin-layout.css" at="Head"></style>
+
+    @if (Orchard.IsRightToLeft())
+    {
+        <style asp-name="bootstrap-rtl" version="5" at="Head"></style>
+        <style media="all" asp-name="admin" version="1" depends-on="bootstrap-rtl,TheAdminLayout" at="Head"></style>
+    }
+    else
+    {
+        <style asp-name="bootstrap" version="5" at="Head"></style>
+        <style media="all" asp-name="admin" version="1" depends-on="bootstrap,TheAdminLayout" at="Head"></style>
+    }
     <script asp-name="font-awesome" at="Head" version="6"></script>
     <script asp-name="admin" version="1" at="Foot"></script>
+
     <resources type="Header" />
 
     @await RenderSectionAsync("HeadMeta", required: false)
@@ -49,55 +60,7 @@
                             }
                         </div>
                     </div>
-                    <ul class="navbar-nav user-top-navbar ms-auto d-flex flex-row">
-                        @await RenderSectionAsync("NavbarTop", required: false)
-                        @if (adminSettings.DisplayThemeToggler)
-                        {
-                            <li class="nav-item">
-                                <div class="dropdown">
-                                    <button class="btn btn-link nav-link dropdown-toggle d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static" aria-label="@T["Toggle theme"]">
-                                        <span class="theme-icon-active"><i class="fa-solid fa-circle-half-stroke"></i></span>
-                                        <span class="d-none" id="bd-theme-text">@T["Toggle theme"]</span>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end position-absolute" aria-labelledby="bd-theme-text">
-                                        <li>
-                                            <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto" aria-pressed="false">
-                                                <span class="theme-icon">
-                                                    <i class="fa-solid fa-circle-half-stroke"></i>
-                                                </span>
-                                                <span class="ps-2">@T["Auto"]</span>
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="light" aria-pressed="true">
-                                                <span class="theme-icon">
-                                                    <i class="fa-solid fa-sun"></i>
-                                                </span>
-                                                <span class="ps-2">@T["Light"]</span>
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
-                                                <span class="theme-icon">
-                                                    <i class="fa-solid fa-moon"></i>
-                                                </span>
-                                                <span class="ps-2">@T["Dark"]</span>
-                                            </button>
-                                        </li>
-                                        @await RenderSectionAsync("ToggleThemeItems", required: false)
-                                    </ul>
-                                </div>
-                            </li>
-                        }
-                        <li class="nav-item">
-                            <a href="@Url.Content("~/")" class="nav-link" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@T["Visit Site"]" role="button">
-                                <i class="fa-solid fa-fw fa-external-link" aria-hidden="true"></i>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            @await DisplayAsync(await DisplayManager.BuildDisplayAsync(new UserMenu(), UpdateModelAccessor.ModelUpdater, "DetailAdmin"))
-                        </li>
-                    </ul>
+                    @await DisplayAsync(await DisplayManager.BuildDisplayAsync(new Navbar(), UpdateModelAccessor.ModelUpdater, "DetailAdmin"))
                 </div>
             </div>
         </nav>

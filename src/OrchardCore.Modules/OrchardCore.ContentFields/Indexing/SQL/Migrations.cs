@@ -42,20 +42,24 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
             SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
                 .CreateIndex("IDX_TextFieldIndex_DocumentId_ContentType",
                     "DocumentId",
-                    "ContentType",
-                    "ContentPart",
-                    "ContentField",
+                    "ContentType(254)",
+                    "ContentPart(254)",
+                    "ContentField(254)",
                     "Published",
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + Text (764) + Published and Latest (1) = 767 (< 768).
             SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
                 .CreateIndex("IDX_TextFieldIndex_DocumentId_Text",
                     "DocumentId",
-                    "Text",
+                    "Text(764)",
                     "Published",
                     "Latest")
             );
@@ -80,12 +84,14 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Boolean, Published and Latest (1) = 765 (< 768).
             SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
                 .CreateIndex("IDX_BooleanFieldIndex_DocumentId_ContentType",
                     "DocumentId",
-                    "ContentType",
-                    "ContentPart",
-                    "ContentField",
+                    "ContentType(254)",
+                    "ContentPart(254)",
+                    "ContentField(254)",
                     "Boolean",
                     "Published",
                     "Latest")
@@ -111,12 +117,14 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
             SchemaBuilder.AlterIndexTable<NumericFieldIndex>(table => table
                 .CreateIndex("IDX_NumericFieldIndex_DocumentId_ContentType",
                     "DocumentId",
-                    "ContentType",
-                    "ContentPart",
-                    "ContentField",
+                    "ContentType(254)",
+                    "ContentPart(254)",
+                    "ContentField(254)",
                     "Published",
                     "Latest")
             );
@@ -149,12 +157,14 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
             SchemaBuilder.AlterIndexTable<DateTimeFieldIndex>(table => table
                 .CreateIndex("IDX_DateTimeFieldIndex_DocumentId_ContentType",
                     "DocumentId",
-                    "ContentType",
-                    "ContentPart",
-                    "ContentField",
+                    "ContentType(254)",
+                    "ContentPart(254)",
+                    "ContentField(254)",
                     "Published",
                     "Latest")
             );
@@ -187,12 +197,14 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
             SchemaBuilder.AlterIndexTable<DateFieldIndex>(table => table
                 .CreateIndex("IDX_DateFieldIndex_DocumentId_ContentType",
                     "DocumentId",
-                    "ContentType",
-                    "ContentPart",
-                    "ContentField",
+                    "ContentType(254)",
+                    "ContentPart(254)",
+                    "ContentField(254)",
                     "Published",
                     "Latest")
             );
@@ -226,12 +238,14 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
             SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
                 .CreateIndex("IDX_ContentPickerFieldIndex_DocumentId_ContentType",
                     "DocumentId",
-                    "ContentType",
-                    "ContentPart",
-                    "ContentField",
+                    "ContentType(254)",
+                    "ContentPart(254)",
+                    "ContentField(254)",
                     "Published",
                     "Latest")
             );
@@ -264,12 +278,14 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
             SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
                 .CreateIndex("IDX_TimeFieldIndex_DocumentId_ContentType",
                     "DocumentId",
-                    "ContentType",
-                    "ContentPart",
-                    "ContentField",
+                    "ContentType(254)",
+                    "ContentPart(254)",
+                    "ContentField(254)",
                     "Published",
                     "Latest")
             );
@@ -309,28 +325,35 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "Latest")
             );
 
+
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
             SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
                 .CreateIndex("IDX_LinkFieldIndex_DocumentId_ContentType",
                     "DocumentId",
-                    "ContentType",
-                    "ContentPart",
-                    "ContentField",
+                    "ContentType(254)",
+                    "ContentPart(254)",
+                    "ContentField(254)",
                     "Published",
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + Url (764) + Published and Latest (1) = 767 (< 768).
             SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
                 .CreateIndex("IDX_LinkFieldIndex_DocumentId_Url",
                     "DocumentId",
-                    "Url",
+                    "Url(764)",
                     "Published",
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + Text (764) + Published and Latest (1) = 767 (< 768).
             SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
                 .CreateIndex("IDX_LinkFieldIndex_DocumentId_Text",
                     "DocumentId",
-                    "Text",
+                    "Text(764)",
                     "Published",
                     "Latest")
             );
@@ -355,12 +378,14 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
             SchemaBuilder.AlterIndexTable<HtmlFieldIndex>(table => table
                 .CreateIndex("IDX_HtmlFieldIndex_DocumentId_ContentType",
                     "DocumentId",
-                    "ContentType",
-                    "ContentPart",
-                    "ContentField",
+                    "ContentType(254)",
+                    "ContentPart(254)",
+                    "ContentField(254)",
                     "Published",
                     "Latest")
             );
@@ -386,20 +411,24 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
             SchemaBuilder.AlterIndexTable<MultiTextFieldIndex>(table => table
                 .CreateIndex("IDX_MultiTextFieldIndex_DocumentId_ContentType",
                     "DocumentId",
-                    "ContentType",
-                    "ContentPart",
-                    "ContentField",
+                    "ContentType(254)",
+                    "ContentPart(254)",
+                    "ContentField(254)",
                     "Published",
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + Value (764) + Published and Latest (1) = 767 (< 768).
             SchemaBuilder.AlterIndexTable<MultiTextFieldIndex>(table => table
                 .CreateIndex("IDX_MultiTextFieldIndex_DocumentId_Value",
                     "DocumentId",
-                    "Value",
+                    "Value(764)",
                     "Published",
                     "Latest")
             );
@@ -450,24 +479,27 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
             SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
                 .CreateIndex("IDX_TextFieldIndex_DocumentId_ContentType",
                     "DocumentId",
-                    "ContentType",
-                    "ContentPart",
-                    "ContentField",
+                    "ContentType(254)",
+                    "ContentPart(254)",
+                    "ContentField(254)",
                     "Published",
                     "Latest")
             );
 
-            // Can't be created on existing databases where the 'Text' may be of 768 chars.
-            //SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
-            //    .CreateIndex("IDX_TextFieldIndex_DocumentId_Text",
-            //        "DocumentId",
-            //        "Text",
-            //        "Published",
-            //        "Latest")
-            //);
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + Text (764) + Published and Latest (1) = 767 (< 768).
+            SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
+                .CreateIndex("IDX_TextFieldIndex_DocumentId_Text",
+                    "DocumentId",
+                    "Text(764)",
+                    "Published",
+                    "Latest")
+            );
 
             SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
                 .CreateIndex("IDX_BooleanFieldIndex_DocumentId",
@@ -478,12 +510,14 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Boolean, Published and Latest (1) = 765 (< 768).
             SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
                 .CreateIndex("IDX_BooleanFieldIndex_DocumentId_ContentType",
                     "DocumentId",
-                    "ContentType",
-                    "ContentPart",
-                    "ContentField",
+                    "ContentType(254)",
+                    "ContentPart(254)",
+                    "ContentField(254)",
                     "Boolean",
                     "Published",
                     "Latest")
@@ -498,12 +532,14 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
             SchemaBuilder.AlterIndexTable<NumericFieldIndex>(table => table
                 .CreateIndex("IDX_NumericFieldIndex_DocumentId_ContentType",
                     "DocumentId",
-                    "ContentType",
-                    "ContentPart",
-                    "ContentField",
+                    "ContentType(254)",
+                    "ContentPart(254)",
+                    "ContentField(254)",
                     "Published",
                     "Latest")
             );
@@ -525,12 +561,14 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
             SchemaBuilder.AlterIndexTable<DateTimeFieldIndex>(table => table
                 .CreateIndex("IDX_DateTimeFieldIndex_DocumentId_ContentType",
                     "DocumentId",
-                    "ContentType",
-                    "ContentPart",
-                    "ContentField",
+                    "ContentType(254)",
+                    "ContentPart(254)",
+                    "ContentField(254)",
                     "Published",
                     "Latest")
             );
@@ -552,12 +590,14 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
             SchemaBuilder.AlterIndexTable<DateFieldIndex>(table => table
                 .CreateIndex("IDX_DateFieldIndex_DocumentId_ContentType",
                     "DocumentId",
-                    "ContentType",
-                    "ContentPart",
-                    "ContentField",
+                    "ContentType(254)",
+                    "ContentPart(254)",
+                    "ContentField(254)",
                     "Published",
                     "Latest")
             );
@@ -579,12 +619,14 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
             SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
                 .CreateIndex("IDX_ContentPickerFieldIndex_DocumentId_ContentType",
                     "DocumentId",
-                    "ContentType",
-                    "ContentPart",
-                    "ContentField",
+                    "ContentType(254)",
+                    "ContentPart(254)",
+                    "ContentField(254)",
                     "Published",
                     "Latest")
             );
@@ -606,12 +648,14 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
             SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
                 .CreateIndex("IDX_TimeFieldIndex_DocumentId_ContentType",
                     "DocumentId",
-                    "ContentType",
-                    "ContentPart",
-                    "ContentField",
+                    "ContentType(254)",
+                    "ContentPart(254)",
+                    "ContentField(254)",
                     "Published",
                     "Latest")
             );
@@ -633,33 +677,37 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
             SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
                 .CreateIndex("IDX_LinkFieldIndex_DocumentId_ContentType",
                     "DocumentId",
-                    "ContentType",
-                    "ContentPart",
-                    "ContentField",
+                    "ContentType(254)",
+                    "ContentPart(254)",
+                    "ContentField(254)",
                     "Published",
                     "Latest")
             );
 
-            // Can't be created on existing databases where the 'Url' may be of 768 chars.
-            //SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
-            //    .CreateIndex("IDX_LinkFieldIndex_DocumentId_Url",
-            //        "DocumentId",
-            //        "Url",
-            //        "Published",
-            //        "Latest")
-            //);
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + Url (764) + Published and Latest (1) = 767 (< 768).
+            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
+                .CreateIndex("IDX_LinkFieldIndex_DocumentId_Url",
+                    "DocumentId",
+                    "Url(764)",
+                    "Published",
+                    "Latest")
+            );
 
-            // Can't be created on existing databases where the 'Text' may be of 768 chars.
-            //SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
-            //    .CreateIndex("IDX_LinkFieldIndex_DocumentId_Text",
-            //        "DocumentId",
-            //        "Text",
-            //        "Published",
-            //        "Latest")
-            //);
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + Text (764) + Published and Latest (1) = 767 (< 768).
+            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
+                .CreateIndex("IDX_LinkFieldIndex_DocumentId_Text",
+                    "DocumentId",
+                    "Text(764)",
+                    "Published",
+                    "Latest")
+            );
 
             SchemaBuilder.AlterIndexTable<HtmlFieldIndex>(table => table
                 .CreateIndex("IDX_HtmlFieldIndex_DocumentId",
@@ -670,12 +718,14 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
             SchemaBuilder.AlterIndexTable<HtmlFieldIndex>(table => table
                 .CreateIndex("IDX_HtmlFieldIndex_DocumentId_ContentType",
                     "DocumentId",
-                    "ContentType",
-                    "ContentPart",
-                    "ContentField",
+                    "ContentType(254)",
+                    "ContentPart(254)",
+                    "ContentField(254)",
                     "Published",
                     "Latest")
             );
@@ -689,20 +739,24 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
             SchemaBuilder.AlterIndexTable<MultiTextFieldIndex>(table => table
                 .CreateIndex("IDX_MultiTextFieldIndex_DocumentId_ContentType",
                     "DocumentId",
-                    "ContentType",
-                    "ContentPart",
-                    "ContentField",
+                    "ContentType(254)",
+                    "ContentPart(254)",
+                    "ContentField(254)",
                     "Published",
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + Value (764) + Published and Latest (1) = 767 (< 768).
             SchemaBuilder.AlterIndexTable<MultiTextFieldIndex>(table => table
                 .CreateIndex("IDX_MultiTextFieldIndex_DocumentId_Value",
                     "DocumentId",
-                    "Value",
+                    "Value(764)",
                     "Published",
                     "Latest")
             );
