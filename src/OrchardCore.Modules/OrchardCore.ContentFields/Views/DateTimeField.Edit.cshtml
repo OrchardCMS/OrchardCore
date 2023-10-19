@@ -2,7 +2,7 @@
 @using OrchardCore.Mvc.Utilities
 @{
     var settings = Model.PartFieldDefinition.GetSettings<DateTimeFieldSettings>();
-    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
+    var uniqueName = Model.PartFieldDefinition.UniqueName();
 }
 <script asp-name="jQuery-ui-i18n" at="Foot"></script>
 <div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x.LocalDateTime)_FieldWrapper">

@@ -18,7 +18,7 @@
 
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
     var fieldName = Model.PartFieldDefinition.Name;
-    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
+    var uniqueName = Model.PartFieldDefinition.UniqueName();
 
     var vueElementId = $"MultiTextField-Picker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
 

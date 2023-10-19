@@ -6,7 +6,7 @@
     var isTextRequired = settings.LinkTextMode == LinkTextMode.Required && string.IsNullOrWhiteSpace(settings.DefaultText);
     var urlClass = settings.Required ? "required" : null;
     var textClass = settings.LinkTextMode == LinkTextMode.Required ? "required" : null;
-    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
+    var uniqueName = Model.PartFieldDefinition.UniqueName();
     var useFormFloating = string.IsNullOrWhiteSpace(settings.UrlPlaceholder) || string.IsNullOrWhiteSpace(settings.TextPlaceholder);
 }
 
