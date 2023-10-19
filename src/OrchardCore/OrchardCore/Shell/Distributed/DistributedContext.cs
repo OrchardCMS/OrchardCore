@@ -7,16 +7,24 @@ using OrchardCore.Environment.Shell.Builders;
 
 namespace OrchardCore.Environment.Shell.Distributed
 {
+    /// <summary>
+    /// Isolated context based on the default tenant settings used to resolve the <see cref="IDistributedCache"/>.
+    /// </summary>
     internal class DistributedContext : IDisposable, IAsyncDisposable
     {
         private readonly ShellContext _context;
         private volatile int _count;
         private bool _released;
 
+        /// <summary>
+        /// Initializes a new <see cref="DistributedContext"/>.
+        /// </summary>
         public DistributedContext(ShellContext context)
         {
             Interlocked.Increment(ref _count);
-            _context = context;
+
+            // By default marked as using shared settings that should not be disposed.
+            _context = context.WithSharedSettings();
 
             // If the distributed feature is not enabled, the distributed cache is not set.
             if (context.ServiceProvider.GetService<DistributedShellMarkerService>() is null)
@@ -34,10 +42,28 @@ namespace OrchardCore.Environment.Shell.Distributed
             DistributedCache = distributedCache;
         }
 
+        /// <summary>
+        /// Gets the inner <see cref="ShellContext"/>.
+        /// </summary>
         public ShellContext Context => _context;
 
+        /// <summary>
+        /// Gets the resolved <see cref="IDistributedCache"/>.
+        /// </summary>
         public IDistributedCache DistributedCache { get; }
 
+        /// <summary>
+        /// Marks this instance as using unshared settings that can be disposed.
+        /// </summary>
+        public DistributedContext WithoutSharedSettings()
+        {
+            _context.WithoutSharedSettings();
+            return this;
+        }
+
+        /// <summary>
+        /// Tries to acquire this instance.
+        /// </summary>
         public DistributedContext Acquire()
         {
             // Don't acquire a released context.
@@ -58,18 +84,27 @@ namespace OrchardCore.Environment.Shell.Distributed
             return this;
         }
 
+        /// <summary>
+        /// Releases once this instance.
+        /// </summary>
         public void Release()
         {
             _released = true;
             Dispose();
         }
 
+        /// <summary>
+        /// Releases once this instance.
+        /// </summary>
         public async Task ReleaseAsync()
         {
             _released = true;
             await DisposeAsync();
         }
 
+        /// <summary>
+        /// Disposes this instance, the last owner dispose the inner <see cref="ShellContext"/>.
+        /// </summary>
         public void Dispose()
         {
             // The last use disposes the shell context.
@@ -79,6 +114,9 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
         }
 
+        /// <summary>
+        /// Disposes this instance, the last owner dispose the inner <see cref="ShellContext"/>.
+        /// </summary>
         public ValueTask DisposeAsync()
         {
             // The last use disposes the shell context.

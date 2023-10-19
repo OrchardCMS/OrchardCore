@@ -6,6 +6,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -24,6 +25,8 @@ namespace OrchardCore.ReCaptcha.Services
 
         private readonly ReCaptchaSettings _reCaptchaSettings;
         private readonly HttpClient _httpClient;
+        private readonly ReCaptchaSettings _settings;
+
         private readonly IEnumerable<IDetectRobots> _robotDetectors;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
@@ -77,7 +80,7 @@ namespace OrchardCore.ReCaptcha.Services
         /// </summary>
         /// <param name="reCaptchaResponse"></param>
         /// <returns></returns>
-        public async Task<bool> VerifyCaptchaResponseAsync(string reCaptchaResponse)
+        public Task<bool> VerifyCaptchaResponseAsync(string reCaptchaResponse)
         {
             return !string.IsNullOrWhiteSpace(reCaptchaResponse)
                 && _reCaptchaSettings.IsValid()

@@ -28,4 +28,25 @@ public static class ShellContextExtensions
     /// Whether or not the tenant is in use in at least one active scope.
     /// </summary>
     public static bool IsActive(this ShellContext context) => context is { ActiveScopes: > 0 };
+
+    /// <summary>
+    /// Marks this instance as using unshared <see cref="ShellContext.Settings"/> that can be disposed.
+    /// </summary>
+    /// <remarks>
+    /// This is the default but can be used if <see cref="WithSharedSettings"/> may have been called.
+    /// </remarks>
+    public static ShellContext WithoutSharedSettings(this ShellContext context)
+    {
+        context.SharedSettings = false;
+        return context;
+    }
+
+    /// <summary>
+    /// Marks this instance as using shared <see cref="ShellContext.Settings"/> that should not be disposed.
+    /// </summary>
+    public static ShellContext WithSharedSettings(this ShellContext context)
+    {
+        context.SharedSettings = true;
+        return context;
+    }
 }

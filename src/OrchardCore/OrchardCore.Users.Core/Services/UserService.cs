@@ -292,7 +292,9 @@ namespace OrchardCore.Users.Services
                     case "InvalidEmail":
                         reportError("Email", S["Email '{0}' is invalid.", user.Email]);
                         break;
-
+                    case "InvalidToken":
+                        reportError(string.Empty, S["The reset token is invalid. Please request a new token."]);
+                        break;
                     default:
                         reportError(string.Empty, S["Unexpected error: '{0}'.", error.Code]);
                         break;

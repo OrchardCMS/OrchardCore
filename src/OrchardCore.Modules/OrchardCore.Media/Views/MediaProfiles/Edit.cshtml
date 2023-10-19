@@ -6,7 +6,7 @@
 <form asp-action="Edit" method="post" class="no-multisubmit">
     <input type="hidden" value="@Model.Name" name="sourceName" />
     <div class="form-g mb-3" asp-validation-class-for="Name">
-        <div class="w-100 w-md-50">
+        <div class="w-100 w-lg-75 w-xl-50">
             <label asp-for="Name">@T["Name"]</label>
             <input asp-for="Name" class="form-control" autofocus />
             <span asp-validation-for="Name"></span>
@@ -17,7 +17,7 @@
     </div>
 
     <div class="form-g mb-3" asp-validation-class-for="Hint">
-        <div class="w-100 w-md-50">
+        <div class="w-100 w-lg-75 w-xl-50">
             <label asp-for="Hint">@T["Hint"]</label>
             <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
             <span asp-validation-for="Hint"></span>
@@ -28,7 +28,7 @@
     </div>
 
     <div class="form-g mb-3" asp-validation-class-for="SelectedWidth">
-        <div class="w-100 w-md-50">
+        <div class="w-100 w-lg-75 w-xl-50">
             <label asp-for="SelectedWidth">@T["Width"]</label>
             <select asp-for="SelectedWidth" asp-items="@Model.AvailableWidths" class="form-select content-preview-select" asp-validation-class-for="SelectedWidth"></select>
             <span asp-validation-for="SelectedWidth"></span>
@@ -41,7 +41,7 @@
     </div>
 
     <div class="form-g mb-3" asp-validation-class-for="SelectedHeight">
-        <div class="w-100 w-md-50">
+        <div class="w-100 w-lg-75 w-xl-50">
             <label asp-for="SelectedHeight">@T["Height"]</label>
             <select asp-for="SelectedHeight" asp-items="@Model.AvailableHeights" class="form-select content-preview-select" asp-validation-class-for="SelectedHeight"></select>
             <span asp-validation-for="SelectedHeight"></span>
@@ -54,7 +54,7 @@
     </div>
 
     <div class="form-g mb-3" asp-validation-class-for="SelectedMode">
-        <div class="w-100 w-md-50">
+        <div class="w-100 w-lg-75 w-xl-50">
             <label asp-for="SelectedMode">@T["Resize Mode"]</label>
             <select asp-for="SelectedMode" asp-items="Model.AvailableResizeModes" class="form-select content-preview-select" asp-validation-class-for="SelectedMode"></select>
             <span asp-validation-for="SelectedMode"></span>
@@ -65,7 +65,7 @@
     </div>
 
     <div class="form-g mb-3" asp-validation-class-for="BackgroundColor" style="@(Model.SelectedMode == ResizeMode.Pad || Model.SelectedMode == ResizeMode.BoxPad ? "" : "display: none;")">
-        <div class="w-100 w-md-50">
+        <div class="w-100 w-lg-75 w-xl-50">
             <label asp-for="BackgroundColor">@T["Background Color"]</label>
             <input type="text" asp-for="BackgroundColor" class="form-control" />
             <span asp-validation-for="BackgroundColor"></span>
@@ -76,7 +76,7 @@
     </div>
 
     <div class="form-g mb-3" asp-validation-class-for="SelectedFormat">
-        <div class="w-100 w-md-50">
+        <div class="w-100 w-lg-75 w-xl-50">
             <label asp-for="SelectedFormat">@T["Format"]</label>
             <select asp-for="SelectedFormat" asp-items="Model.AvailableFormats" class="form-select content-preview-select" asp-validation-class-for="SelectedFormat"></select>
             <span asp-validation-for="SelectedFormat"></span>
@@ -87,7 +87,7 @@
     </div>
 
     <div class="form-g mb-3" asp-validation-class-for="Quality">
-        <div class="w-100 w-md-50">
+        <div class="w-100 w-lg-75 w-xl-50">
             <label asp-for="Quality">@T["Quality"]</label>
             <input asp-for="Quality" class="form-control" min="1" max="100" />
             <span asp-validation-for="Quality"></span>
@@ -114,7 +114,7 @@
 
 <script at="Foot">
     $(function () {
-        $('#@Html.IdFor(x => x.SelectedMode)').on('change', function() {
+        $('#@Html.IdFor(x => x.SelectedMode)').on('change', function () {
             if ((this.value === '@((int)ResizeMode.Pad)') || (this.value === '@((int)ResizeMode.BoxPad)')) {
                 $('#@Html.IdFor(x => x.BackgroundColor)').closest('.form-g').show();
             } else {
@@ -122,7 +122,7 @@
                 $('#@Html.IdFor(x => x.BackgroundColor)').val('');
             }
         });
-        $('#@Html.IdFor(x => x.SelectedWidth)').on('change', function() {
+        $('#@Html.IdFor(x => x.SelectedWidth)').on('change', function () {
             if (this.value === "-1") {
                 $('#@Html.IdFor(x => x.CustomWidth)').show();
             } else {
@@ -130,7 +130,7 @@
                 $('#@Html.IdFor(x => x.CustomWidth)').val(0);
             }
         });
-        $('#@Html.IdFor(x => x.SelectedHeight)').on('change', function() {
+        $('#@Html.IdFor(x => x.SelectedHeight)').on('change', function () {
             if (this.value === "-1") {
                 $('#@Html.IdFor(x => x.CustomHeight)').show();
             } else {
