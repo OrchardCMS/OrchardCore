@@ -14,7 +14,7 @@ namespace OrchardCore.ReCaptcha.Core
         public static IServiceCollection AddReCaptcha(this IServiceCollection services, Action<ReCaptchaSettings> configure = null)
         {
             // c.f. https://learn.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests
-            services.AddTransient<ReCaptchaService>()
+            services.AddScoped<ReCaptchaService>()
                 .AddHttpClient(nameof(ReCaptchaService))
                 .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(3, attempt => TimeSpan.FromSeconds(0.5 * attempt)));
 
