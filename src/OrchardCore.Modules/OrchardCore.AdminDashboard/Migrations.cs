@@ -29,7 +29,7 @@ namespace OrchardCore.AdminDashboard
             SchemaBuilder.AlterIndexTable<DashboardPartIndex>(table => table
                 .CreateIndex("IDX_DashboardPart_DocumentId",
                     "DocumentId",
-                    nameof(DashboardPartIndex.Position))
+                    "Position")
             );
 
             _contentDefinitionManager.AlterPartDefinition("DashboardPart", builder => builder
@@ -56,7 +56,7 @@ namespace OrchardCore.AdminDashboard
             SchemaBuilder.AlterIndexTable<DashboardPartIndex>(table => table
                 .CreateIndex("IDX_DashboardPart_DocumentId",
                     "DocumentId",
-                    nameof(DashboardPartIndex.Position))
+                    "Position")
             );
 
             return 3;

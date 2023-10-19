@@ -50,3 +50,43 @@ Here are samples using logo and favicon from media module.
         </div>
     </a>
     ```
+
+
+## Navbar Shape
+
+The navigation bar shape is available in two display types `Detail` for the frontend and `DetailAdmin` for the backend admin. If you wish to add a menu item to the navigation bar, simply create a display driver for `Navbar`. 
+
+As an illustration, we inject the Visit Site link into `DetailAdmin` display type using a display driver as outlined below:
+
+```csharp
+public class VisitSiteNavbarDisplayDriver : DisplayDriver<Navbar>
+{
+    public override IDisplayResult Display(Navbar model)
+    {
+        return View("VisitSiteNavbarItem", model)
+            .Location("DetailAdmin", "Content:20");
+    }
+}
+```
+
+You can change it by overriding 'VisitSiteNavbarItem' shape, either from a [custom admin theme](../../../guides/create-admin-theme/README.md) or using Admin Templates feature.  
+
+=== "Liquid"
+
+    ``` liquid
+    <li class="nav-item">
+        <a href="{{ '~' | absolute_url }}" class="nav-link" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ "Visit Site" | t }}" role="button">
+            <i class="fa-solid fa-fw fa-external-link" aria-hidden="true"></i>
+        </a>
+    </li>
+    ```
+
+=== "Razor"
+
+    ``` html
+    <li class="nav-item">
+        <a href="@Url.Content("~/")" class="nav-link" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@T["Visit Site"]" role="button">
+            <i class="fa-solid fa-fw fa-external-link" aria-hidden="true"></i>
+        </a>
+    </li>
+    ```

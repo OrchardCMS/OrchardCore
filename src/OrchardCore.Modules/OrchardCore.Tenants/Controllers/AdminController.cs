@@ -299,7 +299,10 @@ namespace OrchardCore.Tenants.Controllers
             var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
 
             // Creates a default shell settings based on the configuration.
-            var shellSettings = _shellSettingsManager.CreateDefaultSettings();
+            using var shellSettings = _shellSettingsManager
+                .CreateDefaultSettings()
+                .AsUninitialized()
+                .AsDisposable();
 
             var currentFeatureProfiles = shellSettings.GetFeatureProfiles();
             var featureProfiles = await GetFeatureProfilesAsync(currentFeatureProfiles);
@@ -348,9 +351,10 @@ namespace OrchardCore.Tenants.Controllers
             if (ModelState.IsValid)
             {
                 // Creates a default shell settings based on the configuration.
-                var shellSettings = _shellSettingsManager
+                using var shellSettings = _shellSettingsManager
                     .CreateDefaultSettings()
-                    .AsUninitialized();
+                    .AsUninitialized()
+                    .AsDisposable();
 
                 shellSettings.Name = model.Name;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;

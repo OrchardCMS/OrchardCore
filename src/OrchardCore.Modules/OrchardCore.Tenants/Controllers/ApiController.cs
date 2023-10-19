@@ -105,9 +105,10 @@ namespace OrchardCore.Tenants.Controllers
                 if (model.IsNewTenant)
                 {
                     // Creates a default shell settings based on the configuration.
-                    var shellSettings = _shellSettingsManager
+                    using var shellSettings = _shellSettingsManager
                         .CreateDefaultSettings()
-                        .AsUninitialized();
+                        .AsUninitialized()
+                        .AsDisposable();
 
                     shellSettings.Name = model.Name;
                     shellSettings.RequestUrlHost = model.RequestUrlHost;
@@ -124,14 +125,15 @@ namespace OrchardCore.Tenants.Controllers
                     shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
 
                     await _shellHost.UpdateShellSettingsAsync(shellSettings);
+                    var reloadedSettings = _shellHost.GetSettings(shellSettings.Name);
 
-                    var token = CreateSetupToken(shellSettings);
+                    var token = CreateSetupToken(reloadedSettings);
 
-                    return Ok(GetEncodedUrl(shellSettings, token));
+                    return Ok(GetEncodedUrl(reloadedSettings, token));
                 }
                 else
                 {
-                    // Site already exists, return 201 for indempotency purposes.
+                    // Site already exists, return 201 for idempotency purposes.
 
                     var token = CreateSetupToken(settings);
 
