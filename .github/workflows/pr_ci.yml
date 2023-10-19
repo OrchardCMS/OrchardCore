@@ -23,7 +23,7 @@ jobs:
         node-version: "15"
     - uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '8.0.100-rc.1.23463.5'
+        dotnet-version: '8.0.100-rc.2.23502.2'
     - name: Build
       run: |
         dotnet build -c Release -f net8.0
