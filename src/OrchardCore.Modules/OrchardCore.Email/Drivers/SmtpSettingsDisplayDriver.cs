@@ -62,6 +62,7 @@ namespace OrchardCore.Email.Drivers
                     model.UseDefaultCredentials = settings.UseDefaultCredentials;
                     model.UserName = settings.UserName;
                     model.Password = settings.Password;
+                    model.IgnoreInvalidSslCertificate = settings.IgnoreInvalidSslCertificate;
                 }).Location("Content:5").OnGroup(GroupId),
             };
 
