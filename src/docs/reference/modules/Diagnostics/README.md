@@ -2,13 +2,16 @@
 
 ## Purpose
 
-Enables you to present HTTP errors in a personalized style and offers a means to modify the response of particular HTML errors. The default setting utilizes the following templates.
+Enables you to present HTTP errors in a personalized style and offers a means to modify the response of particular HTML errors. By default, we utilizes the following templates.
 
- - BadRequest
- - Forbidden
- - NotFound
- - Unauthorized
- - HttpStatusCode
+| Template | Description |
+| --------- | ----------- |
+| `BadRequest` | Generates the `400` HTTP error page. You can adjust its appearance by modifying the `BadRequest.cshtml` or `BadRequest.liquid` views. |
+| `Forbidden` | Generates the `403` HTTP error page. You can adjust its appearance by modifying the `Forbidden.cshtml` or `Forbidden.liquid` views. |
+| `NotFound` | Generates the `404` HTTP error page. You can adjust its appearance by modifying the `NotFound.cshtml` or `NotFound.liquid` views. |
+| `Unauthorized` | Generates the `401` HTTP error page. You can adjust its appearance by modifying the `Unauthorized.cshtml` or `Unauthorized.liquid` views. |
+| `HttpStatusCode` | Fallback template which generates the HTTP error page when no explicit template defined (ex, `MethodNotAllowed.cshtml`). You can adjust its appearance by modifying the `HttpStatusCode.cshtml` or `HttpStatusCode.liquid` views. |
+
 
 ### Example
 
