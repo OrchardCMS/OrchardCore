@@ -29,7 +29,7 @@
     </div>
 </div>
 <div class="mb-3">
-    <div class="w-md-50 pe-md-3">
+    <div class="w-lg-75 w-xl-50">
         <label asp-for="Hint">@T["Hint"]</label>
         <input asp-for="Hint" type="text" class="form-control" />
     </div>
@@ -42,7 +42,7 @@
         <span class="hint dashed">@T["This will allow the user to attach any accessible file from the media library."]</span>
     </div>
 </div>
-<div class="collapse@(Model.AllowAllDefaultMediaTypes ? String.Empty : " show")" id="MediaExtensionWrapper">
+<div class="collapse@(Model.AllowAllDefaultMediaTypes ? string.Empty : " show")" id="MediaExtensionWrapper">
     <div class="mb-3">
         @{
             var groups = Model.MediaTypes
@@ -58,7 +58,7 @@
                 var htmlId = $"MediaExtensionTypeId_{group.Key}";
 
                 <div class="form-check">
-                    <input type="checkbox" class="form-check-input media-extensions-selector" checked="@allSelected" id="@htmlId" value="@String.Join(';', group.Value.Select(m => m.ContentType))">
+                    <input type="checkbox" class="form-check-input media-extensions-selector" checked="@allSelected" id="@htmlId" value="@string.Join(';', group.Value.Select(m => m.ContentType))">
                     <label class="form-check-label cursor-pointer" for="@htmlId">@T["{0} types", group.Key]</label>
                     <span class="hint dashed">@T["Select all extensions with the '{0}' type.", group.Key]</span>
                 </div>

@@ -15,7 +15,7 @@
         <p>@T["Your files will be uploaded to the current folder when you drop them here"]</p>
     </div>
 
-    <div class="alert message-warning" v-if="errors.length > 0">
+    <div class="alert alert-warning message-warning" v-if="errors.length > 0">
         <ul> <li v-for="e in errors"> <p>{{e}}</p> </li> </ul>
     </div>
 
@@ -31,17 +31,17 @@
             <div class="media-container-top-bar">
                 <nav class="nav action-bar pb-3 pt-3 pl-3">
                     <div class="me-auto ms-4">
-                        <a href="javascript:;" class="btn btn-light btn-sm me-2" v-on:click="selectAll">
+                        <a href="javascript:;" class="btn btn-secondary btn-sm me-2" v-on:click="selectAll">
                             @T["Select All"]
                         </a>
-                        <a href="javascript:;" class="btn btn-light btn-sm me-2" v-on:click="unSelectAll" :class="{disabled: selectedMedias.length < 1 }">
+                        <a href="javascript:;" class="btn btn-secondary btn-sm me-2" v-on:click="unSelectAll" :class="{disabled: selectedMedias.length < 1 }">
                             @T["Select None"]
                         </a>
-                        <a href="javascript:;" class="btn btn-light btn-sm me-2" v-on:click="invertSelection">
+                        <a href="javascript:;" class="btn btn-secondary btn-sm me-2" v-on:click="invertSelection">
                             @T["Invert"]
                         </a>
-                        <a href="javascript:;" class="btn btn-light btn-sm me-2" v-on:click="deleteMediaList" :class="{disabled: selectedMedias.length < 1 }">
-                            @T["Delete"] <span class="badge rounded-pill bg-light" v-show="selectedMedias.length > 0">{{ selectedMedias.length}}</span>
+                        <a href="javascript:;" class="btn btn-secondary btn-sm me-2" v-on:click="deleteMediaList" :class="{disabled: selectedMedias.length < 1 }">
+                            @T["Delete"] <span class="badge rounded-pill text-bg-theme" v-show="selectedMedias.length > 0">{{ selectedMedias.length}}</span>
                         </a>
                     </div>
                     <div class="btn-group visibility-buttons">

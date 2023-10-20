@@ -63,10 +63,11 @@ namespace OrchardCore.Email.Drivers
                     model.UserName = settings.UserName;
                     model.Password = settings.Password;
                     model.PasswordSecret = settings.PasswordSecret;
+                    model.IgnoreInvalidSslCertificate = settings.IgnoreInvalidSslCertificate;
                 }).Location("Content:5").OnGroup(GroupId),
             };
 
-            if (settings.DefaultSender != null)
+            if (settings?.DefaultSender != null)
             {
                 shapes.Add(Dynamic("SmtpSettings_TestButton").Location("Actions").OnGroup(GroupId));
             }

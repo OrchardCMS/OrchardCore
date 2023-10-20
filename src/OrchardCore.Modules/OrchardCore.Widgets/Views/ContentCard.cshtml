@@ -17,7 +17,7 @@
         if (Model.BuildEditor == true)
         {
             //Assign prefix
-            if (String.IsNullOrEmpty(Model.PrefixValue))
+            if (string.IsNullOrEmpty(Model.PrefixValue))
             {
                 Model.PrefixValue = Guid.NewGuid().ToString("n");
             }

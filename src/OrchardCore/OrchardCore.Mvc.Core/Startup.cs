@@ -108,10 +108,11 @@ namespace OrchardCore.Mvc
             if (_hostingEnvironment.IsDevelopment() && refsFolderExists)
             {
                 builder.AddRazorRuntimeCompilation();
-
-                // Shares across tenants the same compiler and its 'IMemoryCache' instance.
-                services.AddSingleton<IViewCompilerProvider, SharedViewCompilerProvider>();
             }
+
+            // Share across tenants a static compiler even if there is no runtime compilation
+            // because the compiler still uses its internal cache to retrieve compiled items.
+            services.AddSingleton<IViewCompilerProvider, SharedViewCompilerProvider>();
 
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<MvcRazorRuntimeCompilationOptions>, RazorCompilationOptionsSetup>());

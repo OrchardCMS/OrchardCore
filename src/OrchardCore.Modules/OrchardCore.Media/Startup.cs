@@ -47,6 +47,7 @@ using OrchardCore.Modules.FileProviders;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Shortcodes;
 using SixLabors.ImageSharp.Web.Caching;
@@ -82,6 +83,8 @@ namespace OrchardCore.Media
             })
             .AddLiquidFilter<AssetUrlFilter>("asset_url")
             .AddLiquidFilter<ResizeUrlFilter>("resize_url");
+
+            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
 
             services.AddTransient<IConfigureOptions<MediaOptions>, MediaOptionsConfiguration>();
 

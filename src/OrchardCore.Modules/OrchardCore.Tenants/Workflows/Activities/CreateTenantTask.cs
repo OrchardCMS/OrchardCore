@@ -118,7 +118,10 @@ namespace OrchardCore.Tenants.Workflows.Activities
             var featureProfile = (await ExpressionEvaluator.EvaluateAsync(FeatureProfile, workflowContext, null))?.Trim();
 
             // Creates a default shell settings based on the configuration.
-            var shellSettings = ShellSettingsManager.CreateDefaultSettings();
+            using var shellSettings = ShellSettingsManager
+                .CreateDefaultSettings()
+                .AsUninitialized()
+                .AsDisposable();
 
             shellSettings.Name = tenantName;
 
@@ -172,9 +175,10 @@ namespace OrchardCore.Tenants.Workflows.Activities
             shellSettings["Secret"] = Guid.NewGuid().ToString();
 
             await ShellHost.UpdateShellSettingsAsync(shellSettings);
+            var reloadedSettings = ShellHost.GetSettings(shellSettings.Name);
 
-            workflowContext.LastResult = shellSettings;
-            workflowContext.CorrelationId = shellSettings.Name;
+            workflowContext.LastResult = reloadedSettings;
+            workflowContext.CorrelationId = reloadedSettings.Name;
 
             return Outcomes("Done");
         }

@@ -9,7 +9,7 @@
                 <div class="mb-3" asp-validation-class-for="Path">
                     <label asp-for="Path">@T["Path"] </label>
                     <div class="input-group">
-                        @if (!String.IsNullOrWhiteSpace(Site.BaseUrl))
+                        @if (!string.IsNullOrWhiteSpace(Site.BaseUrl))
                         {
                             <span class="input-group-text">@Site.BaseUrl</span>
                         }

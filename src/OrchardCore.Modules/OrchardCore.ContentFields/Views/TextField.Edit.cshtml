@@ -10,7 +10,7 @@
     <label asp-for="Text" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndCssClasses()">
         <input asp-for="Text" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()" />
-        @if (!String.IsNullOrEmpty(settings.Hint))
+        @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
         }
