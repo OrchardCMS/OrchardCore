@@ -10,7 +10,7 @@
                     Value = option.Value,
                     Selected = Model.Values.Contains(option.Value)
                 }).ToList();
-    var uniqueName = Model.PartFieldDefinition.UniqueName();
+    var uniqueName = Model.PartFieldDefinition.GetFullName();
 }
 
 <div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x.Values)_FieldWrapper">

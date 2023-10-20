@@ -6,7 +6,7 @@
 @{
     var settings = Model.PartFieldDefinition.GetSettings<MarkdownFieldSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
-    var uniqueName = Model.PartFieldDefinition.UniqueName();
+    var uniqueName = Model.PartFieldDefinition.GetFullName();
 }
 
 <style asp-name="codemirror"></style>

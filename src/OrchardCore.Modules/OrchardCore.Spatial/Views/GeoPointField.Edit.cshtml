@@ -6,7 +6,7 @@
 @model EditGeoPointFieldViewModel
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<GeoPointFieldSettings>();
-    var uniqueName = Model.PartFieldDefinition.UniqueName();
+    var uniqueName = Model.PartFieldDefinition.GetFullName();
 }
 
 <div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x)_FieldWrapper">
