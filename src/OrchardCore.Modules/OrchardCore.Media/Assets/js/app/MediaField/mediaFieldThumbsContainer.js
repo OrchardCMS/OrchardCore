@@ -21,7 +21,7 @@ Vue.component('mediaFieldThumbsContainer', {
                             :src="buildMediaUrl(media.url, thumbSize)" \
                             :data-mime="media.mime"\
                             :style="{maxHeight: thumbSize + \'px\' , maxWidth: thumbSize + \'px\'}"/>\
-                            <i v-else class="fa-regular fa-file display-1" :data-mime="media.mime"></i>\
+                            <i v-else :class="getfontAwesomeClassNameForFileName(media.name, \'fa-4x\')" :data-mime="media.mime"></i>\
                          </div>\
                          <div class="media-container-main-item-title card-body">\
                                 <a href="javascript:;" class="btn btn-light btn-sm float-end inline-media-button delete-button"\
@@ -75,6 +75,9 @@ Vue.component('mediaFieldThumbsContainer', {
         },
         buildMediaUrl: function (url, thumbSize) {
             return url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize;
+        },
+        getfontAwesomeClassNameForFileName:function getfontAwesomeClassNameForFilename(filename, thumbsize){
+            return getClassNameForFilename(filename) + ' ' + thumbsize;
         }
     }
 });
