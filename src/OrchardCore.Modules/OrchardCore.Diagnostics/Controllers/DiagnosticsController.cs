@@ -18,6 +18,6 @@ public class DiagnosticsController : Controller
             httpStatusCode = HttpStatusCode.InternalServerError;
         }
 
-        return View(new ErrorShapeViewModel(httpStatusCode));
+        return View(new HttpStatusCodeShapeViewModel(httpStatusCode));
     }
 }
