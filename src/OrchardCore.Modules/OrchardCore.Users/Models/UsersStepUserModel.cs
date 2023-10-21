@@ -20,6 +20,7 @@ public class UsersStepUserModel
     public bool PhoneNumberConfirmed { get; set; }
     public bool TwoFactorEnabled { get; set; }
     public bool IsLockoutEnabled { get; set; }
+
     public int AccessFailedCount { get; set; }
     public IList<string> RoleNames { get; set; }
 }
