@@ -27,8 +27,8 @@ We utilize a template named `HttpStatusCode` to structure the default output of 
 
 You can utilize the [Templates](../Templates/README.md) feature to modify the appearance of your error pages.
 
-To illustrate, if you want to alter the layout of the `403 (Forbidden)` page using the Template feature, create a new Template named `Forbidden` and insert your customized HTML as follows:
+To illustrate, if you want to alter the view of the `403 (Forbidden)` page using the Template feature, create a new Template named `Forbidden` and insert your customized HTML as follows:
 
 ```
-<h3 class="text-danger">{{ "You do not have access permission to this page." | t }}</h3>
+<h2 class="text-danger">{{ "You do not have access permission to this page." | t }}</h2>
 ```
