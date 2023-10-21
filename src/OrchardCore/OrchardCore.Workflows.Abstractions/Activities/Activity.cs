@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Models;
@@ -128,19 +128,25 @@ namespace OrchardCore.Workflows.Activities
 
         protected virtual T GetProperty<T>(Func<T> defaultValue = null, [CallerMemberName] string name = null)
         {
+            ArgumentNullException.ThrowIfNull(name);
+
             var item = Properties[name];
-            return item != null ? item.ToObject<T>() : defaultValue != null ? defaultValue() : default;
+            return item != null ? item.Deserialize<T>() : defaultValue != null ? defaultValue() : default;
         }
 
         protected virtual T GetProperty<T>(Type type, Func<T> defaultValue = null, [CallerMemberName] string name = null)
         {
+            ArgumentNullException.ThrowIfNull(name);
+
             var item = Properties[name];
-            return item != null ? (T)item.ToObject(type) : defaultValue != null ? defaultValue() : default;
+            return item != null ? (T)item.Deserialize(type) : defaultValue != null ? defaultValue() : default;
         }
 
         protected virtual void SetProperty(object value, [CallerMemberName] string name = null)
         {
-            Properties[name] = JToken.FromObject(value);
+            ArgumentNullException.ThrowIfNull(name);
+
+            Properties[name] = JsonSerializer.SerializeToNode(value);
         }
     }
 }
