@@ -82,7 +82,6 @@ namespace OrchardCore.ContentTypes.Controllers
             {
                 if (stereotype == "Content")
                 {
-                    //  contentTypeDefinitions = contentTypeDefinitions.Where(contentType => contentType.TypeDefinition. StereotypeEquals(string.Empty, StringComparison.OrdinalIgnoreCase));
                     contentTypeDefinitions =  contentTypeDefinitions.Where(x => string.IsNullOrWhiteSpace(x.TypeDefinition.GetStereotype()));
                 }
                 else
