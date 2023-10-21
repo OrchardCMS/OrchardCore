@@ -48,7 +48,7 @@ public class UsersStep : IRecipeStepHandler
             user.UserName = importedUser.UserName;
             user.EmailConfirmed = importedUser.EmailConfirmed;
             user.PasswordHash = importedUser.PasswordHash;
-            user.IsEnabled = importedUser.IsEnabled;
+            user.Enabled = importedUser.Enabled;
             user.NormalizedEmail = importedUser.NormalizedEmail;
             user.NormalizedUserName = importedUser.NormalizedUserName;
             user.SecurityStamp = importedUser.SecurityStamp;
