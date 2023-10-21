@@ -22,3 +22,13 @@ To alter the presentation of a particular HTTP status code, you can easily creat
 ```
 
 We utilize a template named `HttpStatusCode` to structure the default output of the undefined error.
+
+### Templates Feature
+
+You can utilize the [Templates](../Templates/README.md) feature to modify the appearance of your error pages.
+
+To illustrate, if you want to alter the layout of the `403 (Forbidden)` page using the Template feature, create a new Template named `Forbidden` and insert your customized HTML as follows:
+
+```
+<h3 class="text-danger">{{ "You do not have access permission to this page." | t }}</h3>
+```
