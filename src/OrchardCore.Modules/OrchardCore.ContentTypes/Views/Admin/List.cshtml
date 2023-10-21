@@ -1,14 +1,37 @@
+@using System.Globalization
+@using OrchardCore.Localization
 @model ListContentTypesViewModel
-
+@{
+    var dropdownClassList = new List<string>()
+    {
+        "dropdown-menu"
+    };
+    if (CultureInfo.CurrentUICulture.IsRightToLeft())
+    {
+        dropdownClassList.Add("dropdown-menu-start");
+    }
+}
 <zone Name="Title"><h1>@RenderTitleSegments(T["Content Types"])</h1></zone>
 
 <div class="card mb-3 text-bg-theme position-sticky action-bar">
     <div class="card-body">
         <div class="row gx-3">
             <div class="col">
-                <div class="has-search">
+                <div class="input-group has-filter">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa-solid fa-filter" title="@T["Stereotypes"]" aria-hidden="true"></i>
+                    </button>
+                    <ul class="@string.Join(' ', dropdownClassList)" aria-labelledby="filter-dropdown">
+                        <li><a class="dropdown-item" href="?stereotype=">@T["Show all"]</a></li>
+                        <div class="dropdown-divider"></div>
+                            @foreach (var stereotype in Model.StereoTypes)
+                            {
+                                <li><a class="dropdown-item" href="?stereotype=@stereotype">@stereotype</a></li>
+                            }
+                    </ul>
+                    <label  for="search-box" class="sr-only">@T["Search"]</label>
                     <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
-                    <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                    <input  id="search-box"  name="search-box" class="form-control" placeholder="@T["Search"]" inputmode="search" type="search" autofocus />
                 </div>
             </div>
             <div class="col-auto">

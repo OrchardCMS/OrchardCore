@@ -55,23 +55,46 @@ namespace OrchardCore.ContentTypes.Controllers
             S = stringLocalizer;
         }
 
-        public Task<ActionResult> Index()
+        public Task<ActionResult> Index(string stereotype="")
         {
-            return List();
+            return List(stereotype);
         }
 
         #region Types
 
-        public async Task<ActionResult> List()
+        public async Task<ActionResult> List(string stereotype="")
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContentTypes))
             {
                 return Forbid();
             }
+            var stereotypes = _contentDefinitionManager.ListTypeDefinitions()
+                .Select(x => x.GetStereotype())
+                .Distinct()
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .ToList();
 
+            //add empty stereotype for content
+            stereotypes.Insert(0,"Content");
+
+            var contentTypeDefinitions = _contentDefinitionService.GetTypes();
+            if (!string.IsNullOrEmpty(stereotype))
+            {
+                if (stereotype == "Content")
+                {
+                    //  contentTypeDefinitions = contentTypeDefinitions.Where(contentType => contentType.TypeDefinition. StereotypeEquals(string.Empty, StringComparison.OrdinalIgnoreCase));
+                    contentTypeDefinitions =  contentTypeDefinitions.Where(x => string.IsNullOrWhiteSpace(x.TypeDefinition.GetStereotype()));
+                }
+                else
+                {
+                    contentTypeDefinitions = contentTypeDefinitions.Where(contentType => contentType.TypeDefinition.StereotypeEquals(stereotype, StringComparison.OrdinalIgnoreCase));
+                }
+            }
             return View("List", new ListContentTypesViewModel
             {
-                Types = _contentDefinitionService.GetTypes()
+                Types =contentTypeDefinitions,
+                StereoTypes = stereotypes
+
             });
         }
 

@@ -7,5 +7,6 @@ namespace OrchardCore.ContentTypes.ViewModels
     {
         [BindNever]
         public IEnumerable<EditTypeViewModel> Types { get; set; }
+        public List<string> StereoTypes { get; set; }
     }
 }
