@@ -21,6 +21,7 @@ public class UsersStepUserModel
     public string PhoneNumber { get; set; }
     public bool PhoneNumberConfirmed { get; set; }
     public bool TwoFactorEnabled { get; set; }
+
     public bool IsLockoutEnabled { get; set; }
 
     public int AccessFailedCount { get; set; }
