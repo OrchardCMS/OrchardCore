@@ -86,11 +86,12 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 RemoteClients = remoteClients,
                 Pager = pagerShape,
-                Options = options
+                Options = options,
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
+            model.Options.ContentsBulkAction = new List<SelectListItem>()
+            {
+                new() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) },
             };
 
             return View(model);
@@ -100,8 +101,9 @@ namespace OrchardCore.Deployment.Remote.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(RemoteClientIndexViewModel model)
         {
-            return RedirectToAction("Index", new RouteValueDictionary {
-                { "Options.Search", model.Options.Search }
+            return RedirectToAction("Index", new RouteValueDictionary
+            {
+                { "Options.Search", model.Options.Search },
             });
         }
 
@@ -160,7 +162,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 Id = remoteClient.Id,
                 ClientName = remoteClient.ClientName,
-                ApiKeySecret = remoteClient.ApiKeySecret
+                ApiKeySecret = remoteClient.ApiKeySecret,
             };
 
             if (remoteClient.ProtectedApiKey?.Length > 0)

@@ -42,7 +42,8 @@ namespace OrchardCore.Forms.Drivers
                 var workflowTypeStore = _services.GetService<IWorkflowTypeStore>();
                 if (workflowTypeStore is not null)
                 {
-                    m.WorkflowTypes.AddRange((await workflowTypeStore.GetByStartActivityAsync("HttpRequestEvent"))
+                    m.WorkflowTypes
+                        .AddRange((await workflowTypeStore.GetByStartActivityAsync("HttpRequestEvent"))
                         .Select(wf => new SelectListItem() { Text = wf.Name, Value = wf.WorkflowTypeId }));
                 }
             });

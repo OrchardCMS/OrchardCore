@@ -67,7 +67,7 @@ namespace OrchardCore.Email.Drivers
                 }).Location("Content:5").OnGroup(GroupId),
             };
 
-            if (settings?.DefaultSender != null)
+            if (settings.DefaultSender != null)
             {
                 shapes.Add(Dynamic("SmtpSettings_TestButton").Location("Actions").OnGroup(GroupId));
             }
@@ -96,7 +96,7 @@ namespace OrchardCore.Email.Drivers
                 }
                 else
                 {
-                    // Encrypt the password
+                    // Encrypt the password.
                     var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration));
                     section.Password = protector.Protect(section.Password);
                 }

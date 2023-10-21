@@ -33,7 +33,6 @@ public class KeyVaultClientService
         var secret = await _client.GetSecretAsync(name);
 
         return secret.Value.Value;
-
     }
 
     public async Task SetSecretAsync(string name, string secretValue)
@@ -50,10 +49,10 @@ public class KeyVaultClientService
     {
         var operation = await _client.StartDeleteSecretAsync(name);
 
-        // TODO test this. I think we delete secrets on set, so we would need to wait for delete to complete,
-        // before updating it again, perhaps not, we can check this.
+        // Purging on deletion is not supported, the retention period should be configured
+        // on any key vault, knowing that the 'soft-delete' feature will be mandatory soon.
 
-        // You only need to wait for completion if you want to purge or recover the secret.
-        await operation.WaitForCompletionAsync();
+        // await operation.WaitForCompletionAsync();
+        // await _client.PurgeDeletedSecretAsync(operation.Value.Name);
     }
 }

@@ -19,7 +19,7 @@ namespace OrchardCore.Deployment.Remote.Models
         /// </summary>
         public string RsaEncryptionSecret { get; set; }
 
-            /// <summary>
+        /// <summary>
         /// The name of the rsa secret that can be used to sign encrypted exported data.
         /// </summary>
         public string RsaSigningSecret { get; set; }

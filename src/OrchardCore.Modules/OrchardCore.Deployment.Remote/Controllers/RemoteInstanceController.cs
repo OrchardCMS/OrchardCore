@@ -79,11 +79,12 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 RemoteInstances = remoteInstances,
                 Pager = pagerShape,
-                Options = options
+                Options = options,
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
+            model.Options.ContentsBulkAction = new List<SelectListItem>()
+            {
+                new() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) },
             };
 
             return View(model);
@@ -93,8 +94,9 @@ namespace OrchardCore.Deployment.Remote.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(RemoteInstanceIndexViewModel model)
         {
-            return RedirectToAction(nameof(Index), new RouteValueDictionary {
-                { "Options.Search", model.Options.Search }
+            return RedirectToAction(nameof(Index), new RouteValueDictionary
+            {
+                { "Options.Search", model.Options.Search },
             });
         }
 
@@ -158,7 +160,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 ApiKeySecret = remoteInstance.ApiKeySecret,
                 Url = remoteInstance.Url,
                 RsaEncryptionSecret = remoteInstance.RsaEncryptionSecret,
-                RsaSigningSecret = remoteInstance.RsaSigningSecret
+                RsaSigningSecret = remoteInstance.RsaSigningSecret,
             };
 
             return View(model);
