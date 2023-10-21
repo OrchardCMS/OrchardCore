@@ -20,6 +20,7 @@ public class UsersStepUserModel
 
     public string NormalizedEmail { get; set; }
     public string NormalizedUserName { get; set; }
+
     public string SecurityStamp { get; set; }
     public string ResetToken { get; set; }
     public string PhoneNumber { get; set; }
