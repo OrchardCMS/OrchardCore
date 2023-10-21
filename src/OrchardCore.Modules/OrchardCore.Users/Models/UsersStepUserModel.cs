@@ -19,6 +19,7 @@ public class UsersStepUserModel
     public bool Enabled { get; set; } = true;
 
     public string NormalizedEmail { get; set; }
+
     public string NormalizedUserName { get; set; }
 
     public string SecurityStamp { get; set; }
