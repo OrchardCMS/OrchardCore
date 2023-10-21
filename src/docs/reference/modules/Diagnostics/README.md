@@ -23,7 +23,7 @@ To alter the presentation of a particular HTTP status code, you can easily creat
 
 We utilize a template named `HttpStatusCode` to structure the default output of the undefined error.
 
-### Templates Feature
+## Utilizing the Templates Feature for Customizing Error Pages
 
 You can utilize the [Templates](../Templates/README.md) feature to modify the appearance of your error pages.
 
