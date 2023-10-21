@@ -65,17 +65,17 @@ public class RSASecretDisplayDriver : DisplayDriver<SecretBase, RSASecret>
             model.KeyType = secret.KeyType;
             model.KeyTypes = new List<SelectListItem>
             {
-                new SelectListItem()
+                new()
                 {
                     Text = S["Public Key"],
                     Value = RSAKeyType.Public.ToString(),
-                    Selected = model.KeyType == RSAKeyType.Public
+                    Selected = model.KeyType == RSAKeyType.Public,
                 },
-                new SelectListItem()
+                new()
                 {
                     Text = S["Public / Private Key Pair"],
                     Value = RSAKeyType.PublicPrivatePair.ToString(),
-                    Selected = model.KeyType == RSAKeyType.PublicPrivatePair
+                    Selected = model.KeyType == RSAKeyType.PublicPrivatePair,
                 },
             };
             model.Context = context;
