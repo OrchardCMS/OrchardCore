@@ -15,6 +15,7 @@ public class UsersStepUserModel
     public string PasswordHash { get; set; }
 
     public bool EmailConfirmed { get; set; }
+
     public bool Enabled { get; set; } = true;
 
     public string NormalizedEmail { get; set; }
