@@ -37,7 +37,7 @@ public class AllUsersDeploymentSource : IDeploymentSource
                     Email = user.Email,
                     EmailConfirmed = user.EmailConfirmed,
                     PasswordHash = user.PasswordHash,
-                    IsEnabled = user.IsEnabled,
+                    Enabled = user.Enabled,
                     NormalizedEmail = user.NormalizedEmail,
                     NormalizedUserName = user.NormalizedUserName,
                     SecurityStamp = user.SecurityStamp,
