@@ -16,7 +16,7 @@ public class UsersStepUserModel
 
     public bool EmailConfirmed { get; set; }
 
-    public bool Enabled { get; set; } = true;
+    public bool IsEnabled { get; set; } = true;
 
     public string NormalizedEmail { get; set; }
 
