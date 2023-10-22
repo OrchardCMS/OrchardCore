@@ -3,27 +3,27 @@
 
 <div class="mb-3" asp-validation-class-for="Value">
     <label asp-for="Value">@T["Value"]</label>
-    <input  type="hidden" asp-for="Value" class="form-control "/>
+    <input type="hidden" asp-for="Value" class="form-control " />
     <div id="@Html.IdFor(x => x.Value)_editor" asp-for="Text" class="form-control"></div>
     <span asp-validation-for="Value"></span>
     <span class="hint">@T["The value to correlate workflow instances with. With Javascript support."]</span>
-</div> 
+</div>
 <script asp-name="monaco" depends-on="admin" at="Foot"></script>
 <script at="Foot" depends-on="monaco">
     $(document).ready(function () {
         require(['vs/editor/editor.main'], function () {
-            var settings=  {
-                  "automaticLayout": true,
-                  "language": "javascript"
-                };
+            var settings = {
+                "automaticLayout": true,
+                "language": "javascript"
+            };
 
-            var html = document.getElementsByTagName("html")[0];
+            var html = document.documentElement;
             const mutationObserver = new MutationObserver(setTheme);
             mutationObserver.observe(html, { attributes: true });
 
             function setTheme() {
-                var theme = html.dataset.theme;
-                if (theme === "darkmode") {
+                var theme = html.dataset.bsTheme;
+                if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     monaco.editor.setTheme('vs-dark')
                 } else {
                     monaco.editor.setTheme('vs')

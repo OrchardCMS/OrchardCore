@@ -49,7 +49,7 @@ namespace OrchardCore.Menu.Controllers
 
         public async Task<IActionResult> Create(string id, string menuContentItemId, string menuItemId)
         {
-            if (String.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(id))
             {
                 return NotFound();
             }

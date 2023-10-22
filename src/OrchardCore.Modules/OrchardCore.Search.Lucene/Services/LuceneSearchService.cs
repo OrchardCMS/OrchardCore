@@ -41,7 +41,7 @@ public class LuceneSearchService : ISearchService
 
     public async Task<SearchResult> SearchAsync(string indexName, string term, int start, int size)
     {
-        var index = !String.IsNullOrWhiteSpace(indexName) ? indexName.Trim() : await DefaultIndexAsync();
+        var index = !string.IsNullOrWhiteSpace(indexName) ? indexName.Trim() : await DefaultIndexAsync();
 
         var result = new SearchResult();
 

@@ -35,7 +35,7 @@ namespace OrchardCore.Localization.GraphQL
             _graphQLContentOptions = graphQLContentOptions.Value;
         }
 
-        public Task<string> GetIdentifierAsync() => Task.FromResult(String.Empty);
+        public Task<string> GetIdentifierAsync() => Task.FromResult(string.Empty);
 
         /// <inheritdocs/>
         public Task BuildAsync(ISchema schema)
@@ -69,7 +69,7 @@ namespace OrchardCore.Localization.GraphQL
                new SiteCulture
                {
                    Culture = culture,
-                   IsDefault = String.Equals(defaultCulture, culture, StringComparison.OrdinalIgnoreCase),
+                   IsDefault = string.Equals(defaultCulture, culture, StringComparison.OrdinalIgnoreCase),
                }
            );
 

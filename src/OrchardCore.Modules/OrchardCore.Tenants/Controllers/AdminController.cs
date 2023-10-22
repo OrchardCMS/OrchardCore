@@ -116,7 +116,7 @@ namespace OrchardCore.Tenants.Controllers
                        ShellSettings = settings,
                    };
 
-                   if (settings.IsUninitialized() && !String.IsNullOrEmpty(settings["Secret"]))
+                   if (settings.IsUninitialized() && !string.IsNullOrEmpty(settings["Secret"]))
                    {
                        entry.Token = dataProtector.Protect(settings["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
                    }
@@ -124,7 +124,7 @@ namespace OrchardCore.Tenants.Controllers
                    return entry;
                }).ToList();
 
-            if (!String.IsNullOrWhiteSpace(options.Search))
+            if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 entries = entries.Where(t => t.Name.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1 ||
                     (t.ShellSettings != null &&
@@ -132,7 +132,7 @@ namespace OrchardCore.Tenants.Controllers
                      (t.ShellSettings.RequestUrlPrefix != null && t.ShellSettings.RequestUrlPrefix.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1)))).ToList();
             }
 
-            if (!String.IsNullOrWhiteSpace(options.Category))
+            if (!string.IsNullOrWhiteSpace(options.Category))
             {
                 entries = entries.Where(t => t.Category?.Equals(options.Category, StringComparison.OrdinalIgnoreCase) == true).ToList();
             }
@@ -175,14 +175,14 @@ namespace OrchardCore.Tenants.Controllers
             // We populate the SelectLists
             model.Options.TenantsCategories = allSettings
                 .GroupBy(t => t["Category"])
-                .Where(t => !String.IsNullOrEmpty(t.Key))
-                .Select(t => new SelectListItem(t.Key, t.Key, String.Equals(options.Category, t.Key, StringComparison.OrdinalIgnoreCase)))
+                .Where(t => !string.IsNullOrEmpty(t.Key))
+                .Select(t => new SelectListItem(t.Key, t.Key, string.Equals(options.Category, t.Key, StringComparison.OrdinalIgnoreCase)))
                 .ToList();
 
             model.Options.TenantsCategories.Insert(0, new SelectListItem(
                 S["All"],
-                String.Empty,
-                selected: String.IsNullOrEmpty(options.Category)));
+                string.Empty,
+                selected: string.IsNullOrEmpty(options.Category)));
 
             model.Options.TenantsStates = new List<SelectListItem>() {
                 new SelectListItem() { Text = S["All states"], Value = nameof(TenantsState.All) },
@@ -299,7 +299,10 @@ namespace OrchardCore.Tenants.Controllers
             var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
 
             // Creates a default shell settings based on the configuration.
-            var shellSettings = _shellSettingsManager.CreateDefaultSettings();
+            using var shellSettings = _shellSettingsManager
+                .CreateDefaultSettings()
+                .AsUninitialized()
+                .AsDisposable();
 
             var currentFeatureProfiles = shellSettings.GetFeatureProfiles();
             var featureProfiles = await GetFeatureProfilesAsync(currentFeatureProfiles);
@@ -319,8 +322,8 @@ namespace OrchardCore.Tenants.Controllers
             };
 
             model.DatabaseConfigurationPreset =
-                !String.IsNullOrEmpty(model.ConnectionString) ||
-                !String.IsNullOrEmpty(model.DatabaseProvider);
+                !string.IsNullOrEmpty(model.ConnectionString) ||
+                !string.IsNullOrEmpty(model.DatabaseProvider);
 
             model.Recipes = recipes;
 
@@ -348,9 +351,10 @@ namespace OrchardCore.Tenants.Controllers
             if (ModelState.IsValid)
             {
                 // Creates a default shell settings based on the configuration.
-                var shellSettings = _shellSettingsManager
+                using var shellSettings = _shellSettingsManager
                     .CreateDefaultSettings()
-                    .AsUninitialized();
+                    .AsUninitialized()
+                    .AsDisposable();
 
                 shellSettings.Name = model.Name;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
@@ -364,7 +368,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["DatabaseProvider"] = model.DatabaseProvider;
                 shellSettings["Secret"] = Guid.NewGuid().ToString();
                 shellSettings["RecipeName"] = model.RecipeName;
-                shellSettings["FeatureProfile"] = String.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
+                shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
 
                 await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
@@ -460,7 +464,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["Category"] = model.Category;
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
-                shellSettings["FeatureProfile"] = String.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
+                shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
 
                 // The user can change the 'preset' database information only if the
                 // tenant has not been initialized yet

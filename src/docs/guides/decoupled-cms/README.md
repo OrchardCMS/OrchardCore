@@ -69,7 +69,7 @@ This will allow for the Razor Pages to be reloaded without the need to recompile
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="OrchardCore.Application.Cms.Core.Targets" Version="1.6.0" />
+  <PackageReference Include="OrchardCore.Application.Cms.Core.Targets" Version="1.7.2" />
 </ItemGroup>
 ```
 This will add the packages from Orchard Core CMS
@@ -81,18 +81,49 @@ builder.Services.AddOrchardCms();
 ```
 
 !!! warning "Razor Pages"
-    `AddRazorPages` must not be called directly as `services.AddOrchardCms()` already invokes it internally.
+    `builder.Services.AddRazorPages()` must not be called directly as `builder.Services.AddOrchardCms()` already invokes it internally.
 
 - Edit the `Program.cs` file
-- Remove everything after `app.UseStaticFiles();` and replace it by `app.UseOrchardCore();` like this:
+- Add `app.UseOrchardCore();` 
+- If any of the following lines exists in your `Program.cs` file, remove them:
 
 ```csharp
-   ...
-   
-   app.UseHttpsRedirection();
-   app.UseStaticFiles();
-   
-   app.UseOrchardCore();
+  builder.Services.AddRazorPages();
+
+  if (!app.Environment.IsDevelopment())
+  {
+      app.UseExceptionHandler("/Error");
+      app.UseHsts();
+  }
+  
+  app.UseHttpsRedirection();
+  app.UseRouting();
+  
+  app.UseAuthorization();
+  
+  app.MapRazorPages();
+}
+```
+
+Here is a sample of a bare minimum `Program.cs` file
+
+```csharp
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
+
+        // Add services to the container.
+        builder.Services.AddOrchardCms();
+
+        var app = builder.Build();
+
+        app.UseStaticFiles();
+        app.UseOrchardCore();
+        
+        app.Run();
+    }
 }
 ```
 

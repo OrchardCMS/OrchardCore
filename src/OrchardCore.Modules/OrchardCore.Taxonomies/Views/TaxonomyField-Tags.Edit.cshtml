@@ -31,14 +31,14 @@
 <div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x.TermContentItemIds)_FieldWrapper">
     <label class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndCssClasses()">
-        @if (!String.IsNullOrEmpty(taxonomySettings.Hint))
+        @if (!string.IsNullOrEmpty(taxonomySettings.Hint))
         {
             <div class="hint dashed mt-lg-2">@taxonomySettings.Hint</div>
         }
 
         @if (Model.Taxonomy == null)
         {
-            <div class="alert alert-danger" role="alert">
+            <div class="alert alert-warning" role="alert">
                 @T["The taxonomy could not be found. Please check the settings for this field."]
             </div>
         }

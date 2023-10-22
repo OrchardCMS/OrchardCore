@@ -64,7 +64,7 @@ namespace OrchardCore.Autoroute.Handlers
 
         public override async Task PublishedAsync(PublishContentContext context, AutoroutePart part)
         {
-            if (!String.IsNullOrWhiteSpace(part.Path))
+            if (!string.IsNullOrWhiteSpace(part.Path))
             {
                 if (part.RouteContainedItems)
                 {
@@ -77,7 +77,7 @@ namespace OrchardCore.Autoroute.Handlers
                 await _entries.UpdateEntriesAsync();
             }
 
-            if (!String.IsNullOrWhiteSpace(part.Path) && !part.Disabled && part.SetHomepage)
+            if (!string.IsNullOrWhiteSpace(part.Path) && !part.Disabled && part.SetHomepage)
             {
                 await SetHomeRouteAsync(part, homeRoute =>
                 {
@@ -92,7 +92,7 @@ namespace OrchardCore.Autoroute.Handlers
 
         public override async Task UnpublishedAsync(PublishContentContext context, AutoroutePart part)
         {
-            if (!String.IsNullOrWhiteSpace(part.Path))
+            if (!string.IsNullOrWhiteSpace(part.Path))
             {
                 // Update entries from the index table after the session is committed.
                 await _entries.UpdateEntriesAsync();
@@ -104,7 +104,7 @@ namespace OrchardCore.Autoroute.Handlers
 
         public override async Task RemovedAsync(RemoveContentContext context, AutoroutePart part)
         {
-            if (!String.IsNullOrWhiteSpace(part.Path) && context.NoActiveVersionLeft)
+            if (!string.IsNullOrWhiteSpace(part.Path) && context.NoActiveVersionLeft)
             {
                 // Update entries from the index table after the session is committed.
                 await _entries.UpdateEntriesAsync();
@@ -117,7 +117,7 @@ namespace OrchardCore.Autoroute.Handlers
         public override async Task ValidatingAsync(ValidateContentContext context, AutoroutePart part)
         {
             // Only validate the path if it's not empty.
-            if (String.IsNullOrWhiteSpace(part.Path))
+            if (string.IsNullOrWhiteSpace(part.Path))
             {
                 return;
             }
@@ -155,7 +155,7 @@ namespace OrchardCore.Autoroute.Handlers
             return context.ForAsync<RouteHandlerAspect>(aspect =>
             {
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-                var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "AutoroutePart"));
+                var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "AutoroutePart"));
                 var settings = contentTypePartDefinition.GetSettings<AutoroutePartSettings>();
                 if (settings.ManageContainedItemRoutes)
                 {
@@ -228,7 +228,7 @@ namespace OrchardCore.Autoroute.Handlers
         private async Task GenerateContainedPathsFromPatternAsync(ContentItem contentItem, AutoroutePart part)
         {
             // Validate contained content item routes if container has valid path.
-            if (String.IsNullOrWhiteSpace(part.Path) || !part.RouteContainedItems)
+            if (string.IsNullOrWhiteSpace(part.Path) || !part.RouteContainedItems)
             {
                 return;
             }
@@ -337,7 +337,7 @@ namespace OrchardCore.Autoroute.Handlers
 
         private static bool IsRelativePathUnique(List<AutorouteEntry> entries, string path, AutoroutePart context)
         {
-            var result = !entries.Any(e => context.ContentItem.ContentItemId != e.ContainedContentItemId && String.Equals(e.Path.Trim('/'), path.Trim('/'), StringComparison.OrdinalIgnoreCase));
+            var result = !entries.Any(e => context.ContentItem.ContentItemId != e.ContainedContentItemId && string.Equals(e.Path.Trim('/'), path.Trim('/'), StringComparison.OrdinalIgnoreCase));
             return result;
         }
 
@@ -347,7 +347,7 @@ namespace OrchardCore.Autoroute.Handlers
             var unversionedPath = path;
 
             var versionSeparatorPosition = path.LastIndexOf('-');
-            if (versionSeparatorPosition > -1 && Int32.TryParse(path[versionSeparatorPosition..].TrimStart('-'), out version))
+            if (versionSeparatorPosition > -1 && int.TryParse(path[versionSeparatorPosition..].TrimStart('-'), out version))
             {
                 unversionedPath = path[..versionSeparatorPosition];
             }
@@ -375,14 +375,14 @@ namespace OrchardCore.Autoroute.Handlers
         private async Task GenerateContainerPathFromPatternAsync(AutoroutePart part)
         {
             // Compute the Path only if it's empty.
-            if (!String.IsNullOrWhiteSpace(part.Path))
+            if (!string.IsNullOrWhiteSpace(part.Path))
             {
                 return;
             }
 
             var pattern = GetPattern(part);
 
-            if (!String.IsNullOrEmpty(pattern))
+            if (!string.IsNullOrEmpty(pattern))
             {
                 var model = new AutoroutePartViewModel()
                 {
@@ -403,7 +403,7 @@ namespace OrchardCore.Autoroute.Handlers
                         new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
                 }
 
-                part.Path = part.Path.Replace("\r", String.Empty).Replace("\n", String.Empty);
+                part.Path = part.Path.Replace("\r", string.Empty).Replace("\n", string.Empty);
 
                 if (part.Path?.Length > AutoroutePart.MaxPathLength)
                 {
@@ -425,7 +425,7 @@ namespace OrchardCore.Autoroute.Handlers
         private string GetPattern(AutoroutePart part)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(AutoroutePart)));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(AutoroutePart)));
             var pattern = contentTypePartDefinition.GetSettings<AutoroutePartSettings>().Pattern;
 
             return pattern;
@@ -437,7 +437,7 @@ namespace OrchardCore.Autoroute.Handlers
             var unversionedPath = path;
 
             var versionSeparatorPosition = path.LastIndexOf('-');
-            if (versionSeparatorPosition > -1 && Int32.TryParse(path[versionSeparatorPosition..].TrimStart('-'), out version))
+            if (versionSeparatorPosition > -1 && int.TryParse(path[versionSeparatorPosition..].TrimStart('-'), out version))
             {
                 unversionedPath = path[..versionSeparatorPosition];
             }

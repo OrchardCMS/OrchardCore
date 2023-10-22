@@ -29,7 +29,7 @@ namespace OrchardCore.Admin
             if (AdminAttribute.IsApplied(_httpContextAccessor.HttpContext))
             {
                 string adminThemeName = await _adminThemeService.GetAdminThemeNameAsync();
-                if (String.IsNullOrEmpty(adminThemeName))
+                if (string.IsNullOrEmpty(adminThemeName))
                 {
                     return null;
                 }

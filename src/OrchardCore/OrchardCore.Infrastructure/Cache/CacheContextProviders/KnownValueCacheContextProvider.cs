@@ -11,7 +11,7 @@ namespace OrchardCore.Environment.Cache.CacheContextProviders
     {
         public Task PopulateContextEntriesAsync(IEnumerable<string> contexts, List<CacheContextEntry> entries)
         {
-            entries.Add(new CacheContextEntry("", String.Join(",", contexts)));
+            entries.Add(new CacheContextEntry("", string.Join(",", contexts)));
 
             return Task.CompletedTask;
         }

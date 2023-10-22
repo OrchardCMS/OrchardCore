@@ -24,22 +24,22 @@ namespace OrchardCore.DisplayManagement.Descriptors
             {
                 first.Alternates = first.Alternates.Combine(second.Alternates);
                 first.Wrappers = first.Wrappers.Combine(second.Wrappers);
-                if (!String.IsNullOrEmpty(second.ShapeType))
+                if (!string.IsNullOrEmpty(second.ShapeType))
                 {
                     first.ShapeType = second.ShapeType;
                 }
 
-                if (!String.IsNullOrEmpty(second.Location))
+                if (!string.IsNullOrEmpty(second.Location))
                 {
                     first.Location = second.Location;
                 }
 
-                if (!String.IsNullOrEmpty(second.DefaultPosition))
+                if (!string.IsNullOrEmpty(second.DefaultPosition))
                 {
                     first.DefaultPosition = second.DefaultPosition;
                 }
 
-                if (!String.IsNullOrEmpty(second.Source))
+                if (!string.IsNullOrEmpty(second.Source))
                 {
                     first.Source += "," + second.Source;
                 }

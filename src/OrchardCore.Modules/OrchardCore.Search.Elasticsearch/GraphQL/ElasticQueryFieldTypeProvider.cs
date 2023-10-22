@@ -42,7 +42,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
 
             foreach (var query in queries.OfType<ElasticQuery>())
             {
-                if (String.IsNullOrWhiteSpace(query.Schema))
+                if (string.IsNullOrWhiteSpace(query.Schema))
                     continue;
 
                 var name = query.Name;

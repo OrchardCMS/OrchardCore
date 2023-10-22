@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -87,7 +88,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-analyzers.html"/>.
         /// </para>
         /// </summary>
-        /// <returns><see cref="Boolean"/>.</returns>
+        /// <returns><see cref="bool"/>.</returns>
         public async Task<bool> CreateIndexAsync(ElasticIndexSettings elasticIndexSettings)
         {
             //Get Index name scoped by ShellName
@@ -213,12 +214,12 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                 foreach (var analyzerProperty in analyzerProperties)
                 {
-                    if (analyzerProperty.Value == null || String.Equals(analyzerProperty.Key, "type", StringComparison.OrdinalIgnoreCase))
+                    if (analyzerProperty.Value == null || string.Equals(analyzerProperty.Key, "type", StringComparison.OrdinalIgnoreCase))
                     {
                         continue;
                     }
 
-                    var key = analyzerProperty.Key.Replace("_", String.Empty);
+                    var key = analyzerProperty.Key.Replace("_", string.Empty);
 
                     var property = properties.FirstOrDefault(p => p.Name.Equals(key, StringComparison.OrdinalIgnoreCase));
 
@@ -373,7 +374,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// </summary>
         public async Task<bool> Exists(string indexName)
         {
-            if (String.IsNullOrWhiteSpace(indexName))
+            if (string.IsNullOrWhiteSpace(indexName))
             {
                 return false;
             }
@@ -396,7 +397,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 indexName = indexName.Remove(0, 1);
             }
 
-            _charsToRemove.ForEach(c => indexName = indexName.Replace(c.ToString(), String.Empty));
+            _charsToRemove.ForEach(c => indexName = indexName.Replace(c.ToString(), string.Empty));
 
             return indexName;
         }
@@ -521,8 +522,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
             foreach (var entry in documentIndex.Entries)
             {
-                if (entries.ContainsKey(entry.Name)
-                    || Array.Exists(_ignoredFields, x => entry.Name.Contains(x)))
+                if (Array.Exists(_ignoredFields, x => entry.Name.Contains(x)))
                 {
                     continue;
                 }
@@ -530,29 +530,29 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 switch (entry.Type)
                 {
                     case DocumentIndex.Types.Boolean:
-
-                        // Store "true"/"false" for booleans.
-                        entries.Add(entry.Name, (bool)(entry.Value));
-                        break;
-
-                    case DocumentIndex.Types.DateTime:
-                        if (entry.Value != null)
+                        if (entry.Value is bool boolValue)
                         {
-                            if (entry.Value is DateTimeOffset)
-                            {
-                                entries.Add(entry.Name, ((DateTimeOffset)(entry.Value)).UtcDateTime);
-                            }
-                            else
-                            {
-                                entries.Add(entry.Name, ((DateTime)(entry.Value)).ToUniversalTime());
-                            }
+                            AddValue(entries, entry.Name, boolValue);
                         }
                         break;
 
-                    case DocumentIndex.Types.Integer:
-                        if (entry.Value != null && Int64.TryParse(entry.Value.ToString(), out var value))
+                    case DocumentIndex.Types.DateTime:
+
+                        if (entry.Value is DateTimeOffset offsetValue)
                         {
-                            entries.Add(entry.Name, value);
+                            AddValue(entries, entry.Name, offsetValue);
+                        }
+                        else if (entry.Value is DateTime dateTimeValue)
+                        {
+                            AddValue(entries, entry.Name, dateTimeValue.ToUniversalTime());
+                        }
+
+                        break;
+
+                    case DocumentIndex.Types.Integer:
+                        if (entry.Value != null && long.TryParse(entry.Value.ToString(), out var value))
+                        {
+                            AddValue(entries, entry.Name, value);
                         }
 
                         break;
@@ -560,14 +560,19 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     case DocumentIndex.Types.Number:
                         if (entry.Value != null)
                         {
-                            entries.Add(entry.Name, Convert.ToDouble(entry.Value));
+                            AddValue(entries, entry.Name, Convert.ToDouble(entry.Value));
                         }
                         break;
 
                     case DocumentIndex.Types.Text:
-                        if (entry.Value != null && !String.IsNullOrEmpty(Convert.ToString(entry.Value)))
+                        if (entry.Value != null)
                         {
-                            entries.Add(entry.Name, Convert.ToString(entry.Value));
+                            var stringValue = Convert.ToString(entry.Value);
+
+                            if (!string.IsNullOrEmpty(stringValue))
+                            {
+                                AddValue(entries, entry.Name, stringValue);
+                            }
                         }
                         break;
                 }
@@ -578,12 +583,39 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         public string GetFullIndexName(string indexName)
         {
-            if (String.IsNullOrEmpty(indexName))
+            if (string.IsNullOrEmpty(indexName))
             {
                 throw new ArgumentException($"{nameof(indexName)} cannot be null or empty.");
             }
 
             return GetIndexPrefix() + "_" + indexName;
+        }
+
+        private static void AddValue(Dictionary<string, object> entries, string key, object value)
+        {
+            if (entries.TryAdd(key, value))
+            {
+                return;
+            }
+
+            // At this point, we know that a value already exists.
+            if (entries[key] is List<object> list)
+            {
+                list.Add(value);
+
+                entries[key] = list;
+
+                return;
+            }
+
+            // Convert the existing value to a list of values.
+            var values = new List<object>()
+            {
+                entries[key],
+                value,
+            };
+
+            entries[key] = values;
         }
 
         private string GetIndexPrefix()
@@ -592,14 +624,14 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             {
                 var parts = new List<string>();
 
-                if (!String.IsNullOrWhiteSpace(_elasticsearchOptions.IndexPrefix))
+                if (!string.IsNullOrWhiteSpace(_elasticsearchOptions.IndexPrefix))
                 {
                     parts.Add(_elasticsearchOptions.IndexPrefix.ToLowerInvariant());
                 }
 
                 parts.Add(_shellSettings.Name.ToLowerInvariant());
 
-                _indexPrefix = String.Join("_", parts);
+                _indexPrefix = string.Join("_", parts);
             }
 
             return _indexPrefix;

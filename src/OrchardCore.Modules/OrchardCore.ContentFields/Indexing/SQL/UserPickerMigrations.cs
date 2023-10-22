@@ -30,12 +30,14 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
             SchemaBuilder.AlterIndexTable<UserPickerFieldIndex>(table => table
                 .CreateIndex("IDX_UserPickerFieldIndex_DocumentId_ContentType",
                     "DocumentId",
-                    "ContentType",
-                    "ContentPart",
-                    "ContentField",
+                    "ContentType(254)",
+                    "ContentPart(254)",
+                    "ContentField(254)",
                     "Published",
                     "Latest")
             );
@@ -64,12 +66,14 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
             SchemaBuilder.AlterIndexTable<UserPickerFieldIndex>(table => table
                 .CreateIndex("IDX_UserPickerFieldIndex_DocumentId_ContentType",
                     "DocumentId",
-                    "ContentType",
-                    "ContentPart",
-                    "ContentField",
+                    "ContentType(254)",
+                    "ContentPart(254)",
+                    "ContentField(254)",
                     "Published",
                     "Latest")
             );

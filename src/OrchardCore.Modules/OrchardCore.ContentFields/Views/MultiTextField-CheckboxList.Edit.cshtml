@@ -20,12 +20,12 @@
         {
             var option = options[i];
             <div class="form-check">
-                <input type="checkbox" id="@(Html.IdFor(m => m.Values) + "_" + i)" name="@(Html.NameFor(m => m.Values))" class="form-check-input" value="@option.Value" @(option.Selected ? "checked='checked'" : String.Empty) />
+                <input type="checkbox" id="@(Html.IdFor(m => m.Values) + "_" + i)" name="@(Html.NameFor(m => m.Values))" class="form-check-input" value="@option.Value" @(option.Selected ? "checked='checked'" : string.Empty) />
                 <label class="form-check-label" for="@(Html.IdFor(m => m.Values) + "_" + i)">@option.Text</label>
             </div>
         }
 
-        @if (!String.IsNullOrEmpty(settings.Hint))
+        @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
         }

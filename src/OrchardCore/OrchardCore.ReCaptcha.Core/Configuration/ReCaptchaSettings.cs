@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.ReCaptcha.Configuration
 {
     public class ReCaptchaSettings
@@ -17,9 +15,11 @@ namespace OrchardCore.ReCaptcha.Configuration
         /// </summary>
         public int DetectionThreshold { get; set; } = 5;
 
+        private bool? _isValid;
+
         public bool IsValid()
-        {
-            return !String.IsNullOrWhiteSpace(SiteKey) && !String.IsNullOrWhiteSpace(SecretKey);
-        }
+            => _isValid ??= !string.IsNullOrWhiteSpace(SiteKey)
+            && !string.IsNullOrWhiteSpace(SecretKey)
+            && !string.IsNullOrWhiteSpace(ReCaptchaApiUri);
     }
 }

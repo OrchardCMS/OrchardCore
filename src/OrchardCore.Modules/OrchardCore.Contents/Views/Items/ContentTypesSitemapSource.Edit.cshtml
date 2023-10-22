@@ -68,7 +68,7 @@
                                 <input type="hidden" name="@Html.NameFor(m => m.ContentTypes[i].ContentTypeName)"
                                        value="@Model.ContentTypes[i].ContentTypeName" />
                                 <div class="mb-3 form-check">
-                                    <input asp-for="ContentTypes[i].IsChecked" type="checkbox" class="form-check-input" />
+                                    <input asp-for="ContentTypes[i].IsChecked" type="checkbox" class="form-check-input content-type-checkbox" />
                                     <label asp-for="ContentTypes[i].IsChecked" class="form-check-label">@Model.ContentTypes[i].ContentTypeDisplayName</label>
                                 </div>
                             </div>
@@ -118,7 +118,7 @@
                 <ul class="list-group">
                     @for (int i = 0; i < Model.LimitedContentTypes.Length; i++)
                     {
-                        var checkd = String.Equals(Model.LimitedContentTypes[i].ContentTypeName, Model.LimitedContentType);
+                        var checkd = string.Equals(Model.LimitedContentTypes[i].ContentTypeName, Model.LimitedContentType);
                         var notChecked = !checkd;
                         <li class="list-group-item d-flex row px-0">
                             @* Select content types *@
@@ -126,7 +126,7 @@
                                 <input type="hidden" name="@Html.NameFor(m => m.LimitedContentTypes[i].ContentTypeName)"
                                        value="@Model.LimitedContentTypes[i].ContentTypeName" />
                                 <div class="mb-3 form-check">
-                                    <input type="radio" id="LimitedContentTypes_@i" asp-for="LimitedContentType" value="@Model.LimitedContentTypes[i].ContentTypeName" class="form-check-input" />
+                                    <input type="radio" id="LimitedContentTypes_@i" asp-for="LimitedContentType" value="@Model.LimitedContentTypes[i].ContentTypeName" class="form-check-input content-type-radio" />
                                     <label for="LimitedContentTypes_@i" class="form-check-label">@Model.LimitedContentTypes[i].ContentTypeDisplayName</label>
                                 </div>
                             </div>

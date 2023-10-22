@@ -64,13 +64,18 @@ namespace OrchardCore.Workflows.Services
 
         public Workflow NewWorkflow(WorkflowType workflowType, string correlationId = null)
         {
+            if (workflowType == null)
+            {
+                throw new ArgumentNullException(nameof(workflowType));
+            }
+
             var workflow = new Workflow
             {
                 WorkflowTypeId = workflowType.WorkflowTypeId,
                 Status = WorkflowStatus.Idle,
                 State = JObject.FromObject(new WorkflowState
                 {
-                    ActivityStates = workflowType.Activities.Select(x => x).ToDictionary(x => x.ActivityId, x => x.Properties)
+                    ActivityStates = workflowType.Activities.ToDictionary(x => x.ActivityId, x => x.Properties)
                 }),
                 CorrelationId = correlationId,
                 LockTimeout = workflowType.LockTimeout,
@@ -84,6 +89,16 @@ namespace OrchardCore.Workflows.Services
 
         public async Task<WorkflowExecutionContext> CreateWorkflowExecutionContextAsync(WorkflowType workflowType, Workflow workflow, IDictionary<string, object> input = null)
         {
+            if (workflowType == null)
+            {
+                throw new ArgumentNullException(nameof(workflowType));
+            }
+
+            if (workflow == null)
+            {
+                throw new ArgumentNullException(nameof(workflow));
+            }
+
             var state = workflow.State.ToObject<WorkflowState>();
             var activityQuery = await Task.WhenAll(workflowType.Activities.Select(x =>
             {
@@ -100,11 +115,17 @@ namespace OrchardCore.Workflows.Services
             var output = await DeserializeAsync(state.Output);
             var lastResult = await DeserializeAsync(state.LastResult);
             var executedActivities = state.ExecutedActivities;
+
             return new WorkflowExecutionContext(workflowType, workflow, mergedInput, output, properties, executedActivities, lastResult, activityQuery);
         }
 
         public Task<ActivityContext> CreateActivityExecutionContextAsync(ActivityRecord activityRecord, JObject properties)
         {
+            if (activityRecord == null)
+            {
+                throw new ArgumentNullException(nameof(activityRecord));
+            }
+
             var activity = _activityLibrary.InstantiateActivity<IActivity>(activityRecord.Name, properties);
 
             if (activity == null)
@@ -232,6 +253,16 @@ namespace OrchardCore.Workflows.Services
 
         public async Task<WorkflowExecutionContext> ResumeWorkflowAsync(Workflow workflow, BlockingActivity awaitingActivity, IDictionary<string, object> input = null)
         {
+            if (workflow == null)
+            {
+                throw new ArgumentNullException(nameof(workflow));
+            }
+
+            if (awaitingActivity == null)
+            {
+                throw new ArgumentNullException(nameof(awaitingActivity));
+            }
+
             var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
             var activityRecord = workflowType.Activities.SingleOrDefault(x => x.ActivityId == awaitingActivity.ActivityId);
             var workflowContext = await CreateWorkflowExecutionContextAsync(workflowType, workflow, input);
@@ -248,28 +279,27 @@ namespace OrchardCore.Workflows.Services
             {
                 // Workflow is aborted.
                 workflowContext.Status = WorkflowStatus.Aborted;
+
+                return workflowContext;
             }
-            else
+
+            // Check if the current activity can execute.
+            var activityContext = workflowContext.GetActivity(activityRecord.ActivityId);
+            if (!await activityContext.Activity.CanExecuteAsync(workflowContext, activityContext))
             {
-                // Check if the current activity can execute.
-                var activityContext = workflowContext.GetActivity(activityRecord.ActivityId);
-                if (await activityContext.Activity.CanExecuteAsync(workflowContext, activityContext))
-                {
-                    // Signal every activity that the workflow is resumed.
-                    await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnWorkflowResumedAsync(workflowContext));
+                workflowContext.Status = WorkflowStatus.Halted;
 
-                    // Remove the blocking activity.
-                    workflowContext.Workflow.BlockingActivities.Remove(awaitingActivity);
-
-                    // Resume the workflow at the specified blocking activity.
-                    await ExecuteWorkflowAsync(workflowContext, activityRecord);
-                }
-                else
-                {
-                    workflowContext.Status = WorkflowStatus.Halted;
-                    return workflowContext;
-                }
+                return workflowContext;
             }
+
+            // Signal every activity that the workflow is resumed.
+            await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnWorkflowResumedAsync(workflowContext));
+
+            // Remove the blocking activity.
+            workflowContext.Workflow.BlockingActivities.Remove(awaitingActivity);
+
+            // Resume the workflow at the specified blocking activity.
+            await ExecuteWorkflowAsync(workflowContext, activityRecord);
 
             if (workflowContext.Status == WorkflowStatus.Finished && workflowType.DeleteFinishedWorkflows)
             {
@@ -283,17 +313,72 @@ namespace OrchardCore.Workflows.Services
             return workflowContext;
         }
 
+        public async Task<WorkflowExecutionContext> RestartWorkflowAsync(WorkflowType workflowType, IDictionary<string, object> input = null, string correlationId = null)
+        {
+            if (workflowType == null)
+            {
+                throw new ArgumentNullException(nameof(workflowType));
+            }
+
+            var startActivity = workflowType.Activities?.FirstOrDefault(x => x.IsStart)
+                ?? throw new InvalidOperationException($"Workflow with ID {workflowType.Id} does not have a start activity.");
+
+            // Create a new workflow instance.
+            var workflow = NewWorkflow(workflowType, correlationId);
+
+            // Create a workflow context.
+            var workflowContext = await CreateWorkflowExecutionContextAsync(workflowType, workflow, input);
+            workflowContext.Status = WorkflowStatus.Starting;
+
+            // Signal every activity that the workflow is about to start.
+            // This should be called prior OnInputReceivedAsync.
+            var cancellationToken = new CancellationToken();
+            await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnWorkflowRestartingAsync(workflowContext, cancellationToken));
+
+            // Signal every activity about available input.
+            await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnInputReceivedAsync(workflowContext, input));
+
+            if (cancellationToken.IsCancellationRequested)
+            {
+                // Workflow is aborted.
+                workflowContext.Status = WorkflowStatus.Aborted;
+
+                return workflowContext;
+            }
+
+            // Check if the current activity can execute.
+            var activityContext = workflowContext.GetActivity(startActivity.ActivityId);
+            if (!await activityContext.Activity.CanExecuteAsync(workflowContext, activityContext))
+            {
+                workflowContext.Status = WorkflowStatus.Idle;
+
+                return workflowContext;
+            }
+
+            // Signal every activity that the workflow has started.
+            await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnWorkflowRestartedAsync(workflowContext));
+
+            // Execute the activity.
+            await ExecuteWorkflowAsync(workflowContext, startActivity);
+
+            if (workflowContext.Status != WorkflowStatus.Finished || !workflowType.DeleteFinishedWorkflows)
+            {
+                // Serialize state.
+                await PersistAsync(workflowContext);
+            }
+
+            return workflowContext;
+        }
+
         public async Task<WorkflowExecutionContext> StartWorkflowAsync(WorkflowType workflowType, ActivityRecord startActivity = null, IDictionary<string, object> input = null, string correlationId = null)
         {
-            if (startActivity == null)
+            if (workflowType == null)
             {
-                startActivity = workflowType.Activities.FirstOrDefault(x => x.IsStart);
-
-                if (startActivity == null)
-                {
-                    throw new InvalidOperationException($"Workflow with ID {workflowType.Id} does not have a start activity.");
-                }
+                throw new ArgumentNullException(nameof(workflowType));
             }
+
+            startActivity ??= workflowType.Activities?.FirstOrDefault(x => x.IsStart)
+                ?? throw new InvalidOperationException($"Workflow with ID {workflowType.Id} does not have a start activity.");
 
             // Create a new workflow instance.
             var workflow = NewWorkflow(workflowType, correlationId);
@@ -313,26 +398,24 @@ namespace OrchardCore.Workflows.Services
             {
                 // Workflow is aborted.
                 workflowContext.Status = WorkflowStatus.Aborted;
+
                 return workflowContext;
             }
-            else
-            {
-                // Check if the current activity can execute.
-                var activityContext = workflowContext.GetActivity(startActivity.ActivityId);
-                if (await activityContext.Activity.CanExecuteAsync(workflowContext, activityContext))
-                {
-                    // Signal every activity that the workflow has started.
-                    await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnWorkflowStartedAsync(workflowContext));
 
-                    // Execute the activity.
-                    await ExecuteWorkflowAsync(workflowContext, startActivity);
-                }
-                else
-                {
-                    workflowContext.Status = WorkflowStatus.Idle;
-                    return workflowContext;
-                }
+            // Check if the current activity can execute.
+            var activityContext = workflowContext.GetActivity(startActivity.ActivityId);
+            if (!await activityContext.Activity.CanExecuteAsync(workflowContext, activityContext))
+            {
+                workflowContext.Status = WorkflowStatus.Idle;
+
+                return workflowContext;
             }
+
+            // Signal every activity that the workflow has started.
+            await InvokeActivitiesAsync(workflowContext, x => x.Activity.OnWorkflowStartedAsync(workflowContext));
+
+            // Execute the activity.
+            await ExecuteWorkflowAsync(workflowContext, startActivity);
 
             if (workflowContext.Status != WorkflowStatus.Finished || !workflowType.DeleteFinishedWorkflows)
             {

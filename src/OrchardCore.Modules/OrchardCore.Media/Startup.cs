@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
@@ -46,6 +47,7 @@ using OrchardCore.Modules.FileProviders;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Shortcodes;
 using SixLabors.ImageSharp.Web.Caching;
@@ -57,7 +59,7 @@ namespace OrchardCore.Media
 {
     public class Startup : StartupBase
     {
-        private const string _imageSharpCacheFolder = "is-cache";
+        private const string ImageSharpCacheFolder = "is-cache";
 
         private readonly AdminOptions _adminOptions;
         private readonly ShellSettings _shellSettings;
@@ -81,6 +83,8 @@ namespace OrchardCore.Media
             })
             .AddLiquidFilter<AssetUrlFilter>("asset_url")
             .AddLiquidFilter<ResizeUrlFilter>("resize_url");
+
+            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
 
             services.AddTransient<IConfigureOptions<MediaOptions>, MediaOptionsConfiguration>();
 
@@ -145,7 +149,7 @@ namespace OrchardCore.Media
                 .SetCacheKey<BackwardsCompatibleCacheKey>()
                 .Configure<PhysicalFileSystemCacheOptions>(options =>
                 {
-                    options.CacheFolder = $"{_shellSettings.Name}/{_imageSharpCacheFolder}";
+                    options.CacheFolder = $"{_shellSettings.Name}/{ImageSharpCacheFolder}";
                     options.CacheFolderDepth = 12;
                 })
                 .AddProvider<MediaResizingFileProvider>()
@@ -168,7 +172,6 @@ namespace OrchardCore.Media
             services.AddDataMigration<Migrations>();
             services.AddScoped<IContentFieldIndexHandler, MediaFieldIndexHandler>();
             services.AddMediaFileTextProvider<PdfMediaFileTextProvider>(".pdf");
-
             services.AddRecipeExecutionStep<MediaStep>();
 
             // MIME types
@@ -187,6 +190,8 @@ namespace OrchardCore.Media
             services.AddScoped<IMediaNameNormalizerService, NullMediaNameNormalizerService>();
 
             services.AddScoped<IUserAssetFolderNameProvider, DefaultUserAssetFolderNameProvider>();
+            services.AddSingleton<IChunkFileUploadService, ChunkFileUploadService>();
+            services.AddSingleton<IBackgroundTask, ChunkFileUploadBackgroundTask>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -388,6 +393,18 @@ namespace OrchardCore.Media
             services.AddTransient<IDeploymentSource, AllMediaProfilesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllMediaProfilesDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllMediaProfilesDeploymentStepDriver>();
+        }
+    }
+
+    [Feature("OrchardCore.Media.Indexing")]
+    public class MediaIndexingStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddMediaFileTextProvider<TextMediaFileTextProvider>(".txt");
+            services.AddMediaFileTextProvider<TextMediaFileTextProvider>(".md");
+            services.AddMediaFileTextProvider<WordDocumentMediaFileTextProvider>(".docx");
+            services.AddMediaFileTextProvider<PresentationDocumentMediaFileTextProvider>(".pptx");
         }
     }
 

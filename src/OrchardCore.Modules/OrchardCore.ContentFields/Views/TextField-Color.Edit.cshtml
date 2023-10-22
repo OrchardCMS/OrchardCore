@@ -9,7 +9,7 @@
     <label asp-for="Text" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndCssClasses("pt-lg-2")">
         <input asp-for="Text" class="form-control content-preview-text" type="color" style="min-height: 2.25rem" />
-        @if (!String.IsNullOrEmpty(settings.Hint))
+        @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
         }

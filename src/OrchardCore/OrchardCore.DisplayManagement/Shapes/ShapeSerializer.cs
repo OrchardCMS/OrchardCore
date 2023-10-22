@@ -39,12 +39,12 @@ namespace OrchardCore.DisplayManagement.Shapes
 
             // Provides a convenient identifier in console.
             var displayText = _shape.Metadata.Name;
-            if (String.IsNullOrEmpty(displayText))
+            if (string.IsNullOrEmpty(displayText))
             {
                 displayText = _shape.Metadata.Type;
             }
 
-            if (String.IsNullOrEmpty(displayText))
+            if (string.IsNullOrEmpty(displayText))
             {
                 displayText = _shape.GetType().Name;
             }

@@ -29,7 +29,7 @@ public class FeatureService
 
     public async Task<IFeatureInfo> GetAvailableFeature(string id)
     {
-        if (String.IsNullOrEmpty(id))
+        if (string.IsNullOrEmpty(id))
         {
             return null;
         }

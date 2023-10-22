@@ -36,7 +36,7 @@ namespace OrchardCore.Modules
 
         public ITimeZone GetTimeZone(string timeZoneId)
         {
-            if (String.IsNullOrEmpty(timeZoneId))
+            if (string.IsNullOrEmpty(timeZoneId))
             {
                 return GetSystemTimeZone();
             }
@@ -65,7 +65,7 @@ namespace OrchardCore.Modules
 
         internal static DateTimeZone GetDateTimeZone(string timeZone)
         {
-            if (!String.IsNullOrEmpty(timeZone) && IsValidTimeZone(DateTimeZoneProviders.Tzdb, timeZone))
+            if (!string.IsNullOrEmpty(timeZone) && IsValidTimeZone(DateTimeZoneProviders.Tzdb, timeZone))
             {
                 return DateTimeZoneProviders.Tzdb[timeZone];
             }

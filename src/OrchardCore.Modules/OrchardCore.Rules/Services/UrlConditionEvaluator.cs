@@ -27,7 +27,7 @@ namespace OrchardCore.Rules.Services
 
             // Tenant home page could have an empty string as a request path, where
             // the default tenant does not.
-            if (String.IsNullOrEmpty(requestPath))
+            if (string.IsNullOrEmpty(requestPath))
             {
                 requestPath = "/";
             }

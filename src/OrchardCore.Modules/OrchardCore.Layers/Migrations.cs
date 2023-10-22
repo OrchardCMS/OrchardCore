@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using OrchardCore.Data.Migration;
 using OrchardCore.Layers.Indexes;
@@ -31,7 +30,9 @@ namespace OrchardCore.Layers
             );
 
             SchemaBuilder.AlterIndexTable<LayerMetadataIndex>(table => table
-                .CreateIndex("IDX_LayerMetadataIndex_DocumentId", "DocumentId", "Zone")
+                .CreateIndex("IDX_LayerMetadataIndex_DocumentId",
+                "DocumentId",
+                "Zone")
             );
 
             // Shortcut other migration steps on new content definition schemas.
@@ -42,7 +43,9 @@ namespace OrchardCore.Layers
         public int UpdateFrom1()
         {
             SchemaBuilder.AlterIndexTable<LayerMetadataIndex>(table => table
-                .CreateIndex("IDX_LayerMetadataIndex_DocumentId", "DocumentId", "Zone")
+                .CreateIndex("IDX_LayerMetadataIndex_DocumentId",
+                "DocumentId",
+                "Zone")
             );
 
             return 2;
@@ -59,7 +62,7 @@ namespace OrchardCore.Layers
 #pragma warning disable 0618
                 _ruleMigrator.Migrate(layer.Rule, layer.LayerRule);
 
-                layer.Rule = String.Empty;
+                layer.Rule = string.Empty;
 #pragma warning restore 0618
             }
 

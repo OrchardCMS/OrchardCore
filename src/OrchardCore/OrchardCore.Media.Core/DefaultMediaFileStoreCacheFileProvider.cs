@@ -96,7 +96,7 @@ namespace OrchardCore.Media.Core
         public Task<bool> PurgeAsync()
         {
             var hasErrors = false;
-            var folders = GetDirectoryContents(String.Empty);
+            var folders = GetDirectoryContents(string.Empty);
             foreach (var fileInfo in folders)
             {
                 if (fileInfo.IsDirectory)

@@ -3,24 +3,23 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.Environment.Shell.Configuration.Internal
 {
-    internal class UpdatableDataProvider : IConfigurationProvider, IEnumerable<KeyValuePair<string, string>>
+    internal class UpdatableDataProvider : IConfigurationProvider, IConfigurationSource, IEnumerable<KeyValuePair<string, string>>
     {
-        private ConfigurationReloadToken _reloadToken = new();
+        public UpdatableDataProvider() => Data = new(StringComparer.OrdinalIgnoreCase);
 
         public UpdatableDataProvider(IEnumerable<KeyValuePair<string, string>> initialData)
         {
-            Data = new ConcurrentDictionary<string, string>(initialData, StringComparer.OrdinalIgnoreCase);
+            initialData ??= Enumerable.Empty<KeyValuePair<string, string>>();
+            Data = new(initialData, StringComparer.OrdinalIgnoreCase);
         }
 
-        protected IDictionary<string, string> Data { get; set; }
-
-        public void Add(string key, string value) => Data.Add(key, value);
+        protected ConcurrentDictionary<string, string> Data { get; set; }
 
         public IEnumerator<KeyValuePair<string, string>> GetEnumerator() => Data.GetEnumerator();
 
@@ -36,7 +35,7 @@ namespace OrchardCore.Environment.Shell.Configuration.Internal
 
         public virtual IEnumerable<string> GetChildKeys(IEnumerable<string> earlierKeys, string parentPath)
         {
-            var prefix = parentPath == null ? String.Empty : parentPath + ConfigurationPath.KeyDelimiter;
+            var prefix = parentPath == null ? string.Empty : parentPath + ConfigurationPath.KeyDelimiter;
 
             return Data
                 .Where(kv => kv.Key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
@@ -51,17 +50,10 @@ namespace OrchardCore.Environment.Shell.Configuration.Internal
             return indexOf < 0 ? key[prefixLength..] : key[prefixLength..indexOf];
         }
 
-        public IChangeToken GetReloadToken()
-        {
-            return _reloadToken;
-        }
-
-        protected void OnReload()
-        {
-            var previousToken = Interlocked.Exchange(ref _reloadToken, new ConfigurationReloadToken());
-            previousToken.OnReload();
-        }
+        public IChangeToken GetReloadToken() => NullChangeToken.Singleton;
 
         public override string ToString() => $"{GetType().Name}";
+
+        public IConfigurationProvider Build(IConfigurationBuilder builder) => this;
     }
 }

@@ -44,6 +44,16 @@
                 </div>
             </div>
 
+            <div class="@Orchard.GetWrapperCssClasses()">
+                <div class="@Orchard.GetEndCssClasses(true)">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" asp-for="UsePipeline" checked="@Model.UsePipeline" />
+                        <label class="form-check-label" asp-for="UsePipeline">@T["Use Tenant Pipeline"]</label>
+                    </div>
+                    <span class="hint">@T["Whether or not the tenant pipeline should be built to configure endpoints and then executed to allow route urls generation in the background."]</span>
+                </div>
+            </div>
+
             <div><span asp-validation-for="LockTimeout" class="text-danger">@T["Invalid lock timeout value in the advanced tab"]</span></div>
             <div><span asp-validation-for="LockExpiration" class="text-danger">@T["Invalid lock expiration value in the advanced tab"]</span></div>
         </div>

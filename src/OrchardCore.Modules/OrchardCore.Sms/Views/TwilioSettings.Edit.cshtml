@@ -1,0 +1,31 @@
+@using OrchardCore.Sms.Services
+@using OrchardCore.Sms.ViewModels
+@using OrchardCore.Sms
+
+@model TwilioSettingsViewModel
+
+<div class="sms-settings-container d-none" data-provider-name="@(TwilioSmsProvider.TechnicalName)">
+    <h4>@T["Twilio Account Info"]</h4>
+    <div class="mb-3" asp-validation-class-for="PhoneNumber">
+        <label asp-for="PhoneNumber">@T["Phone Number"]</label>
+        <input asp-for="PhoneNumber" class="form-control" />
+        <span asp-validation-for="PhoneNumber"></span>
+        <span class="hint">@T["Phone number must include a country code. For example, +1 for United States."]</span>
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="AccountSID">
+        <label asp-for="AccountSID">@T["Account SID"]</label>
+        <input asp-for="AccountSID" class="form-control" />
+        <span asp-validation-for="AccountSID"></span>
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="AuthToken">
+        <label asp-for="AuthToken">@T["Auth Token"]</label>
+        <input asp-for="AuthToken" class="form-control" />
+        <span asp-validation-for="AuthToken"></span>
+        @if (Model.HasAuthToken)
+        {
+            <span class="hint">@T["Auth token was securly saved. Enter a new value if you wish to replace the existing secret."]</span>
+        }
+    </div>
+</div>

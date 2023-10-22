@@ -33,7 +33,7 @@ namespace OrchardCore.ContentTypes.Editors
 
             context.Builder.DisplayedAs(model.DisplayName);
 
-            if (String.IsNullOrWhiteSpace(model.DisplayName))
+            if (string.IsNullOrWhiteSpace(model.DisplayName))
             {
                 context.Updater.ModelState.AddModelError("DisplayName", S["The Content Type name can't be empty."]);
             }

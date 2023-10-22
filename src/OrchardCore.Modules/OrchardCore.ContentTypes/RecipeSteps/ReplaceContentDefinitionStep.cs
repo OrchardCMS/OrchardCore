@@ -21,7 +21,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps
 
         public Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "ReplaceContentDefinition", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "ReplaceContentDefinition", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
@@ -52,7 +52,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps
         {
             _contentDefinitionManager.AlterTypeDefinition(record.Name, builder =>
             {
-                if (!String.IsNullOrEmpty(record.DisplayName))
+                if (!string.IsNullOrEmpty(record.DisplayName))
                 {
                     builder.DisplayedAs(record.DisplayName);
                     builder.MergeSettings(record.Settings);
