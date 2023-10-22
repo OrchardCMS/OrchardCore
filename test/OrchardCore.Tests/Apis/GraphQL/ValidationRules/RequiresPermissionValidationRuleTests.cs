@@ -27,16 +27,9 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
                                 UsePermissionsContext = true
                             });
 
-            var executer = new DocumentExecuter();
+            var result = await ExecuteAndGetPermissionAsync(options, "noPermissions");
 
-            var executionResult = await executer.ExecuteAsync(options);
-
-            Assert.Null(executionResult.Errors);
-
-            var writer = new DocumentWriter();
-            var result = JObject.Parse(await writer.WriteToStringAsync(executionResult));
-
-            Assert.Equal("Fantastic Fox Hates Permissions", result["data"]["test"]["noPermissions"].ToString());
+            Assert.Equal("Fantastic Fox Hates Permissions", result);
         }
 
         [Theory]
@@ -51,16 +44,9 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
                                 AuthorizedPermissions = new[] { _permissions[fieldName] }
                             });
 
-            var executer = new DocumentExecuter();
+            var result = await ExecuteAndGetPermissionAsync(options, fieldName);
 
-            var executionResult = await executer.ExecuteAsync(options);
-
-            Assert.Null(executionResult.Errors);
-
-            var writer = new DocumentWriter();
-            var result = JObject.Parse(await writer.WriteToStringAsync(executionResult));
-
-            Assert.Equal(expectedFieldValue, result["data"]["test"][fieldName].ToString());
+            Assert.Equal(expectedFieldValue, result);
         }
 
         [Fact]
@@ -89,16 +75,9 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
                                 AuthorizedPermissions = _permissions.Values
                             });
 
-            var executer = new DocumentExecuter();
+            var result = await ExecuteAndGetPermissionAsync(options, "permissionMultiple");
 
-            var executionResult = await executer.ExecuteAsync(options);
-
-            Assert.Null(executionResult.Errors);
-
-            var writer = new DocumentWriter();
-            var result = JObject.Parse(await writer.WriteToStringAsync(executionResult));
-
-            Assert.Equal("Fantastic Fox Loves Multiple Permissions", result["data"]["test"]["permissionMultiple"].ToString());
+            Assert.Equal("Fantastic Fox Loves Multiple Permissions", result);
         }
 
         private static ExecutionOptions BuildExecutionOptions(string query, PermissionsContext permissionsContext)
@@ -128,6 +107,19 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
                 },
                 ValidationRules = DocumentValidator.CoreRules.Concat(serviceProvider.GetServices<IValidationRule>())
             };
+        }
+
+        private static async Task<string> ExecuteAndGetPermissionAsync(ExecutionOptions options, string name)
+        {
+            var executer = new DocumentExecuter();
+            var executionResult = await executer.ExecuteAsync(options);
+
+            Assert.Null(executionResult.Errors);
+
+            var writer = new DocumentWriter();
+            var result = JsonNode.Parse(await writer.WriteToStringAsync(executionResult));
+
+            return result.GetNode("data", "test", name).GetValue<string>();
         }
 
         private class ValidationSchema : Schema

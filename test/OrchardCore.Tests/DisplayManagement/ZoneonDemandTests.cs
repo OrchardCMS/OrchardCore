@@ -72,9 +72,11 @@ namespace OrchardCore.Tests.DisplayManagement
             object zoneObject1 = zoneOnDemand, zoneObject2 = zoneOnDemand;
 
             // Intended reference comparison.
+ #pragma warning disable CS0252, CS0253 // Possible unintended reference comparison.
             Assert.True(zoneShape1 == zoneShape2);
             Assert.True(zoneComposite1 == zoneComposite2);
             Assert.True(zoneObject1 == zoneObject2);
+ #pragma warning restore CS0252, CS0253 // Possible unintended reference comparison.
         }
 
         [Fact]

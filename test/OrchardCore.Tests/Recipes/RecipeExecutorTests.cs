@@ -7,6 +7,8 @@ using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Scripting;
+using OrchardCore.Tests.Apis.Context;
+using OrchardCore.Title.Models;
 
 namespace OrchardCore.Recipes
 {
@@ -43,7 +45,7 @@ namespace OrchardCore.Recipes
 
                 // Assert
                 var recipeStep = (recipeEventHandlers.Single() as RecipeEventHandler).Context.Step;
-                Assert.Equal(expected, recipeStep.SelectToken("data.[0].TitlePart.Title").ToString());
+                Assert.Equal(expected, recipeStep.GetNode("data", 0, nameof(TitlePart), nameof(TitlePart.Title)).GetValue<string>());
             });
         }
 

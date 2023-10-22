@@ -3,13 +3,11 @@ using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Recipes;
 using OrchardCore.OpenId.YesSql.Models;
-using OrchardCore.Recipes.Models;
-using OrchardCore.Tests.Utilities;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
 {
-    public class OpenIdApplicationStepTests
+    public class OpenIdApplicationStepTests : OpenIdTestBase
     {
         [Theory]
         [ClassData(typeof(OpenIdApplicationStepTestsData))]
@@ -36,12 +34,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                     new ValueTask<object>(actual));
 
             var step = new OpenIdApplicationStep(appManagerMock.Object);
-            var recipe = JObject.Parse(GetRecipeFileContent(recipeName));
-            var context = new RecipeExecutionContext
-            {
-                Name = recipe.Property("steps").Value.First.Value<string>("name"),
-                Step = (JObject)recipe.Property("steps").Value.First,
-            };
+            var context = GetRecipeExecutionContext(recipeName);
 
             // Act
             await step.ExecuteAsync(context);
@@ -127,12 +120,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                     new ValueTask());
 
             var step = new OpenIdApplicationStep(appManagerMock.Object);
-            var recipe = JObject.Parse(GetRecipeFileContent(recipeName));
-            var context = new RecipeExecutionContext
-            {
-                Name = recipe.Property("steps").Value.First.Value<string>("name"),
-                Step = (JObject)recipe.Property("steps").Value.First,
-            };
+            var context = GetRecipeExecutionContext(recipeName);
 
             // Act
             await step.ExecuteAsync(context);
@@ -159,12 +147,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             Assert.Equal(expected.RedirectUris, actual.RedirectUris);
             Assert.Equal(expected.Roles, actual.Roles);
         }
-
-        private string GetRecipeFileContent(string recipeName)
-        {
-            return new EmbeddedFileProvider(GetType().Assembly)
-                .GetFileInfo($"Modules.OrchardCore.OpenId.RecipeFiles.{recipeName}.json")
-                .ReadToEnd();
-        }
     }
+
 }

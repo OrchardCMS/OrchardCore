@@ -4,31 +4,28 @@ namespace OrchardCore.Tests.Apis.Context
     {
         public static async Task<T> ReadAsAsync<T>(this HttpContent content, JsonConverter jsonConverter)
         {
-            using var stream = await content.ReadAsStreamAsync();
-            using var reader = new StreamReader(stream);
-            using var jsonReader = new JsonTextReader(reader);
-            var ser = new JsonSerializer();
-            ser.Converters.Insert(0, jsonConverter);
-            return ser.Deserialize<T>(jsonReader);
-        }
+            await using var stream = await content.ReadAsStreamAsync();
 
-        public static async Task<T> ReadAsAsync<T>(this HttpContent content)
-        {
-            using var data = await content.ReadAsStreamAsync();
-            return data.ReadAs<T>();
-        }
+            var options = CreateOptions();
 
-        public static T ReadAs<T>(this Stream stream)
-        {
-            using var reader = new StreamReader(stream);
-            using var jsonReader = new JsonTextReader(reader);
-            var jsonSerializer = new JsonSerializer
+            if (jsonConverter != null)
             {
-                NullValueHandling = NullValueHandling.Ignore,
-                Converters = { new StringEnumConverter() }
-            };
+                options.Converters.Insert(0, jsonConverter);
+            }
 
-            return jsonSerializer.Deserialize<T>(jsonReader);
+            return await JsonSerializer.DeserializeAsync<T>(stream, options);
+        }
+
+        public static Task<T> ReadAsAsync<T>(this HttpContent content) =>
+            content.ReadAsAsync<T>(jsonConverter: null);
+
+        private static JsonSerializerOptions CreateOptions()
+        {
+            return new JsonSerializerOptions
+            {
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                Converters = { new JsonStringEnumConverter() },
+            };
         }
     }
 }

@@ -32,13 +32,13 @@ namespace OrchardCore.Tests.Workflows
                 WorkflowTypeId = IdGenerator.GenerateId(),
                 Activities = new List<ActivityRecord>
                 {
-                    new ActivityRecord { ActivityId = "1", IsStart = true, Name = addTask.Name, Properties = JObject.FromObject( new
+                    new ActivityRecord { ActivityId = "1", IsStart = true, Name = addTask.Name, Properties = JsonSerializer.SerializeToNode( new
                     {
                         A = new WorkflowExpression<double>("input(\"A\")"),
                         B = new WorkflowExpression<double>("input(\"B\")"),
-                    }) },
-                    new ActivityRecord { ActivityId = "2", Name = writeLineTask.Name, Properties = JObject.FromObject( new { Text = new WorkflowExpression<string>("lastResult().toString()") }) },
-                    new ActivityRecord { ActivityId = "3", Name = setOutputTask.Name, Properties = JObject.FromObject( new { Value = new WorkflowExpression<string>("lastResult()"), OutputName = "Sum" }) }
+                    })!.AsObject() },
+                    new ActivityRecord { ActivityId = "2", Name = writeLineTask.Name, Properties = JsonSerializer.SerializeToNode( new { Text = new WorkflowExpression<string>("lastResult().toString()") })!.AsObject() },
+                    new ActivityRecord { ActivityId = "3", Name = setOutputTask.Name, Properties = JsonSerializer.SerializeToNode( new { Value = new WorkflowExpression<string>("lastResult()"), OutputName = "Sum" })!.AsObject() }
                 },
                 Transitions = new List<Transition>
                 {

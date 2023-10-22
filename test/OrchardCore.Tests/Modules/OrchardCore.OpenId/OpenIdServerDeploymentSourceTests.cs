@@ -9,7 +9,7 @@ using static OrchardCore.OpenId.Settings.OpenIdServerSettings;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
 {
-    public class OpenIdServerDeploymentSourceTests
+    public class OpenIdServerDeploymentSourceTests : OpenIdTestBase
     {
         private static OpenIdServerSettings CreateSettings(string authority, TokenFormat tokenFormat, bool initializeAllProperties)
         {
@@ -99,17 +99,13 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             await deploymentSource.ProcessDeploymentStepAsync(new OpenIdServerDeploymentStep(), result);
             await result.FinalizeAsync();
 
-            var deploy = JObject.Parse(
+            var deploy = JsonSerializer.SerializeToNode(
                 fileBuilder.GetFileContents(
                     recipeFile,
                     Encoding.UTF8));
 
-            var recipeContext = new RecipeExecutionContext
-            {
-                RecipeDescriptor = descriptor,
-                Name = deploy.Property("steps").Value.First.Value<string>("name"),
-                Step = (JObject)deploy.Property("steps").Value.First,
-            };
+            var recipeContext = GetRecipeExecutionContext(deploy);
+            recipeContext.RecipeDescriptor = descriptor;
 
             var recipeStep = new OpenIdServerSettingsStep(recipeServerServiceMock.Object);
             await recipeStep.ExecuteAsync(recipeContext);

@@ -27,14 +27,14 @@ namespace OrchardCore.Tests.Apis.Context
 
             var result = await GraphQLClient.Content.Query(body);
 
-            var blogPostContentItemId = result["data"]["blogPost"].First["contentItemId"].ToString();
+            var blogPostContentItemId = result.GetNode("data", "blogPost", 0).GetContentItemId();
 
             var content = await Client.GetAsync($"api/content/{blogPostContentItemId}");
             BlogPost = await content.Content.ReadAsAsync<ContentItem>();
 
-            BlogContentItemId = result["data"]["blog"].First["contentItemId"].ToString();
+            BlogContentItemId = result.GetNode("data", "blog", 0).GetContentItemId();
 
-            TagsTaxonomyContentItemId = result["data"]["taxonomy"][1]["contentItemId"].ToString();
+            TagsTaxonomyContentItemId = result.GetNode("data", "taxonomy", 1).GetContentItemId();
         }
     }
 }

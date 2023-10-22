@@ -59,8 +59,7 @@ namespace OrchardCore.Tests.Data
             contentItem.Merge(newContentItem);
 
             // Test
-            var content = (JObject)contentItem.Content;
-            Assert.False(content.ContainsKey(nameof(contentItem.DisplayText)));
+            AssertNoDisplayText(contentItem);
         }
 
         [Fact]
@@ -81,8 +80,7 @@ namespace OrchardCore.Tests.Data
             contentItem.Merge(newContentItem);
 
             // Test
-            var content = (JObject)contentItem.Content;
-            Assert.False(content.ContainsKey(nameof(contentItem.DisplayText)));
+            AssertNoDisplayText(contentItem);
         }
 
         [Fact]
@@ -123,6 +121,12 @@ namespace OrchardCore.Tests.Data
             // Test
             var mergedPart = contentItem.As<CustomPart>();
             Assert.Equal(value, mergedPart?.Value);
+        }
+
+        private static void AssertNoDisplayText(ContentItem contentItem)
+        {
+            var content = (JsonNode)contentItem.Content;
+            Assert.Null(content[nameof(contentItem.DisplayText)]);
         }
 
         public class CustomPart : ContentPart

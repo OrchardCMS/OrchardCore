@@ -189,9 +189,8 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 jItem[nameof(AutoroutePart)][nameof(AutoroutePart.Path)] = "blog/another";
             });
 
-            var firstRecipeData = firstRecipe.SelectToken("steps[0].Data") as JArray;
-
-            var secondContentItem = secondRecipe.SelectToken("steps[0].Data[0]");
+            var firstRecipeData = GetFirstStepData(firstRecipe);
+            var secondContentItem = GetFirstStepData(secondRecipe).First();
 
             firstRecipeData.Add(secondContentItem);
 
@@ -207,5 +206,9 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 Assert.Equal(1, blogPostsCount);
             });
         }
+
+        public static JsonArray GetFirstStepData(JsonObject recipe) =>
+            (recipe?["steps"] as JsonArray)?["Data"] as JsonArray ??
+                throw new InvalidOperationException("Couldn't find JSON array \"steps[0].Data\".");
     }
 }

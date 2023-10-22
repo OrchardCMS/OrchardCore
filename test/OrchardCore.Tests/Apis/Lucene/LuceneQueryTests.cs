@@ -31,14 +31,11 @@ namespace OrchardCore.Tests.Apis.Lucene
                 },
             };
 
-            var query = JsonConvert.SerializeObject(dynamicQuery);
-
-            var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
-            var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
+            var queryResults = await GetLuceneQueryResultsAsync(context, index, dynamicQuery);
 
             // Test
             Assert.Equal(2, queryResults.Items.Count());
-            var contentItems = queryResults.Items.Select(x => ((JObject)x).ToObject<ContentItem>());
+            var contentItems = GetContentItems(queryResults);
 
             Assert.True(contentItems.All(x => x.DisplayText.Contains("Orchard", StringComparison.OrdinalIgnoreCase)));
         }
@@ -67,13 +64,11 @@ namespace OrchardCore.Tests.Apis.Lucene
                 },
             };
 
-            var query = JsonConvert.SerializeObject(dynamicQuery);
-            var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
-            var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
+            var queryResults = await GetLuceneQueryResultsAsync(context, index, dynamicQuery);
 
             // Test
             Assert.Equal(2, queryResults.Items.Count());
-            var contentItems = queryResults.Items.Select(x => ((JObject)x).ToObject<ContentItem>());
+            var contentItems = GetContentItems(queryResults);
 
             Assert.False(contentItems.All(x => x.DisplayText.Contains("Orchard", StringComparison.OrdinalIgnoreCase)));
         }
@@ -105,14 +100,11 @@ namespace OrchardCore.Tests.Apis.Lucene
                 },
             };
 
-            var query = JsonConvert.SerializeObject(dynamicQuery);
-
-            var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
-            var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
+            var queryResults = await GetLuceneQueryResultsAsync(context, index, dynamicQuery);
 
             // Test
             Assert.NotEmpty(queryResults.Items);
-            var contentItems = queryResults.Items.Select(x => ((JObject)x).ToObject<ContentItem>());
+            var contentItems = GetContentItems(queryResults);
 
             Assert.Contains("Orchard", contentItems.First().DisplayText, StringComparison.OrdinalIgnoreCase);
         }
@@ -136,9 +128,7 @@ namespace OrchardCore.Tests.Apis.Lucene
                             "{ \"wildcard\": { \"Content.BodyAspect.Body\": { \"value\": \"orchar*\", \"boost\": 5 } } }" +
                         "] } } }";
 
-                var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
-                var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
-                var contentItems = queryResults.Items.Select(x => ((JObject)x).ToObject<ContentItem>());
+                var contentItems = GetContentItems(await GetLuceneQueryResultsAsync(context, index, query));
 
                 // Test
                 Assert.NotEmpty(contentItems);
@@ -148,7 +138,22 @@ namespace OrchardCore.Tests.Apis.Lucene
                 Assert.Contains("Orchard", contentItems.ElementAt(1).As<HtmlBodyPart>().Html, StringComparison.OrdinalIgnoreCase);
                 Assert.Contains("Orchard", contentItems.ElementAt(2).DisplayText, StringComparison.OrdinalIgnoreCase);
                 Assert.Contains("Orchard", contentItems.ElementAt(3).DisplayText, StringComparison.OrdinalIgnoreCase);
-            };
+            }
         }
+
+        private static async Task<LuceneQueryResults> GetLuceneQueryResultsAsync(LuceneContext context, string index, string query)
+        {
+            var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
+            return await content.Content.ReadAsAsync<LuceneQueryResults>();
+        }
+
+        private static Task<LuceneQueryResults> GetLuceneQueryResultsAsync(LuceneContext context, string index, object dynamicQuery) =>
+            GetLuceneQueryResultsAsync(context, index, JsonSerializer.Serialize(dynamicQuery));
+
+        private static IEnumerable<ContentItem> GetContentItems(LuceneQueryResults queryResults) =>
+            queryResults
+                .Items
+                .Cast<JsonObject>()
+                .Select(jsonObject => jsonObject.Deserialize<ContentItem>());
     }
 }

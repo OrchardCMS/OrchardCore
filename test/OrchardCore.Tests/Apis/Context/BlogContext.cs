@@ -10,10 +10,6 @@ namespace OrchardCore.Tests.Apis.Context
 
         public string BlogContentItemId { get; private set; }
 
-        static BlogContext()
-        {
-        }
-
         public override async Task InitializeAsync()
         {
             await base.InitializeAsync();
@@ -28,7 +24,7 @@ namespace OrchardCore.Tests.Apis.Context
                         .WithField("contentItemId");
                 });
 
-            BlogContentItemId = result["data"]["blog"].First["contentItemId"].ToString();
+            BlogContentItemId = result.GetNode("data", "blog", 0).GetContentItemId();
         }
     }
 }

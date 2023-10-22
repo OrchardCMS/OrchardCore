@@ -5,9 +5,9 @@ namespace OrchardCore.Tests.Apis.Context
     /// </summary>
     internal static class HttpRequestExtensions
     {
-        private readonly static JsonSerializerSettings _jsonSettings = new()
+        private static readonly JsonSerializerOptions _jsonSettings = new()
         {
-            NullValueHandling = NullValueHandling.Ignore
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         };
 
         /// <summary>
@@ -34,12 +34,9 @@ namespace OrchardCore.Tests.Apis.Context
             this HttpClient client,
             string requestUri,
             T value,
-            JsonSerializerSettings settings = null)
+            JsonSerializerOptions settings = null)
         {
-            var content = new StringContent(
-                JsonConvert.SerializeObject(value, settings ?? _jsonSettings),
-                Encoding.UTF8,
-                "application/json");
+            var content = CreateContent(value, settings);
 
             return PatchAsync(client, requestUri, content);
         }
@@ -99,12 +96,9 @@ namespace OrchardCore.Tests.Apis.Context
             this HttpClient client,
             string requestUri,
             T value,
-            JsonSerializerSettings settings = null)
+            JsonSerializerOptions settings = null)
         {
-            var content = new StringContent(
-                JsonConvert.SerializeObject(value, settings ?? _jsonSettings),
-                Encoding.UTF8,
-                "application/json");
+            var content = CreateContent(value, settings);
 
             return client.PutAsync(requestUri, content);
         }
@@ -133,12 +127,9 @@ namespace OrchardCore.Tests.Apis.Context
             this HttpClient client,
             string requestUri,
             T value,
-            JsonSerializerSettings settings = null)
+            JsonSerializerOptions settings = null)
         {
-            var content = new StringContent(
-                JsonConvert.SerializeObject(value, settings ?? _jsonSettings),
-                Encoding.UTF8,
-                "application/json");
+            var content = CreateContent(value, settings);
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
             {
@@ -157,10 +148,7 @@ namespace OrchardCore.Tests.Apis.Context
             string requestUri,
             string json)
         {
-            var content = new StringContent(
-                json,
-                Encoding.UTF8,
-                "application/json");
+            var content = CreateContent(json, "application/json");
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
             {
@@ -179,10 +167,7 @@ namespace OrchardCore.Tests.Apis.Context
             string requestUri,
             string json)
         {
-            var content = new StringContent(
-                json,
-                Encoding.UTF8,
-                "application/vnd.api+json");
+            var content = CreateContent(json, "application/vnd.api+json");
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
             {
@@ -195,5 +180,11 @@ namespace OrchardCore.Tests.Apis.Context
 
             return client.SendAsync(request);
         }
+
+        private static StringContent CreateContent(string json, string mediaType) =>
+            new(json, Encoding.UTF8, mediaType);
+
+        private static StringContent CreateContent<T>(T value, JsonSerializerOptions settings) =>
+            CreateContent(JsonSerializer.Serialize(value, settings ?? _jsonSettings), "application/json");
     }
 }

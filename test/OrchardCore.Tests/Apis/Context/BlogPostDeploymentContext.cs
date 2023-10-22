@@ -12,10 +12,6 @@ namespace OrchardCore.Tests.Apis.Context
         public ContentItem OriginalBlogPost { get; private set; }
         public string OriginalBlogPostVersionId { get; private set; }
 
-        static BlogPostDeploymentContext()
-        {
-        }
-
         public override async Task InitializeAsync()
         {
             await base.InitializeAsync();
@@ -23,13 +19,9 @@ namespace OrchardCore.Tests.Apis.Context
 
             var result = await GraphQLClient
                 .Content
-                .Query("blogPost", builder =>
-                {
-                    builder
-                        .WithField("contentItemId");
-                });
+                .Query("blogPost", builder => builder.WithField("contentItemId"));
 
-            BlogPostContentItemId = result["data"]["blogPost"].First["contentItemId"].ToString();
+            BlogPostContentItemId = result["data"]?["blogPost"]?.AsArray().First()["contentItemId"]?.ToString();
 
             var content = await Client.GetAsync($"api/content/{BlogPostContentItemId}");
             OriginalBlogPost = await content.Content.ReadAsAsync<ContentItem>();
@@ -43,19 +35,19 @@ namespace OrchardCore.Tests.Apis.Context
             });
         }
 
-        public static JObject GetContentStepRecipe(ContentItem contentItem, Action<JObject> mutation)
+        public static JsonObject GetContentStepRecipe(ContentItem contentItem, Action<JsonObject> mutation)
         {
-            var jContentItem = JObject.FromObject(contentItem);
+            var jContentItem = JsonSerializer.SerializeToNode(contentItem)!.AsObject();
             mutation.Invoke(jContentItem);
 
-            var recipe = new JObject
+            var recipe = new JsonObject
             {
-                ["steps"] = new JArray
+                ["steps"] = new JsonArray
                 {
-                    new JObject
+                    new JsonObject
                     {
                         ["name"] = "content",
-                        ["Data"] = new JArray { jContentItem }
+                        ["Data"] = new JsonArray { jContentItem }
                     }
                 }
             };
@@ -63,16 +55,15 @@ namespace OrchardCore.Tests.Apis.Context
             return recipe;
         }
 
-        public async Task<HttpResponseMessage> PostRecipeAsync(JObject recipe, bool ensureSuccess = true)
+        public async Task<HttpResponseMessage> PostRecipeAsync(JsonObject recipe, bool ensureSuccess = true)
         {
             using var zipStream = new MemoryStream();
             using (var zip = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
             {
                 var entry = zip.CreateEntry("Recipe.json");
-                using var streamWriter = new StreamWriter(entry.Open());
-                using var jsonWriter = new JsonTextWriter(streamWriter);
-                await recipe.WriteToAsync(jsonWriter);
-                await jsonWriter.FlushAsync();
+                await using var stream = entry.Open();
+                await JsonSerializer.SerializeAsync(stream, recipe);
+                await stream.FlushAsync();
             }
 
             zipStream.Position = 0;

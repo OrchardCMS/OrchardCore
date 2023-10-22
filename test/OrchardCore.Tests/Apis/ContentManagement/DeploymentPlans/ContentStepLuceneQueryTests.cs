@@ -23,8 +23,8 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
 
             // Create a second content item in the recipe data so we can confirm the behaviour
             // of the LuceneIndexingContentHandler.
-            var data = recipe["steps"][0]["Data"] as JArray;
-            var secondContentItem = JObject.FromObject(context.OriginalBlogPost);
+            var data = BlogPostCreateDeploymentPlanTests.GetFirstStepData(recipe);
+            var secondContentItem = JsonSerializer.SerializeToNode(context.OriginalBlogPost)!.AsObject();
             secondContentItem[nameof(ContentItem.ContentItemId)] = "secondcontentitemid";
             secondContentItem[nameof(ContentItem.ContentItemVersionId)] = "secondcontentitemversionid";
             secondContentItem[nameof(ContentItem.DisplayText)] = "second content item display text";
@@ -43,11 +43,11 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                         .WithField("displayText");
                 });
 
-            var nodes = result["data"]["recentBlogPosts"];
+            var nodes = result.GetNode("data", "recentBlogPosts").AsArray();
 
-            Assert.Equal(2, nodes.Count());
-            Assert.Equal("new version", nodes[0]["displayText"].ToString());
-            Assert.Equal("second content item display text", nodes[1]["displayText"].ToString());
+            Assert.Equal(2, nodes.Count);
+            Assert.Equal("new version", nodes[0]["displayText"].GetValue<string>());
+            Assert.Equal("second content item display text", nodes[1]["displayText"].GetValue<string>());
         }
     }
 }

@@ -25,8 +25,10 @@ namespace OrchardCore.Tests.Apis.GraphQL
                         .WithField("contentItemId");
                 });
 
-            Assert.Single(result["data"]["blog"].Children()["contentItemId"]
-                .Where(b => b.ToString() == context.BlogContentItemId));
+            var blog = result.GetNode("data", "blog").AsObject();
+            Assert.Single(blog
+                .Select(pair => pair.Value.GetContentItemId())
+                .Where(id => id == context.BlogContentItemId));
         }
 
         [Fact]
@@ -87,7 +89,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             Assert.Equal(
                 "Some sorta blogpost!",
-                result["data"]["blogPost"][0]["displayText"].ToString());
+                result.GetNode("data", "blogPost", 0, "displayText").GetValue<string>());
         }
 
         [Fact]
@@ -106,7 +108,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             Assert.Equal(
                 "Problems look mighty small from 150 miles up",
-                result["data"]["blogPost"][0]["subtitle"].ToString());
+                result.GetNode("data", "blogPost", 0, "subtitle").GetValue<string>());
         }
 
         [Fact]
@@ -156,7 +158,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             Assert.Equal(
                 "Hey - Is this working!?!?!?!?",
-                result["data"]["blogPost"][0]["subtitle"].ToString());
+                result.GetNode("data", "blogPost", 0, "subtitle").GetValue<string>());
         }
 
         [Fact]
@@ -181,20 +183,16 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             var result = await context.GraphQLClient.Content
                 .Query("blogPost(status: PUBLISHED) { displayText, published }");
-
-            Assert.Single(result["data"]["blogPost"]);
-            Assert.Equal(true, result["data"]["blogPost"][0]["published"]);
+            Assert.Equal(true, result.GetNode("data", "blogPost").AsArray().Single()["published"]);
 
             result = await context.GraphQLClient.Content
                 .Query("blogPost(status: DRAFT) { displayText, published }");
-
-            Assert.Single(result["data"]["blogPost"]);
-            Assert.Equal(false, result["data"]["blogPost"][0]["published"]);
+            Assert.Equal(false, result.GetNode("data", "blogPost").AsArray().Single()["published"]);
 
             result = await context.GraphQLClient.Content
                 .Query("blogPost(status: LATEST) { displayText, published }");
 
-            Assert.Equal(2, result["data"]["blogPost"].Count());
+            Assert.Equal(2, result.GetNode("data", "blogPost").AsArray().Count);
         }
 
         [Fact]
@@ -231,7 +229,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     builder.WithField("contentItemId");
                 });
 
-            Assert.NotEmpty(result["data"]["blog"]);
+            Assert.NotEmpty(result["data"]["blog"].AsArray());
         }
 
         [Fact]
@@ -256,7 +254,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     builder.WithField("contentItemId");
                 });
 
-            Assert.Empty(result["data"]["blog"]);
+            Assert.Empty(result["data"]["blog"].AsArray());
         }
 
         [Fact]
@@ -280,7 +278,9 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     builder.WithField("contentItemId");
                 });
 
-            Assert.Equal(GraphQLApi.ValidationRules.RequiresPermissionValidationRule.ErrorCode, result["errors"][0]["extensions"]["number"].ToString());
+            Assert.Equal(
+                GraphQLApi.ValidationRules.RequiresPermissionValidationRule.ErrorCode,
+                result.GetNode("errors", 0, "extensions", "number").GetValue<string>());
         }
     }
 }

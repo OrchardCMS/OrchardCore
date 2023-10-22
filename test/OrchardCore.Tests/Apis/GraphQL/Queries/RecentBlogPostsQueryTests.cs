@@ -35,9 +35,9 @@ namespace OrchardCore.Tests.Apis.GraphQL
                         .WithField("displayText");
                 });
 
-            var nodes = result["data"]["recentBlogPosts"];
+            var nodes = result["data"]["recentBlogPosts"].AsArray();
 
-            Assert.Equal(2, nodes.Count());
+            Assert.Equal(2, nodes.Count);
             Assert.Equal("Some sorta blogpost in a Query!", nodes[0]["displayText"].ToString());
             Assert.Equal("Man must explore, and this is exploration at its greatest", nodes[1]["displayText"].ToString());
         }

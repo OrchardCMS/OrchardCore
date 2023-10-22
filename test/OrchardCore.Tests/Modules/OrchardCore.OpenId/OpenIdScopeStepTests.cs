@@ -3,20 +3,11 @@ using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Recipes;
 using OrchardCore.OpenId.YesSql.Models;
-using OrchardCore.Recipes.Models;
-using OrchardCore.Tests.Utilities;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
 {
-    public class OpenIdScopeStepTests
+    public class OpenIdScopeStepTests : OpenIdTestBase
     {
-        private string GetRecipeFileContent(string recipeName)
-        {
-            return new EmbeddedFileProvider(GetType().Assembly)
-                .GetFileInfo($"Modules.OrchardCore.OpenId.RecipeFiles.{recipeName}.json")
-                .ReadToEnd();
-        }
-
         private static OpenIdScopeDescriptor CreateScopeDescriptor(string name, string suffix, params string[] resources)
         {
             var scope = new OpenIdScopeDescriptor
@@ -57,12 +48,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                     new ValueTask<object>());
 
             var step = new OpenIdScopeStep(scopeManagerMock.Object);
-            var recipe = JObject.Parse(GetRecipeFileContent("scope-recipe"));
-            var context = new RecipeExecutionContext
-            {
-                Name = recipe.Property("steps").Value.First.Value<string>("name"),
-                Step = (JObject)recipe.Property("steps").Value.First,
-            };
+            var context = GetRecipeExecutionContext("scope-recipe");
 
             // Act
             await step.ExecuteAsync(context);
@@ -128,12 +114,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                     new ValueTask());
 
             var step = new OpenIdScopeStep(scopeManagerMock.Object);
-            var recipe = JObject.Parse(GetRecipeFileContent("scope-recipe"));
-            var context = new RecipeExecutionContext
-            {
-                Name = recipe.Property("steps").Value.First.Value<string>("name"),
-                Step = (JObject)recipe.Property("steps").Value.First,
-            };
+            var context = GetRecipeExecutionContext("scope-recipe");
 
             // Act
             await step.ExecuteAsync(context);
