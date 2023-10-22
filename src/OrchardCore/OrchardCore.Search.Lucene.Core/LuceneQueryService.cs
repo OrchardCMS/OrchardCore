@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.TokenAttributes;
@@ -18,7 +19,7 @@ namespace OrchardCore.Search.Lucene
             _queryProviders = queryProviders;
         }
 
-        public Task<LuceneTopDocs> SearchAsync(LuceneQueryContext context, JObject queryObj)
+        public Task<LuceneTopDocs> SearchAsync(LuceneQueryContext context, JsonObject queryObj)
         {
             var queryProp = queryObj["query"] as JObject
                 ?? throw new ArgumentException("Query DSL requires a [query] property");
@@ -103,7 +104,7 @@ namespace OrchardCore.Search.Lucene
             return Task.FromResult(result);
         }
 
-        public Query CreateQueryFragment(LuceneQueryContext context, JObject queryObj)
+        public Query CreateQueryFragment(LuceneQueryContext context, JsonObject queryObj)
         {
             var first = queryObj.Properties().First();
 

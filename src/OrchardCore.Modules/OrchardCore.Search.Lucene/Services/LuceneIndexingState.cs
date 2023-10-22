@@ -1,6 +1,7 @@
 using System.IO;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Search.Lucene
@@ -12,7 +13,7 @@ namespace OrchardCore.Search.Lucene
     public class LuceneIndexingState
     {
         private readonly string _indexSettingsFilename;
-        private readonly JObject _content;
+        private readonly JsonObject _content;
 
         public LuceneIndexingState(
             IOptions<ShellOptions> shellOptions,
@@ -29,24 +30,24 @@ namespace OrchardCore.Search.Lucene
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(_indexSettingsFilename));
 
-                File.WriteAllText(_indexSettingsFilename, new JObject().ToString(Newtonsoft.Json.Formatting.Indented));
+                File.WriteAllText(_indexSettingsFilename, "{}");
             }
 
-            _content = JObject.Parse(File.ReadAllText(_indexSettingsFilename));
+            _content = JsonNode.Parse(File.ReadAllText(_indexSettingsFilename))?.AsObject() ?? new JsonObject();
         }
 
         public long GetLastTaskId(string indexName)
         {
-            JToken value;
-            if (_content.TryGetValue(indexName, out value))
+            JsonNode value;
+            if (_content.TryGetPropertyValue(indexName, out value) && value != null)
             {
-                return value.Value<long>();
+                return value.GetValue<long>();
             }
             else
             {
                 lock (this)
                 {
-                    _content.Add(new JProperty(indexName, 0));
+                    _content.Add(indexName, 0);
                 }
 
                 return 0L;
@@ -65,7 +66,9 @@ namespace OrchardCore.Search.Lucene
         {
             lock (this)
             {
-                File.WriteAllText(_indexSettingsFilename, _content.ToString(Newtonsoft.Json.Formatting.Indented));
+                File.WriteAllText(
+                    _indexSettingsFilename,
+                    JsonSerializer.Serialize(_content, new JsonSerializerOptions { WriteIndented = true }));
             }
         }
     }

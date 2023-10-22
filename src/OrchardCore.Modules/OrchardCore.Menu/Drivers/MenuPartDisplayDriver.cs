@@ -1,10 +1,10 @@
 using System;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Metadata;
@@ -72,16 +72,16 @@ namespace OrchardCore.Menu.Drivers
             {
                 var originalMenuItems = part.ContentItem.As<MenuItemsListPart>();
 
-                var newHierarchy = JArray.Parse(model.Hierarchy);
+                var newHierarchy = JsonSerializer.SerializeToNode(model.Hierarchy)!.AsArray();
 
-                var menuItems = new JArray();
+                var menuItems = new JsonArray();
 
                 foreach (var item in newHierarchy)
                 {
-                    menuItems.Add(ProcessItem(originalMenuItems, item as JObject));
+                    menuItems.Add(ProcessItem(originalMenuItems, item as JsonObject));
                 }
 
-                part.ContentItem.Content["MenuItemsListPart"] = new JObject(new JProperty("MenuItems", menuItems));
+                SetMenuItemsListPart(part.ContentItem.Content as JsonObject, menuItems);
             }
 
             return Edit(part);
@@ -90,7 +90,7 @@ namespace OrchardCore.Menu.Drivers
         /// <summary>
         /// Clone the content items at the specific index.
         /// </summary>
-        private static JObject GetMenuItemAt(MenuItemsListPart menuItems, int[] indexes)
+        private static JsonObject GetMenuItemAt(MenuItemsListPart menuItems, int[] indexes)
         {
             ContentItem menuItem = null;
 
@@ -100,33 +100,36 @@ namespace OrchardCore.Menu.Drivers
                 menuItems = menuItem.As<MenuItemsListPart>();
             }
 
-            var newObj = JObject.Parse(JsonConvert.SerializeObject(menuItem));
+            var newObj = JsonSerializer.SerializeToNode(menuItem)?.AsObject() ?? new JsonObject();
             if (newObj["MenuItemsListPart"] != null)
             {
-                newObj["MenuItemsListPart"] = new JObject(new JProperty("MenuItems", new JArray()));
+                SetMenuItemsListPart(newObj, new JsonArray());
             }
 
             return newObj;
         }
 
-        private JObject ProcessItem(MenuItemsListPart originalItems, JObject item)
+        private JsonObject ProcessItem(MenuItemsListPart originalItems, JsonObject item)
         {
             var contentItem = GetMenuItemAt(originalItems, item["index"].ToString().Split('-').Select(x => Convert.ToInt32(x)).ToArray());
 
-            var children = item["children"] as JArray;
+            var children = item["children"]?.AsArray();
 
             if (children != null)
             {
-                var menuItems = new JArray();
+                var menuItems = new JsonArray();
 
                 for (var i = 0; i < children.Count; i++)
                 {
-                    menuItems.Add(ProcessItem(originalItems, children[i] as JObject));
-                    contentItem["MenuItemsListPart"] = new JObject(new JProperty("MenuItems", menuItems));
+                    menuItems.Add(ProcessItem(originalItems, children[i] as JsonObject));
+                    SetMenuItemsListPart(contentItem, menuItems);
                 }
             }
 
             return contentItem;
         }
+
+        private static void SetMenuItemsListPart(JsonNode contentItem, JsonArray menuItems) =>
+            contentItem["MenuItemsListPart"] = new JsonObject{ ["MenuItems"] = menuItems };
     }
 }

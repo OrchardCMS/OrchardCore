@@ -1,8 +1,7 @@
-using System;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -96,24 +95,32 @@ namespace OrchardCore.Html
                 await _session.SaveChangesAsync();
             }
 
-            static bool UpdateBody(JToken content)
+            static bool UpdateBody(JsonNode content)
             {
                 var changed = false;
 
-                if (content.Type == JTokenType.Object)
+                if (content is JsonObject jsonObject)
                 {
-                    var body = content["BodyPart"]?["Body"]?.Value<string>();
+                    var body = content["BodyPart"]?["Body"]?.GetValue<string>();
 
                     if (!string.IsNullOrWhiteSpace(body))
                     {
-                        content["HtmlBodyPart"] = new JObject(new JProperty("Html", body));
+                        content["HtmlBodyPart"] = new JsonObject { ["Html"] = body };
                         changed = true;
+                    }
+
+                    foreach (var pair in jsonObject)
+                    {
+                        changed = UpdateBody(pair.Value) || changed;
                     }
                 }
 
-                foreach (var token in content)
+                if (content is JsonArray jsonArray)
                 {
-                    changed = UpdateBody(token) || changed;
+                    foreach (var item in jsonArray)
+                    {
+                        changed = UpdateBody(item) || changed;
+                    }
                 }
 
                 return changed;

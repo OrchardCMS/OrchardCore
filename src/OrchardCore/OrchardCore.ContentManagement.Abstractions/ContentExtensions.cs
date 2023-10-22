@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Builders;
 
 namespace OrchardCore.ContentManagement
@@ -63,14 +65,14 @@ namespace OrchardCore.ContentManagement
                 return element;
             }
 
-            var elementData = contentElement.Data[name] as JObject;
+            var elementData = contentElement.Data[name] as JsonObject;
 
             if (elementData == null)
             {
                 return null;
             }
 
-            var result = (ContentElement)elementData.ToObject(contentElementType);
+            var result = (ContentElement)elementData.Deserialize(contentElementType);
             result.Data = elementData;
             result.ContentItem = contentElement.ContentItem;
 
@@ -128,7 +130,7 @@ namespace OrchardCore.ContentManagement
         {
             if (!contentElement.Data.ContainsKey(name))
             {
-                element.Data = JObject.FromObject(element);
+                element.Data = JsonSerializer.SerializeToNode(element)!.AsObject();
                 element.ContentItem = contentElement.ContentItem;
 
                 contentElement.Data[name] = element.Data;
@@ -147,7 +149,7 @@ namespace OrchardCore.ContentManagement
         {
             var elementName = typeof(TElement).Name;
 
-            var elementData = contentElement.Data[elementName] as JObject;
+            var elementData = contentElement.Data[elementName] as JsonObject;
 
             if (elementData == null)
             {
@@ -156,15 +158,17 @@ namespace OrchardCore.ContentManagement
                 contentElement.Weld(elementName, part);
             }
 
-            JToken result;
-            if (!contentElement.Data.TryGetValue(WeldedPartSettingsName, out result))
+            if (!contentElement.Data.TryGetPropertyValue(WeldedPartSettingsName, out var result) || result is not JsonObject)
             {
-                contentElement.Data[WeldedPartSettingsName] = result = new JObject();
+                result = new JsonObject();
+                contentElement.Data[WeldedPartSettingsName] = result;
             }
 
-            var weldedPartSettings = (JObject)result;
+            var weldedPartSettings = (JsonObject)result;
 
-            weldedPartSettings[elementName] = settings == null ? new JObject() : JObject.FromObject(settings, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+            weldedPartSettings[elementName] = settings == null
+                ? new JsonObject()
+                : JsonSerializer.SerializeToNode(settings, new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault });
 
             return contentElement;
         }
@@ -178,15 +182,15 @@ namespace OrchardCore.ContentManagement
         /// <returns>The current <see cref="ContentItem"/> instance.</returns>
         public static ContentElement Apply(this ContentElement contentElement, string name, ContentElement element)
         {
-            var elementData = contentElement.Data[name] as JObject;
+            var elementSerialized = JsonSerializer.SerializeToNode(element)!.AsObject();
 
-            if (elementData != null)
+            if (contentElement.Data[name] is JsonObject elementData)
             {
-                elementData.Merge(JObject.FromObject(element), _jsonMergeSettings);
+                elementData.Merge(elementSerialized, _jsonMergeSettings);
             }
             else
             {
-                elementData = JObject.FromObject(element);
+                elementData = elementSerialized;
                 contentElement.Data[name] = elementData;
             }
 

@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.CompiledQueries;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
@@ -524,7 +524,7 @@ namespace OrchardCore.ContentManagement
                 ContentItemVersionId = _idGenerator.GenerateUniqueId(existingContentItem),
                 DisplayText = existingContentItem.DisplayText,
                 Latest = true,
-                Data = new JObject(existingContentItem.Data),
+                Data = new JsonObject(existingContentItem.Data),
             };
 
             var context = new VersionContentContext(existingContentItem, buildingContentItem);
@@ -581,7 +581,7 @@ namespace OrchardCore.ContentManagement
                     ContentItemVersionId = _idGenerator.GenerateUniqueId(existingContentItem),
                     DisplayText = existingContentItem.DisplayText,
                     Latest = true,
-                    Data = new JObject(existingContentItem.Data),
+                    Data = new JsonObject(existingContentItem.Data),
                 };
 
                 var context = new VersionContentContext(existingContentItem, buildingContentItem);
@@ -727,19 +727,19 @@ namespace OrchardCore.ContentManagement
                         // The draft item should be removed, because it would now be orphaned, as the imported published item
                         // would be further ahead, on a timeline, between the two.
 
-                        var jImporting = JObject.FromObject(importingItem);
+                        var jImporting = JsonSerializer.SerializeToNode(importingItem)!.AsObject();
 
                         // Removed Published and Latest from consideration when evaluating.
                         // Otherwise an import of an unchanged (but published) version would overwrite a newer published version.
                         jImporting.Remove(nameof(ContentItem.Published));
                         jImporting.Remove(nameof(ContentItem.Latest));
 
-                        var jOriginal = JObject.FromObject(originalVersion);
+                        var jOriginal = JsonSerializer.SerializeToNode(originalVersion)!.AsObject();
 
                         jOriginal.Remove(nameof(ContentItem.Published));
                         jOriginal.Remove(nameof(ContentItem.Latest));
 
-                        if (JToken.DeepEquals(jImporting, jOriginal))
+                        if (JsonSerializer.Serialize(jImporting) == JsonSerializer.Serialize(jOriginal))
                         {
                             _logger.LogInformation("Importing '{ContentItemVersionId}' skipped as it is unchanged", importingItem.ContentItemVersionId);
                             continue;
@@ -912,7 +912,7 @@ namespace OrchardCore.ContentManagement
 
             var context = new CloneContentContext(contentItem, cloneContentItem);
 
-            context.CloneContentItem.Data = contentItem.Data.DeepClone() as JObject;
+            context.CloneContentItem.Data = JsonNode.Parse(JsonSerializer.Serialize(contentItem.Data))!.AsObject();
 
             await Handlers.InvokeAsync((handler, context) => handler.CloningAsync(context), context, _logger);
 

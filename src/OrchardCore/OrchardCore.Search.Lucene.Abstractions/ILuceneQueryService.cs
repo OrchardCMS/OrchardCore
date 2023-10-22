@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Lucene.Net.Search;
 using Newtonsoft.Json.Linq;
@@ -13,7 +14,7 @@ namespace OrchardCore.Search.Lucene
         /// <param name="context"></param>
         /// <param name="queryObj"></param>
         /// <returns><see cref="LuceneTopDocs"/></returns>
-        Task<LuceneTopDocs> SearchAsync(LuceneQueryContext context, JObject queryObj);
-        Query CreateQueryFragment(LuceneQueryContext context, JObject queryObj);
+        Task<LuceneTopDocs> SearchAsync(LuceneQueryContext context, JsonObject queryObj);
+        Query CreateQueryFragment(LuceneQueryContext context, JsonObject queryObj);
     }
 }
