@@ -21,6 +21,10 @@
         {
           "choice": "net7.0",
           "description": "Target net7.0"
+        },
+        {
+          "choice": "net8.0",
+          "description": "Target net8.0"
         }
       ],
       "replaces": "$(TemplateTargetPackageFramework)",
