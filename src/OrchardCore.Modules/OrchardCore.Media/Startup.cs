@@ -74,6 +74,10 @@ namespace OrchardCore.Media
         {
             services.AddSingleton<IAnchorTag, MediaAnchorTag>();
 
+            // Resized media and remote media caches cleanups.
+            services.AddSingleton<IBackgroundTask, ResizedMediaCacheBackgroundTask>();
+            services.AddSingleton<IBackgroundTask, RemoteMediaCacheBackgroundTask>();
+
             services.Configure<TemplateOptions>(o =>
             {
                 o.MemberAccessStrategy.Register<DisplayMediaFieldViewModel>();
@@ -100,6 +104,7 @@ namespace OrchardCore.Media
                 {
                     Directory.CreateDirectory(mediaPath);
                 }
+
                 return new MediaFileProvider(options.AssetsRequestPath, mediaPath);
             });
 
