@@ -5,11 +5,11 @@ namespace OrchardCore.Diagnostics.ViewModels;
 
 public class HttpStatusCodeShapeViewModel : ShapeViewModel
 {
-    public int? Status { get; }
+    public HttpStatusCode HttpStatusCode { get; }
 
     public HttpStatusCodeShapeViewModel(HttpStatusCode statusCode)
     {
-        Status = (int)statusCode;
+        HttpStatusCode = statusCode;
         Metadata.Type = "HttpStatusCode";
 
         // The type name is 'HttpStatusCode', so any Http status code will be handled by the 'HttpStatusCode.cshtml' or 'HttpStatusCode.liquid'.
