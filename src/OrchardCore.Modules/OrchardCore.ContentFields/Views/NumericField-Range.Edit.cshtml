@@ -10,10 +10,10 @@
     string id = Html.IdFor(m => m.Value);
     string javascriptDecimalSeparator = CultureInfo.InvariantCulture.NumberFormat.NumberDecimalSeparator;
     string serverDecimalSeparator = CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator;
-    var uniqueName = Model.PartFieldDefinition.GetFullName();
+    var additionalClasses = Model.PartFieldDefinition.GetAdditionalClasses("field-wrapper", t => t.HtmlClassify());
 }
 
-<div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x.Value)_FieldWrapper">
+<div class="@Orchard.GetWrapperCssClasses(additionalClasses.ToArray())" id="@Html.IdFor(x => x.Value)_FieldWrapper">
     <label asp-for="Value" class="@Orchard.GetLabelCssClasses()">@name</label>
     <div class="@Orchard.GetEndCssClasses()">
         <div class="@Orchard.GetLimitedWidthWrapperCssClasses()">

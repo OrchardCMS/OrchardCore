@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using OrchardCore.ContentManagement.Metadata.Settings;
 
 namespace OrchardCore.ContentManagement.Metadata.Models
@@ -44,6 +45,20 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         public static string DisplayMode(this ContentTypePartDefinition typePart)
         {
             return typePart.GetSettings<ContentTypePartSettings>().DisplayMode;
+        }
+
+        public static bool IsNamedPart(this ContentTypePartDefinition typePart)
+            => typePart.PartDefinition.IsReusable() && typePart.Name != typePart.PartDefinition.Name;
+
+        public static IEnumerable<string> GetAdditionalClasses(this ContentTypePartDefinition partDefinition, string prefix, Func<string, string> transform)
+        {
+            yield return prefix;
+            yield return $"{prefix}-{transform(partDefinition.Name)}";
+
+            if (partDefinition.IsNamedPart())
+            {
+                yield return $"{prefix}-{transform(partDefinition.PartDefinition.Name)}";
+            }
         }
     }
 }

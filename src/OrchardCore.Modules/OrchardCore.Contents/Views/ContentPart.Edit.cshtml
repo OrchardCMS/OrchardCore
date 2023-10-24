@@ -7,17 +7,11 @@
     ContentPart contentPart = Model.ContentPart;
     ContentTypePartDefinition typePartDefinition = Model.ContentTypePartDefinition;
     var description = typePartDefinition.Description();
-    var namedPart = typePartDefinition.PartDefinition.IsReusable() && typePartDefinition.Name != typePartDefinition.PartDefinition.Name;
-    var name = typePartDefinition.PartDefinition.Name.HtmlClassify();
-    var additionalClasses = new List<string> { "content-part-wrapper", $"content-part-wrapper-{name}" };
-    if (namedPart)
-    {
-        var namedPartTechnicalName = typePartDefinition.Name.HtmlClassify();
-        additionalClasses.Add($"content-part-wrapper-{namedPartTechnicalName}");
-    }
+    var isNamedPart = typePartDefinition.IsNamedPart();
+    var additionalClasses = typePartDefinition.GetAdditionalClasses("content-part-wrapper", t => t.HtmlClassify());
 }
 
-@if (namedPart)
+@if (isNamedPart)
 {
     <div class="@Orchard.GetWrapperCssClasses(additionalClasses.ToArray())">
         <div class="@Orchard.GetLabelCssClasses()">
@@ -39,7 +33,7 @@
 }
 else
 {
-    <div class="content-part-wrapper content-part-wrapper-@name">
+    <div class="@string.Join(' ', additionalClasses)">
         @foreach (var shape in Model)
         {
             @await DisplayAsync(shape)
