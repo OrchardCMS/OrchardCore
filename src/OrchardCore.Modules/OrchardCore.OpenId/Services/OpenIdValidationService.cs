@@ -2,11 +2,11 @@ using System;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using OpenIddict.Server;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -52,7 +52,7 @@ namespace OrchardCore.OpenId.Services
 
         private OpenIdValidationSettings GetSettingsFromContainer(ISite container)
         {
-            if (container.Properties.TryGetValue(nameof(OpenIdValidationSettings), out var settings))
+            if (container.Properties.TryGetPropertyValue(nameof(OpenIdValidationSettings), out var settings))
             {
                 return settings.ToObject<OpenIdValidationSettings>();
             }

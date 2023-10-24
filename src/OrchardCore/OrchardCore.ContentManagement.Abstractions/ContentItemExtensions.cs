@@ -1,6 +1,7 @@
 using System;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.ContentManagement
 {
@@ -101,17 +102,17 @@ namespace OrchardCore.ContentManagement
         /// </summary>
         /// <param name="contentItem">The <see cref="ContentItem"/>.</param>
         /// <param name="properties">The object to merge.</param>
-        /// <param name="jsonMergeSettings">The <see cref="JsonMergeSettings"/> to use.</param>
+        /// <param name="options">The <see cref="JsonSerializerOptions"/> to use.</param>
         /// <returns>The current <see cref="ContentItem"/> instance.</returns>
-        public static ContentItem Merge(this ContentItem contentItem, object properties, JsonMergeSettings jsonMergeSettings = null)
+        public static ContentItem Merge(this ContentItem contentItem, object properties, JsonSerializerOptions options = null)
         {
             var props = JObject.FromObject(properties);
 
             var originalDocumentId = contentItem.Id;
-            contentItem.Data.Merge(props, jsonMergeSettings);
+            contentItem.Data.Merge(props, options);
             contentItem.Elements.Clear();
 
-            // Return to original value or it will be interpreated as a different object by YesSql.
+            // Return to original value or it will be interpretated as a different object by YesSql.
             contentItem.Id = originalDocumentId;
 
             // After merging content here we need to remove all the well known properties from the Data jObject

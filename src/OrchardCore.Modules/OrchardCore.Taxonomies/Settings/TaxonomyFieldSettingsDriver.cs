@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -10,7 +11,7 @@ namespace OrchardCore.Taxonomies.Settings
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<TaxonomyFieldSettings>("TaxonomyFieldSettings_Edit", model => partFieldDefinition.PopulateSettings(model))
+            return Copy("TaxonomyFieldSettings_Edit", partFieldDefinition.Settings.ToObject<TaxonomyFieldSettings>())
                 .Location("Content");
         }
 

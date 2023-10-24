@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -11,7 +12,7 @@ namespace OrchardCore.Spatial.Drivers
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<GeoPointFieldSettings>("GeoPointFieldSettings_Edit", model => partFieldDefinition.PopulateSettings(model))
+            return Copy("GeoPointFieldSettings_Edit", partFieldDefinition.Settings.ToObject<GeoPointFieldSettings>())
                 .Location("Content");
         }
 

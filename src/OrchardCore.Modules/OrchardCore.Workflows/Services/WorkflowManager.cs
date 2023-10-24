@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Activities;
@@ -104,7 +104,7 @@ namespace OrchardCore.Workflows.Services
             {
                 if (!state.ActivityStates.TryGetValue(x.ActivityId, out var activityState))
                 {
-                    activityState = new JObject();
+                    activityState = new JsonObject();
                 }
 
                 return CreateActivityExecutionContextAsync(x, activityState);
@@ -119,7 +119,7 @@ namespace OrchardCore.Workflows.Services
             return new WorkflowExecutionContext(workflowType, workflow, mergedInput, output, properties, executedActivities, lastResult, activityQuery);
         }
 
-        public Task<ActivityContext> CreateActivityExecutionContextAsync(ActivityRecord activityRecord, JObject properties)
+        public Task<ActivityContext> CreateActivityExecutionContextAsync(ActivityRecord activityRecord, JsonObject properties)
         {
             if (activityRecord == null)
             {

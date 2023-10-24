@@ -1,8 +1,8 @@
 using System;
+using System.Text.Json.Nodes;
 using Dapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
@@ -31,7 +31,7 @@ namespace OrchardCore.Search.Lucene
                 {
                     _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
                     {
-                        if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings) &&
+                        if (partDefinition.Settings.TryGetPropertyValue("ContentIndexSettings", out var existingPartSettings) &&
                             !partDefinition.Settings.ContainsKey(nameof(LuceneContentIndexSettings)))
                         {
                             var included = existingPartSettings["Included"];
@@ -55,12 +55,13 @@ namespace OrchardCore.Search.Lucene
                                 }
                             }
 
-                            // We remove unecessary properties from old releases.
-                            existingPartSettings["Analyzed"]?.Parent.Remove();
-                            existingPartSettings["Tokenized"]?.Parent.Remove();
-                            existingPartSettings["Template"]?.Parent.Remove();
+                            // We remove unnecessary properties from old releases.
+                            // existingPartSettings["Analyzed"]?.Parent.Remove();
+                            // existingPartSettings["Tokenized"]?.Parent.Remove();
+                            // existingPartSettings["Template"]?.Parent.Remove();
 
-                            partDefinition.Settings.Add(new JProperty(nameof(LuceneContentIndexSettings), existingPartSettings));
+                            var jExistingPartSettings = new JsonObject(existingPartSettings.AsObject());
+                            partDefinition.Settings.Add(nameof(LuceneContentIndexSettings), jExistingPartSettings);
                         }
 
                         partDefinition.Settings.Remove("ContentIndexSettings");
@@ -74,7 +75,7 @@ namespace OrchardCore.Search.Lucene
             {
                 _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
                 {
-                    if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings) &&
+                    if (partDefinition.Settings.TryGetPropertyValue("ContentIndexSettings", out var existingPartSettings) &&
                         !partDefinition.Settings.ContainsKey(nameof(LuceneContentIndexSettings)))
                     {
                         var included = existingPartSettings["Included"];
@@ -98,20 +99,21 @@ namespace OrchardCore.Search.Lucene
                             }
                         }
 
-                        // We remove unecessary properties from old releases.
-                        existingPartSettings["Analyzed"]?.Parent.Remove();
-                        existingPartSettings["Tokenized"]?.Parent.Remove();
-                        existingPartSettings["Template"]?.Parent.Remove();
+                        // We remove unnecessary properties from old releases.
+                        // existingPartSettings["Analyzed"]?.Parent.Remove();
+                        // existingPartSettings["Tokenized"]?.Parent.Remove();
+                        // existingPartSettings["Template"]?.Parent.Remove();
 
-                        partDefinition.Settings.Add(new JProperty(nameof(LuceneContentIndexSettings), existingPartSettings));
+                        var jExistingPartSettings = new JsonObject(existingPartSettings.AsObject());
+                        partDefinition.Settings.Add(nameof(LuceneContentIndexSettings), jExistingPartSettings);
                     }
 
                     partDefinition.Settings.Remove("ContentIndexSettings");
 
                     foreach (var fieldDefinition in partDefinition.Fields)
                     {
-                        if (fieldDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingFieldSettings)
-                        && !fieldDefinition.Settings.TryGetValue(nameof(LuceneContentIndexSettings), out var existingLuceneFieldSettings))
+                        if (fieldDefinition.Settings.TryGetPropertyValue("ContentIndexSettings", out var existingFieldSettings)
+                        && !fieldDefinition.Settings.TryGetPropertyValue(nameof(LuceneContentIndexSettings), out _))
                         {
                             var included = existingFieldSettings["Included"];
                             var analyzed = existingFieldSettings["Analyzed"];
@@ -134,12 +136,13 @@ namespace OrchardCore.Search.Lucene
                                 }
                             }
 
-                            // We remove unecessary properties from old releases.
-                            existingFieldSettings["Analyzed"]?.Parent.Remove();
-                            existingFieldSettings["Tokenized"]?.Parent.Remove();
-                            existingFieldSettings["Template"]?.Parent.Remove();
+                            // We remove unnecessary properties from old releases.
+                            // existingFieldSettings["Analyzed"]?.Parent.Remove();
+                            // existingFieldSettings["Tokenized"]?.Parent.Remove();
+                            // existingFieldSettings["Template"]?.Parent.Remove();
 
-                            fieldDefinition.Settings.Add(new JProperty(nameof(LuceneContentIndexSettings), existingFieldSettings));
+                            var jExistingFieldSettings = new JsonObject(existingFieldSettings.AsObject());
+                            fieldDefinition.Settings.Add(nameof(LuceneContentIndexSettings), jExistingFieldSettings);
                         }
 
                         fieldDefinition.Settings.Remove("ContentIndexSettings");

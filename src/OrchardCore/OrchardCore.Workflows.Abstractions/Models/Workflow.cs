@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
 namespace OrchardCore.Workflows.Models
 {
@@ -26,7 +26,7 @@ namespace OrchardCore.Workflows.Models
         /// <summary>
         /// Serialized state of the workflow.
         /// </summary>
-        public JObject State { get; set; } = new JObject();
+        public JsonObject State { get; set; } = new JsonObject();
 
         public WorkflowStatus Status { get; set; }
         public string FaultMessage { get; set; }

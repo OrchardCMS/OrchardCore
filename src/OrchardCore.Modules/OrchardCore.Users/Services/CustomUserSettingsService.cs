@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -16,22 +14,16 @@ namespace OrchardCore.Users.Services;
 public class CustomUserSettingsService
 {
     private readonly IContentManager _contentManager;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IAuthorizationService _authorizationService;
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly Lazy<IDictionary<string, ContentTypeDefinition>> _settingsTypes;
     private readonly YesSql.ISession _session;
 
     public CustomUserSettingsService(
         IContentManager contentManager,
-        IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService,
         IContentDefinitionManager contentDefinitionManager,
         YesSql.ISession session)
     {
         _contentManager = contentManager;
-        _httpContextAccessor = httpContextAccessor;
-        _authorizationService = authorizationService;
         _contentDefinitionManager = contentDefinitionManager;
         _settingsTypes = new Lazy<IDictionary<string, ContentTypeDefinition>>(
             () => _contentDefinitionManager
@@ -97,7 +89,7 @@ public class CustomUserSettingsService
     {
         ContentItem contentItem;
 
-        if (user.Properties.TryGetValue(settingsType.Name, out JToken property))
+        if (user.Properties.TryGetPropertyValue(settingsType.Name, out var property))
         {
             var existing = property.ToObject<ContentItem>();
 

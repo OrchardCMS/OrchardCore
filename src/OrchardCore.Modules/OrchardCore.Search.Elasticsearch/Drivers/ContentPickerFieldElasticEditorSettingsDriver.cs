@@ -1,8 +1,9 @@
-using System;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
@@ -18,13 +19,13 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
             _elasticIndexSettingsService = elasticIndexSettingsService;
         }
 
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        public override async Task<IDisplayResult> EditAsync(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
         {
-            return Initialize<ContentPickerFieldElasticEditorSettings>("ContentPickerFieldElasticEditorSettings_Edit", async model =>
-            {
-                partFieldDefinition.PopulateSettings<ContentPickerFieldElasticEditorSettings>(model);
-                model.Indices = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-            }).Location("Editor");
+            var model = partFieldDefinition.Settings.ToObject<ContentPickerFieldElasticEditorSettings>();
+            model.Indices = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+
+            return Copy("ContentPickerFieldElasticEditorSettings_Edit", model)
+                .Location("Editor");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -38,7 +39,7 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
                 context.Builder.WithSettings(model);
             }
 
-            return Edit(partFieldDefinition);
+            return await EditAsync(partFieldDefinition, context);
         }
 
         public override bool CanHandleModel(ContentPartFieldDefinition model)

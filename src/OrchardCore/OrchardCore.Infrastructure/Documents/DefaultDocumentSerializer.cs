@@ -1,9 +1,9 @@
-using System;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using OrchardCore.Data.Documents;
 
 namespace OrchardCore.Documents
@@ -15,10 +15,9 @@ namespace OrchardCore.Documents
     {
         public static readonly DefaultDocumentSerializer Instance = new();
 
-        private static readonly JsonSerializerSettings _jsonSettings = new()
+        private static readonly JsonSerializerOptions _options = new()
         {
-            TypeNameHandling = TypeNameHandling.Auto,
-            DateTimeZoneHandling = DateTimeZoneHandling.Utc
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         };
 
         public DefaultDocumentSerializer()
@@ -27,8 +26,7 @@ namespace OrchardCore.Documents
 
         public Task<byte[]> SerializeAsync<TDocument>(TDocument document, int compressThreshold = int.MaxValue) where TDocument : class, IDocument, new()
         {
-            var data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(document, _jsonSettings));
-
+            var data = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(document, _options));
             if (data.Length >= compressThreshold)
             {
                 data = Compress(data);
@@ -44,7 +42,7 @@ namespace OrchardCore.Documents
                 data = Decompress(data);
             }
 
-            var document = JsonConvert.DeserializeObject<TDocument>(Encoding.UTF8.GetString(data), _jsonSettings);
+            var document = JsonSerializer.Deserialize<TDocument>(Encoding.UTF8.GetString(data), _options);
 
             return Task.FromResult(document);
         }

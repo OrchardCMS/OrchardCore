@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.CompiledQueries;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
@@ -21,7 +21,8 @@ namespace OrchardCore.ContentManagement
     public class DefaultContentManager : IContentManager
     {
         private const int ImportBatchSize = 500;
-        private static readonly JsonMergeSettings _updateJsonMergeSettings = new() { MergeArrayHandling = MergeArrayHandling.Replace };
+
+        //private static readonly JsonMergeSettings _updateJsonMergeSettings = new() { MergeArrayHandling = MergeArrayHandling.Replace };
 
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
@@ -524,7 +525,8 @@ namespace OrchardCore.ContentManagement
                 ContentItemVersionId = _idGenerator.GenerateUniqueId(existingContentItem),
                 DisplayText = existingContentItem.DisplayText,
                 Latest = true,
-                Data = new JObject(existingContentItem.Data),
+                // Data = new JObject(existingContentItem.Data),
+                Data = existingContentItem.Data.DeepClone().AsObject(),
             };
 
             var context = new VersionContentContext(existingContentItem, buildingContentItem);
@@ -581,7 +583,8 @@ namespace OrchardCore.ContentManagement
                     ContentItemVersionId = _idGenerator.GenerateUniqueId(existingContentItem),
                     DisplayText = existingContentItem.DisplayText,
                     Latest = true,
-                    Data = new JObject(existingContentItem.Data),
+                    // Data = new JObject(existingContentItem.Data),
+                    Data = existingContentItem.Data.DeepClone().AsObject(),
                 };
 
                 var context = new VersionContentContext(existingContentItem, buildingContentItem);
@@ -722,11 +725,12 @@ namespace OrchardCore.ContentManagement
                         // We compare the two versions and skip importing it if they are the same.
                         // We do this to prevent unnecessary sql updates, and because UpdateContentItemVersionAsync
                         // may remove drafts of updated items.
-                        // This is necesary because an imported item maybe set to latest, and published.
+                        // This is necessary because an imported item maybe set to latest, and published.
                         // In this case, the draft item in the system, must be removed, or there will be two drafts.
                         // The draft item should be removed, because it would now be orphaned, as the imported published item
                         // would be further ahead, on a timeline, between the two.
 
+                        // var jImporting = JObject.FromObject(importingItem);
                         var jImporting = JObject.FromObject(importingItem);
 
                         // Removed Published and Latest from consideration when evaluating.
@@ -734,12 +738,13 @@ namespace OrchardCore.ContentManagement
                         jImporting.Remove(nameof(ContentItem.Published));
                         jImporting.Remove(nameof(ContentItem.Latest));
 
+                        // var jOriginal = JObject.FromObject(originalVersion);
                         var jOriginal = JObject.FromObject(originalVersion);
 
                         jOriginal.Remove(nameof(ContentItem.Published));
                         jOriginal.Remove(nameof(ContentItem.Latest));
 
-                        if (JToken.DeepEquals(jImporting, jOriginal))
+                        if (JsonNode.DeepEquals(jImporting, jOriginal))
                         {
                             _logger.LogInformation("Importing '{ContentItemVersionId}' skipped as it is unchanged", importingItem.ContentItemVersionId);
                             continue;
@@ -912,7 +917,8 @@ namespace OrchardCore.ContentManagement
 
             var context = new CloneContentContext(contentItem, cloneContentItem);
 
-            context.CloneContentItem.Data = contentItem.Data.DeepClone() as JObject;
+            // context.CloneContentItem.Data = contentItem.Data.DeepClone() as JObject;
+            context.CloneContentItem.Data = contentItem.Data.DeepClone().AsObject();
 
             await Handlers.InvokeAsync((handler, context) => handler.CloningAsync(context), context, _logger);
 
@@ -1063,7 +1069,7 @@ namespace OrchardCore.ContentManagement
                 await RemovePublishedVersionAsync(updatingVersion, evictionVersions);
             }
 
-            updatingVersion.Merge(updatedVersion, _updateJsonMergeSettings);
+            updatingVersion.Merge(updatedVersion); // , _updateJsonMergeSettings);
             updatingVersion.Latest = importingLatest;
             updatingVersion.Published = importingPublished;
 

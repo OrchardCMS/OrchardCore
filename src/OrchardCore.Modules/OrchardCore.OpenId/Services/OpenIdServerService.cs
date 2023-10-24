@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Caching.Memory;
@@ -14,7 +15,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Settings;
@@ -63,7 +63,7 @@ namespace OrchardCore.OpenId.Services
 
         private OpenIdServerSettings GetSettingsFromContainer(ISite container)
         {
-            if (container.Properties.TryGetValue(nameof(OpenIdServerSettings), out var settings))
+            if (container.Properties.TryGetPropertyValue(nameof(OpenIdServerSettings), out var settings))
             {
                 return settings.ToObject<OpenIdServerSettings>();
             }

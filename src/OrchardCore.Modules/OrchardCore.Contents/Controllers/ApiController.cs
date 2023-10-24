@@ -143,7 +143,7 @@ namespace OrchardCore.Contents.Controllers
                     return this.ChallengeOrForbid("Api");
                 }
 
-                contentItem.Merge(model, _updateJsonMergeSettings);
+                contentItem.Merge(model); // , _updateJsonMergeSettings);
 
                 await _contentManager.UpdateAsync(contentItem);
                 var result = await _contentManager.ValidateAsync(contentItem);
