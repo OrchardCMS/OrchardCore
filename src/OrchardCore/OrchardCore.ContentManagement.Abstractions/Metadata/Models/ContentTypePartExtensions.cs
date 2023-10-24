@@ -53,11 +53,11 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         public static IEnumerable<string> GetAdditionalClasses(this ContentTypePartDefinition partDefinition, string prefix, Func<string, string> transform)
         {
             yield return prefix;
-            yield return $"{prefix}-{transform(partDefinition.Name)}";
+            yield return $"{prefix}-{transform(partDefinition.PartDefinition.Name)}";
 
             if (partDefinition.IsNamedPart())
             {
-                yield return $"{prefix}-{transform(partDefinition.PartDefinition.Name)}";
+                yield return $"{prefix}-{transform(partDefinition.Name)}";
             }
         }
     }
