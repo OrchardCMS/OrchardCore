@@ -80,11 +80,6 @@ namespace OrchardCore.Recipes.Services
                         {
                             foreach (var step in property.Value.EnumerateArray())
                             {
-                                if (cancellationToken.IsCancellationRequested)
-                                {
-                                    break;
-                                }
-
                                 var child = JsonObject.Create(step);
 
                                 var recipeStep = new RecipeExecutionContext
@@ -204,25 +199,34 @@ namespace OrchardCore.Recipes.Services
                 return null;
             }
 
-            JsonValue jsonValue = null;
             switch (node.GetValueKind())
             {
                 case JsonValueKind.Array:
                     var array = node.AsArray();
                     for (var i = 0; i < array.Count; i++)
                     {
-                        array[i] = EvaluateJsonTree(scriptingManager, context, array[i]);
+                        var item = EvaluateJsonTree(scriptingManager, context, array[i]);
+                        if (item is JsonValue && item != array[i])
+                        {
+                            array[i] = item;
+                        }
                     }
 
                     break;
+
                 case JsonValueKind.Object:
                     var properties = node.AsObject();
                     foreach (var property in properties.ToArray())
                     {
-                        properties[property.Key] = EvaluateJsonTree(scriptingManager, context, property.Value);
+                        var newProperty = EvaluateJsonTree(scriptingManager, context, property.Value);
+                        if (newProperty is JsonValue && newProperty != property.Value)
+                        {
+                            properties[property.Key] = newProperty;
+                        }
                     }
 
                     break;
+
                 case JsonValueKind.String:
                     const char scriptSeparator = ':';
                     var value = node.Value<string>();
@@ -248,12 +252,12 @@ namespace OrchardCore.Recipes.Services
                             ?? "").ToString();
                     }
 
-                    jsonValue = JsonValue.Create<string>(value);
+                    node = JsonValue.Create<string>(value);
 
                     break;
             }
 
-            return jsonValue;
+            return node;
         }
     }
 }

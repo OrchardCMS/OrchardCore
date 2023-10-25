@@ -14,7 +14,7 @@ namespace OrchardCore.ContentManagement
         /// <summary>
         /// These settings instruct merge to replace current value, even for null values.
         /// </summary>
-        //private static readonly JsonMergeSettings _jsonMergeSettings = new() { MergeArrayHandling = MergeArrayHandling.Replace, MergeNullValueHandling = MergeNullValueHandling.Merge };
+        // private static readonly JsonMergeSettings _jsonMergeSettings = new() { MergeArrayHandling = MergeArrayHandling.Replace, MergeNullValueHandling = MergeNullValueHandling.Merge };
 
         private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
         {

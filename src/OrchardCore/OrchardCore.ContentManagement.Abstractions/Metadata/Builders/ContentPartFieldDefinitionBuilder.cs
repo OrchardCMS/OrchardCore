@@ -17,7 +17,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         {
             Current = field;
 
-            _settings = new JsonObject(field.Settings);
+            _settings = field.Settings.DeepClone().AsObject();
         }
 
         [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]

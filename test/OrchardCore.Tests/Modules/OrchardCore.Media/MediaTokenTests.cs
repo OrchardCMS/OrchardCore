@@ -73,7 +73,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
 
             var mockSiteService = Mock.Of<ISiteService>(ss =>
                 ss.GetSiteSettingsAsync() == Task.FromResult(
-                    Mock.Of<ISite>(s => s.Properties == JObject.FromObject(new { MediaTokenSettings = _mediaTokenSettings }))
+                    Mock.Of<ISite>(s => s.Properties ==
+                       System.Text.Json.Nodes.JObject.FromObject(new { MediaTokenSettings = _mediaTokenSettings }, null))
                 )
             );
 

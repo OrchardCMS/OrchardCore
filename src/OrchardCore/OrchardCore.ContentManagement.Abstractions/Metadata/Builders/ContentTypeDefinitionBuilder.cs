@@ -36,7 +36,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
                 _name = existing.Name;
                 _displayName = existing.DisplayName;
                 _parts = existing.Parts.ToList();
-                _settings = new JsonObject(existing.Settings);
+                _settings = existing.Settings.DeepClone().AsObject();
             }
         }
 

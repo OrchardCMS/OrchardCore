@@ -17,7 +17,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         {
             Name = name;
             Fields = fields.ToList();
-            Settings = new JsonObject(settings);
+            Settings = settings.DeepClone().AsObject();
 
             foreach (var field in Fields)
             {

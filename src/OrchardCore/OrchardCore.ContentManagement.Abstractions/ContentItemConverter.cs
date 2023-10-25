@@ -38,6 +38,11 @@ namespace OrchardCore.ContentManagement
             var contentItem = new ContentItem();
             while (reader.Read())
             {
+                if (reader.TokenType == JsonTokenType.EndObject)
+                {
+                    break;
+                }
+
                 if (reader.TokenType != JsonTokenType.PropertyName)
                 {
                     continue;
@@ -45,57 +50,55 @@ namespace OrchardCore.ContentManagement
 
                 var propertyName = reader.GetString();
 
+                reader.Read();
+
                 switch (propertyName)
                 {
                     case nameof(ContentItem.ContentItemId):
-                        reader.Read();
                         contentItem.ContentItemId = reader.TokenType == JsonTokenType.String ? reader.GetString() : null;
                         break;
                     case nameof(ContentItem.ContentItemVersionId):
-                        reader.Read();
                         contentItem.ContentItemVersionId = reader.TokenType == JsonTokenType.String ? reader.GetString() : null;
                         break;
                     case nameof(ContentItem.ContentType):
-                        reader.Read();
                         contentItem.ContentType = reader.TokenType == JsonTokenType.String ? reader.GetString() : null;
                         break;
                     case nameof(ContentItem.DisplayText):
-                        reader.Read();
                         contentItem.DisplayText = reader.TokenType == JsonTokenType.String ? reader.GetString() : null;
                         break;
                     case nameof(ContentItem.Latest):
-                        reader.Read();
                         contentItem.Latest = reader.TokenType == JsonTokenType.True ||
                             reader.TokenType == JsonTokenType.False ? reader.GetBoolean() : false;
                         break;
                     case nameof(ContentItem.Published):
-                        reader.Read();
                         contentItem.Published = reader.TokenType == JsonTokenType.True ||
                             reader.TokenType == JsonTokenType.False ? reader.GetBoolean() : false;
                         break;
                     case nameof(ContentItem.PublishedUtc):
-                        reader.Read();
-                        contentItem.PublishedUtc = reader.TryGetDateTime(out var date) ? date : null;
+                        contentItem.PublishedUtc = reader.TokenType != JsonTokenType.Null &&
+                            reader.TryGetDateTime(out var date) ? date : null;
                         break;
                     case nameof(ContentItem.ModifiedUtc):
-                        reader.Read();
-                        contentItem.ModifiedUtc = reader.TryGetDateTime(out date) ? date : null;
+                        contentItem.ModifiedUtc = reader.TokenType != JsonTokenType.Null &&
+                            reader.TryGetDateTime(out date) ? date : null;
                         break;
                     case nameof(ContentItem.CreatedUtc):
-                        reader.Read();
-                        contentItem.CreatedUtc = reader.TryGetDateTime(out date) ? date : null;
+                        contentItem.CreatedUtc = reader.TokenType != JsonTokenType.Null &&
+                            reader.TryGetDateTime(out date) ? date : null;
                         break;
                     case nameof(ContentItem.Author):
-                        reader.Read();
                         contentItem.Author = reader.TokenType == JsonTokenType.String ? reader.GetString() : null;
                         break;
                     case nameof(ContentItem.Owner):
-                        reader.Read();
                         contentItem.Owner = reader.TokenType == JsonTokenType.String ? reader.GetString() : null;
                         break;
                     default:
-                        var jsonElement = JsonElement.ParseValue(ref reader);
-                        contentItem.Data.MergeItem(jsonElement, options);
+                        if (reader.TokenType == JsonTokenType.StartObject)
+                        {
+                            var property = JsonNode.Parse(ref reader);
+                            contentItem.Data.Add(propertyName, property);
+                        }
+
                         break;
                 }
             }

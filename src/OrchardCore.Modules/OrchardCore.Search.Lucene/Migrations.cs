@@ -60,7 +60,7 @@ namespace OrchardCore.Search.Lucene
                             // existingPartSettings["Tokenized"]?.Parent.Remove();
                             // existingPartSettings["Template"]?.Parent.Remove();
 
-                            var jExistingPartSettings = new JsonObject(existingPartSettings.AsObject());
+                            var jExistingPartSettings = existingPartSettings.DeepClone();
                             partDefinition.Settings.Add(nameof(LuceneContentIndexSettings), jExistingPartSettings);
                         }
 
@@ -104,7 +104,7 @@ namespace OrchardCore.Search.Lucene
                         // existingPartSettings["Tokenized"]?.Parent.Remove();
                         // existingPartSettings["Template"]?.Parent.Remove();
 
-                        var jExistingPartSettings = new JsonObject(existingPartSettings.AsObject());
+                        var jExistingPartSettings = existingPartSettings.DeepClone();
                         partDefinition.Settings.Add(nameof(LuceneContentIndexSettings), jExistingPartSettings);
                     }
 
@@ -141,7 +141,7 @@ namespace OrchardCore.Search.Lucene
                             // existingFieldSettings["Tokenized"]?.Parent.Remove();
                             // existingFieldSettings["Template"]?.Parent.Remove();
 
-                            var jExistingFieldSettings = new JsonObject(existingFieldSettings.AsObject());
+                            var jExistingFieldSettings = existingFieldSettings.DeepClone();
                             fieldDefinition.Settings.Add(nameof(LuceneContentIndexSettings), jExistingFieldSettings);
                         }
 

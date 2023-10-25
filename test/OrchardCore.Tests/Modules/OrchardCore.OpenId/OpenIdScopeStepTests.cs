@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using OpenIddict.Abstractions;
 using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
@@ -57,11 +58,13 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                     new ValueTask<object>());
 
             var step = new OpenIdScopeStep(scopeManagerMock.Object);
-            var recipe = JObject.Parse(GetRecipeFileContent("scope-recipe"));
+            var recipe = JsonNode.Parse(GetRecipeFileContent("scope-recipe"));
             var context = new RecipeExecutionContext
             {
-                Name = recipe.Property("steps").Value.First.Value<string>("name"),
-                Step = (JObject)recipe.Property("steps").Value.First,
+                // Name = recipe.Property("steps").Value.First.Value<string>("name"),
+                // Step = (JObject)recipe.Property("steps").Value.First,
+                Name = recipe["steps"][0].Value<string>("name"),
+                Step = (JsonObject)recipe["steps"][0],
             };
 
             // Act
@@ -128,11 +131,13 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                     new ValueTask());
 
             var step = new OpenIdScopeStep(scopeManagerMock.Object);
-            var recipe = JObject.Parse(GetRecipeFileContent("scope-recipe"));
+            var recipe = JsonNode.Parse(GetRecipeFileContent("scope-recipe"));
             var context = new RecipeExecutionContext
             {
-                Name = recipe.Property("steps").Value.First.Value<string>("name"),
-                Step = (JObject)recipe.Property("steps").Value.First,
+                // Name = recipe.Property("steps").Value.First.Value<string>("name"),
+                // Step = (JObject)recipe.Property("steps").Value.First,
+                Name = recipe["steps"][0].Value<string>("name"),
+                Step = (JsonObject)recipe["steps"][0],
             };
 
             // Act

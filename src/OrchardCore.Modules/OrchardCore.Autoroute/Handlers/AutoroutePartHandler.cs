@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -8,7 +9,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Autoroute.Core.Indexes;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.ViewModels;
@@ -195,13 +195,13 @@ namespace OrchardCore.Autoroute.Handlers
             return _tagCache.RemoveTagAsync($"slug:{part.Path}");
         }
 
-        private async Task CheckContainedHomeRouteAsync(string containerContentItemId, ContainedContentItemsAspect containedAspect, JObject content)
+        private async Task CheckContainedHomeRouteAsync(string containerContentItemId, ContainedContentItemsAspect containedAspect, JsonObject content)
         {
             foreach (var accessor in containedAspect.Accessors)
             {
                 var jItems = accessor.Invoke(content);
 
-                foreach (var jItem in jItems.Cast<JObject>())
+                foreach (var jItem in jItems.Cast<JsonObject>())
                 {
                     var contentItem = jItem.ToObject<ContentItem>();
                     var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
@@ -215,7 +215,7 @@ namespace OrchardCore.Autoroute.Handlers
                             await SetHomeRouteAsync(autoroutePart, homeRoute =>
                             {
                                 homeRoute[_options.ContentItemIdKey] = containerContentItemId;
-                                homeRoute[_options.JsonPathKey] = jItem.Path;
+                                homeRoute[_options.JsonPathKey] = jItem.GetPath();
                             });
 
                             break;
@@ -243,13 +243,13 @@ namespace OrchardCore.Autoroute.Handlers
             await ValidateContainedContentItemRoutesAsync(entries, part.ContentItem.ContentItemId, containedAspect, contentItem.Content, part.Path);
         }
 
-        private async Task PopulateContainedContentItemRoutesAsync(List<AutorouteEntry> entries, string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JObject content, string basePath)
+        private async Task PopulateContainedContentItemRoutesAsync(List<AutorouteEntry> entries, string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JsonObject content, string basePath)
         {
             foreach (var accessor in containedContentItemsAspect.Accessors)
             {
                 var jItems = accessor.Invoke(content);
 
-                foreach (var jItem in jItems.Cast<JObject>())
+                foreach (var jItem in jItems.Cast<JsonObject>())
                 {
                     var contentItem = jItem.ToObject<ContentItem>();
                     var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
@@ -262,7 +262,7 @@ namespace OrchardCore.Autoroute.Handlers
                             path = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path.TrimStart('/');
                         }
 
-                        entries.Add(new AutorouteEntry(containerContentItemId, path, contentItem.ContentItemId, jItem.Path)
+                        entries.Add(new AutorouteEntry(containerContentItemId, path, contentItem.ContentItemId, jItem.GetPath())
                         {
                             DocumentId = contentItem.Id
                         });
@@ -275,13 +275,13 @@ namespace OrchardCore.Autoroute.Handlers
             }
         }
 
-        private async Task ValidateContainedContentItemRoutesAsync(List<AutorouteEntry> entries, string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JObject content, string basePath)
+        private async Task ValidateContainedContentItemRoutesAsync(List<AutorouteEntry> entries, string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JsonObject content, string basePath)
         {
             foreach (var accessor in containedContentItemsAspect.Accessors)
             {
                 var jItems = accessor.Invoke(content);
 
-                foreach (var jItem in jItems.Cast<JObject>())
+                foreach (var jItem in jItems.Cast<JsonObject>())
                 {
                     var contentItem = jItem.ToObject<ContentItem>();
                     var containedAutoroutePart = contentItem.As<AutoroutePart>();
@@ -299,11 +299,13 @@ namespace OrchardCore.Autoroute.Handlers
                             containedAutoroutePart.Apply();
 
                             // Merge because we have disconnected the content item from it's json owner.
-                            jItem.Merge(contentItem.Content, new JsonMergeSettings
-                            {
-                                MergeArrayHandling = MergeArrayHandling.Replace,
-                                MergeNullValueHandling = MergeNullValueHandling.Merge
-                            });
+                            // jItem.Merge(contentItem.Content, new JsonMergeSettings
+                            // {
+                            //     MergeArrayHandling = MergeArrayHandling.Replace,
+                            //     MergeNullValueHandling = MergeNullValueHandling.Merge
+                            // });
+
+                            jItem.Merge(contentItem.Content as JsonObject);
                         }
                         else
                         {
@@ -317,11 +319,13 @@ namespace OrchardCore.Autoroute.Handlers
                                 containedAutoroutePart.Apply();
 
                                 // Merge because we have disconnected the content item from it's json owner.
-                                jItem.Merge(contentItem.Content, new JsonMergeSettings
-                                {
-                                    MergeArrayHandling = MergeArrayHandling.Replace,
-                                    MergeNullValueHandling = MergeNullValueHandling.Merge
-                                });
+                                // jItem.Merge(contentItem.Content, new JsonMergeSettings
+                                // {
+                                //     MergeArrayHandling = MergeArrayHandling.Replace,
+                                //     MergeNullValueHandling = MergeNullValueHandling.Merge
+                                // });
+
+                                jItem.Merge(contentItem.Content as JsonObject);
                             }
 
                             path = path[currentItemBasePath.Length..];

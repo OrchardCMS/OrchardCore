@@ -139,7 +139,8 @@ namespace OrchardCore.Tests.OrchardCore.Users
 
             var mockSiteService = Mock.Of<ISiteService>(ss =>
                 ss.GetSiteSettingsAsync() == Task.FromResult(
-                    Mock.Of<ISite>(s => s.Properties == JObject.FromObject(new { RegistrationSettings = registrationSettings }))
+                    Mock.Of<ISite>(s => s.Properties ==
+                        System.Text.Json.Nodes.JObject.FromObject(new { RegistrationSettings = registrationSettings }, null))
                     )
             );
             var mockSmtpService = Mock.Of<ISmtpService>(x => x.SendAsync(It.IsAny<MailMessage>()) == Task.FromResult(SmtpResult.Success));

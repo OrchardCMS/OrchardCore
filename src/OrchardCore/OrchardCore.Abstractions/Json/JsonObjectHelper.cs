@@ -1,5 +1,7 @@
 #nullable enable
 
+using System.Text.Json.Serialization;
+
 namespace System.Text.Json.Nodes;
 
 public static class JObject
@@ -33,15 +35,23 @@ public static class JNode
 
 public static class JsonNodeExtensions
 {
-    /// <summary>
-    /// Creates an instance of the specified type from this <see cref="JsonNode"/>.
-    /// </summary>
-    public static T? ToObject<T>(this JsonNode? node) => node.Deserialize<T>();
+    private static readonly JsonSerializerOptions _options = new()
+    {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        PropertyNameCaseInsensitive = true,
+    };
 
     /// <summary>
     /// Creates an instance of the specified type from this <see cref="JsonNode"/>.
     /// </summary>
-    public static object? ToObject(this JsonNode? node, Type type) => node.Deserialize(type);
+    public static T? ToObject<T>(this JsonNode? node, JsonSerializerOptions? options = null) =>
+        node.Deserialize<T>(options ?? _options);
+
+    /// <summary>
+    /// Creates an instance of the specified type from this <see cref="JsonNode"/>.
+    /// </summary>
+    public static object? ToObject(this JsonNode? node, Type type, JsonSerializerOptions? options = null) =>
+        node.Deserialize(type, options ?? _options);
 
     /// <summary>
     /// Gets the value of the specified type of this <see cref="JsonNode"/>.

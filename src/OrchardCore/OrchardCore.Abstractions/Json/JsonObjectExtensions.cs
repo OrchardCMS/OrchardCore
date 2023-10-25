@@ -1,3 +1,7 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
+
 #nullable enable
 
 namespace System.Text.Json.Nodes;
@@ -8,7 +12,7 @@ public static class JsonObjectExtensions
     /// <summary>
     /// Merge the specified content into this <see cref="JsonObject"/> using <see cref="JsonSerializerOptions"/>.
     /// </summary>
-    public static void Merge(this JsonObject jsonObject, JsonObject? content, JsonSerializerOptions? options = null)
+    public static void Merge1(this JsonObject jsonObject, JsonObject? content, JsonSerializerOptions? options = null)
     {
         if (content is null)
         {
@@ -19,7 +23,7 @@ public static class JsonObjectExtensions
         {
             if (!jsonObject.TryGetPropertyValue(item.Key, out var existing))
             {
-                jsonObject[item.Key] = item.Value;
+                jsonObject[item.Key] = item.Value?.DeepClone();
 
                 continue;
             }
@@ -65,7 +69,7 @@ public static class JsonObjectExtensions
     /// <summary>
     /// Merge the specified content into this <see cref="JsonObject"/> using <see cref="JsonSerializerOptions"/>.
     /// </summary>
-    public static void Merge2(this JsonObject jsonObject, JsonObject? content, JsonSerializerOptions? options = null)
+    public static void Merge(this JsonObject jsonObject, JsonObject? content, JsonSerializerOptions? options = null)
     {
         if (content is null)
         {
@@ -83,13 +87,16 @@ public static class JsonObjectExtensions
         {
             if (jsonObject.ContainsKey(property.Name))
             {
+                // Todo: Merge possible inner arrays.
                 continue;
             }
 
             switch (property.Value.ValueKind)
             {
                 case JsonValueKind.Object:
-                    // Merge Object.
+
+                    var jObject = JsonObject.Create(property.Value);
+                    jsonObject.Add(property.Name, jObject);
                     break;
 
                 case JsonValueKind.Array:
@@ -100,7 +107,8 @@ public static class JsonObjectExtensions
                     //     break;
                     // }
 
-                    // Merge Array.
+                    var jArray = JsonArray.Create(property.Value);
+                    jsonObject.Add(property.Name, jArray);
                     break;
 
                 case JsonValueKind.Number:

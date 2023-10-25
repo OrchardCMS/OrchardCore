@@ -19,7 +19,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             Name = part.Name;
             PartName = part.PartDefinition.Name;
             TypeName = part.ContentTypeDefinition != null ? part.ContentTypeDefinition.Name : default;
-            _settings = new JsonObject(part.Settings);
+            _settings = part.Settings.DeepClone().AsObject();
         }
 
         public ContentTypePartDefinitionBuilder WithSettings<T>(T settings)

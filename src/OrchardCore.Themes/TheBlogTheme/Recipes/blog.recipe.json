@@ -64,8 +64,8 @@
         "OrchardCore.Media",
         "OrchardCore.Menu",
         "OrchardCore.Placements",
-        "OrchardCore.Queries",
-        "OrchardCore.Queries.Sql",
+        //"OrchardCore.Queries",
+        //"OrchardCore.Queries.Sql",
         "OrchardCore.Shortcodes.Templates",
         "OrchardCore.Rules",
         "OrchardCore.Taxonomies",
@@ -1171,18 +1171,18 @@
         }
       ]
     },
-    {
-      "name": "queries",
-      "Queries": [
-        {
-          "Source": "Sql",
-          "Name": "RecentBlogPosts",
-          "Template": "SELECT * FROM ContentItemIndex WHERE ContentType='BlogPost' ORDER BY CreatedUtc DESC LIMIT 3",
-          "Schema": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]",
-          "ReturnContentItems": true
-        }
-      ]
-    },
+    //{
+    //  "name": "queries",
+    //  "Queries": [
+    //    {
+    //      "Source": "Sql",
+    //      "Name": "RecentBlogPosts",
+    //      "Template": "SELECT * FROM ContentItemIndex WHERE ContentType='BlogPost' ORDER BY CreatedUtc DESC LIMIT 3",
+    //      "Schema": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]",
+    //      "ReturnContentItems": true
+    //    }
+    //  ]
+    //},
     {
       "name": "AdminMenu",
       "data": [

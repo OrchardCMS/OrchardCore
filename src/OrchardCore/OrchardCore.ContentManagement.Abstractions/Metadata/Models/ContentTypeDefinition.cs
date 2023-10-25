@@ -12,7 +12,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
             Name = name;
             DisplayName = displayName;
             Parts = parts.ToList();
-            Settings = new JsonObject(settings);
+            Settings = settings.DeepClone().AsObject();
 
             foreach (var part in Parts)
             {

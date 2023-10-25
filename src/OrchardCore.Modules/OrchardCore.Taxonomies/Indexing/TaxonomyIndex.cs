@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data;
@@ -80,16 +80,14 @@ namespace OrchardCore.Taxonomies.Indexing
                     // Get all field values
                     foreach (var fieldDefinition in fieldDefinitions)
                     {
-                        var jPart = (JObject)contentItem.Content[fieldDefinition.PartDefinition.Name];
-
-                        if (jPart == null)
+                        var jPart = (JsonObject)contentItem.Content[fieldDefinition.PartDefinition.Name];
+                        if (jPart is null)
                         {
                             continue;
                         }
 
-                        var jField = jPart[fieldDefinition.Name] as JObject;
-
-                        if (jField == null)
+                        var jField = jPart[fieldDefinition.Name] as JsonObject;
+                        if (jField is null)
                         {
                             continue;
                         }

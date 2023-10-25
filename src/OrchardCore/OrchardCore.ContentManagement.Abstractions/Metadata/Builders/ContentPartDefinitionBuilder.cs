@@ -34,7 +34,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             {
                 Name = existing.Name;
                 _fields = existing.Fields.ToList();
-                _settings = new JsonObject(existing.Settings);
+                _settings = existing.Settings.DeepClone().AsObject();
             }
         }
 
