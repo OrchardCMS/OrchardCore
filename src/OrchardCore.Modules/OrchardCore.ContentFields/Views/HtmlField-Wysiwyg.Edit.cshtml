@@ -5,7 +5,6 @@
 @{
     var settings = Model.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
-    var additionalClasses = Model.PartFieldDefinition.GetFieldWrapperCssClasses(t => t.HtmlClassify());
 }
 
 <style asp-name="trumbowyg" version="2"></style>
@@ -13,7 +12,7 @@
 <script asp-name="trumbowyg-shortcodes" at="Foot"></script>
 
 
-<div class="@Orchard.GetWrapperCssClasses(additionalClasses.ToArray())" id="@Html.IdFor(x => x.Html)_FieldWrapper">
+<div class="@Orchard.GetFieldWrapperCssClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Html)_FieldWrapper">
     <label asp-for="Html" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndCssClasses()">
         @await DisplayAsync(await New.ShortcodeModal())

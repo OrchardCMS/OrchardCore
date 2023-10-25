@@ -11,7 +11,6 @@
     var selectedItems = JsonConvert.SerializeObject(Model.SelectedItems, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
     var fieldName = Model.PartFieldDefinition.Name;
-    var additionalClasses = Model.PartFieldDefinition.GetFieldWrapperCssClasses(t => t.HtmlClassify());
     var searchUrl = Url.RouteUrl(new { area = "OrchardCore.ContentFields", controller = "LocalizationSetContentPickerAdmin", action = "SearchLocalizationSets", part = partName, field = fieldName });
     var vueElementId = $"LocalizedContentPicker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
     var multiple = settings.Multiple.ToString().ToLowerInvariant();
@@ -20,7 +19,7 @@
 <script asp-name="vue-multiselect-wrapper" asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-wrapper.js" at="Foot" depends-on="vuejs, vue-multiselect, sortable, vuedraggable"></script>
 <style asp-name="vue-multiselect" at="Foot"></style>
 
-<div class="@Orchard.GetWrapperCssClasses(additionalClasses.ToArray())" id="@Html.IdFor(x => x.LocalizationSets)_FieldWrapper">
+<div class="@Orchard.GetFieldWrapperCssClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.LocalizationSets)_FieldWrapper">
     <label asp-for="LocalizationSets" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndCssClasses()">
         <div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-editor-type="LocalizationSetContentPicker" data-selected-items="@selectedItems" data-search-url="@searchUrl" data-multiple="@multiple">

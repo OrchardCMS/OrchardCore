@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using OrchardCore.ContentManagement.Metadata.Settings;
 
 namespace OrchardCore.ContentManagement.Metadata.Models
@@ -24,17 +22,5 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         /// <returns></returns>
         public static string GetFieldWrapperClassName(this ContentPartFieldDefinition fieldDefinition)
             =>  $"{fieldDefinition.ContentTypePartDefinition.Name}-{fieldDefinition.Name}";
-
-
-        public static IEnumerable<string> GetFieldWrapperCssClasses(this ContentPartFieldDefinition fieldDefinition, Func<string, string> transform)
-        {
-            yield return "field-wrapper";
-            yield return $"field-wrapper-{transform(fieldDefinition.GetReusableFieldWrapperClassName())}";
-
-            if (fieldDefinition.IsNamedPart())
-            {
-                yield return $"field-wrapper-{transform(fieldDefinition.GetFieldWrapperClassName())}";
-            }
-        }
     }
 }

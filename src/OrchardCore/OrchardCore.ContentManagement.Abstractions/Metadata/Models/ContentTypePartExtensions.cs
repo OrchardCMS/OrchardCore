@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using OrchardCore.ContentManagement.Metadata.Settings;
 
 namespace OrchardCore.ContentManagement.Metadata.Models
@@ -49,16 +47,5 @@ namespace OrchardCore.ContentManagement.Metadata.Models
 
         public static bool IsNamedPart(this ContentTypePartDefinition typePart)
             => typePart.PartDefinition.IsReusable() && typePart.Name != typePart.PartDefinition.Name;
-
-        public static IEnumerable<string> GetPartWrapperCssClasses(this ContentTypePartDefinition partDefinition, Func<string, string> transform)
-        {
-            yield return "content-part-wrapper";
-            yield return $"content-part-wrapper-{transform(partDefinition.PartDefinition.Name)}";
-
-            if (partDefinition.IsNamedPart())
-            {
-                yield return $"content-part-wrapper-{transform(partDefinition.Name)}";
-            }
-        }
     }
 }

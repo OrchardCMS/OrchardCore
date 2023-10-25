@@ -10,10 +10,9 @@
 
         options.Add(new SelectListItem { Text = option.Name, Value = option.Value, Selected = isSelected });
     }
-    var additionalClasses = Model.PartFieldDefinition.GetFieldWrapperCssClasses(t => t.HtmlClassify());
 }
 
-<div class="@Orchard.GetWrapperCssClasses(additionalClasses.ToArray())" id="@Html.IdFor(x => x.Values)_FieldWrapper">
+<div class="@Orchard.GetFieldWrapperCssClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Values)_FieldWrapper">
     <label asp-for="Values" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndCssClasses()">
         <select class="form-select content-preview-select" asp-for="Values" asp-items="options" multiple></select>
