@@ -50,14 +50,14 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         public static bool IsNamedPart(this ContentTypePartDefinition typePart)
             => typePart.PartDefinition.IsReusable() && typePart.Name != typePart.PartDefinition.Name;
 
-        public static IEnumerable<string> GetAdditionalClasses(this ContentTypePartDefinition partDefinition, string prefix, Func<string, string> transform)
+        public static IEnumerable<string> GetPartWrapperCssClasses(this ContentTypePartDefinition partDefinition, Func<string, string> transform)
         {
-            yield return prefix;
-            yield return $"{prefix}-{transform(partDefinition.PartDefinition.Name)}";
+            yield return "content-part-wrapper";
+            yield return $"content-part-wrapper-{transform(partDefinition.PartDefinition.Name)}";
 
             if (partDefinition.IsNamedPart())
             {
-                yield return $"{prefix}-{transform(partDefinition.Name)}";
+                yield return $"content-part-wrapper-{transform(partDefinition.Name)}";
             }
         }
     }

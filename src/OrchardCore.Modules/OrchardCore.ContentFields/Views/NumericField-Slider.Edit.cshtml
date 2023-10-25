@@ -10,7 +10,7 @@
     string id = Html.IdFor(m => m.Value);
     string javascriptDecimalSeparator = CultureInfo.InvariantCulture.NumberFormat.NumberDecimalSeparator;
     string serverDecimalSeparator = CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator;
-    var additionalClasses = Model.PartFieldDefinition.GetAdditionalClasses("field-wrapper", t => t.HtmlClassify());
+    var additionalClasses = Model.PartFieldDefinition.GetFieldWrapperCssClasses(t => t.HtmlClassify());
 }
 
 <script asp-name="nouislider" at="Foot"></script>

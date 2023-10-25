@@ -6,7 +6,7 @@
 @model EditGeoPointFieldViewModel
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<GeoPointFieldSettings>();
-    var additionalClasses = Model.PartFieldDefinition.GetAdditionalClasses("field-wrapper", t => t.HtmlClassify());
+    var additionalClasses = Model.PartFieldDefinition.GetFieldWrapperCssClasses(t => t.HtmlClassify());
 }
 
 <div class="@Orchard.GetWrapperCssClasses(additionalClasses.ToArray())" id="@Html.IdFor(x => x)_FieldWrapper">

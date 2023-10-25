@@ -6,7 +6,7 @@
     decimal step = (decimal)Math.Pow(10, 0 - settings.Scale);
     decimal from = settings.Minimum.HasValue ? settings.Minimum.Value : 0;
     decimal to = settings.Maximum.HasValue ? settings.Maximum.Value : 10;
-    var additionalClasses = Model.PartFieldDefinition.GetAdditionalClasses("field-wrapper", t => t.HtmlClassify());
+    var additionalClasses = Model.PartFieldDefinition.GetFieldWrapperCssClasses(t => t.HtmlClassify());
 }
 
 <div class="@Orchard.GetWrapperCssClasses(additionalClasses.ToArray())" id="@Html.IdFor(x => x.Value)_FieldWrapper">

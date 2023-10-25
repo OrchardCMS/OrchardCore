@@ -5,7 +5,7 @@
     string name = Model.PartFieldDefinition.DisplayName();
     decimal min = settings.Minimum.HasValue ? settings.Minimum.Value : 0;
     decimal max = settings.Maximum.HasValue ? settings.Maximum.Value : 10000;
-    var additionalClasses = Model.PartFieldDefinition.GetAdditionalClasses("field-wrapper", t => t.HtmlClassify());
+    var additionalClasses = Model.PartFieldDefinition.GetFieldWrapperCssClasses(t => t.HtmlClassify());
 }
 
 <div class="@Orchard.GetWrapperCssClasses(additionalClasses.ToArray())" id="@Html.IdFor(x => x.Value)_FieldWrapper">

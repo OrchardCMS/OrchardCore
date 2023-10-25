@@ -8,7 +8,7 @@
     ContentTypePartDefinition typePartDefinition = Model.ContentTypePartDefinition;
     var description = typePartDefinition.Description();
     var isNamedPart = typePartDefinition.IsNamedPart();
-    var additionalClasses = typePartDefinition.GetAdditionalClasses("content-part-wrapper", t => t.HtmlClassify());
+    var additionalClasses = typePartDefinition.GetPartWrapperCssClasses(t => t.HtmlClassify());
 }
 
 @if (isNamedPart)
