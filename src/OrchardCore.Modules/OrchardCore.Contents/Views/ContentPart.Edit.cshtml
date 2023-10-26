@@ -7,10 +7,9 @@
     ContentPart contentPart = Model.ContentPart;
     ContentTypePartDefinition typePartDefinition = Model.ContentTypePartDefinition;
     var description = typePartDefinition.Description();
-    var isNamedPart = typePartDefinition.IsNamedPart();
 }
 
-@if (isNamedPart)
+@if (typePartDefinition.IsNamedPart())
 {
     <div class="@Orchard.GetPartWrapperCssClasses(typePartDefinition)">
         <div class="@Orchard.GetLabelCssClasses()">
