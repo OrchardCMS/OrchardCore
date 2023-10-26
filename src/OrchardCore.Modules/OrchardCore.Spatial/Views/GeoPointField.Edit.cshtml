@@ -1,15 +1,15 @@
 @using System.Text.Json.Nodes
 @using OrchardCore
+@using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.Spatial.Settings
 @using OrchardCore.Spatial.ViewModels
 @model EditGeoPointFieldViewModel
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<GeoPointFieldSettings>();
-    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
-<div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x)_FieldWrapper">
+<div class="@Orchard.GetFieldWrapperCssClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x)_FieldWrapper">
     <div class="@Orchard.GetEndCssClasses(true)">
         <div class="row">
             <div class="col-md-6">
