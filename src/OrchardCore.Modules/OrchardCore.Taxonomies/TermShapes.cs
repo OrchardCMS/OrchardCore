@@ -133,7 +133,7 @@ namespace OrchardCore.Taxonomies
                     foreach (var termContentItem in termItems)
                     {
                         ContentItem[] childTerms = null;
-                        if (termContentItem.Content.Terms is JsonArray termsArray)
+                        if ((termContentItem.Content as JsonObject)["Terms"] is JsonArray termsArray)
                         {
                             childTerms = termsArray.ToObject<ContentItem[]>();
                         }
@@ -171,7 +171,7 @@ namespace OrchardCore.Taxonomies
                         foreach (var termContentItem in termItem.GetProperty<ContentItem[]>("Terms"))
                         {
                             ContentItem[] childTerms = null;
-                            if (termContentItem.Content.Terms is JsonArray termsArray)
+                            if ((termContentItem.Content as JsonObject)["Terms"] is JsonArray termsArray)
                             {
                                 childTerms = termsArray.ToObject<ContentItem[]>();
                             }

@@ -64,7 +64,7 @@
         "OrchardCore.Media",
         "OrchardCore.Menu",
         "OrchardCore.Placements",
-        //"OrchardCore.Queries",
+        "OrchardCore.Queries",
         //"OrchardCore.Queries.Sql",
         "OrchardCore.Shortcodes.Templates",
         "OrchardCore.Rules",
