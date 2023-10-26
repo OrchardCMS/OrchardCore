@@ -31,11 +31,10 @@
 }
 else
 {
-    <div class="@Orchard.GetPartWrapperCssClasses(typePartDefinition, skipThemeWrapperClasses: true)">
+    <div class="@Orchard.GetPartWrapperCssClasses(typePartDefinition)">
         @foreach (var shape in Model)
         {
             @await DisplayAsync(shape)
-
         }
     </div>
 }

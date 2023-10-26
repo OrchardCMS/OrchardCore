@@ -7,11 +7,9 @@ namespace OrchardCore;
 
 public static class CssOrchardHelper
 {
-    public static string GetPartWrapperCssClasses(this IOrchardHelper helper, ContentTypePartDefinition partDefinition, bool skipThemeWrapperClasses = false)
+    public static string GetPartWrapperCssClasses(this IOrchardHelper helper, ContentTypePartDefinition partDefinition)
     {
-        var partClasses = GetPartWrapperCssClasses(partDefinition).ToArray();
-
-        return skipThemeWrapperClasses ? string.Join(' ', partClasses) : helper.GetWrapperCssClasses(partClasses);
+        return helper.GetWrapperCssClasses(GetPartWrapperCssClasses(partDefinition).ToArray());
     }
 
     public static string GetFieldWrapperCssClasses(this IOrchardHelper helper, ContentPartFieldDefinition fieldDefinition)
@@ -32,12 +30,15 @@ public static class CssOrchardHelper
 
     private static IEnumerable<string> GetFieldWrapperCssClasses(ContentPartFieldDefinition fieldDefinition)
     {
+        var reusableFieldWrapperName = $"{fieldDefinition.PartDefinition.Name}-{fieldDefinition.Name}";
+        var fieldWrapperName = $"{fieldDefinition.ContentTypePartDefinition.Name}-{fieldDefinition.Name}";
+
         yield return "field-wrapper";
-        yield return $"field-wrapper-{fieldDefinition.GetReusableFieldWrapperClassName().HtmlClassify()}";
+        yield return $"field-wrapper-{reusableFieldWrapperName.HtmlClassify()}";
 
         if (fieldDefinition.IsNamedPart())
         {
-            yield return $"field-wrapper-{fieldDefinition.GetFieldWrapperClassName().HtmlClassify()}";
+            yield return $"field-wrapper-{fieldWrapperName.HtmlClassify()}";
         }
     }
 }

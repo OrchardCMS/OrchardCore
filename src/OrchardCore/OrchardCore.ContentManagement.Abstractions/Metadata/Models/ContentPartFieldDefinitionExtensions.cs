@@ -6,21 +6,5 @@ namespace OrchardCore.ContentManagement.Metadata.Models
     {
         public static bool IsNamedPart(this ContentPartFieldDefinition fieldDefinition)
             => fieldDefinition.PartDefinition.IsReusable() && fieldDefinition.ContentTypePartDefinition.Name != fieldDefinition.PartDefinition.Name;
-
-        /// <summary>
-        /// Returns reusable field wrapper class name.
-        /// </summary>
-        /// <param name="fieldDefinition">The <see cref="ContentPartFieldDefinition" />.</param>
-        /// <returns></returns>
-        public static string GetReusableFieldWrapperClassName(this ContentPartFieldDefinition fieldDefinition)
-            => $"{fieldDefinition.PartDefinition.Name}-{fieldDefinition.Name}";
-
-        /// <summary>
-        /// Returns field wrapper class name.
-        /// </summary>
-        /// <param name="fieldDefinition">The <see cref="ContentPartFieldDefinition" />.</param>
-        /// <returns></returns>
-        public static string GetFieldWrapperClassName(this ContentPartFieldDefinition fieldDefinition)
-            =>  $"{fieldDefinition.ContentTypePartDefinition.Name}-{fieldDefinition.Name}";
     }
 }
