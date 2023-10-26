@@ -246,7 +246,7 @@ namespace OrchardCore.ContentManagement
                 {
                     if (field.FieldDefinition == null)
                     {
-                        throw new Exception($"The '{field.Name}' field in '{model.Name}' part was defined without a specified type. Please review the migration and explicitly specify the field type.");
+                        throw new InvalidOperationException($"The '{field.Name}' field in '{model.Name}' part was defined without a specified type. Please review the migration and explicitly specify the field type.");
                     }
 
                     partFieldRecord = new ContentPartFieldDefinitionRecord
