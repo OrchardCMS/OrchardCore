@@ -1,5 +1,3 @@
-using System;
-using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Diagnostics.ViewModels;
 
@@ -13,11 +11,6 @@ public class DiagnosticsController : Controller
         // Most commonly used error messages.
         ViewData["StatusCode"] = status;
 
-        if (!status.HasValue || !Enum.TryParse<HttpStatusCode>(status.ToString(), out var httpStatusCode))
-        {
-            httpStatusCode = HttpStatusCode.InternalServerError;
-        }
-
-        return View(new HttpStatusCodeShapeViewModel(httpStatusCode));
+        return View(new HttpErrorShapeViewModel(status));
     }
 }
