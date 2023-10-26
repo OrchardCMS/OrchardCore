@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
@@ -89,7 +89,7 @@ namespace OrchardCore.Taxonomies
                     var termContentItemId = termShape.GetProperty<string>("TermContentItemId");
                     if (!string.IsNullOrEmpty(termContentItemId))
                     {
-                        level = FindTerm(taxonomyContentItem.Content.TaxonomyPart.Terms as JArray, termContentItemId, level, out var termContentItem);
+                        level = FindTerm(taxonomyContentItem.Content.TaxonomyPart.Terms as JsonArray, termContentItemId, level, out var termContentItem);
 
                         if (termContentItem == null)
                         {
@@ -133,7 +133,7 @@ namespace OrchardCore.Taxonomies
                     foreach (var termContentItem in termItems)
                     {
                         ContentItem[] childTerms = null;
-                        if (termContentItem.Content.Terms is JArray termsArray)
+                        if (termContentItem.Content.Terms is JsonArray termsArray)
                         {
                             childTerms = termsArray.ToObject<ContentItem[]>();
                         }
@@ -171,7 +171,7 @@ namespace OrchardCore.Taxonomies
                         foreach (var termContentItem in termItem.GetProperty<ContentItem[]>("Terms"))
                         {
                             ContentItem[] childTerms = null;
-                            if (termContentItem.Content.Terms is JArray termsArray)
+                            if (termContentItem.Content.Terms is JsonArray termsArray)
                             {
                                 childTerms = termsArray.ToObject<ContentItem[]>();
                             }
@@ -248,19 +248,18 @@ namespace OrchardCore.Taxonomies
                 });
         }
 
-        private int FindTerm(JArray termsArray, string termContentItemId, int level, out ContentItem contentItem)
+        private int FindTerm(JsonArray termsArray, string termContentItemId, int level, out ContentItem contentItem)
         {
-            foreach (var term in termsArray.Cast<JObject>())
+            foreach (var term in termsArray.Cast<JsonObject>())
             {
-                var contentItemId = term.GetValue("ContentItemId").ToString();
-
+                var contentItemId = term["ContentItemId"]?.ToString();
                 if (contentItemId == termContentItemId)
                 {
                     contentItem = term.ToObject<ContentItem>();
                     return level;
                 }
 
-                if (term.GetValue("Terms") is JArray children)
+                if (term["Terms"] is JsonArray children)
                 {
                     level += 1;
                     level = FindTerm(children, termContentItemId, level, out var foundContentItem);

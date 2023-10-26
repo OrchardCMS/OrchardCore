@@ -14,8 +14,8 @@ namespace OrchardCore.Recipes
     {
         [Theory]
         [InlineData("recipe1", "[locale en]You have successfully registered![/locale][locale fr]Vous vous êtes inscrit avec succès![/locale]")]
-        [InlineData("recipe2", "[1js: variables('now')]")]
-        [InlineData("recipe3", "js: variables('now')")]
+        [InlineData("recipe2", "[1js: valiables('now')]")]
+        [InlineData("recipe3", "js: valiables('now')")]
         [InlineData("recipe4", "[locale en]This text contains a colon ':' symbol[/locale][locale fr]Ce texte contient un deux-points ':'[/locale]")]
         [InlineData("recipe5", "[sc text='some : text'/]")]
         public async Task ShouldTrimValidScriptExpression(string recipeName, string expected)
@@ -45,8 +45,7 @@ namespace OrchardCore.Recipes
                 var recipeStep = (recipeEventHandlers.Single() as RecipeEventHandler).Context.Step;
 
                 // Todo: Implement 'SelectToken' by path.
-                // Assert.Equal(expected, recipeStep.SelectToken("data.[0].TitlePart.Title").ToString());
-                Assert.Equal(expected, expected);
+                Assert.Equal(expected, recipeStep["data"][0]["TitlePart"]["Title"].ToString());
             });
         }
 

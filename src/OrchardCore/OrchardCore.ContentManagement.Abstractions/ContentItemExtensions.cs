@@ -1,5 +1,4 @@
 using System;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
@@ -102,14 +101,14 @@ namespace OrchardCore.ContentManagement
         /// </summary>
         /// <param name="contentItem">The <see cref="ContentItem"/>.</param>
         /// <param name="properties">The object to merge.</param>
-        /// <param name="options">The <see cref="JsonSerializerOptions"/> to use.</param>
+        /// <param name="settings">The <see cref="JsonMergeSettings"/> to use.</param>
         /// <returns>The current <see cref="ContentItem"/> instance.</returns>
-        public static ContentItem Merge(this ContentItem contentItem, object properties, JsonSerializerOptions options = null)
+        public static ContentItem Merge(this ContentItem contentItem, object properties, JsonMergeSettings settings = null)
         {
             var props = JObject.FromObject(properties);
 
             var originalDocumentId = contentItem.Id;
-            contentItem.Data.Merge(props, options);
+            contentItem.Data.Merge(props);
             contentItem.Elements.Clear();
 
             // Return to original value or it will be interpretated as a different object by YesSql.

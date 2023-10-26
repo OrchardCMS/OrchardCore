@@ -21,11 +21,6 @@ namespace OrchardCore.Taxonomies.Drivers
 {
     public class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
     {
-        // private static readonly JsonSerializerSettings _serializerSettings = new()
-        // {
-        //     ContractResolver = new CamelCasePropertyNamesContractResolver(),
-        // };
-
         private static readonly JsonSerializerOptions _options = new()
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -114,7 +109,10 @@ namespace OrchardCore.Taxonomies.Drivers
 
                 foreach (var termContentItemId in field.TermContentItemIds)
                 {
-                    var term = TaxonomyOrchardHelperExtensions.FindTerm(taxonomy.Content.TaxonomyPart.Terms as JsonArray, termContentItemId);
+                    var term = TaxonomyOrchardHelperExtensions.FindTerm(
+                        (taxonomy.Content as JsonObject)["TaxonomyPart"]["Terms"] as JsonArray,
+                        termContentItemId);
+
                     terms.Add(term);
                 }
 

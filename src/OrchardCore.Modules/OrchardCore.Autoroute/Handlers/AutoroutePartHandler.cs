@@ -299,13 +299,11 @@ namespace OrchardCore.Autoroute.Handlers
                             containedAutoroutePart.Apply();
 
                             // Merge because we have disconnected the content item from it's json owner.
-                            // jItem.Merge(contentItem.Content, new JsonMergeSettings
-                            // {
-                            //     MergeArrayHandling = MergeArrayHandling.Replace,
-                            //     MergeNullValueHandling = MergeNullValueHandling.Merge
-                            // });
-
-                            jItem.Merge(contentItem.Content as JsonObject);
+                            jItem.Merge(contentItem.Content as JsonObject, new JsonMergeSettings
+                            {
+                                MergeArrayHandling = MergeArrayHandling.Replace,
+                                MergeNullValueHandling = MergeNullValueHandling.Merge
+                            });
                         }
                         else
                         {
@@ -319,13 +317,11 @@ namespace OrchardCore.Autoroute.Handlers
                                 containedAutoroutePart.Apply();
 
                                 // Merge because we have disconnected the content item from it's json owner.
-                                // jItem.Merge(contentItem.Content, new JsonMergeSettings
-                                // {
-                                //     MergeArrayHandling = MergeArrayHandling.Replace,
-                                //     MergeNullValueHandling = MergeNullValueHandling.Merge
-                                // });
-
-                                jItem.Merge(contentItem.Content as JsonObject);
+                                jItem.Merge(contentItem.Content as JsonObject, new JsonMergeSettings
+                                {
+                                    MergeArrayHandling = MergeArrayHandling.Replace,
+                                    MergeNullValueHandling = MergeNullValueHandling.Merge
+                                });
                             }
 
                             path = path[currentItemBasePath.Length..];

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.Scripting;
@@ -54,7 +55,7 @@ namespace OrchardCore.Contents.Scripting
                 Method = serviceProvider => (Action<ContentItem, object>)((contentItem, properties) =>
                 {
                     var contentManager = serviceProvider.GetRequiredService<IContentManager>();
-                    contentItem.Merge(properties); // , new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
+                    contentItem.Merge(properties, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
                     contentManager.UpdateAsync(contentItem).GetAwaiter().GetResult();
                     var result = contentManager.ValidateAsync(contentItem).GetAwaiter().GetResult();
                     if (!result.Succeeded)

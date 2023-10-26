@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -22,7 +21,7 @@ namespace OrchardCore.ContentManagement
     {
         private const int ImportBatchSize = 500;
 
-        //private static readonly JsonMergeSettings _updateJsonMergeSettings = new() { MergeArrayHandling = MergeArrayHandling.Replace };
+        private static readonly JsonMergeSettings _updateJsonMergeSettings = new() { MergeArrayHandling = MergeArrayHandling.Replace };
 
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
@@ -525,8 +524,7 @@ namespace OrchardCore.ContentManagement
                 ContentItemVersionId = _idGenerator.GenerateUniqueId(existingContentItem),
                 DisplayText = existingContentItem.DisplayText,
                 Latest = true,
-                // Data = new JObject(existingContentItem.Data),
-                Data = existingContentItem.Data.DeepClone().AsObject(),
+                Data = existingContentItem.Data.Clone(),
             };
 
             var context = new VersionContentContext(existingContentItem, buildingContentItem);
@@ -583,8 +581,7 @@ namespace OrchardCore.ContentManagement
                     ContentItemVersionId = _idGenerator.GenerateUniqueId(existingContentItem),
                     DisplayText = existingContentItem.DisplayText,
                     Latest = true,
-                    // Data = new JObject(existingContentItem.Data),
-                    Data = existingContentItem.Data.DeepClone().AsObject(),
+                    Data = existingContentItem.Data.Clone(),
                 };
 
                 var context = new VersionContentContext(existingContentItem, buildingContentItem);
@@ -917,8 +914,7 @@ namespace OrchardCore.ContentManagement
 
             var context = new CloneContentContext(contentItem, cloneContentItem);
 
-            // context.CloneContentItem.Data = contentItem.Data.DeepClone() as JObject;
-            context.CloneContentItem.Data = contentItem.Data.DeepClone().AsObject();
+            context.CloneContentItem.Data = contentItem.Data.Clone();
 
             await Handlers.InvokeAsync((handler, context) => handler.CloningAsync(context), context, _logger);
 
@@ -1069,7 +1065,7 @@ namespace OrchardCore.ContentManagement
                 await RemovePublishedVersionAsync(updatingVersion, evictionVersions);
             }
 
-            updatingVersion.Merge(updatedVersion); // , _updateJsonMergeSettings);
+            updatingVersion.Merge(updatedVersion, _updateJsonMergeSettings);
             updatingVersion.Latest = importingLatest;
             updatingVersion.Published = importingPublished;
 

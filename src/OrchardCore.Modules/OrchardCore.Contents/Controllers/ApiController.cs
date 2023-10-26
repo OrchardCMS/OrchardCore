@@ -1,12 +1,11 @@
-using System;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
@@ -143,7 +142,7 @@ namespace OrchardCore.Contents.Controllers
                     return this.ChallengeOrForbid("Api");
                 }
 
-                contentItem.Merge(model); // , _updateJsonMergeSettings);
+                contentItem.Merge(model, _updateJsonMergeSettings);
 
                 await _contentManager.UpdateAsync(contentItem);
                 var result = await _contentManager.ValidateAsync(contentItem);

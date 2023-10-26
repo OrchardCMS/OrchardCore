@@ -34,7 +34,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             {
                 Name = existing.Name;
                 _fields = existing.Fields.ToList();
-                _settings = existing.Settings.DeepClone().AsObject();
+                _settings = existing.Settings.Clone();
             }
         }
 
@@ -83,7 +83,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentPartDefinitionBuilder MergeSettings(JsonObject settings)
         {
-            _settings.Merge(settings/*, ContentBuilderSettings.JsonMergeSettings*/);
+            _settings.Merge(settings, ContentBuilderSettings.JsonMergeSettings);
             return this;
         }
 
@@ -93,13 +93,13 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             // If existing settings do not exist, create.
             if (existingJObject == null)
             {
-                existingJObject = JObject.FromObject(new T()/*, ContentBuilderSettings.IgnoreDefaultValuesSerializer*/);
+                existingJObject = JObject.FromObject(new T(), ContentBuilderSettings.IgnoreDefaultValuesSerializer);
                 _settings[typeof(T).Name] = existingJObject;
             }
 
             var settingsToMerge = existingJObject.ToObject<T>();
             setting(settingsToMerge);
-            _settings[typeof(T).Name] = JObject.FromObject(settingsToMerge/*, ContentBuilderSettings.IgnoreDefaultValuesSerializer*/);
+            _settings[typeof(T).Name] = JObject.FromObject(settingsToMerge, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
             return this;
         }
 
@@ -110,7 +110,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            var jObject = JObject.FromObject(settings/*, ContentBuilderSettings.IgnoreDefaultValuesSerializer*/);
+            var jObject = JObject.FromObject(settings, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
             _settings[typeof(T).Name] = jObject;
 
             return this;

@@ -98,7 +98,7 @@ namespace OrchardCore.Settings.Recipes
                         break;
 
                     default:
-                        site.Properties[property.Key] = property.Value.DeepClone();
+                        site.Properties[property.Key] = property.Value.Clone();
                         break;
                 }
             }

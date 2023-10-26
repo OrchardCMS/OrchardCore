@@ -14,11 +14,10 @@ namespace OrchardCore.ContentManagement
         /// <summary>
         /// These settings instruct merge to replace current value, even for null values.
         /// </summary>
-        // private static readonly JsonMergeSettings _jsonMergeSettings = new() { MergeArrayHandling = MergeArrayHandling.Replace, MergeNullValueHandling = MergeNullValueHandling.Merge };
-
-        private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
+        private static readonly JsonMergeSettings _jsonMergeSettings = new()
         {
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            MergeArrayHandling = MergeArrayHandling.Replace,
+            MergeNullValueHandling = MergeNullValueHandling.Merge
         };
 
         /// <summary>
@@ -75,7 +74,7 @@ namespace OrchardCore.ContentManagement
                 return null;
             }
 
-            var result = (ContentElement)elementData.Deserialize(contentElementType, _jsonSerializerOptions);
+            var result = (ContentElement)elementData.Deserialize(contentElementType);
             result.Data = elementData;
             result.ContentItem = contentElement.ContentItem;
 
@@ -133,7 +132,7 @@ namespace OrchardCore.ContentManagement
         {
             if (!contentElement.Data.ContainsKey(name))
             {
-                element.Data = JObject.FromObject(element, _jsonSerializerOptions);
+                element.Data = JObject.FromObject(element);
                 element.ContentItem = contentElement.ContentItem;
 
                 contentElement.Data[name] = element.Data;
@@ -169,7 +168,7 @@ namespace OrchardCore.ContentManagement
             var weldedPartSettings = result.AsObject();
 
             weldedPartSettings[elementName] = settings is not null
-                ? JObject.FromObject(settings, _jsonSerializerOptions)
+                ? JObject.FromObject(settings)
                 : new JsonObject();
 
             return contentElement;
@@ -187,11 +186,11 @@ namespace OrchardCore.ContentManagement
             var elementData = contentElement.Data[name] as JsonObject;
             if (elementData is not null)
             {
-                elementData.Merge(JObject.FromObject(element, _jsonSerializerOptions));
+                elementData.Merge(JObject.FromObject(element), _jsonMergeSettings);
             }
             else
             {
-                elementData = JObject.FromObject(element, _jsonSerializerOptions);
+                elementData = JObject.FromObject(element);
                 contentElement.Data[name] = elementData;
             }
 
@@ -219,11 +218,11 @@ namespace OrchardCore.ContentManagement
         {
             if (contentElement.Data is not null)
             {
-                contentElement.Data.Merge(JObject.FromObject(element.Data, _jsonSerializerOptions));
+                contentElement.Data.Merge(JObject.FromObject(element.Data), _jsonMergeSettings);
             }
             else
             {
-                contentElement.Data = JObject.FromObject(element.Data, _jsonSerializerOptions);
+                contentElement.Data = JObject.FromObject(element.Data);
             }
 
             contentElement.Elements.Clear();

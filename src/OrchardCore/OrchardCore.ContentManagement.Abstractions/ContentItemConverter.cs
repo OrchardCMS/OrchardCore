@@ -7,8 +7,6 @@ namespace OrchardCore.ContentManagement
 {
     public class ContentItemConverter : JsonConverter<ContentItem>
     {
-        public override bool CanConvert(Type objectType) => objectType == typeof(ContentItem);
-
         public override void Write(Utf8JsonWriter writer, ContentItem value, JsonSerializerOptions options)
         {
             var o = new JsonObject()
@@ -28,7 +26,7 @@ namespace OrchardCore.ContentManagement
             };
 
             // Write all custom content properties.
-            o.Merge(value.Data, options);
+            o.Merge(value.Data);
 
             o.WriteTo(writer);
         }

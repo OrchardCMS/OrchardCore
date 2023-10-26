@@ -61,7 +61,7 @@ namespace OrchardCore.Recipes.Services
 
                 using (var stream = recipeDescriptor.RecipeFileInfo.CreateReadStream())
                 {
-                    using var doc = await JsonDocument.ParseAsync(stream, _options);
+                    using var doc = await JsonDocument.ParseAsync(stream, _options, cancellationToken);
                     if (doc.RootElement.ValueKind != JsonValueKind.Object)
                     {
                         throw new FormatException($"Top-level JSON element must be an object. Instead, '{doc.RootElement.ValueKind}' was found.");

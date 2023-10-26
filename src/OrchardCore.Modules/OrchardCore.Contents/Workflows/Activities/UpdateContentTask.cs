@@ -126,7 +126,7 @@ namespace OrchardCore.Contents.Workflows.Activities
             if (!string.IsNullOrWhiteSpace(ContentProperties.Expression))
             {
                 var contentProperties = await _expressionEvaluator.EvaluateAsync(ContentProperties, workflowContext, _javaScriptEncoder);
-                contentItem.Merge(JsonNode.Parse(contentProperties)); // , new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
+                contentItem.Merge(JsonNode.Parse(contentProperties), new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
             }
 
             if (!inlineEventOfSameContentItemId)
