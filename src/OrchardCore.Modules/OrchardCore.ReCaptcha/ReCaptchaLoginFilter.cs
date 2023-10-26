@@ -40,10 +40,7 @@ namespace OrchardCore.ReCaptcha
                 return;
             }
 
-            if (_reCaptchaSettings == null)
-            {
-                _reCaptchaSettings = (await _siteService.GetSiteSettingsAsync()).As<ReCaptchaSettings>();
-            }
+            _reCaptchaSettings ??= (await _siteService.GetSiteSettingsAsync()).As<ReCaptchaSettings>();
 
             if (!_reCaptchaSettings.IsValid())
             {
