@@ -7,10 +7,9 @@
     var settings = Model.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
     int previousLevel = 0;
     int closingDivs = 0;
-    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
-<div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x.TermEntries)_FieldWrapper">
+<div class="@Orchard.GetFieldWrapperCssClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.TermEntries)_FieldWrapper">
     <label class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndCssClasses()">
         @if (!string.IsNullOrEmpty(settings.Hint))

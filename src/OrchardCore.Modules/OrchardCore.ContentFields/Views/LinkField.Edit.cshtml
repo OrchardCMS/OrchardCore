@@ -6,11 +6,10 @@
     var isTextRequired = settings.LinkTextMode == LinkTextMode.Required && string.IsNullOrWhiteSpace(settings.DefaultText);
     var urlClass = settings.Required ? "required" : null;
     var textClass = settings.LinkTextMode == LinkTextMode.Required ? "required" : null;
-    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
     var useFormFloating = string.IsNullOrWhiteSpace(settings.UrlPlaceholder) || string.IsNullOrWhiteSpace(settings.TextPlaceholder);
 }
 
-<div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x.Text)_FieldWrapper">
+<div class="@Orchard.GetFieldWrapperCssClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Text)_FieldWrapper">
     <label asp-for="Url" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndCssClasses()">
         <div class="row">
