@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Mvc.Utilities;
 
@@ -7,38 +6,42 @@ namespace OrchardCore;
 
 public static class CssOrchardHelper
 {
+    private const string FieldWrapperPrefix = "field-wrapper";
+    private const string PartWrapperPrefix = "content-part-wrapper";
     public static string GetPartWrapperCssClasses(this IOrchardHelper helper, ContentTypePartDefinition partDefinition)
     {
-        return helper.GetWrapperCssClasses(GetPartWrapperCssClasses(partDefinition).ToArray());
-    }
+        var items = new List<string>()
+        {
+            PartWrapperPrefix,
+        };
 
+        if (partDefinition != null)
+        {
+            items.Add($"{PartWrapperPrefix}-{partDefinition.PartDefinition.Name.HtmlClassify()}");
+            if (partDefinition.IsNamedPart())
+            {
+                items.Add($"{PartWrapperPrefix}-{partDefinition.Name.HtmlClassify()}");
+            }
+        }
+
+        return helper.GetWrapperCssClasses(items.ToArray());
+    }
     public static string GetFieldWrapperCssClasses(this IOrchardHelper helper, ContentPartFieldDefinition fieldDefinition)
     {
-        return helper.GetWrapperCssClasses(GetFieldWrapperCssClasses(fieldDefinition).ToArray());
-    }
-
-    private static IEnumerable<string> GetPartWrapperCssClasses(ContentTypePartDefinition partDefinition)
-    {
-        yield return "content-part-wrapper";
-        yield return $"content-part-wrapper-{partDefinition.PartDefinition.Name.HtmlClassify()}";
-
-        if (partDefinition.IsNamedPart())
+        var items = new List<string>()
         {
-            yield return $"content-part-wrapper-{partDefinition.Name.HtmlClassify()}";
-        }
-    }
+            FieldWrapperPrefix
+        };
 
-    private static IEnumerable<string> GetFieldWrapperCssClasses(ContentPartFieldDefinition fieldDefinition)
-    {
-        var reusableFieldWrapperName = $"{fieldDefinition.PartDefinition.Name}-{fieldDefinition.Name}";
-        var fieldWrapperName = $"{fieldDefinition.ContentTypePartDefinition.Name}-{fieldDefinition.Name}";
-
-        yield return "field-wrapper";
-        yield return $"field-wrapper-{reusableFieldWrapperName.HtmlClassify()}";
-
-        if (fieldDefinition.IsNamedPart())
+        if (fieldDefinition != null)
         {
-            yield return $"field-wrapper-{fieldWrapperName.HtmlClassify()}";
+            items.Add($"{FieldWrapperPrefix}-{fieldDefinition.PartDefinition.Name}-{fieldDefinition.Name}".HtmlClassify());
+            if (fieldDefinition.IsNamedPart())
+            {
+                items.Add($"{FieldWrapperPrefix}-{fieldDefinition.ContentTypePartDefinition.Name}-{fieldDefinition.Name}".HtmlClassify());
+            }
         }
+
+        return helper.GetWrapperCssClasses(items.ToArray());
     }
 }
