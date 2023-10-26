@@ -483,9 +483,9 @@ namespace OrchardCore.Resources
             manifest
                 .DefineScript("js-cookie")
                 .SetUrl("~/OrchardCore.Resources/Scripts/js.cookie.min.js", "~/OrchardCore.Resources/Scripts/js.cookie.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js", "https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.js")
-                .SetCdnIntegrity("sha384-ETDm/j6COkRSUfVFsGNM5WYE4WjyRgfDhy4Pf4Fsc8eNw/eYEMqYZWuxTzMX6FBa", "sha384-wAGdUDEOVO9JhMpvNh7mkYd0rL2EM0bLb1+VY5R+jDfVBxYFJNfzkinHfbRfxT2s")
-                .SetVersion("3.0.1");
+                .SetCdn("https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js", "https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.js")
+                .SetCdnIntegrity("sha384-/vxhYfM1LENRhdpZ8dwEsQn/X4VhpbEZSiU4m/FwR+PVpzar4fkEOw8FP9Y+OfQN", "sha384-b1TD0tFP+Ao4jmFaQw9RQxezUooFrLdlqfDfoh1SKv5L3jG7dD44QiwD+UzckH8W")
+                .SetVersion("3.0.5");
 
             manifest
                 .DefineScript("monaco-loader")

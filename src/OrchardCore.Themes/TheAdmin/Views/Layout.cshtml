@@ -60,7 +60,7 @@
                             }
                         </div>
                     </div>
-                    @await DisplayAsync(await DisplayManager.BuildDisplayAsync(new Navbar(), UpdateModelAccessor.ModelUpdater, "DetailAdmin"))
+                    @await DisplayAsync(await DisplayManager.BuildDisplayAsync<Navbar>(UpdateModelAccessor.ModelUpdater, "DetailAdmin"))
                 </div>
             </div>
         </nav>
