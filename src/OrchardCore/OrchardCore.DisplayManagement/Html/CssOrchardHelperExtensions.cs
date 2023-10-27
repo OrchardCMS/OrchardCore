@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Html;
 
 namespace OrchardCore;
@@ -74,7 +74,8 @@ public static class CssOrchardHelperExtensions
         return string.Join(' ', Combine(options.OffsetClasses, additionalClasses));
     }
 
-    private static TheAdminThemeOptions GetThemeOptions(IOrchardHelper helper) => helper.HttpContext.RequestServices.GetService<IOptions<TheAdminThemeOptions>>().Value;
+    private static TheAdminThemeOptions GetThemeOptions(IOrchardHelper helper)
+        => helper.HttpContext.RequestServices.GetService<IOptions<TheAdminThemeOptions>>().Value;
 
     private static IEnumerable<string> Combine(string optionClasses, string[] additionalClasses)
     {
