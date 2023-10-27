@@ -1,3 +1,7 @@
+using System.Collections.Generic;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.Mvc.Utilities;
+
 namespace OrchardCore;
 
 public static class CssOrchardHelperExtensions
