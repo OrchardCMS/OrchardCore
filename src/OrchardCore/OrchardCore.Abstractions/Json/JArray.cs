@@ -1,7 +1,5 @@
 #nullable enable
 
-using System.Linq;
-
 namespace System.Text.Json.Nodes;
 
 public static class JArray
@@ -15,19 +13,19 @@ public static class JArray
     /// <summary>
     /// Creates a new instance from an existing <see cref="JsonArray"/>.
     /// </summary>
-    public static JsonArray? Clone(this JsonArray? array) => array?.DeepClone().AsArray();
+    public static JsonArray? Clone(this JsonArray? jsonArray) => jsonArray?.DeepClone().AsArray();
 
     /// <summary>
     /// Whether this <see cref="JsonArray"/> contains the provided <see cref="JsonArray"/> or not.
     /// </summary>
-    public static bool ContainsValue(this JsonArray? array, JsonValue? value)
+    public static bool ContainsValue(this JsonArray? jsonArray, JsonValue? value)
     {
-        if (array is null || value is null)
+        if (jsonArray is null || value is null)
         {
             return false;
         }
 
-        foreach (var item in array)
+        foreach (var item in jsonArray)
         {
             if (item is not JsonValue)
             {
@@ -44,11 +42,61 @@ public static class JArray
     }
 
     /// <summary>
+    /// Selects a <see cref="JsonNode"/> from this <see cref="JsonArray"/> using a JSON path.
+    /// </summary>
+    public static JsonNode? SelectNode(this JsonArray? jsonArray, string? path)
+    {
+        if (jsonArray is null || path is null)
+        {
+            return null;
+        }
+
+        foreach (var item in jsonArray)
+        {
+            if (item is null)
+            {
+                continue;
+            }
+
+            var itemPath = item.GetPath();
+            if (itemPath == path)
+            {
+                return item;
+            }
+
+            if (!path.Contains(itemPath))
+            {
+                continue;
+            }
+
+            if (item is JsonObject jObject)
+            {
+                var node = jObject.SelectNode(path);
+                if (node is not null)
+                {
+                    return node;
+                }
+            }
+
+            if (item is JsonArray jArray)
+            {
+                var node = jArray.SelectNode(path);
+                if (node is not null)
+                {
+                    return node;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
     /// Merge the specified content into this <see cref="JsonArray"/> using <see cref="JsonMergeSettings"/>.
     /// </summary>
-    internal static void Merge(this JsonArray? jsonArray, JsonArray? jsonContent, JsonMergeSettings? settings = null)
+    internal static void Merge(this JsonArray? jsonArray, JsonNode? content, JsonMergeSettings? settings = null)
     {
-        if (jsonArray is null || jsonContent is null)
+        if (jsonArray is null || content is not JsonArray jsonContent)
         {
             return;
         }

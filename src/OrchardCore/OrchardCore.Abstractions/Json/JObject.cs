@@ -13,14 +13,64 @@ public static class JObject
     /// <summary>
     /// Creates a new instance from an existing <see cref="JsonObject"/>.
     /// </summary>
-    public static JsonObject? Clone(this JsonObject? node) => node?.DeepClone().AsObject();
+    public static JsonObject? Clone(this JsonObject? jsonObject) => jsonObject?.DeepClone().AsObject();
+
+    /// <summary>
+    /// Selects a <see cref="JsonNode"/> from this <see cref="JsonObject"/> using a JSON path.
+    /// </summary>
+    public static JsonNode? SelectNode(this JsonObject? jsonObject, string? path)
+    {
+        if (jsonObject is null || path is null)
+        {
+            return null;
+        }
+
+        foreach (var item in jsonObject)
+        {
+            if (item.Value is null)
+            {
+                continue;
+            }
+
+            var itemPath = item.Value.GetPath();
+            if (itemPath == path)
+            {
+                return item.Value;
+            }
+
+            if (!path.Contains(itemPath))
+            {
+                continue;
+            }
+
+            if (item.Value is JsonObject jObject)
+            {
+                var node = jObject.SelectNode(path);
+                if (node is not null)
+                {
+                    return node;
+                }
+            }
+
+            if (item.Value is JsonArray jArray)
+            {
+                var node = jArray.SelectNode(path);
+                if (node is not null)
+                {
+                    return node;
+                }
+            }
+        }
+
+        return null;
+    }
 
     /// <summary>
     /// Merge the specified content into this <see cref="JsonObject"/> using <see cref="JsonMergeSettings"/>.
     /// </summary>
-    public static void Merge(this JsonObject? jsonObject, JsonObject? jsonContent, JsonMergeSettings? settings = null)
+    public static void Merge(this JsonObject? jsonObject, JsonNode? content, JsonMergeSettings? settings = null)
     {
-        if (jsonObject is null || jsonContent is null)
+        if (jsonObject is null || content is not JsonObject jsonContent)
         {
             return;
         }

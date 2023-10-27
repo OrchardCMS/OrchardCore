@@ -36,7 +36,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentPartFieldDefinitionBuilder MergeSettings(JsonObject settings)
         {
-            _settings.Merge(settings/*, ContentBuilderSettings.JsonMergeSettings*/);
+            _settings.Merge(settings, ContentBuilderSettings.JsonMergeSettings);
             return this;
         }
 

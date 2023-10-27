@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Scope;
@@ -44,8 +45,7 @@ namespace OrchardCore.Recipes
                 // Assert
                 var recipeStep = (recipeEventHandlers.Single() as RecipeEventHandler).Context.Step;
 
-                // Todo: Implement 'SelectToken' by path.
-                Assert.Equal(expected, recipeStep["data"][0]["TitlePart"]["Title"].ToString());
+                Assert.Equal(expected, recipeStep.SelectNode("$.data[0].TitlePart.Title").ToString());
             });
         }
 

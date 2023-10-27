@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace OrchardCore.Queries
 {
     /// <summary>
@@ -9,6 +11,7 @@ namespace OrchardCore.Queries
         /// Initializes a new instance of a <see cref="Query"/>.
         /// </summary>
         /// <param name="source"></param>
+        [JsonConstructor]
         protected Query(string source)
         {
             Source = source;
