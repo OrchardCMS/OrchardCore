@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 
 namespace YesSql.Serialization
 {
@@ -14,9 +16,19 @@ namespace YesSql.Serialization
             {
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
             };
+        }
 
-            // _options.Converters.Add(UtcDateTimeJsonConverter.Instance);
-            // _options.Converters.Add(DynamicJsonConverter.Instance);
+        public DefaultJsonContentSerializer(IEnumerable<IJsonTypeInfoResolver> typeInfoResolvers)
+        {
+            _options = new()
+            {
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            };
+
+            foreach (var resolver in typeInfoResolvers)
+            {
+                _options.TypeInfoResolverChain.Add(resolver);
+            }
         }
 
         public DefaultJsonContentSerializer(JsonSerializerOptions options) => _options = options;

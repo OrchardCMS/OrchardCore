@@ -10,8 +10,7 @@ namespace OrchardCore.Queries
         /// <summary>
         /// Initializes a new instance of a <see cref="Query"/>.
         /// </summary>
-        /// <param name="source"></param>
-        [JsonConstructor]
+        /// <param name="source"></param> 
         protected Query(string source)
         {
             Source = source;

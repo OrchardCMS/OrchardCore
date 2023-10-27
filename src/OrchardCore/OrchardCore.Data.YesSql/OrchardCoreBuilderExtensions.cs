@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Serialization.Metadata;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
 using OrchardCore.Data.Documents;
@@ -174,13 +175,13 @@ namespace Microsoft.Extensions.DependencyInjection
         private static IConfiguration GetStoreConfiguration(IServiceProvider sp, YesSqlOptions yesSqlOptions, DatabaseTableOptions databaseTableOptions)
         {
             var tableNameFactory = sp.GetRequiredService<ITableNameConventionFactory>();
+            var typeInfoResolvers = sp.GetServices<IJsonTypeInfoResolver>();
 
             var storeConfiguration = new YesSql.Configuration
             {
                 CommandsPageSize = yesSqlOptions.CommandsPageSize,
                 QueryGatingEnabled = yesSqlOptions.QueryGatingEnabled,
-                // ContentSerializer = new PoolingJsonContentSerializer(sp.GetService<ArrayPool<char>>()),
-                ContentSerializer = new DefaultJsonContentSerializer(),
+                ContentSerializer = new DefaultJsonContentSerializer(typeInfoResolvers),
                 TableNameConvention = tableNameFactory.Create(databaseTableOptions),
                 IdentityColumnSize = Enum.Parse<IdentityColumnSize>(databaseTableOptions.IdentityColumnSize),
             };
