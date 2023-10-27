@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 
@@ -59,7 +60,7 @@ namespace OrchardCore.Tests.Data
             contentItem.Merge(newContentItem);
 
             // Test
-            var content = (JObject)contentItem.Content;
+            var content = (JsonObject)contentItem.Content;
             Assert.False(content.ContainsKey(nameof(contentItem.DisplayText)));
         }
 
@@ -81,7 +82,7 @@ namespace OrchardCore.Tests.Data
             contentItem.Merge(newContentItem);
 
             // Test
-            var content = (JObject)contentItem.Content;
+            var content = (JsonObject)contentItem.Content;
             Assert.False(content.ContainsKey(nameof(contentItem.DisplayText)));
         }
 

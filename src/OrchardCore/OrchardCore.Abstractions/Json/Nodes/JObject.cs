@@ -87,7 +87,7 @@ public static class JObject
             var existingProperty = jsonObject[item.Key];
             if (existingProperty is null)
             {
-                jsonObject.Add(item.Key, item.Value.Clone());
+                jsonObject[item.Key] = item.Value.Clone();
                 continue;
             }
 

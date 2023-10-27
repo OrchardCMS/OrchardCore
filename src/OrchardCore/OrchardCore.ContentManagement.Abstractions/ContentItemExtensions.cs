@@ -108,7 +108,7 @@ namespace OrchardCore.ContentManagement
             var props = JObject.FromObject(properties);
 
             var originalDocumentId = contentItem.Id;
-            contentItem.Data.Merge(props);
+            contentItem.Data.Merge(props, settings);
             contentItem.Elements.Clear();
 
             // Return to original value or it will be interpretated as a different object by YesSql.
@@ -118,19 +118,19 @@ namespace OrchardCore.ContentManagement
             // or these properties will take precedence over the properties on the C# object when and if they are mutated.
             if (props.ContainsKey(nameof(contentItem.DisplayText)))
             {
-                contentItem.DisplayText = props[nameof(contentItem.DisplayText)].ToString();
+                contentItem.DisplayText = props[nameof(contentItem.DisplayText)]?.ToString();
                 contentItem.Data.Remove(nameof(contentItem.DisplayText));
             }
 
             if (props.ContainsKey(nameof(contentItem.Owner)))
             {
-                contentItem.Owner = props[nameof(contentItem.Owner)].ToString();
+                contentItem.Owner = props[nameof(contentItem.Owner)]?.ToString();
                 contentItem.Data.Remove(nameof(contentItem.Owner));
             }
 
             if (props.ContainsKey(nameof(contentItem.Author)))
             {
-                contentItem.Author = props[nameof(contentItem.Author)].ToString();
+                contentItem.Author = props[nameof(contentItem.Author)]?.ToString();
                 contentItem.Data.Remove(nameof(contentItem.Author));
             }
 
