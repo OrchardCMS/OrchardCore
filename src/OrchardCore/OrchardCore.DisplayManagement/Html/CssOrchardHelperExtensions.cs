@@ -1,12 +1,8 @@
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Html;
 
 namespace OrchardCore;
 
-public static class CssOrchardHelper
+public static class CssOrchardHelperExtensions
 {
     public static string GetLimitedWidthWrapperCssClasses(this IOrchardHelper helper, params string[] additionalClasses)
     {
