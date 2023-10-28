@@ -9,7 +9,7 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Forms.Workflows.Activities
 {
-    public class BindModelStateTask : TaskActivity
+    public class BindModelStateTask : TaskActivity<BindModelStateTask>
     {
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -25,8 +25,6 @@ namespace OrchardCore.Forms.Workflows.Activities
             _httpContextAccessor = httpContextAccessor;
             S = localizer;
         }
-
-        public override string Name => nameof(BindModelStateTask);
 
         public override LocalizedString DisplayText => S["Bind Model State Task"];
 

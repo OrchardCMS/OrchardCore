@@ -9,7 +9,7 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.ReCaptcha.Workflows
 {
-    public class ValidateReCaptchaTask : TaskActivity
+    public class ValidateReCaptchaTask : TaskActivity<ValidateReCaptchaTask>
     {
         private readonly ReCaptchaService _reCaptchaService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
@@ -25,8 +25,6 @@ namespace OrchardCore.ReCaptcha.Workflows
             _updateModelAccessor = updateModelAccessor;
             S = localizer;
         }
-
-        public override string Name => nameof(ValidateReCaptchaTask);
 
         public override LocalizedString DisplayText => S["Validate ReCaptcha Task"];
 
