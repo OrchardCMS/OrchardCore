@@ -1,5 +1,7 @@
 #nullable enable
 
+using Microsoft.Extensions.Options;
+
 namespace System.Text.Json.Nodes;
 
 public static class JObject
@@ -8,7 +10,7 @@ public static class JObject
     /// Creates a <see cref="JsonObject"/> from an object.
     /// </summary>
     public static JsonObject? FromObject(object? obj, JsonSerializerOptions? options = null) =>
-        JsonObject.Create(JsonSerializer.SerializeToElement(obj, options));
+        JsonObject.Create(JsonSerializer.SerializeToElement(obj, options ?? JNode.Options));
 
     /// <summary>
     /// Creates a new instance from an existing <see cref="JsonObject"/>.

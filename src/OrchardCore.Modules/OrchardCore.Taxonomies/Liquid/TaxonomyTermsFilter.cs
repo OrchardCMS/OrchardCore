@@ -35,10 +35,7 @@ namespace OrchardCore.Taxonomies.Liquid
                 && jobj.ContainsKey(nameof(TaxonomyField.TaxonomyContentItemId)))
             {
                 taxonomyContentItemId = jobj["TaxonomyContentItemId"].Value<string>();
-                // termContentItemIds = ((JArray)jobj["TermContentItemIds"]).Values<string>().ToArray();
-
-                termContentItemIds = ((JsonArray)jobj["TermContentItemIds"])
-                    .AsEnumerable().Select(node => node.Value<string>()).ToArray();
+                termContentItemIds = jobj["TermContentItemIds"].Values<string>().ToArray();
             }
             else if (input.Type == FluidValues.Array)
             {

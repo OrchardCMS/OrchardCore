@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Execution;
@@ -28,9 +29,15 @@ namespace OrchardCore.Apis.GraphQL
         private readonly GraphQLSettings _settings;
         private readonly IDocumentExecuter _executer;
         internal static readonly Encoding _utf8Encoding = new UTF8Encoding(false);
-        private readonly static MediaType _jsonMediaType = new("application/json");
-        private readonly static MediaType _graphQlMediaType = new("application/graphql");
-        private readonly static JsonSerializerOptions _jsonSerializerOptions = new() { WriteIndented = false, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        private static readonly MediaType _jsonMediaType = new("application/json");
+        private static readonly MediaType _graphQlMediaType = new("application/graphql");
+
+        private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
+        {
+            WriteIndented = false,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            ReferenceHandler = ReferenceHandler.IgnoreCycles,
+        };
 
         public GraphQLMiddleware(
             RequestDelegate next,

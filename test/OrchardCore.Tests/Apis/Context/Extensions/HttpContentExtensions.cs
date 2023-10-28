@@ -1,16 +1,17 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using JsonSerializer = System.Text.Json.JsonSerializer;
+
 namespace OrchardCore.Tests.Apis.Context
 {
     internal static class HttpContentExtensions
     {
-        public static async Task<T> ReadAsAsync<T>(this HttpContent content, JsonConverter jsonConverter)
+        private readonly static JsonSerializerOptions _jsonOptions = new()
         {
-            using var stream = await content.ReadAsStreamAsync();
-            using var reader = new StreamReader(stream);
-            using var jsonReader = new JsonTextReader(reader);
-            var ser = new JsonSerializer();
-            ser.Converters.Insert(0, jsonConverter);
-            return ser.Deserialize<T>(jsonReader);
-        }
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            ReferenceHandler = ReferenceHandler.IgnoreCycles,
+            PropertyNameCaseInsensitive = true,
+        };
 
         public static async Task<T> ReadAsAsync<T>(this HttpContent content)
         {
@@ -18,17 +19,6 @@ namespace OrchardCore.Tests.Apis.Context
             return data.ReadAs<T>();
         }
 
-        public static T ReadAs<T>(this Stream stream)
-        {
-            using var reader = new StreamReader(stream);
-            using var jsonReader = new JsonTextReader(reader);
-            var jsonSerializer = new JsonSerializer
-            {
-                NullValueHandling = NullValueHandling.Ignore,
-                Converters = { new StringEnumConverter() }
-            };
-
-            return jsonSerializer.Deserialize<T>(jsonReader);
-        }
+        public static T ReadAs<T>(this Stream stream) => JsonSerializer.Deserialize<T>(stream, _jsonOptions);
     }
 }

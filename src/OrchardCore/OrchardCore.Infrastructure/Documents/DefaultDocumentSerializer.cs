@@ -18,6 +18,8 @@ namespace OrchardCore.Documents
         private static readonly JsonSerializerOptions _options = new()
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            ReferenceHandler = ReferenceHandler.IgnoreCycles,
+            PropertyNameCaseInsensitive = true,
         };
 
         public DefaultDocumentSerializer()

@@ -14,7 +14,8 @@ namespace YesSql.Serialization
         {
             _options = new()
             {
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                ReferenceHandler = ReferenceHandler.IgnoreCycles,
             };
         }
 
@@ -22,7 +23,8 @@ namespace YesSql.Serialization
         {
             _options = new()
             {
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                ReferenceHandler = ReferenceHandler.IgnoreCycles,
             };
 
             foreach (var resolver in typeInfoResolvers)
@@ -45,7 +47,7 @@ namespace YesSql.Serialization
             }
         }
 
-        public dynamic DeserializeDynamic(string content) => JsonSerializer.Deserialize<dynamic>(content);
+        public dynamic DeserializeDynamic(string content) => JsonSerializer.Deserialize<dynamic>(content, _options);
 
         public string Serialize(object item) => JsonSerializer.Serialize(item, _options);
     }

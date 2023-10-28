@@ -8,7 +8,7 @@ public static class JArray
     /// Creates a <see cref="JsonArray"/> from an object.
     /// </summary>
     public static JsonArray? FromObject(object? obj, JsonSerializerOptions? options = null) =>
-        JsonArray.Create(JsonSerializer.SerializeToElement(obj, options));
+        JsonArray.Create(JsonSerializer.SerializeToElement(obj, options ?? JNode.Options));
 
     /// <summary>
     /// Creates a new instance from an existing <see cref="JsonArray"/>.

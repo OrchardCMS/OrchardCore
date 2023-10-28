@@ -1,3 +1,7 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using JsonSerializer = System.Text.Json.JsonSerializer;
+
 namespace OrchardCore.Tests.Apis.Context
 {
     /// <summary>
@@ -5,9 +9,11 @@ namespace OrchardCore.Tests.Apis.Context
     /// </summary>
     internal static class HttpRequestExtensions
     {
-        private readonly static JsonSerializerSettings _jsonSettings = new()
+        private readonly static JsonSerializerOptions _jsonOptions = new()
         {
-            NullValueHandling = NullValueHandling.Ignore
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            ReferenceHandler = ReferenceHandler.IgnoreCycles,
+            PropertyNameCaseInsensitive = true,
         };
 
         /// <summary>
@@ -34,10 +40,10 @@ namespace OrchardCore.Tests.Apis.Context
             this HttpClient client,
             string requestUri,
             T value,
-            JsonSerializerSettings settings = null)
+            JsonSerializerOptions options = null)
         {
             var content = new StringContent(
-                JsonConvert.SerializeObject(value, settings ?? _jsonSettings),
+                JsonSerializer.Serialize(value, options ?? _jsonOptions),
                 Encoding.UTF8,
                 "application/json");
 
@@ -99,10 +105,10 @@ namespace OrchardCore.Tests.Apis.Context
             this HttpClient client,
             string requestUri,
             T value,
-            JsonSerializerSettings settings = null)
+            JsonSerializerOptions options = null)
         {
             var content = new StringContent(
-                JsonConvert.SerializeObject(value, settings ?? _jsonSettings),
+                JsonSerializer.Serialize(value, options ?? _jsonOptions),
                 Encoding.UTF8,
                 "application/json");
 
@@ -133,10 +139,10 @@ namespace OrchardCore.Tests.Apis.Context
             this HttpClient client,
             string requestUri,
             T value,
-            JsonSerializerSettings settings = null)
+            JsonSerializerOptions options = null)
         {
             var content = new StringContent(
-                JsonConvert.SerializeObject(value, settings ?? _jsonSettings),
+                JsonSerializer.Serialize(value, options ?? _jsonOptions),
                 Encoding.UTF8,
                 "application/json");
 

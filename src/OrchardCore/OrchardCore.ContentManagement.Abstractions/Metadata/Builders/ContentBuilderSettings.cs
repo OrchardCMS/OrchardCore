@@ -21,7 +21,9 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         /// </summary>
         public static readonly JsonSerializerOptions IgnoreDefaultValuesSerializer = new()
         {
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            ReferenceHandler = ReferenceHandler.IgnoreCycles,
+            PropertyNameCaseInsensitive = true,
         };
     }
 }

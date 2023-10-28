@@ -1,11 +1,12 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
 
@@ -35,7 +36,6 @@ namespace OrchardCore.Data.Documents
         public async Task<T> GetOrCreateMutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
         {
             var loaded = ShellScope.Get<T>(typeof(T));
-
             if (loaded != null)
             {
                 return loaded;
@@ -54,7 +54,6 @@ namespace OrchardCore.Data.Documents
         public async Task<(bool, T)> GetOrCreateImmutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
         {
             var loaded = ShellScope.Get<T>(typeof(T));
-
             if (loaded != null)
             {
                 // Return the already loaded document but indicating that it should not be cached.
@@ -93,7 +92,6 @@ namespace OrchardCore.Data.Documents
             }
 
             var filename = _tenantPath + typeName + ".json";
-
             if (!File.Exists(filename))
             {
                 return default;
@@ -102,13 +100,8 @@ namespace OrchardCore.Data.Documents
             await _semaphore.WaitAsync();
             try
             {
-                T document;
-
-                using var file = File.OpenText(filename);
-                var serializer = new JsonSerializer();
-                document = (T)serializer.Deserialize(file, typeof(T));
-
-                return document;
+                using var stream = File.OpenRead(filename);
+                return JsonSerializer.Deserialize<T>(stream, JNode.Options);
             }
             finally
             {
@@ -131,13 +124,8 @@ namespace OrchardCore.Data.Documents
             await _semaphore.WaitAsync();
             try
             {
-                using var file = File.CreateText(filename);
-                var serializer = new JsonSerializer
-                {
-                    Formatting = Formatting.Indented
-                };
-
-                serializer.Serialize(file, document);
+                using var stream = File.OpenWrite(filename);
+                JsonSerializer.Serialize<T>(stream, document, JNode.Options);
             }
             finally
             {

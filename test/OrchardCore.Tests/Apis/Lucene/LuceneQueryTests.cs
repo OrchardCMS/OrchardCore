@@ -2,6 +2,8 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Html.Models;
 using OrchardCore.Search.Lucene;
 using OrchardCore.Tests.Apis.Context;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace OrchardCore.Tests.Apis.Lucene
 {
@@ -38,7 +40,7 @@ namespace OrchardCore.Tests.Apis.Lucene
 
             // Test
             Assert.Equal(2, queryResults.Items.Count());
-            var contentItems = queryResults.Items.Select(x => ((JObject)x).ToObject<ContentItem>());
+            var contentItems = queryResults.Items.Select(x => ((JsonElement)x).Deserialize<ContentItem>());
 
             Assert.True(contentItems.All(x => x.DisplayText.Contains("Orchard", StringComparison.OrdinalIgnoreCase)));
         }
@@ -73,7 +75,7 @@ namespace OrchardCore.Tests.Apis.Lucene
 
             // Test
             Assert.Equal(2, queryResults.Items.Count());
-            var contentItems = queryResults.Items.Select(x => ((JObject)x).ToObject<ContentItem>());
+            var contentItems = queryResults.Items.Select(x => ((JsonElement)x).Deserialize<ContentItem>());
 
             Assert.False(contentItems.All(x => x.DisplayText.Contains("Orchard", StringComparison.OrdinalIgnoreCase)));
         }
@@ -112,7 +114,7 @@ namespace OrchardCore.Tests.Apis.Lucene
 
             // Test
             Assert.NotEmpty(queryResults.Items);
-            var contentItems = queryResults.Items.Select(x => ((JObject)x).ToObject<ContentItem>());
+            var contentItems = queryResults.Items.Select(x => ((JsonElement)x).Deserialize<ContentItem>());
 
             Assert.Contains("Orchard", contentItems.First().DisplayText, StringComparison.OrdinalIgnoreCase);
         }
@@ -138,7 +140,7 @@ namespace OrchardCore.Tests.Apis.Lucene
 
                 var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
                 var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
-                var contentItems = queryResults.Items.Select(x => ((JObject)x).ToObject<ContentItem>());
+                var contentItems = queryResults.Items.Select(x => ((JsonElement)x).Deserialize<ContentItem>());
 
                 // Test
                 Assert.NotEmpty(contentItems);
