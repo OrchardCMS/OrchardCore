@@ -4,10 +4,9 @@
     var settings = Model.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
     var monacoSettings = Model.PartFieldDefinition.GetSettings<HtmlFieldMonacoEditorSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
-    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
-<div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x.Html)_FieldWrapper">
+<div class="@Orchard.GetFieldWrapperCssClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Html)_FieldWrapper">
     <label asp-for="Html" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndCssClasses()">
         @await DisplayAsync(await New.ShortcodeModal())

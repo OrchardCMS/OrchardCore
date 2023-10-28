@@ -28,7 +28,7 @@
 
         @if (!string.IsNullOrEmpty(Model.CurrentProvider))
         {
-            var shape = await DisplayManager.BuildEditorAsync(new TwoFactorMethod(), UpdateModelAccessor.ModelUpdater, false, Model.CurrentProvider, string.Empty);
+            var shape = await DisplayManager.BuildEditorAsync<TwoFactorMethod>(UpdateModelAccessor.ModelUpdater, false, Model.CurrentProvider);
 
             @await DisplayAsync(shape)
         }
