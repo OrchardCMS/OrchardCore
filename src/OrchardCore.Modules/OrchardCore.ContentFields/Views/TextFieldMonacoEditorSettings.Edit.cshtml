@@ -1,7 +1,8 @@
+@using OrchardCore.Mvc.Core.Utilities
 @model OrchardCore.ContentFields.ViewModels.MonacoSettingsViewModel
 
 @{
-    var IStandaloneEditorConstructionOptionsSchemaPath = Url.Content("~/OrchardCore.Resources/Scripts/monaco/IStandaloneEditorConstructionOptions.json");
+    var IStandaloneEditorConstructionOptionsSchemaPath = Url.ToAbsoluteContent("~/OrchardCore.Resources/Scripts/monaco/IStandaloneEditorConstructionOptions.json");
 }
 
 <div id="@Html.IdFor(m => m)" class="field-editor field-editor-monaco">
