@@ -2,7 +2,7 @@
 @model OrchardCore.Html.ViewModels.MonacoSettingsViewModel
 
 @{
-    var IStandaloneEditorConstructionOptionsSchemaPath = Url.ToAbsoluteContent("~/OrchardCore.Resources/Scripts/monaco/IStandaloneEditorConstructionOptions.json");
+    var IStandaloneEditorConstructionOptionsSchemaPath = Url.ToAbsoluteUrl("~/OrchardCore.Resources/Scripts/monaco/IStandaloneEditorConstructionOptions.json");
 }
 
 <div id="@Html.IdFor(m => m)" class="type-part-editor type-part-editor-monaco">

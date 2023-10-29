@@ -1,6 +1,4 @@
-using System;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace OrchardCore.Mvc.Core.Utilities
 {
@@ -23,13 +21,6 @@ namespace OrchardCore.Mvc.Core.Utilities
         {
             var baseUrl = url.GetBaseUrl();
             var path = url.Content(virtualPath);
-            return $"{baseUrl}{path}";
-        }
-
-        public static string ToAbsoluteContent(this IUrlHelper url, string contentPath)
-        {
-            var baseUrl = url.GetBaseUrl();
-            var path = url.Content(contentPath);
             return $"{baseUrl}{path}";
         }
     }
