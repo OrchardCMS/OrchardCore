@@ -57,9 +57,16 @@ namespace OrchardCore.AdminDashboard.Controllers
             if (model.CanManageDashboard || await _authorizationService.AuthorizeAsync(User, Permissions.AccessAdminDashboard))
             {
                 var wrappers = new List<DashboardWrapper>();
+                var widgetContentTypes = GetDashboardWidgets();
+
                 var widgets = await _adminDashboardService.GetWidgetsAsync(x => x.Published);
                 foreach (var widget in widgets)
                 {
+                    if (!widgetContentTypes.Any(x => x.Name == widget.ContentType))
+                    {
+                        continue;
+                    }
+
                     if (!model.CanManageDashboard && !await _authorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, widget))
                     {
                         continue;
@@ -92,14 +99,11 @@ namespace OrchardCore.AdminDashboard.Controllers
             });
 
             var dashboardCreatable = new List<SelectListItem>();
-
-            var widgetContentTypes = _contentDefinitionManager.ListTypeDefinitions()
-                    .Where(t => t.StereotypeEquals("DashboardWidget"))
-                    .OrderBy(x => x.DisplayName);
+            var widgetContentTypes = GetDashboardWidgets();
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            foreach (var ctd in widgetContentTypes)
+            foreach (var ctd in widgetContentTypes.OrderBy(x => x.DisplayName))
             {
                 if (!await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, ctd.Name, userId))
                 {
@@ -111,12 +115,18 @@ namespace OrchardCore.AdminDashboard.Controllers
 
             var widgets = await _adminDashboardService.GetWidgetsAsync(x => x.Latest);
             var wrappers = new List<DashboardWrapper>();
-            foreach (var item in widgets)
+            foreach (var widget in widgets)
             {
+                if (!widgetContentTypes.Any(x => x.Name == widget.ContentType)
+                    || !await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, widget.ContentType, userId))
+                {
+                    continue;
+                }
+
                 var wrapper = new DashboardWrapper
                 {
-                    Dashboard = item,
-                    Content = await _contentItemDisplayManager.BuildDisplayAsync(item, _updateModelAccessor.ModelUpdater, "DetailAdmin")
+                    Dashboard = widget,
+                    Content = await _contentItemDisplayManager.BuildDisplayAsync(widget, _updateModelAccessor.ModelUpdater, "DetailAdmin")
                 };
 
                 wrappers.Add(wrapper);
@@ -130,6 +140,11 @@ namespace OrchardCore.AdminDashboard.Controllers
 
             return View(model);
         }
+
+        private List<ContentTypeDefinition> GetDashboardWidgets()
+            => _contentDefinitionManager.ListTypeDefinitions()
+            .Where(t => t.StereotypeEquals("DashboardWidget"))
+            .ToList();
 
         [HttpPost]
         public async Task<IActionResult> Update([FromForm] DashboardPartViewModel[] parts)
