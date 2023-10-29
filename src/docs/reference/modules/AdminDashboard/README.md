@@ -26,6 +26,48 @@ Each widget has the following customizable settings:
 | `Width`   | An integer value between 1 and 6, representing the widget's width on the screen. Please note that 1 indicates (1/6) of the screen, while 6 signifies full screen width. |
 | `Height`  | An integer value between 1 and 6, representing the widget's height on the screen. Please note that 1 indicates (1/6) of the screen, while 6 signifies full screen height. |
 
+### Styling
+
+If you wish to modify the look of your widget, consider incorporating a template named `DashboardWidget-{ContentType}.DetailAdmin.cshtml`, where `{ContentType}` represents the specific technical name of your content type. Below is an illustration of a template that introduces spacing around the widget:
+```
+<div class="card h-100 @string.Join(' ', Model.Classes.ToArray())">
+    @if (Model.Header != null || Model.Leading != null || Model.ActionsMenu != null)
+    {
+        <div class="card-header">
+            @await DisplayAsync(Model.Leading)
+            @await DisplayAsync(Model.Header)
+            @if (Model.ActionsMenu != null)
+            {
+                <div class="btn-group float-end" title="@T["Actions"]">
+                    <button type="button" class="btn btn-sm " data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa-solid fa-ellipsis-v" aria-hidden="true"></i>
+                    </button>
+                    <div class="actions-menu dropdown-menu">
+                        @await DisplayAsync(Model.ActionsMenu)
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    <div class="dashboard-body-container card-body p-2 h-100">
+        @if (Model.Tags != null || Model.Meta != null)
+        {
+            <div class="dashboard-meta">
+                @await DisplayAsync(Model.Meta)
+                @await DisplayAsync(Model.Tags)
+            </div>
+        }
+        @await DisplayAsync(Model.Content)
+    </div>
+    @if (Model.Footer != null)
+    {
+        <div class="card-footer">
+            @await DisplayAsync(Model.Footer)
+        </div>
+    }
+</div>
+```
+
 
 ### Videos
 
