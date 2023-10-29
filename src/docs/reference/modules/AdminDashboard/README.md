@@ -29,6 +29,7 @@ Each widget has the following customizable settings:
 ### Styling
 
 If you wish to modify the look of your widget, consider incorporating a template named `DashboardWidget-{ContentType}.DetailAdmin.cshtml`, where `{ContentType}` represents the specific technical name of your content type. Below is an illustration of a template that introduces spacing around the widget:
+
 ```
 <div class="card h-100 @string.Join(' ', Model.Classes.ToArray())">
     @if (Model.Header != null || Model.Leading != null || Model.ActionsMenu != null)
