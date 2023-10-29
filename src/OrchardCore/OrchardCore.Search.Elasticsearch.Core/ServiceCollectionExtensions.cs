@@ -36,7 +36,7 @@ namespace OrchardCore.Search.Elasticsearch
 
 
             // Allows to serialize 'ElasticQuery' from its base type.
-            services.AddJsonPolymorphicResolver<ElasticQuery, Query>();
+            services.AddJsonDerivedTypeInfo<ElasticQuery, Query>();
 
             return services;
         }

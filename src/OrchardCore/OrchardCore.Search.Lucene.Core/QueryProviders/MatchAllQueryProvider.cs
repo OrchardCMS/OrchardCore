@@ -1,6 +1,5 @@
 using System.Text.Json.Nodes;
 using Lucene.Net.Search;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Search.Lucene.QueryProviders
 {

@@ -1,8 +1,7 @@
-using System.IO;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Recipes.Models;
 
 namespace OrchardCore.Recipes.Services
@@ -14,10 +13,8 @@ namespace OrchardCore.Recipes.Services
             // TODO: Try to optimize by only reading the required metadata instead of the whole file.
 
             using var stream = recipeFileInfo.CreateReadStream();
-            using var reader = new StreamReader(stream);
-            using var jsonReader = new JsonTextReader(reader);
 
-            var recipeDescriptor = (await JObject.LoadAsync(jsonReader)).ToObject<RecipeDescriptor>();
+            var recipeDescriptor = await JsonSerializer.DeserializeAsync<RecipeDescriptor>(stream, JNode.Options);
 
             recipeDescriptor.FileProvider = recipeFileProvider;
             recipeDescriptor.BasePath = recipeBasePath;

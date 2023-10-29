@@ -29,7 +29,7 @@ namespace OrchardCore.Tests.Apis.Context
                         .WithField("contentItemId");
                 });
 
-            BlogPostContentItemId = result["data"]["blogPost"].First["contentItemId"].ToString();
+            BlogPostContentItemId = result["data"]["blogPost"].AsObject().First().Value["contentItemId"].ToString();
 
             var content = await Client.GetAsync($"api/content/{BlogPostContentItemId}");
             OriginalBlogPost = await content.Content.ReadAsAsync<ContentItem>();

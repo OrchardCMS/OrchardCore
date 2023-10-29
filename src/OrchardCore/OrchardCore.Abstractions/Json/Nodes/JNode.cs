@@ -12,7 +12,9 @@ public static class JNode
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         ReferenceHandler = ReferenceHandler.IgnoreCycles,
+        ReadCommentHandling = JsonCommentHandling.Skip,
         PropertyNameCaseInsensitive = true,
+        WriteIndented = false,
     };
 
     /// <summary>
@@ -67,7 +69,14 @@ public static class JNode
     public static T? Value<T>(this JsonNode? jsonNode, int index) => jsonNode is JsonArray jsonArray ? jsonArray[index].Value<T>() : default;
 
     /// <summary>
-    /// Gets the value of the specified type of this <see cref="JsonNode"/>.
+    /// Whether this node contains elements or not.
+    /// </summary>
+    public static bool HasValues(this JsonNode? jsonNode) =>
+        jsonNode is JsonObject jsonObject && jsonObject.Count > 0 ||
+        jsonNode is JsonArray jsonArray && jsonArray.Count > 0;
+
+    /// <summary>
+    /// Gets the values of the specified type of this <see cref="JsonNode"/>.
     /// </summary>
     public static IEnumerable<T?> Values<T>(this JsonNode? jsonNode) =>
         jsonNode is JsonArray jsonArray ? jsonArray.AsEnumerable().Select(node => node.Value<T>()) : Enumerable.Empty<T?>();

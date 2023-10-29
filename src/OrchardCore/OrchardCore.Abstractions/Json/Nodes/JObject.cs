@@ -1,11 +1,18 @@
 #nullable enable
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Options;
 
 namespace System.Text.Json.Nodes;
 
 public static class JObject
 {
+    /// <summary>
+    ///   Parses text representing a single JSON value.
+    /// </summary>
+    public static JsonObject? Parse(string json, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
+        => JsonNode.Parse(json, nodeOptions, documentOptions)?.AsObject();
+
     /// <summary>
     /// Creates a <see cref="JsonObject"/> from an object.
     /// </summary>

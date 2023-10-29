@@ -22,7 +22,7 @@ namespace OrchardCore.Queries.Sql
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             // Allows to serialize 'SqlQuery' from its base type.
-            services.AddJsonPolymorphicResolver<SqlQuery, Query>();
+            services.AddJsonDerivedTypeInfo<SqlQuery, Query>();
         }
     }
 }

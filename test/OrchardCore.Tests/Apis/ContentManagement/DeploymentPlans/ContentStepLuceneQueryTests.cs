@@ -45,7 +45,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
 
             var nodes = result["data"]["recentBlogPosts"];
 
-            Assert.Equal(2, nodes.Count());
+            Assert.Equal(2, nodes.AsObject().Count());
             Assert.Equal("new version", nodes[0]["displayText"].ToString());
             Assert.Equal("second content item display text", nodes[1]["displayText"].ToString());
         }

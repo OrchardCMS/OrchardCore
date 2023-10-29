@@ -1,43 +1,26 @@
 using System.IO;
 using System.Net.Http;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace OrchardCore.Apis.GraphQL.Client
 {
     internal static class HttpContentExtensions
     {
-        public static async Task<T> ReadAsAsync<T>(this HttpContent content, JsonConverter jsonConverter)
+        private static readonly JsonSerializerOptions _options = new()
         {
-            using var stream = await content.ReadAsStreamAsync();
-            using var reader = new StreamReader(stream);
-            using var jsonReader = new JsonTextReader(reader);
-
-            var ser = new JsonSerializer();
-            ser.Converters.Insert(0, jsonConverter);
-
-            return ser.Deserialize<T>(jsonReader);
-        }
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            ReferenceHandler = ReferenceHandler.IgnoreCycles,
+            PropertyNameCaseInsensitive = true,
+        };
 
         public static async Task<T> ReadAsAsync<T>(this HttpContent content)
         {
             using var data = await content.ReadAsStreamAsync();
-            return data.ReadAs<T>();
+            return await data.ReadAsAsync<T>();
         }
 
-        public static T ReadAs<T>(this Stream stream)
-        {
-            using var reader = new StreamReader(stream);
-            using var jsonReader = new JsonTextReader(reader);
-
-            var jsonSerializer = new JsonSerializer
-            {
-                NullValueHandling = NullValueHandling.Ignore,
-                Converters = { new StringEnumConverter() },
-            };
-
-            return jsonSerializer.Deserialize<T>(jsonReader);
-        }
+        public static ValueTask<T> ReadAsAsync<T>(this Stream stream) => JsonSerializer.DeserializeAsync<T>(stream, _options);
     }
 }

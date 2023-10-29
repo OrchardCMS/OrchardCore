@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
@@ -175,7 +176,10 @@ namespace Microsoft.Extensions.DependencyInjection
         private static IConfiguration GetStoreConfiguration(IServiceProvider sp, YesSqlOptions yesSqlOptions, DatabaseTableOptions databaseTableOptions)
         {
             var tableNameFactory = sp.GetRequiredService<ITableNameConventionFactory>();
-            var typeInfoResolvers = sp.GetServices<IJsonTypeInfoResolver>();
+
+            var typeInfoResolvers = sp.GetServices<IJsonTypeInfoResolver>().ToList();
+            var derivedTypeInfos = sp.GetServices<IJsonDerivedTypeInfo>();
+            typeInfoResolvers.Add(new JsonPolymorphicResolver(derivedTypeInfos));
 
             var storeConfiguration = new YesSql.Configuration
             {

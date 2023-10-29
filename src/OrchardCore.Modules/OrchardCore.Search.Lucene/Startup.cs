@@ -89,7 +89,7 @@ namespace OrchardCore.Search.Lucene
             services.AddScoped<IAuthorizationHandler, LuceneAuthorizationHandler>();
 
             // Allows to serialize 'LuceneQuery' from its base type.
-            services.AddJsonPolymorphicResolver<LuceneQuery, Query>();
+            services.AddJsonDerivedTypeInfo<LuceneQuery, Query>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

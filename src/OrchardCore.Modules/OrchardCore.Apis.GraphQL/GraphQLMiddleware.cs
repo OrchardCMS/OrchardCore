@@ -34,9 +34,10 @@ namespace OrchardCore.Apis.GraphQL
 
         private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
         {
-            WriteIndented = false,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             ReferenceHandler = ReferenceHandler.IgnoreCycles,
+            PropertyNameCaseInsensitive = true,
+            WriteIndented = false,
         };
 
         public GraphQLMiddleware(

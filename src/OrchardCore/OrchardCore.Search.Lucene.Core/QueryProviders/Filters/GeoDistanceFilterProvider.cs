@@ -9,7 +9,6 @@ using Lucene.Net.Spatial.Prefix;
 using Lucene.Net.Spatial.Prefix.Tree;
 using Lucene.Net.Spatial.Queries;
 using Lucene.Net.Spatial.Util;
-using Newtonsoft.Json.Linq;
 using Spatial4n.Context;
 using Spatial4n.Distance;
 using Spatial4n.Shapes;
