@@ -141,11 +141,6 @@ namespace OrchardCore.AdminDashboard.Controllers
             return View(model);
         }
 
-        private List<ContentTypeDefinition> GetDashboardWidgets()
-            => _contentDefinitionManager.ListTypeDefinitions()
-            .Where(t => t.StereotypeEquals("DashboardWidget"))
-            .ToList();
-
         [HttpPost]
         public async Task<IActionResult> Update([FromForm] DashboardPartViewModel[] parts)
         {
@@ -154,17 +149,17 @@ namespace OrchardCore.AdminDashboard.Controllers
                 return Unauthorized();
             }
 
-            var contentItemIds = parts.Select(i => i.ContentItemId).ToArray();
+            var contentItemIds = parts.Select(i => i.ContentItemId).ToList();
 
             // Load the latest version first if any.
-            var latestItems = await _contentManager.GetAsync(contentItemIds, true);
+            var latestItems = await _contentManager.GetAsync(contentItemIds, VersionOptions.Latest);
 
             if (latestItems == null)
             {
                 return NotFound();
             }
 
-            var publishedItems = await _contentManager.GetAsync(contentItemIds, false);
+            var publishedItems = await _contentManager.GetAsync(contentItemIds, VersionOptions.Published);
 
             foreach (var contentItem in latestItems)
             {
@@ -188,7 +183,7 @@ namespace OrchardCore.AdminDashboard.Controllers
                 {
                     var publishedVersion = publishedItems.FirstOrDefault(p => p.ContentItemId == contentItem.ContentItemId);
                     var publishedMetaData = publishedVersion?.As<DashboardPart>();
-                    if (publishedVersion != null && publishedMetaData != null)
+                    if (publishedMetaData != null)
                     {
                         publishedMetaData.Position = partViewModel.Position;
                         publishedMetaData.Width = partViewModel.Width;
@@ -199,12 +194,17 @@ namespace OrchardCore.AdminDashboard.Controllers
                 }
             }
 
-            if (Request.Headers != null && Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            if (Request.Headers != null && Request.Headers.XRequestedWith == "XMLHttpRequest")
             {
                 return Ok();
             }
 
             return RedirectToAction(nameof(Manage));
         }
+
+        private List<ContentTypeDefinition> GetDashboardWidgets()
+            => _contentDefinitionManager.ListTypeDefinitions()
+            .Where(t => t.StereotypeEquals("DashboardWidget"))
+            .ToList();
     }
 }
