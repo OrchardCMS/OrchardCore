@@ -12,9 +12,9 @@
         <textarea asp-for="Options" hidden>@Html.Raw(Model.Options)</textarea>
     </div>
 </div>
-<script asp-name="monaco" depends-on="jQuery" at="Foot"></script>
+<script asp-name="monaco" at="Foot"></script>
 <script at="Foot" depends-on="monaco">
-    $(document).ready(function () {
+    document.addEventListener('DOMContentLoaded', function() {
         require(['vs/editor/editor.main'], function () {
 
             var html = document.documentElement;
