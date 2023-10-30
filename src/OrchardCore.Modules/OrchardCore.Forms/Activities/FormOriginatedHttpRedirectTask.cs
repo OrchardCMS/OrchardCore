@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Primitives;
 using OrchardCore.Forms.Models;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
@@ -48,14 +49,7 @@ public class FormOriginatedHttpRedirectTask : TaskActivity
             && _httpContextAccessor.HttpContext.Request.Form.TryGetValue(FormPart.RequestOriginatedFromInputName, out var value)
             && !string.IsNullOrWhiteSpace(value))
         {
-            var stringValue = value.ToString();
-
-            if (stringValue.StartsWith('/'))
-            {
-                WorkflowHttpRedirectResult.Instance.Url = "~";
-            }
-
-            WorkflowHttpRedirectResult.Instance.Url += stringValue.ToUriComponents();
+            WorkflowHttpRedirectResult.Instance.Url = GetLocationUrl(value.ToString());
 
             _httpContextAccessor.HttpContext.Items[WorkflowHttpRedirectResult.Instance] = WorkflowHttpRedirectResult.Instance;
 
@@ -63,5 +57,15 @@ public class FormOriginatedHttpRedirectTask : TaskActivity
         }
 
         return Task.FromResult(Outcomes("Failed"));
+    }
+
+    private static string GetLocationUrl(string value)
+    {
+        if (value.StartsWith('/'))
+        {
+            return "~" + value.ToUriComponents();
+        }
+
+        return value.ToUriComponents();
     }
 }
