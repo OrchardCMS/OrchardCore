@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,7 +6,7 @@ using OrchardCore.DisplayManagement.Html;
 
 namespace OrchardCore;
 
-public static class CssOrchardHelper
+public static class CssOrchardHelperExtensions
 {
     public static string GetLimitedWidthWrapperCssClasses(this IOrchardHelper helper, params string[] additionalClasses)
     {
@@ -75,7 +74,8 @@ public static class CssOrchardHelper
         return string.Join(' ', Combine(options.OffsetClasses, additionalClasses));
     }
 
-    private static TheAdminThemeOptions GetThemeOptions(IOrchardHelper helper) => helper.HttpContext.RequestServices.GetService<IOptions<TheAdminThemeOptions>>().Value;
+    private static TheAdminThemeOptions GetThemeOptions(IOrchardHelper helper)
+        => helper.HttpContext.RequestServices.GetService<IOptions<TheAdminThemeOptions>>().Value;
 
     private static IEnumerable<string> Combine(string optionClasses, string[] additionalClasses)
     {

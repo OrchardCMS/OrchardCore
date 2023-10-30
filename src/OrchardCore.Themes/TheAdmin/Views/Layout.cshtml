@@ -24,10 +24,21 @@
     <!-- This script can't wait till the footer -->
     <script asp-name="admin-main" version="1" at="Head"></script>
 
-    <!-- TheAdmin & Bootstrap CSS -->
-    <style media="all" asp-name="admin" version="1"></style>
+    <style asp-name="TheAdminLayout" asp-src="~/TheAdmin/css/admin-layout.min.css" debug-src="~/TheAdmin/css/admin-layout.css" at="Head"></style>
+
+    @if (Orchard.IsRightToLeft())
+    {
+        <style asp-name="bootstrap-rtl" version="5" at="Head"></style>
+        <style media="all" asp-name="admin" version="1" depends-on="bootstrap-rtl,TheAdminLayout" at="Head"></style>
+    }
+    else
+    {
+        <style asp-name="bootstrap" version="5" at="Head"></style>
+        <style media="all" asp-name="admin" version="1" depends-on="bootstrap,TheAdminLayout" at="Head"></style>
+    }
     <script asp-name="font-awesome" at="Head" version="6"></script>
     <script asp-name="admin" version="1" at="Foot"></script>
+
     <resources type="Header" />
 
     @await RenderSectionAsync("HeadMeta", required: false)
@@ -49,7 +60,7 @@
                             }
                         </div>
                     </div>
-                    @await DisplayAsync(await DisplayManager.BuildDisplayAsync(new Navbar(), UpdateModelAccessor.ModelUpdater, "DetailAdmin"))
+                    @await DisplayAsync(await DisplayManager.BuildDisplayAsync<Navbar>(UpdateModelAccessor.ModelUpdater, "DetailAdmin"))
                 </div>
             </div>
         </nav>

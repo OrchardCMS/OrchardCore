@@ -37,7 +37,7 @@ Vue.component('media-items-table', {
                              <td class="thumbnail-column">
                                 <div class="img-wrapper">
                                     <img v-if="media.mime.startsWith('image')" draggable="false" :src="buildMediaUrl(media.url, thumbSize)" />
-                                    <i v-else class="fa-solid fa-file fa-lg" :data-mime="media.mime"></i>
+                                    <i v-else :class="getfontAwesomeClassNameForFileName(media.name, \'fa-4x\')" :data-mime="media.mime"></i>
                                 </div>
                             </td>
                             <td>
@@ -114,6 +114,9 @@ Vue.component('media-items-table', {
         printDateTime: function (datemillis){
             var d = new Date(datemillis);
             return d.toLocaleString();            
+        },
+        getfontAwesomeClassNameForFileName:function getfontAwesomeClassNameForFilename(filename, thumbsize){
+             return   getClassNameForFilename(filename) + ' ' + thumbsize;
         }
     }
 });

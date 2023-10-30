@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Text.Json;
+using OrchardCore.Environment.Shell.Configuration.Internal;
 
 namespace Microsoft.Extensions.Configuration.Json
 {
@@ -19,19 +19,9 @@ namespace Microsoft.Extensions.Configuration.Json
         /// Loads the JSON data from a stream.
         /// </summary>
         /// <param name="stream">The stream to read.</param>
-        public override void Load(Stream stream)
-        {
-            try
-            {
-                Data = JsonConfigurationFileParser.Parse(stream);
-            }
-            catch (JsonException e)
-            {
-                // throw new FormatException(SR.Error_JSONParseError, e);
-                throw new FormatException("Could not parse the JSON file.", e);
-            }
-        }
+        public override void Load(Stream stream) => Data = JsonConfigurationParser.Parse(stream);
 
+#if !NET8_0_OR_GREATER
         /// <summary>
         /// Dispose the provider.
         /// </summary>
@@ -39,9 +29,8 @@ namespace Microsoft.Extensions.Configuration.Json
         protected override void Dispose(bool disposing)
         {
             base.Dispose(true);
-
-            // OC: Will be part of 'FileConfigurationProvider'.
             (Source.FileProvider as IDisposable)?.Dispose();
         }
+#endif
     }
 }

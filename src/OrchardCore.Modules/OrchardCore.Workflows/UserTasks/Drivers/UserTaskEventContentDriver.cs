@@ -78,7 +78,8 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
                     {
                         Name = nameof(UserTaskEvent),
                         ContentType = model.ContentType,
-                        ContentItemId = model.ContentItemId
+                        ContentItemId = model.ContentItemId,
+                        ContentItemVersionId = model.ContentItemVersionId,
                     };
 
                     var input = new Dictionary<string, object>

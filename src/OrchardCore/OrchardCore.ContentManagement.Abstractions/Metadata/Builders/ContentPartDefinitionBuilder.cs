@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Utilities;
 
 namespace OrchardCore.ContentManagement.Metadata.Builders
@@ -103,6 +104,11 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentPartDefinitionBuilder WithField(string fieldName, Action<ContentPartFieldDefinitionBuilder> configuration)
         {
+            if (string.IsNullOrWhiteSpace(fieldName))
+            {
+                throw new ArgumentException($"'{nameof(fieldName)}' cannot be null or empty.");
+            }
+
             var existingField = _fields.FirstOrDefault(x => string.Equals(x.Name, fieldName, StringComparison.OrdinalIgnoreCase));
             if (existingField != null)
             {
@@ -117,6 +123,9 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
                 existingField = new ContentPartFieldDefinition(null, fieldName, new JsonObject());
             }
             var configurer = new FieldConfigurerImpl(existingField, _part);
+            // Assume that the display name is the same as the field name.
+            // Set the display name before invoking the given action, to allow the action to set the display-name explicitly.
+            configurer.WithDisplayName(fieldName);
             configuration(configurer);
             _fields.Add(configurer.Build());
             return this;
@@ -124,6 +133,11 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public async Task<ContentPartDefinitionBuilder> WithFieldAsync(string fieldName, Func<ContentPartFieldDefinitionBuilder, Task> configurationAsync)
         {
+            if (string.IsNullOrWhiteSpace(fieldName))
+            {
+                throw new ArgumentException($"'{nameof(fieldName)}' cannot be null or empty.");
+            }
+
             var existingField = _fields.FirstOrDefault(x => string.Equals(x.Name, fieldName, StringComparison.OrdinalIgnoreCase));
 
             if (existingField != null)
@@ -140,6 +154,9 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
 
             var configurer = new FieldConfigurerImpl(existingField, _part);
+            // Assume that the display name is the same as the field name.
+            // Set the display name before invoking the given action, to allow the action to set the display-name explicitly.
+            configurer.WithDisplayName(fieldName);
 
             await configurationAsync(configurer);
 

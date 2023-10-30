@@ -1,3 +1,4 @@
+@using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.Spatial.ViewModels
 @using OrchardCore.Spatial.Settings
 @using OrchardCore.Mvc.Utilities
@@ -5,10 +6,9 @@
 @model EditGeoPointFieldViewModel
 @{
     var settings = Model.PartFieldDefinition.GetSettings<GeoPointFieldSettings>();
-    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
-<div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x)_FieldWrapper">
+<div class="@Orchard.GetFieldWrapperCssClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x)_FieldWrapper">
     <div class="@Orchard.GetEndCssClasses(true)">
         <div class="row">
             <div class="col-md-6">

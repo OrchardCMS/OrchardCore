@@ -15,6 +15,14 @@ public static class RazorHelperExtensions
     }
 
     /// <summary>
+    /// Gets whether the culture is RTL or not.
+    /// </summary>
+    public static bool IsRightToLeft(this IOrchardHelper _)
+    {
+        return CultureInfo.CurrentUICulture.IsRightToLeft();
+    }
+
+    /// <summary>
     /// Returns the current culture name.
     /// </summary>
     public static string CultureName(this IOrchardHelper _)

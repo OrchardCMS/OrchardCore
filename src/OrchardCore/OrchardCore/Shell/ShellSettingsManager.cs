@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.CommandLine;
 using Microsoft.Extensions.Configuration.EnvironmentVariables;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Models;
 
@@ -80,7 +79,7 @@ namespace OrchardCore.Environment.Shell
                     };
 
                     allSettings.Add(shellSettings);
-                }
+                };
 
                 return allSettings;
             }
@@ -158,38 +157,43 @@ namespace OrchardCore.Environment.Shell
 
                 configuration.Bind(shellSettings);
 
-                var configSettings = JsonSerializer.SerializeToNode(shellSettings)!.AsObject();
-                var tenantSettings = JsonSerializer.SerializeToNode(settings)!.AsObject();
+                var configSettings = JObject.FromObject(shellSettings);
+                var tenantSettings = JObject.FromObject(settings);
 
-                foreach (var (name, value) in configSettings)
+                foreach (var property in configSettings)
                 {
-                    var tenantValue = tenantSettings[name]?.GetValue<string>();
-                    var configValue = value?.GetValue<string>();
+                    var tenantValue = tenantSettings.Value<string>(property.Key);
+                    var configValue = configSettings.Value<string>(property.Key);
 
-                    tenantSettings[name] = tenantValue != configValue ? tenantValue : null;
+                    if (tenantValue != configValue)
+                    {
+                        tenantSettings[property.Key] = tenantValue;
+                    }
+                    else
+                    {
+                        tenantSettings[property.Key] = null;
+                    }
                 }
 
                 tenantSettings.Remove("Name");
 
-                await _tenantsSettingsSources.SaveAsync(
-                    settings.Name,
-                    tenantSettings.Deserialize<Dictionary<string, string>>());
+                await _tenantsSettingsSources.SaveAsync(settings.Name, tenantSettings.ToObject<Dictionary<string, string>>());
 
-                var tenantConfig = new JsonObject();
-
-                var sections = settings.ShellConfiguration.GetChildren()
-                    .Where(s => !s.GetChildren().Any())
-                    .ToArray();
-
-                foreach (var section in sections)
+                var tenantConfig = new Dictionary<string, string>();
+                foreach (var config in settings.ShellConfiguration.AsEnumerable())
                 {
-                    if (settings[section.Key] != configuration[section.Key])
+                    if (settings.ShellConfiguration.GetSection(config.Key).GetChildren().Any())
                     {
-                        tenantConfig[section.Key] = settings[section.Key];
+                        continue;
+                    }
+
+                    if (settings[config.Key] != configuration[config.Key])
+                    {
+                        tenantConfig[config.Key] = settings[config.Key];
                     }
                     else
                     {
-                        tenantConfig[section.Key] = null;
+                        tenantConfig[config.Key] = null;
                     }
                 }
 
@@ -198,9 +202,7 @@ namespace OrchardCore.Environment.Shell
                 await _tenantConfigSemaphore.WaitAsync();
                 try
                 {
-                    await _tenantConfigSources.SaveAsync(
-                        settings.Name,
-                        tenantConfig.Deserialize<Dictionary<string, string>>());
+                    await _tenantConfigSources.SaveAsync(settings.Name, tenantConfig);
                 }
                 finally
                 {
