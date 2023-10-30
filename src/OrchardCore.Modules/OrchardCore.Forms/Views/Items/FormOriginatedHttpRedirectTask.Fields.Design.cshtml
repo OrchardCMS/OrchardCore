@@ -1,0 +1,8 @@
+@using OrchardCore.Forms.Activities
+
+@model ActivityViewModel<FormOriginatedHttpRedirectTask>
+
+<header>
+    <h4><i class="fa-solid fa-globe" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Form Originated HTTP Redirect"])</h4>
+</header>
+

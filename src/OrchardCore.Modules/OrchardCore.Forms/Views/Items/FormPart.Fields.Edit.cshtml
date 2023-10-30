@@ -42,3 +42,13 @@
         </div>
     </div>
 </div>
+
+<div class="@Orchard.GetWrapperCssClasses()">
+    <div class="@Orchard.GetEndCssClasses(true)">
+        <div class="form-check">
+            <input asp-for="EnableRequestOriginatedFrom" class="form-check-input" />
+            <label asp-for="EnableRequestOriginatedFrom" class="form-check-label">@T["Enable Request Originated Location"]</label>
+            <span class="hint">@T["Check to include the request originated location."]</span>
+        </div>
+    </div>
+</div>
