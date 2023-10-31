@@ -24,6 +24,6 @@ public class CssHelpers
         // At this point, we already know that the builder has at least one entry, so we append a single space to the class name.
         // We pass create HtmlString here to prevent the builder from preforming string.IsNullOrWhiteSpace again for performance reason.
         builder.AppendHtml(CssClassSeperator);
-        builder.AppendHtml(new HtmlString(value));
+        builder.Append(value);
     }
 }
