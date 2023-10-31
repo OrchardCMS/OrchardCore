@@ -1,0 +1,84 @@
+@using OrchardCore.ContentsTransfer.Models
+@using OrchardCore.ContentsTransfer
+@using Microsoft.Extensions.Options
+@using OrchardCore.ContentsTransfer.ViewModels
+
+@model ContentImporterViewModel
+
+@inject IOptions<ContentImportOptions> ContentImportOptions
+
+@if (!ViewContext.ModelState.IsValid)
+{
+    @Html.ValidationSummary(false, string.Empty, new { @class = "text-danger" })
+}
+
+<div class="card text-bg-theme mb-3">
+    <div class="card-header fw-bold">@T["Import {0} contents", Model.ContentTypeDefinition.DisplayName]</div>
+    <div class="card-body">
+        <form asp-route-contentTypeId="@(Model.ContentTypeDefinition.Name)" enctype="multipart/form-data" method="post">
+
+            @await DisplayAsync(Model.Content)
+            <div class="mb-3 mt-2">
+
+                <button type="submit" class="btn btn-primary">@T["Upload"]</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header fw-bold">@T["File Requirements"]</div>
+
+    <div class="card-body">
+
+        <ul>
+            <li>@T["The uploaded excel file must be in .xls, .xlsx or .csv format."]</li>
+            @if (ContentImportOptions.Value.MaxAllowedFileSizeInBytes > 0)
+            {
+                <li>@T["The uploaded excel file must be less than or equal to {0}MB in size.", ContentImportOptions.Value.GetMaxAllowedSizeInMb()]</li>
+            }
+            <li>@T["The uploaded excel file must contains a single tab and all formats should be cleared."]</li>
+            <li>@T["The very first row of the uploaded file must be the column names. The column names and their requirements are defined below."]</li>
+            <li>@T["The order of the column in the file is not important as long as it exists. Any column not defined below will be ignored."]</li>
+            <li>@T["Click 'Download Template' link to download a sample template of a file."] <a asp-action="DownloadTemplate" asp-controller="Admin" asp-route-contentTypeId="@Model.ContentTypeDefinition.Name" asp-area="CrestApps.Contents.Imports" download="Bulk-@Model.ContentTypeDefinition.Name-Import-Template.xlsx">@T["Download Template"]</a></li>
+        </ul>
+
+        <table class="table">
+            <thead class="table-dark">
+                <tr>
+                    <th colspan="3" class="text-center">@T["Columns Requirements"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="table-secondary">
+                    <th>@T["Column Name as it must appear on the first row on the file"]</th>
+                    <th>@T["Required?"]</th>
+                    <th>@T["Description"]</th>
+                </tr>
+
+                @foreach (var column in Model.Columns)
+                {
+                    <tr>
+                        <th>@column.Name</th>
+                        <td>@(column.IsRequired ? T["Yes"] : T["No"])</td>
+                        <td>
+                            <p>@column.Description</p>
+                            @if (column.ValidValues != null && column.ValidValues.Length > 0)
+                            {
+                                <p>
+                                    <span>@T["Valid values"] </span>
+
+                                    @foreach (var validValue in column.ValidValues)
+                                    {
+                                        @Html.Raw("<code>\"" + validValue + "\"</code> ")
+                                    }
+                                </p>
+                            }
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>

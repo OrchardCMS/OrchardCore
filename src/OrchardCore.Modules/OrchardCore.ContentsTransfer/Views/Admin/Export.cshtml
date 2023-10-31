@@ -1,0 +1,67 @@
+@using CrestApps.Contents.Imports.Core
+@using CrestApps.Contents.Imports.Core.Models
+@using Microsoft.Extensions.Options
+@using OrchardCore
+@model CrestApps.Contents.Imports.ViewModels.ContentExporterViewModel
+
+@inject IOptions<ContentImportOptions> ContentImportOptions
+
+<div class="card text-bg-theme mb-3">
+    <div class="card-header fw-bold">@T["Export contents"]</div>
+    <div class="card-body">
+        <div class="@Orchard.GetWrapperCssClasses()">
+            <label asp-for="Extension" class="@Orchard.GetLabelCssClasses()">@T["File type"]</label>
+            <div class="@Orchard.GetEndCssClasses()">
+                <select asp-for="Extension" asp-items="Model.Extensions" class="form-select">
+                </select>
+            </div>
+        </div>
+        <div class="@Orchard.GetWrapperCssClasses()">
+            <label asp-for="ContentTypeId" class="@Orchard.GetLabelCssClasses()">@T["File type"]</label>
+            <div class="@Orchard.GetEndCssClasses()">
+                <select asp-for="ContentTypeId" asp-items="Model.ContentTypes" class="form-select">
+                    <option value="">@T["Select type to export"]</option>
+                </select>
+            </div>
+        </div>
+        <div class="@Orchard.GetWrapperCssClasses()">
+            <div class="@Orchard.GetEndCssClasses(true)">
+                <a id="export_contents_button" class="btn btn-primary disabled" disabled>@T["Export Data"]</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', function () {
+
+        var downloadUrl = '@Url.Action("DownloadExport", "Admin", new { extension= "FILE_EXTENSION", contentTypeId = "CONTENT_TYPE_ID", area = "CrestApps.Contents.Imports" })';
+
+        var extensionMenu = document.getElementById('@Html.IdFor(x => x.Extension)');
+        var contentTypeMenu = document.getElementById('@Html.IdFor(x => x.ContentTypeId)');
+        var button = document.getElementById('export_contents_button');
+
+        extensionMenu.addEventListener('change', setDownloadButton);
+        contentTypeMenu.addEventListener('change', setDownloadButton);
+
+        function setDownloadButton() {
+            console.log('set button...', extensionMenu.value, contentTypeMenu.value);
+            if (!extensionMenu.value || !contentTypeMenu.value) {
+                button.setAttribute('disabled', true);
+                button.classList.add('disabled');
+
+                return;
+            }
+
+            var link = downloadUrl.replace('FILE_EXTENSION', extensionMenu.value)
+                .replace('CONTENT_TYPE_ID', contentTypeMenu.value);
+
+            button.setAttribute('href', link);
+            button.setAttribute('download', contentTypeMenu.value + '.' + extensionMenu.value);
+            button.classList.remove('disabled');
+            button.removeAttribute('disabled');
+        }
+
+    }, false);
+
+</script>
