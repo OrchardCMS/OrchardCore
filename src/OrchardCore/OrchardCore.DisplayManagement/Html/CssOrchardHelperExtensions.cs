@@ -4,7 +4,6 @@ using System.Linq;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement.Html;
 
 namespace OrchardCore;
@@ -174,22 +173,7 @@ public static class CssOrchardHelperExtensions
         {
             foreach (var value in values)
             {
-                if (builder.Count == 0)
-                {
-                    // The 'Append' method performs a string.IsNullOrEmpty() check. So, as long as the builder has no entries, we append with no spaces.
-                    builder.Append(value);
-
-                    continue;
-                }
-
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    continue;
-                }
-
-                // At this point, we already know that the builder has at least one entry, so we append a single space to the class name.
-                // We pass create HtmlString here to prevent the builder from preforming string.IsNullOrWhiteSpace again for performance reason.
-                builder.AppendHtml(new HtmlString(' ' + value));
+                CssHelpers.AppendValue(builder, value);
             }
         }
 
