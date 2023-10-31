@@ -1,8 +1,5 @@
 #nullable enable
 
-using System.Diagnostics.CodeAnalysis;
-using Microsoft.Extensions.Options;
-
 namespace System.Text.Json.Nodes;
 
 public static class JObject
