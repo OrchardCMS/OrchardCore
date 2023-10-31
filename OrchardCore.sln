@@ -505,7 +505,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Sms.Abstraction
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Sms", "src\OrchardCore.Modules\OrchardCore.Sms\OrchardCore.Sms.csproj", "{CBF6DB53-FD0C-47F8-9E60-A1D247ACFD05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Sms.Core", "src\OrchardCore\OrchardCore.Sms.Core\OrchardCore.Sms.Core.csproj", "{20356393-B16D-466C-8203-877A534E287D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Sms.Core", "src\OrchardCore\OrchardCore.Sms.Core\OrchardCore.Sms.Core.csproj", "{20356393-B16D-466C-8203-877A534E287D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.ContentsTransfer", "src\OrchardCore.Modules\OrchardCore.ContentsTransfer\OrchardCore.ContentsTransfer.csproj", "{188D4C60-8821-40DA-9498-4D492A56F062}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.ContentsTransfer.Core", "src\OrchardCore\OrchardCore.ContentsTransfer.Core\OrchardCore.ContentsTransfer.Core.csproj", "{0C7C15A8-6018-4F43-86A7-96D25D66E36D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.ContentsTransfer.Abstractions", "src\OrchardCore\OrchardCore.ContentsTransfer.Abstractions\OrchardCore.ContentsTransfer.Abstractions.csproj", "{EF72865D-FC5A-42B6-821B-A3983BE372EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1335,6 +1341,18 @@ Global
 		{20356393-B16D-466C-8203-877A534E287D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20356393-B16D-466C-8203-877A534E287D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20356393-B16D-466C-8203-877A534E287D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{188D4C60-8821-40DA-9498-4D492A56F062}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{188D4C60-8821-40DA-9498-4D492A56F062}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{188D4C60-8821-40DA-9498-4D492A56F062}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{188D4C60-8821-40DA-9498-4D492A56F062}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C7C15A8-6018-4F43-86A7-96D25D66E36D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C7C15A8-6018-4F43-86A7-96D25D66E36D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C7C15A8-6018-4F43-86A7-96D25D66E36D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C7C15A8-6018-4F43-86A7-96D25D66E36D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF72865D-FC5A-42B6-821B-A3983BE372EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF72865D-FC5A-42B6-821B-A3983BE372EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF72865D-FC5A-42B6-821B-A3983BE372EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF72865D-FC5A-42B6-821B-A3983BE372EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1566,6 +1584,9 @@ Global
 		{2D93F509-1FB3-4E22-92F0-588D0EFBA921} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{CBF6DB53-FD0C-47F8-9E60-A1D247ACFD05} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{20356393-B16D-466C-8203-877A534E287D} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{188D4C60-8821-40DA-9498-4D492A56F062} = {90030E85-0C4F-456F-B879-443E8A3F220D}
+		{0C7C15A8-6018-4F43-86A7-96D25D66E36D} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{EF72865D-FC5A-42B6-821B-A3983BE372EA} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}

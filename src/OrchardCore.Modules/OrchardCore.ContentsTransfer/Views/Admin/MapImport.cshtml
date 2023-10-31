@@ -1,0 +1,61 @@
+﻿@using OrchardCore.ContentManagement
+@model ImportContentMap
+
+<h2 class="fw-bold mb-3">@T["Review uploaded contents"]</h2>
+
+@if (!ViewContext.ModelState.IsValid)
+{
+    @Html.ValidationSummary(false, string.Empty, new { @class = "text-danger" })
+}
+
+<form asp-action="MapImport" asp-controller="Admin" asp-route-contentTypeId="@Model.ContentTypeId" asp-area="CrestApps.Contents.Imports" method="post" asp-antiforgery="true">
+
+    <div class="accordion mb-3" id="Contents_Import_Accordion">
+
+        @for (int i = 0; i < Model.Items.Count; i++)
+        {
+            var item = Model.Items[i];
+            ContentItem contentItem = item.ContentItem;
+            var htmlId = Guid.NewGuid().ToString("n");
+            var headingId = $"accordionHead_{htmlId}";
+            var bodyId = $"AccordionBody_{htmlId}";
+            var shouldCollapse = true;
+            var hasErrors = false;
+
+            var prefix = $"{Html.NameFor(x => x.Items)}[{i}]";
+
+            if (!ViewContext.ModelState.IsValid)
+            {
+                foreach (var key in ViewContext.ViewData.ModelState.Keys)
+                {
+                    if (key.StartsWith(prefix) && ViewData.ModelState[key].Errors.Any())
+                    {
+                        hasErrors = true;
+                        break;
+                    }
+                }
+
+                shouldCollapse = !hasErrors;
+            }
+
+            <div class="accordion-item user-form-wrapper">
+                <h2 class="accordion-header" id="@headingId">
+                    <button class="accordion-button@(hasErrors ? " bg-danger text-white" : string.Empty)" type="button" data-bs-toggle="collapse" data-bs-target="#@bodyId" aria-expanded="@shouldCollapse.ToString().ToLowerInvariant()" aria-controls="collapseOne">
+                        @(contentItem)
+                    </button>
+                </h2>
+
+                <div id="@bodyId" class="accordion-collapse collapse@(!shouldCollapse ? " show" : string.Empty)" aria-labelledby="@headingId" data-bs-parent="#Contents_Import_Accordion">
+                    <div class="accordion-body">
+                        <input type="hidden" name="@(prefix).ContentItemId" value="@contentItem.ContentItemId">
+                        @await DisplayAsync(item)
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="w-100 text-center">
+        <button type="submit" class="btn btn-primary" style="width: 15rem;">@T["Process"]</button>
+    </div>
+
+</form>
