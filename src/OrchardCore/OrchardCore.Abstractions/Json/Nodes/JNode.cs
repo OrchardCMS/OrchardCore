@@ -14,6 +14,7 @@ public static class JNode
         ReferenceHandler = ReferenceHandler.IgnoreCycles,
         ReadCommentHandling = JsonCommentHandling.Skip,
         PropertyNameCaseInsensitive = true,
+        AllowTrailingCommas = true,
         WriteIndented = false,
     };
 
