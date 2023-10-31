@@ -6,9 +6,9 @@
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
 }
 
-<div class="@Orchard.GetFieldWrapperCssClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Text)_FieldWrapper">
-    <label asp-for="Text" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Text)_FieldWrapper">
+    <label asp-for="Text" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndClasses()">
         <div id="@Html.IdFor(x => x.Text)_editor" asp-for="Text" style="min-height: 400px;" class="form-control" dir="@culture.GetLanguageDirection()"></div>
         <textarea asp-for="Text" hidden>@Html.Raw(Model.Text)</textarea>
         @if (!string.IsNullOrEmpty(settings.Hint))

@@ -16,9 +16,9 @@
 <script asp-name="media" at="Foot"></script>
 <style asp-name="media" at="Head"></style>
 
-<div class="@Orchard.GetFieldWrapperCssClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Paths)_FieldWrapper">
-    <label asp-for="Paths" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
-    <div class="@Orchard.GetEndCssClasses()" id="@mediaFieldId" data-for="@Html.IdFor(m => m.Paths)">
+<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Paths)_FieldWrapper">
+    <label asp-for="Paths" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndClasses()" id="@mediaFieldId" data-for="@Html.IdFor(m => m.Paths)">
         @if (!string.IsNullOrWhiteSpace(settings.Hint))
         {
             <div class="hint mt-lg-2">@settings.Hint</div>

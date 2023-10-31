@@ -22,8 +22,8 @@
 
         @if (Model.Actions != null)
         {
-            <div class="@Orchard.GetWrapperCssClasses("edit-item-secondary","group")">
-                <div class="@Orchard.GetEndCssClasses(true, "edit-item-actions")">
+            <div class="@Orchard.GetWrapperClasses("edit-item-secondary","group")">
+                <div class="@Orchard.GetEndClasses(true, "edit-item-actions")">
                     @await DisplayAsync(Model.Actions)
 
                     @{
