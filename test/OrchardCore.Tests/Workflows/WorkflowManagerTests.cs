@@ -9,6 +9,7 @@ using OrchardCore.Workflows.Evaluators;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.WorkflowContextProviders;
+using JObject = System.Text.Json.Nodes.JObject;
 
 namespace OrchardCore.Tests.Workflows
 {
@@ -32,13 +33,13 @@ namespace OrchardCore.Tests.Workflows
                 WorkflowTypeId = IdGenerator.GenerateId(),
                 Activities = new List<ActivityRecord>
                 {
-                    new ActivityRecord { ActivityId = "1", IsStart = true, Name = addTask.Name, Properties = System.Text.Json.Nodes.JObject.FromObject( new
+                    new ActivityRecord { ActivityId = "1", IsStart = true, Name = addTask.Name, Properties = JObject.FromObject( new
                     {
                         A = new WorkflowExpression<double>("input(\"A\")"),
                         B = new WorkflowExpression<double>("input(\"B\")"),
                     }) },
-                    new ActivityRecord { ActivityId = "2", Name = writeLineTask.Name, Properties = System.Text.Json.Nodes.JObject.FromObject( new { Text = new WorkflowExpression<string>("lastResult().toString()") }) },
-                    new ActivityRecord { ActivityId = "3", Name = setOutputTask.Name, Properties = System.Text.Json.Nodes.JObject.FromObject( new { Value = new WorkflowExpression<string>("lastResult()"), OutputName = "Sum" }) }
+                    new ActivityRecord { ActivityId = "2", Name = writeLineTask.Name, Properties = JObject.FromObject( new { Text = new WorkflowExpression<string>("lastResult().toString()") }) },
+                    new ActivityRecord { ActivityId = "3", Name = setOutputTask.Name, Properties = JObject.FromObject( new { Value = new WorkflowExpression<string>("lastResult()"), OutputName = "Sum" }) }
                 },
                 Transitions = new List<Transition>
                 {

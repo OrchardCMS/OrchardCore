@@ -17,6 +17,11 @@ public static class JNode
         WriteIndented = false,
     };
 
+    static JNode()
+    {
+        Options.Converters.Add(new JsonDynamicConverter());
+    }
+
     /// <summary>
     /// Creates a <see cref="JsonNode"/> from an object.
     /// </summary>

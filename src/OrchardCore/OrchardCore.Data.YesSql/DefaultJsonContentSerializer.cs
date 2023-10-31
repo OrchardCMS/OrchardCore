@@ -18,7 +18,7 @@ namespace YesSql.Serialization
                 ReferenceHandler = ReferenceHandler.IgnoreCycles,
             };
 
-            // _options.Converters.Add(JsonDynamicConverter.Instance);
+            _options.Converters.Add(JsonDynamicConverter.Instance);
         }
 
         public DefaultJsonContentSerializer(IEnumerable<IJsonTypeInfoResolver> typeInfoResolvers)
@@ -34,7 +34,7 @@ namespace YesSql.Serialization
                 _options.TypeInfoResolverChain.Add(resolver);
             }
 
-            // _options.Converters.Add(JsonDynamicConverter.Instance);
+            _options.Converters.Add(JsonDynamicConverter.Instance);
         }
 
         public DefaultJsonContentSerializer(JsonSerializerOptions options) => _options = options;

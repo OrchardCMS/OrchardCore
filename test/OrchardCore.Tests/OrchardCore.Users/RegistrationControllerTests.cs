@@ -8,6 +8,7 @@ using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
+using JObject = System.Text.Json.Nodes.JObject;
 
 namespace OrchardCore.Tests.OrchardCore.Users
 {
@@ -139,8 +140,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
 
             var mockSiteService = Mock.Of<ISiteService>(ss =>
                 ss.GetSiteSettingsAsync() == Task.FromResult(
-                    Mock.Of<ISite>(s => s.Properties ==
-                        System.Text.Json.Nodes.JObject.FromObject(new { RegistrationSettings = registrationSettings }, null))
+                    Mock.Of<ISite>(s => s.Properties == JObject.FromObject(new { RegistrationSettings = registrationSettings }, null))
                     )
             );
             var mockSmtpService = Mock.Of<ISmtpService>(x => x.SendAsync(It.IsAny<MailMessage>()) == Task.FromResult(SmtpResult.Success));
