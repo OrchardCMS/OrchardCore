@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Routing;
 using Newtonsoft.Json.Linq;
@@ -64,7 +65,7 @@ namespace OrchardCore.Settings
 
             var settings = this.As<T>(name);
 
-            _cache[name] = settings;
+            _cache.TryAdd(name, settings);
 
             return settings;
         }
@@ -78,11 +79,11 @@ namespace OrchardCore.Settings
                 this.Put(name, settings);
             }
 
-            _cache.Remove(name);
+            _cache.TryRemove(name, out _);
 
             return this;
         }
 
-        private readonly Dictionary<string, object> _cache = new();
+        private readonly ConcurrentDictionary<string, object> _cache = new();
     }
 }
