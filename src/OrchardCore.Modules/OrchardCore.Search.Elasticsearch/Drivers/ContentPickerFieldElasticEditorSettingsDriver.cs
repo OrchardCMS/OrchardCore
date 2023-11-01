@@ -3,7 +3,6 @@ using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
@@ -19,12 +18,15 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
             _elasticIndexSettingsService = elasticIndexSettingsService;
         }
 
-        public override async Task<IDisplayResult> EditAsync(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            var model = partFieldDefinition.Settings.ToObject<ContentPickerFieldElasticEditorSettings>();
-            model.Indices = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+            return Initialize<ContentPickerFieldElasticEditorSettings>("ContentPickerFieldElasticEditorSettings_Edit", async model =>
+            {
+                var settings = partFieldDefinition.Settings.ToObject<ContentPickerFieldElasticEditorSettings>();
 
-            return Copy("ContentPickerFieldElasticEditorSettings_Edit", model)
+                model.Index = settings.Index;
+                model.Indices = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+            })
                 .Location("Editor");
         }
 
@@ -39,7 +41,7 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
                 context.Builder.WithSettings(model);
             }
 
-            return await EditAsync(partFieldDefinition, context);
+            return Edit(partFieldDefinition);
         }
 
         public override bool CanHandleModel(ContentPartFieldDefinition model)

@@ -11,7 +11,14 @@ namespace OrchardCore.ContentFields.Settings
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Copy("BooleanFieldSettings_Edit", partFieldDefinition.Settings.ToObject<BooleanFieldSettings>())
+            return Initialize<BooleanFieldSettings>("BooleanFieldSettings_Edit", model =>
+            {
+                var settings = partFieldDefinition.Settings.ToObject<BooleanFieldSettings>();
+
+                model.Hint = settings.Hint;
+                model.Label = settings.Label;
+                model.DefaultValue = settings.DefaultValue;
+            })
                 .Location("Content");
         }
 

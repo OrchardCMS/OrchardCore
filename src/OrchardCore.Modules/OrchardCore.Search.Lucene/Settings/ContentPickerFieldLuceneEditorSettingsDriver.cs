@@ -17,12 +17,15 @@ namespace OrchardCore.Search.Lucene.Settings
             _luceneIndexSettingsService = luceneIndexSettingsService;
         }
 
-        public override async Task<IDisplayResult> EditAsync(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
+        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            var model = partFieldDefinition.Settings.ToObject<ContentPickerFieldLuceneEditorSettings>();
-            model.Indices = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+            return Initialize<ContentPickerFieldLuceneEditorSettings>("ContentPickerFieldLuceneEditorSettings_Edit", async model =>
+            {
+                var settings = partFieldDefinition.Settings.ToObject<ContentPickerFieldLuceneEditorSettings>();
 
-            return Copy("ContentPickerFieldLuceneEditorSettings_Edit", model)
+                model.Index = settings.Index;
+                model.Indices = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+            })
                 .Location("Editor");
         }
 
@@ -37,7 +40,7 @@ namespace OrchardCore.Search.Lucene.Settings
                 context.Builder.WithSettings(model);
             }
 
-            return await EditAsync(partFieldDefinition, context);
+            return Edit(partFieldDefinition);
         }
 
         public override bool CanHandleModel(ContentPartFieldDefinition model)

@@ -13,7 +13,15 @@ namespace OrchardCore.ContentFields.Settings
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Copy("LocalizationSetContentPickerFieldSettings_Edit", partFieldDefinition.Settings.ToObject<LocalizationSetContentPickerFieldSettings>())
+            return Initialize<LocalizationSetContentPickerFieldSettings>("LocalizationSetContentPickerFieldSettings_Edit", model =>
+            {
+                var settings = partFieldDefinition.Settings.ToObject<LocalizationSetContentPickerFieldSettings>();
+
+                model.Hint = settings.Hint;
+                model.Required = settings.Required;
+                model.Multiple = settings.Multiple;
+                model.DisplayedContentTypes = settings.DisplayedContentTypes;
+            })
              .Location("Content");
         }
 

@@ -11,7 +11,17 @@ namespace OrchardCore.Taxonomies.Settings
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Copy("TaxonomyFieldSettings_Edit", partFieldDefinition.Settings.ToObject<TaxonomyFieldSettings>())
+            return Initialize<TaxonomyFieldSettings>("TaxonomyFieldSettings_Edit", model =>
+            {
+                var settings = partFieldDefinition.Settings.ToObject<TaxonomyFieldSettings>();
+
+                model.Hint = settings.Hint;
+                model.Required = settings.Required;
+                model.TaxonomyContentItemId = settings.TaxonomyContentItemId;
+                model.Unique = settings.Unique;
+                model.LeavesOnly = settings.LeavesOnly;
+                model.Open = settings.Open;
+            })
                 .Location("Content");
         }
 
