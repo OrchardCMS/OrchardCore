@@ -26,7 +26,6 @@ namespace OrchardCore.Media.Shortcodes
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ResourceManagementOptions _options;
         private readonly IFileVersionProvider _fileVersionProvider;
-        private readonly IOrchardHelper _orchardHelper;
 
         public ImageShortcodeProvider(
             IMediaFileStore mediaFileStore,
@@ -41,7 +40,6 @@ namespace OrchardCore.Media.Shortcodes
             _httpContextAccessor = httpContextAccessor;
             _options = options.Value;
             _fileVersionProvider = fileVersionProvider;
-            _orchardHelper = orchardHelper;
         }
 
         public ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content, Context context)
@@ -121,7 +119,7 @@ namespace OrchardCore.Media.Shortcodes
 
                 if (appendVersion == "true")
                 {
-                    content = _fileVersionProvider.AddFileVersionToPath(_orchardHelper.HttpContext.Request.PathBase, content);
+                    content = _fileVersionProvider.AddFileVersionToPath(_httpContextAccessor.HttpContext.Request.PathBase, content);
                 }
 
                 if (className != null)
