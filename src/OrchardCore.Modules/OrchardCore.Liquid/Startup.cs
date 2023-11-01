@@ -1,11 +1,11 @@
 using System;
+using System.Text.Json.Nodes;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
@@ -47,15 +47,15 @@ namespace OrchardCore.Liquid
                 options.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
 
                 // When a property of a JObject value is accessed, try to look into its properties
-                options.MemberAccessStrategy.Register<JObject, object>((source, name) => source[name]);
+                options.MemberAccessStrategy.Register<JsonObject, object>((source, name) => source[name]);
 
                 // Convert JToken to FluidValue
                 options.ValueConverters.Add(x =>
                 {
                     return x switch
                     {
-                        JObject o => new ObjectValue(o),
-                        JValue v => v.Value,
+                        JsonObject o => new ObjectValue(o),
+                        JsonValue v => v.Value<object>(),
                         DateTime d => new ObjectValue(d),
                         _ => null
                     };
