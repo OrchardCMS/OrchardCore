@@ -32,8 +32,7 @@ namespace OrchardCore.Media.Shortcodes
             IHtmlSanitizerService htmlSanitizerService,
             IHttpContextAccessor httpContextAccessor,
             IOptions<ResourceManagementOptions> options,
-            IFileVersionProvider fileVersionProvider,
-            IOrchardHelper orchardHelper)
+            IFileVersionProvider fileVersionProvider)
         {
             _mediaFileStore = mediaFileStore;
             _htmlSanitizerService = htmlSanitizerService;
