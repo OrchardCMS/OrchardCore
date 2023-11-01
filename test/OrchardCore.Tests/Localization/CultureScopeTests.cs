@@ -59,7 +59,7 @@ namespace OrchardCore.Tests.Localization
             var uiCulture = CultureInfo.CurrentUICulture;
 
             // Act & Assert
-            await Assert.ThrowsAsync<Exception>(() =>
+            await Assert.ThrowsAsync<Exception>(Task () =>
             {
                 using var cultureScope = CultureScope.Create("FR");
                 throw new Exception("Something goes wrong!!");
