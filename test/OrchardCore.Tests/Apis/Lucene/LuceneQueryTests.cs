@@ -1,9 +1,8 @@
+using System.Text.Json;
 using OrchardCore.ContentManagement;
 using OrchardCore.Html.Models;
 using OrchardCore.Search.Lucene;
 using OrchardCore.Tests.Apis.Context;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace OrchardCore.Tests.Apis.Lucene
 {
@@ -33,7 +32,7 @@ namespace OrchardCore.Tests.Apis.Lucene
                 },
             };
 
-            var query = System.Text.Json.JsonSerializer.Serialize(dynamicQuery);
+            var query = JsonSerializer.Serialize(dynamicQuery);
 
             var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
             var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
@@ -69,7 +68,7 @@ namespace OrchardCore.Tests.Apis.Lucene
                 },
             };
 
-            var query = JsonConvert.SerializeObject(dynamicQuery);
+            var query = JsonSerializer.Serialize(dynamicQuery);
             var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
             var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
 

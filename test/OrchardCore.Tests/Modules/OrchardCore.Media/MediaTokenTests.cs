@@ -1,8 +1,8 @@
+using System.Text.Json.Nodes;
 using OrchardCore.Media;
 using OrchardCore.Media.Processing;
 using OrchardCore.Settings;
 using SixLabors.ImageSharp.Web.Processors;
-using JObject = System.Text.Json.Nodes.JObject;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media
 {

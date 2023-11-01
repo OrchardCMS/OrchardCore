@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using GraphQL;
 using GraphQL.Execution;
 using GraphQL.Types;
@@ -16,7 +17,6 @@ using YesSql.Provider.Sqlite;
 using YesSql.Serialization;
 using YesSql.Sql;
 using ISession = YesSql.ISession;
-using JObject = System.Text.Json.Nodes.JObject;
 
 namespace OrchardCore.Tests.Apis.GraphQL
 {

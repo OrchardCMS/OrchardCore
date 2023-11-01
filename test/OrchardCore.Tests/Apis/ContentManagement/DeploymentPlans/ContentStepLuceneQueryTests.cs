@@ -1,7 +1,7 @@
+using System.Text.Json.Nodes;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.Tests.Apis.Context;
-using JObject = System.Text.Json.Nodes.JObject;
 
 namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
 {

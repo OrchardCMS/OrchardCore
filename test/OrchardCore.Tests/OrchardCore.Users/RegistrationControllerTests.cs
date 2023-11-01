@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email;
@@ -8,7 +9,6 @@ using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
-using JObject = System.Text.Json.Nodes.JObject;
 
 namespace OrchardCore.Tests.OrchardCore.Users
 {

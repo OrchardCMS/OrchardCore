@@ -3,7 +3,6 @@ using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Remote.ViewModels;
-using JObject = System.Text.Json.Nodes.JObject;
 
 namespace OrchardCore.Tests.Apis.Context
 {

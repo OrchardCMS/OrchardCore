@@ -240,7 +240,7 @@ namespace OrchardCore.ContentManagement
             if (!string.IsNullOrEmpty(jsonPath))
             {
                 var root = contentItem.Content as JsonObject;
-                contentItem = (root as JsonNode).SelectNode(jsonPath)?.ToObject<ContentItem>();
+                contentItem = root.SelectNode(jsonPath)?.ToObject<ContentItem>();
 
                 return contentItem;
             }
