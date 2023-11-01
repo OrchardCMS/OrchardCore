@@ -10,14 +10,14 @@
 
 <div class="@Orchard.GetWrapperClasses()">
     <label asp-for="Url" class="@Orchard.GetLabelClasses()">@T["Url"]</label>
-    <div class="@Orchard.GetEndCssClasses()">
+    <div class="@Orchard.GetEndClasses()">
         <input asp-for="Url" class="form-control" />
     </div>
 </div>
 
 <div class="@Orchard.GetWrapperClasses()">
     <label asp-for="Html" class="@Orchard.GetLabelClasses()">@T["Html"]</label>
-    <div class="@Orchard.GetEndCssClasses()">
+    <div class="@Orchard.GetEndClasses()">
         <input asp-for="Html" class="form-control" />
         <span class="hint">This field will be rendered raw in place of the name; it will be enclosed in the anchor tag.</span>
     </div>

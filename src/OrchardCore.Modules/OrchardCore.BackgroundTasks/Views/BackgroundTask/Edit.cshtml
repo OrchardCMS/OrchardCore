@@ -35,7 +35,7 @@
 
             <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Schedule">
                 <label asp-for="Schedule" class="@Orchard.GetLabelClasses()">@T["Schedule"]</label>
-                <div class="@Orchard.GetEndCssClasses()">
+                <div class="@Orchard.GetEndClasses()">
                     <div class="input-group mb-3">
                         <input asp-for="Schedule" class="form-control" />
                         <button id="use-default-schedule" class="btn btn-outline-success">@T["Reset Schedule"]</button>
