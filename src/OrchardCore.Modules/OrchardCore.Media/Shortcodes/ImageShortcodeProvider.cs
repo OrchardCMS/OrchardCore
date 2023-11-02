@@ -87,7 +87,7 @@ namespace OrchardCore.Media.Shortcodes
                 var mode = arguments.Named("mode");
                 var quality = arguments.Named("quality");
                 var format = arguments.Named("format");
-                var appendVersion = arguments.Named("appendVersion");
+                var appendVersion = arguments.Named("append_version");
                 className = arguments.Named("class");
                 altText = arguments.Named("alt");
 
