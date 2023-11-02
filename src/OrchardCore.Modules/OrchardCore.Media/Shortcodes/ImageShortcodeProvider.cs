@@ -77,7 +77,6 @@ namespace OrchardCore.Media.Shortcodes
             }
             var className = string.Empty;
             var altText = string.Empty;
-
             if (arguments.Any())
             {
                 var queryStringParams = new Dictionary<string, string>();
