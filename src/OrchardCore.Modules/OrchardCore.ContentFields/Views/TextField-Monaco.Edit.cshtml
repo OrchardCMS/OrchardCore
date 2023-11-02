@@ -20,41 +20,45 @@
 
 <script asp-name="monaco" at="Foot"></script>
 <script at="Foot" depends-on="monaco">
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         require(['vs/editor/editor.main'], function () {
 
-            var settings = @Html.Raw(monacoSettings.Options);
-            if (settings.automaticLayout == undefined) {
-                settings.automaticLayout = true;
-            }
+            var divEditor = document.getElementById('@Html.IdFor(x => x.Text)_editor');
 
-            const html = document.documentElement;
-            const mutationObserver = new MutationObserver(setTheme);
-            mutationObserver.observe(html, { attributes: true });
-
-            function setTheme() {
-                var theme = html.dataset.bsTheme;
-                if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    monaco.editor.setTheme('vs-dark')
-                } else {
-                    monaco.editor.setTheme('vs')
+            if (divEditor != undefined || divEditor != null) {
+                var settings = @Html.Raw(monacoSettings.Options);
+                if (settings.automaticLayout == undefined) {
+                    settings.automaticLayout = true;
                 }
+
+                const html = document.documentElement;
+                const mutationObserver = new MutationObserver(setTheme);
+                mutationObserver.observe(html, { attributes: true });
+
+                function setTheme() {
+                    var theme = html.dataset.bsTheme;
+                    if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                        monaco.editor.setTheme('vs-dark')
+                    } else {
+                        monaco.editor.setTheme('vs')
+                    }
+                }
+
+                setTheme();
+
+                var editor = monaco.editor.create(divEditor, settings);
+                var textArea = document.getElementById('@Html.IdFor(x => x.Text)');
+
+                editor.getModel().setValue(textArea.value);
+
+                window.addEventListener("submit", function () {
+                    textArea.value = editor.getValue();
+                });
+                editor.getModel().onDidChangeContent((event) => {
+                    textArea.value = editor.getValue();
+                    $(document).trigger('contentpreview:render');
+                });
             }
-
-            setTheme();
-
-            var editor = monaco.editor.create(document.getElementById('@Html.IdFor(x => x.Text)_editor'), settings);
-            var textArea = document.getElementById('@Html.IdFor(x => x.Text)');
-
-            editor.getModel().setValue(textArea.value);
-
-            window.addEventListener("submit", function () {
-                textArea.value = editor.getValue();
-            });
-            editor.getModel().onDidChangeContent((event) => {
-                textArea.value = editor.getValue();
-                $(document).trigger('contentpreview:render');
-            });
 
         });
     });
