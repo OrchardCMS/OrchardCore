@@ -108,19 +108,13 @@ public static class CssOrchardHelperExtensions
         return additionalClasses.Concat(new[] { optionClasses });
     }
 
-    private static HtmlContentBuilder GetHtmlContentBuilder(string optionClasses, IEnumerable<string> values)
+    private static HtmlContentBuilder GetHtmlContentBuilder(string optionClasses, IList<string> values)
     {
         var builder = new HtmlContentBuilder();
-
+        
         builder.Append(optionClasses);
 
-        if (values != null)
-        {
-            foreach (var value in values)
-            {
-                CssHelpers.AppendValue(builder, value);
-            }
-        }
+        builder.AppendValues(values);
 
         return builder;
     }
