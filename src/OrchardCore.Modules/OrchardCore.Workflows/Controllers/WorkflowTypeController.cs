@@ -62,8 +62,8 @@ namespace OrchardCore.Workflows.Controllers
             IShapeFactory shapeFactory,
             INotifier notifier,
             ISecurityTokenService securityTokenService,
-            IStringLocalizer<WorkflowTypeController> s,
-            IHtmlLocalizer<WorkflowTypeController> h,
+            IStringLocalizer<WorkflowTypeController> stringLocalizer,
+            IHtmlLocalizer<WorkflowTypeController> htmlLocalizer,
             IUpdateModelAccessor updateModelAccessor)
         {
             _pagerOptions = pagerOptions.Value;
@@ -79,8 +79,8 @@ namespace OrchardCore.Workflows.Controllers
             _updateModelAccessor = updateModelAccessor;
 
             New = shapeFactory;
-            S = s;
-            H = h;
+            S = stringLocalizer;
+            H = htmlLocalizer;
         }
 
         public async Task<IActionResult> Index(WorkflowTypeIndexOptions options, PagerParameters pagerParameters)
@@ -122,7 +122,7 @@ namespace OrchardCore.Workflows.Controllers
                 .Take(pager.PageSize)
                 .ListAsync();
 
-            var connection = await _session.CreateConnectionAsync();
+            using var connection = await _session.CreateConnectionAsync();
 
             var dialect = _session.Store.Configuration.SqlDialect;
             var sqlBuilder = dialect.CreateBuilder(_session.Store.Configuration.TablePrefix);
@@ -157,7 +157,7 @@ namespace OrchardCore.Workflows.Controllers
 
             model.Options.WorkflowTypesBulkAction = new List<SelectListItem>()
             {
-                new SelectListItem()
+                new()
                 {
                     Text = S["Delete"].Value, Value = nameof(WorkflowTypeBulkAction.Delete),
                 },

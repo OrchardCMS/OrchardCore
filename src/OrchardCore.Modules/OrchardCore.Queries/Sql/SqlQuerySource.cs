@@ -48,51 +48,40 @@ namespace OrchardCore.Queries.Sql
             var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(sqlQuery.Template, NullEncoder.Default,
                 parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
 
-            var connection = _dbConnectionAccessor.CreateConnection();
             var dialect = _session.Store.Configuration.SqlDialect;
 
             if (!SqlParser.TryParse(tokenizedQuery, _session.Store.Configuration.Schema, dialect, _session.Store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {
                 sqlQueryResults.Items = Array.Empty<object>();
-                connection.Dispose();
+
                 return sqlQueryResults;
             }
+
+            using var connection = _dbConnectionAccessor.CreateConnection();
+            await connection.OpenAsync();
+            using var transaction = connection.BeginTransaction(_session.Store.Configuration.IsolationLevel);
 
             if (sqlQuery.ReturnDocuments)
-            {
-                IEnumerable<long> documentIds;
-                using (connection)
-                {
-                    await connection.OpenAsync();
-
-                    using var transaction = connection.BeginTransaction(_session.Store.Configuration.IsolationLevel);
-                    documentIds = await connection.QueryAsync<long>(rawQuery, parameters, transaction);
-                }
-
+            {    
+                var documentIds = await connection.QueryAsync<long>(rawQuery, parameters, transaction);
+                
                 sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds.ToArray());
+
                 return sqlQueryResults;
             }
-            else
+
+            var queryResults = await connection.QueryAsync(rawQuery, parameters, transaction);
+            
+            var results = new List<JObject>();
+
+            foreach (var document in queryResults)
             {
-                IEnumerable<dynamic> queryResults;
-                using (connection)
-                {
-                    await connection.OpenAsync();
-
-                    using var transaction = connection.BeginTransaction(_session.Store.Configuration.IsolationLevel);
-                    queryResults = await connection.QueryAsync(rawQuery, parameters, transaction);
-                }
-
-                var results = new List<JObject>();
-
-                foreach (var document in queryResults)
-                {
-                    results.Add(JObject.FromObject(document));
-                }
-
-                sqlQueryResults.Items = results;
-                return sqlQueryResults;
+                results.Add(JObject.FromObject(document));
             }
+
+            sqlQueryResults.Items = results;
+
+            return sqlQueryResults;
         }
     }
 }
