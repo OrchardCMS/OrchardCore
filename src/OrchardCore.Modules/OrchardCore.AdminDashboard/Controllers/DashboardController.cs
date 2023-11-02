@@ -62,7 +62,7 @@ namespace OrchardCore.AdminDashboard.Controllers
                 var widgets = await _adminDashboardService.GetWidgetsAsync(x => x.Published);
                 foreach (var widget in widgets)
                 {
-                    if (!widgetContentTypes.Any(x => x.Name == widget.ContentType))
+                    if (!widgetContentTypes.ContainsKey(widget.ContentType))
                     {
                         continue;
                     }
@@ -103,21 +103,21 @@ namespace OrchardCore.AdminDashboard.Controllers
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            foreach (var ctd in widgetContentTypes.OrderBy(x => x.DisplayName))
+            foreach (var ctd in widgetContentTypes.OrderBy(x => x.Value.DisplayName))
             {
-                if (!await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, ctd.Name, userId))
+                if (!await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, ctd.Value.Name, userId))
                 {
                     continue;
                 }
 
-                dashboardCreatable.Add(new SelectListItem(ctd.DisplayName, ctd.Name));
+                dashboardCreatable.Add(new SelectListItem(ctd.Value.DisplayName, ctd.Value.Name));
             }
 
             var widgets = await _adminDashboardService.GetWidgetsAsync(x => x.Latest);
             var wrappers = new List<DashboardWrapper>();
             foreach (var widget in widgets)
             {
-                if (!widgetContentTypes.Any(x => x.Name == widget.ContentType)
+                if (!widgetContentTypes.ContainsKey(widget.ContentType)
                     || !await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, widget.ContentType, userId))
                 {
                     continue;
@@ -202,9 +202,9 @@ namespace OrchardCore.AdminDashboard.Controllers
             return RedirectToAction(nameof(Manage));
         }
 
-        private List<ContentTypeDefinition> GetDashboardWidgets()
+        private Dictionary<string, ContentTypeDefinition> GetDashboardWidgets()
             => _contentDefinitionManager.ListTypeDefinitions()
             .Where(t => t.StereotypeEquals("DashboardWidget"))
-            .ToList();
+            .ToDictionary(x => x.Name, x => x);
     }
 }
