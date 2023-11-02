@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.DisplayManagement.Html;
-using System.Collections.Generic;
 
 namespace OrchardCore;
 
@@ -17,19 +16,19 @@ public static class CssOrchardHelperExtensions
 
         builder.Append(helper.GetThemeOptions().WrapperClasses);
 
-        builder.AppendValue(PartWrapperPrefix);
+        builder.AppendSeparatedValue(PartWrapperPrefix);
 
         if (partDefinition?.PartDefinition != null)
         {
-            builder.AppendValue($"{PartWrapperPrefix}-{partDefinition.PartDefinition.Name.HtmlClassify()}");
+            builder.AppendSeparatedValue($"{PartWrapperPrefix}-{partDefinition.PartDefinition.Name.HtmlClassify()}");
 
             if (partDefinition.IsNamedPart())
             {
-                builder.AppendValue($"{PartWrapperPrefix}-{partDefinition.Name.HtmlClassify()}");
+                builder.AppendSeparatedValue($"{PartWrapperPrefix}-{partDefinition.Name.HtmlClassify()}");
             }
         }
 
-        return builder.AppendValues(additionalClasses);
+        return builder.AppendSeparatedValues(additionalClasses);
     }
 
     public static IHtmlContent GetFieldWrapperClasses(this IOrchardHelper helper, ContentPartFieldDefinition fieldDefinition, params string[] additionalClasses)
@@ -38,18 +37,18 @@ public static class CssOrchardHelperExtensions
 
         builder.Append(helper.GetThemeOptions().WrapperClasses);
 
-        builder.AppendValue(FieldWrapperPrefix);
+        builder.AppendSeparatedValue(FieldWrapperPrefix);
 
         if (fieldDefinition?.PartDefinition != null)
         {
-            builder.AppendValue($"{FieldWrapperPrefix}-{fieldDefinition.PartDefinition.Name}-{fieldDefinition.Name}".HtmlClassify());
+            builder.AppendSeparatedValue($"{FieldWrapperPrefix}-{fieldDefinition.PartDefinition.Name}-{fieldDefinition.Name}".HtmlClassify());
 
             if (fieldDefinition.IsNamedPart())
             {
-                builder.AppendValue($"{FieldWrapperPrefix}-{fieldDefinition.ContentTypePartDefinition.Name}-{fieldDefinition.Name}".HtmlClassify());
+                builder.AppendSeparatedValue($"{FieldWrapperPrefix}-{fieldDefinition.ContentTypePartDefinition.Name}-{fieldDefinition.Name}".HtmlClassify());
             }
         }
 
-        return builder.AppendValues(additionalClasses);
+        return builder.AppendSeparatedValues(additionalClasses);
     }
 }

@@ -114,7 +114,7 @@ public static class CssOrchardHelperExtensions
         
         builder.Append(optionClasses);
 
-        builder.AppendValues(values);
+        builder.AppendSeparatedValues(values);
 
         return builder;
     }
