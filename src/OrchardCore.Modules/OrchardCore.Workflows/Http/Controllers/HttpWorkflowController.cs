@@ -276,9 +276,9 @@ namespace OrchardCore.Workflows.Http.Controllers
                 return new EmptyResult();
             }
 
-            if (HttpContext.Items.TryGetValue(WorkflowHttpRedirectResult.Instance, out var value) && value is WorkflowHttpRedirectResult result)
+            if (HttpContext.Items.TryGetValue("FormOriginatedLocation", out var value))
             {
-                return Redirect(result.Url);
+                return Redirect(value.ToString());
             }
 
             return Accepted();

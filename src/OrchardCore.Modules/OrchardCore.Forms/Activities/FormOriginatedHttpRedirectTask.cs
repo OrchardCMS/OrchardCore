@@ -49,9 +49,7 @@ public class FormOriginatedHttpRedirectTask : TaskActivity
             && _httpContextAccessor.HttpContext.Request.Form.TryGetValue(FormPart.RequestOriginatedFromInputName, out var value)
             && !string.IsNullOrWhiteSpace(value))
         {
-            WorkflowHttpRedirectResult.Instance.Url = GetLocationUrl(value.ToString());
-
-            _httpContextAccessor.HttpContext.Items[WorkflowHttpRedirectResult.Instance] = WorkflowHttpRedirectResult.Instance;
+            _httpContextAccessor.HttpContext.Items["FormOriginatedLocation"] = GetLocationUrl(value.ToString());
 
             return Task.FromResult(Outcomes("Done"));
         }
