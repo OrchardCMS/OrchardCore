@@ -116,7 +116,7 @@ namespace OrchardCore.Media.Shortcodes
                     queryStringParams.Add("format", format);
                 }
 
-                if (appendVersion?.Equals("true", StringComparison.InvariantCultureIgnoreCase) == true)
+                if (appendVersion?.Equals("true", StringComparison.OrdinalIgnoreCase) == true)
                 {
                     content = _fileVersionProvider.AddFileVersionToPath(_httpContextAccessor.HttpContext.Request.PathBase, content);
                 }
