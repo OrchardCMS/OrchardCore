@@ -17,6 +17,5 @@ namespace OrchardCore.Forms.Models
         public bool EnableAntiForgeryToken { get; set; } = true;
 
         public bool EnableRequestOriginatedFrom { get; set; } = true;
-
     }
 }
