@@ -1,3 +1,15 @@
+using System;
+using Dapper;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using OrchardCore.Data;
+using OrchardCore.Data.Migration;
+using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Users.Indexes;
+using OrchardCore.Users.Models;
+using YesSql;
+using YesSql.Sql;
+
 namespace OrchardCore.Users
 {
     public class Migrations : DataMigration
@@ -262,7 +274,6 @@ namespace OrchardCore.Users
                         var updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, 'OrchardCore.Users.Models.LoginSettings, OrchardCore.Users', 'OrchardCore.Users.Models.LoginSettings, OrchardCore.Users.Core') WHERE {quotedTypeColumnName} = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
 
                         await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
-
                         await transaction.CommitAsync();
                     }
                     catch (Exception e)

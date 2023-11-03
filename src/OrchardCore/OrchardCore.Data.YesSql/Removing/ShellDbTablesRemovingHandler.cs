@@ -1,3 +1,17 @@
+using System;
+using System.IO;
+using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using OrchardCore.Data;
+using OrchardCore.Data.Documents;
+using OrchardCore.Data.Migration;
+using OrchardCore.Environment.Shell.Builders;
+using OrchardCore.Environment.Shell.Scope;
+using YesSql;
+
 namespace OrchardCore.Environment.Shell.Removing;
 
 /// <summary>

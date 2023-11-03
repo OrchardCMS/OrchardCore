@@ -1,4 +1,14 @@
+using System;
+using Dapper;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
+using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.Data;
+using OrchardCore.Data.Migration;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Search.Lucene.Model;
+using YesSql;
 
 namespace OrchardCore.Search.Lucene
 {

@@ -1,3 +1,19 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Dapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentPreview;
+using OrchardCore.Data;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Modules;
+using YesSql;
+
 namespace OrchardCore.Indexing.Services
 {
     /// <summary>
