@@ -52,36 +52,37 @@ namespace OrchardCore.Liquid
                 options.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
 
                 // When a property of a JObject value is accessed, try to look into its properties
-                // options.MemberAccessStrategy.Register<JsonObject, object>((source, name) => source[name]);
-                options.MemberAccessStrategy.Register<DynamicDictionary, object>((source, name) => source[name]);
+                //options.MemberAccessStrategy.Register<JsonObject, object>((source, name) => source[name]);
+                //options.MemberAccessStrategy.Register<DynamicDictionary, object>((source, name) => source[name]);
+                options.MemberAccessStrategy.Register<JsonDynamicObject, object>((source, name) => source[name]);
 
                 // Convert JToken to FluidValue
                 options.ValueConverters.Add(x =>
                 {
-                    //if (x is JsonArray jsonArray)
-                    //{
-                    //    //var a = new ObjectValue((IList<object>)jsonArray.ToObject<object>());
-                    //    var a = new ObjectValue(jsonArray.AsEnumerable().ToArray());
-                    //    //var a = new ObjectValue(jsonArray.ToObject<object>());
-                    //    return a;
-                    //}
+                    ////if (x is JsonArray jsonArray)
+                    ////{
+                    ////    //var a = new ObjectValue((IList<object>)jsonArray.ToObject<object>());
+                    ////    var a = new ObjectValue(jsonArray.AsEnumerable().ToArray());
+                    ////    //var a = new ObjectValue(jsonArray.ToObject<object>());
+                    ////    return a;
+                    ////}
 
-                    if (x is JsonObject jsonObject)
-                    {
-                        // var a = new ObjectValue((IList<object>)jsonArray.ToObject<object>());
-                        // var o = new ObjectValue(jsonObject.AsEnumerable().ToArray());
-                        // var o = new ObjectValue(jsonObject.ToObject<object>());
-                        var o = new ObjectValue(jsonObject.ToObject<object>());
-                        // var o = new ObjectValue(JsonSerializer.Deserialize<object>(jsonObject));
-                        return o;
-                    }
+                    //if (x is JsonObject jsonObject)
+                    //{
+                    //    // var a = new ObjectValue((IList<object>)jsonArray.ToObject<object>());
+                    //    // var o = new ObjectValue(jsonObject.AsEnumerable().ToArray());
+                    //    // var o = new ObjectValue(jsonObject.ToObject<object>());
+                    //    var o = new ObjectValue(jsonObject.ToObject<object>());
+                    //    // var o = new ObjectValue(JsonSerializer.Deserialize<object>(jsonObject));
+                    //    return o;
+                    //}
 
                     return x switch
                     {
                         // JsonObject o => new ObjectValue(o.ToObject<object>()),
-                        // JsonObject o => new ObjectValue(o),
-                        // JsonArray a => new ObjectValue(a.ToObject<object>()),
-                        // JsonValue v => new ObjectValue(v.ToObject<object>()),
+                        //JsonObject o => new ObjectValue(o),
+                        JsonDynamicObject o => new ObjectValue(o),
+                        //JsonValue v => new ObjectValue(v.ToObject<object>()),
                         DateTime d => new ObjectValue(d),
                         _ => null
                     };
