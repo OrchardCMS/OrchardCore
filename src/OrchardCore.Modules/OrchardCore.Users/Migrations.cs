@@ -1,15 +1,3 @@
-using System;
-using Dapper;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using OrchardCore.Data;
-using OrchardCore.Data.Migration;
-using OrchardCore.Environment.Shell.Scope;
-using OrchardCore.Users.Indexes;
-using OrchardCore.Users.Models;
-using YesSql;
-using YesSql.Sql;
-
 namespace OrchardCore.Users
 {
     public class Migrations : DataMigration
@@ -258,28 +246,40 @@ namespace OrchardCore.Users
                 logger.LogDebug("Updating User Settings");
 
                 await using var connection = dbConnectionAccessor.CreateConnection();
-                await connection.OpenAsync();
-                using var transaction = connection.BeginTransaction(session.Store.Configuration.IsolationLevel);
-                var dialect = session.Store.Configuration.SqlDialect;
 
                 try
                 {
-                    var quotedTableName = dialect.QuoteForTableName(table, session.Store.Configuration.Schema);
-                    var quotedContentColumnName = dialect.QuoteForColumnName("Content");
-                    var quotedTypeColumnName = dialect.QuoteForColumnName("Type");
+                    await connection.OpenAsync();
+                    using var transaction = connection.BeginTransaction(session.Store.Configuration.IsolationLevel);
+                    var dialect = session.Store.Configuration.SqlDialect;
 
-                    var updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, 'OrchardCore.Users.Models.LoginSettings, OrchardCore.Users', 'OrchardCore.Users.Models.LoginSettings, OrchardCore.Users.Core') WHERE {quotedTypeColumnName} = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
+                    try
+                    {
+                        var quotedTableName = dialect.QuoteForTableName(table, session.Store.Configuration.Schema);
+                        var quotedContentColumnName = dialect.QuoteForColumnName("Content");
+                        var quotedTypeColumnName = dialect.QuoteForColumnName("Type");
 
-                    await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
+                        var updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, 'OrchardCore.Users.Models.LoginSettings, OrchardCore.Users', 'OrchardCore.Users.Models.LoginSettings, OrchardCore.Users.Core') WHERE {quotedTypeColumnName} = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
 
-                    await transaction.CommitAsync();
+                        await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
+
+                        await transaction.CommitAsync();
+                    }
+                    catch (Exception e)
+                    {
+                        await transaction.RollbackAsync();
+                        logger.LogError(e, "An error occurred while updating User Settings");
+
+                        throw;
+                    }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    await transaction.RollbackAsync();
-                    logger.LogError(e, "An error occurred while updating User Settings");
-
                     throw;
+                }
+                finally
+                {
+                    await connection.CloseAsync();
                 }
             });
 

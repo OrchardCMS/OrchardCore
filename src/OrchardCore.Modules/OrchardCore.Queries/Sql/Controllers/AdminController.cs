@@ -1,20 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Dapper;
-using Fluid;
-using Fluid.Values;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using OrchardCore.Liquid;
-using OrchardCore.Modules;
 using OrchardCore.Queries.Sql.ViewModels;
-using YesSql;
 
 namespace OrchardCore.Queries.Sql.Controllers
 {
@@ -86,15 +70,19 @@ namespace OrchardCore.Queries.Sql.Controllers
                 model.RawSql = rawQuery;
                 model.Parameters = JsonConvert.SerializeObject(parameters, Formatting.Indented);
 
+                await using var connection = _store.Configuration.ConnectionFactory.CreateConnection();
                 try
                 {
-                    await using var connection = _store.Configuration.ConnectionFactory.CreateConnection();
                     await connection.OpenAsync();
                     model.Documents = await connection.QueryAsync(rawQuery, parameters);
                 }
                 catch (Exception e)
                 {
                     ModelState.AddModelError("", S["An error occurred while executing the SQL query: {0}", e.Message]);
+                }
+                finally
+                {
+                    await connection.CloseAsync();
                 }
             }
             else

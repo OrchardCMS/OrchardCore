@@ -1,17 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Dapper;
-using Fluid;
-using Fluid.Values;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
-using OrchardCore.ContentManagement;
-using OrchardCore.Data;
-using OrchardCore.Liquid;
-using YesSql;
-
 namespace OrchardCore.Queries.Sql
 {
     public class SqlQuerySource : IQuerySource
@@ -56,29 +42,38 @@ namespace OrchardCore.Queries.Sql
 
                 return sqlQueryResults;
             }
-
-            await using var connection = _dbConnectionAccessor.CreateConnection();
-            await connection.OpenAsync();
-            using var transaction = connection.BeginTransaction(_session.Store.Configuration.IsolationLevel);
-
-            if (sqlQuery.ReturnDocuments)
-            {    
-                var documentIds = await connection.QueryAsync<long>(rawQuery, parameters, transaction);
-                
-                sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds.ToArray());
-
-                return sqlQueryResults;
-            }
-
-            var queryResults = await connection.QueryAsync(rawQuery, parameters, transaction);
-            
             var results = new List<JObject>();
 
-            foreach (var document in queryResults)
+            await using var connection = _dbConnectionAccessor.CreateConnection();
+            try
             {
-                results.Add(JObject.FromObject(document));
-            }
+                await connection.OpenAsync();
+                using var transaction = connection.BeginTransaction(_session.Store.Configuration.IsolationLevel);
 
+                if (sqlQuery.ReturnDocuments)
+                {
+                    var documentIds = await connection.QueryAsync<long>(rawQuery, parameters, transaction);
+
+                    sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds.ToArray());
+
+                    return sqlQueryResults;
+                }
+
+                var queryResults = await connection.QueryAsync(rawQuery, parameters, transaction);
+
+                foreach (var document in queryResults)
+                {
+                    results.Add(JObject.FromObject(document));
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                await connection.CloseAsync();
+            }
             sqlQueryResults.Items = results;
 
             return sqlQueryResults;

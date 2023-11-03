@@ -108,6 +108,10 @@ public class DbConnectionValidator : IDbConnectionValidator
 
             return DbConnectionValidatorResult.DocumentTableNotFound;
         }
+        finally
+        {
+            await connection.CloseAsync();
+        }
 
         var tableNameConvention = _tableNameConventionFactory.Create(context.TableOptions);
         var documentName = tableNameConvention.GetDocumentTable();

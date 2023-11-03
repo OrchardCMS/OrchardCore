@@ -1,17 +1,3 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.Data.Sqlite;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using OrchardCore.Data;
-using OrchardCore.Data.Documents;
-using OrchardCore.Data.Migration;
-using OrchardCore.Environment.Shell.Builders;
-using OrchardCore.Environment.Shell.Scope;
-using YesSql;
-
 namespace OrchardCore.Environment.Shell.Removing;
 
 /// <summary>
@@ -85,20 +71,31 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
             }
             else
             {
-                await connection.OpenAsync();
-                using var transaction = connection.BeginTransaction(store.Configuration.IsolationLevel);
                 try
                 {
-                    // Remove all tables of this tenant.
-                    shellDbTablesInfo.Configure(transaction, _logger, throwOnError: false);
-                    shellDbTablesInfo.RemoveAllTables();
+                    await connection.OpenAsync();
+                    using var transaction = connection.BeginTransaction(store.Configuration.IsolationLevel);
+                    try
+                    {
+                        // Remove all tables of this tenant.
+                        shellDbTablesInfo.Configure(transaction, _logger, throwOnError: false);
+                        shellDbTablesInfo.RemoveAllTables();
 
-                    await transaction.CommitAsync();
+                        await transaction.CommitAsync();
+                    }
+                    catch
+                    {
+                        await transaction.RollbackAsync();
+                        throw;
+                    }
                 }
-                catch
+                catch (Exception)
                 {
-                    await transaction.RollbackAsync();
                     throw;
+                }
+                finally
+                {
+                    await connection.CloseAsync();
                 }
             }
         }

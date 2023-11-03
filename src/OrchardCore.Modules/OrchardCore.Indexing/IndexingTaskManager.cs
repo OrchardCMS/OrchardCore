@@ -1,19 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Dapper;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using OrchardCore.ContentManagement;
-using OrchardCore.ContentPreview;
-using OrchardCore.Data;
-using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Scope;
-using OrchardCore.Modules;
-using YesSql;
-
 namespace OrchardCore.Indexing.Services
 {
     /// <summary>
@@ -123,48 +107,57 @@ namespace OrchardCore.Indexing.Services
             }
 
             await using var connection = dbConnectionAccessor.CreateConnection();
-            await connection.OpenAsync();
-
-            using var transaction = connection.BeginTransaction(session.Store.Configuration.IsolationLevel);
-            var dialect = session.Store.Configuration.SqlDialect;
-
             try
             {
-                // Page delete statements to prevent the limits from IN sql statements.
-                var pageSize = 100;
+                await connection.OpenAsync();
 
-                var deleteCmd = $"delete from {dialect.QuoteForTableName(table, _store.Configuration.Schema)} where {dialect.QuoteForColumnName("ContentItemId")} {dialect.InOperator("@Ids")};";
+                using var transaction = connection.BeginTransaction(session.Store.Configuration.IsolationLevel);
+                var dialect = session.Store.Configuration.SqlDialect;
 
-                do
+                try
                 {
-                    var pageOfIds = ids.Take(pageSize).ToArray();
+                    // Page delete statements to prevent the limits from IN sql statements.
+                    var pageSize = 100;
 
-                    if (pageOfIds.Length > 0)
+                    var deleteCmd = $"delete from {dialect.QuoteForTableName(table, _store.Configuration.Schema)} where {dialect.QuoteForColumnName("ContentItemId")} {dialect.InOperator("@Ids")};";
+
+                    do
                     {
-                        await transaction.Connection.ExecuteAsync(deleteCmd, new { Ids = pageOfIds }, transaction);
-                        ids = ids.Skip(pageSize).ToArray();
-                    }
-                } while (ids.Length > 0);
+                        var pageOfIds = ids.Take(pageSize).ToArray();
 
-                var insertCmd = $"insert into {dialect.QuoteForTableName(table, _store.Configuration.Schema)} ({dialect.QuoteForColumnName("CreatedUtc")}, {dialect.QuoteForColumnName("ContentItemId")}, {dialect.QuoteForColumnName("Type")}) values (@CreatedUtc, @ContentItemId, @Type);";
-                await transaction.Connection.ExecuteAsync(insertCmd, localQueue, transaction);
+                        if (pageOfIds.Length > 0)
+                        {
+                            await transaction.Connection.ExecuteAsync(deleteCmd, new { Ids = pageOfIds }, transaction);
+                            ids = ids.Skip(pageSize).ToArray();
+                        }
+                    } while (ids.Length > 0);
 
-                await transaction.CommitAsync();
+                    var insertCmd = $"insert into {dialect.QuoteForTableName(table, _store.Configuration.Schema)} ({dialect.QuoteForColumnName("CreatedUtc")}, {dialect.QuoteForColumnName("ContentItemId")}, {dialect.QuoteForColumnName("Type")}) values (@CreatedUtc, @ContentItemId, @Type);";
+                    await transaction.Connection.ExecuteAsync(insertCmd, localQueue, transaction);
+
+                    await transaction.CommitAsync();
+                }
+                catch (Exception e)
+                {
+                    await transaction.RollbackAsync();
+                    logger.LogError(e, "An error occurred while updating indexing tasks");
+
+                    throw;
+                }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                await transaction.RollbackAsync();
-                logger.LogError(e, "An error occurred while updating indexing tasks");
-
                 throw;
+            }
+            finally
+            {
+                await connection.CloseAsync();
             }
         }
 
         public async Task<IEnumerable<IndexingTask>> GetIndexingTasksAsync(long afterTaskId, int count)
         {
             await using var connection = _dbConnectionAccessor.CreateConnection();
-            await connection.OpenAsync();
-
             try
             {
                 var dialect = _store.Configuration.SqlDialect;
@@ -182,12 +175,18 @@ namespace OrchardCore.Indexing.Services
                 sqlBuilder.WhereAnd($"{dialect.QuoteForColumnName("Id")} > @Id");
                 sqlBuilder.OrderBy($"{dialect.QuoteForColumnName("Id")}");
 
+                await connection.OpenAsync();
+
                 return await connection.QueryAsync<IndexingTask>(sqlBuilder.ToSqlString(), new { Id = afterTaskId });
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "An error occurred while reading indexing tasks");
                 throw;
+            }
+            finally
+            {
+                await connection.CloseAsync();
             }
         }
     }
