@@ -88,7 +88,7 @@ namespace OrchardCore.Queries.Sql.Controllers
 
                 try
                 {
-                    using var connection = _store.Configuration.ConnectionFactory.CreateConnection();
+                    await using var connection = _store.Configuration.ConnectionFactory.CreateConnection();
                     await connection.OpenAsync();
                     model.Documents = await connection.QueryAsync(rawQuery, parameters);
                 }

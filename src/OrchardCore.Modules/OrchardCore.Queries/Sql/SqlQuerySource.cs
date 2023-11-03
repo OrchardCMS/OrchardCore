@@ -57,7 +57,7 @@ namespace OrchardCore.Queries.Sql
                 return sqlQueryResults;
             }
 
-            using var connection = _dbConnectionAccessor.CreateConnection();
+            await using var connection = _dbConnectionAccessor.CreateConnection();
             await connection.OpenAsync();
             using var transaction = connection.BeginTransaction(_session.Store.Configuration.IsolationLevel);
 

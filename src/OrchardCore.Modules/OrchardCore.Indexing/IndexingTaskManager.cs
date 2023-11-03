@@ -122,7 +122,7 @@ namespace OrchardCore.Indexing.Services
                 logger.LogDebug("Updating indexing tasks: {ContentItemIds}", string.Join(", ", tasks.Select(x => x.ContentItemId)));
             }
 
-            using var connection = dbConnectionAccessor.CreateConnection();
+            await using var connection = dbConnectionAccessor.CreateConnection();
             await connection.OpenAsync();
 
             using var transaction = connection.BeginTransaction(session.Store.Configuration.IsolationLevel);
@@ -162,7 +162,7 @@ namespace OrchardCore.Indexing.Services
 
         public async Task<IEnumerable<IndexingTask>> GetIndexingTasksAsync(long afterTaskId, int count)
         {
-            using var connection = _dbConnectionAccessor.CreateConnection();
+            await using var connection = _dbConnectionAccessor.CreateConnection();
             await connection.OpenAsync();
 
             try

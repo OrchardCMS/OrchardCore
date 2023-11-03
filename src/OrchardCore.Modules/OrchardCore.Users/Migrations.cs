@@ -257,7 +257,7 @@ namespace OrchardCore.Users
 
                 logger.LogDebug("Updating User Settings");
 
-                using var connection = dbConnectionAccessor.CreateConnection();
+                await using var connection = dbConnectionAccessor.CreateConnection();
                 await connection.OpenAsync();
                 using var transaction = connection.BeginTransaction(session.Store.Configuration.IsolationLevel);
                 var dialect = session.Store.Configuration.SqlDialect;

@@ -157,7 +157,7 @@ namespace OrchardCore.Search.Lucene
                 var documentTableName = session.Store.Configuration.TableNameConvention.GetDocumentTable();
                 var table = $"{session.Store.Configuration.TablePrefix}{documentTableName}";
 
-                using var connection = dbConnectionAccessor.CreateConnection();
+                await using var connection = dbConnectionAccessor.CreateConnection();
                 await connection.OpenAsync();
 
                 using var transaction = connection.BeginTransaction(session.Store.Configuration.IsolationLevel);
