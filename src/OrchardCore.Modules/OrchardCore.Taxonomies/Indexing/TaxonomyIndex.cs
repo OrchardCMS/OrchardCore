@@ -80,13 +80,13 @@ namespace OrchardCore.Taxonomies.Indexing
                     // Get all field values
                     foreach (var fieldDefinition in fieldDefinitions)
                     {
-                        var jPart = (JsonObject)contentItem.Content[fieldDefinition.PartDefinition.Name];
+                        var jPart = contentItem.Content[fieldDefinition.PartDefinition.Name];
                         if (jPart is null)
                         {
                             continue;
                         }
 
-                        var jField = jPart[fieldDefinition.Name] as JsonObject;
+                        var jField = jPart[fieldDefinition.Name];
                         if (jField is null)
                         {
                             continue;

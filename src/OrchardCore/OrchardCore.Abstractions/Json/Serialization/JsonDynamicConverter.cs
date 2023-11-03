@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Dynamic;
+using System.Text.Json.Nodes;
 
 #nullable enable
 
@@ -65,7 +65,8 @@ public class JsonDynamicConverter : JsonConverter<object>
                 }
 
             case JsonTokenType.StartObject:
-                var dictionary = new ExpandoObject();
+                // IDictionary<string, object?> dictionary = new ExpandoObject();
+                dynamic dictionary = new DynamicDictionary();
                 while (reader.Read())
                 {
                     switch (reader.TokenType)
@@ -78,7 +79,8 @@ public class JsonDynamicConverter : JsonConverter<object>
                             reader.Read();
                             if (key is not null)
                             {
-                                dictionary.TryAdd(key, Read(ref reader, typeof(object), options));
+                                // dictionary.TryAdd(key, Read(ref reader, typeof(object), options));
+                                dictionary[key] = Read(ref reader, typeof(object), options);
                             }
 
                             break;

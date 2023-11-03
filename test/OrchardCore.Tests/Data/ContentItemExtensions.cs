@@ -60,8 +60,7 @@ namespace OrchardCore.Tests.Data
             contentItem.Merge(newContentItem);
 
             // Test
-            var content = (JsonObject)contentItem.Content;
-            Assert.False(content.ContainsKey(nameof(contentItem.DisplayText)));
+            Assert.False(contentItem.Content.ContainsKey(nameof(contentItem.DisplayText)));
         }
 
         [Fact]
@@ -82,8 +81,7 @@ namespace OrchardCore.Tests.Data
             contentItem.Merge(newContentItem);
 
             // Test
-            var content = (JsonObject)contentItem.Content;
-            Assert.False(content.ContainsKey(nameof(contentItem.DisplayText)));
+            Assert.False(contentItem.Content.ContainsKey(nameof(contentItem.DisplayText)));
         }
 
         [Fact]

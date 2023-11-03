@@ -138,7 +138,7 @@ namespace OrchardCore.Taxonomies.Drivers
             {
                 var children = Array.Empty<ContentItem>();
 
-                if ((contentItem.Content as JsonObject)["Terms"] is JsonArray termsArray)
+                if (contentItem.Content["Terms"] is JsonArray termsArray)
                 {
                     children = termsArray.ToObject<ContentItem[]>();
                 }

@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json.Nodes;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using OrchardCore.ContentFields.Fields;
@@ -23,7 +21,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Boolean field",
                     FieldType = typeof(BooleanGraphType),
                     UnderlyingType = typeof(BooleanField),
-                    FieldAccessor = field => (field.Content as JsonObject)["Value"]?.Value<bool>(),
+                    FieldAccessor = field => field.Content.Value,
                 }
             },
             {
@@ -33,7 +31,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Date field",
                     FieldType = typeof(DateGraphType),
                     UnderlyingType = typeof(DateField),
-                    FieldAccessor = field => (field.Content as JsonObject)["Value"]?.Value<DateTime?>(),
+                    FieldAccessor = field => field.Content.Value,
                 }
             },
             {
@@ -43,7 +41,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Date & time field",
                     FieldType = typeof(DateTimeGraphType),
                     UnderlyingType = typeof(DateTimeField),
-                    FieldAccessor = field => (field.Content as JsonObject)["Value"]?.Value<DateTime?>(),
+                    FieldAccessor = field => field.Content.Value,
                 }
             },
             {
@@ -53,7 +51,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Numeric field",
                     FieldType = typeof(DecimalGraphType),
                     UnderlyingType = typeof(NumericField),
-                    FieldAccessor = field => (field.Content as JsonObject)["Value"]?.Value<decimal?>(),
+                    FieldAccessor = field => field.Content.Value,
                 }
             },
             {
@@ -63,7 +61,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Text field",
                     FieldType = typeof(StringGraphType),
                     UnderlyingType = typeof(TextField),
-                    FieldAccessor = field => (field.Content as JsonObject)["Text"]?.Value<string>(),
+                    FieldAccessor = field => field.Content.Text,
                 }
             },
             {
@@ -73,7 +71,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Time field",
                     FieldType = typeof(TimeSpanGraphType),
                     UnderlyingType = typeof(TimeField),
-                    FieldAccessor = field => (field.Content as JsonObject)["Value"]?.Value<TimeSpan?>(),
+                    FieldAccessor = field => field.Content.Value,
                 }
             },
             {
@@ -83,7 +81,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Multi text field",
                     FieldType = typeof(ListGraphType<StringGraphType>),
                     UnderlyingType = typeof(MultiTextField),
-                    FieldAccessor = field => (field.Content as JsonObject)["Values"]?.Values<string>().ToArray(),
+                    FieldAccessor = field => field.Content.Values,
                 }
             }
         };

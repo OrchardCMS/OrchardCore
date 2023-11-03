@@ -67,14 +67,15 @@ namespace OrchardCore.ContentManagement
                 return element;
             }
 
-            var elementData = contentElement.Data[name] as JsonObject;
-            if (elementData == null)
+            var elementData = contentElement.Data.JsonObject[name] as JsonObject;
+            if (elementData is null)
             {
                 return null;
             }
 
             var result = (ContentElement)elementData.Deserialize(contentElementType);
-            result.Data = elementData;
+
+            result.Data.JsonObject = elementData;
             result.ContentItem = contentElement.ContentItem;
 
             contentElement.Elements[name] = result;
@@ -112,7 +113,7 @@ namespace OrchardCore.ContentManagement
                     ContentItem = contentElement.ContentItem,
                 };
 
-                contentElement.Data[name] = newElement.Data;
+                contentElement.Data.JsonObject[name] = newElement.Data.JsonObject;
                 contentElement.Elements[name] = newElement;
                 return newElement;
             }
@@ -131,10 +132,10 @@ namespace OrchardCore.ContentManagement
         {
             if (!contentElement.Data.ContainsKey(name))
             {
-                element.Data = JObject.FromObject(element);
+                element.Data.JsonObject = JObject.FromObject(element);
                 element.ContentItem = contentElement.ContentItem;
 
-                contentElement.Data[name] = element.Data;
+                contentElement.Data.JsonObject[name] = element.Data.JsonObject;
                 contentElement.Elements[name] = element;
             }
 
@@ -150,7 +151,7 @@ namespace OrchardCore.ContentManagement
         {
             var elementName = typeof(TElement).Name;
 
-            var elementData = contentElement.Data[elementName] as JsonObject;
+            var elementData = contentElement.Data.JsonObject[elementName] as JsonObject;
             if (elementData == null)
             {
                 // build and weld the part
@@ -159,9 +160,9 @@ namespace OrchardCore.ContentManagement
             }
 
             JsonNode result;
-            if (!contentElement.Data.TryGetPropertyValue(WeldedPartSettingsName, out result))
+            if (!contentElement.Data.JsonObject.TryGetPropertyValue(WeldedPartSettingsName, out result))
             {
-                contentElement.Data[WeldedPartSettingsName] = result = new JsonObject();
+                contentElement.Data.JsonObject[WeldedPartSettingsName] = result = new JsonObject();
             }
 
             var weldedPartSettings = result.AsObject();
@@ -182,7 +183,7 @@ namespace OrchardCore.ContentManagement
         /// <returns>The current <see cref="ContentItem"/> instance.</returns>
         public static ContentElement Apply(this ContentElement contentElement, string name, ContentElement element)
         {
-            var elementData = contentElement.Data[name] as JsonObject;
+            var elementData = contentElement.Data.JsonObject[name] as JsonObject;
             if (elementData is not null)
             {
                 elementData.Merge(JObject.FromObject(element), _jsonMergeSettings);
@@ -190,10 +191,10 @@ namespace OrchardCore.ContentManagement
             else
             {
                 elementData = JObject.FromObject(element);
-                contentElement.Data[name] = elementData;
+                contentElement.Data.JsonObject[name] = elementData;
             }
 
-            element.Data = elementData;
+            element.Data.JsonObject = elementData;
             element.ContentItem = contentElement.ContentItem;
 
             // Replace the existing content element with the new one
@@ -217,11 +218,11 @@ namespace OrchardCore.ContentManagement
         {
             if (contentElement.Data is not null)
             {
-                contentElement.Data.Merge(JObject.FromObject(element.Data), _jsonMergeSettings);
+                contentElement.Data.JsonObject.Merge(JObject.FromObject(element.Data), _jsonMergeSettings);
             }
             else
             {
-                contentElement.Data = JObject.FromObject(element.Data);
+                contentElement.Data.JsonObject = JObject.FromObject(element.Data);
             }
 
             contentElement.Elements.Clear();

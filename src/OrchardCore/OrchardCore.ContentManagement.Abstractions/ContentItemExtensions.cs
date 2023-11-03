@@ -108,7 +108,7 @@ namespace OrchardCore.ContentManagement
             var props = JObject.FromObject(properties);
 
             var originalDocumentId = contentItem.Id;
-            contentItem.Data.Merge(props, settings);
+            contentItem.Data.JsonObject.Merge(props, settings);
             contentItem.Elements.Clear();
 
             // Return to original value or it will be interpretated as a different object by YesSql.

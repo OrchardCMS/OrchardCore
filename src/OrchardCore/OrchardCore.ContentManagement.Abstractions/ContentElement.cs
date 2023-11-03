@@ -12,11 +12,11 @@ namespace OrchardCore.ContentManagement
     {
         private Dictionary<string, ContentElement> _elements;
 
-        protected ContentElement() : this(new JsonObject())
+        internal ContentElement() : this(new JsonDynamicObject())
         {
         }
 
-        protected ContentElement(JsonObject data)
+        internal ContentElement(JsonDynamicObject data)
         {
             Data = data;
         }
@@ -28,7 +28,7 @@ namespace OrchardCore.ContentManagement
         public dynamic Content { get { return Data; } }
 
         [JsonIgnore]
-        internal JsonObject Data { get; set; }
+        internal JsonDynamicObject Data { get; set; }
 
         [JsonIgnore]
         public ContentItem ContentItem { get; set; }

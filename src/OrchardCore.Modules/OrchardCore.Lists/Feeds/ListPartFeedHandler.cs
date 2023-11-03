@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Feeds.Models;
@@ -13,8 +12,8 @@ namespace OrchardCore.Lists.Drivers
             return context.ForAsync<FeedMetadata>(feedMetadata =>
             {
                 // Enable the feed if the value is not defined. This is handy to migrate the old feeds
-                feedMetadata.DisableRssFeed = (part.Content as JsonObject)["DisableRssFeed"]?.GetValue<bool>() ?? false;
-                feedMetadata.FeedProxyUrl = (part.Content as JsonObject)["FeedProxyUrl"]?.ToString();
+                feedMetadata.DisableRssFeed = part.Content.DisableRssFeed ?? false;
+                feedMetadata.FeedProxyUrl = part.Content.FeedProxyUrl;
 
                 return Task.CompletedTask;
             });

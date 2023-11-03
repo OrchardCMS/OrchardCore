@@ -62,7 +62,7 @@ namespace OrchardCore.Layers.Recipes
                     allLayers.Layers.Add(layer);
                 }
 
-                // Backwards compatability check.
+                // Backwards compatibility check.
                 if (layer.LayerRule == null)
                 {
                     layer.LayerRule = new Rule();

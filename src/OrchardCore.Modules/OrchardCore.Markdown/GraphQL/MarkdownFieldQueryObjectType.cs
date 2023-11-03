@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Fluid.Values;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
@@ -50,10 +50,10 @@ namespace OrchardCore.Markdown.GraphQL
 
             var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
-            var jObject = ctx.Source.Content as JObject;
+            var jObject = ctx.Source.Content.JsonObject as JsonObject;
             // The JObject.Path is consistent here even when contained in a bag part.
-            var jsonPath = jObject.Path;
-            var paths = jsonPath.Split('.');
+            var jsonPath = jObject.GetPath();
+            var paths = jsonPath[2..].Split('.');
             var partName = paths[0];
             var fieldName = paths[1];
             var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(ctx.Source.ContentItem.ContentType);

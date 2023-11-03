@@ -1,8 +1,10 @@
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
+using OrchardCore.Queries;
 using OrchardCore.Rules.Drivers;
 using OrchardCore.Rules.Models;
 using OrchardCore.Rules.Services;
@@ -79,7 +81,26 @@ namespace OrchardCore.Rules
             services
                 .AddScoped<IDisplayDriver<Condition>, ContentTypeConditionDisplayDriver>()
                 .AddCondition<ContentTypeCondition, ContentTypeConditionEvaluatorDriver, ConditionFactory<ContentTypeCondition>>()
-                .AddScoped<IContentDisplayDriver>(sp => (IContentDisplayDriver)sp.GetRequiredService<ContentTypeConditionEvaluatorDriver>());
+                .AddScoped<IContentDisplayDriver>(sp => sp.GetRequiredService<ContentTypeConditionEvaluatorDriver>());
+
+            // Allows to serialize 'Condition' derived types.
+            services.AddJsonDerivedTypeInfo<BooleanCondition, Condition>();
+            services.AddJsonDerivedTypeInfo<ContentTypeCondition, Condition>();
+            services.AddJsonDerivedTypeInfo<CultureCondition, Condition>();
+            services.AddJsonDerivedTypeInfo<HomepageCondition, Condition>();
+            services.AddJsonDerivedTypeInfo<IsAnonymousCondition, Condition>();
+
+            services.AddJsonDerivedTypeInfo<IsAuthenticatedCondition, Condition>();
+            services.AddJsonDerivedTypeInfo<JavascriptCondition, Condition>();
+            services.AddJsonDerivedTypeInfo<RoleCondition, Condition>();
+            services.AddJsonDerivedTypeInfo<UrlCondition, Condition>();
+            services.AddJsonDerivedTypeInfo<ConditionGroup, Condition>();
+
+            // Allows to serialize 'ConditionGroup' derived types.
+            services.AddJsonDerivedTypeInfo<Rule, ConditionGroup>();
+            services.AddJsonDerivedTypeInfo<DisplayTextConditionGroup, ConditionGroup>();
+            services.AddJsonDerivedTypeInfo<AllConditionGroup, DisplayTextConditionGroup>();
+            services.AddJsonDerivedTypeInfo<AnyConditionGroup, DisplayTextConditionGroup>();
         }
     }
 }

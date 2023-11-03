@@ -230,7 +230,7 @@ namespace OrchardCore.Taxonomies.Controllers
             }
 
             // Look for the target taxonomy item in the hierarchy.
-            JsonObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
+            JsonObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content.JsonContent, taxonomyItemId);
 
             // Couldn't find targeted taxonomy item.
             if (taxonomyItem == null)
@@ -258,7 +258,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 return View(model);
             }
 
-            taxonomyItem.Merge(contentItem.Content as JsonObject, new JsonMergeSettings
+            taxonomyItem.Merge(contentItem.Content.JsonObject as JsonObject, new JsonMergeSettings
             {
                 MergeArrayHandling = MergeArrayHandling.Replace,
                 MergeNullValueHandling = MergeNullValueHandling.Merge

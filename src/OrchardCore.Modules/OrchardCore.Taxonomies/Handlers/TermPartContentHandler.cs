@@ -12,7 +12,7 @@ namespace OrchardCore.Taxonomies.Handlers
             return context.ForAsync<ContainedContentItemsAspect>(aspect =>
             {
                 // Check this content item contains Terms.
-                if ((context.ContentItem.Content as JsonObject)["Terms"] is JsonArray children)
+                if (context.ContentItem.Content["Terms"] is JsonArray children)
                 {
                     aspect.Accessors.Add((jsonObject) =>
                     {
