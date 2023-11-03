@@ -26,7 +26,7 @@ namespace OrchardCore.Indexing.Services
     {
         private readonly IClock _clock;
         private readonly IStore _store;
-        private readonly IDbConnectionAccessor _dbConnectionAccessor;
+        private readonly IDbQueryExecutor _queryExecutor;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
 
@@ -35,13 +35,13 @@ namespace OrchardCore.Indexing.Services
         public IndexingTaskManager(
             IClock clock,
             IStore store,
-            IDbConnectionAccessor dbConnectionAccessor,
+            IDbQueryExecutor queryExecutor,
             IHttpContextAccessor httpContextAccessor,
             ILogger<IndexingTaskManager> logger)
         {
             _clock = clock;
             _store = store;
-            _dbConnectionAccessor = dbConnectionAccessor;
+            _queryExecutor = queryExecutor;
             _httpContextAccessor = httpContextAccessor;
             _logger = logger;
         }
@@ -114,7 +114,7 @@ namespace OrchardCore.Indexing.Services
             }
 
             // At this point, content items ids should be unique in localQueue.
-            var ids = localQueue.Select(x => x.ContentItemId).ToArray();
+            var ids = localQueue.Select(x => x.ContentItemId).ToList();
             var table = $"{session.Store.Configuration.TablePrefix}{nameof(IndexingTask)}";
 
             if (logger.IsEnabled(LogLevel.Debug))
@@ -122,59 +122,32 @@ namespace OrchardCore.Indexing.Services
                 logger.LogDebug("Updating indexing tasks: {ContentItemIds}", string.Join(", ", tasks.Select(x => x.ContentItemId)));
             }
 
-            await using var connection = dbConnectionAccessor.CreateConnection();
-            try
+            // Page delete statements to prevent the limits from IN sql statements.
+            await _queryExecutor.ExecuteAsync(async (connection, transaction) =>
             {
-                await connection.OpenAsync();
-
-                using var transaction = connection.BeginTransaction(session.Store.Configuration.IsolationLevel);
+                var pageSize = 100;
                 var dialect = session.Store.Configuration.SqlDialect;
 
-                try
+                var deleteCmd = $"delete from {dialect.QuoteForTableName(table, _store.Configuration.Schema)} where {dialect.QuoteForColumnName("ContentItemId")} {dialect.InOperator("@Ids")};";
+
+                do
                 {
-                    // Page delete statements to prevent the limits from IN sql statements.
-                    var pageSize = 100;
+                    var pageOfIds = ids.Take(pageSize).ToList();
 
-                    var deleteCmd = $"delete from {dialect.QuoteForTableName(table, _store.Configuration.Schema)} where {dialect.QuoteForColumnName("ContentItemId")} {dialect.InOperator("@Ids")};";
-
-                    do
+                    if (pageOfIds.Count > 0)
                     {
-                        var pageOfIds = ids.Take(pageSize).ToArray();
+                        await transaction.Connection.ExecuteAsync(deleteCmd, new { Ids = pageOfIds }, transaction);
+                        ids = ids.Skip(pageSize).ToList();
+                    }
+                } while (ids.Count > 0);
 
-                        if (pageOfIds.Length > 0)
-                        {
-                            await transaction.Connection.ExecuteAsync(deleteCmd, new { Ids = pageOfIds }, transaction);
-                            ids = ids.Skip(pageSize).ToArray();
-                        }
-                    } while (ids.Length > 0);
-
-                    var insertCmd = $"insert into {dialect.QuoteForTableName(table, _store.Configuration.Schema)} ({dialect.QuoteForColumnName("CreatedUtc")}, {dialect.QuoteForColumnName("ContentItemId")}, {dialect.QuoteForColumnName("Type")}) values (@CreatedUtc, @ContentItemId, @Type);";
-                    await transaction.Connection.ExecuteAsync(insertCmd, localQueue, transaction);
-
-                    await transaction.CommitAsync();
-                }
-                catch (Exception e)
-                {
-                    await transaction.RollbackAsync();
-                    logger.LogError(e, "An error occurred while updating indexing tasks");
-
-                    throw;
-                }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            finally
-            {
-                await connection.CloseAsync();
-            }
+                var insertCmd = $"insert into {dialect.QuoteForTableName(table, _store.Configuration.Schema)} ({dialect.QuoteForColumnName("CreatedUtc")}, {dialect.QuoteForColumnName("ContentItemId")}, {dialect.QuoteForColumnName("Type")}) values (@CreatedUtc, @ContentItemId, @Type);";
+                await transaction.Connection.ExecuteAsync(insertCmd, localQueue, transaction);
+            });
         }
 
         public async Task<IEnumerable<IndexingTask>> GetIndexingTasksAsync(long afterTaskId, int count)
-        {
-            await using var connection = _dbConnectionAccessor.CreateConnection();
-            try
+            => await _queryExecutor.QueryAsync(async (connection) =>
             {
                 var dialect = _store.Configuration.SqlDialect;
                 var sqlBuilder = dialect.CreateBuilder(_store.Configuration.TablePrefix);
@@ -191,19 +164,7 @@ namespace OrchardCore.Indexing.Services
                 sqlBuilder.WhereAnd($"{dialect.QuoteForColumnName("Id")} > @Id");
                 sqlBuilder.OrderBy($"{dialect.QuoteForColumnName("Id")}");
 
-                await connection.OpenAsync();
-
                 return await connection.QueryAsync<IndexingTask>(sqlBuilder.ToSqlString(), new { Id = afterTaskId });
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "An error occurred while reading indexing tasks");
-                throw;
-            }
-            finally
-            {
-                await connection.CloseAsync();
-            }
-        }
+            });
     }
 }

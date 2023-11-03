@@ -249,49 +249,26 @@ namespace OrchardCore.Users
             ShellScope.AddDeferredTask(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                var dbConnectionAccessor = scope.ServiceProvider.GetService<IDbConnectionAccessor>();
+                var queryExecutor = scope.ServiceProvider.GetService<IDbQueryExecutor>();
                 var logger = scope.ServiceProvider.GetService<ILogger<Migrations>>();
                 var tablePrefix = session.Store.Configuration.TablePrefix;
                 var documentTableName = session.Store.Configuration.TableNameConvention.GetDocumentTable();
                 var table = $"{session.Store.Configuration.TablePrefix}{documentTableName}";
 
                 logger.LogDebug("Updating User Settings");
+                //session.Store.Configuration.IsolationLevel
 
-                await using var connection = dbConnectionAccessor.CreateConnection();
-
-                try
+                await queryExecutor.ExecuteAsync(async (connection, transaction) =>
                 {
-                    await connection.OpenAsync();
-                    using var transaction = connection.BeginTransaction(session.Store.Configuration.IsolationLevel);
                     var dialect = session.Store.Configuration.SqlDialect;
+                    var quotedTableName = dialect.QuoteForTableName(table, session.Store.Configuration.Schema);
+                    var quotedContentColumnName = dialect.QuoteForColumnName("Content");
+                    var quotedTypeColumnName = dialect.QuoteForColumnName("Type");
 
-                    try
-                    {
-                        var quotedTableName = dialect.QuoteForTableName(table, session.Store.Configuration.Schema);
-                        var quotedContentColumnName = dialect.QuoteForColumnName("Content");
-                        var quotedTypeColumnName = dialect.QuoteForColumnName("Type");
+                    var updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, 'OrchardCore.Users.Models.LoginSettings, OrchardCore.Users', 'OrchardCore.Users.Models.LoginSettings, OrchardCore.Users.Core') WHERE {quotedTypeColumnName} = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
 
-                        var updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, 'OrchardCore.Users.Models.LoginSettings, OrchardCore.Users', 'OrchardCore.Users.Models.LoginSettings, OrchardCore.Users.Core') WHERE {quotedTypeColumnName} = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
-
-                        await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
-                        await transaction.CommitAsync();
-                    }
-                    catch (Exception e)
-                    {
-                        await transaction.RollbackAsync();
-                        logger.LogError(e, "An error occurred while updating User Settings");
-
-                        throw;
-                    }
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-                finally
-                {
-                    await connection.CloseAsync();
-                }
+                    await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
+                }, new DbExecutionContext(session.Store.Configuration.IsolationLevel));
             });
 
             return 13;

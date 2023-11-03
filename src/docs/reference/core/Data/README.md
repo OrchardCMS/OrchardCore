@@ -85,7 +85,58 @@ It is available from the `OrchardCore.Environment.Shell` namespace in the `Orcha
 
 ## Example
 
-The following example uses Dapper to execute a SQL query.
+In this instance, Dapper is used to perform a SQL query utilizing `IDbQueryExecutor`.
+
+```csharp
+using Dapper;
+using OrchardCore.Data;
+using OrchardCore.Environment.Shell
+
+public class AdminController : Controller
+{
+    private readonly IDbQueryExecutor _queryExecutor;
+    private readonly IStore _store;
+    private readonly string _tablePrefix;
+
+    public AdminController(IDbQueryExecutor queryExecutor, IStore store, ShellSettings shellSettings)
+    {
+        _queryExecutor = queryExecutor;
+        _store = store;
+        _tablePrefix = shellSettings["TablePrefix"];
+    }
+
+    public async Task<ActionResult> Query()
+    {
+        // Example of select command
+        CustomTable model = null;
+        await _queryExecutor.QueryAsync(async connection => {
+            var dialect = _store.Configuration.SqlDialect;
+            var customTable = dialect.QuoteForTableName($"{_tablePrefix}CustomTable");
+
+            model = connection.QueryAsync<CustomTable>($"SELECT * FROM {customTable}");
+        });
+
+        return View(model);
+    }
+
+    public async Task<ActionResult> Delete()
+    {
+        // Example of delete command
+
+        await _queryExecutor.ExecuteAsync(async (connection, transaction) =>
+        {
+            var dialect = _store.Configuration.SqlDialect;
+            var customTable = dialect.QuoteForTableName($"{_tablePrefix}CustomTable");
+
+            await connection.ExecuteAsync($"DELETE FROM {customTable}");
+        });
+
+        return View();
+    }
+}
+```
+
+If you prefer not to utilize the `IDbQueryExecutor` service, you can achieve the same functionality using the following approach
 
 ```csharp
 using Dapper;
@@ -98,37 +149,54 @@ public class AdminController : Controller
     private readonly IStore _store;
     private readonly string _tablePrefix;
 
-    public AdminController(IDbConnectionAccessor dbAccessor, IStore store, ShellSettings settings)
+    public AdminController(IDbConnectionAccessor dbAccessor, IStore store, ShellSettings shellSettings)
     {
         _dbAccessor = dbAccessor;
         _store = store;
-        _tablePrefix = settings["TablePrefix"];
+        _tablePrefix = shellSettings["TablePrefix"];
     }
 
-    public async Task<ActionResult> Index()
+    public async Task<ActionResult> Query()
     {
+        // Example of select command
+        await using var connection = _dbAccessor.CreateConnection();
+        try
+        {
+            await connection.OpenAsync();
+            var dialect = _store.Configuration.SqlDialect;
+            var customTable = dialect.QuoteForTableName($"{_tablePrefix}CustomTable");
+
+            var model = connection.QueryAsync<CustomTable>($"SELECT * FROM {customTable}");
+        }
+        finally
+        {
+            await connection.CloseAsync();
+        }
+
+        return View(model);
+    }
+
+    public async Task<ActionResult> Delete()
+    {
+        // Example of delete command
         await using var connection = _dbAccessor.CreateConnection();
         try
         {
             await connection.OpenAsync();
             using var transaction = connection.BeginTransaction();
-            try
+            try 
             {
                 var dialect = _store.Configuration.SqlDialect;
                 var customTable = dialect.QuoteForTableName($"{_tablePrefix}CustomTable");
 
-                var selectCommand = $"SELECT * FROM {customTable}";
-
-                var model = connection.QueryAsync<CustomTable>(selectCommand);
-
-                // If an exception occurs the transaction is disposed and rollbacked
+                await connection.ExecuteAsync($"DELETE FROM {customTable}");
                 await transaction.CommitAsync();
             } 
-            catch
+            catch 
             {
                 await transaction.RollbackAsync();
             }
-        } 
+        }
         finally
         {
             await connection.CloseAsync();

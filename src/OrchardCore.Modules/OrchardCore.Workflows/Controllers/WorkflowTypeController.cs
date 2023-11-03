@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using OrchardCore.Admin;
+using OrchardCore.Data;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -35,6 +36,7 @@ namespace OrchardCore.Workflows.Controllers
     {
         private readonly PagerOptions _pagerOptions;
         private readonly ISession _session;
+        private readonly IDbQueryExecutor _queryExecutor;
         private readonly IActivityLibrary _activityLibrary;
         private readonly IWorkflowManager _workflowManager;
         private readonly IWorkflowTypeStore _workflowTypeStore;
@@ -53,6 +55,7 @@ namespace OrchardCore.Workflows.Controllers
         (
             IOptions<PagerOptions> pagerOptions,
             ISession session,
+            IDbQueryExecutor queryExecutor,
             IActivityLibrary activityLibrary,
             IWorkflowManager workflowManager,
             IWorkflowTypeStore workflowTypeStore,
@@ -68,6 +71,7 @@ namespace OrchardCore.Workflows.Controllers
         {
             _pagerOptions = pagerOptions.Value;
             _session = session;
+            _queryExecutor = queryExecutor;
             _activityLibrary = activityLibrary;
             _workflowManager = workflowManager;
             _workflowTypeStore = workflowTypeStore;
@@ -122,8 +126,6 @@ namespace OrchardCore.Workflows.Controllers
                 .Take(pager.PageSize)
                 .ListAsync();
 
-            await using var connection = await _session.CreateConnectionAsync();
-
             var dialect = _session.Store.Configuration.SqlDialect;
             var sqlBuilder = dialect.CreateBuilder(_session.Store.Configuration.TablePrefix);
             sqlBuilder.Select();
@@ -131,13 +133,13 @@ namespace OrchardCore.Workflows.Controllers
             sqlBuilder.Selector(nameof(WorkflowIndex), nameof(WorkflowIndex.WorkflowTypeId), _session.Store.Configuration.Schema);
             sqlBuilder.Table(nameof(WorkflowIndex), alias: null, _session.Store.Configuration.Schema);
 
-            var workflowTypeIdsWithInstances = await connection.QueryAsync<string>(sqlBuilder.ToSqlString());
-
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
             routeData.Values.Add("Options.Filter", options.Filter);
             routeData.Values.Add("Options.Search", options.Search);
             routeData.Values.Add("Options.Order", options.Order);
+
+            var workflowTypeIdsWithInstances = (await _queryExecutor.QueryAsync(connection => connection.QueryAsync<string>(sqlBuilder.ToSqlString()))).ToHashSet();
 
             var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
             var model = new WorkflowTypeIndexViewModel

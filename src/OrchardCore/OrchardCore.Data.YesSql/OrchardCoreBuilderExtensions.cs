@@ -165,6 +165,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddScoped<IDocumentStore, DocumentStore>();
                 services.AddSingleton<IFileDocumentStore, FileDocumentStore>();
                 services.AddTransient<IDbConnectionAccessor, DbConnectionAccessor>();
+                services.AddTransient<IDbQueryExecutor, DbQueryExecutor>();
             });
 
             return builder;

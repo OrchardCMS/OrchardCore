@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using OrchardCore.Data;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Queries.Sql.ViewModels;
@@ -25,6 +26,7 @@ namespace OrchardCore.Queries.Sql.Controllers
         private readonly IStore _store;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         protected readonly IStringLocalizer S;
+        private readonly IDbQueryExecutor _queryExecutor;
         private readonly TemplateOptions _templateOptions;
 
         public AdminController(
@@ -32,6 +34,7 @@ namespace OrchardCore.Queries.Sql.Controllers
             IStore store,
             ILiquidTemplateManager liquidTemplateManager,
             IStringLocalizer<AdminController> stringLocalizer,
+            IDbQueryExecutor queryExecutor,
             IOptions<TemplateOptions> templateOptions)
 
         {
@@ -39,6 +42,7 @@ namespace OrchardCore.Queries.Sql.Controllers
             _store = store;
             _liquidTemplateManager = liquidTemplateManager;
             S = stringLocalizer;
+            _queryExecutor = queryExecutor;
             _templateOptions = templateOptions.Value;
         }
 
@@ -75,37 +79,28 @@ namespace OrchardCore.Queries.Sql.Controllers
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            var dialect = _store.Configuration.SqlDialect;
-
             var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
-
             var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(model.DecodedQuery, NullEncoder.Default, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
+            var dialect = _store.Configuration.SqlDialect;
 
             if (SqlParser.TryParse(tokenizedQuery, _store.Configuration.Schema, dialect, _store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {
                 model.RawSql = rawQuery;
                 model.Parameters = JsonConvert.SerializeObject(parameters, Formatting.Indented);
-
-                await using var connection = _store.Configuration.ConnectionFactory.CreateConnection();
                 try
                 {
-                    await connection.OpenAsync();
-                    model.Documents = await connection.QueryAsync(rawQuery, parameters);
+                    model.Documents = await _queryExecutor.QueryAsync(connection => connection.QueryAsync(rawQuery, parameters));
                 }
                 catch (Exception e)
                 {
-                    ModelState.AddModelError("", S["An error occurred while executing the SQL query: {0}", e.Message]);
-                }
-                finally
-                {
-                    await connection.CloseAsync();
+                    ModelState.AddModelError(string.Empty, S["An error occurred while executing the SQL query: {0}", e.Message]);
                 }
             }
             else
             {
                 foreach (var message in messages)
                 {
-                    ModelState.AddModelError("", message);
+                    ModelState.AddModelError(string.Empty, message);
                 }
             }
 
