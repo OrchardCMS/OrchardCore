@@ -18,7 +18,6 @@ using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentsTransfer.Models;
-using OrchardCore.ContentsTransfer.Services;
 using OrchardCore.ContentsTransfer.ViewModels;
 using OrchardCore.ContentTransfer;
 using OrchardCore.DisplayManagement;
@@ -37,12 +36,6 @@ public class AdminController : Controller
         MergeNullValueHandling = MergeNullValueHandling.Ignore,
     };
 
-    private static readonly HashSet<string> _allowedExtensions = new()
-    {
-        ".csv",
-        ".xls",
-        ".xlsx"
-    };
 
     private readonly IDisplayManager<ImportContent> _displayManager;
     private readonly IAuthorizationService _authorizationService;
@@ -55,7 +48,6 @@ public class AdminController : Controller
     private readonly IClock _clock;
     private readonly IContentManagerSession _contentManagerSession;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-    private readonly ContentTransferService _contentTransferService;
     private readonly IContentTransferFileStore _contentTransferFileStore;
     private readonly ILogger _logger;
 
@@ -73,7 +65,6 @@ public class AdminController : Controller
         IHtmlLocalizer<AdminController> htmlLocalizer,
         IContentManagerSession contentManagerSession,
         IUpdateModelAccessor updateModelAccessor,
-        ContentTransferService contentTransferService,
         IContentTransferFileStore contentTransferFileStore,
         INotifier notifier,
         ISession session,
@@ -93,7 +84,6 @@ public class AdminController : Controller
         H = htmlLocalizer;
         _contentManagerSession = contentManagerSession;
         _updateModelAccessor = updateModelAccessor;
-        _contentTransferService = contentTransferService;
         _contentTransferFileStore = contentTransferFileStore;
         _logger = logger;
     }
@@ -132,10 +122,16 @@ public class AdminController : Controller
 
         var columns = _contentImportHandlerCoordinator.Invoke(handler => handler.Columns(context), _logger);
 
+        var importContent = new ImportContent()
+        {
+            ContentTypeId = contentTypeId,
+            ContentTypeName = contentTypeDefinition.Name,
+        };
+
         var viewModel = new ContentImporterViewModel()
         {
             ContentTypeDefinition = contentTypeDefinition,
-            Content = await _displayManager.BuildEditorAsync(_updateModelAccessor.ModelUpdater, true),
+            Content = await _displayManager.BuildEditorAsync(importContent, _updateModelAccessor.ModelUpdater, true, string.Empty, string.Empty),
             Columns = columns.SelectMany(x => x).Where(x => x.Type != ImportColumnType.ExportOnly).ToList(),
         };
 
@@ -147,55 +143,55 @@ public class AdminController : Controller
     [ActionName(nameof(Import))]
     [DisableRequestSizeLimit]
     [RequestFormLimits(ValueLengthLimit = ContentImportOptions.AbsoluteMaxAllowedFileSizeInBytes, ValueCountLimit = ContentImportOptions.AbsoluteMaxAllowedFileSizeInBytes)]
-    public async Task<IActionResult> ImportPOST(ContentImportViewModel model)
+    public async Task<IActionResult> ImportPOST(string contentTypeId)
     {
-        if (!ModelState.IsValid)
+        if (string.IsNullOrEmpty(contentTypeId))
         {
-            return View(model);
+            return NotFound();
         }
 
-        if (!await _authorizationService.AuthorizeAsync(User, ImportPermissions.ImportContentFromFile, (object)model.ContentTypeId))
+        if (!await _authorizationService.AuthorizeAsync(User, ImportPermissions.ImportContentFromFile, (object)contentTypeId))
         {
             return Unauthorized();
         }
 
-        var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.ContentTypeId);
+        var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentTypeId);
 
         if (contentTypeDefinition == null)
         {
-            ModelState.AddModelError(string.Empty, S["Invalid Content Type"]);
-
-            return View(model);
+            return NotFound();
         }
 
         var settings = contentTypeDefinition.GetSettings<ContentTypeTransferSettings>();
 
         if (!settings.AllowBulkImport)
         {
-            ModelState.AddModelError(string.Empty, S["The content types does not allow import."]);
-
-            return View(model);
+            return NotFound();
         }
 
-        var extension = Path.GetExtension(model.File.FileName);
+        var importContent = new ImportContent()
+        {
+            ContentTypeId = contentTypeId,
+            ContentTypeName = contentTypeDefinition.Name,
+        };
 
-        if (!_allowedExtensions.Contains(extension))
+        var shape = await _displayManager.UpdateEditorAsync(importContent, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
+
+        if (ModelState.IsValid)
         {
-            ModelState.AddModelError(nameof(model.File), S["This extension is not allowed"]);
-        }
-        else
-        {
+            var extension = Path.GetExtension(importContent.File.FileName);
+
             // Create entry in the database
             var fileName = Guid.NewGuid() + extension;
 
-            var storedFileName = await _contentTransferFileStore.CreateFileFromStreamAsync(fileName, model.File.OpenReadStream(), false);
+            var storedFileName = await _contentTransferFileStore.CreateFileFromStreamAsync(fileName, importContent.File.OpenReadStream(), false);
 
             var entry = new ContentTransferEntry()
             {
                 EntryId = IdGenerator.GenerateId(),
-                ContentType = model.ContentTypeId,
+                ContentType = contentTypeId,
                 Owner = CurrentUserId(),
-                UploadedFileName = model.File.Name,
+                UploadedFileName = importContent.File.FileName,
                 StoredFileName = storedFileName,
                 Status = ContentTransferEntryStatus.New,
                 CreatedUtc = _clock.UtcNow,
@@ -208,7 +204,22 @@ public class AdminController : Controller
             return RedirectToAction(nameof(Import));
         }
 
-        return View(model);
+        var context = new ImportContentContext()
+        {
+            ContentItem = await _contentManager.NewAsync(contentTypeId),
+            ContentTypeDefinition = contentTypeDefinition,
+        };
+
+        var columns = _contentImportHandlerCoordinator.Invoke(handler => handler.Columns(context), _logger);
+
+        var viewModel = new ContentImporterViewModel()
+        {
+            ContentTypeDefinition = contentTypeDefinition,
+            Content = shape,
+            Columns = columns.SelectMany(x => x).Where(x => x.Type != ImportColumnType.ExportOnly).ToList(),
+        };
+
+        return View(viewModel);
     }
 
     public async Task<IActionResult> DownloadTemplate(string contentTypeId)
