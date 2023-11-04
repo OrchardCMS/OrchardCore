@@ -9,10 +9,11 @@
     var description = typePartDefinition.Description();
 }
 
-@if (typePartDefinition.IsNamedPart())
-{
-    <div class="@Orchard.GetPartWrapperCssClasses(typePartDefinition)">
-        <div class="@Orchard.GetLabelCssClasses()">
+<div class="@Orchard.GetPartWrapperClasses(typePartDefinition)">
+
+    @if (typePartDefinition.IsNamedPart())
+    {
+        <div class="@Orchard.GetLabelClasses()">
             @typePartDefinition.DisplayName()
 
             @if (!string.IsNullOrEmpty(description))
@@ -21,20 +22,19 @@
             }
         </div>
 
-        <div class="@Orchard.GetEndCssClasses()">
+        <div class="@Orchard.GetEndClasses()">
             @foreach (var shape in Model)
             {
                 @await DisplayAsync(shape)
             }
         </div>
-    </div>
-}
-else
-{
-    <div class="@Orchard.GetPartWrapperCssClasses(typePartDefinition)">
-        @foreach (var shape in Model)
+    }
+    else
+    {   
+        foreach (var shape in Model)
         {
             @await DisplayAsync(shape)
         }
-    </div>
-}
+    }
+
+</div>

@@ -2,17 +2,17 @@
 @using OrchardCore
 @model FormPartEditViewModel
 
-<div class="@Orchard.GetWrapperCssClasses()">
-    <label asp-for="Action" class="@Orchard.GetLabelCssClasses()">@T["Action"]</label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Action" class="@Orchard.GetLabelClasses()">@T["Action"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <input type="text" asp-for="Action" class="form-control content-preview-text" />
         <span class="hint">@T["The URL to submit the form to."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperCssClasses()">
-    <label asp-for="Method" class="@Orchard.GetLabelCssClasses()">@T["Method"]</label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Method" class="@Orchard.GetLabelClasses()">@T["Method"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <select asp-for="Method" class="form-select content-preview-select">
             <option value="POST">POST</option>
             <option value="GET">GET</option>
@@ -21,9 +21,9 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperCssClasses()">
-    <label asp-for="EncType" class="@Orchard.GetLabelCssClasses()">@T["EncType"]</label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="EncType" class="@Orchard.GetLabelClasses()">@T["EncType"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <select asp-for="EncType" class="form-select content-preview-select">
             <option value="application/x-www-form-urlencoded">application/x-www-form-urlencoded	</option>
             <option value="multipart/form-data">multipart/form-data</option>
@@ -33,8 +33,8 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperCssClasses()">
-    <div class="@Orchard.GetEndCssClasses(true)">
+<div class="@Orchard.GetWrapperClasses()">
+    <div class="@Orchard.GetEndClasses(true)">
         <div class="form-check">
             <input asp-for="EnableAntiForgeryToken" class="form-check-input" />
             <label asp-for="EnableAntiForgeryToken" class="form-check-label">@T["Anti Forgery Token"]</label>

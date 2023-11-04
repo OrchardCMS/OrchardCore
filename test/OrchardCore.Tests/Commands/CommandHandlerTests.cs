@@ -52,7 +52,7 @@ namespace OrchardCore.Tests.Commands
         [Fact]
         public async Task TestNotExistingCommand()
         {
-            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            await Assert.ThrowsAsync<InvalidOperationException>(async Task () =>
             {
                 var commandContext = CreateCommandContext("NoSuchCommand");
                 await _handler.ExecuteAsync(commandContext);
@@ -118,7 +118,7 @@ namespace OrchardCore.Tests.Commands
         {
             var switches = new Dictionary<string, string> { { "User", "OrchardUser" } };
             var commandContext = CreateCommandContext("Foo", switches);
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _handler.ExecuteAsync(commandContext));
+            await Assert.ThrowsAsync<InvalidOperationException>(async Task () => await _handler.ExecuteAsync(commandContext));
         }
 
         [Fact]
@@ -134,7 +134,7 @@ namespace OrchardCore.Tests.Commands
         {
             var switches = new Dictionary<string, string> { { "ThisSwitchDoesNotExist", "Insignificant" } };
             var commandContext = CreateCommandContext("Foo", switches);
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _handler.ExecuteAsync(commandContext));
+            await Assert.ThrowsAsync<InvalidOperationException>(async Task () => await _handler.ExecuteAsync(commandContext));
         }
 
         [Fact]
@@ -175,21 +175,21 @@ namespace OrchardCore.Tests.Commands
         public async Task TestCommandParamsMismatchWithoutParamsNotEnoughArguments()
         {
             var commandContext = CreateCommandContext("Concat", new Dictionary<string, string>(), new[] { "left to " });
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _handler.ExecuteAsync(commandContext));
+            await Assert.ThrowsAsync<InvalidOperationException>(async Task () => await _handler.ExecuteAsync(commandContext));
         }
 
         [Fact]
         public async Task TestCommandParamsMismatchWithoutParamsTooManyArguments()
         {
             var commandContext = CreateCommandContext("Foo", new Dictionary<string, string>(), new[] { "left to " });
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _handler.ExecuteAsync(commandContext));
+            await Assert.ThrowsAsync<InvalidOperationException>(async Task () => await _handler.ExecuteAsync(commandContext));
         }
 
         [Fact]
         public async Task TestCommandParamsMismatchWithParamsButNotEnoughArguments()
         {
             var commandContext = CreateCommandContext("ConcatAllParams", new Dictionary<string, string>());
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _handler.ExecuteAsync(commandContext));
+            await Assert.ThrowsAsync<InvalidOperationException>(async Task () => await _handler.ExecuteAsync(commandContext));
         }
     }
 
