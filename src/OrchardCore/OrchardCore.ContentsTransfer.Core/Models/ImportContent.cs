@@ -1,9 +1,10 @@
 
 using Microsoft.AspNetCore.Http;
+using OrchardCore.Entities;
 
 namespace OrchardCore.ContentsTransfer.Models;
 
-public class ImportContent
+public class ImportContent : Entity
 {
     public string ContentTypeName { get; set; }
 

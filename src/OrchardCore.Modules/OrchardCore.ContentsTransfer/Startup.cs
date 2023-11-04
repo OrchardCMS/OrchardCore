@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using CrestApps.Contents.Imports.Drivers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -20,10 +21,12 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage.FileSystem;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Title.Models;
 
@@ -31,7 +34,6 @@ namespace OrchardCore.ContentsTransfer;
 
 public class Startup : StartupBase
 {
-    private const string ContentFolderName = "__ContentTransfer";
     private readonly AdminOptions _adminOptions;
     private readonly IShellConfiguration _configuration;
 
@@ -50,7 +52,9 @@ public class Startup : StartupBase
 
         services.AddSingleton<IContentTransferFileStore>(serviceProvider =>
         {
-            var fileStore = new FileSystemStore(ContentFolderName);
+            var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
+            var path = Path.Combine("App_Data", "Sites", shellSettings.Name, "Temp");
+            var fileStore = new FileSystemStore(path);
 
             return new ContentTransferFileStore(fileStore);
         });
@@ -65,7 +69,7 @@ public class Startup : StartupBase
         services.AddScoped<IContentImportHandlerCoordinator, ContentImportHandlerCoordinator>();
         services.AddScoped<IContentTypeDefinitionDisplayDriver, ContentTypeTransferSettingsDisplayDriver>();
         services.AddScoped<IContentImportHandler, CommonContentImportHandler>();
-
+        services.AddScoped<INavigationProvider, AdminMenu>();
         services.Configure<ContentImportOptions>(_configuration.GetSection("OrchardCore_ContentsTransfer"));
     }
 
@@ -84,7 +88,6 @@ public class Startup : StartupBase
             pattern: _adminOptions.AdminUrlPrefix + "/import/contents/{contentTypeId}/download-template",
             defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.DownloadTemplate) }
         );
-
 
         routes.MapAreaControllerRoute(
             name: "ExportContentToFile",
