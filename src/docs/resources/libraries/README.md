@@ -43,6 +43,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) | General purpose redis client. | 2.6.122 | [MIT](https://github.com/StackExchange/StackExchange.Redis/blob/main/LICENSE) |
 | [YesSql](https://github.com/sebastienros/yessql) | .NET document database working on any RDBMS. | 3.4.0 | [MIT](https://github.com/sebastienros/yessql/blob/dev/LICENSE) |
 | [ZString](https://github.com/Cysharp/ZString) | Zero Allocation StringBuilder for .NET Core and Unity. | 2.5.1 | [MIT](https://github.com/Cysharp/ZString/blob/master/LICENSE) |
+| [EPPlus](https://github.com/Cysharp/ZString) | EPPlus - Excel spreadsheets for .NET | 7.0.0 | [MIT](https://www.epplussoftware.com/) |
 
 The below table lists the different libraries used as Resources:
 

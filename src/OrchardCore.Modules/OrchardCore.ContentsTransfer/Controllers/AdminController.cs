@@ -37,7 +37,7 @@ public class AdminController : Controller
         MergeNullValueHandling = MergeNullValueHandling.Ignore,
     };
 
-    private static readonly HashSet<string> _allowedExtensions = new ()
+    private static readonly HashSet<string> _allowedExtensions = new()
     {
         ".csv",
         ".xls",
@@ -142,7 +142,11 @@ public class AdminController : Controller
         return View(viewModel);
     }
 
-    [HttpPost, ValidateAntiForgeryToken, ActionName(nameof(Import))]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [ActionName(nameof(Import))]
+    [DisableRequestSizeLimit]
+    [RequestFormLimits(ValueLengthLimit = ContentImportOptions.AbsoluteMaxAllowedFileSizeInBytes, ValueCountLimit = ContentImportOptions.AbsoluteMaxAllowedFileSizeInBytes)]
     public async Task<IActionResult> ImportPOST(ContentImportViewModel model)
     {
         if (!ModelState.IsValid)

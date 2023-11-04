@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.FileProviders;
 
 namespace OrchardCore.ContentsTransfer.ViewModels;
 

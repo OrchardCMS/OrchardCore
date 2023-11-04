@@ -1,8 +1,6 @@
-@using CrestApps.Contents.Imports.Core
-@using CrestApps.Contents.Imports.Core.Models
 @using Microsoft.Extensions.Options
 @using OrchardCore
-@model CrestApps.Contents.Imports.ViewModels.ContentExporterViewModel
+@model ContentExporterViewModel
 
 @inject IOptions<ContentImportOptions> ContentImportOptions
 
@@ -35,7 +33,7 @@
 <script at="Foot">
     document.addEventListener('DOMContentLoaded', function () {
 
-        var downloadUrl = '@Url.Action("DownloadExport", "Admin", new { extension= "FILE_EXTENSION", contentTypeId = "CONTENT_TYPE_ID", area = "CrestApps.Contents.Imports" })';
+        var downloadUrl = '@Url.Action("DownloadExport", "Admin", new { extension = "FILE_EXTENSION", contentTypeId = "CONTENT_TYPE_ID", area = "CrestApps.Contents.Imports" })';
 
         var extensionMenu = document.getElementById('@Html.IdFor(x => x.Extension)');
         var contentTypeMenu = document.getElementById('@Html.IdFor(x => x.ContentTypeId)');
