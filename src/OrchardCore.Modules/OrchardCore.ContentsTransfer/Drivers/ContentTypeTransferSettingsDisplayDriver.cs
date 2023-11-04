@@ -7,12 +7,12 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentsTransfer.Drivers;
 
-public class ImportableContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
+public class ContentTypeTransferSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
 {
     protected readonly IStringLocalizer S;
 
-    public ImportableContentTypeSettingsDisplayDriver(
-        IStringLocalizer<ImportableContentTypeSettingsDisplayDriver> stringLocalizer
+    public ContentTypeTransferSettingsDisplayDriver(
+        IStringLocalizer<ContentTypeTransferSettingsDisplayDriver> stringLocalizer
         )
     {
         S = stringLocalizer;
@@ -20,18 +20,17 @@ public class ImportableContentTypeSettingsDisplayDriver : ContentTypeDefinitionD
 
     public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
     {
-        return Initialize<ImportableContentTypeSettings>("ImportableContentTypeSettings_Edit", model =>
+        return Initialize<ContentTypeTransferSettings>("ContentTypeTransferSettings_Edit", model =>
         {
-            var settings = contentTypeDefinition.GetSettings<ImportableContentTypeSettings>();
+            var settings = contentTypeDefinition.GetSettings<ContentTypeTransferSettings>();
             model.AllowBulkImport = settings.AllowBulkImport;
             model.AllowBulkExport = settings.AllowBulkExport;
-
         }).Location("Content:5");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypeDefinition contentTypeDefinition, UpdateTypeEditorContext context)
     {
-        var model = new ImportableContentTypeSettings();
+        var model = new ContentTypeTransferSettings();
 
         if (await context.Updater.TryUpdateModelAsync(model, Prefix))
         {

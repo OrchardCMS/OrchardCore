@@ -63,7 +63,7 @@ public class Startup : StartupBase
 
         services.AddScoped<IContentImportHandlerResolver, ContentImportHandlerResolver>();
         services.AddScoped<IContentImportHandlerCoordinator, ContentImportHandlerCoordinator>();
-        services.AddScoped<IContentTypeDefinitionDisplayDriver, ImportableContentTypeSettingsDisplayDriver>();
+        services.AddScoped<IContentTypeDefinitionDisplayDriver, ContentTypeTransferSettingsDisplayDriver>();
         services.AddScoped<IContentImportHandler, CommonContentImportHandler>();
 
         services.Configure<ContentImportOptions>(_configuration.GetSection("OrchardCore_ContentsTransfer"));

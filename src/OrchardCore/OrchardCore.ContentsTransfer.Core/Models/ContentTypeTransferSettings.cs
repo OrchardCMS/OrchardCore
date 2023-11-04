@@ -1,6 +1,6 @@
 namespace OrchardCore.ContentsTransfer.Models;
 
-public class ImportableContentTypeSettings
+public class ContentTypeTransferSettings
 {
     public bool AllowBulkImport { get; set; }
 
