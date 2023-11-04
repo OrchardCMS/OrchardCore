@@ -106,9 +106,9 @@
 }
 <div class="select-part-properties-wrapper" id="@widgetId">
 
-    <div class="@Orchard.GetWrapperCssClasses("show-for-input")">
-        <label asp-for="Editor" class="@Orchard.GetLabelCssClasses()">@T["Editor"]</label>
-        <div class="@Orchard.GetEndCssClasses()">
+    <div class="@Orchard.GetWrapperClasses("show-for-input")">
+        <label asp-for="Editor" class="@Orchard.GetLabelClasses()">@T["Editor"]</label>
+        <div class="@Orchard.GetEndClasses()">
             <select asp-for="Editor" class="form-select content-preview-select">
                 <option value="@SelectEditorOption.Dropdown">@T["Dropdown"]</option>
                 <option value="@SelectEditorOption.Checkbox">@T["Checkbox"]</option>
@@ -118,10 +118,10 @@
         </div>
     </div>
 
-    <div class="@Orchard.GetWrapperCssClasses("field-options-wrapper")" id="@(widgetId)-selectOptions" data-defaultValue="@Model.DefaultValue">
-        <label asp-for="Options" class="@Orchard.GetLabelCssClasses()">@T["Options"]</label>
+    <div class="@Orchard.GetWrapperClasses("field-options-wrapper")" id="@(widgetId)-selectOptions" data-defaultValue="@Model.DefaultValue">
+        <label asp-for="Options" class="@Orchard.GetLabelClasses()">@T["Options"]</label>
 
-        <div class="@Orchard.GetEndCssClasses()">
+        <div class="@Orchard.GetEndClasses()">
             <input type="hidden" class="field-options-wrapper-initial-default-value" value="@Model.DefaultValue" />
             <div class="d-none field-options-wrapper-initial-options">@Html.Raw(Model.Options)</div>
             <a href="#" v-on:click.prevent.stop="showModal = true" class="float-end" title="@T["Edit Data"]"><i class="fa-solid fa-edit" aria-hidden="true"></i></a>

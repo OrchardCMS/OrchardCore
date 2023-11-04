@@ -2,9 +2,9 @@
 @using OrchardCore
 @model OwnerEditorViewModel
 
-<div class="@Orchard.GetWrapperCssClasses()" asp-validation-class-for="OwnerName">
-    <label asp-for="OwnerName" class="@Orchard.GetLabelCssClasses()">@T["Owner"]</label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="OwnerName">
+    <label asp-for="OwnerName" class="@Orchard.GetLabelClasses()">@T["Owner"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <input asp-for="OwnerName" class="form-control" />
         <span asp-validation-for="OwnerName"></span>
         <span class="hint">@T["The owner's username of this content item."]</span>

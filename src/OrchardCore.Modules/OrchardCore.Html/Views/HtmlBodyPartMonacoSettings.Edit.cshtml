@@ -1,7 +1,9 @@
+@using OrchardCore.Mvc.Core.Utilities
 @model OrchardCore.Html.ViewModels.MonacoSettingsViewModel
 
 @{
-    var IStandaloneEditorConstructionOptionsSchemaPath = Url.Content("~/OrchardCore.Resources/Scripts/monaco/IStandaloneEditorConstructionOptions.json");
+    // Use Url.ToAbsoluteUrl() because Url.Content() leads to a js error: 'Not allowed to load local resource'.
+    var IStandaloneEditorConstructionOptionsSchemaPath = Url.ToAbsoluteUrl("~/OrchardCore.Resources/Scripts/monaco/IStandaloneEditorConstructionOptions.json");
 }
 
 <div id="@Html.IdFor(m => m)" class="type-part-editor type-part-editor-monaco">
@@ -12,9 +14,9 @@
         <textarea asp-for="Options" hidden>@Html.Raw(Model.Options)</textarea>
     </div>
 </div>
-<script asp-name="monaco" depends-on="admin" at="Foot"></script>
+<script asp-name="monaco" at="Foot"></script>
 <script at="Foot" depends-on="monaco">
-    $(document).ready(function () {
+    document.addEventListener('DOMContentLoaded', function() {
         require(['vs/editor/editor.main'], function () {
 
             var html = document.documentElement;

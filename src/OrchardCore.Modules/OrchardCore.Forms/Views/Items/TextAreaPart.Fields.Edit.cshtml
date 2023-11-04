@@ -2,17 +2,17 @@
 @using OrchardCore.Forms.ViewModels
 @model TextAreaPartEditViewModel
 
-<div class="@Orchard.GetWrapperCssClasses()">
-    <label asp-for="Placeholder" class="@Orchard.GetLabelCssClasses()">@T["Placeholder Text"]</label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Placeholder" class="@Orchard.GetLabelClasses()">@T["Placeholder Text"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <input asp-for="Placeholder" type="text" class="form-control content-preview-text" />
         <span class="hint">@T["The text to display when the textarea has no value."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperCssClasses()">
-    <label asp-for="DefaultValue" class="@Orchard.GetLabelCssClasses()">@T["Default Value"]</label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="DefaultValue" class="@Orchard.GetLabelClasses()">@T["Default Value"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <input asp-for="DefaultValue" type="text" class="form-control content-preview-text" />
         <span class="hint">@T["The default value for this textarea."]</span>
     </div>

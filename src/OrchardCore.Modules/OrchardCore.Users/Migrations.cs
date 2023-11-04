@@ -255,16 +255,15 @@ namespace OrchardCore.Users
                 var documentTableName = session.Store.Configuration.TableNameConvention.GetDocumentTable();
                 var table = $"{session.Store.Configuration.TablePrefix}{documentTableName}";
 
+                logger.LogDebug("Updating User Settings");
+
                 using var connection = dbConnectionAccessor.CreateConnection();
                 await connection.OpenAsync();
-
                 using var transaction = connection.BeginTransaction(session.Store.Configuration.IsolationLevel);
                 var dialect = session.Store.Configuration.SqlDialect;
 
                 try
                 {
-                    logger.LogDebug("Updating User Settings");
-
                     var quotedTableName = dialect.QuoteForTableName(table, session.Store.Configuration.Schema);
                     var quotedContentColumnName = dialect.QuoteForColumnName("Content");
                     var quotedTypeColumnName = dialect.QuoteForColumnName("Type");
@@ -273,11 +272,11 @@ namespace OrchardCore.Users
 
                     await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
 
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
                 catch (Exception e)
                 {
-                    transaction.Rollback();
+                    await transaction.RollbackAsync();
                     logger.LogError(e, "An error occurred while updating User Settings");
 
                     throw;

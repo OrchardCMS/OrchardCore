@@ -6,11 +6,10 @@
 @{
     ContentTypePartDefinition typePartDefinition = Model.ContentTypePartDefinition;
     var description = typePartDefinition.Description();
-    var name = typePartDefinition.PartDefinition.Name.HtmlClassify();
 }
 
-<div class="@Orchard.GetWrapperCssClasses("content-part-wrapper", $"content-part-wrapper-{name}")">
-    <div class="@Orchard.GetLabelCssClasses()">
+<div class="@Orchard.GetPartWrapperClasses(typePartDefinition)">
+    <div class="@Orchard.GetLabelClasses()">
         @typePartDefinition.DisplayName()
 
         @if (!string.IsNullOrEmpty(description))
@@ -19,7 +18,7 @@
         }
     </div>
 
-    <div class="@Orchard.GetEndCssClasses()">
+    <div class="@Orchard.GetEndClasses()">
         @foreach (var shape in Model)
         {
             @await DisplayAsync(shape)

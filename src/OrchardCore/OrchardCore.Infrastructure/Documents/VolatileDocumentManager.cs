@@ -99,7 +99,7 @@ namespace OrchardCore.Documents
 
                 document.Identifier ??= IdGenerator.GenerateId();
 
-                await SetInternalAsync(document);
+                await InvalidateInternalAsync(document);
 
                 if (delegates.AfterUpdateDelegateAsync != null)
                 {

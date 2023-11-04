@@ -141,6 +141,7 @@ The following parameters can be used:
 
 - **alt:** Adds alternative text to your image for the benefit of readers who can't see the image and also good for SEO.
 - **class:** Adds an html class attribute to the image tag for styling.
+- **append_version:** Adds a cache busting query string parameter if set to `true`, i.e. `append_version="true"`.
 - **format:** Change the file format from the original file. Can be jpeg, png, gif or bmp.
 - **quality:** Sets the encoding quality to use for jpeg images. The higher the quality, the larger the file size will be. The value can be from 0 to 100 and defaults to 75.
 - **width, height:** The width and height can be set to resize the image. The possible values are limited to prevent malicious clients from creating too many variations of the same image. The values can be 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048.

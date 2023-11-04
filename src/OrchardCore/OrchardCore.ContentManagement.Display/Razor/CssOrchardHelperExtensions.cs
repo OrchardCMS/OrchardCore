@@ -1,61 +1,54 @@
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Mvc.Utilities;
+using OrchardCore.DisplayManagement.Html;
 
 namespace OrchardCore;
 
 public static class CssOrchardHelperExtensions
 {
-    private const string FieldWrapperPrefix = "field-wrapper";
     private const string PartWrapperPrefix = "content-part-wrapper";
+    private const string FieldWrapperPrefix = "field-wrapper";
 
-    public static string GetPartWrapperCssClasses(this IOrchardHelper helper, ContentTypePartDefinition partDefinition, params string[] additionalClasses)
+    public static IHtmlContent GetPartWrapperClasses(this IOrchardHelper helper, ContentTypePartDefinition partDefinition, params string[] additionalClasses)
     {
-        var items = new List<string>()
-        {
-            PartWrapperPrefix,
-        };
+        var builder = new HtmlContentBuilder();
 
-        if (partDefinition != null)
+        builder.Append(helper.GetThemeOptions().WrapperClasses);
+
+        builder.AppendSeparatedValue(PartWrapperPrefix);
+
+        if (partDefinition?.PartDefinition != null)
         {
-            items.Add($"{PartWrapperPrefix}-{partDefinition.PartDefinition.Name.HtmlClassify()}");
+            builder.AppendSeparatedValue($"{PartWrapperPrefix}-{partDefinition.PartDefinition.Name.HtmlClassify()}");
 
             if (partDefinition.IsNamedPart())
             {
-                items.Add($"{PartWrapperPrefix}-{partDefinition.Name.HtmlClassify()}");
+                builder.AppendSeparatedValue($"{PartWrapperPrefix}-{partDefinition.Name.HtmlClassify()}");
             }
         }
 
-        if (additionalClasses?.Length > 0)
-        {
-            items.AddRange(additionalClasses);
-        }
-
-        return helper.GetWrapperCssClasses(items.ToArray());
+        return builder.AppendSeparatedValues(additionalClasses);
     }
 
-    public static string GetFieldWrapperCssClasses(this IOrchardHelper helper, ContentPartFieldDefinition fieldDefinition, params string[] additionalClasses)
+    public static IHtmlContent GetFieldWrapperClasses(this IOrchardHelper helper, ContentPartFieldDefinition fieldDefinition, params string[] additionalClasses)
     {
-        var items = new List<string>()
-        {
-            FieldWrapperPrefix
-        };
+        var builder = new HtmlContentBuilder();
 
-        if (fieldDefinition != null)
+        builder.Append(helper.GetThemeOptions().WrapperClasses);
+
+        builder.AppendSeparatedValue(FieldWrapperPrefix);
+
+        if (fieldDefinition?.PartDefinition != null)
         {
-            items.Add($"{FieldWrapperPrefix}-{fieldDefinition.PartDefinition.Name}-{fieldDefinition.Name}".HtmlClassify());
+            builder.AppendSeparatedValue($"{FieldWrapperPrefix}-{fieldDefinition.PartDefinition.Name}-{fieldDefinition.Name}".HtmlClassify());
 
             if (fieldDefinition.IsNamedPart())
             {
-                items.Add($"{FieldWrapperPrefix}-{fieldDefinition.ContentTypePartDefinition.Name}-{fieldDefinition.Name}".HtmlClassify());
+                builder.AppendSeparatedValue($"{FieldWrapperPrefix}-{fieldDefinition.ContentTypePartDefinition.Name}-{fieldDefinition.Name}".HtmlClassify());
             }
         }
 
-        if (additionalClasses?.Length > 0)
-        {
-            items.AddRange(additionalClasses);
-        }
-
-        return helper.GetWrapperCssClasses(items.ToArray());
+        return builder.AppendSeparatedValues(additionalClasses);
     }
 }
