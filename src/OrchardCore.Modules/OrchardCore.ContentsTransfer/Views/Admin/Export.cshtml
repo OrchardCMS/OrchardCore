@@ -7,23 +7,23 @@
 <div class="card text-bg-theme mb-3">
     <div class="card-header fw-bold">@T["Export contents"]</div>
     <div class="card-body">
-        <div class="@Orchard.GetWrapperCssClasses()">
-            <label asp-for="Extension" class="@Orchard.GetLabelCssClasses()">@T["File type"]</label>
-            <div class="@Orchard.GetEndCssClasses()">
+        <div class="@Orchard.GetWrapperClasses()">
+            <label asp-for="Extension" class="@Orchard.GetLabelClasses()">@T["File type"]</label>
+            <div class="@Orchard.GetEndClasses()">
                 <select asp-for="Extension" asp-items="Model.Extensions" class="form-select">
                 </select>
             </div>
         </div>
-        <div class="@Orchard.GetWrapperCssClasses()">
-            <label asp-for="ContentTypeId" class="@Orchard.GetLabelCssClasses()">@T["File type"]</label>
-            <div class="@Orchard.GetEndCssClasses()">
+        <div class="@Orchard.GetWrapperClasses()">
+            <label asp-for="ContentTypeId" class="@Orchard.GetLabelClasses()">@T["File type"]</label>
+            <div class="@Orchard.GetEndClasses()">
                 <select asp-for="ContentTypeId" asp-items="Model.ContentTypes" class="form-select">
                     <option value="">@T["Select type to export"]</option>
                 </select>
             </div>
         </div>
-        <div class="@Orchard.GetWrapperCssClasses()">
-            <div class="@Orchard.GetEndCssClasses(true)">
+        <div class="@Orchard.GetWrapperClasses()">
+            <div class="@Orchard.GetEndClasses(true)">
                 <a id="export_contents_button" class="btn btn-primary disabled" disabled>@T["Export Data"]</a>
             </div>
         </div>

@@ -112,7 +112,7 @@ public class AdminController : Controller
             return NotFound();
         }
 
-        var settings = contentTypeDefinition.GetSettings<ImportableContentTypeSettings>();
+        var settings = contentTypeDefinition.GetSettings<ContentTypeTransferSettings>();
 
         if (!settings.AllowBulkImport)
         {
@@ -168,7 +168,7 @@ public class AdminController : Controller
             return View(model);
         }
 
-        var settings = contentTypeDefinition.GetSettings<ImportableContentTypeSettings>();
+        var settings = contentTypeDefinition.GetSettings<ContentTypeTransferSettings>();
 
         if (!settings.AllowBulkImport)
         {
@@ -225,7 +225,7 @@ public class AdminController : Controller
             return NotFound();
         }
 
-        var settings = contentTypeDefinition.GetSettings<ImportableContentTypeSettings>();
+        var settings = contentTypeDefinition.GetSettings<ContentTypeTransferSettings>();
 
         if (!settings.AllowBulkImport)
         {
@@ -291,7 +291,7 @@ public class AdminController : Controller
 
         foreach (var contentTypeDefinition in _contentDefinitionManager.LoadTypeDefinitions())
         {
-            var settings = contentTypeDefinition.GetSettings<ImportableContentTypeSettings>();
+            var settings = contentTypeDefinition.GetSettings<ContentTypeTransferSettings>();
 
             if (!settings.AllowBulkExport
                 || !await _authorizationService.AuthorizeAsync(User, ImportPermissions.ExportContentFromFile, (object)contentTypeDefinition.Name))
@@ -324,7 +324,7 @@ public class AdminController : Controller
             return NotFound();
         }
 
-        var settings = contentTypeDefinition.GetSettings<ImportableContentTypeSettings>();
+        var settings = contentTypeDefinition.GetSettings<ContentTypeTransferSettings>();
 
         if (!settings.AllowBulkExport)
         {

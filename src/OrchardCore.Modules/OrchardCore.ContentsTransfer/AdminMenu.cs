@@ -45,7 +45,7 @@ public class AdminMenu : INavigationProvider
             {
                 foreach (var contentTypeDefinition in _contentDefinitionManager.LoadTypeDefinitions())
                 {
-                    var settings = contentTypeDefinition.GetSettings<ImportableContentTypeSettings>();
+                    var settings = contentTypeDefinition.GetSettings<ContentTypeTransferSettings>();
                     if (!settings.AllowBulkImport)
                     {
                         continue;
@@ -70,7 +70,7 @@ public class AdminMenu : INavigationProvider
         foreach (var contentTypeDefinition in _contentDefinitionManager.LoadTypeDefinitions())
         {
             // check settings
-            var settings = contentTypeDefinition.GetSettings<ImportableContentTypeSettings>();
+            var settings = contentTypeDefinition.GetSettings<ContentTypeTransferSettings>();
             if (settings.AllowBulkExport
                 && await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, ImportPermissions.ExportContentFromFile, (object)contentTypeDefinition.Name))
             {

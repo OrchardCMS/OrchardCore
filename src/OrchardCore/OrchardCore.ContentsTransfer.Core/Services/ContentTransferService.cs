@@ -37,12 +37,12 @@ public class ContentTransferService
 
         var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentTypeId);
 
-        if(contentTypeDefinition == null)
+        if (contentTypeDefinition == null)
         {
             return DataTableImportResult.Fail(S["Unable to find a content type definition for '{0}'.", contentTypeId]);
         }
 
-        var settings = contentTypeDefinition.GetSettings<ImportableContentTypeSettings>();
+        var settings = contentTypeDefinition.GetSettings<ContentTypeTransferSettings>();
 
         if (settings.AllowBulkImport)
         {
@@ -69,9 +69,9 @@ public class ContentTransferService
 
             // Important to map the data first since the map could identify existing content item.
             // MapAsync could change the content item id.
-            await _contentImportHandlerCoordinator.InvokeAsync(async mapper => await mapper.MapAsync(mapContext), _logger);
+            //await _contentImportHandlerCoordinator.InvokeAsync(async mapper => await mapper.MapAsync(mapContext), _logger);
 
-            contentItems.Add(mapContext.ContentItem);
+            //contentItems.Add(mapContext.ContentItem);
         }
 
         return result;
