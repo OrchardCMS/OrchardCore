@@ -58,7 +58,7 @@ namespace OrchardCore.Flows.Drivers
 
         public override IDisplayResult Display(BagPart bagPart, BuildPartDisplayContext context)
         {
-            var hasItems = bagPart.ContentItems.Any();
+            var hasItems = bagPart.ContentItems.Count > 0;
 
             return Initialize<BagPartViewModel>(hasItems ? "BagPart" : "BagPart_Empty", m =>
             {

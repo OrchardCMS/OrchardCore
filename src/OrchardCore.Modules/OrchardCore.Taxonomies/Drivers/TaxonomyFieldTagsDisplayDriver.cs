@@ -110,7 +110,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 foreach (var termContentItemId in field.TermContentItemIds)
                 {
                     var term = TaxonomyOrchardHelperExtensions.FindTerm(
-                        (taxonomy.Content as JsonObject)["TaxonomyPart"]["Terms"] as JsonArray,
+                        taxonomy.Content.JsonObject["TaxonomyPart"]["Terms"] as JsonArray,
                         termContentItemId);
 
                     terms.Add(term);

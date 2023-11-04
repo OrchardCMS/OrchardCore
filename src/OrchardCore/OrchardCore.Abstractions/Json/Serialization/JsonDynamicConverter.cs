@@ -65,8 +65,7 @@ public class JsonDynamicConverter : JsonConverter<object>
                 }
 
             case JsonTokenType.StartObject:
-                // IDictionary<string, object?> dictionary = new ExpandoObject();
-                dynamic dictionary = new DynamicDictionary();
+                var dictionary = new DynamicDictionary();
                 while (reader.Read())
                 {
                     switch (reader.TokenType)
@@ -79,7 +78,6 @@ public class JsonDynamicConverter : JsonConverter<object>
                             reader.Read();
                             if (key is not null)
                             {
-                                // dictionary.TryAdd(key, Read(ref reader, typeof(object), options));
                                 dictionary[key] = Read(ref reader, typeof(object), options);
                             }
 

@@ -46,7 +46,7 @@ namespace OrchardCore.Flows.Drivers
 
         public override IDisplayResult Display(FlowPart flowPart, BuildPartDisplayContext context)
         {
-            var hasItems = flowPart.Widgets.Any();
+            var hasItems = flowPart.Widgets.Count > 0;
 
             return Initialize<FlowPartViewModel>(hasItems ? "FlowPart" : "FlowPart_Empty", m =>
             {

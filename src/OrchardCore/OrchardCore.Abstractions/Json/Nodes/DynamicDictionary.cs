@@ -8,28 +8,22 @@ namespace System.Text.Json.Nodes;
 
 public class DynamicDictionary : DynamicObject, IDictionary<string, object?>
 {
-    internal readonly IDictionary<string, object?> _obj;
+    internal readonly IDictionary<string, object?> _dictionary;
 
-    public DynamicDictionary()
-    {
-        _obj = new Dictionary<string, object?>();
-    }
+    public DynamicDictionary() => _dictionary = new Dictionary<string, object?>();
 
-    public DynamicDictionary(IDictionary<string, object?> obj)
-    {
-        _obj = obj;
-    }
+    public DynamicDictionary(IDictionary<string, object?> dictionary) => _dictionary = dictionary;
 
     public object? this[string key]
     {
         get
         {
-            _obj.TryGetValue(key, out var result);
+            _dictionary.TryGetValue(key, out var result);
             return Wrap(result);
         }
         set
         {
-            _obj[key] = Unwrap(value);
+            _dictionary[key] = Unwrap(value);
         }
     }
 
@@ -47,10 +41,9 @@ public class DynamicDictionary : DynamicObject, IDictionary<string, object?>
 
     public static object? Wrap(object? value)
     {
-        var obj = value as IDictionary<string, object?>;
-        if (obj is not null)
+        if (value is IDictionary<string, object?> dictionary)
         {
-            return new DynamicDictionary(obj);
+            return new DynamicDictionary(dictionary);
         }
 
         return value;
@@ -58,87 +51,41 @@ public class DynamicDictionary : DynamicObject, IDictionary<string, object?>
 
     public static object? Unwrap(object? value)
     {
-        var dictWrapper = value as DynamicDictionary;
-        if (dictWrapper is not null)
+        if (value is DynamicDictionary dictionary)
         {
-            return dictWrapper._obj;
+            return dictionary._dictionary;
         }
 
         return value;
     }
 
-    public void Add(string key, object? value)
-    {
-        _obj.Add(key, value);
-    }
+    public void Add(string key, object? value) => Add(key, Unwrap(value));
 
-    public bool ContainsKey(string key)
-    {
-        return _obj.ContainsKey(key);
-    }
+    public bool ContainsKey(string key) => _dictionary.ContainsKey(key);
 
-    public ICollection<string> Keys
-    {
-        get { return _obj.Keys; }
-    }
+    public ICollection<string> Keys => _dictionary.Keys;
 
-    public bool Remove(string key)
-    {
-        return _obj.Remove(key);
-    }
+    public bool Remove(string key) => _dictionary.Remove(key);
 
-    public bool TryGetValue(string key, out object? value)
-    {
-        return _obj.TryGetValue(key, out value);
-    }
+    public bool TryGetValue(string key, out object? value) => _dictionary.TryGetValue(key, out value);
 
-    public ICollection<object?> Values
-    {
-        get { return _obj.Values; }
-    }
+    public ICollection<object?> Values => _dictionary.Values;
 
-    public void Add(KeyValuePair<string, object?> item)
-    {
-        _obj.Add(item);
-    }
+    public void Add(KeyValuePair<string, object?> item) => _dictionary.Add(item);
 
-    public void Clear()
-    {
-        _obj.Clear();
-    }
+    public void Clear() => _dictionary.Clear();
 
-    public bool Contains(KeyValuePair<string, object?> item)
-    {
-        return _obj.Contains(item);
-    }
+    public bool Contains(KeyValuePair<string, object?> item) => _dictionary.Contains(item);
 
-    public void CopyTo(KeyValuePair<string, object?>[] array, int arrayIndex)
-    {
-        _obj.CopyTo(array, arrayIndex);
-    }
+    public void CopyTo(KeyValuePair<string, object?>[] array, int arrayIndex) => _dictionary.CopyTo(array, arrayIndex);
 
-    public int Count
-    {
-        get { return _obj.Count; }
-    }
+    public int Count => _dictionary.Count;
 
-    public bool IsReadOnly
-    {
-        get { return _obj.IsReadOnly; }
-    }
+    public bool IsReadOnly => _dictionary.IsReadOnly;
 
-    public bool Remove(KeyValuePair<string, object?> item)
-    {
-        return _obj.Remove(item);
-    }
+    public bool Remove(KeyValuePair<string, object?> item) => _dictionary.Remove(item);
 
-    public IEnumerator<KeyValuePair<string, object?>> GetEnumerator()
-    {
-        return _obj.GetEnumerator();
-    }
+    public IEnumerator<KeyValuePair<string, object?>> GetEnumerator() => _dictionary.GetEnumerator();
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

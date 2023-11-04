@@ -52,9 +52,11 @@ namespace OrchardCore.Liquid
                 options.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
 
                 // When a property of a JObject value is accessed, try to look into its properties
-                //options.MemberAccessStrategy.Register<JsonObject, object>((source, name) => source[name]);
+                options.MemberAccessStrategy.Register<JsonObject, object>((source, name) => source[name]);
                 //options.MemberAccessStrategy.Register<DynamicDictionary, object>((source, name) => source[name]);
                 options.MemberAccessStrategy.Register<JsonDynamicObject, object>((source, name) => source[name]);
+                //options.MemberAccessStrategy.Register<List<JsonDynamicObject>>();
+                //options.MemberAccessStrategy.Register<JsonDynamicObject>();
 
                 // Convert JToken to FluidValue
                 options.ValueConverters.Add(x =>
@@ -80,12 +82,13 @@ namespace OrchardCore.Liquid
                     return x switch
                     {
                         // JsonObject o => new ObjectValue(o.ToObject<object>()),
-                        //JsonObject o => new ObjectValue(o),
-                        JsonDynamicObject o => new ObjectValue(o),
+                        JsonObject o => new ObjectValue(o),
+                        //JsonDynamicObject o => new ObjectValue(o),
                         //JsonValue v => new ObjectValue(v.ToObject<object>()),
+                        //List<object> a => new ArrayValue(a.Select(o => new ObjectValue(o))),
                         DateTime d => new ObjectValue(d),
                         _ => null
-                    };
+                    }; ;
                 });
 
                 options.Filters.AddFilter("json", JsonFilter.Json);
