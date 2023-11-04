@@ -3,9 +3,11 @@
   <PropertyGroup>
     <!-- NuGet properties-->
     <Title>Target for Modular OrchardCore CMS Application</Title>
-    <Description>$(OCCMSDescription)
+    <Description>
+      $(OCCMSDescription)
 
-    Converts the application into a modular OrchardCore CMS application with TheAdmin theme but without any front-end Themes.</Description>
+      Converts the application into a modular OrchardCore CMS application with TheAdmin theme but without any front-end Themes.
+    </Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS CMS</PackageTags>
   </PropertyGroup>
 
@@ -48,6 +50,7 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.ContentFields\OrchardCore.ContentFields.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.ContentLocalization\OrchardCore.ContentLocalization.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.ContentPreview\OrchardCore.ContentPreview.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.ContentsTransfer\OrchardCore.ContentsTransfer.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Contents\OrchardCore.Contents.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.ContentTypes\OrchardCore.ContentTypes.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Cors\OrchardCore.Cors.csproj" PrivateAssets="none" />

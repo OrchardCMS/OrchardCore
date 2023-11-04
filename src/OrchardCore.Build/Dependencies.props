@@ -67,5 +67,6 @@
     <PackageManagement Include="YesSql.Filters.Abstractions" Version="3.4.0" />
     <PackageManagement Include="YesSql.Filters.Query" Version="3.4.0" />
     <PackageManagement Include="ZString" Version="2.5.1" />
+    <PackageManagement Include="EPPlus" Version="7.0.0" />
   </ItemGroup>
 </Project>

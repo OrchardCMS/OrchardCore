@@ -1,7 +1,4 @@
-@using OrchardCore.ContentsTransfer.Models
-@using OrchardCore.ContentsTransfer
 @using Microsoft.Extensions.Options
-@using OrchardCore.ContentsTransfer.ViewModels
 
 @model ContentImporterViewModel
 
@@ -40,7 +37,7 @@
             <li>@T["The uploaded excel file must contains a single tab and all formats should be cleared."]</li>
             <li>@T["The very first row of the uploaded file must be the column names. The column names and their requirements are defined below."]</li>
             <li>@T["The order of the column in the file is not important as long as it exists. Any column not defined below will be ignored."]</li>
-            <li>@T["Click 'Download Template' link to download a sample template of a file."] <a asp-action="DownloadTemplate" asp-controller="Admin" asp-route-contentTypeId="@Model.ContentTypeDefinition.Name" asp-area="CrestApps.Contents.Imports" download="Bulk-@Model.ContentTypeDefinition.Name-Import-Template.xlsx">@T["Download Template"]</a></li>
+            <li>@T["Click 'Download Template' link to download a sample template of a file."] <a asp-action="DownloadTemplate" asp-controller="Admin" asp-route-contentTypeId="@Model.ContentTypeDefinition.Name" asp-area="CrestApps.Contents.Imports" download="Bulk-@(Model.ContentTypeDefinition.Name)-Import-Template.xlsx">@T["Download Template"]</a></li>
         </ul>
 
         <table class="table">

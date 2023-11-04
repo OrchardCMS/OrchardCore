@@ -62,6 +62,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
   - [SEO Meta](modules/Seo/README.md)
 - [Content Fields](modules/ContentFields/README.md)
 - [Content Preview](modules/ContentPreview/README.md)
+- [Content Transfer](modules/ContentTransfer/README.md)
 - [Taxonomies](modules/Taxonomies/README.md)
 - [Feeds](modules/Feeds/README.md)
 - [Forms](modules/Forms/README.md)

@@ -1,0 +1,17 @@
+@model ImportableContentTypeSettings
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="AllowBulkImport">
+        <label class="form-check-label" asp-for="AllowBulkImport">@T["Allow bulk import"]</label>
+        <span class="hint dashed">@T["Determines whether you wish to grant the user permission to perform bulk imports from a file."]</span>
+    </div>
+</div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="AllowBulkExport">
+        <label class="form-check-label" asp-for="AllowBulkExport">@T["Allow bulk export"]</label>
+        <span class="hint dashed">@T["Determines whether you wish to grant the user permission to perform bulk export to a file."]</span>
+    </div>
+</div>
