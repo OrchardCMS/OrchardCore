@@ -1,11 +1,16 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics;
 using System.Dynamic;
 using System.Reflection;
+using System.Linq;
 
 #nullable enable
 
 namespace System.Text.Json.Nodes;
 
+[DebuggerDisplay("JsonDynamicObject[{_jsonObject.Count}]")]
+[DebuggerTypeProxy(typeof(DebugView))]
 public class JsonDynamicObject : DynamicObject
 {
     private readonly JsonObject _jsonObject;
@@ -130,7 +135,83 @@ public class JsonDynamicObject : DynamicObject
         return true;
     }
 
+
+
     public static implicit operator JsonObject(JsonDynamicObject value) => value._jsonObject;
 
     public static implicit operator JsonDynamicObject(JsonObject value) => new(value);
+
+    public override IEnumerable<string> GetDynamicMemberNames() => _jsonObject.AsEnumerable().Select(node => node.Key);
+
+    [ExcludeFromCodeCoverage]
+    private sealed class DebugView
+    {
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private readonly JsonObject _node;
+
+        public DebugView(JsonDynamicObject node)
+        {
+            _node = node;
+        }
+
+        public string Json => _node.ToJsonString();
+        public string Path => _node.GetPath();
+
+        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+#pragma warning disable IDE0051 // Remove unused private members
+        private DebugViewProperty[] Items
+#pragma warning restore IDE0051 // Remove unused private members
+        {
+            get
+            {
+                var properties = new DebugViewProperty[_node.Count];
+
+                var i = 0;
+                foreach (var item in _node)
+                {
+                    properties[i].PropertyName = item.Key;
+                    properties[i].Value = item.Value;
+                    i++;
+                }
+
+                return properties;
+            }
+        }
+
+        [DebuggerDisplay("{Display,nq}")]
+        private struct DebugViewProperty
+        {
+            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+            public JsonNode? Value;
+
+            [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+            public string PropertyName;
+
+            [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+            public string Display
+            {
+                get
+                {
+                    if (Value is null)
+                    {
+                        return $"{PropertyName} = null";
+                    }
+
+                    if (Value is JsonValue)
+                    {
+                        return $"{PropertyName} = {Value.ToJsonString()}";
+                    }
+
+                    if (Value is JsonObject jsonObject)
+                    {
+                        return $"{PropertyName} = JsonObject[{jsonObject.Count}]";
+                    }
+
+                    var jsonArray = (JsonArray)Value;
+                    return $"{PropertyName} = JsonArray[{jsonArray.Count}]";
+                }
+            }
+
+        }
+    }
 }
