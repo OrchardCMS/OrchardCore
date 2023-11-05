@@ -5,7 +5,7 @@ namespace OrchardCore.ContentsTransfer;
 
 public static class ContentHandlerOptionsExtensions
 {
-    public static IServiceCollection AddContentPartImporter<TPart, THandler>(this IServiceCollection services)
+    public static IServiceCollection AddContentPartImportHandler<TPart, THandler>(this IServiceCollection services)
         where TPart : ContentPart
         where THandler : IContentPartImportHandler
     {
@@ -18,7 +18,7 @@ public static class ContentHandlerOptionsExtensions
         return services;
     }
 
-    public static IServiceCollection AddContentFieldImporter<TField, THandler>(this IServiceCollection services)
+    public static IServiceCollection AddContentFieldImportHandler<TField, THandler>(this IServiceCollection services)
         where TField : ContentField
         where THandler : IContentFieldImportHandler
     {

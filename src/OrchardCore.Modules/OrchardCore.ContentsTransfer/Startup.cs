@@ -66,7 +66,7 @@ public class Startup : StartupBase
         services.AddScoped<IDisplayDriver<ImportContent>, ImportContentDisplayDriver>();
 
         services.AddScoped<IContentImportHandlerResolver, ContentImportHandlerResolver>();
-        services.AddScoped<IContentImportHandlerCoordinator, ContentImportHandlerCoordinator>();
+        services.AddScoped<IContentImportManager, ContentImportManager>();
         services.AddScoped<IContentTypeDefinitionDisplayDriver, ContentTypeTransferSettingsDisplayDriver>();
         services.AddScoped<IContentImportHandler, CommonContentImportHandler>();
         services.AddScoped<INavigationProvider, AdminMenu>();
@@ -103,28 +103,28 @@ public class Startup : StartupBase
             defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.DownloadExport) }
         );
     }
+}
 
-    [RequireFeatures("OrchardCore.Title")]
-    public class TitleStartup : StartupBase
+[RequireFeatures("OrchardCore.Title")]
+public class TitleStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddContentPartImporter<TitlePart, TitlePartContentImportHandler>();
-        }
+        services.AddContentPartImportHandler<TitlePart, TitlePartContentImportHandler>();
     }
+}
 
-    [RequireFeatures("OrchardCore.ContentFields")]
-    public class ContentFieldsStartup : StartupBase
+[RequireFeatures("OrchardCore.ContentFields")]
+public class ContentFieldsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddContentFieldImporter<TextField, TextFieldImportHandler>();
-            services.AddContentFieldImporter<NumericField, NumberFieldImportHandler>();
-            services.AddContentFieldImporter<DateField, DateFieldImportHandler>();
-            services.AddContentFieldImporter<DateTimeField, DateTimeFieldImportHandler>();
-            services.AddContentFieldImporter<TimeField, TimeFieldImportHandler>();
-            services.AddContentFieldImporter<ContentPickerField, ContentPickerFieldImportHandler>();
-            services.AddContentFieldImporter<BooleanField, BooleanFieldImportHandler>();
-        }
+        services.AddContentFieldImportHandler<TextField, TextFieldImportHandler>();
+        services.AddContentFieldImportHandler<NumericField, NumberFieldImportHandler>();
+        services.AddContentFieldImportHandler<DateField, DateFieldImportHandler>();
+        services.AddContentFieldImportHandler<DateTimeField, DateTimeFieldImportHandler>();
+        services.AddContentFieldImportHandler<TimeField, TimeFieldImportHandler>();
+        services.AddContentFieldImportHandler<ContentPickerField, ContentPickerFieldImportHandler>();
+        services.AddContentFieldImportHandler<BooleanField, BooleanFieldImportHandler>();
     }
 }

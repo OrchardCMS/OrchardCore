@@ -4,33 +4,29 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Modules;
 
 namespace OrchardCore.ContentsTransfer.Services;
 
-public class ContentImportHandlerCoordinator : IContentImportHandlerCoordinator
+public class ContentImportManager : IContentImportManager
 {
     private readonly IContentImportHandlerResolver _contentImportHandlerResolver;
-    private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
     private readonly ITypeActivatorFactory<ContentField> _contentFieldFactory;
     private readonly IEnumerable<IContentImportHandler> _contentImportHandlers;
     private readonly IContentManager _contentManager;
     private readonly ILogger _logger;
 
-    public ContentImportHandlerCoordinator(
+    public ContentImportManager(
         IContentImportHandlerResolver contentImportHandlerResolver,
-        IContentDefinitionManager contentDefinitionManager,
         ITypeActivatorFactory<ContentPart> contentPartFactory,
         ITypeActivatorFactory<ContentField> contentFieldFactory,
         IEnumerable<IContentImportHandler> contentImportHandlers,
         IContentManager contentManager,
-        ILogger<ContentImportHandlerCoordinator> logger
+        ILogger<ContentImportManager> logger
         )
     {
         _contentImportHandlerResolver = contentImportHandlerResolver;
-        _contentDefinitionManager = contentDefinitionManager;
         _contentPartFactory = contentPartFactory;
         _contentFieldFactory = contentFieldFactory;
         _contentImportHandlers = contentImportHandlers;
@@ -38,14 +34,14 @@ public class ContentImportHandlerCoordinator : IContentImportHandlerCoordinator
         _logger = logger;
     }
 
-    public IReadOnlyCollection<ImportColumn> Columns(ImportContentContext context)
+    public async Task<IReadOnlyCollection<ImportColumn>> GetColumnsAsync(ImportContentContext context)
     {
         if (context == null)
         {
             throw new ArgumentNullException(nameof(context));
         }
 
-        var contentItem = _contentManager.NewAsync(context.ContentTypeDefinition.Name).GetAwaiter().GetResult();
+        var contentItem = await _contentManager.NewAsync(context.ContentTypeDefinition.Name);
 
         var columns = new List<ImportColumn>();
 
@@ -114,7 +110,7 @@ public class ContentImportHandlerCoordinator : IContentImportHandlerCoordinator
         return columns;
     }
 
-    public async Task MapAsync(ContentImportMapContext context)
+    public async Task ImportAsync(ContentImportMapContext context)
     {
         if (context == null)
         {
@@ -184,7 +180,7 @@ public class ContentImportHandlerCoordinator : IContentImportHandlerCoordinator
         }
     }
 
-    public async Task MapOutAsync(ContentExportMapContext context)
+    public async Task ExportAsync(ContentExportMapContext context)
     {
         if (context == null)
         {
@@ -252,7 +248,7 @@ public class ContentImportHandlerCoordinator : IContentImportHandlerCoordinator
         }
     }
 
-    public async Task ValidateColumnsAsync(ValidateImportContext context)
+    public async Task ValidateAsync(ValidateImportContext context)
     {
         if (context == null)
         {
