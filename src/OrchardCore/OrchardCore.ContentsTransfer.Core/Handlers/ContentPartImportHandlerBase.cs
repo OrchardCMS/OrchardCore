@@ -21,7 +21,7 @@ public abstract class ContentPartImportHandlerBase : IContentPartImportHandler
     {
         foreach (var term in terms)
         {
-            if (columnName.Equals(term, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(columnName, term, StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
@@ -39,7 +39,7 @@ public abstract class ContentPartImportHandlerBase : IContentPartImportHandler
 
         foreach (var term in importColumn.AdditionalNames ?? Array.Empty<string>())
         {
-            if (columnName.Equals(term, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(columnName, term, StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }

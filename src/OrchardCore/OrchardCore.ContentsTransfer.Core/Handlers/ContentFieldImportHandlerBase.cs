@@ -21,7 +21,7 @@ public abstract class ContentFieldImportHandlerBase : IContentFieldImportHandler
     {
         foreach (var term in terms)
         {
-            if (columnName.Equals(term, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(columnName, term, StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
@@ -32,14 +32,14 @@ public abstract class ContentFieldImportHandlerBase : IContentFieldImportHandler
 
     protected static bool Is(string columnName, ImportColumn importColumn)
     {
-        if (columnName.Equals(importColumn.Name, StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(columnName, importColumn.Name, StringComparison.OrdinalIgnoreCase))
         {
             return true;
         }
 
         foreach (var term in importColumn.AdditionalNames ?? Array.Empty<string>())
         {
-            if (columnName.Equals(term, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(columnName, term, StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }

@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OfficeOpenXml;
 using OrchardCore.Admin;
+using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentsTransfer.Drivers;
 using OrchardCore.ContentsTransfer.Handlers;
@@ -71,6 +72,7 @@ public class Startup : StartupBase
         services.AddScoped<IContentImportHandler, CommonContentImportHandler>();
         services.AddScoped<INavigationProvider, AdminMenu>();
         services.Configure<ContentImportOptions>(_configuration.GetSection("OrchardCore_ContentsTransfer"));
+        services.AddSingleton<IBackgroundTask, ImportFilesBackgroundTask>();
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

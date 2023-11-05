@@ -2,11 +2,10 @@ using System;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentsTransfer.Models;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.ContentsTransfer.Services;
 
@@ -15,18 +14,15 @@ public class ContentTransferService
     private readonly IContentManager _contentManager;
     private readonly IContentDefinitionManager _contentDefinitionManager;
     protected readonly IStringLocalizer S;
-    private readonly ILogger _logger;
 
     public ContentTransferService(
         IContentManager contentManager,
         IContentDefinitionManager contentDefinitionManager,
-        IStringLocalizer<ContentTransferService> stringLocalizer,
-        ILogger<ContentTransferService> logger)
+        IStringLocalizer<ContentTransferService> stringLocalizer)
     {
         _contentManager = contentManager;
         _contentDefinitionManager = contentDefinitionManager;
         S = stringLocalizer;
-        _logger = logger;
     }
     public async Task<DataTableImportResult> ImportAsync(string contentTypeId, DataTable dataTable)
     {
