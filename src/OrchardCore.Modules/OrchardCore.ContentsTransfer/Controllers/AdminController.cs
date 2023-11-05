@@ -39,7 +39,7 @@ public class AdminController : Controller
 
     private readonly IDisplayManager<ImportContent> _displayManager;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IEnumerable<IContentImportHandlerCoordinator> _contentImportHandlerCoordinator;
+    private readonly IEnumerable<IContentImportManager> _contentImportHandlerCoordinator;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IContentManager _contentManager;
@@ -58,7 +58,7 @@ public class AdminController : Controller
         IDisplayManager<ImportContent> displayManager,
         IAuthorizationService authorizationService,
         IStringLocalizer<AdminController> stringLocalizer,
-        IEnumerable<IContentImportHandlerCoordinator> contentImportHandlerCoordinator,
+        IEnumerable<IContentImportManager> contentImportHandlerCoordinator,
         IContentItemDisplayManager contentItemDisplayManager,
         IContentDefinitionManager contentDefinitionManager,
         IContentManager contentManager,
@@ -120,7 +120,7 @@ public class AdminController : Controller
             ContentTypeDefinition = contentTypeDefinition,
         };
 
-        var columns = _contentImportHandlerCoordinator.Invoke(handler => handler.Columns(context), _logger);
+        var columns = await _contentImportHandlerCoordinator.InvokeAsync(handler => handler.GetColumnsAsync(context), _logger);
 
         var importContent = new ImportContent()
         {
@@ -210,7 +210,7 @@ public class AdminController : Controller
             ContentTypeDefinition = contentTypeDefinition,
         };
 
-        var columns = _contentImportHandlerCoordinator.Invoke(handler => handler.Columns(context), _logger);
+        var columns = await _contentImportHandlerCoordinator.InvokeAsync(handler => handler.GetColumnsAsync(context), _logger);
 
         var viewModel = new ContentImporterViewModel()
         {
@@ -258,7 +258,7 @@ public class AdminController : Controller
             ContentTypeDefinition = contentTypeDefinition,
         };
 
-        var columns = _contentImportHandlerCoordinator.Invoke(handler => handler.Columns(context), _logger);
+        var columns = await _contentImportHandlerCoordinator.InvokeAsync(handler => handler.GetColumnsAsync(context), _logger);
 
         foreach (var column in columns.SelectMany(x => x))
         {
@@ -353,7 +353,7 @@ public class AdminController : Controller
             ContentTypeDefinition = contentTypeDefinition,
         };
 
-        var columns = _contentImportHandlerCoordinator.Invoke(handler => handler.Columns(context), _logger);
+        var columns = await _contentImportHandlerCoordinator.InvokeAsync(handler => handler.GetColumnsAsync(context), _logger);
 
         var items = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == contentTypeId && x.Published)
             .OrderBy(x => x.PublishedUtc)
@@ -380,7 +380,7 @@ public class AdminController : Controller
                 Row = dataTable.NewRow(),
             };
 
-            await _contentImportHandlerCoordinator.InvokeAsync(async handler => await handler.MapOutAsync(mapContext), _logger);
+            await _contentImportHandlerCoordinator.InvokeAsync(async handler => await handler.ExportAsync(mapContext), _logger);
 
             dataTable.Rows.Add(mapContext.Row);
         }
