@@ -36,9 +36,8 @@ public class DateTimeFieldImportHandler : StandardFieldImportHandler
     }
 
     protected override string Description(ImportContentFieldContext context)
-    {
-        return S["A datetime value for {0}", context.ContentPartFieldDefinition.DisplayName()];
-    }
+        => S["A datetime value for {0}", context.ContentPartFieldDefinition.DisplayName()];
+
 
     protected override bool IsRequired(ImportContentFieldContext context)
     {
@@ -47,5 +46,6 @@ public class DateTimeFieldImportHandler : StandardFieldImportHandler
         return settings?.Required ?? false;
     }
 
-    protected override string BindingPropertyName => nameof(DateTimeField.Value);
+    protected override string BindingPropertyName
+        => nameof(DateTimeField.Value);
 }

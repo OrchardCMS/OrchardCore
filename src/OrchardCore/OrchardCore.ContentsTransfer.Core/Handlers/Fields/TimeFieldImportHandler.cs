@@ -35,9 +35,8 @@ public class TimeFieldImportHandler : StandardFieldImportHandler
     }
 
     protected override string Description(ImportContentFieldContext context)
-    {
-        return S["A timespan value for {0}", context.ContentPartFieldDefinition.DisplayName()];
-    }
+        => S["A timespan value for {0}", context.ContentPartFieldDefinition.DisplayName()];
+
 
     protected override bool IsRequired(ImportContentFieldContext context)
     {
@@ -46,5 +45,6 @@ public class TimeFieldImportHandler : StandardFieldImportHandler
         return settings?.Required ?? false;
     }
 
-    protected override string BindingPropertyName => nameof(TimeField.Value);
+    protected override string BindingPropertyName
+        => nameof(TimeField.Value);
 }

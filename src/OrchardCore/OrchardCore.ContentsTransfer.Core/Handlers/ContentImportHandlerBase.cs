@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 
@@ -50,35 +49,35 @@ public abstract class ContentImportHandlerBase : IContentImportHandler
     }
 
     protected static string[] SplitCellValues(DataRow row, DataColumn column, string seperator = ",")
+        => row[column]?.ToString()?.Split(seperator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? Array.Empty<string>();
+
+    public abstract IReadOnlyCollection<ImportColumn> GetColumns(ImportContentContext context);
+
+    public abstract Task ImportAsync(ContentImportMapContext content);
+
+    public abstract Task ExportAsync(ContentExportMapContext content);
+
+    public virtual Task ValidateAsync(ValidateImportContext context)
     {
-        return (row[column]?.ToString()?.Split(seperator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)) ?? Array.Empty<string>();
-    }
-
-    public abstract IReadOnlyCollection<ImportColumn> Columns(ImportContentContext context);
-
-    public abstract Task MapAsync(ContentImportMapContext content);
-
-    public abstract Task MapOutAsync(ContentExportMapContext content);
-
-    public virtual Task ValidateColumnsAsync(ValidateImportContext context)
-    {
-        var foundColumns = new List<ImportColumn>();
-        var knownColumns = Columns(context);
+        var foundColumns = new Dictionary<string, ImportColumn>();
+        var knownColumns = GetColumns(context);
 
         foreach (DataColumn column in context.Columns)
         {
             foreach (var knownColumn in knownColumns)
             {
-                if (Is(column.ColumnName, knownColumn))
+                if (!Is(column.ColumnName, knownColumn))
                 {
-                    foundColumns.Add(knownColumn);
+                    continue;
                 }
+
+                foundColumns.Add(knownColumn.Name, knownColumn);
             }
         }
 
         foreach (var knownColumn in knownColumns)
         {
-            if (!knownColumn.IsRequired || foundColumns.Any(x => x.Name == knownColumn.Name))
+            if (!knownColumn.IsRequired || foundColumns.ContainsKey(knownColumn.Name))
             {
                 continue;
             }

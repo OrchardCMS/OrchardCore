@@ -19,14 +19,14 @@ public class PermissionsProvider : IPermissionProvider
     {
         var permissions = new List<Permission>()
         {
-            ImportPermissions.ImportContentFromFile,
-            ImportPermissions.ExportContentFromFile,
+            ContentTransferPermissions.ImportContentFromFile,
+            ContentTransferPermissions.ExportContentFromFile,
         };
 
         foreach (var contentTypeDefinition in _contentDefinitionManager.LoadTypeDefinitions())
         {
-            permissions.Add(ContentTypePermissionsHelper.CreateDynamicPermission(ImportPermissions.ImportContentFromFileOfType, contentTypeDefinition.Name));
-            permissions.Add(ContentTypePermissionsHelper.CreateDynamicPermission(ImportPermissions.ExportContentFromFileOfType, contentTypeDefinition.Name));
+            permissions.Add(ContentTypePermissionsHelper.CreateDynamicPermission(ContentTransferPermissions.ImportContentFromFileOfType, contentTypeDefinition.Name));
+            permissions.Add(ContentTypePermissionsHelper.CreateDynamicPermission(ContentTransferPermissions.ExportContentFromFileOfType, contentTypeDefinition.Name));
         }
 
         return Task.FromResult<IEnumerable<Permission>>(permissions);
@@ -41,8 +41,8 @@ public class PermissionsProvider : IPermissionProvider
                     Name = "Administrator",
                     Permissions = new[]
                     {
-                        ImportPermissions.ImportContentFromFile,
-                        ImportPermissions.ExportContentFromFile,
+                        ContentTransferPermissions.ImportContentFromFile,
+                        ContentTransferPermissions.ExportContentFromFile,
                     }
                 }
             };

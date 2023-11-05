@@ -5,11 +5,11 @@ namespace OrchardCore.ContentsTransfer;
 
 public interface IContentImportHandler
 {
-    IReadOnlyCollection<ImportColumn> Columns(ImportContentContext context);
+    IReadOnlyCollection<ImportColumn> GetColumns(ImportContentContext context);
 
-    Task MapAsync(ContentImportMapContext content);
+    Task ImportAsync(ContentImportMapContext content);
 
-    Task MapOutAsync(ContentExportMapContext content);
+    Task ExportAsync(ContentExportMapContext content);
 
-    Task ValidateColumnsAsync(ValidateImportContext context);
+    Task ValidateAsync(ValidateImportContext context);
 }

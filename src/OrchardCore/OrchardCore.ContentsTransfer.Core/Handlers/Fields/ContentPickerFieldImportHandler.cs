@@ -16,7 +16,7 @@ namespace OrchardCore.ContentsTransfer.Handlers.Fields;
 
 public class ContentPickerFieldImportHandler : StandardFieldImportHandler
 {
-    private Dictionary<string, IEnumerable<ContentItemIndex>> _data = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, IEnumerable<ContentItemIndex>> _data = new(StringComparer.OrdinalIgnoreCase);
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly ISession _session;
 
@@ -65,7 +65,7 @@ public class ContentPickerFieldImportHandler : StandardFieldImportHandler
     protected override async Task<object> GetValueAsync(ContentFieldExportMapContext context)
     {
         var settings = context.ContentPartFieldDefinition.GetSettings<ContentPickerFieldSettings>();
-        List<string> contentTypes = GetContentTypes(settings);
+        var contentTypes = GetContentTypes(settings);
 
         var field = context.ContentPart.Get<ContentPickerField>(context.ContentPartFieldDefinition.Name);
 
@@ -86,7 +86,7 @@ public class ContentPickerFieldImportHandler : StandardFieldImportHandler
 
     private List<string> GetContentTypes(ContentPickerFieldSettings settings)
     {
-        var contentTypes = new List<string>();
+        List<string> contentTypes;
 
         if (settings.DisplayAllContentTypes)
         {
@@ -128,8 +128,8 @@ public class ContentPickerFieldImportHandler : StandardFieldImportHandler
         return settings?.Required ?? false;
     }
 
-    protected override string BindingPropertyName => nameof(ContentPickerField.ContentItemIds);
-
+    protected override string BindingPropertyName
+        => nameof(ContentPickerField.ContentItemIds);
 
     private async Task<IEnumerable<ContentItemIndex>> GetItemsAsync(IEnumerable<string> contentTypes, string displayText)
     {

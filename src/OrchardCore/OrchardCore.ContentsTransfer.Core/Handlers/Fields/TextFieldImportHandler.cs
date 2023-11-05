@@ -18,7 +18,7 @@ public class TextFieldImportHandler : ContentFieldImportHandlerBase
     {
     }
 
-    public override IReadOnlyCollection<ImportColumn> Columns(ImportContentFieldContext context)
+    public override IReadOnlyCollection<ImportColumn> GetColumns(ImportContentFieldContext context)
     {
         return new[]
         {
@@ -32,7 +32,7 @@ public class TextFieldImportHandler : ContentFieldImportHandlerBase
         };
     }
 
-    public override async Task MapAsync(ContentFieldImportMapContext context)
+    public override async Task ImportAsync(ContentFieldImportMapContext context)
     {
         if (context.ContentItem == null)
         {
@@ -49,7 +49,7 @@ public class TextFieldImportHandler : ContentFieldImportHandlerBase
             throw new ArgumentNullException(nameof(context.Row));
         }
 
-        var firstColumn = Columns(context).FirstOrDefault();
+        var firstColumn = GetColumns(context).FirstOrDefault();
 
         foreach (DataColumn column in context.Columns)
         {
@@ -68,7 +68,7 @@ public class TextFieldImportHandler : ContentFieldImportHandlerBase
         }
     }
 
-    public override async Task MapOutAsync(ContentFieldExportMapContext context)
+    public override async Task ExportAsync(ContentFieldExportMapContext context)
     {
         if (context.ContentItem == null)
         {
@@ -81,7 +81,7 @@ public class TextFieldImportHandler : ContentFieldImportHandlerBase
             throw new ArgumentNullException(nameof(context.Row));
         }
 
-        var firstColumn = Columns(context).FirstOrDefault();
+        var firstColumn = GetColumns(context).FirstOrDefault();
 
         if (firstColumn != null)
         {

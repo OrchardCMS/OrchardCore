@@ -40,14 +40,11 @@ public class BooleanFieldImportHandler : StandardFieldImportHandler
     }
 
     protected override string Description(ImportContentFieldContext context)
-    {
-        return S["A numeric value for {0}", context.ContentPartFieldDefinition.DisplayName()];
-    }
+     => S["A numeric value for {0}", context.ContentPartFieldDefinition.DisplayName()];
+
 
     protected override bool IsRequired(ImportContentFieldContext context)
-    {
-        return false;
-    }
+        => false;
 
     protected override string BindingPropertyName => nameof(NumericField.Value);
 

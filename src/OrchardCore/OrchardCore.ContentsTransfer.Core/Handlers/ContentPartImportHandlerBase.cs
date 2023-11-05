@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 
@@ -54,16 +53,16 @@ public abstract class ContentPartImportHandlerBase : IContentPartImportHandler
         return (row[column]?.ToString()?.Split(seperator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)) ?? Array.Empty<string>();
     }
 
-    public abstract IReadOnlyCollection<ImportColumn> Columns(ImportContentPartContext context);
+    public abstract IReadOnlyCollection<ImportColumn> GetColumns(ImportContentPartContext context);
 
-    public abstract Task MapAsync(ContentPartImportMapContext content);
+    public abstract Task ImportAsync(ContentPartImportMapContext content);
 
-    public abstract Task MapOutAsync(ContentPartExportMapContext content);
+    public abstract Task ExportAsync(ContentPartExportMapContext content);
 
-    public virtual Task ValidateColumnsAsync(ValidatePartImportContext context)
+    public virtual Task ValidateAsync(ValidatePartImportContext context)
     {
-        var foundColumns = new List<ImportColumn>();
-        var knownColumns = Columns(context);
+        var foundColumns = new Dictionary<string, ImportColumn>();
+        var knownColumns = GetColumns(context);
 
         foreach (DataColumn column in context.Columns)
         {
@@ -71,14 +70,14 @@ public abstract class ContentPartImportHandlerBase : IContentPartImportHandler
             {
                 if (Is(column.ColumnName, knownColumn))
                 {
-                    foundColumns.Add(knownColumn);
+                    foundColumns.Add(knownColumn.Name, knownColumn);
                 }
             }
         }
 
         foreach (var knownColumn in knownColumns)
         {
-            if (!knownColumn.IsRequired || foundColumns.Any(x => x.Name == knownColumn.Name))
+            if (!knownColumn.IsRequired || foundColumns.ContainsKey(knownColumn.Name))
             {
                 continue;
             }
