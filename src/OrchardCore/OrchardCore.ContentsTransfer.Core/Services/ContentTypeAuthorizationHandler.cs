@@ -40,13 +40,13 @@ public class ContentTypeAuthorizationHandler : AuthorizationHandler<PermissionRe
             ? contentItem.ContentType
             : context.Resource.ToString();
 
-        if (requirement.Permission.Name == ImportPermissions.ImportContentFromFile.Name)
+        if (requirement.Permission.Name == ContentTransferPermissions.ImportContentFromFile.Name)
         {
-            permission = ContentTypePermissionsHelper.CreateDynamicPermission(ImportPermissions.ImportContentFromFileOfType, contentType);
+            permission = ContentTypePermissionsHelper.CreateDynamicPermission(ContentTransferPermissions.ImportContentFromFileOfType, contentType);
         }
-        else if (requirement.Permission.Name == ImportPermissions.ExportContentFromFile.Name)
+        else if (requirement.Permission.Name == ContentTransferPermissions.ExportContentFromFile.Name)
         {
-            permission = ContentTypePermissionsHelper.CreateDynamicPermission(ImportPermissions.ExportContentFromFileOfType, contentType);
+            permission = ContentTypePermissionsHelper.CreateDynamicPermission(ContentTransferPermissions.ExportContentFromFileOfType, contentType);
         }
 
         if (permission == null)

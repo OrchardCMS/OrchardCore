@@ -19,7 +19,7 @@ public class CommonContentImportHandler : ContentImportHandlerBase
         _contentItemIdGenerator = contentItemIdGenerator;
     }
 
-    public override IReadOnlyCollection<ImportColumn> Columns(ImportContentContext context)
+    public override IReadOnlyCollection<ImportColumn> GetColumns(ImportContentContext context)
     {
         return new[]
         {
@@ -43,8 +43,13 @@ public class CommonContentImportHandler : ContentImportHandlerBase
         };
     }
 
-    public override Task MapAsync(ContentImportMapContext context)
+    public override Task ImportAsync(ContentImportMapContext context)
     {
+        if (context == null)
+        {
+            throw new ArgumentNullException(nameof(context));
+        }
+
         if (context.ContentItem == null)
         {
             throw new ArgumentNullException(nameof(context.ContentItem));
@@ -86,7 +91,7 @@ public class CommonContentImportHandler : ContentImportHandlerBase
         return Task.CompletedTask;
     }
 
-    public override Task MapOutAsync(ContentExportMapContext context)
+    public override Task ExportAsync(ContentExportMapContext context)
     {
         if (context.ContentItem == null)
         {
@@ -98,6 +103,7 @@ public class CommonContentImportHandler : ContentImportHandlerBase
             throw new ArgumentNullException(nameof(context.Row));
         }
 
+        // TODO, add settings to allow exporting the following columns.
         context.Row[nameof(ContentItem.ContentItemId)] = context.ContentItem.ContentItemId;
         context.Row[nameof(ContentItem.CreatedUtc)] = context.ContentItem.CreatedUtc;
         context.Row[nameof(ContentItem.ModifiedUtc)] = context.ContentItem.ModifiedUtc;

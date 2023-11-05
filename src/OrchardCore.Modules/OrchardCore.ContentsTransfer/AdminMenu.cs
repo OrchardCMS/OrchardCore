@@ -58,7 +58,7 @@ public class AdminMenu : INavigationProvider
                                 area = ContentTransferConstants.Feature.ModuleId,
                                 contentTypeId = contentTypeDefinition.Name,
                             })
-                            .Permission(ImportPermissions.ImportContentFromFile)
+                            .Permission(ContentTransferPermissions.ImportContentFromFile)
                             .Resource(contentTypeDefinition.Name)
                         );
                 }
@@ -72,7 +72,7 @@ public class AdminMenu : INavigationProvider
             // check settings
             var settings = contentTypeDefinition.GetSettings<ContentTypeTransferSettings>();
             if (settings.AllowBulkExport
-                && await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, ImportPermissions.ExportContentFromFile, (object)contentTypeDefinition.Name))
+                && await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, ContentTransferPermissions.ExportContentFromFile, (object)contentTypeDefinition.Name))
             {
                 showExport = true;
                 break;

@@ -45,7 +45,7 @@ public class ContentImportManager : IContentImportManager
 
         var columns = new List<ImportColumn>();
 
-        columns.AddRange(_contentImportHandlers.Invoke(handler => handler.Columns(context), _logger).SelectMany(x => x));
+        columns.AddRange(_contentImportHandlers.Invoke(handler => handler.GetColumns(context), _logger).SelectMany(x => x));
 
         foreach (var typePartDefinition in context.ContentTypeDefinition.Parts)
         {
@@ -68,7 +68,7 @@ public class ContentImportManager : IContentImportManager
                 ContentTypePartDefinition = typePartDefinition,
             };
 
-            var partColumns = partHandlers.Invoke((handler) => handler.Columns(partContext), _logger);
+            var partColumns = partHandlers.Invoke((handler) => handler.GetColumns(partContext), _logger);
 
             columns.AddRange(partColumns.SelectMany(x => x));
 
@@ -101,7 +101,7 @@ public class ContentImportManager : IContentImportManager
 
                 var fieldHandlers = _contentImportHandlerResolver.GetFieldHandlers(fieldName);
 
-                var fieldColumns = fieldHandlers.Invoke((handler) => handler.Columns(fieldContext), _logger);
+                var fieldColumns = fieldHandlers.Invoke((handler) => handler.GetColumns(fieldContext), _logger);
 
                 columns.AddRange(fieldColumns.SelectMany(x => x));
             }
@@ -117,7 +117,7 @@ public class ContentImportManager : IContentImportManager
             throw new ArgumentNullException(nameof(context));
         }
 
-        await _contentImportHandlers.InvokeAsync(handler => handler.MapAsync(context), _logger);
+        await _contentImportHandlers.InvokeAsync(handler => handler.ImportAsync(context), _logger);
 
         foreach (var typePartDefinition in context.ContentTypeDefinition.Parts)
         {
@@ -141,7 +141,7 @@ public class ContentImportManager : IContentImportManager
                 Row = context.Row,
             };
 
-            await partHandlers.InvokeAsync((handler) => handler.MapAsync(partContext), _logger);
+            await partHandlers.InvokeAsync((handler) => handler.ImportAsync(partContext), _logger);
 
             if (typePartDefinition.PartDefinition?.Fields == null)
             {
@@ -175,7 +175,7 @@ public class ContentImportManager : IContentImportManager
 
                 var fieldHandlers = _contentImportHandlerResolver.GetFieldHandlers(fieldName);
 
-                await fieldHandlers.InvokeAsync((handler) => handler.MapAsync(fieldContext), _logger);
+                await fieldHandlers.InvokeAsync((handler) => handler.ImportAsync(fieldContext), _logger);
             }
         }
     }
@@ -187,7 +187,7 @@ public class ContentImportManager : IContentImportManager
             throw new ArgumentNullException(nameof(context));
         }
 
-        await _contentImportHandlers.InvokeAsync(handler => handler.MapOutAsync(context), _logger);
+        await _contentImportHandlers.InvokeAsync(handler => handler.ExportAsync(context), _logger);
 
         foreach (var typePartDefinition in context.ContentTypeDefinition.Parts)
         {
@@ -210,7 +210,7 @@ public class ContentImportManager : IContentImportManager
                 Row = context.Row,
             };
 
-            await partHandlers.InvokeAsync((handler) => handler.MapOutAsync(partContext), _logger);
+            await partHandlers.InvokeAsync((handler) => handler.ExportAsync(partContext), _logger);
 
             if (typePartDefinition.PartDefinition?.Fields == null)
             {
@@ -243,7 +243,7 @@ public class ContentImportManager : IContentImportManager
 
                 var fieldHandlers = _contentImportHandlerResolver.GetFieldHandlers(fieldName);
 
-                await fieldHandlers.InvokeAsync((handler) => handler.MapOutAsync(fieldContext), _logger);
+                await fieldHandlers.InvokeAsync((handler) => handler.ExportAsync(fieldContext), _logger);
             }
         }
     }
@@ -277,7 +277,7 @@ public class ContentImportManager : IContentImportManager
                 Columns = context.Columns,
             };
 
-            await partHandlers.InvokeAsync((handler) => handler.ValidateColumnsAsync(partContext), _logger);
+            await partHandlers.InvokeAsync((handler) => handler.ValidateAsync(partContext), _logger);
 
             foreach (var error in partContext.ContentValidateResult.Errors)
             {
@@ -315,7 +315,7 @@ public class ContentImportManager : IContentImportManager
 
                 var fieldHandlers = _contentImportHandlerResolver.GetFieldHandlers(fieldName);
 
-                await fieldHandlers.InvokeAsync((handler) => handler.ValidateColumnsAsync(fieldContext), _logger);
+                await fieldHandlers.InvokeAsync((handler) => handler.ValidateAsync(fieldContext), _logger);
 
                 foreach (var error in fieldContext.ContentValidateResult.Errors)
                 {

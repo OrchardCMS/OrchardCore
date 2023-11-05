@@ -18,7 +18,7 @@ public class TitlePartContentImportHandler : ContentPartImportHandlerBase
     {
     }
 
-    public override IReadOnlyCollection<ImportColumn> Columns(ImportContentPartContext context)
+    public override IReadOnlyCollection<ImportColumn> GetColumns(ImportContentPartContext context)
     {
         if (_column == null)
         {
@@ -43,8 +43,13 @@ public class TitlePartContentImportHandler : ContentPartImportHandlerBase
         return new[] { _column };
     }
 
-    public override Task MapAsync(ContentPartImportMapContext context)
+    public override Task ImportAsync(ContentPartImportMapContext context)
     {
+        if (context == null)
+        {
+            throw new ArgumentNullException(nameof(context.ContentItem));
+        }
+
         if (context.ContentItem == null)
         {
             throw new ArgumentNullException(nameof(context.ContentItem));
@@ -86,7 +91,7 @@ public class TitlePartContentImportHandler : ContentPartImportHandlerBase
         return Task.CompletedTask;
     }
 
-    public override Task MapOutAsync(ContentPartExportMapContext context)
+    public override Task ExportAsync(ContentPartExportMapContext context)
     {
         if (context.ContentItem == null)
         {

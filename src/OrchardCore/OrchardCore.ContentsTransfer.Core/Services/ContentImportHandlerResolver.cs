@@ -9,7 +9,7 @@ namespace OrchardCore.ContentsTransfer.Services;
 public class ContentImportHandlerResolver : IContentImportHandlerResolver
 {
     private readonly IServiceProvider _serviceProvider;
-    private ContentHandlerOptions _contentHandlerOptions;
+    private readonly ContentHandlerOptions _contentHandlerOptions;
 
     public ContentImportHandlerResolver(
         IOptions<ContentHandlerOptions> contentHandlerOptions,

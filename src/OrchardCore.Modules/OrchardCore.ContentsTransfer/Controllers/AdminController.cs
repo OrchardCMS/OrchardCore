@@ -109,7 +109,7 @@ public class AdminController : Controller
             return BadRequest();
         }
 
-        if (!await _authorizationService.AuthorizeAsync(User, ImportPermissions.ImportContentFromFile, (object)contentTypeId))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTransferPermissions.ImportContentFromFile, (object)contentTypeId))
         {
             return Unauthorized();
         }
@@ -150,7 +150,7 @@ public class AdminController : Controller
             return NotFound();
         }
 
-        if (!await _authorizationService.AuthorizeAsync(User, ImportPermissions.ImportContentFromFile, (object)contentTypeId))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTransferPermissions.ImportContentFromFile, (object)contentTypeId))
         {
             return Unauthorized();
         }
@@ -243,7 +243,7 @@ public class AdminController : Controller
             return BadRequest();
         }
 
-        if (!await _authorizationService.AuthorizeAsync(User, ImportPermissions.ImportContentFromFile, (object)contentTypeId))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTransferPermissions.ImportContentFromFile, (object)contentTypeId))
         {
             return Unauthorized();
         }
@@ -305,7 +305,7 @@ public class AdminController : Controller
             var settings = contentTypeDefinition.GetSettings<ContentTypeTransferSettings>();
 
             if (!settings.AllowBulkExport
-                || !await _authorizationService.AuthorizeAsync(User, ImportPermissions.ExportContentFromFile, (object)contentTypeDefinition.Name))
+                || !await _authorizationService.AuthorizeAsync(User, ContentTransferPermissions.ExportContentFromFile, (object)contentTypeDefinition.Name))
             {
                 continue;
             }
@@ -342,7 +342,7 @@ public class AdminController : Controller
             return BadRequest();
         }
 
-        if (!await _authorizationService.AuthorizeAsync(User, ImportPermissions.ExportContentFromFile, (object)contentTypeId))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTransferPermissions.ExportContentFromFile, (object)contentTypeId))
         {
             return Unauthorized();
         }

@@ -36,9 +36,8 @@ public class DateFieldImportHandler : StandardFieldImportHandler
     }
 
     protected override string Description(ImportContentFieldContext context)
-    {
-        return S["A date value for {0}", context.ContentPartFieldDefinition.DisplayName()];
-    }
+        => S["A date value for {0}", context.ContentPartFieldDefinition.DisplayName()];
+
 
     protected override bool IsRequired(ImportContentFieldContext context)
     {

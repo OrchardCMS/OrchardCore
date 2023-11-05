@@ -14,7 +14,7 @@ public abstract class StandardFieldImportHandler : ContentFieldImportHandlerBase
     {
     }
 
-    public override IReadOnlyCollection<ImportColumn> Columns(ImportContentFieldContext context)
+    public override IReadOnlyCollection<ImportColumn> GetColumns(ImportContentFieldContext context)
     {
         return new[]
         {
@@ -28,7 +28,7 @@ public abstract class StandardFieldImportHandler : ContentFieldImportHandlerBase
         };
     }
 
-    public override async Task MapAsync(ContentFieldImportMapContext context)
+    public override async Task ImportAsync(ContentFieldImportMapContext context)
     {
         if (context.ContentItem == null)
         {
@@ -45,7 +45,7 @@ public abstract class StandardFieldImportHandler : ContentFieldImportHandlerBase
             throw new ArgumentNullException(nameof(context.Row));
         }
 
-        var knownColumns = Columns(context);
+        var knownColumns = GetColumns(context);
 
         foreach (DataColumn column in context.Columns)
         {
@@ -62,7 +62,7 @@ public abstract class StandardFieldImportHandler : ContentFieldImportHandlerBase
         }
     }
 
-    public override async Task MapOutAsync(ContentFieldExportMapContext context)
+    public override async Task ExportAsync(ContentFieldExportMapContext context)
     {
         if (context.ContentItem == null)
         {
@@ -74,7 +74,7 @@ public abstract class StandardFieldImportHandler : ContentFieldImportHandlerBase
             throw new ArgumentNullException(nameof(context.Row));
         }
 
-        var firstColumn = Columns(context).FirstOrDefault();
+        var firstColumn = GetColumns(context).FirstOrDefault();
 
         if (firstColumn != null)
         {
@@ -86,11 +86,14 @@ public abstract class StandardFieldImportHandler : ContentFieldImportHandlerBase
 
     protected abstract Task SetValueAsync(ContentFieldImportMapContext context, string value);
 
-    protected virtual string Description(ImportContentFieldContext context) => string.Empty;
+    protected virtual string Description(ImportContentFieldContext context)
+        => string.Empty;
 
-    protected virtual bool IsRequired(ImportContentFieldContext context) => false;
+    protected virtual bool IsRequired(ImportContentFieldContext context)
+        => false;
 
-    protected virtual string[] GetValidValues(ImportContentFieldContext context) => Array.Empty<string>();
+    protected virtual string[] GetValidValues(ImportContentFieldContext context)
+        => Array.Empty<string>();
 
     protected abstract string BindingPropertyName { get; }
 }
