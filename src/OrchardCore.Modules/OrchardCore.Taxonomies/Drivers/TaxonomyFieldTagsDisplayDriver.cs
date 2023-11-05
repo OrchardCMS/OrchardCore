@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
@@ -68,7 +67,7 @@ namespace OrchardCore.Taxonomies.Drivers
                         IsLeaf = te.IsLeaf
                     });
 
-                    model.TagTermEntries = Encoding.UTF8.GetString(JsonSerializer.SerializeToUtf8Bytes(tagTermEntries, _options));
+                    model.TagTermEntries = JNode.FromObject(tagTermEntries, _options).ToJsonString();
                 }
 
                 model.Field = field;
@@ -110,7 +109,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 foreach (var termContentItemId in field.TermContentItemIds)
                 {
                     var term = TaxonomyOrchardHelperExtensions.FindTerm(
-                        taxonomy.Content.JsonObject["TaxonomyPart"]["Terms"] as JsonArray,
+                        taxonomy.Content["TaxonomyPart"]["Terms"] as JsonArray,
                         termContentItemId);
 
                     terms.Add(term);

@@ -13,7 +13,7 @@ namespace OrchardCore.ContentFields.Fields
         /// </remarks>
         public static string[] GetUserNames(this UserPickerField userPickerField)
         {
-            var userNames = userPickerField.Content.JsonObject["UserNames"] as JsonArray;
+            var userNames = userPickerField.Content["UserNames"] as JsonArray;
 
             return userNames is not null ? userNames.ToObject<string[]>() : Array.Empty<string>();
         }
@@ -26,7 +26,7 @@ namespace OrchardCore.ContentFields.Fields
         /// </remarks>
         public static void SetUserNames(this UserPickerField userPickerField, string[] userNames)
         {
-            userPickerField.Content.JsonObject["UserNames"] = JArray.FromObject(userNames);
+            userPickerField.Content["UserNames"] = JArray.FromObject(userNames);
         }
     }
 }

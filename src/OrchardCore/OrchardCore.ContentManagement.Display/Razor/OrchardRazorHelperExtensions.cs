@@ -83,7 +83,7 @@ public static class OrchardRazorHelperExtensions
             [nameof(ContentItem.CreatedUtc)] = contentItem.CreatedUtc,
             [nameof(ContentItem.Owner)] = contentItem.Owner,
             [nameof(ContentItem.Author)] = contentItem.Author,
-            [nameof(ContentItem.Content)] = contentItem.Content.JsonObject,
+            [nameof(ContentItem.Content)] = contentItem.Content,
         };
 
         return o;

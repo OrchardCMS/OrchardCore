@@ -59,7 +59,7 @@ namespace OrchardCore.Taxonomies.Liquid
             foreach (var termContentItemId in termContentItemIds)
             {
                 var term = TaxonomyOrchardHelperExtensions.FindTerm(
-                    taxonomy.Content.JsonObject["TaxonomyPart"]["Terms"] as JsonArray,
+                    taxonomy.Content["TaxonomyPart"]["Terms"] as JsonArray,
                     termContentItemId);
 
                 if (term is not null)

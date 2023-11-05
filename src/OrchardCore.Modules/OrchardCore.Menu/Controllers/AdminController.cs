@@ -115,7 +115,7 @@ namespace OrchardCore.Menu.Controllers
             else
             {
                 // Look for the target menu item in the hierarchy.
-                var parentMenuItem = FindMenuItem(menu.Content.JsonObject, menuItemId) as JsonObject;
+                var parentMenuItem = FindMenuItem(menu.Content, menuItemId) as JsonObject;
 
                 // Couldn't find targeted menu item.
                 if (parentMenuItem == null)
@@ -156,7 +156,7 @@ namespace OrchardCore.Menu.Controllers
             }
 
             // Look for the target menu item in the hierarchy.
-            var menuItem = FindMenuItem(menu.Content.JsonObject, menuItemId);
+            var menuItem = FindMenuItem(menu.Content, menuItemId);
 
             // Couldn't find targeted menu item.
             if (menuItem == null)
@@ -202,7 +202,7 @@ namespace OrchardCore.Menu.Controllers
             }
 
             // Look for the target menu item in the hierarchy.
-            var menuItem = FindMenuItem(menu.Content.JsonObject, menuItemId);
+            var menuItem = FindMenuItem(menu.Content, menuItemId);
 
             // Couldn't find targeted menu item
             if (menuItem == null)
@@ -268,7 +268,7 @@ namespace OrchardCore.Menu.Controllers
             }
 
             // Look for the target menu item in the hierarchy.
-            var menuItem = FindMenuItem(menu.Content.JsonObject, menuItemId);
+            var menuItem = FindMenuItem(menu.Content, menuItemId);
 
             // Couldn't find targeted menu item.
             if (menuItem == null)
@@ -276,7 +276,7 @@ namespace OrchardCore.Menu.Controllers
                 return NotFound();
             }
 
-            menu.Content.JsonObject.Remove(menuItemId);
+            menu.Content.Remove(menuItemId);
 
             await _contentManager.SaveDraftAsync(menu);
 

@@ -239,7 +239,7 @@ namespace OrchardCore.ContentManagement
             // It represents a contained content item
             if (!string.IsNullOrEmpty(jsonPath))
             {
-                var root = contentItem.Content.JsonObject as JsonObject;
+                var root = contentItem.Content as JsonObject;
                 contentItem = root.SelectNode(jsonPath)?.ToObject<ContentItem>();
 
                 return contentItem;

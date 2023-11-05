@@ -10,7 +10,7 @@ namespace OrchardCore.Media.Fields
         /// </summary>
         public static Anchor[] GetAnchors(this MediaField mediaField)
         {
-            var anchors = mediaField.Content.JsonObject["Anchors"] as JsonArray;
+            var anchors = mediaField.Content["Anchors"] as JsonArray;
 
             return anchors != null ? anchors.ToObject<Anchor[]>() : Array.Empty<Anchor>();
         }
@@ -20,7 +20,7 @@ namespace OrchardCore.Media.Fields
         /// </summary>
         public static void SetAnchors(this MediaField mediaField, Anchor[] anchors)
         {
-            mediaField.Content.JsonObject["Anchors"] = JArray.FromObject(anchors);
+            mediaField.Content["Anchors"] = JArray.FromObject(anchors);
         }
 
     }

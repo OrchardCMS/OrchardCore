@@ -74,12 +74,6 @@ public static class JObject
     /// <summary>
     /// Merge the specified content into this <see cref="JsonObject"/> using <see cref="JsonMergeSettings"/>.
     /// </summary>
-    public static JsonObject? Merge(this JsonObject? jsonObject, JsonDynamicObject? content, JsonMergeSettings? settings = null)
-        => jsonObject.Merge(content?.JsonObject, settings);
-
-    /// <summary>
-    /// Merge the specified content into this <see cref="JsonObject"/> using <see cref="JsonMergeSettings"/>.
-    /// </summary>
     public static JsonObject? Merge(this JsonObject? jsonObject, JsonNode? content, JsonMergeSettings? settings = null)
     {
         if (jsonObject is null || content is not JsonObject jsonContent)

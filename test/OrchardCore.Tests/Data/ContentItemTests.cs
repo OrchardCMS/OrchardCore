@@ -18,9 +18,9 @@ namespace OrchardCore.Tests.Data
                 Published = true,
             };
 
-            var json = System.Text.Json.JsonSerializer.Serialize(contentItem);
+            var json = JsonSerializer.Serialize(contentItem);
 
-            var contentItem2 = System.Text.Json.JsonSerializer.Deserialize<ContentItem>(json);
+            var contentItem2 = JsonSerializer.Deserialize<ContentItem>(json);
 
             Assert.Equal(0, contentItem2.Id); // Should be 0 as we dont serialize it.
             Assert.Equal(contentItem.ContentItemId, contentItem2.ContentItemId);

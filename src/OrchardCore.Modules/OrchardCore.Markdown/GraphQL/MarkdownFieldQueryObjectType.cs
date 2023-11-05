@@ -50,7 +50,7 @@ namespace OrchardCore.Markdown.GraphQL
 
             var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
-            var jObject = ctx.Source.Content.JsonObject as JsonObject;
+            var jObject = ctx.Source.Content as JsonObject;
             // The JObject.Path is consistent here even when contained in a bag part.
             var jsonPath = jObject.GetPath();
             var paths = jsonPath[2..].Split('.');

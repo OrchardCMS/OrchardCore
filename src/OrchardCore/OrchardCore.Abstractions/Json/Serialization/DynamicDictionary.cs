@@ -4,7 +4,7 @@ using System.Dynamic;
 
 #nullable enable
 
-namespace System.Text.Json.Nodes;
+namespace System.Text.Json.Serialization;
 
 public class DynamicDictionary : DynamicObject, IDictionary<string, object?>
 {

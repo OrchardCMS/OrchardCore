@@ -92,7 +92,7 @@ namespace OrchardCore.Taxonomies.Indexing
                             continue;
                         }
 
-                        var field = jField.ToObject<TaxonomyField>();
+                        var field = ((JsonObject)jField).ToObject<TaxonomyField>();
 
                         foreach (var termContentItemId in field.TermContentItemIds)
                         {

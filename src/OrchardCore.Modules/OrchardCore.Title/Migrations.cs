@@ -61,7 +61,7 @@ namespace OrchardCore.Title
                 foreach (var contentItemVersion in contentItemVersions)
                 {
                     if (string.IsNullOrEmpty(contentItemVersion.DisplayText)
-                        && UpdateTitle(contentItemVersion.Content.JsonObject))
+                        && UpdateTitle(contentItemVersion.Content))
                     {
                         _session.Save(contentItemVersion);
                         _logger.LogInformation("A content item version's Title was upgraded: {ContentItemVersionId}", contentItemVersion.ContentItemVersionId);

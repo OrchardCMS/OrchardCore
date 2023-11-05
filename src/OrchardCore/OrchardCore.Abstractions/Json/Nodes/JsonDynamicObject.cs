@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Reflection;
 
 #nullable enable
 
@@ -7,26 +8,20 @@ namespace System.Text.Json.Nodes;
 
 public class JsonDynamicObject : DynamicObject
 {
-    private readonly Dictionary<string, object?> _obj = new();
+    private readonly JsonObject _jsonObject;
 
-    public JsonDynamicObject(JsonObject jsonObject) => JsonObject = jsonObject;
+    private readonly Dictionary<string, object?> _dictionary = new();
 
-    public JsonObject JsonObject { get; set; }
-
-    public T? ToObject<T>() => JsonObject.ToObject<T>();
-
-    public JsonDynamicObject Clone() => new(JsonObject.Clone() ?? new JsonObject());
+    public JsonDynamicObject(JsonObject jsonObject) => _jsonObject = jsonObject;
 
     public JsonDynamicObject Merge(JsonNode? content, JsonMergeSettings? settings = null) =>
-        new(JsonObject.Merge(content, settings)?.Clone() ?? new JsonObject());
-
-    public JsonObject AsObject() => JsonObject;
+        new(_jsonObject.Merge(content, settings)?.Clone() ?? new JsonObject());
 
     public object? this[string key]
     {
         get
         {
-            if (!JsonObject.TryGetPropertyValue(key, out var value))
+            if (!_jsonObject.TryGetPropertyValue(key, out var value))
             {
                 return null;
             }
@@ -38,25 +33,35 @@ public class JsonDynamicObject : DynamicObject
 
             return value;
         }
-        set
-        {
-            TrySetValue(key, value);
-        }
     }
 
-    public override bool TryGetMember(GetMemberBinder binder, out object? result) => TryGetValue(binder.Name, out result);
+    public override bool TryGetMember(GetMemberBinder binder, out object? result)
+    {
+        TryGetValue(binder.Name, out result);
+        return true;
+    }
 
-    public override bool TrySetMember(SetMemberBinder binder, object? value) => TrySetValue(binder.Name, value);
+    public override bool TrySetMember(SetMemberBinder binder, object? value)
+    {
+        TrySetValue(binder.Name, value);
+        return true;
+    }
+
+    public override bool TryInvokeMember(InvokeMemberBinder binder, object?[]? args, out object? result)
+    {
+        result = typeof(JsonObject).InvokeMember(binder.Name, BindingFlags.InvokeMethod, null, _jsonObject, args);
+        return true;
+    }
 
     public bool TryGetValue(string key, out object? value)
     {
-        if (_obj.TryGetValue(key, out var existing))
+        if (_dictionary.TryGetValue(key, out var property))
         {
-            value = existing;
+            value = property;
             return true;
         }
 
-        if (!JsonObject.TryGetPropertyValue(key, out var jsonNode))
+        if (!_jsonObject.TryGetPropertyValue(key, out var jsonNode))
         {
             value = null;
             return false;
@@ -64,7 +69,7 @@ public class JsonDynamicObject : DynamicObject
 
         if (jsonNode is JsonObject jsonObject)
         {
-            value = _obj[key] = new JsonDynamicObject(jsonObject);
+            value = _dictionary[key] = new JsonDynamicObject(jsonObject);
         }
         else if (jsonNode is JsonArray jsonArray)
         {
@@ -81,11 +86,11 @@ public class JsonDynamicObject : DynamicObject
                 }
             }
 
-            value = _obj[key] = list;
+            value = _dictionary[key] = list;
         }
         else
         {
-            value = _obj[key] = jsonNode.ToObject<object>();
+            value = _dictionary[key] = jsonNode.ToObject<object>();
         }
 
         return true;
@@ -95,8 +100,8 @@ public class JsonDynamicObject : DynamicObject
     {
         if (value is JsonObject jsonObject)
         {
-            JsonObject[key] = jsonObject;
-            _obj[key] = new JsonDynamicObject(jsonObject);
+            _jsonObject[key] = jsonObject;
+            _dictionary[key] = new JsonDynamicObject(jsonObject);
         }
         else if (value is JsonArray jsonArray)
         {
@@ -113,31 +118,19 @@ public class JsonDynamicObject : DynamicObject
                 }
             }
 
-            JsonObject[key] = jsonArray;
-            _obj[key] = list;
+            _jsonObject[key] = jsonArray;
+            _dictionary[key] = list;
         }
         else
         {
-            JsonObject[key] = JNode.FromObject(value);
-            _obj[key] = value;
+            _jsonObject[key] = JNode.FromObject(value);
+            _dictionary[key] = value;
         }
 
         return true;
     }
 
-    public bool ContainsKey(string key) => JsonObject.ContainsKey(key);
+    public static implicit operator JsonObject(JsonDynamicObject value) => value._jsonObject;
 
-    public bool Remove(string key)
-    {
-        _obj.Remove(key);
-        return JsonObject.Remove(key);
-    }
-
-    public void Clear()
-    {
-        JsonObject.Clear();
-        _obj.Clear();
-    }
-
-    public int Count => JsonObject.Count;
+    public static implicit operator JsonDynamicObject(JsonObject value) => new(value);
 }

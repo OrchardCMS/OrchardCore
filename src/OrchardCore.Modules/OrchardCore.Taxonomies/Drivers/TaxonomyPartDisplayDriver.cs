@@ -95,7 +95,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
                 taxonomyItem = taxonomyItems[index];
 
-                var terms = taxonomyItem.Content.JsonObject["Terms"] as JsonArray;
+                var terms = taxonomyItem.Content["Terms"] as JsonArray;
                 taxonomyItems = terms?.ToObject<List<ContentItem>>();
             }
 

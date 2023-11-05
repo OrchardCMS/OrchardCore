@@ -134,7 +134,7 @@ namespace OrchardCore.Taxonomies.Controllers
             else
             {
                 // Look for the target taxonomy item in the hierarchy.
-                var parentTaxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content.JsonObject, taxonomyItemId);
+                var parentTaxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
                 // Couldn't find targeted taxonomy item.
                 if (parentTaxonomyItem == null)
@@ -177,7 +177,7 @@ namespace OrchardCore.Taxonomies.Controllers
             }
 
             // Look for the target taxonomy item in the hierarchy.
-            JsonObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content.JsonObject, taxonomyItemId);
+            JsonObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
             // Couldn't find targeted taxonomy item.
             if (taxonomyItem == null)
@@ -230,7 +230,7 @@ namespace OrchardCore.Taxonomies.Controllers
             }
 
             // Look for the target taxonomy item in the hierarchy.
-            JsonObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content.JsonObject, taxonomyItemId);
+            JsonObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
             // Couldn't find targeted taxonomy item.
             if (taxonomyItem == null)
@@ -258,7 +258,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 return View(model);
             }
 
-            taxonomyItem.Merge(contentItem.Content.JsonObject as JsonObject, new JsonMergeSettings
+            taxonomyItem.Merge(contentItem.Content as JsonObject, new JsonMergeSettings
             {
                 MergeArrayHandling = MergeArrayHandling.Replace,
                 MergeNullValueHandling = MergeNullValueHandling.Merge
@@ -304,7 +304,7 @@ namespace OrchardCore.Taxonomies.Controllers
             }
 
             // Look for the target taxonomy item in the hierarchy.
-            var taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content.JsonObject, taxonomyItemId);
+            var taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
             // Couldn't find targeted taxonomy item.
             if (taxonomyItem == null)
@@ -312,7 +312,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 return NotFound();
             }
 
-            taxonomy.As<TaxonomyPart>().Content.JsonObject.Remove(taxonomyItemId);
+            taxonomy.As<TaxonomyPart>().Content.Remove(taxonomyItemId);
             _session.Save(taxonomy);
 
             await _notifier.SuccessAsync(H["Taxonomy item deleted successfully."]);
