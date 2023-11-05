@@ -39,7 +39,7 @@ public class AdminController : Controller
 
     private readonly IDisplayManager<ImportContent> _displayManager;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IEnumerable<IContentImportManager> _contentImportHandlerCoordinator;
+    private readonly IEnumerable<IContentImportManager> _contentImportManager;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IContentManager _contentManager;
@@ -74,7 +74,7 @@ public class AdminController : Controller
         _displayManager = displayManager;
         _authorizationService = authorizationService;
         S = stringLocalizer;
-        _contentImportHandlerCoordinator = contentImportHandlerCoordinator;
+        _contentImportManager = contentImportHandlerCoordinator;
         _contentItemDisplayManager = contentItemDisplayManager;
         _contentDefinitionManager = contentDefinitionManager;
         _contentManager = contentManager;
@@ -120,7 +120,7 @@ public class AdminController : Controller
             ContentTypeDefinition = contentTypeDefinition,
         };
 
-        var columns = await _contentImportHandlerCoordinator.InvokeAsync(handler => handler.GetColumnsAsync(context), _logger);
+        var columns = await _contentImportManager.InvokeAsync(handler => handler.GetColumnsAsync(context), _logger);
 
         var importContent = new ImportContent()
         {
@@ -210,7 +210,7 @@ public class AdminController : Controller
             ContentTypeDefinition = contentTypeDefinition,
         };
 
-        var columns = await _contentImportHandlerCoordinator.InvokeAsync(handler => handler.GetColumnsAsync(context), _logger);
+        var columns = await _contentImportManager.InvokeAsync(handler => handler.GetColumnsAsync(context), _logger);
 
         var viewModel = new ContentImporterViewModel()
         {
@@ -248,17 +248,18 @@ public class AdminController : Controller
             return Unauthorized();
         }
 
-        var content = new MemoryStream();
-        using var package = new ExcelPackage(content);
-        var workSheet = package.Workbook.Worksheets.Add(contentTypeDefinition.DisplayName);
-        var columnIndex = 1;
         var context = new ImportContentContext()
         {
             ContentItem = await _contentManager.NewAsync(contentTypeId),
             ContentTypeDefinition = contentTypeDefinition,
         };
 
-        var columns = await _contentImportHandlerCoordinator.InvokeAsync(handler => handler.GetColumnsAsync(context), _logger);
+        var columns = await _contentImportManager.InvokeAsync(handler => handler.GetColumnsAsync(context), _logger);
+
+        var content = new MemoryStream();
+        using var package = new ExcelPackage(content);
+        var workSheet = package.Workbook.Worksheets.Add(contentTypeDefinition.DisplayName);
+        var columnIndex = 1;
 
         foreach (var column in columns.SelectMany(x => x))
         {
@@ -321,7 +322,7 @@ public class AdminController : Controller
         return View(viewModel);
     }
 
-    public async Task<IActionResult> DownloadExport(string contentTypeId, string extension)
+    public async Task<IActionResult> DownloadExport(string contentTypeId)
     {
         if (string.IsNullOrEmpty(contentTypeId))
         {
@@ -353,11 +354,7 @@ public class AdminController : Controller
             ContentTypeDefinition = contentTypeDefinition,
         };
 
-        var columns = await _contentImportHandlerCoordinator.InvokeAsync(handler => handler.GetColumnsAsync(context), _logger);
-
-        var items = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == contentTypeId && x.Published)
-            .OrderBy(x => x.PublishedUtc)
-            .ListAsync();
+        var columns = await _contentImportManager.InvokeAsync(handler => handler.GetColumnsAsync(context), _logger);
 
         var dataTable = new DataTable();
 
@@ -371,6 +368,10 @@ public class AdminController : Controller
             dataTable.Columns.Add(column.Name);
         }
 
+        var items = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == contentTypeId && x.Published)
+            .OrderBy(x => x.PublishedUtc)
+            .ListAsync();
+
         foreach (var item in items)
         {
             var mapContext = new ContentExportMapContext()
@@ -380,7 +381,7 @@ public class AdminController : Controller
                 Row = dataTable.NewRow(),
             };
 
-            await _contentImportHandlerCoordinator.InvokeAsync(async handler => await handler.ExportAsync(mapContext), _logger);
+            await _contentImportManager.InvokeAsync(async handler => await handler.ExportAsync(mapContext), _logger);
 
             dataTable.Rows.Add(mapContext.Row);
         }

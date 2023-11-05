@@ -21,9 +21,14 @@ public class ContentTransferEntry : Entity
     public string ContentType { get; set; }
 
     /// <summary>
-    /// When the content item has been created or first published.
+    /// When the entry was been created or first created.
     /// </summary>
     public DateTime CreatedUtc { get; set; }
+
+    /// <summary>
+    /// When the entry finished processing.
+    /// </summary>
+    public DateTime? CompletedUtc { get; set; }
 
     /// <summary>
     /// The user id of the user who created this entry.
@@ -49,4 +54,5 @@ public enum ContentTransferEntryStatus
     Processing = 2,
     Completed = 3,
     CompletedWithErrors = 4,
+    Failed = 5,
 }
