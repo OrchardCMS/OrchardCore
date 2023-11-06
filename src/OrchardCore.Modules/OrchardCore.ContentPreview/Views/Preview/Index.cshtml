@@ -25,16 +25,13 @@
 
 <resources type="Footer" />
 
-<script at="Foot" depends-on="jQuery">
-    var renderPreviewUrl = $(document.getElementById('renderPreviewUrl')).data('value');
-    var iframe = document.getElementById('iframe');
-    var previewEventTimer = null;
-    var previewRenderTimer = null;
-    var previewRendering;
-    var previewRenderData;
-    var initialized;
+<script>
+    let iframe = document.getElementById('iframe');
+    let previewRenderTimer = null, previewRendering, previewRenderData, initialized, renderPreviewUrl;
 
     $(function () {
+        var previewEventTimer = null;
+        renderPreviewUrl = document.getElementById('renderPreviewUrl').getAttribute('data-value');
         $(window).on('storage', function (ev) {
             if (ev.key.indexOf('contentpreview:not-connected:') !== -1) {
                 $(notConnectedWarning).show();
@@ -50,7 +47,7 @@
         });
 
         // override default behaviour of Bootstrap's. We only hide, not remove the alert.
-        $('#close-connect-warning').on('click', function(){
+        $('#close-connect-warning').on('click', function () {
             $('#notConnectedWarning').hide();
         });
 
@@ -72,7 +69,7 @@
 
     iframe.onload = function () {
         // The iframe may not be well setup after the first loading and then on the first editor update
-        // we may lose the scrolling position. A workaround is to refrech the page once after or to add
+        // we may lose the scrolling position. A workaround is to re-fetch the page once after or to add
         // here a delay that really block the thread before exiting. Here, we just rewrite the document.
         if (!initialized) {
             if (this.contentWindow) {
@@ -102,6 +99,7 @@
                 previewRendering = false;
                 return;
             }
+
 
             $.post(renderPreviewUrl, formData)
                 .done(function (data) {
