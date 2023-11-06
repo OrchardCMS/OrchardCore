@@ -215,7 +215,7 @@ namespace OrchardCore.Autoroute.Handlers
                             await SetHomeRouteAsync(autoroutePart, homeRoute =>
                             {
                                 homeRoute[_options.ContentItemIdKey] = containerContentItemId;
-                                homeRoute[_options.JsonPathKey] = jItem.GetPath();
+                                homeRoute[_options.JsonPathKey] = jItem.GetNormalizedPath();
                             });
 
                             break;
@@ -262,7 +262,7 @@ namespace OrchardCore.Autoroute.Handlers
                             path = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path.TrimStart('/');
                         }
 
-                        entries.Add(new AutorouteEntry(containerContentItemId, path, contentItem.ContentItemId, jItem.GetPath())
+                        entries.Add(new AutorouteEntry(containerContentItemId, path, contentItem.ContentItemId, jItem.GetNormalizedPath())
                         {
                             DocumentId = contentItem.Id
                         });

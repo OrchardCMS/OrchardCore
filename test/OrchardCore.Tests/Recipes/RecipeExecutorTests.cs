@@ -45,7 +45,7 @@ namespace OrchardCore.Recipes
                 // Assert
                 var recipeStep = (recipeEventHandlers.Single() as RecipeEventHandler).Context.Step;
 
-                Assert.Equal(expected, recipeStep.SelectNode("$.data[0].TitlePart.Title").ToString());
+                Assert.Equal(expected, recipeStep.SelectNode("data[0].TitlePart.Title").ToString());
             });
         }
 

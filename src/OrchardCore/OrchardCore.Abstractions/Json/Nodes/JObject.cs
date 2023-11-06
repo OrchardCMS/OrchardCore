@@ -26,6 +26,7 @@ public static class JObject
     /// </summary>
     public static JsonNode? SelectNode(this JsonObject? jsonObject, string? path)
     {
+        path = path.GetNormalizedPath();
         if (jsonObject is null || path is null)
         {
             return null;
@@ -38,13 +39,13 @@ public static class JObject
                 continue;
             }
 
-            var itemPath = item.Value.GetPath();
+            var itemPath = item.Value.GetNormalizedPath();
             if (itemPath == path)
             {
                 return item.Value;
             }
 
-            if (!path.Contains(itemPath))
+            if (itemPath is null || !path.Contains(itemPath))
             {
                 continue;
             }

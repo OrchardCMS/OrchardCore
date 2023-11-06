@@ -184,7 +184,7 @@ namespace OrchardCore.Autoroute.Core.Indexes
                             Published = containerContentItem.Published,
                             Latest = containerContentItem.Latest,
                             ContainedContentItemId = contentItem.ContentItemId,
-                            JsonPath = jItem.GetPath(),
+                            JsonPath = jItem.GetNormalizedPath(),
                         });
                     }
 

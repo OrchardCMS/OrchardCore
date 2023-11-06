@@ -58,7 +58,7 @@ namespace OrchardCore.Liquid
                         JsonObject o => new ObjectValue(o),
                         DateTime d => new ObjectValue(d),
                         _ => null
-                    }; ;
+                    };
                 });
 
                 options.Filters.AddFilter("json", JsonFilter.Json);

@@ -88,6 +88,29 @@ public static class JNode
         jsonNode is JsonArray jsonArray ? jsonArray.AsEnumerable().Select(node => node.Value<T>()) : Enumerable.Empty<T?>();
 
     /// <summary>
+    /// Creates a <see cref="JsonNode"/> from an object.
+    /// </summary>
+    public static string? GetNormalizedPath(this string? path)
+    {
+        if (path is null || path[0] != '$')
+        {
+            return path;
+        }
+
+        if (path.Length == 1)
+        {
+            return string.Empty;
+        }
+
+        return path[2..];
+    }
+
+    /// <summary>
+    /// Creates a <see cref="JsonNode"/> from an object.
+    /// </summary>
+    public static string? GetNormalizedPath(this JsonNode jsonNode) => jsonNode.GetPath().GetNormalizedPath();
+
+    /// <summary>
     /// Selects a <see cref="JsonNode"/> from this <see cref="JsonObject"/> using a JSON path.
     /// </summary>
     public static JsonNode? SelectNode(this JsonNode? jsonNode, string? path)

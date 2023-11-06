@@ -16,7 +16,7 @@ namespace OrchardCore.Flows.Handlers
                 {
                     // Content.Path contains the accessor for named bag parts and typed bag parts.
                     var jContent = part.Content as JsonObject;
-                    return jsonObject[jContent.GetPath()]["ContentItems"] as JsonArray;
+                    return jsonObject[jContent.GetNormalizedPath()]["ContentItems"] as JsonArray;
                 });
 
                 return Task.CompletedTask;

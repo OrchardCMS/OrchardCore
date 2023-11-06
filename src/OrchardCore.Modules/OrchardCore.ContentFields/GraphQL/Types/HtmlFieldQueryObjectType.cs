@@ -39,10 +39,10 @@ namespace OrchardCore.ContentFields.GraphQL
             var shortcodeService = serviceProvider.GetRequiredService<IShortcodeService>();
             var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
-            var jObject = ctx.Source.Content as JsonObject;
+            var jObject = (JsonObject)ctx.Source.Content;
             // The JObject.Path is consistent here even when contained in a bag part.
-            var jsonPath = jObject.GetPath();
-            var paths = jsonPath[2..].Split('.');
+            var jsonPath = jObject.GetNormalizedPath();
+            var paths = jsonPath.Split('.');
             var partName = paths[0];
             var fieldName = paths[1];
             var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(ctx.Source.ContentItem.ContentType);

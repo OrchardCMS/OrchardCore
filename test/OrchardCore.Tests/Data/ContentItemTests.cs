@@ -40,9 +40,6 @@ namespace OrchardCore.Tests.Data
 
             var contentItem2 = JsonSerializer.Deserialize<ContentItem>(json);
 
-            //Assert.NotNull((contentItem2.Content as JsonObject)[nameof(MyPart)]);
-            //Assert.Equal("test", (contentItem2.Content as JsonObject)[nameof(MyPart)][nameof(MyPart.Text)].ToString());
-
             Assert.NotNull(contentItem2.Content.MyPart);
             Assert.Equal("test", (string)contentItem2.Content.MyPart.Text);
         }

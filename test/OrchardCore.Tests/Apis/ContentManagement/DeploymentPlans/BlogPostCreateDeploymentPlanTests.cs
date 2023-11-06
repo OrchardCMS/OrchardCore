@@ -190,9 +190,9 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 jItem[nameof(AutoroutePart)][nameof(AutoroutePart.Path)] = "blog/another";
             });
 
-            var firstRecipeData = firstRecipe.SelectNode("$.steps[0].Data").AsArray();
+            var firstRecipeData = firstRecipe.SelectNode("steps[0].Data").AsArray();
 
-            var secondContentItem = secondRecipe.SelectNode("$.steps[0].Data[0]");
+            var secondContentItem = secondRecipe.SelectNode("steps[0].Data[0]");
 
             firstRecipeData.Add(secondContentItem.Clone());
 

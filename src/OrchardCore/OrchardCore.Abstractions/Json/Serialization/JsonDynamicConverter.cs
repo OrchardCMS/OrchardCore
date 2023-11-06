@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Dynamic;
 
 #nullable enable
 
@@ -64,7 +65,7 @@ public class JsonDynamicConverter : JsonConverter<object>
                 }
 
             case JsonTokenType.StartObject:
-                var dictionary = new DynamicDictionary();
+                IDictionary<string, object?> dictionary = new ExpandoObject();
                 while (reader.Read())
                 {
                     switch (reader.TokenType)
@@ -98,5 +99,5 @@ public class JsonDynamicConverter : JsonConverter<object>
         Utf8JsonWriter writer,
         object objectToWrite,
         JsonSerializerOptions options) =>
-            JsonSerializer.Serialize(writer, objectToWrite, objectToWrite.GetType(), options);
+        JsonSerializer.Serialize(writer, objectToWrite, objectToWrite.GetType(), options);
 }

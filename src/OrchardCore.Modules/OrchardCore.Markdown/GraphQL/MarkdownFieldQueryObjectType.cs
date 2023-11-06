@@ -52,8 +52,8 @@ namespace OrchardCore.Markdown.GraphQL
 
             var jObject = ctx.Source.Content as JsonObject;
             // The JObject.Path is consistent here even when contained in a bag part.
-            var jsonPath = jObject.GetPath();
-            var paths = jsonPath[2..].Split('.');
+            var jsonPath = jObject.GetNormalizedPath();
+            var paths = jsonPath.Split('.');
             var partName = paths[0];
             var fieldName = paths[1];
             var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(ctx.Source.ContentItem.ContentType);

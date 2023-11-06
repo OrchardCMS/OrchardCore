@@ -46,6 +46,7 @@ public static class JArray
     /// </summary>
     public static JsonNode? SelectNode(this JsonArray? jsonArray, string? path)
     {
+        path = path.GetNormalizedPath();
         if (jsonArray is null || path is null)
         {
             return null;
@@ -58,13 +59,13 @@ public static class JArray
                 continue;
             }
 
-            var itemPath = item.GetPath();
+            var itemPath = item.GetNormalizedPath();
             if (itemPath == path)
             {
                 return item;
             }
 
-            if (!path.Contains(itemPath))
+            if (itemPath is null || !path.Contains(itemPath))
             {
                 continue;
             }
@@ -94,11 +95,11 @@ public static class JArray
     /// <summary>
     /// Merge the specified content into this <see cref="JsonArray"/> using <see cref="JsonMergeSettings"/>.
     /// </summary>
-    internal static void Merge(this JsonArray? jsonArray, JsonNode? content, JsonMergeSettings? settings = null)
+    internal static JsonArray? Merge(this JsonArray? jsonArray, JsonNode? content, JsonMergeSettings? settings = null)
     {
         if (jsonArray is null || content is not JsonArray jsonContent)
         {
-            return;
+            return jsonArray;
         }
 
         settings ??= new JsonMergeSettings();
@@ -197,5 +198,7 @@ public static class JArray
             default:
                 throw new ArgumentOutOfRangeException(nameof(settings), "Unexpected merge array handling when merging JSON.");
         }
+
+        return jsonArray;
     }
 }
