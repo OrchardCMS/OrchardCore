@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Modules;
 
 namespace OrchardCore.ContentsTransfer.Services;
@@ -248,7 +249,7 @@ public class ContentImportManager : IContentImportManager
         }
     }
 
-    public async Task ValidateAsync(ValidateImportContext context)
+    public async Task<ContentValidateResult> ValidateAsync(ValidateImportContext context)
     {
         if (context == null)
         {
@@ -323,5 +324,7 @@ public class ContentImportManager : IContentImportManager
                 }
             }
         }
+
+        return context.ContentValidateResult;
     }
 }

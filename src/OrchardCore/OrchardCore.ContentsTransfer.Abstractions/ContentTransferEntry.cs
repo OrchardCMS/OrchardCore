@@ -26,6 +26,11 @@ public class ContentTransferEntry : Entity
     public DateTime CreatedUtc { get; set; }
 
     /// <summary>
+    /// When the entry was last processed.
+    /// </summary>
+    public DateTime? ProcessSaveUtc { get; set; }
+
+    /// <summary>
     /// When the entry finished processing.
     /// </summary>
     public DateTime? CompletedUtc { get; set; }
@@ -46,6 +51,11 @@ public class ContentTransferEntry : Entity
     public string StoredFileName { get; set; }
 
     public ContentTransferEntryStatus Status { get; set; }
+
+    /// <summary>
+    /// Error message if the file failed processing.
+    /// </summary>
+    public string Error { get; set; }
 }
 
 public enum ContentTransferEntryStatus
