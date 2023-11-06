@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.ContentManagement.Handlers;
 
 namespace OrchardCore.ContentsTransfer;
 
@@ -11,5 +12,5 @@ public interface IContentImportManager
 
     Task ExportAsync(ContentExportMapContext context);
 
-    Task ValidateAsync(ValidateImportContext context);
+    Task<ContentValidateResult> ValidateAsync(ValidateImportContext context);
 }

@@ -45,7 +45,7 @@ public class ImportFilesBackgroundTask : IBackgroundTask
         var fileStore = serviceProvider.GetRequiredService<IContentTransferFileStore>();
         var contentManager = serviceProvider.GetRequiredService<IContentManager>();
         var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
-        var coordinator = serviceProvider.GetRequiredService<IEnumerable<IContentImportManager>>();
+        var contentImportManager = serviceProvider.GetRequiredService<IContentImportManager>();
 
         var entries = await _session.Query<ContentTransferEntry, ContentTransferEntryIndex>(x => x.Status == ContentTransferEntryStatus.New || x.Status == ContentTransferEntryStatus.Processing)
         .OrderBy(x => x.CreatedUtc)
@@ -58,7 +58,7 @@ public class ImportFilesBackgroundTask : IBackgroundTask
             if (contentTypeDefinition == null)
             {
                 // The content type was removed somehow. Skip it.
-                await SaveEntryWithError(entry);
+                await SaveEntryWithError(entry, S["The content definition was removed."]);
 
                 continue;
             }
@@ -68,19 +68,19 @@ public class ImportFilesBackgroundTask : IBackgroundTask
             if (fileInfo.Length == 0)
             {
                 // The file was removed somehow. Skip it.
-                await SaveEntryWithError(entry);
+                await SaveEntryWithError(entry, S["The import file no longer exists."]);
 
                 continue;
             }
 
             var file = await fileStore.GetFileStreamAsync(fileInfo);
             var errors = new Dictionary<string, string>();
-            var dataTable = GetDataTable(errors.Add);
+            using var dataTable = GetDataTable(errors.Add);
 
             if (errors.Count > 0)
             {
                 // The file was removed somehow. Skip it.
-                await SaveEntryWithError(entry);
+                await SaveEntryWithError(entry, errors.First().Value);
 
                 continue;
             }
@@ -88,12 +88,14 @@ public class ImportFilesBackgroundTask : IBackgroundTask
             var progressPart = entry.As<ImportFileProcessStatsPart>();
 
             var contentItems = new List<ContentItem>();
-            using var errorDataTable = new DataTable();
+
             foreach (DataRow row in dataTable.Rows)
             {
                 if (row == null || row.ItemArray.All(x => x == null || x is DBNull || string.IsNullOrWhiteSpace(x?.ToString())))
                 {
                     // Ignore empty rows.
+                    progressPart.TotalProcessed++;
+
                     continue;
                 }
 
@@ -107,48 +109,53 @@ public class ImportFilesBackgroundTask : IBackgroundTask
 
                 // Important to map the data first since the map could identify existing content item.
                 // MapAsync could change the content item id.
-                await coordinator.InvokeAsync(mapper => mapper.ImportAsync(mapContext), _logger);
-                var validationResult = await contentManager.ValidateAsync(mapContext.ContentItem);
-
+                await contentImportManager.ImportAsync(mapContext);
+                var validateContext = new ValidateImportContext()
+                {
+                    Columns = dataTable.Columns,
+                    ContentTypeDefinition = contentTypeDefinition,
+                    ContentItem = mapContext.ContentItem,
+                };
+                var validationResult = await contentImportManager.ValidateAsync(validateContext);
+                progressPart.TotalProcessed++;
                 if (validationResult.Succeeded)
                 {
                     contentItems.Add(mapContext.ContentItem);
-                    progressPart.TotalSuccesses++;
                 }
                 else
                 {
-                    errorDataTable.Rows.Add(row);
-                    progressPart.TotalErrors++;
+                    progressPart.Errors.Add(dataTable.Rows.IndexOf(row));
                 }
 
                 if (contentItems.Count == _batchSize)
                 {
+                    entry.ProcessSaveUtc = _clock.UtcNow;
                     entry.Put(progressPart);
 
                     _session.Save(entry);
                     await _session.SaveChangesAsync();
 
                     contentItems.Clear();
-                    // save errorDataTable to an error file.
                 }
             }
 
+            entry.Status = progressPart.Errors.Count > 0 ? ContentTransferEntryStatus.CompletedWithErrors : ContentTransferEntryStatus.Completed;
+            entry.CompletedUtc = _clock.UtcNow;
             entry.Put(progressPart);
 
             _session.Save(entry);
             await _session.SaveChangesAsync();
-            // save errorDataTable to an error file.
-            dataTable.Dispose();
-            errorDataTable.Dispose();
         }
     }
 
-    private async Task SaveEntryWithError(ContentTransferEntry entry)
+    private async Task SaveEntryWithError(ContentTransferEntry entry, string error)
     {
         entry.Status = ContentTransferEntryStatus.Failed;
+        entry.Error = error;
         entry.CompletedUtc = _clock.UtcNow;
 
         _session.Save(entry);
+
         await _session.SaveChangesAsync();
     }
 
@@ -167,13 +174,13 @@ public class ImportFilesBackgroundTask : IBackgroundTask
             return dataTable;
         }
 
-        var worksheet = worksheets[0];
+        using var worksheet = worksheets[0];
 
         // Check if the worksheet is completely empty.
         if (worksheet.Dimension == null)
         {
             error(string.Empty, S["Unable to find a tab in the file that contains data."]);
-            worksheet.Dispose();
+
             return dataTable;
         }
 
@@ -231,8 +238,6 @@ public class ImportFilesBackgroundTask : IBackgroundTask
 
             dataTable.Rows.Add(newRow);
         }
-
-        worksheet.Dispose();
 
         return dataTable;
     }
