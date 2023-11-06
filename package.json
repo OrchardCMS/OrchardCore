@@ -25,7 +25,7 @@
     "gulp-cli": "^2.3.0",
     "gulp-concat": "2.6.1",
     "gulp-dart-sass": "1.1.0",
-    "gulp-debug": "4.0.0",
+    "gulp-debug": "5.0.1",
     "gulp-eol": "0.2.0",
     "gulp-header": "2.0.9",
     "gulp-if": "3.0.0",
