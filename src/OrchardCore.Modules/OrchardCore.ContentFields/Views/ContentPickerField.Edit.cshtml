@@ -15,9 +15,9 @@
 <script asp-name="vue-multiselect-wrapper" asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-wrapper.js" at="Foot" depends-on="vuejs, vue-multiselect, sortable, vuedraggable"></script>
 <style asp-name="vue-multiselect" at="Foot"></style>
 
-<div class="@Orchard.GetFieldWrapperCssClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.ContentItemIds)_FieldWrapper">
-    <label asp-for="ContentItemIds" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.ContentItemIds)_FieldWrapper">
+    <label asp-for="ContentItemIds" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndClasses()">
         <div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-editor-type="ContentPicker" data-selected-items="@selectedItems" data-search-url="@searchUrl" data-multiple="@multiple">
 
             <ul class="mb-1 list-group w-lg-75 w-xxl-50 content-picker-default__list" v-show="arrayOfItems.length" v-cloak>

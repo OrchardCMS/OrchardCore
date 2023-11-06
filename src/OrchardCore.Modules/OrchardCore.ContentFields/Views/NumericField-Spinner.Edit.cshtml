@@ -15,11 +15,11 @@
     string serverDecimalSeparator = CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator;
 }
 
-<div class="@Orchard.GetFieldWrapperCssClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Value)_FieldWrapper">
-    <label asp-for="Value" class="@Orchard.GetLabelCssClasses()">@name</label>
-    <div class="@Orchard.GetEndCssClasses()">
-        <div class="@Orchard.GetLimitedWidthWrapperCssClasses()">
-            <div class="@Orchard.GetLimitedWidthCssClasses()">
+<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Value)_FieldWrapper">
+    <label asp-for="Value" class="@Orchard.GetLabelClasses()">@name</label>
+    <div class="@Orchard.GetEndClasses()">
+        <div class="@Orchard.GetLimitedWidthWrapperClasses()">
+            <div class="@Orchard.GetLimitedWidthClasses()">
                 <div class="input-group">
                     @if (settings.Minimum.HasValue)
                     {
