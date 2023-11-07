@@ -7,13 +7,15 @@ namespace System.Text.Json.Nodes;
 [DebuggerDisplay("JsonDynamicValue[{Value}]")]
 public class JsonDynamicValue
 {
+    private readonly object? _value;
+
     public JsonDynamicValue(JsonValue? jsonValue, object? value = null)
     {
         JsonValue = jsonValue;
-        Value = value ?? JsonValue.ToObject<object>();
+        _value = value;
     }
 
     public JsonValue? JsonValue { get; }
 
-    public object? Value { get; }
+    public object? Value => _value ?? JsonValue.ToObject<object>();
 }
