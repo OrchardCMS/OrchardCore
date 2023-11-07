@@ -4,8 +4,6 @@ namespace OrchardCore.Forms.Models
 {
     public class FormPart : ContentPart
     {
-        public const string RequestOriginatedFromInputName = "__RequestOriginatedFrom";
-
         public string Action { get; set; }
 
         public string Method { get; set; }
@@ -16,6 +14,8 @@ namespace OrchardCore.Forms.Models
 
         public bool EnableAntiForgeryToken { get; set; } = true;
 
-        public bool EnableRequestOriginatedFrom { get; set; } = true;
+        public bool SaveFormLocation { get; set; } = true;
+
+        public string FormLocationKey { get; set; }
     }
 }

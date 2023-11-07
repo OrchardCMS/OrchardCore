@@ -25,7 +25,7 @@
     <label asp-for="EncType" class="@Orchard.GetLabelClasses()">@T["EncType"]</label>
     <div class="@Orchard.GetEndClasses()">
         <select asp-for="EncType" class="form-select content-preview-select">
-            <option value="application/x-www-form-urlencoded">application/x-www-form-urlencoded	</option>
+            <option value="application/x-www-form-urlencoded">application/x-www-form-urlencoded </option>
             <option value="multipart/form-data">multipart/form-data</option>
             <option value="text/plain">text/plain</option>
         </select>
@@ -43,12 +43,20 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperCssClasses()">
-    <div class="@Orchard.GetEndCssClasses(true)">
+<div class="@Orchard.GetWrapperClasses()">
+    <div class="@Orchard.GetEndClasses(true)">
         <div class="form-check">
-            <input asp-for="EnableRequestOriginatedFrom" class="form-check-input" />
-            <label asp-for="EnableRequestOriginatedFrom" class="form-check-label">@T["Enable Request Originated Location"]</label>
-            <span class="hint">@T["Check to include the request originated location."]</span>
+            <input asp-for="SaveFormLocation" class="form-check-input" />
+            <label asp-for="SaveFormLocation" class="form-check-label">@T["Save Form Location"]</label>
+            <span class="hint">@T["Check in order to store the current form location. This stored location can later be used to return the user to their initial location."]</span>
         </div>
+    </div>
+</div>
+
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="FormLocationKey" class="@Orchard.GetLabelClasses()">@T["Form Location Key"]</label>
+    <div class="@Orchard.GetEndClasses()">
+        <input type="text" asp-for="FormLocationKey" class="form-control content-preview-text" />
+        <span class="hint">@T["This key serves to differentiate the current form's location."]</span>
     </div>
 </div>

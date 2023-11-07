@@ -19,9 +19,9 @@
         @Html.AntiForgeryToken()
     }
 
-    @if (formPart.EnableRequestOriginatedFrom)
+    @if (formPart.SaveFormLocation)
     {
-        <input type="hidden" name="@FormPart.RequestOriginatedFromInputName" value="@ViewContext.HttpContext.Request.Path" />
+        <input type="hidden" name="@formPart.FormLocationKey" value="@ViewContext.HttpContext.Request.Path" />
     }
 
     @await DisplayAsync((IHtmlContent)Model.Metadata.ChildContent)

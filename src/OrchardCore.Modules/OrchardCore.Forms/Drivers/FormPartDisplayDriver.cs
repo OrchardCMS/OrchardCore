@@ -1,14 +1,25 @@
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
+using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Forms.Drivers
 {
     public class FormPartDisplayDriver : ContentPartDisplayDriver<FormPart>
     {
+        public const string DefaultFormLocationInputName = "__RequestOriginatedFrom";
+
+        protected readonly IStringLocalizer S;
+
+        public FormPartDisplayDriver(IStringLocalizer<FormPartDisplayDriver> stringLocalizer)
+        {
+            S = stringLocalizer;
+        }
+
         public override IDisplayResult Edit(FormPart part)
         {
             return Initialize<FormPartEditViewModel>("FormPart_Fields_Edit", m =>
@@ -18,7 +29,8 @@ namespace OrchardCore.Forms.Drivers
                 m.WorkflowTypeId = part.WorkflowTypeId;
                 m.EncType = part.EncType;
                 m.EnableAntiForgeryToken = part.EnableAntiForgeryToken;
-                m.EnableRequestOriginatedFrom = part.EnableRequestOriginatedFrom;
+                m.SaveFormLocation = part.SaveFormLocation;
+                m.FormLocationKey = part.FormLocationKey ?? DefaultFormLocationInputName;
             });
         }
 
@@ -33,7 +45,22 @@ namespace OrchardCore.Forms.Drivers
                 part.WorkflowTypeId = viewModel.WorkflowTypeId;
                 part.EncType = viewModel.EncType;
                 part.EnableAntiForgeryToken = viewModel.EnableAntiForgeryToken;
-                part.EnableRequestOriginatedFrom = viewModel.EnableRequestOriginatedFrom;
+                part.SaveFormLocation = false;
+                part.FormLocationKey = string.Empty;
+
+                if (viewModel.SaveFormLocation)
+                {
+                    part.SaveFormLocation = true;
+
+                    if (string.IsNullOrWhiteSpace(viewModel.FormLocationKey))
+                    {
+                        updater.ModelState.AddModelError(Prefix, nameof(viewModel.FormLocationKey), S["Form Location Key is required."]);
+                    }
+                    else
+                    {
+                        part.FormLocationKey = viewModel.FormLocationKey.Trim();
+                    }
+                }
             }
 
             return Edit(part);

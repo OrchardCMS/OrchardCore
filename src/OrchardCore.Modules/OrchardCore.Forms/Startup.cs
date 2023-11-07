@@ -84,7 +84,7 @@ namespace OrchardCore.Forms
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddActivity<FormOriginatedHttpRedirectTask, FormOriginatedHttpRedirectTaskDisplayDriver>();
+            services.AddActivity<HttpRedirectToFormLocationTask, HttpRedirectToFormLocationTaskDisplayDriver>();
         }
     }
 }

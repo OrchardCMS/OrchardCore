@@ -12,6 +12,8 @@ namespace OrchardCore.Forms.ViewModels
 
         public bool EnableAntiForgeryToken { get; set; } = true;
 
-        public bool EnableRequestOriginatedFrom { get; set; } = true;
+        public bool SaveFormLocation { get; set; } = true;
+
+        public string FormLocationKey { get; set; }
     }
 }
