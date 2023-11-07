@@ -55,7 +55,7 @@ public class ContentTransferService
                 continue;
             }
 
-            var mapContext = new ContentImportMapContext()
+            var mapContext = new ContentImportContext()
             {
                 ContentItem = await _contentManager.NewAsync(contentTypeId),
                 ContentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentTypeId),

@@ -7,9 +7,9 @@ public interface IContentImportHandler
 {
     IReadOnlyCollection<ImportColumn> GetColumns(ImportContentContext context);
 
-    Task ImportAsync(ContentImportMapContext content);
+    Task ImportAsync(ContentImportContext content);
 
-    Task ExportAsync(ContentExportMapContext content);
+    Task ExportAsync(ContentExportContext content);
 
     Task ValidateAsync(ValidateImportContext context);
 }

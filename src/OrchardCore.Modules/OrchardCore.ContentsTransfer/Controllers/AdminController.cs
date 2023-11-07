@@ -23,6 +23,7 @@ using OrchardCore.ContentTransfer;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Media.Services;
 using OrchardCore.Modules;
 using YesSql;
 
@@ -141,8 +142,7 @@ public class AdminController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     [ActionName(nameof(Import))]
-    [DisableRequestSizeLimit]
-    [RequestFormLimits(ValueLengthLimit = ContentImportOptions.AbsoluteMaxAllowedFileSizeInBytes, ValueCountLimit = ContentImportOptions.AbsoluteMaxAllowedFileSizeInBytes)]
+    [ContentTransferSizeLimit]
     public async Task<IActionResult> ImportPOST(string contentTypeId)
     {
         if (string.IsNullOrEmpty(contentTypeId))
@@ -374,7 +374,7 @@ public class AdminController : Controller
 
         foreach (var contentItem in contentItems)
         {
-            var mapContext = new ContentExportMapContext()
+            var mapContext = new ContentExportContext()
             {
                 ContentItem = contentItem,
                 ContentTypeDefinition = contentTypeDefinition,
