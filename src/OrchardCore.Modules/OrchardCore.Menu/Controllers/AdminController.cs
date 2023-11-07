@@ -123,7 +123,7 @@ namespace OrchardCore.Menu.Controllers
                     return NotFound();
                 }
 
-                var menuItems = parentMenuItem["MenuItemsListPart"]?["MenuItems"] as JsonArray;
+                var menuItems = (JsonArray)parentMenuItem["MenuItemsListPart"]?["MenuItems"];
 
                 if (menuItems == null)
                 {

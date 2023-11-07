@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace System.Text.Json.Nodes;
 
-[DebuggerDisplay("JsonDynamicObject[{_jsonObject.Count}]")]
+[DebuggerDisplay("JsonDynamicObject[{Count}]")]
 public class JsonDynamicObject : DynamicObject
 {
     private readonly JsonObject _jsonObject;
@@ -17,6 +17,8 @@ public class JsonDynamicObject : DynamicObject
 
     public JsonDynamicObject(JsonObject jsonObject) => _jsonObject = jsonObject;
 
+    public int Count => _jsonObject.Count;
+
     public JsonDynamicObject Merge(JsonNode? content, JsonMergeSettings? settings = null) =>
         new(_jsonObject.Merge(content, settings)?.Clone() ?? new JsonObject());
 
@@ -24,33 +26,36 @@ public class JsonDynamicObject : DynamicObject
     {
         get
         {
-            if (!_jsonObject.TryGetPropertyValue(key, out var value))
+            var value = GetValue(key);
+            if (value is JsonDynamicValue jsonDynamicValue)
             {
-                return null;
-            }
-
-            if (value is JsonObject jsonObject)
-            {
-                return new JsonDynamicObject(jsonObject);
-            }
-            else if (value is JsonArray jsonArray)
-            {
-                return new JsonDynamicArray(jsonArray);
+                return jsonDynamicValue.JsonValue;
             }
 
             return value;
+        }
+        set
+        {
+            SetValue(key, value);
         }
     }
 
     public override bool TryGetMember(GetMemberBinder binder, out object? result)
     {
-        TryGetValue(binder.Name, out result);
+        var value = GetValue(binder.Name);
+        if (value is JsonDynamicValue jsonDynamicValue)
+        {
+            result = jsonDynamicValue.Value;
+            return true;
+        }
+
+        result = value;
         return true;
     }
 
     public override bool TrySetMember(SetMemberBinder binder, object? value)
     {
-        TrySetValue(binder.Name, value);
+        SetValue(binder.Name, value);
         return true;
     }
 
@@ -60,55 +65,66 @@ public class JsonDynamicObject : DynamicObject
         return true;
     }
 
-    public bool TryGetValue(string key, out object? value)
+    public object? GetValue(string key)
     {
-        if (_dictionary.TryGetValue(key, out var property))
+        if (_dictionary.TryGetValue(key, out var value))
         {
-            value = property;
-            return true;
+            return value;
         }
 
         if (!_jsonObject.TryGetPropertyValue(key, out var jsonNode))
         {
-            value = null;
-            return false;
+            return null;
+        }
+
+        if (jsonNode is null)
+        {
+            return null;
         }
 
         if (jsonNode is JsonObject jsonObject)
         {
-            value = _dictionary[key] = new JsonDynamicObject(jsonObject);
-        }
-        else if (jsonNode is JsonArray jsonArray)
-        {
-            value = _dictionary[key] = new JsonDynamicArray(jsonArray);
-        }
-        else
-        {
-            value = _dictionary[key] = jsonNode.ToObject<object>();
+            return _dictionary[key] = new JsonDynamicObject(jsonObject);
         }
 
-        return true;
+        if (jsonNode is JsonArray jsonArray)
+        {
+            return _dictionary[key] = new JsonDynamicArray(jsonArray);
+        }
+
+        if (jsonNode is JsonValue jsonValue)
+        {
+            return _dictionary[key] = new JsonDynamicValue(jsonValue);
+        }
+
+        return null;
     }
 
-    public bool TrySetValue(string key, object? value)
+    public void SetValue(string key, object? value, object? originalValue = null)
     {
         if (value is JsonObject jsonObject)
         {
             _jsonObject[key] = jsonObject;
             _dictionary[key] = new JsonDynamicObject(jsonObject);
+            return;
         }
-        else if (value is JsonArray jsonArray)
+
+        if (value is JsonArray jsonArray)
         {
             _jsonObject[key] = jsonArray;
             _dictionary[key] = new JsonDynamicArray(jsonArray);
-        }
-        else
-        {
-            _jsonObject[key] = JNode.FromObject(value);
-            _dictionary[key] = value;
+            return;
         }
 
-        return true;
+        if (value is JsonValue jsonValue)
+        {
+            _jsonObject[key] = jsonValue;
+            _dictionary[key] = new JsonDynamicValue(jsonValue, originalValue);
+            return;
+        }
+
+        var jsonNode = JNode.FromObject(value);
+        SetValue(key, jsonNode, value);
     }
 
     public static implicit operator JsonObject(JsonDynamicObject value) => value._jsonObject;

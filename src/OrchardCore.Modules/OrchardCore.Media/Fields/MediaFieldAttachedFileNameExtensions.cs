@@ -10,7 +10,7 @@ namespace OrchardCore.Media.Fields
         /// </summary>
         public static string[] GetAttachedFileNames(this MediaField mediaField)
         {
-            var filenames = mediaField.Content["AttachedFileNames"] as JsonArray;
+            var filenames = (JsonArray)mediaField.Content["AttachedFileNames"];
 
             return filenames != null
                 ? filenames.ToObject<string[]>()

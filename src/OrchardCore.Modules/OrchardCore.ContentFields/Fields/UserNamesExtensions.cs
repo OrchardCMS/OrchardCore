@@ -13,7 +13,7 @@ namespace OrchardCore.ContentFields.Fields
         /// </remarks>
         public static string[] GetUserNames(this UserPickerField userPickerField)
         {
-            var userNames = userPickerField.Content["UserNames"] as JsonArray;
+            var userNames = (JsonArray)userPickerField.Content["UserNames"];
 
             return userNames is not null ? userNames.ToObject<string[]>() : Array.Empty<string>();
         }

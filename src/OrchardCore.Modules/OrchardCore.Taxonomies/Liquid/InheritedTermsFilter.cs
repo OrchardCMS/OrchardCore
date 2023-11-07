@@ -36,7 +36,7 @@ namespace OrchardCore.Taxonomies.Liquid
 
             var terms = new List<ContentItem>();
 
-            TaxonomyOrchardHelperExtensions.FindTermHierarchy(taxonomy.Content.TaxonomyPart.Terms as JsonArray, termContentItemId, terms);
+            TaxonomyOrchardHelperExtensions.FindTermHierarchy((JsonArray)taxonomy.Content.TaxonomyPart.Terms, termContentItemId, terms);
 
             return FluidValue.Create(terms, ctx.Options);
         }

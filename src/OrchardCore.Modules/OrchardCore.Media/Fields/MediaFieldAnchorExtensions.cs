@@ -10,9 +10,9 @@ namespace OrchardCore.Media.Fields
         /// </summary>
         public static Anchor[] GetAnchors(this MediaField mediaField)
         {
-            var anchors = mediaField.Content["Anchors"] as JsonArray;
+            var anchors = (JsonArray)mediaField.Content["Anchors"];
 
-            return anchors != null ? anchors.ToObject<Anchor[]>() : Array.Empty<Anchor>();
+            return anchors is not null ? anchors.ToObject<Anchor[]>() : Array.Empty<Anchor>();
         }
 
         /// <summary>

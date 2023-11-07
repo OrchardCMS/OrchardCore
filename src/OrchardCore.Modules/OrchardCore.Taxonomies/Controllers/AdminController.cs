@@ -142,7 +142,7 @@ namespace OrchardCore.Taxonomies.Controllers
                     return NotFound();
                 }
 
-                var taxonomyItems = parentTaxonomyItem?["Terms"] as JsonArray;
+                var taxonomyItems = (JsonArray)parentTaxonomyItem?["Terms"];
 
                 if (taxonomyItems == null)
                 {

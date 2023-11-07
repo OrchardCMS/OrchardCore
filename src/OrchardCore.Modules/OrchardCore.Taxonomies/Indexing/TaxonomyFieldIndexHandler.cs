@@ -42,7 +42,7 @@ namespace OrchardCore.Taxonomies.Indexing
             var inheritedContentItems = new List<ContentItem>();
             foreach (var contentItemId in field.TermContentItemIds)
             {
-                TaxonomyOrchardHelperExtensions.FindTermHierarchy(taxonomy.Content.TaxonomyPart.Terms as JsonArray, contentItemId, inheritedContentItems);
+                TaxonomyOrchardHelperExtensions.FindTermHierarchy((JsonArray)taxonomy.Content.TaxonomyPart.Terms, contentItemId, inheritedContentItems);
             }
 
             foreach (var key in context.Keys)

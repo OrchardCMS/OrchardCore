@@ -48,7 +48,6 @@ namespace OrchardCore.Liquid
 
                 // When a property of a 'JsonObject' value is accessed, try to look into its properties.
                 options.MemberAccessStrategy.Register<JsonObject, object>((source, name) => source[name]);
-                options.MemberAccessStrategy.Register<JsonDynamicObject, object>((source, name) => source[name]);
 
                 // Convert JToken to FluidValue
                 options.ValueConverters.Add(x =>
@@ -56,6 +55,7 @@ namespace OrchardCore.Liquid
                     return x switch
                     {
                         JsonObject o => new ObjectValue(o),
+                        JsonDynamicObject o => new ObjectValue((JsonObject)o),
                         DateTime d => new ObjectValue(d),
                         _ => null
                     };

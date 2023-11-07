@@ -1,6 +1,5 @@
 using System;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Fluid;
@@ -101,38 +100,6 @@ namespace OrchardCore.Contents
                 o.MemberAccessStrategy.Register<ContentPartFieldDefinition>();
                 o.MemberAccessStrategy.Register<ContentFieldDefinition>();
                 o.MemberAccessStrategy.Register<ContentPartDefinition>();
-
-
-                // Convert JToken to FluidValue
-                //o.ValueConverters.Add(x =>
-                //{
-                //    //if (x is JsonArray jsonArray)
-                //    //{
-                //    //    //var a = new ObjectValue((IList<object>)jsonArray.ToObject<object>());
-                //    //    var a = new ObjectValue(jsonArray.AsEnumerable().ToArray());
-                //    //    //var a = new ObjectValue(jsonArray.ToObject<object>());
-                //    //    return a;
-                //    //}
-
-                //    if (x is JsonObject jsonObject)
-                //    {
-                //        //var a = new ObjectValue((IList<object>)jsonArray.ToObject<object>());
-                //        //var o = new ObjectValue(jsonObject.AsEnumerable().ToArray());
-                //        //var o = new ObjectValue(jsonObject.ToObject<object>());
-                //        var o = jsonObject.ToObject<object>();
-                //        return o;
-                //    }
-
-                //    return x switch
-                //    {
-                //        //JsonObject o => new ObjectValue(o.ToObject<object>(Options)),
-                //        //JsonArray a => new ObjectValue(a.ToObject<object>()),
-                //        //JsonValue v => new ObjectValue(v.ToObject<object>()),
-                //        DateTime d => new ObjectValue(d),
-                //        _ => null
-                //    };
-                //});
-
 
                 o.Filters.AddFilter("display_text", DisplayTextFilter.DisplayText);
 

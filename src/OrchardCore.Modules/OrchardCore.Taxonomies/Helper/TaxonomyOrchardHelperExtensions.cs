@@ -30,7 +30,7 @@ public static class TaxonomyOrchardHelperExtensions
             return null;
         }
 
-        return FindTerm(taxonomy.Content.TaxonomyPart.Terms as JsonArray, termContentItemId);
+        return FindTerm((JsonArray)taxonomy.Content.TaxonomyPart.Terms, termContentItemId);
     }
 
     /// <summary>
@@ -52,7 +52,7 @@ public static class TaxonomyOrchardHelperExtensions
 
         var terms = new List<ContentItem>();
 
-        FindTermHierarchy(taxonomy.Content.TaxonomyPart.Terms as JsonArray, termContentItemId, terms);
+        FindTermHierarchy((JsonArray)taxonomy.Content.TaxonomyPart.Terms, termContentItemId, terms);
 
         return terms;
     }
