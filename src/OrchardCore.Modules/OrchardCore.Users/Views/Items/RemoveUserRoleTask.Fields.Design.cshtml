@@ -1,0 +1,9 @@
+@using OrchardCore.Workflows.ViewModels
+@using OrchardCore.Workflows.Helpers
+@using OrchardCore.Users.Workflows.Activities
+@using OrchardCore.Users.Workflows.ViewModels
+@model ActivityViewModel<RemoveUserRoleTask>
+<header>
+    <h4><i class="fa-solid fa-user" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Remove user from role"])</h4>
+</header>
+<em>@T["{0} from role {1}", Model.Activity.UserName, Model.Activity.RoleName]</em>
