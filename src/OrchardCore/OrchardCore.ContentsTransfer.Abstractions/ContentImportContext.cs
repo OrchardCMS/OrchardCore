@@ -2,7 +2,7 @@ using System.Data;
 
 namespace OrchardCore.ContentsTransfer;
 
-public class ContentImportMapContext : ImportContentContext
+public class ContentImportContext : ImportContentContext
 {
     public DataColumnCollection Columns { get; set; }
 

@@ -53,9 +53,9 @@ public abstract class ContentImportHandlerBase : IContentImportHandler
 
     public abstract IReadOnlyCollection<ImportColumn> GetColumns(ImportContentContext context);
 
-    public abstract Task ImportAsync(ContentImportMapContext content);
+    public abstract Task ImportAsync(ContentImportContext content);
 
-    public abstract Task ExportAsync(ContentExportMapContext content);
+    public abstract Task ExportAsync(ContentExportContext content);
 
     public virtual Task ValidateAsync(ValidateImportContext context)
     {

@@ -43,7 +43,7 @@ public class CommonContentImportHandler : ContentImportHandlerBase
         };
     }
 
-    public override Task ImportAsync(ContentImportMapContext context)
+    public override Task ImportAsync(ContentImportContext context)
     {
         if (context == null)
         {
@@ -91,7 +91,7 @@ public class CommonContentImportHandler : ContentImportHandlerBase
         return Task.CompletedTask;
     }
 
-    public override Task ExportAsync(ContentExportMapContext context)
+    public override Task ExportAsync(ContentExportContext context)
     {
         if (context.ContentItem == null)
         {
