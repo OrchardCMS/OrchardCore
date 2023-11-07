@@ -276,9 +276,9 @@ namespace OrchardCore.Workflows.Http.Controllers
                 return new EmptyResult();
             }
 
-            if (HttpContext.Items.TryGetValue("FormOriginatedLocation", out var value))
+            if (HttpContext.Items.TryGetValue(WorkflowConstants.FormOriginatedLocationItemsKey, out var value))
             {
-                return Redirect(value.ToString());
+                return Redirect(value.ToString().ToUriComponents());
             }
 
             return Accepted();

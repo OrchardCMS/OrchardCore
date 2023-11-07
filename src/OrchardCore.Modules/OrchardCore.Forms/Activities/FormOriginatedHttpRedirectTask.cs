@@ -1,17 +1,13 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Primitives;
 using OrchardCore.Forms.Models;
+using OrchardCore.Workflows;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
-using OrchardCore.Workflows.Http;
 using OrchardCore.Workflows.Models;
-using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Forms.Activities;
 
@@ -49,7 +45,7 @@ public class FormOriginatedHttpRedirectTask : TaskActivity
             && _httpContextAccessor.HttpContext.Request.Form.TryGetValue(FormPart.RequestOriginatedFromInputName, out var value)
             && !string.IsNullOrWhiteSpace(value))
         {
-            _httpContextAccessor.HttpContext.Items["FormOriginatedLocation"] = GetLocationUrl(value.ToString());
+            _httpContextAccessor.HttpContext.Items[WorkflowConstants.FormOriginatedLocationItemsKey] = GetLocationUrl(value.ToString());
 
             return Task.FromResult(Outcomes("Done"));
         }
@@ -61,9 +57,9 @@ public class FormOriginatedHttpRedirectTask : TaskActivity
     {
         if (value.StartsWith('/'))
         {
-            return "~" + value.ToUriComponents();
+            return "~" + value;
         }
 
-        return value.ToUriComponents();
+        return value;
     }
 }
