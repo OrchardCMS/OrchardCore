@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Forms.Models
@@ -12,8 +13,10 @@ namespace OrchardCore.Forms.Models
 
         public string EncType { get; set; }
 
+        [DefaultValue(true)]
         public bool EnableAntiForgeryToken { get; set; } = true;
 
+        [DefaultValue(true)]
         public bool SaveFormLocation { get; set; } = true;
 
         public string FormLocationKey { get; set; }
