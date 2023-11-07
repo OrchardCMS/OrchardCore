@@ -11,5 +11,5 @@ public interface IContentFieldImportHandler
 
     Task ExportAsync(ContentFieldExportMapContext context);
 
-    Task ValidateAsync(ValidateFieldImportContext context);
+    // Task ValidateAsync(ValidateFieldImportContext context);
 }

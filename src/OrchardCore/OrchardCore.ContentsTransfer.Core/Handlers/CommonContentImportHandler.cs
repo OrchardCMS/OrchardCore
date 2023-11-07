@@ -7,19 +7,20 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.ContentsTransfer.Handlers;
 
-public class CommonContentImportHandler : ContentImportHandlerBase
+public class CommonContentImportHandler : ContentImportHandlerBase, IContentImportHandler
 {
     private readonly IContentItemIdGenerator _contentItemIdGenerator;
+    protected readonly IStringLocalizer S;
 
     public CommonContentImportHandler(
         IStringLocalizer<TitlePartContentImportHandler> stringLocalizer,
         IContentItemIdGenerator contentItemIdGenerator)
-        : base(stringLocalizer)
     {
         _contentItemIdGenerator = contentItemIdGenerator;
+        S = stringLocalizer; ;
     }
 
-    public override IReadOnlyCollection<ImportColumn> GetColumns(ImportContentContext context)
+    public IReadOnlyCollection<ImportColumn> GetColumns(ImportContentContext context)
     {
         return new[]
         {
@@ -43,7 +44,7 @@ public class CommonContentImportHandler : ContentImportHandlerBase
         };
     }
 
-    public override Task ImportAsync(ContentImportContext context)
+    public Task ImportAsync(ContentImportContext context)
     {
         if (context == null)
         {
@@ -91,7 +92,7 @@ public class CommonContentImportHandler : ContentImportHandlerBase
         return Task.CompletedTask;
     }
 
-    public override Task ExportAsync(ContentExportContext context)
+    public Task ExportAsync(ContentExportContext context)
     {
         if (context.ContentItem == null)
         {

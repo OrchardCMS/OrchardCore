@@ -10,9 +10,11 @@ namespace OrchardCore.ContentsTransfer.Handlers.Fields;
 
 public class DateFieldImportHandler : StandardFieldImportHandler
 {
+    protected readonly IStringLocalizer S;
+
     public DateFieldImportHandler(IStringLocalizer<DateFieldImportHandler> stringLocalizer)
-        : base(stringLocalizer)
     {
+        S = stringLocalizer;
     }
 
     protected override Task SetValueAsync(ContentFieldImportMapContext context, string text)
@@ -38,13 +40,8 @@ public class DateFieldImportHandler : StandardFieldImportHandler
     protected override string Description(ImportContentFieldContext context)
         => S["A date value for {0}", context.ContentPartFieldDefinition.DisplayName()];
 
-
     protected override bool IsRequired(ImportContentFieldContext context)
-    {
-        var settings = context.ContentPartFieldDefinition.GetSettings<DateFieldSettings>();
-
-        return settings?.Required ?? false;
-    }
+        => context.ContentPartFieldDefinition.GetSettings<DateFieldSettings>()?.Required ?? false;
 
     protected override string BindingPropertyName => nameof(DateField.Value);
 }

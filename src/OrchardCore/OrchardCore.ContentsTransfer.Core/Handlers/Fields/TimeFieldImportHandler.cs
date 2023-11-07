@@ -10,9 +10,11 @@ namespace OrchardCore.ContentsTransfer.Handlers.Fields;
 
 public class TimeFieldImportHandler : StandardFieldImportHandler
 {
+    protected readonly IStringLocalizer S;
+
     public TimeFieldImportHandler(IStringLocalizer<TimeFieldImportHandler> stringLocalizer)
-        : base(stringLocalizer)
     {
+        S = stringLocalizer;
     }
 
     protected override Task SetValueAsync(ContentFieldImportMapContext context, string text)
@@ -37,13 +39,8 @@ public class TimeFieldImportHandler : StandardFieldImportHandler
     protected override string Description(ImportContentFieldContext context)
         => S["A timespan value for {0}", context.ContentPartFieldDefinition.DisplayName()];
 
-
     protected override bool IsRequired(ImportContentFieldContext context)
-    {
-        var settings = context.ContentPartFieldDefinition.GetSettings<TimeFieldSettings>();
-
-        return settings?.Required ?? false;
-    }
+        => context.ContentPartFieldDefinition.GetSettings<TimeFieldSettings>()?.Required ?? false;
 
     protected override string BindingPropertyName
         => nameof(TimeField.Value);

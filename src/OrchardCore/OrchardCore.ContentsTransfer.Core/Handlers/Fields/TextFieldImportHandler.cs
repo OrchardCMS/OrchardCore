@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,85 +10,19 @@ using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentsTransfer.Handlers.Fields;
 
-public class TextFieldImportHandler : ContentFieldImportHandlerBase
+public class TextFieldImportHandler : StandardFieldImportHandler
 {
+    protected readonly IStringLocalizer S;
+
     public TextFieldImportHandler(IStringLocalizer<TextFieldImportHandler> stringLocalizer)
-        : base(stringLocalizer)
     {
+        S = stringLocalizer;
     }
 
-    public override IReadOnlyCollection<ImportColumn> GetColumns(ImportContentFieldContext context)
-    {
-        return new[]
-        {
-            new ImportColumn()
-            {
-                Name = $"{context.PartName}_{context.ContentPartFieldDefinition.Name}_{nameof(TextField.Text)}",
-                Description = Description(context),
-                IsRequired = IsRequired(context),
-                AdditionalNames = AdditionalValues(context),
-            }
-        };
-    }
+    protected override string BindingPropertyName
+        => nameof(TextField.Text);
 
-    public override async Task ImportAsync(ContentFieldImportMapContext context)
-    {
-        if (context.ContentItem == null)
-        {
-            throw new ArgumentNullException(nameof(context.ContentItem));
-        }
-
-        if (context.Columns == null)
-        {
-            throw new ArgumentNullException(nameof(context.Columns));
-        }
-
-        if (context.Row == null)
-        {
-            throw new ArgumentNullException(nameof(context.Row));
-        }
-
-        var firstColumn = GetColumns(context).FirstOrDefault();
-
-        foreach (DataColumn column in context.Columns)
-        {
-            if (!Is(column.ColumnName, firstColumn))
-            {
-                continue;
-            }
-            var text = context.Row[column]?.ToString();
-
-            if (string.IsNullOrWhiteSpace(text))
-            {
-                continue;
-            }
-
-            await SetValueAsync(context, text);
-        }
-    }
-
-    public override async Task ExportAsync(ContentFieldExportMapContext context)
-    {
-        if (context.ContentItem == null)
-        {
-            throw new ArgumentNullException(nameof(context.ContentItem));
-        }
-
-
-        if (context.Row == null)
-        {
-            throw new ArgumentNullException(nameof(context.Row));
-        }
-
-        var firstColumn = GetColumns(context).FirstOrDefault();
-
-        if (firstColumn != null)
-        {
-            context.Row[firstColumn.Name] = await GetValueAsync(context);
-        }
-    }
-
-    protected virtual Task SetValueAsync(ContentFieldImportMapContext context, string text)
+    protected override Task SetValueAsync(ContentFieldImportMapContext context, string text)
     {
         context.ContentPart.Alter<TextField>(context.ContentPartFieldDefinition.Name, (field) =>
         {
@@ -99,26 +32,20 @@ public class TextFieldImportHandler : ContentFieldImportHandlerBase
         return Task.CompletedTask;
     }
 
-    protected virtual Task<object> GetValueAsync(ContentFieldExportMapContext context)
+    protected override Task<object> GetValueAsync(ContentFieldExportMapContext context)
     {
         var field = context.ContentPart.Get<TextField>(context.ContentPartFieldDefinition.Name);
 
         return Task.FromResult<object>(field?.Text);
     }
 
-    protected virtual string Description(ImportContentFieldContext context)
-    {
-        return S["A text value for {0}", context.ContentPartFieldDefinition.DisplayName()];
-    }
+    protected override string Description(ImportContentFieldContext context)
+        => S["A text value for {0}", context.ContentPartFieldDefinition.DisplayName()];
 
-    protected virtual bool IsRequired(ImportContentFieldContext context)
-    {
-        var settings = context.ContentPartFieldDefinition.GetSettings<TextFieldSettings>();
+    protected override bool IsRequired(ImportContentFieldContext context)
+        => context.ContentPartFieldDefinition.GetSettings<TextFieldSettings>()?.Required ?? false;
 
-        return settings?.Required ?? false;
-    }
-
-    protected virtual string[] AdditionalValues(ImportContentFieldContext context)
+    protected override string[] GetValidValues(ImportContentFieldContext context)
     {
         var predefined = context.ContentPartFieldDefinition.GetSettings<TextFieldPredefinedListEditorSettings>();
 

@@ -8,10 +8,12 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OfficeOpenXml;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentsTransfer.Indexes;
 using OrchardCore.ContentsTransfer.Models;
@@ -23,7 +25,7 @@ using YesSql;
 namespace OrchardCore.ContentsTransfer;
 
 [BackgroundTask(
-    Title = "Import Files Processor",
+    Title = "Imported Files Processor",
     Schedule = "*/10 * * * *",
     Description = "Regularly check for imported files and process them.",
     LockTimeout = 3_000, LockExpiration = 30_000)]
@@ -34,8 +36,6 @@ public class ImportFilesBackgroundTask : IBackgroundTask
         MergeArrayHandling = MergeArrayHandling.Replace,
         MergeNullValueHandling = MergeNullValueHandling.Ignore,
     };
-
-    private const int _batchSize = 100;
 
     private ISession _session;
     private IClock _clock;
@@ -49,6 +49,7 @@ public class ImportFilesBackgroundTask : IBackgroundTask
         _clock = serviceProvider.GetRequiredService<IClock>();
         _logger = serviceProvider.GetRequiredService<ILogger<ImportFilesBackgroundTask>>();
         _contentManager = serviceProvider.GetRequiredService<IContentManager>();
+        var contentImportOptions = serviceProvider.GetRequiredService<IOptions<ContentImportOptions>>().Value;
         S = serviceProvider.GetRequiredService<IStringLocalizer<ImportFilesBackgroundTask>>();
 
         var fileStore = serviceProvider.GetRequiredService<IContentTransferFileStore>();
@@ -58,6 +59,8 @@ public class ImportFilesBackgroundTask : IBackgroundTask
         var entries = await _session.Query<ContentTransferEntry, ContentTransferEntryIndex>(x => x.Status == ContentTransferEntryStatus.New || x.Status == ContentTransferEntryStatus.Processing)
         .OrderBy(x => x.CreatedUtc)
         .ListAsync();
+
+        var batchSize = contentImportOptions.ImportBatchSize < 1 ? 100 : contentImportOptions.ImportBatchSize;
 
         foreach (var entry in entries)
         {
@@ -121,7 +124,7 @@ public class ImportFilesBackgroundTask : IBackgroundTask
 
                 contentItems.Insert(dataTable.Rows.IndexOf(row), mapContext.ContentItem);
 
-                if (contentItems.Count == _batchSize)
+                if (contentItems.Count == batchSize)
                 {
                     await SavePatchAsync(contentItems, progressPart);
                     entry.ProcessSaveUtc = _clock.UtcNow;
@@ -153,44 +156,45 @@ public class ImportFilesBackgroundTask : IBackgroundTask
         var existingItemIds = contentItems.Where(x => !string.IsNullOrEmpty(x.ContentItemId)).Select(x => x.ContentItemId).ToList();
 
         // Attempt to find existing content item.
-        var existingContentItems = (await _contentManager.GetAsync(existingItemIds, VersionOptions.Latest)).ToDictionary(x => x.ContentItemId, x => x);
+        var existingContentItems = (await _contentManager.GetAsync(existingItemIds, VersionOptions.DraftRequired)).ToDictionary(x => x.ContentItemId, x => x);
 
         foreach (var contentItem in contentItems)
         {
+            ContentValidateResult validationResult;
+
             if (existingContentItems.TryGetValue(contentItem.ContentItemId, out var existingContentItem))
             {
                 // At this point, we are updating existing content item.
                 // Merge new values to existing.
                 existingContentItem.Merge(contentItem, _updateJsonMergeSettings);
 
-                if (!await TrySaveRecordAsync(existingContentItem))
+                validationResult = await _contentManager.ValidateAsync(existingContentItem);
+
+                if (validationResult.Succeeded)
                 {
-                    stats.Errors.Add(contentItems.IndexOf(contentItem));
+                    await _contentManager.PublishAsync(existingContentItem);
+
+                    continue;
                 }
+
+                stats.Errors.Add(contentItems.IndexOf(contentItem));
 
                 continue;
             }
 
             // At this point, we are creating a new content item.
-            if (!await TrySaveRecordAsync(contentItem))
+            validationResult = await _contentManager.ValidateAsync(existingContentItem);
+
+            if (validationResult.Succeeded)
             {
-                stats.Errors.Add(contentItems.IndexOf(contentItem));
+                await _contentManager.CreateAsync(contentItem, VersionOptions.Draft);
+                await _contentManager.PublishAsync(contentItem);
+
+                return;
             }
+
+            stats.Errors.Add(contentItems.IndexOf(contentItem));
         }
-    }
-
-    private async Task<bool> TrySaveRecordAsync(ContentItem existingContentItem)
-    {
-        var result = await _contentManager.ValidateAsync(existingContentItem);
-
-        if (result.Succeeded)
-        {
-            _session.Save(existingContentItem);
-
-            return true;
-        }
-
-        return false;
     }
 
     private async Task SaveEntryWithError(ContentTransferEntry entry, string error)
