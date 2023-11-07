@@ -11,5 +11,5 @@ public interface IContentPartImportHandler
 
     Task ExportAsync(ContentPartExportMapContext content);
 
-    Task ValidateAsync(ValidatePartImportContext context);
+    // Task ValidateAsync(ValidatePartImportContext context);
 }

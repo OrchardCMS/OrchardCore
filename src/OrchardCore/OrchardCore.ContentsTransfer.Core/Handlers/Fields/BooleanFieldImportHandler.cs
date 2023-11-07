@@ -10,9 +10,11 @@ namespace OrchardCore.ContentsTransfer.Handlers.Fields;
 
 public class BooleanFieldImportHandler : StandardFieldImportHandler
 {
+    protected readonly IStringLocalizer S;
+
     public BooleanFieldImportHandler(IStringLocalizer<BooleanFieldImportHandler> stringLocalizer)
-        : base(stringLocalizer)
     {
+        S = stringLocalizer;
     }
 
     protected override Task SetValueAsync(ContentFieldImportMapContext context, string text)
@@ -40,8 +42,7 @@ public class BooleanFieldImportHandler : StandardFieldImportHandler
     }
 
     protected override string Description(ImportContentFieldContext context)
-     => S["A numeric value for {0}", context.ContentPartFieldDefinition.DisplayName()];
-
+        => S["A numeric value for {0}", context.ContentPartFieldDefinition.DisplayName()];
 
     protected override bool IsRequired(ImportContentFieldContext context)
         => false;

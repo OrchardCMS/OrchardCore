@@ -57,11 +57,6 @@ public class ImportContentDisplayDriver : DisplayDriver<ImportContent>
                     context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.File), S["This extension is not allowed"]);
                 }
 
-                if (_contentImportOptions.MaxAllowedFileSizeInBytes > 0 && viewModel.File.Length > _contentImportOptions.MaxAllowedFileSizeInBytes)
-                {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.File), S["The uploaded file size exceeded the allowed file size {0} MB", _contentImportOptions.GetMaxAllowedSizeInMb()]);
-                }
-
                 model.File = viewModel.File;
             }
         }

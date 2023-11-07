@@ -4,6 +4,8 @@ namespace OrchardCore.ContentsTransfer.Models;
 
 public class ContentImportOptions
 {
+    public int ImportBatchSize { get; set; } = 100;
+
     // 100MB is the absolute max.
     public const int AbsoluteMaxAllowedFileSizeInBytes = 100 * 1024 * 1024;
 
@@ -22,5 +24,10 @@ public class ContentImportOptions
         }
 
         return Math.Min(MaxAllowedFileSizeInBytes, AbsoluteMaxAllowedFileSizeInBytes);
+    }
+
+    public double GetMaxAllowedSizeInMb()
+    {
+        return GetMaxAllowedSize() / 1000000d;
     }
 }

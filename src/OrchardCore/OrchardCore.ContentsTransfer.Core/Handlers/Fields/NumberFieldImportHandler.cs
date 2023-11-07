@@ -9,9 +9,11 @@ namespace OrchardCore.ContentsTransfer.Handlers.Fields;
 
 public class NumberFieldImportHandler : StandardFieldImportHandler
 {
+    private readonly IStringLocalizer S;
+
     public NumberFieldImportHandler(IStringLocalizer<NumberFieldImportHandler> stringLocalizer)
-        : base(stringLocalizer)
     {
+        S = stringLocalizer;
     }
 
     protected override Task SetValueAsync(ContentFieldImportMapContext context, string text)
@@ -39,13 +41,8 @@ public class NumberFieldImportHandler : StandardFieldImportHandler
     protected override string Description(ImportContentFieldContext context)
         => S["A numeric value for {0}", context.ContentPartFieldDefinition.DisplayName()];
 
-
     protected override bool IsRequired(ImportContentFieldContext context)
-    {
-        var settings = context.ContentPartFieldDefinition.GetSettings<NumericFieldSettings>();
-
-        return settings?.Required ?? false;
-    }
+        => context.ContentPartFieldDefinition.GetSettings<NumericFieldSettings>()?.Required ?? false;
 
     protected override string BindingPropertyName
         => nameof(NumericField.Value);

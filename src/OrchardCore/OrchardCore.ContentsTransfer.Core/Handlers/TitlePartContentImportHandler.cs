@@ -9,16 +9,17 @@ using OrchardCore.Title.Models;
 
 namespace OrchardCore.ContentsTransfer.Handlers;
 
-public class TitlePartContentImportHandler : ContentPartImportHandlerBase
+public class TitlePartContentImportHandler : ContentImportHandlerBase, IContentPartImportHandler
 {
+    protected readonly IStringLocalizer S;
     private ImportColumn _column;
 
     public TitlePartContentImportHandler(IStringLocalizer<TitlePartContentImportHandler> stringLocalizer)
-        : base(stringLocalizer)
     {
+        S = stringLocalizer;
     }
 
-    public override IReadOnlyCollection<ImportColumn> GetColumns(ImportContentPartContext context)
+    public IReadOnlyCollection<ImportColumn> GetColumns(ImportContentPartContext context)
     {
         if (_column == null)
         {
@@ -43,7 +44,7 @@ public class TitlePartContentImportHandler : ContentPartImportHandlerBase
         return new[] { _column };
     }
 
-    public override Task ImportAsync(ContentPartImportMapContext context)
+    public Task ImportAsync(ContentPartImportMapContext context)
     {
         if (context == null)
         {
@@ -91,7 +92,7 @@ public class TitlePartContentImportHandler : ContentPartImportHandlerBase
         return Task.CompletedTask;
     }
 
-    public override Task ExportAsync(ContentPartExportMapContext context)
+    public Task ExportAsync(ContentPartExportMapContext context)
     {
         if (context.ContentItem == null)
         {
