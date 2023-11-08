@@ -100,8 +100,14 @@ public class JsonDynamicObject : DynamicObject
         return null;
     }
 
-    public void SetValue(string key, object? value, object? originalValue = null)
+    public void SetValue(string key, object? value, object? nodeValue = null)
     {
+        if (value is not JsonNode)
+        {
+            var jsonNode = JNode.FromObject(value);
+            SetValue(key, jsonNode, value);
+        }
+
         if (value is JsonObject jsonObject)
         {
             _jsonObject[key] = jsonObject;
@@ -119,12 +125,9 @@ public class JsonDynamicObject : DynamicObject
         if (value is JsonValue jsonValue)
         {
             _jsonObject[key] = jsonValue;
-            _dictionary[key] = new JsonDynamicValue(jsonValue, originalValue);
+            _dictionary[key] = new JsonDynamicValue(jsonValue, nodeValue);
             return;
         }
-
-        var jsonNode = JNode.FromObject(value);
-        SetValue(key, jsonNode, value);
     }
 
     public static implicit operator JsonObject(JsonDynamicObject value) => value._jsonObject;

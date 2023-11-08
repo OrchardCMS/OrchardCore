@@ -1,13 +1,11 @@
-using System.Diagnostics;
-
 #nullable enable
 
 namespace System.Text.Json.Nodes;
 
-[DebuggerDisplay("JsonDynamicValue[{Value}]")]
 public class JsonDynamicValue
 {
-    private readonly object? _value;
+    private object? _value;
+    private bool _initialized;
 
     public JsonDynamicValue(JsonValue? jsonValue, object? value = null)
     {
@@ -17,5 +15,17 @@ public class JsonDynamicValue
 
     public JsonValue? JsonValue { get; }
 
-    public object? Value => _value ?? JsonValue.ToObject<object>();
+    public object? Value
+    {
+        get
+        {
+            if (!_initialized)
+            {
+                _value = JsonValue.ToObject<object>();
+                _initialized = true;
+            }
+
+            return _value;
+        }
+    }
 }

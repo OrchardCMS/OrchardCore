@@ -152,7 +152,7 @@ namespace OrchardCore.Autoroute.Core.Indexes
 
                     var containedContentItemsAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
 
-                    await PopulateContainedContentItemIndexesAsync(results, contentItem, containedContentItemsAspect, contentItem.Content, part.Path);
+                    await PopulateContainedContentItemIndexesAsync(results, contentItem, containedContentItemsAspect, (JsonObject)contentItem.Content, part.Path);
 
                     return results;
                 });

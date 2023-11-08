@@ -85,7 +85,7 @@ namespace OrchardCore.Html
 
                 foreach (var contentItemVersion in contentItemVersions)
                 {
-                    if (UpdateBody(contentItemVersion.Content))
+                    if (UpdateBody((JsonObject)contentItemVersion.Content))
                     {
                         _session.Save(contentItemVersion);
                         _logger.LogInformation("A content item version's BodyPart was upgraded: {ContentItemVersionId}", contentItemVersion.ContentItemVersionId);

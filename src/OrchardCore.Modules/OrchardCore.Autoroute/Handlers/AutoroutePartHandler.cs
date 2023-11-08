@@ -70,7 +70,7 @@ namespace OrchardCore.Autoroute.Handlers
                 {
                     _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
                     var containedAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(context.PublishingItem);
-                    await CheckContainedHomeRouteAsync(part.ContentItem.ContentItemId, containedAspect, context.PublishingItem.Content);
+                    await CheckContainedHomeRouteAsync(part.ContentItem.ContentItemId, containedAspect, (JsonObject)context.PublishingItem.Content);
                 }
 
                 // Update entries from the index table after the session is committed.
@@ -238,9 +238,9 @@ namespace OrchardCore.Autoroute.Handlers
 
             // Build the entries for this content item to evaluate for duplicates.
             var entries = new List<AutorouteEntry>();
-            await PopulateContainedContentItemRoutesAsync(entries, part.ContentItem.ContentItemId, containedAspect, contentItem.Content, part.Path);
+            await PopulateContainedContentItemRoutesAsync(entries, part.ContentItem.ContentItemId, containedAspect, (JsonObject)contentItem.Content, part.Path);
 
-            await ValidateContainedContentItemRoutesAsync(entries, part.ContentItem.ContentItemId, containedAspect, contentItem.Content, part.Path);
+            await ValidateContainedContentItemRoutesAsync(entries, part.ContentItem.ContentItemId, containedAspect, (JsonObject)contentItem.Content, part.Path);
         }
 
         private async Task PopulateContainedContentItemRoutesAsync(List<AutorouteEntry> entries, string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JsonObject content, string basePath)
@@ -299,7 +299,7 @@ namespace OrchardCore.Autoroute.Handlers
                             containedAutoroutePart.Apply();
 
                             // Merge because we have disconnected the content item from it's json owner.
-                            jItem.Merge(contentItem.Content as JsonObject, new JsonMergeSettings
+                            jItem.Merge((JsonObject)contentItem.Content, new JsonMergeSettings
                             {
                                 MergeArrayHandling = MergeArrayHandling.Replace,
                                 MergeNullValueHandling = MergeNullValueHandling.Merge
@@ -317,7 +317,7 @@ namespace OrchardCore.Autoroute.Handlers
                                 containedAutoroutePart.Apply();
 
                                 // Merge because we have disconnected the content item from it's json owner.
-                                jItem.Merge(contentItem.Content as JsonObject, new JsonMergeSettings
+                                jItem.Merge((JsonObject)contentItem.Content, new JsonMergeSettings
                                 {
                                     MergeArrayHandling = MergeArrayHandling.Replace,
                                     MergeNullValueHandling = MergeNullValueHandling.Merge

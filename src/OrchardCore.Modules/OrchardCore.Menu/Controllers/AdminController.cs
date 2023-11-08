@@ -115,7 +115,7 @@ namespace OrchardCore.Menu.Controllers
             else
             {
                 // Look for the target menu item in the hierarchy.
-                var parentMenuItem = FindMenuItem(menu.Content, menuItemId) as JsonObject;
+                var parentMenuItem = FindMenuItem((JsonObject)menu.Content, menuItemId) as JsonObject;
 
                 // Couldn't find targeted menu item.
                 if (parentMenuItem == null)
@@ -129,7 +129,7 @@ namespace OrchardCore.Menu.Controllers
                 {
                     parentMenuItem["MenuItemsListPart"] = new JsonObject
                     {
-                        ["MenuItems" ] = menuItems = new JsonArray(),
+                        ["MenuItems"] = menuItems = new JsonArray(),
                     };
                 }
 
@@ -156,7 +156,7 @@ namespace OrchardCore.Menu.Controllers
             }
 
             // Look for the target menu item in the hierarchy.
-            var menuItem = FindMenuItem(menu.Content, menuItemId);
+            var menuItem = FindMenuItem((JsonObject)menu.Content, menuItemId);
 
             // Couldn't find targeted menu item.
             if (menuItem == null)
@@ -202,7 +202,7 @@ namespace OrchardCore.Menu.Controllers
             }
 
             // Look for the target menu item in the hierarchy.
-            var menuItem = FindMenuItem(menu.Content, menuItemId);
+            var menuItem = FindMenuItem((JsonObject)menu.Content, menuItemId);
 
             // Couldn't find targeted menu item
             if (menuItem == null)
@@ -227,7 +227,7 @@ namespace OrchardCore.Menu.Controllers
                 return View(model);
             }
 
-            menuItem.Merge(contentItem.Content, new JsonMergeSettings
+            menuItem.Merge((JsonObject)contentItem.Content, new JsonMergeSettings
             {
                 MergeArrayHandling = MergeArrayHandling.Replace,
                 MergeNullValueHandling = MergeNullValueHandling.Merge
@@ -268,7 +268,7 @@ namespace OrchardCore.Menu.Controllers
             }
 
             // Look for the target menu item in the hierarchy.
-            var menuItem = FindMenuItem(menu.Content, menuItemId);
+            var menuItem = FindMenuItem((JsonObject)menu.Content, menuItemId);
 
             // Couldn't find targeted menu item.
             if (menuItem == null)
