@@ -141,7 +141,7 @@ public class JsonDynamicArray : DynamicObject, IEnumerable<JsonNode?>
 
     public override bool TryGetMember(GetMemberBinder binder, out object? result)
     {
-        if (binder.Name == "{No Dynamic Member}")
+        if (binder.Name == "{No Member}")
         {
             result = 0;
             return true;
@@ -174,7 +174,7 @@ public class JsonDynamicArray : DynamicObject, IEnumerable<JsonNode?>
 
         if (names.Count == 0)
         {
-            names.Add("{No Dynamic Member}");
+            names.Add("{No Member}");
         }
 
         return names;

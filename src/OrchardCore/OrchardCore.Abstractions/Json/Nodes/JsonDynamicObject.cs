@@ -41,7 +41,7 @@ public class JsonDynamicObject : DynamicObject
 
     public override bool TryGetMember(GetMemberBinder binder, out object? result)
     {
-        if (_jsonObject.Count == 0 && binder.Name == "{No Dynamic Member}")
+        if (_jsonObject.Count == 0 && binder.Name == "{No Member}")
         {
             result = 0;
             return true;
@@ -151,7 +151,7 @@ public class JsonDynamicObject : DynamicObject
 
         if (names.Count == 0)
         {
-            names.Add("{No Dynamic Member}");
+            names.Add("{No Member}");
         }
 
         return names;

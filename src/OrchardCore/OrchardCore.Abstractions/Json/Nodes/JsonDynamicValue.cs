@@ -21,7 +21,7 @@ public class JsonDynamicValue
         {
             if (!_initialized)
             {
-                _value = JsonValue.ToObject<object>();
+                _value ??= JsonValue.ToObject<object>();
                 _initialized = true;
             }
 
