@@ -89,7 +89,7 @@ namespace OrchardCore.Queries.Sql.Controllers
                 model.Parameters = JsonConvert.SerializeObject(parameters, Formatting.Indented);
                 try
                 {
-                    model.Documents = await _queryExecutor.QueryAsync(connection => connection.QueryAsync(rawQuery, parameters));
+                    model.Documents = await _queryExecutor.QueryAsync<dynamic>(rawQuery, parameters);
                 }
                 catch (Exception e)
                 {

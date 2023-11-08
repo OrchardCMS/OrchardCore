@@ -59,7 +59,7 @@ namespace OrchardCore.Queries.Sql
 
             var results = new List<JObject>();
 
-            await _queryExecutor.QueryAsync(async connection =>
+            await _queryExecutor.ExecuteAsync(async connection =>
             {
                 if (sqlQuery.ReturnDocuments)
                 {

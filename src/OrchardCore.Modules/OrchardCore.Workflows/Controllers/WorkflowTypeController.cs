@@ -139,7 +139,7 @@ namespace OrchardCore.Workflows.Controllers
             routeData.Values.Add("Options.Search", options.Search);
             routeData.Values.Add("Options.Order", options.Order);
 
-            var workflowTypeIdsWithInstances = (await _queryExecutor.QueryAsync(connection => connection.QueryAsync<string>(sqlBuilder.ToSqlString()))).ToHashSet();
+            var workflowTypeIdsWithInstances = (await _queryExecutor.QueryAsync<string>(sqlBuilder)).ToHashSet();
 
             var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
             var model = new WorkflowTypeIndexViewModel

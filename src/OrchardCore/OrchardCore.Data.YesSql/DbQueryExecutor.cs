@@ -25,8 +25,10 @@ public class DbQueryExecutor : IDbQueryExecutor
             throw new ArgumentNullException(nameof(context));
         }
 
-        await QueryAsync(async (connection) =>
+        await using var connection = _dbConnectionAccessor.CreateConnection();
+        try
         {
+            await connection.OpenAsync();
             using var transaction = await connection.BeginTransactionAsync(context.TransactionIsolationLevel, context.CancellationToken);
             try
             {
@@ -44,21 +46,6 @@ public class DbQueryExecutor : IDbQueryExecutor
                     throw;
                 }
             }
-        }, context);
-    }
-
-    public async Task QueryAsync(Func<DbConnection, Task> callback, DbQueryContext context)
-    {
-        if (context == null)
-        {
-            throw new ArgumentNullException(nameof(context));
-        }
-
-        await using var connection = _dbConnectionAccessor.CreateConnection();
-        try
-        {
-            await connection.OpenAsync();
-            await callback(connection);
         }
         catch (Exception ex)
         {

@@ -136,13 +136,13 @@ namespace OrchardCore.Indexing.Services
 
                     if (pageOfIds.Count > 0)
                     {
-                        await transaction.Connection.ExecuteAsync(deleteCmd, new { Ids = pageOfIds }, transaction);
+                        await connection.ExecuteAsync(deleteCmd, new { Ids = pageOfIds }, transaction);
                         ids = ids.Skip(pageSize).ToList();
                     }
                 } while (ids.Count > 0);
 
                 var insertCmd = $"insert into {dialect.QuoteForTableName(table, _store.Configuration.Schema)} ({dialect.QuoteForColumnName("CreatedUtc")}, {dialect.QuoteForColumnName("ContentItemId")}, {dialect.QuoteForColumnName("Type")}) values (@CreatedUtc, @ContentItemId, @Type);";
-                await transaction.Connection.ExecuteAsync(insertCmd, localQueue, transaction);
+                await connection.ExecuteAsync(insertCmd, localQueue, transaction);
             });
         }
 

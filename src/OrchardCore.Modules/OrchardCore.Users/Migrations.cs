@@ -1,5 +1,4 @@
 using System;
-using Dapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Data;
@@ -256,19 +255,15 @@ namespace OrchardCore.Users
                 var table = $"{session.Store.Configuration.TablePrefix}{documentTableName}";
 
                 logger.LogDebug("Updating User Settings");
-                //session.Store.Configuration.IsolationLevel
 
-                await queryExecutor.ExecuteAsync(async (connection, transaction) =>
-                {
-                    var dialect = session.Store.Configuration.SqlDialect;
-                    var quotedTableName = dialect.QuoteForTableName(table, session.Store.Configuration.Schema);
-                    var quotedContentColumnName = dialect.QuoteForColumnName("Content");
-                    var quotedTypeColumnName = dialect.QuoteForColumnName("Type");
+                var dialect = session.Store.Configuration.SqlDialect;
+                var quotedTableName = dialect.QuoteForTableName(table, session.Store.Configuration.Schema);
+                var quotedContentColumnName = dialect.QuoteForColumnName("Content");
+                var quotedTypeColumnName = dialect.QuoteForColumnName("Type");
 
-                    var updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, 'OrchardCore.Users.Models.LoginSettings, OrchardCore.Users', 'OrchardCore.Users.Models.LoginSettings, OrchardCore.Users.Core') WHERE {quotedTypeColumnName} = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
+                var updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, 'OrchardCore.Users.Models.LoginSettings, OrchardCore.Users', 'OrchardCore.Users.Models.LoginSettings, OrchardCore.Users.Core') WHERE {quotedTypeColumnName} = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
 
-                    await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
-                }, new DbExecutionContext(session.Store.Configuration.IsolationLevel));
+                await queryExecutor.ExecuteAsync(updateCmd, new DbExecutionContext(session.Store.Configuration.IsolationLevel));
             });
 
             return 13;
