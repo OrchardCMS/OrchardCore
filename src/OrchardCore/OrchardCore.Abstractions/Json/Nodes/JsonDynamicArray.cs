@@ -14,7 +14,7 @@ public class JsonDynamicArray : DynamicObject, IEnumerable<JsonNode?>
 {
     private readonly JsonArray _jsonArray;
 
-    private readonly Dictionary<string, object?> _dictionary = new();
+    public readonly Dictionary<int, object?> _dictionary = new();
 
     public JsonDynamicArray(JsonArray jsonArray) => _jsonArray = jsonArray;
 
@@ -65,7 +65,7 @@ public class JsonDynamicArray : DynamicObject, IEnumerable<JsonNode?>
 
     public object? GetValue(int index)
     {
-        if (_dictionary.TryGetValue($"{index}", out var value))
+        if (_dictionary.TryGetValue(index, out var value))
         {
             return value;
         }
@@ -83,17 +83,17 @@ public class JsonDynamicArray : DynamicObject, IEnumerable<JsonNode?>
 
         if (jsonNode is JsonObject jsonObject)
         {
-            return _dictionary[$"{index}"] = new JsonDynamicObject(jsonObject);
+            return _dictionary[index] = new JsonDynamicObject(jsonObject);
         }
 
         if (jsonNode is JsonArray jsonArray)
         {
-            return _dictionary[$"{index}"] = new JsonDynamicArray(jsonArray);
+            return _dictionary[index] = new JsonDynamicArray(jsonArray);
         }
 
-        if (value is JsonValue jsonValue)
+        if (jsonNode is JsonValue jsonValue)
         {
-            return _dictionary[$"{index}"] = new JsonDynamicValue(jsonValue);
+            return _dictionary[index] = new JsonDynamicValue(jsonValue);
         }
 
         return null;
@@ -110,21 +110,21 @@ public class JsonDynamicArray : DynamicObject, IEnumerable<JsonNode?>
         if (value is JsonObject jsonObject)
         {
             _jsonArray[index] = jsonObject;
-            _dictionary[$"{index}"] = new JsonDynamicObject(jsonObject);
+            _dictionary[index] = new JsonDynamicObject(jsonObject);
             return;
         }
 
         if (value is JsonArray jsonArray)
         {
             _jsonArray[index] = jsonArray;
-            _dictionary[$"{index}"] = new JsonDynamicArray(jsonArray);
+            _dictionary[index] = new JsonDynamicArray(jsonArray);
             return;
         }
 
         if (value is JsonValue jsonValue)
         {
             _jsonArray[index] = jsonValue;
-            _dictionary[$"{index}"] = new JsonDynamicValue(jsonValue, nodeValue);
+            _dictionary[index] = new JsonDynamicValue(jsonValue, nodeValue);
             return;
         }
     }
@@ -141,31 +141,43 @@ public class JsonDynamicArray : DynamicObject, IEnumerable<JsonNode?>
 
     public override bool TryGetMember(GetMemberBinder binder, out object? result)
     {
-        if (!int.TryParse(binder.Name, out var index))
+        if (binder.Name == "{No Dynamic Member}")
+        {
+            result = 0;
+            return true;
+        }
+
+        if (!int.TryParse(binder.Name[1..^1], out var index))
         {
             result = null;
             return false;
         }
 
-        result = this[index];
+        var value = GetValue(index);
+        if (value is JsonDynamicValue jsonDynamicValue)
+        {
+            result = jsonDynamicValue.Value;
+            return true;
+        }
 
+        result = value;
         return true;
     }
 
     public override IEnumerable<string> GetDynamicMemberNames()
     {
-        if (_jsonArray.Count == 0)
-        {
-            return Enumerable.Empty<string>();
-        }
-
-        var list = new List<string>();
+        var names = new List<string>();
         for (var i = 0; i < _jsonArray.Count; i++)
         {
-            list.Add($"{i}");
+            names.Add($"[{i}]");
         }
 
-        return list;
+        if (names.Count == 0)
+        {
+            names.Add("{No Dynamic Member}");
+        }
+
+        return names;
     }
 
     #endregion

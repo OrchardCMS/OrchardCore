@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
-using System.Linq;
 using System.Reflection;
 
 #nullable enable
@@ -42,6 +41,12 @@ public class JsonDynamicObject : DynamicObject
 
     public override bool TryGetMember(GetMemberBinder binder, out object? result)
     {
+        if (_jsonObject.Count == 0 && binder.Name == "{No Dynamic Member}")
+        {
+            result = 0;
+            return true;
+        }
+
         var value = GetValue(binder.Name);
         if (value is JsonDynamicValue jsonDynamicValue)
         {
@@ -134,5 +139,23 @@ public class JsonDynamicObject : DynamicObject
 
     public static implicit operator JsonDynamicObject(JsonObject value) => new(value);
 
-    public override IEnumerable<string> GetDynamicMemberNames() => _jsonObject.AsEnumerable().Select(node => node.Key);
+    #region For debugging purposes only.
+
+    public override IEnumerable<string> GetDynamicMemberNames()
+    {
+        var names = new List<string>();
+        foreach (var node in _jsonObject)
+        {
+            names.Add(node.Key);
+        }
+
+        if (names.Count == 0)
+        {
+            names.Add("{No Dynamic Member}");
+        }
+
+        return names;
+    }
+
+    #endregion
 }
