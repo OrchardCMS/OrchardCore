@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,8 +11,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -32,6 +32,22 @@ namespace OrchardCore.Workflows.Controllers
     [Admin]
     public class WorkflowController : Controller
     {
+        private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            ReferenceHandler = ReferenceHandler.IgnoreCycles,
+            PropertyNameCaseInsensitive = true,
+            WriteIndented = false,
+        };
+
+        private static readonly JsonSerializerOptions _jsonSerializerIndentedOptions = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            ReferenceHandler = ReferenceHandler.IgnoreCycles,
+            PropertyNameCaseInsensitive = true,
+            WriteIndented = true,
+        };
+
         private readonly PagerOptions _pagerOptions;
         private readonly ISession _session;
         private readonly IWorkflowManager _workflowManager;
@@ -212,13 +228,12 @@ namespace OrchardCore.Workflows.Controllers
                 workflowType.Transitions,
             };
 
-            var jsonSerializerSettings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
             var viewModel = new WorkflowViewModel
             {
                 Workflow = workflow,
                 WorkflowType = workflowType,
-                WorkflowTypeJson = JsonConvert.SerializeObject(workflowTypeData, Formatting.None, jsonSerializerSettings),
-                WorkflowJson = JsonConvert.SerializeObject(workflow, Formatting.Indented, jsonSerializerSettings),
+                WorkflowTypeJson = JsonSerializer.Serialize(workflowTypeData, _jsonSerializerOptions),
+                WorkflowJson = JsonSerializer.Serialize(workflow, _jsonSerializerIndentedOptions),
                 ActivityDesignShapes = activityDesignShapes,
             };
 

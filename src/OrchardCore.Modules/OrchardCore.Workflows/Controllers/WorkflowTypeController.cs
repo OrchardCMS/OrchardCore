@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Dapper;
 using Microsoft.AspNetCore.Authorization;
@@ -10,9 +13,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -33,6 +33,14 @@ namespace OrchardCore.Workflows.Controllers
     [Admin]
     public class WorkflowTypeController : Controller
     {
+        private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            ReferenceHandler = ReferenceHandler.IgnoreCycles,
+            PropertyNameCaseInsensitive = true,
+            WriteIndented = false,
+        };
+
         private readonly PagerOptions _pagerOptions;
         private readonly ISession _session;
         private readonly IActivityLibrary _activityLibrary;
@@ -422,13 +430,7 @@ namespace OrchardCore.Workflows.Controllers
             var viewModel = new WorkflowTypeViewModel
             {
                 WorkflowType = workflowType,
-                WorkflowTypeJson = JsonConvert.SerializeObject(
-                    workflowTypeData,
-                    Formatting.None,
-                    new JsonSerializerSettings
-                    {
-                        ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                    }),
+                WorkflowTypeJson = JsonSerializer.Serialize(workflowTypeData, _jsonSerializerOptions),
                 ActivityThumbnailShapes = activityThumbnailShapes,
                 ActivityDesignShapes = activityDesignShapes,
                 ActivityCategories = _activityLibrary.ListCategories().ToList(),
