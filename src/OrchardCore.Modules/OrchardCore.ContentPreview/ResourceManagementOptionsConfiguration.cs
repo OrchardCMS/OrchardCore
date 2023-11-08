@@ -13,7 +13,6 @@ namespace OrchardCore.ContentPreview
 
             _manifest
                 .DefineScript("contentpreview-edit")
-                .SetDependencies("admin")
                 .SetUrl("~/OrchardCore.ContentPreview/Scripts/contentpreview.edit.min.js", "~/OrchardCore.ContentPreview/Scripts/contentpreview.edit.js")
                 .SetVersion("1.0.0");
         }
