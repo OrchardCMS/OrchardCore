@@ -101,6 +101,13 @@ public class JsonDynamicArray : DynamicObject, IEnumerable<JsonNode?>
 
     public void SetValue(int index, object? value, object? nodeValue = null)
     {
+        if (value is null)
+        {
+            _jsonArray[index] = null;
+            _dictionary[index] = null;
+            return;
+        }
+
         if (value is not JsonNode)
         {
             var jsonNode = JNode.FromObject(value);
@@ -147,6 +154,12 @@ public class JsonDynamicArray : DynamicObject, IEnumerable<JsonNode?>
             return true;
         }
 
+        if (binder.Name.EndsWith("{null}"))
+        {
+            result = "{null}";
+            return true;
+        }
+
         if (!int.TryParse(binder.Name[1..^1], out var index))
         {
             result = null;
@@ -169,6 +182,11 @@ public class JsonDynamicArray : DynamicObject, IEnumerable<JsonNode?>
         var names = new List<string>();
         for (var i = 0; i < _jsonArray.Count; i++)
         {
+            if (_jsonArray[i] is null)
+            {
+                names.Add($"[{i}] {{null}}");
+            }
+
             names.Add($"[{i}]");
         }
 

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;

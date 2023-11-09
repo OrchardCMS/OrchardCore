@@ -41,9 +41,15 @@ public class JsonDynamicObject : DynamicObject
 
     public override bool TryGetMember(GetMemberBinder binder, out object? result)
     {
-        if (_jsonObject.Count == 0 && binder.Name == "{No Member}")
+        if (binder.Name == "{No Member}")
         {
             result = 0;
+            return true;
+        }
+
+        if (binder.Name.EndsWith("{null}"))
+        {
+            result = "{null}";
             return true;
         }
 
@@ -107,6 +113,13 @@ public class JsonDynamicObject : DynamicObject
 
     public void SetValue(string key, object? value, object? nodeValue = null)
     {
+        if (value is null)
+        {
+            _jsonObject[key] = null;
+            _dictionary[key] = null;
+            return;
+        }
+
         if (value is not JsonNode)
         {
             var jsonNode = JNode.FromObject(value);
@@ -146,6 +159,11 @@ public class JsonDynamicObject : DynamicObject
         var names = new List<string>();
         foreach (var node in _jsonObject)
         {
+            if (node.Value is null)
+            {
+                names.Add($"{node.Key} {{null}}");
+            }
+
             names.Add(node.Key);
         }
 

@@ -1,7 +1,5 @@
 #nullable enable
 
-using Microsoft.Extensions.Options;
-
 namespace System.Text.Json.Nodes;
 
 public static class JValue
