@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Data;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
 using OrchardCore.Data.Documents;
@@ -101,7 +102,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     {
                         var tablePrefix = shellSettings["TablePrefix"].Trim() + databaseTableOptions.TableNameSeparator;
 
-                        storeConfiguration = storeConfiguration.SetTablePrefix(tablePrefix);
+                        storeConfiguration.SetTablePrefix(tablePrefix);
                     }
 
                     var store = StoreFactory.Create(storeConfiguration);
@@ -170,7 +171,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        private static IConfiguration GetStoreConfiguration(IServiceProvider sp, YesSqlOptions yesSqlOptions, DatabaseTableOptions databaseTableOptions)
+        private static YesSql.Configuration GetStoreConfiguration(IServiceProvider sp, YesSqlOptions yesSqlOptions, DatabaseTableOptions databaseTableOptions)
         {
             var tableNameFactory = sp.GetRequiredService<ITableNameConventionFactory>();
 
@@ -181,6 +182,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 ContentSerializer = new PoolingJsonContentSerializer(sp.GetService<ArrayPool<char>>()),
                 TableNameConvention = tableNameFactory.Create(databaseTableOptions),
                 IdentityColumnSize = Enum.Parse<IdentityColumnSize>(databaseTableOptions.IdentityColumnSize),
+                Logger = sp.GetService<ILogger<YesSql.Configuration>>(),
             };
 
             if (yesSqlOptions.IdGenerator != null)
