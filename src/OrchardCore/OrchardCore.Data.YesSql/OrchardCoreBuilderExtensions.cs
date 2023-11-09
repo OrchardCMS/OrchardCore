@@ -174,6 +174,7 @@ namespace Microsoft.Extensions.DependencyInjection
         private static YesSql.Configuration GetStoreConfiguration(IServiceProvider sp, YesSqlOptions yesSqlOptions, DatabaseTableOptions databaseTableOptions)
         {
             var tableNameFactory = sp.GetRequiredService<ITableNameConventionFactory>();
+            var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
 
             var storeConfiguration = new YesSql.Configuration
             {
@@ -182,7 +183,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 ContentSerializer = new PoolingJsonContentSerializer(sp.GetService<ArrayPool<char>>()),
                 TableNameConvention = tableNameFactory.Create(databaseTableOptions),
                 IdentityColumnSize = Enum.Parse<IdentityColumnSize>(databaseTableOptions.IdentityColumnSize),
-                Logger = sp.GetService<ILogger<YesSql.Configuration>>(),
+                Logger = loggerFactory.CreateLogger("YesSql"),
             };
 
             if (yesSqlOptions.IdGenerator != null)
