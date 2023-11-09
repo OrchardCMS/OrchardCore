@@ -9,7 +9,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Email.Workflows.Activities
 {
-    public class EmailTask : TaskActivity
+    public class EmailTask : TaskActivity<EmailTask>
     {
         private readonly ISmtpService _smtpService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
@@ -29,8 +29,8 @@ namespace OrchardCore.Email.Workflows.Activities
             _htmlEncoder = htmlEncoder;
         }
 
-        public override string Name => nameof(EmailTask);
         public override LocalizedString DisplayText => S["Email Task"];
+
         public override LocalizedString Category => S["Messaging"];
 
         public WorkflowExpression<string> Author
