@@ -2,6 +2,7 @@
 @using OrchardCore.ContentManagement
 @using OrchardCore.Forms.Models
 @using OrchardCore.Mvc.Utilities
+@using OrchardCore.Workflows
 
 @{
     var formPart = ((ContentItem)Model.ContentItem).As<FormPart>();
@@ -21,7 +22,7 @@
 
     @if (formPart.SaveFormLocation)
     {
-        <input type="hidden" name="@formPart.FormLocationKey" value="@ViewContext.HttpContext.Request.Path" />
+        <input type="hidden" name="@WorkflowConstants.FormLocationKeyInputName" value="@ViewContext.HttpContext.Request.Path" />
     }
 
     @await DisplayAsync((IHtmlContent)Model.Metadata.ChildContent)

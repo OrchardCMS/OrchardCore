@@ -18,7 +18,5 @@ namespace OrchardCore.Forms.Models
 
         [DefaultValue(true)]
         public bool SaveFormLocation { get; set; } = true;
-
-        public string FormLocationKey { get; set; }
     }
 }

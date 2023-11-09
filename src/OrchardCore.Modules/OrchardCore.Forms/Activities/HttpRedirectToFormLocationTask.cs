@@ -1,10 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Fluid;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Forms.Drivers;
 using OrchardCore.Workflows;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
@@ -44,39 +42,27 @@ public class HttpRedirectToFormLocationTask : TaskActivity
         return Outcomes(S["Done"], S["Failed"]);
     }
 
-    public WorkflowExpression<string> FormLocationKey
+    public string FormLocationKey
     {
-        get => GetProperty(() => new WorkflowExpression<string>());
+        get => GetProperty<string>();
         set => SetProperty(value);
     }
 
-    public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    public override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var location = await _workflowExpressionEvaluator.EvaluateAsync(FormLocationKey, workflowContext, NullEncoder.Default);
-        if (string.IsNullOrEmpty(location))
+        if (workflowContext.Output.TryGetValue(WorkflowConstants.HttpFormLocationOutputKeyName, out var obj) && obj is Dictionary<string, string> formLocations)
         {
-            location = FormPartDisplayDriver.DefaultFormLocationInputName;
+            // if no custom location-key was provided, we use empty string as the default key.
+            var location = FormLocationKey ?? string.Empty;
+
+            if (formLocations.TryGetValue(location, out var path))
+            {
+                _httpContextAccessor.HttpContext.Items[WorkflowConstants.FormOriginatedLocationItemsKey] = path;
+
+                return Task.FromResult(Outcomes("Done"));
+            }
         }
 
-        if (_httpContextAccessor.HttpContext.Request.HasFormContentType
-            && _httpContextAccessor.HttpContext.Request.Form.TryGetValue(location, out var value)
-            && !string.IsNullOrWhiteSpace(value))
-        {
-            _httpContextAccessor.HttpContext.Items[WorkflowConstants.FormOriginatedLocationItemsKey] = GetLocationUrl(value.ToString());
-
-            return Outcomes("Done");
-        }
-
-        return Outcomes("Failed");
-    }
-
-    private static string GetLocationUrl(string value)
-    {
-        if (value.StartsWith('/'))
-        {
-            return "~" + value;
-        }
-
-        return value;
+        return Task.FromResult(Outcomes("Failed"));
     }
 }
