@@ -13,7 +13,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Activities
 {
-    public class HttpResponseTask : TaskActivity
+    public class HttpResponseTask : TaskActivity<HttpResponseTask>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
@@ -32,8 +32,6 @@ namespace OrchardCore.Workflows.Http.Activities
             _expressionEvaluator = expressionEvaluator;
             _urlEncoder = urlEncoder;
         }
-
-        public override string Name => nameof(HttpResponseTask);
 
         public override LocalizedString DisplayText => S["Http Response Task"];
 
