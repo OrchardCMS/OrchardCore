@@ -1,4 +1,6 @@
 @model OrchardCore.Taxonomies.ViewModels.EditTagTaxonomyFieldViewModel
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Serialization;
 @using OrchardCore.Taxonomies.Settings
 @using OrchardCore.ContentManagement.Metadata.Models
 @using Microsoft.AspNetCore.Authorization
@@ -44,6 +46,28 @@
         }
         else
         {
+            var termEntries = new List<TermEntry>();
+            OrchardCore.Taxonomies.Drivers.TaxonomyFieldDriverHelper.PopulateTermEntries(termEntries, Model.Field, Model.Taxonomy.As<TaxonomyPart>().Terms, 0);
+            for (int i = 0; i < termEntries.Count; i++)
+            {
+                if (termEntries[i].Level > 0)
+                {
+                    termEntries[i].Term.DisplayText = $"{termEntries[i - 1].Term.DisplayText} - {termEntries[i].Term.DisplayText}";
+                }
+            }
+
+            var tagTermEntries = termEntries.Select(te => new TagTermEntry
+                {
+                    ContentItemId = te.ContentItemId,
+                    Selected = te.Selected,
+                    DisplayText = te.Term.DisplayText,
+                    IsLeaf = te.IsLeaf
+                });
+
+
+            Model.TagTermEntries = JsonConvert.SerializeObject(tagTermEntries, new JsonSerializerSettings() { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+
+
             <div id="@vueElementId" class="tags" data-taxonomy-content-item-id="@Model.Taxonomy.ContentItemId" data-open="@open.ToString().ToLower()" data-leaves-only="@taxonomySettings.LeavesOnly.ToString().ToLower()" data-create-tag-error-message="@T["Error creating tag"]" data-all-tag-terms="@Model.TagTermEntries" data-create-tag-url="@createTagUrl">
 
                 <div class="w-100">
