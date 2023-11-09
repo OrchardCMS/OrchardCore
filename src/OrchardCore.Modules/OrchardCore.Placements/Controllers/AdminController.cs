@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,8 +12,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using OrchardCore.DisplayManagement.Notify;
@@ -90,8 +90,9 @@ namespace OrchardCore.Placements.Controllers
                 Options = options,
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
+            model.Options.ContentsBulkAction = new List<SelectListItem>()
+            {
+                new() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) },
             };
 
             return View("Index", model);
@@ -119,7 +120,7 @@ namespace OrchardCore.Placements.Controllers
             {
                 Creating = true,
                 ShapeType = suggestion,
-                Nodes = JsonConvert.SerializeObject(template, Formatting.Indented)
+                Nodes = JsonSerializer.Serialize(template, JNode.OptionsIndented)
             };
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -144,11 +145,11 @@ namespace OrchardCore.Placements.Controllers
                 };
                 if (!string.IsNullOrEmpty(contentType))
                 {
-                    generatedNode.Filters.Add("contentType", new JArray(contentType));
+                    generatedNode.Filters.Add("contentType", new JsonArray(contentType));
                 }
                 if (!string.IsNullOrEmpty(contentPart))
                 {
-                    generatedNode.Filters.Add("contentPart", new JArray(contentPart));
+                    generatedNode.Filters.Add("contentPart", new JsonArray(contentPart));
                 }
 
                 placementNodes.Add(generatedNode);
@@ -157,7 +158,7 @@ namespace OrchardCore.Placements.Controllers
             var viewModel = new EditShapePlacementViewModel
             {
                 ShapeType = shapeType,
-                Nodes = JsonConvert.SerializeObject(placementNodes, Formatting.Indented)
+                Nodes = JsonSerializer.Serialize(placementNodes, JNode.OptionsIndented)
             };
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -183,7 +184,7 @@ namespace OrchardCore.Placements.Controllers
 
             try
             {
-                var placementNodes = JsonConvert.DeserializeObject<PlacementNode[]>(viewModel.Nodes)
+                var placementNodes = JsonSerializer.Deserialize<PlacementNode[]>(viewModel.Nodes)
                     ?? Enumerable.Empty<PlacementNode>();
 
                 // Remove empty nodes.
@@ -209,7 +210,7 @@ namespace OrchardCore.Placements.Controllers
                     await _notifier.SuccessAsync(H["The \"{0}\" placement has been deleted.", viewModel.ShapeType]);
                 }
             }
-            catch (JsonReaderException jsonException)
+            catch (JsonException jsonException)
             {
                 await _notifier.ErrorAsync(H["An error occurred while parsing the placement<br/>{0}", jsonException.Message]);
                 return View(viewModel);
@@ -295,7 +296,11 @@ namespace OrchardCore.Placements.Controllers
             {
                 return !nodes.Any(node =>
                     (string.IsNullOrEmpty(displayType) || node.DisplayType == displayType) &&
-                    (string.IsNullOrEmpty(contentType) || (node.Filters.ContainsKey("contentType") && FilterEquals(node.Filters["contentType"], contentType))) &&
+
+                    (string.IsNullOrEmpty(contentType) ||
+                        (node.Filters.ContainsKey("contentType") && FilterEquals(node.Filters["contentType"], contentType))) &&
+
+
                     (string.IsNullOrEmpty(contentPart) || (node.Filters.ContainsKey("contentPart") && FilterEquals(node.Filters["contentPart"], contentPart))) &&
                     (string.IsNullOrEmpty(differentiator) || node.Differentiator == differentiator));
             }
@@ -310,16 +315,17 @@ namespace OrchardCore.Placements.Controllers
         }
 
 
-        private static bool FilterEquals(JToken token, string value)
+        private static bool FilterEquals(object node, string value)
         {
-            if (token is JArray)
+            var jsonNode = JNode.FromObject(node);
+            if (jsonNode is JsonArray jsonArray)
             {
-                var tokenValues = token.Values<string>();
+                var tokenValues = jsonArray.Values<string>();
                 return tokenValues.Count() == 1 && tokenValues.First() == value;
             }
             else
             {
-                return token.Value<string>() == value;
+                return jsonNode.Value<string>() == value;
             }
         }
     }

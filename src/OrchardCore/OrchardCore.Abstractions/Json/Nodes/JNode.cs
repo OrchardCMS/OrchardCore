@@ -18,9 +18,14 @@ public static class JNode
         WriteIndented = false,
     };
 
+    public static readonly JsonSerializerOptions OptionsIndented;
+
     static JNode()
     {
         Options.Converters.Add(new JsonDynamicConverter());
+        OptionsIndented = new JsonSerializerOptions(Options);
+        OptionsIndented.Converters.Add(new JsonDynamicConverter());
+        OptionsIndented.WriteIndented = true;
     }
 
     /// <summary>

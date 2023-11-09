@@ -106,7 +106,7 @@ namespace OrchardCore.Tests.Apis.Lucene
                 },
             };
 
-            var query = System.Text.Json.JsonSerializer.Serialize(dynamicQuery);
+            var query = JsonSerializer.Serialize(dynamicQuery);
 
             var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
             var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
