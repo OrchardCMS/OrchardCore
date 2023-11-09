@@ -143,10 +143,12 @@ namespace OrchardCore.Placements.Controllers
                     DisplayType = displayType,
                     Differentiator = differentiator
                 };
+
                 if (!string.IsNullOrEmpty(contentType))
                 {
                     generatedNode.Filters.Add("contentType", new JsonArray(contentType));
                 }
+
                 if (!string.IsNullOrEmpty(contentPart))
                 {
                     generatedNode.Filters.Add("contentPart", new JsonArray(contentPart));
@@ -296,11 +298,7 @@ namespace OrchardCore.Placements.Controllers
             {
                 return !nodes.Any(node =>
                     (string.IsNullOrEmpty(displayType) || node.DisplayType == displayType) &&
-
-                    (string.IsNullOrEmpty(contentType) ||
-                        (node.Filters.ContainsKey("contentType") && FilterEquals(node.Filters["contentType"], contentType))) &&
-
-
+                    (string.IsNullOrEmpty(contentType) || (node.Filters.ContainsKey("contentType") && FilterEquals(node.Filters["contentType"], contentType))) &&
                     (string.IsNullOrEmpty(contentPart) || (node.Filters.ContainsKey("contentPart") && FilterEquals(node.Filters["contentPart"], contentPart))) &&
                     (string.IsNullOrEmpty(differentiator) || node.Differentiator == differentiator));
             }
