@@ -24,7 +24,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         require(['vs/editor/editor.main'], function () {
 
-            let divEditor = document.getElementById('@Html.IdFor(x => x.Html)_editor');
+            const divEditor = document.getElementById('@Html.IdFor(x => x.Html)_editor');
 
             if (!divEditor) {
                 return;
