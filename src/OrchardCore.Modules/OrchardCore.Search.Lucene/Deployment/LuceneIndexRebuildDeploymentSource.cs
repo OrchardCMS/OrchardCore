@@ -1,6 +1,7 @@
 using System;
+using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Search.Lucene.Deployment
@@ -18,11 +19,12 @@ namespace OrchardCore.Search.Lucene.Deployment
 
             var indicesToRebuild = luceneIndexRebuildStep.IncludeAll ? Array.Empty<string>() : luceneIndexRebuildStep.IndexNames;
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "lucene-index-rebuild"),
-                new JProperty("includeAll", luceneIndexRebuildStep.IncludeAll),
-                new JProperty("Indices", new JArray(indicesToRebuild))
-            ));
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "lucene-index-rebuild",
+                ["includeAll"] = luceneIndexRebuildStep.IncludeAll,
+                ["Indices"] = new JsonArray(indicesToRebuild.Select(i => JsonValue.Create(i)).ToArray()),
+            });
 
             return Task.CompletedTask;
         }

@@ -14,11 +14,6 @@ namespace OrchardCore.Sitemaps.Recipes
     /// </summary>
     public class SitemapsStep : IRecipeStepHandler
     {
-        // private static readonly JsonSerializer _serializer = new()
-        // {
-        //     TypeNameHandling = TypeNameHandling.Auto
-        // };
-
         private readonly ISitemapManager _sitemapManager;
 
         public SitemapsStep(ISitemapManager sitemapManager)
@@ -37,7 +32,7 @@ namespace OrchardCore.Sitemaps.Recipes
 
             foreach (var token in model.Data.Cast<JsonObject>())
             {
-                var sitemap = token.ToObject<SitemapType>(/*_serializer*/);
+                var sitemap = token.ToObject<SitemapType>();
                 await _sitemapManager.UpdateSitemapAsync(sitemap);
             }
         }

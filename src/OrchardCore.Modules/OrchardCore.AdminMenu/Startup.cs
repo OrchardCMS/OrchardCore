@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,6 +8,7 @@ using OrchardCore.Admin;
 using OrchardCore.AdminMenu.AdminNodes;
 using OrchardCore.AdminMenu.Controllers;
 using OrchardCore.AdminMenu.Deployment;
+using OrchardCore.AdminMenu.Models;
 using OrchardCore.AdminMenu.Recipes;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Deployment;
@@ -52,6 +54,10 @@ namespace OrchardCore.AdminMenu
             services.AddSingleton<IAdminNodeProviderFactory>(new AdminNodeProviderFactory<LinkAdminNode>());
             services.AddScoped<IAdminNodeNavigationBuilder, LinkAdminNodeNavigationBuilder>();
             services.AddScoped<IDisplayDriver<MenuItem>, LinkAdminNodeDriver>();
+
+            // Allows to serialize 'AdminNode' derived types.
+            services.AddJsonDerivedTypeInfo<LinkAdminNode, AdminNode>();
+            services.AddJsonDerivedTypeInfo<PlaceholderAdminNode, AdminNode>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
