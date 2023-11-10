@@ -1,11 +1,11 @@
 @using OrchardCore.Users.Workflows.ViewModels
 @model SelectUsersInRoleTaskViewModel
 
-<div class="mb-3" asp-validation-class-for="PropertyName">
-    <label asp-for="PropertyName">@T["PropertyName"]</label>
-    <input type="text" asp-for="PropertyName" class="form-control code" />
-    <span asp-validation-for="PropertyName"></span>
-    <span class="hint">@T["The PropertyName to save list. With Liquid support."]</span>
+<div class="mb-3" asp-validation-class-for="OutputKeyName">
+    <label asp-for="OutputKeyName">@T["OutputKeyName"]</label>
+    <input type="text" asp-for="OutputKeyName" class="form-control code" />
+    <span asp-validation-for="OutputKeyName"></span>
+    <span class="hint">@T["The Output Key Name to save list. With Liquid support."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="RoleName">

@@ -9,13 +9,13 @@ namespace OrchardCore.Users.Workflows.Drivers
     {
         protected override void EditActivity(SelectUsersInRoleTask activity, SelectUsersInRoleTaskViewModel model)
         {
-            model.PropertyName = activity.PropertyName.Expression;
+            model.OutputKeyName = activity.OutputKeyName.Expression;
             model.RoleName = activity.RoleName.Expression;
         }
 
         protected override void UpdateActivity(SelectUsersInRoleTaskViewModel model, SelectUsersInRoleTask activity)
         {
-            activity.PropertyName = new WorkflowExpression<string>(model.PropertyName);
+            activity.OutputKeyName = new WorkflowExpression<string>(model.OutputKeyName);
             activity.RoleName = new WorkflowExpression<string>(model.RoleName);
         }
     }

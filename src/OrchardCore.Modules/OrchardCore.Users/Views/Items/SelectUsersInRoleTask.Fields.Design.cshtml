@@ -6,4 +6,4 @@
 <header>
     <h4><i class="fa-solid fa-user" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Select users in role"])</h4>
 </header>
-<em>@T["Store users of role {0} to {1}", Model.Activity.RoleName, Model.Activity.PropertyName]</em>
+<em>@T["Stores users from role {0} to {1}", Model.Activity.RoleName, Model.Activity.OutputKeyName]</em>

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,7 +33,7 @@ namespace OrchardCore.Users.Workflows.Activities
 
         public override LocalizedString Category => S["User"];
 
-        public WorkflowExpression<string> PropertyName
+        public WorkflowExpression<string> OutputKeyName
         {
             get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
@@ -48,32 +47,22 @@ namespace OrchardCore.Users.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(S["Done"], S["Empty"], S["Failed"]);
+            return Outcomes(S["Done"], S["Failed"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var propName = await _expressionEvaluator.EvaluateAsync(PropertyName, workflowContext, null);
+            var propKeyName = await _expressionEvaluator.EvaluateAsync(OutputKeyName, workflowContext, null);
             var roleName = await _expressionEvaluator.EvaluateAsync(RoleName, workflowContext, null);
 
-            if (!string.IsNullOrEmpty(propName) && !string.IsNullOrEmpty(roleName))
+            if (!string.IsNullOrEmpty(propKeyName) && !string.IsNullOrEmpty(roleName))
             {
                 var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
                 if (usersInRole.Count > 0)
                 {
-                    List<string> output;
-                    if (propName.Contains("email", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        output = usersInRole.Select((u) => (u as User)?.Email).ToList();
-                    }
-                    else
-                    {
-                        output = usersInRole.Select(u => u.UserName).ToList();
-                    }
-                    workflowContext.Properties[propName] = string.Join(",", output);
+                    workflowContext.Output[propKeyName] = usersInRole.Select(u => (u as User).UserId).ToArray();
                     return Outcomes("Done");
                 }
-                return Outcomes("Empty");
             }
             return Outcomes("Failed");
         }
