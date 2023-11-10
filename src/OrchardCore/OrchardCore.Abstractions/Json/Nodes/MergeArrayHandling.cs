@@ -1,6 +1,6 @@
-#nullable enable
-
 namespace System.Text.Json.Nodes;
+
+#nullable enable
 
 /// <summary>
 /// Specifies how JSON arrays are merged together.

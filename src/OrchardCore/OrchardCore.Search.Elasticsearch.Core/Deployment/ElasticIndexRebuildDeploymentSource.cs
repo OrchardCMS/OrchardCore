@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.Deployment;
@@ -26,7 +25,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
             {
                 ["name"] = "elastic-index-rebuild",
                 ["includeAll"] = elasticIndexRebuildStep.IncludeAll,
-                ["Indices"] = new JsonArray(indicesToRebuild.Select(i => JsonValue.Create<string>(i)).ToArray()),
+                ["Indices"] = JArray.FromObject(indicesToRebuild),
             });
 
             return Task.CompletedTask;

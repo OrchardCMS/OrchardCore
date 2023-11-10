@@ -1,6 +1,6 @@
-#nullable enable
-
 namespace System.Text.Json.Nodes;
+
+#nullable enable
 
 /// <summary>
 /// Specifies how null value properties are merged.

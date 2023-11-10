@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.Deployment;
@@ -28,7 +27,7 @@ namespace OrchardCore.Queries.Deployment
             result.Steps.Add(new JsonObject
             {
                 ["name"] = "Queries",
-                ["Queries"] = new JsonArray(queries.Select(query => JObject.FromObject(query)).ToArray()),
+                ["Queries"] = JArray.FromObject(queries),
             });
         }
     }

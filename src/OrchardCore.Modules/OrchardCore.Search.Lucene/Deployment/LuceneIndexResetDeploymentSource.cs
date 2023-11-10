@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.Deployment;
@@ -23,7 +22,7 @@ namespace OrchardCore.Search.Lucene.Deployment
             {
                 ["name"] = "lucene-index-reset",
                 ["includeAll"] = luceneIndexResetStep.IncludeAll,
-                ["Indices"] = new JsonArray(indicesToReset.Select(i => JsonValue.Create(i)).ToArray()),
+                ["Indices"] = JArray.FromObject(indicesToReset),
             });
 
             return Task.CompletedTask;

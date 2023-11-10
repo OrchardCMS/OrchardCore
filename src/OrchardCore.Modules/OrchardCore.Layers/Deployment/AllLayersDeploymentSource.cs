@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.Deployment;
@@ -34,7 +33,7 @@ namespace OrchardCore.Layers.Deployment
             result.Steps.Add(new JsonObject
             {
                 ["name"] = "Layers",
-                ["Layers"] = new JsonArray(layers.Layers.Select(layer => JObject.FromObject(layer)).ToArray()),
+                ["Layers"] = JArray.FromObject(layers.Layers),
             });
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
