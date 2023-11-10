@@ -19,18 +19,31 @@ public static class JNode
     };
 
     public static readonly JsonSerializerOptions OptionsIndented;
-
+    public static readonly JsonSerializerOptions OptionsCamelCase;
+    public static readonly JsonSerializerOptions OptionsCamelCaseIndented;
     public static readonly JsonDocumentOptions DocumentOptions;
-
     public static readonly JsonNodeOptions NodeOptions;
 
     static JNode()
     {
         Options.Converters.Add(new JsonDynamicConverter());
 
-        OptionsIndented = new JsonSerializerOptions(Options);
+        OptionsIndented = new JsonSerializerOptions(Options)
+        {
+            WriteIndented = true
+        };
+
         OptionsIndented.Converters.Add(new JsonDynamicConverter());
-        OptionsIndented.WriteIndented = true;
+
+        OptionsCamelCase = new JsonSerializerOptions(Options)
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+
+        OptionsCamelCaseIndented = new JsonSerializerOptions(OptionsIndented)
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
 
         DocumentOptions = new JsonDocumentOptions
         {

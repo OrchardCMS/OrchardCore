@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -20,11 +19,6 @@ namespace OrchardCore.Taxonomies.Drivers
 {
     public class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
     {
-        private static readonly JsonSerializerOptions _options = new()
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        };
-
         private readonly IContentManager _contentManager;
         protected readonly IStringLocalizer S;
 
@@ -67,7 +61,7 @@ namespace OrchardCore.Taxonomies.Drivers
                         IsLeaf = te.IsLeaf
                     });
 
-                    model.TagTermEntries = JNode.FromObject(tagTermEntries, _options).ToJsonString();
+                    model.TagTermEntries = JNode.FromObject(tagTermEntries, JNode.OptionsCamelCase).ToJsonString();
                 }
 
                 model.Field = field;

@@ -5,7 +5,7 @@ using System.Net;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Execution;
@@ -31,14 +31,6 @@ namespace OrchardCore.Apis.GraphQL
         internal static readonly Encoding _utf8Encoding = new UTF8Encoding(false);
         private static readonly MediaType _jsonMediaType = new("application/json");
         private static readonly MediaType _graphQlMediaType = new("application/graphql");
-
-        private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            ReferenceHandler = ReferenceHandler.IgnoreCycles,
-            PropertyNameCaseInsensitive = true,
-            WriteIndented = false,
-        };
 
         public GraphQLMiddleware(
             RequestDelegate next,
@@ -109,7 +101,7 @@ namespace OrchardCore.Apis.GraphQL
                         }
                         else
                         {
-                            request = await JsonSerializer.DeserializeAsync<GraphQLRequest>(context.Request.Body, _jsonSerializerOptions);
+                            request = await JsonSerializer.DeserializeAsync<GraphQLRequest>(context.Request.Body, JNode.OptionsCamelCase);
                         }
                     }
                     else
@@ -197,7 +189,7 @@ namespace OrchardCore.Apis.GraphQL
 
             if (context.Request.Query.ContainsKey("variables"))
             {
-                request.Variables = JsonSerializer.Deserialize<JsonElement>(context.Request.Query["variables"], _jsonSerializerOptions);
+                request.Variables = JsonSerializer.Deserialize<JsonElement>(context.Request.Query["variables"], JNode.OptionsCamelCase);
             }
 
             if (context.Request.Query.ContainsKey("operationName"))

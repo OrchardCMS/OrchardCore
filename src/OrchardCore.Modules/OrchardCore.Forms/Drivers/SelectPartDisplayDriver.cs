@@ -1,6 +1,6 @@
 using System;
 using System.Text.Json;
-using System.Text.Json.Serialization;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -13,14 +13,6 @@ namespace OrchardCore.Forms.Drivers
 {
     public class SelectPartDisplayDriver : ContentPartDisplayDriver<SelectPart>
     {
-        private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            ReferenceHandler = ReferenceHandler.IgnoreCycles,
-            PropertyNameCaseInsensitive = true,
-            WriteIndented = true,
-        };
-
         protected readonly IStringLocalizer S;
 
         public SelectPartDisplayDriver(IStringLocalizer<SelectPartDisplayDriver> stringLocalizer)
@@ -37,7 +29,7 @@ namespace OrchardCore.Forms.Drivers
         {
             return Initialize<SelectPartEditViewModel>("SelectPart_Fields_Edit", m =>
             {
-                m.Options = JsonSerializer.Serialize(part.Options ?? Array.Empty<SelectOption>(), _jsonSerializerOptions);
+                m.Options = JsonSerializer.Serialize(part.Options ?? Array.Empty<SelectOption>(), JNode.OptionsCamelCaseIndented);
                 m.DefaultValue = part.DefaultValue;
                 m.Editor = part.Editor;
             });

@@ -1,14 +1,9 @@
-@using Newtonsoft.Json
 @model CorsSettingsViewModel
-
-@{
-    var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeHtml };
-}
 
 <script asp-name="vuejs" at="Foot"></script>
 <script depends-on="vuejs" asp-src="~/OrchardCore.Cors/Scripts/cors-admin.min.js" debug-src="~/OrchardCore.Cors/Scripts/cors-admin.js" type="text/javascript" asp-name="cors-admin" at="Foot"></script>
 <script depends-on="cors-admin" at="Foot">
-    corsApp.policies = @Html.Raw(Json.Serialize(Model.Policies, settings));
+    corsApp.policies = @Html.Raw(Json.Serialize(Model.Policies));
 </script>
 <style>
     [v-cloak] {
@@ -22,7 +17,7 @@
 <p class="alert alert-warning">@T["The current tenant will be reloaded when the CORS is executed."]</p>
 <div class="alert alert-info">@T["CORS stands for Cross-Origin Resource Sharing. More information can be found here:"] <a target="_blank" href="https://docs.microsoft.com/en-us/aspnet/core/security/cors">https://docs.microsoft.com/en-us/aspnet/core/security/cors</a></div>
 <form id="corsForm" asp-action="Index" method="post" class="no-multisubmit">
-    <input type="hidden" name="CorsSettings" id="CorsSettings" value='@Html.Raw(Json.Serialize(Model.Policies, settings))' />
+    <input type="hidden" name="CorsSettings" id="CorsSettings" value='@Html.Raw(Json.Serialize(Model.Policies))' />
     <div id="corsAdmin">
         <div v-if="!selectedPolicy">
             <div class="card mb-3 text-bg-theme position-sticky action-bar">

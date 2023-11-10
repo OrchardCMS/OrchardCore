@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +11,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
@@ -152,7 +153,7 @@ namespace OrchardCore.Tenants.Controllers
                 // the id is immutable whereas the name is mutable
                 Id = featureProfile.Id ?? id,
                 Name = featureProfile.Name ?? id,
-                FeatureRules = JsonConvert.SerializeObject(featureProfile.FeatureRules, Formatting.Indented),
+                FeatureRules = JsonSerializer.Serialize(featureProfile.FeatureRules, JNode.OptionsIndented),
             };
 
             return View(model);
@@ -236,7 +237,7 @@ namespace OrchardCore.Tenants.Controllers
                 {
                     profile.Id = model.Id;
                     profile.Name = model.Name;
-                    profile.FeatureRules = JsonConvert.DeserializeObject<List<FeatureRule>>(model.FeatureRules);
+                    profile.FeatureRules = JsonSerializer.Deserialize<List<FeatureRule>>(model.FeatureRules);
 
                     var featureProfilesDocument = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
 
