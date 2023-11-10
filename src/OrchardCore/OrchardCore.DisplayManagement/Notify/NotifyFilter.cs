@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
@@ -9,7 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.Layout;
 
 namespace OrchardCore.DisplayManagement.Notify
@@ -17,31 +18,35 @@ namespace OrchardCore.DisplayManagement.Notify
     public class NotifyFilter : IActionFilter, IAsyncResultFilter, IPageFilter
     {
         public const string CookiePrefix = "orch_notify";
+
         private readonly INotifier _notifier;
         private readonly IShapeFactory _shapeFactory;
         private readonly ILayoutAccessor _layoutAccessor;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-
-        private NotifyEntry[] _existingEntries = Array.Empty<NotifyEntry>();
-        private bool _shouldDeleteCookie;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly ILogger _logger;
 
+        public readonly JsonSerializerOptions _settings;
+        private NotifyEntry[] _existingEntries = Array.Empty<NotifyEntry>();
+        private bool _shouldDeleteCookie;
+
         public NotifyFilter(
             INotifier notifier,
-            ILayoutAccessor layoutAccessor,
             IShapeFactory shapeFactory,
+            ILayoutAccessor layoutAccessor,
             IDataProtectionProvider dataProtectionProvider,
             HtmlEncoder htmlEncoder,
             ILogger<NotifyFilter> logger)
         {
-            _htmlEncoder = htmlEncoder;
-            _logger = logger;
-            _dataProtectionProvider = dataProtectionProvider;
-
-            _layoutAccessor = layoutAccessor;
             _notifier = notifier;
             _shapeFactory = shapeFactory;
+            _layoutAccessor = layoutAccessor;
+            _dataProtectionProvider = dataProtectionProvider;
+            _htmlEncoder = htmlEncoder;
+            _logger = logger;
+
+            _settings = new(JNode.Options);
+            _settings.Converters.Add(new NotifyEntryConverter(htmlEncoder));
         }
 
         private void OnHandlerExecuting(FilterContext filterContext)
@@ -168,13 +173,10 @@ namespace OrchardCore.DisplayManagement.Notify
 
         private string SerializeNotifyEntry(NotifyEntry[] notifyEntries)
         {
-            var settings = new JsonSerializerSettings();
-            settings.Converters.Add(new NotifyEntryConverter(_htmlEncoder));
-
             try
             {
                 var protector = _dataProtectionProvider.CreateProtector(nameof(NotifyFilter));
-                var signed = protector.Protect(JsonConvert.SerializeObject(notifyEntries, settings));
+                var signed = protector.Protect(JsonSerializer.Serialize(notifyEntries, _settings));
                 return WebUtility.UrlEncode(signed);
             }
             catch
@@ -185,14 +187,11 @@ namespace OrchardCore.DisplayManagement.Notify
 
         private void DeserializeNotifyEntries(string value, out NotifyEntry[] messageEntries)
         {
-            var settings = new JsonSerializerSettings();
-            settings.Converters.Add(new NotifyEntryConverter(_htmlEncoder));
-
             try
             {
                 var protector = _dataProtectionProvider.CreateProtector(nameof(NotifyFilter));
                 var decoded = protector.Unprotect(WebUtility.UrlDecode(value));
-                messageEntries = JsonConvert.DeserializeObject<NotifyEntry[]>(decoded, settings);
+                messageEntries = JsonSerializer.Deserialize<NotifyEntry[]>(decoded, _settings);
             }
             catch
             {

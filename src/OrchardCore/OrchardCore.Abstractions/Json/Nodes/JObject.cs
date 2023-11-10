@@ -5,10 +5,22 @@ namespace System.Text.Json.Nodes;
 public static class JObject
 {
     /// <summary>
-    ///   Parses text representing a single JSON value.
+    ///   Loads a JSON object from the provided reader.
+    /// </summary>
+    public static JsonObject? Load(ref Utf8JsonReader reader, JsonNodeOptions? nodeOptions = null)
+        => Parse(ref reader, nodeOptions);
+
+    /// <summary>
+    ///   Parses a JSON object from the provided reader.
+    /// </summary>
+    public static JsonObject? Parse(ref Utf8JsonReader reader, JsonNodeOptions? nodeOptions = null)
+        => JsonNode.Parse(ref reader, nodeOptions ?? JNode.NodeOptions)?.AsObject();
+
+    /// <summary>
+    ///   Parses text representing a single JSON object.
     /// </summary>
     public static JsonObject? Parse(string json, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
-        => JsonNode.Parse(json, nodeOptions, documentOptions)?.AsObject();
+        => JsonNode.Parse(json, nodeOptions ?? JNode.NodeOptions, documentOptions)?.AsObject();
 
     /// <summary>
     /// Creates a <see cref="JsonObject"/> from an object.

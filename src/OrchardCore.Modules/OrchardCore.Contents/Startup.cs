@@ -1,5 +1,4 @@
 using System;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Fluid;
@@ -65,22 +64,9 @@ namespace OrchardCore.Contents
     {
         private readonly AdminOptions _adminOptions;
 
-        public static readonly JsonSerializerOptions Options = new()
-        {
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            ReferenceHandler = ReferenceHandler.IgnoreCycles,
-            ReadCommentHandling = JsonCommentHandling.Skip,
-            PropertyNameCaseInsensitive = true,
-            AllowTrailingCommas = true,
-            WriteIndented = false,
-        };
-
         public Startup(IOptions<AdminOptions> adminOptions)
         {
             _adminOptions = adminOptions.Value;
-
-            Options.Converters.Add(new ContentItemConverter());
-            Options.Converters.Add(new JsonDynamicConverter());
         }
 
         public override void ConfigureServices(IServiceCollection services)

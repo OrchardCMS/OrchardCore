@@ -125,11 +125,7 @@ namespace OrchardCore.Search.Elasticsearch
 
                     var jsonNode = configuration.GetSection(nameof(o.Analyzers)).AsJsonNode();
                     var jsonElement = JsonSerializer.Deserialize<JsonElement>(jsonNode);
-
-                    var analyzersObject = JsonObject.Create(jsonElement, new JsonNodeOptions()
-                    {
-                        PropertyNameCaseInsensitive = true,
-                    });
+                    var analyzersObject = JsonObject.Create(jsonElement, JNode.NodeOptions);
 
                     if (analyzersObject != null)
                     {

@@ -19,12 +19,6 @@ namespace OrchardCore.Recipes.Services
 {
     public class RecipeExecutor : IRecipeExecutor
     {
-        private static JsonDocumentOptions _options = new()
-        {
-            CommentHandling = JsonCommentHandling.Skip,
-            AllowTrailingCommas = true,
-        };
-
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
         private readonly IEnumerable<IRecipeEventHandler> _recipeEventHandlers;
@@ -60,7 +54,7 @@ namespace OrchardCore.Recipes.Services
 
                 using (var stream = recipeDescriptor.RecipeFileInfo.CreateReadStream())
                 {
-                    using var doc = await JsonDocument.ParseAsync(stream, _options, cancellationToken);
+                    using var doc = await JsonDocument.ParseAsync(stream, JNode.DocumentOptions, cancellationToken);
                     if (doc.RootElement.ValueKind != JsonValueKind.Object)
                     {
                         throw new FormatException($"Top-level JSON element must be an object. Instead, '{doc.RootElement.ValueKind}' was found.");

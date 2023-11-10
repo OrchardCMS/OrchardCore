@@ -20,13 +20,35 @@ public static class JNode
 
     public static readonly JsonSerializerOptions OptionsIndented;
 
+    public static readonly JsonDocumentOptions DocumentOptions;
+
+    public static readonly JsonNodeOptions NodeOptions;
+
     static JNode()
     {
         Options.Converters.Add(new JsonDynamicConverter());
+
         OptionsIndented = new JsonSerializerOptions(Options);
         OptionsIndented.Converters.Add(new JsonDynamicConverter());
         OptionsIndented.WriteIndented = true;
+
+        DocumentOptions = new JsonDocumentOptions
+        {
+            CommentHandling = Options.ReadCommentHandling,
+            AllowTrailingCommas = Options.AllowTrailingCommas,
+        };
+
+        NodeOptions = new JsonNodeOptions
+        {
+            PropertyNameCaseInsensitive = Options.PropertyNameCaseInsensitive,
+        };
     }
+
+    /// <summary>
+    ///   Loads a JSON value (including objects or arrays) from the provided reader.
+    /// </summary>
+    public static JsonNode? Load(ref Utf8JsonReader reader, JsonNodeOptions? nodeOptions = null)
+        => JsonNode.Parse(ref reader, nodeOptions ?? NodeOptions);
 
     /// <summary>
     /// Creates a <see cref="JsonNode"/> from an object.
@@ -97,7 +119,7 @@ public static class JNode
     /// </summary>
     public static string? GetNormalizedPath(this string? path)
     {
-        if (path is null || path[0] != '$')
+        if (path is null || path.Length == 0 || path[0] != '$')
         {
             return path;
         }

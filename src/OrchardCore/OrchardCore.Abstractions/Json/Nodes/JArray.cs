@@ -5,6 +5,24 @@ namespace System.Text.Json.Nodes;
 public static class JArray
 {
     /// <summary>
+    ///   Loads a JSON array from the provided reader.
+    /// </summary>
+    public static JsonArray? Load(ref Utf8JsonReader reader, JsonNodeOptions? nodeOptions = null)
+        => JArray.Parse(ref reader, nodeOptions);
+
+    /// <summary>
+    ///   Parses a JSON array from the provided reader.
+    /// </summary>
+    public static JsonArray? Parse(ref Utf8JsonReader reader, JsonNodeOptions? nodeOptions = null)
+        => JsonNode.Parse(ref reader, nodeOptions ?? JNode.NodeOptions)?.AsArray();
+
+    /// <summary>
+    ///   Parses text representing a single JSON array.
+    /// </summary>
+    public static JsonArray? Parse(string json, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
+        => JsonNode.Parse(json, nodeOptions ?? JNode.NodeOptions, documentOptions)?.AsArray();
+
+    /// <summary>
     /// Creates a <see cref="JsonArray"/> from an object.
     /// </summary>
     public static JsonArray? FromObject(object? obj, JsonSerializerOptions? options = null) =>

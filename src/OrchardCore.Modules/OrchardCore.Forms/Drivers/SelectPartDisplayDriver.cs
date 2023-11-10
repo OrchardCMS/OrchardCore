@@ -1,8 +1,8 @@
 using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -13,10 +13,12 @@ namespace OrchardCore.Forms.Drivers
 {
     public class SelectPartDisplayDriver : ContentPartDisplayDriver<SelectPart>
     {
-        private static readonly JsonSerializerSettings _serializerSettings = new()
+        private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
         {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            Formatting = Formatting.Indented,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            ReferenceHandler = ReferenceHandler.IgnoreCycles,
+            PropertyNameCaseInsensitive = true,
+            WriteIndented = true,
         };
 
         protected readonly IStringLocalizer S;
@@ -35,7 +37,7 @@ namespace OrchardCore.Forms.Drivers
         {
             return Initialize<SelectPartEditViewModel>("SelectPart_Fields_Edit", m =>
             {
-                m.Options = JsonConvert.SerializeObject(part.Options ?? Array.Empty<SelectOption>(), _serializerSettings);
+                m.Options = JsonSerializer.Serialize(part.Options ?? Array.Empty<SelectOption>(), _jsonSerializerOptions);
                 m.DefaultValue = part.DefaultValue;
                 m.Editor = part.Editor;
             });
@@ -53,7 +55,7 @@ namespace OrchardCore.Forms.Drivers
                     part.Editor = viewModel.Editor;
                     part.Options = string.IsNullOrWhiteSpace(viewModel.Options)
                         ? Array.Empty<SelectOption>()
-                        : JsonConvert.DeserializeObject<SelectOption[]>(viewModel.Options);
+                        : JsonSerializer.Deserialize<SelectOption[]>(viewModel.Options);
                 }
                 catch
                 {

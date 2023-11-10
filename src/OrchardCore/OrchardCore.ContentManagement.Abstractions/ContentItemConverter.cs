@@ -93,7 +93,7 @@ namespace OrchardCore.ContentManagement
                     default:
                         if (reader.TokenType == JsonTokenType.StartObject)
                         {
-                            var property = JsonNode.Parse(ref reader);
+                            var property = JNode.Load(ref reader);
                             contentItem.Data.Add(propertyName, property);
                         }
 
