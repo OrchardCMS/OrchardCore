@@ -5,7 +5,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Tests.Workflows.Activities
 {
-    public class WriteLineTask : TaskActivity
+    public class WriteLineTask : TaskActivity<WriteLineTask>
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
         private readonly TextWriter _output;
@@ -17,8 +17,6 @@ namespace OrchardCore.Tests.Workflows.Activities
             _output = output;
             S = stringLocalizer;
         }
-
-        public override string Name => nameof(WriteLineTask);
 
         public override LocalizedString DisplayText => S["Write Line Task"];
 

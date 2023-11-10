@@ -112,3 +112,19 @@ public abstract class NotifyUserTaskActivity : TaskActivity
 
     abstract protected Task<IEnumerable<IUser>> GetUsersAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext);
 }
+
+public abstract class NotifyUserTaskActivity<TActivity> : NotifyUserTaskActivity where TActivity : ITask
+{
+    protected NotifyUserTaskActivity(
+        INotificationService notificationService,
+        IWorkflowExpressionEvaluator expressionEvaluator,
+        HtmlEncoder htmlEncoder,
+        ILogger logger,
+        IStringLocalizer localizer)
+        : base(notificationService, expressionEvaluator, htmlEncoder, logger, localizer)
+    {
+    }
+
+    // The technical name of the activity. Within a workflow definition, activities make use of this name.
+    public override string Name => typeof(TActivity).Name;
+}
