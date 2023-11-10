@@ -6,9 +6,9 @@
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
 }
 
-<div class="@Orchard.GetFieldWrapperCssClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Html)_FieldWrapper">
-    <label asp-for="Html" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Html)_FieldWrapper">
+    <label asp-for="Html" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndClasses()">
         @await DisplayAsync(await New.ShortcodeModal())
         <div id="@Html.IdFor(x => x.Html)_editor" asp-for="Text" style="min-height: 400px;" class="form-control" dir="@culture.GetLanguageDirection()"></div>
         <textarea asp-for="Html" hidden>@Html.Raw(Model.Html)</textarea>
@@ -19,10 +19,16 @@
     </div>
 </div>
 
-<script asp-name="monaco" depends-on="admin" at="Foot"></script>
+<script asp-name="monaco" at="Foot"></script>
 <script at="Foot" depends-on="monaco">
-    $(document).ready(function () {
+    document.addEventListener('DOMContentLoaded', function () {
         require(['vs/editor/editor.main'], function () {
+
+            const divEditor = document.getElementById('@Html.IdFor(x => x.Html)_editor');
+
+            if (!divEditor) {
+                return;
+            }
 
             var settings = @Html.Raw(monacoSettings.Options);
             if (settings.automaticLayout == undefined) {
@@ -45,7 +51,7 @@
 
             setTheme();
 
-            var editor = monaco.editor.create(document.getElementById('@Html.IdFor(x => x.Html)_editor'), settings);
+            var editor = monaco.editor.create(divEditor, settings);
             var textArea = document.getElementById('@Html.IdFor(x => x.Html)');
 
             editor.getModel().onDidChangeContent((event) => {
