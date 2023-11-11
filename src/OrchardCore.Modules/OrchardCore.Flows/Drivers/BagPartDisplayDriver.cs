@@ -14,7 +14,6 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Contents;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
@@ -58,7 +57,7 @@ namespace OrchardCore.Flows.Drivers
 
         public override IDisplayResult Display(BagPart bagPart, BuildPartDisplayContext context)
         {
-            var hasItems = bagPart.ContentItems.Any();
+            var hasItems = bagPart.ContentItems.Count > 0;
 
             return Initialize<BagPartViewModel>(hasItems ? "BagPart" : "BagPart_Empty", m =>
             {
@@ -148,7 +147,7 @@ namespace OrchardCore.Flows.Drivers
                 if (await AuthorizeAsync(contentDefinitionManager, CommonPermissions.DeleteContent, existingContentItem))
                 {
                     // at this point the user has permission to delete a securable item or the type isn't securable
-                    // if the existsing content id isn't in the requested ids, don't add the content item... meaning the user deleted it
+                    // if the existing content id isn't in the requested ids, don't add the content item... meaning the user deleted it
                     if (!model.ContentItems.Contains(existingContentItem.ContentItemId))
                     {
                         continue;
@@ -179,7 +178,9 @@ namespace OrchardCore.Flows.Drivers
                     Deletable = true,
                 };
 
-                if (IsSecurable(contentDefinitionManager, contentItem.ContentType, out var contentTypeDefinition))
+                var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+
+                if (contentTypeDefinition.IsSecurable())
                 {
                     widget.Viewable = await AuthorizeAsync(CommonPermissions.ViewContent, contentItem);
                     widget.Editable = await AuthorizeAsync(CommonPermissions.EditContent, contentItem);
@@ -208,7 +209,9 @@ namespace OrchardCore.Flows.Drivers
 
         private async Task<bool> AuthorizeAsync(IContentDefinitionManager contentDefinitionManager, Permission permission, ContentItem contentItem)
         {
-            if (!IsSecurable(contentDefinitionManager, contentItem.ContentType, out _))
+            var contentType = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+
+            if (contentType?.IsSecurable() ?? false)
             {
                 return true;
             }
@@ -216,19 +219,8 @@ namespace OrchardCore.Flows.Drivers
             return await AuthorizeAsync(permission, contentItem);
         }
 
-        private async Task<bool> AuthorizeAsync(Permission permission, ContentItem contentItem)
-        {
-            return await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, permission, contentItem);
-        }
-
-        private static bool IsSecurable(IContentDefinitionManager contentDefinitionManager, string contentType, out ContentTypeDefinition contentTypeDefinition)
-        {
-            contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(contentType);
-
-            var settings = contentTypeDefinition?.GetSettings<ContentTypeSettings>();
-
-            return settings?.Securable ?? false;
-        }
+        private Task<bool> AuthorizeAsync(Permission permission, ContentItem contentItem)
+            => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, permission, contentItem);
 
         private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ContentTypePartDefinition typePartDefinition)
         {
@@ -237,15 +229,28 @@ namespace OrchardCore.Flows.Drivers
 
             if (settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0)
             {
-                contentTypes = _contentDefinitionManager.ListTypeDefinitions()
+                contentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
                     .Where(contentType => contentType.HasStereotype() && settings.ContainedStereotypes.Contains(contentType.GetStereotype(), StringComparer.OrdinalIgnoreCase));
             }
             else if (settings.ContainedContentTypes != null && settings.ContainedContentTypes.Length > 0)
             {
-                contentTypes = settings.ContainedContentTypes
-                    .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
-                    .Where(contentType => contentType != null);
+                var definitions = new List<ContentTypeDefinition>();
+
+                foreach (var contentType in settings.ContainedContentTypes)
+                {
+                    var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
+
+                    if (definition == null)
+                    {
+                        continue;
+                    }
+
+                    definitions.Add(definition);
+                }
+
+                contentTypes = definitions;
             }
+
             var user = _httpContextAccessor.HttpContext.User;
 
             var accessibleContentTypes = new List<ContentTypeDefinition>();

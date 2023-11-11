@@ -305,15 +305,15 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// <summary>
         /// Synchronizes Elasticsearch content index settings with Lucene ones.
         /// </summary>
-        public Task SyncSettings()
+        public async Task SyncSettings()
         {
-            var contentTypeDefinitions = _contentDefinitionManager.LoadTypeDefinitions();
+            var contentTypeDefinitions = await _contentDefinitionManager.LoadTypeDefinitionsAsync();
 
             foreach (var contentTypeDefinition in contentTypeDefinitions)
             {
                 foreach (var partDefinition in contentTypeDefinition.Parts)
                 {
-                    _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
+                    await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
                     {
                         if (partDefinition.Settings.TryGetValue("LuceneContentIndexSettings", out var existingPartSettings))
                         {
@@ -328,11 +328,11 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 }
             }
 
-            var partDefinitions = _contentDefinitionManager.LoadPartDefinitions();
+            var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync();
 
             foreach (var partDefinition in partDefinitions)
             {
-                _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
+                await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
                 {
                     if (partDefinition.Settings.TryGetValue("LuceneContentIndexSettings", out var existingPartSettings))
                     {
@@ -358,8 +358,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     }
                 });
             }
-
-            return Task.CompletedTask;
         }
     }
 }

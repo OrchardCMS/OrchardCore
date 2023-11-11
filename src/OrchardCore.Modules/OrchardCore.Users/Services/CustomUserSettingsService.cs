@@ -2,9 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -16,65 +13,93 @@ namespace OrchardCore.Users.Services;
 public class CustomUserSettingsService
 {
     private readonly IContentManager _contentManager;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IAuthorizationService _authorizationService;
     private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly Lazy<IDictionary<string, ContentTypeDefinition>> _settingsTypes;
-    private readonly YesSql.ISession _session;
+    private readonly Lazy<Task<IDictionary<string, ContentTypeDefinition>>> _settingsTypes;
+    private readonly ISession _session;
 
     public CustomUserSettingsService(
         IContentManager contentManager,
-        IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService,
         IContentDefinitionManager contentDefinitionManager,
-        YesSql.ISession session)
+        ISession session)
     {
         _contentManager = contentManager;
-        _httpContextAccessor = httpContextAccessor;
-        _authorizationService = authorizationService;
         _contentDefinitionManager = contentDefinitionManager;
-        _settingsTypes = new Lazy<IDictionary<string, ContentTypeDefinition>>(
-            () => _contentDefinitionManager
-            .ListTypeDefinitions()
-            .Where(x => x.StereotypeEquals("CustomUserSettings"))
-            .ToDictionary(x => x.Name));
-
+        _settingsTypes = new Lazy<Task<IDictionary<string, ContentTypeDefinition>>>(async () => await GetContentTypeAsync());
         _session = session;
     }
 
-    public IEnumerable<string> GetAllSettingsTypeNames() => _settingsTypes.Value.Keys;
+    [Obsolete($"Instead, utilize the {nameof(GetAllSettingsTypeNamesAsync)} method. This current method is slated for removal in upcoming releases.")]
+    public IEnumerable<string> GetAllSettingsTypeNames()
+        => _settingsTypes.Value.ConfigureAwait(false).GetAwaiter().GetResult().Keys;
 
+    [Obsolete($"Instead, utilize the {nameof(GetAllSettingsTypesAsync)} method. This current method is slated for removal in upcoming releases.")]
     public IEnumerable<ContentTypeDefinition> GetAllSettingsTypes()
     {
-        return _settingsTypes.Value.Values;
+        return _settingsTypes.Value.ConfigureAwait(false).GetAwaiter().GetResult().Values;
     }
 
+    [Obsolete($"Instead, utilize the {nameof(GetSettingsTypesAsync)} method. This current method is slated for removal in upcoming releases.")]
     public IEnumerable<ContentTypeDefinition> GetSettingsTypes(params string[] settingsTypeNames)
     {
+        var types = _settingsTypes.Value.ConfigureAwait(false).GetAwaiter().GetResult();
+
         foreach (var settingsTypeName in settingsTypeNames)
         {
-            if (_settingsTypes.Value.TryGetValue(settingsTypeName, out ContentTypeDefinition settingsType))
+            if (types.TryGetValue(settingsTypeName, out ContentTypeDefinition settingsType))
             {
                 yield return settingsType;
             }
         }
     }
 
+    [Obsolete($"Instead, utilize the {nameof(GetSettingsTypeAsync)} method. This current method is slated for removal in upcoming releases.")]
     public ContentTypeDefinition GetSettingsType(string settingsTypeName)
     {
-        _settingsTypes.Value.TryGetValue(settingsTypeName, out ContentTypeDefinition settingsType);
+        var types = _settingsTypes.Value.ConfigureAwait(false).GetAwaiter().GetResult();
+
+        types.TryGetValue(settingsTypeName, out var settingsType);
         return settingsType;
     }
 
-    public Task<Dictionary<string, ContentItem>> GetSettingsAsync(string settingsTypeName, Func<Task> factoryAsync = null)
+    public async Task<IEnumerable<string>> GetAllSettingsTypeNamesAsync()
+        => (await _settingsTypes.Value).Keys;
+
+    public async Task<IEnumerable<ContentTypeDefinition>> GetAllSettingsTypesAsync()
+        => (await _settingsTypes.Value).Values;
+
+    public async Task<IEnumerable<ContentTypeDefinition>> GetSettingsTypesAsync(params string[] settingsTypeNames)
     {
-        var settingsType = GetSettingsType(settingsTypeName);
-        if (settingsType == null)
+        var types = await _settingsTypes.Value;
+        var definitions = new List<ContentTypeDefinition>();
+
+        foreach (var settingsTypeName in settingsTypeNames)
         {
-            return Task.FromResult<Dictionary<string, ContentItem>>(null);
+            if (types.TryGetValue(settingsTypeName, out var settingsType))
+            {
+                definitions.Add(settingsType);
+            }
         }
 
-        return GetSettingsAsync(settingsType, factoryAsync);
+        return definitions;
+    }
+
+    public async Task<ContentTypeDefinition> GetSettingsTypeAsync(string settingsTypeName)
+    {
+        var types = await _settingsTypes.Value;
+
+        types.TryGetValue(settingsTypeName, out var settingsType);
+        return settingsType;
+    }
+
+    public async Task<Dictionary<string, ContentItem>> GetSettingsAsync(string settingsTypeName, Func<Task> factoryAsync = null)
+    {
+        var settingsType = await GetSettingsTypeAsync(settingsTypeName);
+        if (settingsType == null)
+        {
+            return new Dictionary<string, ContentItem>();
+        }
+
+        return await GetSettingsAsync(settingsType, factoryAsync);
     }
 
     public async Task<Dictionary<string, ContentItem>> GetSettingsAsync(ContentTypeDefinition settingsType, Func<Task> factoryAsync = null)
@@ -97,7 +122,7 @@ public class CustomUserSettingsService
     {
         ContentItem contentItem;
 
-        if (user.Properties.TryGetValue(settingsType.Name, out JToken property))
+        if (user.Properties.TryGetValue(settingsType.Name, out var property))
         {
             var existing = property.ToObject<ContentItem>();
 
@@ -112,5 +137,15 @@ public class CustomUserSettingsService
         await factoryAsync?.Invoke();
 
         return contentItem;
+    }
+
+    private async Task<IDictionary<string, ContentTypeDefinition>> GetContentTypeAsync()
+    {
+        var contentTypes = await _contentDefinitionManager.ListTypeDefinitionsAsync();
+
+        var result = contentTypes.Where(x => x.StereotypeEquals("CustomUserSettings"))
+        .ToDictionary(x => x.Name);
+
+        return result;
     }
 }

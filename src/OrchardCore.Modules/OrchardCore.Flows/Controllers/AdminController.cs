@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
@@ -47,15 +48,15 @@ namespace OrchardCore.Flows.Controllers
 
             // Does this editor need the flow metadata editor?
             string cardCollectionType = null;
-            int colSize = 12;
+            var colSize = 12;
             IEnumerable<ContentTypeDefinition> containedContentTypes = null;
 
             if (flowmetadata)
             {
                 var metadata = new FlowMetadata();
                 contentItem.Weld(metadata);
-                colSize = (int)Math.Round((double)metadata.Size / 100.0 * 12);
-                containedContentTypes = GetContainedContentTypes(parentContentType, partName);
+                colSize = (int)Math.Round(metadata.Size / 100.0 * 12);
+                containedContentTypes = await GetContainedContentTypesAsync(parentContentType, partName);
 
                 cardCollectionType = nameof(FlowPart);
             }
@@ -64,35 +65,35 @@ namespace OrchardCore.Flows.Controllers
                 cardCollectionType = nameof(BagPart);
             }
 
-            //Create a Card Shape
+            // Create a Card Shape
             dynamic contentCard = await _shapeFactory.New.ContentCard(
-                //Updater is the controller for AJAX Requests
+                // Updater is the controller for AJAX Requests
                 Updater: _updateModelAccessor.ModelUpdater,
-                //Shape Specific
+                // Shape Specific
                 CollectionShapeType: cardCollectionType,
                 ContentItem: contentItem,
                 BuildEditor: true,
                 ParentContentType: parentContentType,
                 CollectionPartName: partName,
                 ContainedContentTypes: containedContentTypes,
-                //Card Specific Properties
+                // Card Specific Properties
                 TargetId: targetId,
                 Inline: true,
                 CanMove: true,
                 CanDelete: true,
-                //Input hidden
-                //Prefixes
+                // Input hidden
+                // Prefixes
                 PrefixValue: prefix,
                 PrefixesId: prefixesName.Replace('.', '_'),
                 PrefixesName: prefixesName,
-                //ContentTypes
+                // ContentTypes
                 ContentTypesId: contentTypesName.Replace('.', '_'),
                 ContentTypesName: contentTypesName,
-                //ContentItems
+                // ContentItems
                 ContentItemsId: contentItemsName.Replace('.', '_'),
                 ContentItemsName: contentItemsName
             );
-            //Only Add ColumnSize Property if Part has FlowMetadata
+            // Only Add ColumnSize Property if Part has FlowMetadata
             if (flowmetadata)
             {
                 contentCard.ColumnSize = colSize;
@@ -105,18 +106,30 @@ namespace OrchardCore.Flows.Controllers
             return View("Display", model);
         }
 
-        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(string contentType, string partName)
+        private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(string contentType, string partName)
         {
-            var settings = _contentDefinitionManager.GetTypeDefinition(contentType)?.Parts.SingleOrDefault(x => x.Name == partName)?.GetSettings<FlowPartSettings>();
+            var settings = (await _contentDefinitionManager.GetTypeDefinitionAsync(contentType))?.Parts.SingleOrDefault(x => x.Name == partName)?.GetSettings<FlowPartSettings>();
 
-            if (settings == null || settings.ContainedContentTypes == null || !settings.ContainedContentTypes.Any())
+            if (settings?.ContainedContentTypes?.Length == 0)
             {
-                return _contentDefinitionManager.ListTypeDefinitions().Where(t => t.GetStereotype() == "Widget");
+                return (await _contentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => t.GetStereotype() == "Widget");
             }
 
-            return settings.ContainedContentTypes
-                .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
-                .Where(t => t != null && t.GetStereotype() == "Widget");
+            var definitions = new List<ContentTypeDefinition>();
+
+            foreach (var ct in settings.ContainedContentTypes)
+            {
+                var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(ct);
+
+                if (definition == null)
+                {
+                    continue;
+                }
+
+                definitions.Add(definition);
+            }
+
+            return definitions;
         }
     }
 }

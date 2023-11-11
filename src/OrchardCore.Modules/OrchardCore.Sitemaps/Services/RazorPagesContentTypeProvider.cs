@@ -47,7 +47,7 @@ namespace OrchardCore.Sitemaps.Services
 
         public IEnumerable<ContentTypeDefinition> ListRoutableTypeDefinitions()
         {
-            var ctds = _contentDefinitionManager.ListTypeDefinitions();
+            var ctds = _contentDefinitionManager.ListTypeDefinitionsAsync().GetAwaiter().GetResult();
             var rctds = ctds.Where(ctd => _options.ContentTypeOptions.Any(o => o.ContentType == ctd.Name));
             return rctds;
         }

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
@@ -17,9 +18,9 @@ public class Migrations : DataMigration
         _contentDefinitionManager = contentDefinitionManager;
     }
 
-    public int Create()
+    public async Task<int> CreateAsync()
     {
-        _contentDefinitionManager.AlterPartDefinition(nameof(PublishLaterPart), builder => builder
+        await _contentDefinitionManager.AlterPartDefinitionAsync(nameof(PublishLaterPart), builder => builder
             .Attachable()
             .WithDescription("Adds the ability to schedule content items to be published at a given future date and time."));
 

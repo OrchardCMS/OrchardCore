@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
@@ -18,9 +19,9 @@ namespace OrchardCore.Taxonomies
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterTypeDefinition("Taxonomy", taxonomy => taxonomy
+            await _contentDefinitionManager.AlterTypeDefinitionAsync("Taxonomy", taxonomy => taxonomy
                 .Draftable()
                 .Versionable()
                 .Creatable()
@@ -81,16 +82,16 @@ namespace OrchardCore.Taxonomies
 
         // Migrate FieldSettings. This only needs to run on old content definition schemas.
         // This code can be removed in a later version.
-        public int UpdateFrom1()
+        public async Task<int> UpdateFrom1Async()
         {
-            _contentDefinitionManager.MigrateFieldSettings<TaxonomyField, TaxonomyFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<TaxonomyField, TaxonomyFieldSettings>();
             return 2;
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom2()
+        public async Task<int> UpdateFrom2Async()
         {
-            _contentDefinitionManager.AlterTypeDefinition("Taxonomy", taxonomy => taxonomy
+            await _contentDefinitionManager.AlterTypeDefinitionAsync("Taxonomy", taxonomy => taxonomy
                 .WithPart("AutoroutePart", part => part
                     .WithPosition("3")
                     .WithSettings(new AutoroutePartSettings

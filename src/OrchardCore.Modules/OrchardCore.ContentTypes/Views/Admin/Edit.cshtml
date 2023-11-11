@@ -8,14 +8,22 @@
 
 @{
     var typePart = Model.TypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.Name, Model.TypeDefinition.Name, StringComparison.OrdinalIgnoreCase));
-    var partDefinitions = Model.TypeDefinition.Parts
-        .Select(part =>
+
+    var partDefinitions = new List<dynamic>();
+
+    foreach (var part in Model.TypeDefinition.Parts)
+    {
+        var partDefinition = await ContentDefinitionManager.GetPartDefinitionAsync(part.PartDefinition.Name);
+
+        if (partDefinition == null)
         {
-            var defaultPosition = ContentDefinitionManager.GetPartDefinition(part.PartDefinition.Name)?.DefaultPosition() ?? "5";
-            return new { Part = part, Order = int.Parse(part.GetSettings<ContentTypePartSettings>().Position ?? defaultPosition) };
-        })
-        .OrderBy(x => x.Order)
-        .Select(x => x.Part);
+            continue;
+        }
+
+        var defaultPosition = partDefinition.DefaultPosition() ?? "5";
+
+        partDefinitions.Add(new { Part = part, Order = int.Parse(part.GetSettings<ContentTypePartSettings>().Position ?? defaultPosition) });
+    }
 
     var fieldDefintions = new List<ContentPartFieldDefinition>();
 
@@ -28,7 +36,7 @@
         .ToList();
     }
 
-    var fields = ContentDefinitionService.GetFields().ToList();
+    var fields = (await ContentDefinitionService.GetFieldsAsync()).ToList();
 }
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Content Type - {0}", Model.TypeDefinition.DisplayName])</h1></zone>
@@ -53,7 +61,7 @@
             <h3>@T["Fields"]</h3>
 
             <ul class="list-group sortable" id="fields">
-                @foreach (var fieldDefintion in fieldDefintions)
+                @foreach (var fieldDefintion in partDefinitions.OrderBy(x => x.Order).Select(x => x.Part))
                 {
                     <li class="list-group-item" style="cursor: move;">
                         <div class="w-100">
