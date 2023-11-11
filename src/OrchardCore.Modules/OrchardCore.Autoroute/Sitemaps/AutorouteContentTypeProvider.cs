@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,16 +37,23 @@ namespace OrchardCore.Autoroute.Sitemaps
                 var routes = contentItemMetadata.DisplayRouteValues;
 
                 // UrlHelper.Action includes BasePath automatically if present.
-                // If content item is assigned as home route, Urlhelper resolves as site root.
+                // If content item is assigned as home route, UrlHelper resolves as site root.
                 return context.HostPrefix + context.UrlHelper.Action(routes["Action"].ToString(), routes);
             }
 
             return null;
         }
 
+        [Obsolete]
         public IEnumerable<ContentTypeDefinition> ListRoutableTypeDefinitions()
         {
             return _contentDefinitionManager.ListTypeDefinitions()
+                .Where(ctd => ctd.Parts.Any(p => p.Name == nameof(AutoroutePart)));
+        }
+
+        public async Task<IEnumerable<ContentTypeDefinition>> ListRoutableTypeDefinitionsAsync()
+        {
+            return (await _contentDefinitionManager.ListTypeDefinitionsAsync())
                 .Where(ctd => ctd.Parts.Any(p => p.Name == nameof(AutoroutePart)));
         }
     }

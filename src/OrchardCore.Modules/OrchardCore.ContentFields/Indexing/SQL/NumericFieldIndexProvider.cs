@@ -46,8 +46,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     // Lazy initialization because of ISession cyclic dependency
                     _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
-                    // Search for NumericField
-                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+                    // Search for NumericField  
+                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType).GetAwaiter().GetResult();
 
                     // This can occur when content items become orphaned, particularly layer widgets when a layer is removed, before its widgets have been unpublished.
                     if (contentTypeDefinition == null)

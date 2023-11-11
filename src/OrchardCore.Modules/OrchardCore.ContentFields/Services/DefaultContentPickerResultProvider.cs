@@ -41,8 +41,7 @@ namespace OrchardCore.ContentFields.Services
             var contentTypes = searchContext.ContentTypes;
             if (searchContext.DisplayAllContentTypes)
             {
-                contentTypes = _contentDefinitionManager
-                    .ListTypeDefinitions()
+                contentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
                     .Where(x => !x.HasStereotype())
                     .Select(x => x.Name)
                     .AsEnumerable();
