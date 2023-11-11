@@ -28,7 +28,7 @@ namespace OrchardCore.Autoroute.Sitemaps
 
         public async Task<string> GetRouteAsync(SitemapBuilderContext context, ContentItem contentItem)
         {
-            var ctd = ListRoutableTypeDefinitions()?
+            var ctd = (await ListRoutableTypeDefinitionsAsync())?
                 .FirstOrDefault(rctd => rctd.Name == contentItem.ContentType);
 
             if (ctd != null)

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -28,10 +29,14 @@ namespace OrchardCore.Contents.Sitemaps
             );
         }
 
-        public override IDisplayResult Edit(ContentTypesSitemapSource sitemapSource, IUpdateModel updater)
+        public override async Task<IDisplayResult> EditAsync(ContentTypesSitemapSource sitemapSource, IUpdateModel updater)
         {
-            var contentTypeDefinitions = _routeableContentTypeDefinitionProviders
-                .SelectMany(x => x.ListRoutableTypeDefinitions());
+            var contentTypeDefinitions = new List<ContentTypeDefinition>();
+
+            foreach (var routeableContentTypeDefinitionProviders in _routeableContentTypeDefinitionProviders)
+            {
+                contentTypeDefinitions.AddRange(await routeableContentTypeDefinitionProviders.ListRoutableTypeDefinitionsAsync());
+            }
 
             var entries = contentTypeDefinitions
                 .Select(ctd => new ContentTypeSitemapEntryViewModel
