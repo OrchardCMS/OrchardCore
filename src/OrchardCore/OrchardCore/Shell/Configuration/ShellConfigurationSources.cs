@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using OrchardCore.Environment.Shell.Configuration.Internal;
 
 namespace OrchardCore.Environment.Shell.Configuration
@@ -36,8 +37,8 @@ namespace OrchardCore.Environment.Shell.Configuration
             IDictionary<string, string> configData;
             if (File.Exists(appsettings))
             {
-                using var stream = File.OpenRead(appsettings);
-                configData = await JsonConfigurationParser.ParseAsync(stream);
+                using var streamReader = File.OpenRead(appsettings);
+                configData = await JsonConfigurationParser.ParseAsync(streamReader);
             }
             else
             {
@@ -58,10 +59,8 @@ namespace OrchardCore.Environment.Shell.Configuration
 
             Directory.CreateDirectory(tenantFolder);
 
-            using var streamWriter = File.CreateText(appsettings);
-            using var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented };
-
-            await configData.ToJObject().WriteToAsync(jsonWriter);
+            using var streamWriter = File.OpenWrite(appsettings);
+            await JsonSerializer.SerializeAsync(streamWriter, configData.ToJsonObject(), JNode.OptionsIndented);
         }
 
         public Task RemoveAsync(string tenant)

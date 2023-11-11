@@ -1,3 +1,7 @@
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace System.Text.Json.Nodes;
 
 #nullable enable
@@ -5,22 +9,36 @@ namespace System.Text.Json.Nodes;
 public static class JObject
 {
     /// <summary>
-    ///   Loads a JSON object from the provided reader.
+    /// Loads a JSON object from the provided stream.
+    /// </summary>
+    public static async Task<JsonObject?> LoadAsync(Stream utf8Json) => (await JNode.LoadAsync(utf8Json))?.AsObject();
+
+    /// <summary>
+    /// Loads a JSON object from the provided stream.
+    /// </summary>
+    public static async Task<JsonObject?> LoadAsync(
+        Stream utf8Json,
+        JsonNodeOptions? nodeOptions = null,
+        JsonDocumentOptions documentOptions = default,
+        CancellationToken cancellationToken = default)
+        => (await JNode.LoadAsync(utf8Json, nodeOptions, documentOptions, cancellationToken))?.AsObject();
+
+    /// <summary>
+    /// Loads a JSON object from the provided reader.
     /// </summary>
     public static JsonObject? Load(ref Utf8JsonReader reader, JsonNodeOptions? nodeOptions = null)
-        => Parse(ref reader, nodeOptions);
+        => JNode.Load(ref reader, nodeOptions)?.AsObject();
 
     /// <summary>
-    ///   Parses a JSON object from the provided reader.
+    /// Parses text representing a single JSON object.
     /// </summary>
-    public static JsonObject? Parse(ref Utf8JsonReader reader, JsonNodeOptions? nodeOptions = null)
-        => JsonNode.Parse(ref reader, nodeOptions ?? JNode.NodeOptions)?.AsObject();
+    public static JsonObject? Parse(string json) => JNode.Parse(json)?.AsObject();
 
     /// <summary>
-    ///   Parses text representing a single JSON object.
+    /// Parses text representing a single JSON object.
     /// </summary>
     public static JsonObject? Parse(string json, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
-        => JsonNode.Parse(json, nodeOptions ?? JNode.NodeOptions, documentOptions)?.AsObject();
+        => JNode.Parse(json, nodeOptions, documentOptions)?.AsObject();
 
     /// <summary>
     /// Creates a <see cref="JsonObject"/> from an object.

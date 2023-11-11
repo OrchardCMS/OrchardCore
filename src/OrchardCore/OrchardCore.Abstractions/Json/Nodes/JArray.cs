@@ -1,3 +1,7 @@
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace System.Text.Json.Nodes;
 
 #nullable enable
@@ -5,22 +9,36 @@ namespace System.Text.Json.Nodes;
 public static class JArray
 {
     /// <summary>
-    ///   Loads a JSON array from the provided reader.
+    /// Loads a JSON array from the provided stream.
+    /// </summary>
+    public static async Task<JsonArray?> LoadAsync(Stream utf8Json) => (await JNode.LoadAsync(utf8Json))?.AsArray();
+
+    /// <summary>
+    /// Loads a JSON array from the provided stream.
+    /// </summary>
+    public static async Task<JsonArray?> LoadAsync(
+        Stream utf8Json,
+        JsonNodeOptions? nodeOptions = null,
+        JsonDocumentOptions documentOptions = default,
+        CancellationToken cancellationToken = default)
+        => (await JNode.LoadAsync(utf8Json, nodeOptions, documentOptions, cancellationToken))?.AsArray();
+
+    /// <summary>
+    /// Loads a JSON array from the provided reader.
     /// </summary>
     public static JsonArray? Load(ref Utf8JsonReader reader, JsonNodeOptions? nodeOptions = null)
-        => JArray.Parse(ref reader, nodeOptions);
+        => JNode.Load(ref reader, nodeOptions)?.AsArray();
 
     /// <summary>
-    ///   Parses a JSON array from the provided reader.
+    /// Parses text representing a single JSON array.
     /// </summary>
-    public static JsonArray? Parse(ref Utf8JsonReader reader, JsonNodeOptions? nodeOptions = null)
-        => JsonNode.Parse(ref reader, nodeOptions ?? JNode.NodeOptions)?.AsArray();
+    public static JsonArray? Parse(string json) => JNode.Parse(json)?.AsArray();
 
     /// <summary>
-    ///   Parses text representing a single JSON array.
+    /// Parses text representing a single JSON array.
     /// </summary>
     public static JsonArray? Parse(string json, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
-        => JsonNode.Parse(json, nodeOptions ?? JNode.NodeOptions, documentOptions)?.AsArray();
+        => JNode.Parse(json, nodeOptions, documentOptions)?.AsArray();
 
     /// <summary>
     /// Creates a <see cref="JsonArray"/> from an object.

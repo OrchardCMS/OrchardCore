@@ -125,7 +125,7 @@ namespace OrchardCore.Data.Documents
             try
             {
                 using var stream = File.OpenWrite(filename);
-                await JsonSerializer.SerializeAsync(stream, document, JNode.Options);
+                await JsonSerializer.SerializeAsync(stream, document, JNode.OptionsIndented);
             }
             finally
             {

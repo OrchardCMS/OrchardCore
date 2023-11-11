@@ -1,6 +1,9 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.Json.Serialization;
+using System.Threading;
+using System.Threading.Tasks;
 
 #nullable enable
 
@@ -21,6 +24,7 @@ public static class JNode
     public static readonly JsonSerializerOptions OptionsIndented;
     public static readonly JsonSerializerOptions OptionsCamelCase;
     public static readonly JsonSerializerOptions OptionsCamelCaseIndented;
+
     public static readonly JsonDocumentOptions DocumentOptions;
     public static readonly JsonNodeOptions NodeOptions;
 
@@ -32,8 +36,6 @@ public static class JNode
         {
             WriteIndented = true
         };
-
-        OptionsIndented.Converters.Add(new JsonDynamicConverter());
 
         OptionsCamelCase = new JsonSerializerOptions(Options)
         {
@@ -58,10 +60,36 @@ public static class JNode
     }
 
     /// <summary>
-    ///   Loads a JSON value (including objects or arrays) from the provided reader.
+    /// Loads a JSON node (including objects or arrays)  from the provided stream.
+    /// </summary>
+    public static Task<JsonNode?> LoadAsync(Stream utf8Json) => LoadAsync(utf8Json, JNode.NodeOptions, JNode.DocumentOptions);
+
+    /// <summary>
+    /// Loads a JSON node (including objects or arrays)  from the provided stream.
+    /// </summary>
+    public static async Task<JsonNode?> LoadAsync(
+        Stream utf8Json,
+        JsonNodeOptions? nodeOptions = null,
+        JsonDocumentOptions documentOptions = default,
+        CancellationToken cancellationToken = default)
+        => (await JsonNode.ParseAsync(utf8Json, nodeOptions ?? NodeOptions, documentOptions, cancellationToken));
+
+    /// <summary>
+    /// Loads a JSON node (including objects or arrays) from the provided reader.
     /// </summary>
     public static JsonNode? Load(ref Utf8JsonReader reader, JsonNodeOptions? nodeOptions = null)
         => JsonNode.Parse(ref reader, nodeOptions ?? NodeOptions);
+
+    /// <summary>
+    /// Parses text representing a single JSON node.
+    /// </summary>
+    public static JsonNode? Parse(string json) => Parse(json, NodeOptions, DocumentOptions);
+
+    /// <summary>
+    /// Parses text representing a single JSON node.
+    /// </summary>
+    public static JsonNode? Parse(string json, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
+        => JsonNode.Parse(json, nodeOptions ?? JNode.NodeOptions, documentOptions);
 
     /// <summary>
     /// Creates a <see cref="JsonNode"/> from an object.
