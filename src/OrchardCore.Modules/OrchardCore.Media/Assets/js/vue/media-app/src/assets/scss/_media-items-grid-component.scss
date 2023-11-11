@@ -25,7 +25,7 @@ ol.media-items-grid {
         }
 
         &.selected {
-            border: 1px solid $primary;
+            border: 1px solid red;
         }
 
         &.selected .inline-media-button, &:hover .inline-media-button {

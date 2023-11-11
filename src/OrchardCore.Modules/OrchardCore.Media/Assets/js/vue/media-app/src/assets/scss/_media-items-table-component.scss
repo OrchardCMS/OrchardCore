@@ -53,33 +53,17 @@
         vertical-align: middle;
     }
 
-    .text-col {
-        margin-top: 16px;
-    }
-
     tr:hover {
         cursor: pointer;
     }
 
-
     .media-name-cell {
-        margin-top: 16px;
         display: flex;
         flex-direction: column;
 
         .media-filename {
             flex-grow: 1;
         }
-
-        .buttons-container {
-            opacity: 0;
-            transition: all 0.2s;
-        }
-    }
-
-    tr:hover .buttons-container, tr.selected .buttons-container {
-        opacity: 1;
-        transition: all 0.2s;
     }
 
     .btn-link {

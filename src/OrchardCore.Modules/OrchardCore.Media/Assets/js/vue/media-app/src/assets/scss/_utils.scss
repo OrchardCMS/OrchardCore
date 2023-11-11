@@ -28,8 +28,9 @@
     word-wrap: break-word;
     background-color: #fff;
     background-clip: border-box;
-    border: 1px solid rgba(0,0,0,.125);
+    border: 1px solid #b9dcff;
     border-radius: 0.25rem;
+    margin-bottom: unset !important;
 }
 
 .card-body {
@@ -43,6 +44,6 @@
 
 .card-footer {
     padding: 0.5rem 1rem;
-    background-color: rgba(0,0,0,.03);
-    border-top: 1px solid rgba(0,0,0,.125);
+    background-color: #e1f0ff;
+    border-top: $media-border-content;
 }

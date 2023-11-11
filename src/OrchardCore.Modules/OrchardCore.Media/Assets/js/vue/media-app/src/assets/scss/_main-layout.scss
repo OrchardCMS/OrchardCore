@@ -1,90 +1,117 @@
 #mediaApp {
+  .mediaApp {
     //position: absolute;
     //top: 52px;
     //bottom: 0;
     //right: 0;
     //left: 259px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
-    background-color: $body-bg;
     width: 100%;
-    height: 100vh;
     color: #000;
-    
+
     ::-webkit-scrollbar {
-        width: 4px;
+      width: 4px;
     }
 
     ::-webkit-scrollbar-thumb {
-        background-color: #495057;
+      background-color: #495057;
     }
 
     #mediaContainer {
+      border: $media-border-content;
+      display: flex;
+      flex-direction: column; // on small screen #navigationApp and #mediaContainerstacked
+      
+      height: 100%;
+      width: 100%;
+      align-items: stretch;
+
+      #navigationApp {
+        flex-shrink: 0;
+      }
+
+      #mediaContainerMain {
         display: flex;
-        flex-direction: column; // on small screen #navigationApp and #mediaContainerstacked
-        height: 100%;
-        align-items: stretch;
+        flex-direction: column;
+        flex-grow: 1;
 
-        #navigationApp {
-            border-right: $media-border-content;
-            border-top: $media-border-content;
-            flex-shrink: 0;
+        .media-container-middle {
+          flex-grow: 1;
+          flex-shrink: 0;
         }
 
-        #mediaContainerMain {
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-
-            .media-container-middle {
-                flex-grow: 1;
-                flex-shrink: 0;
-            }
-
-            .media-container-footer {
-                border-top: $media-border-content;
-            }
+        .media-container-footer {
+          border-top: $media-border-content;
         }
+      }
     }
     // on large screen they are side by side
-    @media only screen and ( min-width: 923px ) {
-        #mediaContainer {
-            flex-direction: row;
+    @media only screen and (min-width: 923px) {
+      #mediaContainer {
+        flex-direction: row;
+        height: calc(100vh - 240px);
 
-            #mediaContainerMain {
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
+        #mediaContainerMain {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
 
-                .media-container-middle {
-                    flex-shrink: 1;
-                    overflow: auto;
-                    height: calc(100vh - 236px);
-                }
-            }
-        }
-        // we don't want left navigation 100% tall when on stacked over the thumbs list
-        #navigationApp {
-            min-width: 240px;
+          .media-container-middle {
+            flex-shrink: 1;
             overflow: auto;
-            scrollbar-width: thin;
-            scrollbar-color: #495057 #EAEAEA;
+          }
         }
+      }
+      // we don't want left navigation 100% tall when on stacked over the thumbs list
+      #navigationApp {
+        min-width: 240px;
+        border-right: $media-border-content;
+        overflow: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #495057 #eaeaea;
+      }
     }
 
     .alert-info {
-        font-size: 0.875rem;
+      font-size: 0.875rem;
     }
 
     .message-warning {
-        padding: 20px;
-        margin-bottom: 8px;
+      width: 100%;
+      display: flex;
+      padding: 20px;
+      margin-bottom: 15px;
+
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
     }
 
     a.disabled {
-        cursor: default;
+      cursor: default;
     }
+  }
 }
 
 .left-sidebar-compact #mediaApp {
-    left: 48px;
+  left: 48px;
+}
+
+
+.no-breadcrumb-divider {
+    &::before {
+        content: none !important
+    }
+  }
+.breadcrumb-item + .breadcrumb-item {
+  padding-left: 2px;
+
+  &:before {
+    padding-right: 2px;
+  }
 }
