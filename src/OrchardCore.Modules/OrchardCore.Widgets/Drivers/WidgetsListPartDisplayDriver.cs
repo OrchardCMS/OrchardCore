@@ -35,7 +35,7 @@ namespace OrchardCore.Widgets.Drivers
 
         public override async Task<IDisplayResult> DisplayAsync(WidgetsListPart part, BuildPartDisplayContext context)
         {
-            if (context.DisplayType != "Detail" || !part.Widgets.Any())
+            if (context.DisplayType != "Detail" || part.Widgets.Count == 0)
             {
                 return null;
             }

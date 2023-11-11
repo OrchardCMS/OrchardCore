@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -31,8 +30,18 @@ namespace OrchardCore.Sitemaps.Services
         }
 
         public IEnumerable<ContentTypeDefinition> ListRoutableTypeDefinitions()
+            => ListRoutableTypeDefinitionsAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+
+        public async Task<IEnumerable<ContentTypeDefinition>> ListRoutableTypeDefinitionsAsync()
         {
-            return _routeableContentTypeProviders.SelectMany(rctd => rctd.ListRoutableTypeDefinitions());
+            var results = new List<ContentTypeDefinition>();
+
+            foreach (var routeableContentTypeProvider in _routeableContentTypeProviders)
+            {
+                results.AddRange(await routeableContentTypeProvider.ListRoutableTypeDefinitionsAsync());
+            }
+
+            return results;
         }
     }
 }

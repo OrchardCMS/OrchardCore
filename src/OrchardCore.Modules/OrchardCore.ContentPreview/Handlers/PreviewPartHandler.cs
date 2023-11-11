@@ -26,7 +26,7 @@ namespace OrchardCore.ContentPreview.Handlers
         }
 
         /// <summary>
-        /// Get the pattern from the AutoroutePartSettings property for its type
+        /// Get the pattern from the AutoroutePartSettings property for its type.
         /// </summary>
         private async Task<string> GetPatternAsync(PreviewPart part)
         {

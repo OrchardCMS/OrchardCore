@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -46,8 +45,11 @@ namespace OrchardCore.Sitemaps.Services
         }
 
         public IEnumerable<ContentTypeDefinition> ListRoutableTypeDefinitions()
+            => ListRoutableTypeDefinitionsAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+
+        public async Task<IEnumerable<ContentTypeDefinition>> ListRoutableTypeDefinitionsAsync()
         {
-            var ctds = _contentDefinitionManager.ListTypeDefinitionsAsync().GetAwaiter().GetResult();
+            var ctds = await _contentDefinitionManager.ListTypeDefinitionsAsync();
             var rctds = ctds.Where(ctd => _options.ContentTypeOptions.Any(o => o.ContentType == ctd.Name));
             return rctds;
         }

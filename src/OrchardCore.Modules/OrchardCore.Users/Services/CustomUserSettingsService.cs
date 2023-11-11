@@ -34,9 +34,7 @@ public class CustomUserSettingsService
 
     [Obsolete($"Instead, utilize the {nameof(GetAllSettingsTypesAsync)} method. This current method is slated for removal in upcoming releases.")]
     public IEnumerable<ContentTypeDefinition> GetAllSettingsTypes()
-    {
-        return _settingsTypes.Value.ConfigureAwait(false).GetAwaiter().GetResult().Values;
-    }
+        => _settingsTypes.Value.ConfigureAwait(false).GetAwaiter().GetResult().Values;
 
     [Obsolete($"Instead, utilize the {nameof(GetSettingsTypesAsync)} method. This current method is slated for removal in upcoming releases.")]
     public IEnumerable<ContentTypeDefinition> GetSettingsTypes(params string[] settingsTypeNames)
@@ -45,7 +43,7 @@ public class CustomUserSettingsService
 
         foreach (var settingsTypeName in settingsTypeNames)
         {
-            if (types.TryGetValue(settingsTypeName, out ContentTypeDefinition settingsType))
+            if (types.TryGetValue(settingsTypeName, out var settingsType))
             {
                 yield return settingsType;
             }
@@ -54,12 +52,7 @@ public class CustomUserSettingsService
 
     [Obsolete($"Instead, utilize the {nameof(GetSettingsTypeAsync)} method. This current method is slated for removal in upcoming releases.")]
     public ContentTypeDefinition GetSettingsType(string settingsTypeName)
-    {
-        var types = _settingsTypes.Value.ConfigureAwait(false).GetAwaiter().GetResult();
-
-        types.TryGetValue(settingsTypeName, out var settingsType);
-        return settingsType;
-    }
+        => GetSettingsTypeAsync(settingsTypeName).GetAwaiter().GetResult();
 
     public async Task<IEnumerable<string>> GetAllSettingsTypeNamesAsync()
         => (await _settingsTypes.Value).Keys;
