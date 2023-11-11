@@ -14,6 +14,8 @@ public class JsonDynamicObject : DynamicObject
 
     private readonly Dictionary<string, object?> _dictionary = new();
 
+    public JsonDynamicObject() => _jsonObject = new JsonObject();
+
     public JsonDynamicObject(JsonObject jsonObject) => _jsonObject = jsonObject;
 
     public int Count => _jsonObject.Count;

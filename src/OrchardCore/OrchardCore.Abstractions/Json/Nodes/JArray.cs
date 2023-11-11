@@ -43,8 +43,15 @@ public static class JArray
     /// <summary>
     /// Creates a <see cref="JsonArray"/> from an object.
     /// </summary>
-    public static JsonArray? FromObject(object? obj, JsonSerializerOptions? options = null) =>
-        JsonArray.Create(JsonSerializer.SerializeToElement(obj, options ?? JNode.Options));
+    public static JsonArray? FromObject(object? obj, JsonSerializerOptions? options = null)
+    {
+        if (obj is JsonElement jsonElement)
+        {
+            return JsonArray.Create(jsonElement);
+        }
+
+        return JsonArray.Create(JsonSerializer.SerializeToElement(obj, options ?? JNode.Options));
+    }
 
     /// <summary>
     /// Creates a new instance from an existing <see cref="JsonArray"/>.
@@ -52,7 +59,7 @@ public static class JArray
     public static JsonArray? Clone(this JsonArray? jsonArray) => jsonArray?.DeepClone().AsArray();
 
     /// <summary>
-    /// Whether this <see cref="JsonArray"/> contains the provided <see cref="JsonArray"/> or not.
+    /// Whether this <see cref="JsonArray"/> contains the provided <see cref="JsonValue"/> or not.
     /// </summary>
     public static bool ContainsValue(this JsonArray? jsonArray, JsonValue? value)
     {

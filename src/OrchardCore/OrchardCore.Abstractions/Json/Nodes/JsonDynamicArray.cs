@@ -16,6 +16,8 @@ public class JsonDynamicArray : DynamicObject, IEnumerable<JsonNode?>
 
     public readonly Dictionary<int, object?> _dictionary = new();
 
+    public JsonDynamicArray() => _jsonArray = new JsonArray();
+
     public JsonDynamicArray(JsonArray jsonArray) => _jsonArray = jsonArray;
 
     public int Count => _jsonArray.Count;
