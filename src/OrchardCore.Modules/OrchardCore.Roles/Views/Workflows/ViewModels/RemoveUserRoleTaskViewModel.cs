@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Users.Workflows.ViewModels
+namespace OrchardCore.Roles.Workflows.ViewModels
 {
     public class RemoveUserRoleTaskViewModel
     {

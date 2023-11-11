@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Users;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -10,16 +10,16 @@ using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
-namespace OrchardCore.Users.Workflows.Activities
+namespace OrchardCore.Roles.Workflows.Activities
 {
-    public class SelectUsersInRoleTask : TaskActivity
+    public class RemoveUserRoleTask : TaskActivity
     {
         private readonly UserManager<IUser> _userManager;
         private readonly IUserService _userService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
         protected readonly IStringLocalizer S;
 
-        public SelectUsersInRoleTask(UserManager<IUser> userManager, IUserService userService, IWorkflowExpressionEvaluator expressionvaluator, IStringLocalizer<SelectUsersInRoleTask> localizer)
+        public RemoveUserRoleTask(UserManager<IUser> userManager, IUserService userService, IWorkflowExpressionEvaluator expressionvaluator, IStringLocalizer<RemoveUserRoleTask> localizer)
         {
             _userManager = userManager;
             _userService = userService;
@@ -27,13 +27,13 @@ namespace OrchardCore.Users.Workflows.Activities
             S = localizer;
         }
 
-        public override string Name => nameof(SelectUsersInRoleTask);
+        public override string Name => nameof(RemoveUserRoleTask);
 
-        public override LocalizedString DisplayText => S["Select Users in Role Task"];
+        public override LocalizedString DisplayText => S["Remove User Role Task"];
 
         public override LocalizedString Category => S["User"];
 
-        public WorkflowExpression<string> OutputKeyName
+        public WorkflowExpression<string> UserName
         {
             get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
@@ -52,19 +52,24 @@ namespace OrchardCore.Users.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var propKeyName = await _expressionEvaluator.EvaluateAsync(OutputKeyName, workflowContext, null);
+            var userName = await _expressionEvaluator.EvaluateAsync(UserName, workflowContext, null);
             var roleName = await _expressionEvaluator.EvaluateAsync(RoleName, workflowContext, null);
 
-            if (!string.IsNullOrEmpty(propKeyName) && !string.IsNullOrEmpty(roleName))
+            var user = (User)await _userService.GetUserAsync(userName);
+
+            if (user != null)
             {
-                var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
-                if (usersInRole.Count > 0)
+                if (user.RoleNames.Contains(roleName))
                 {
-                    workflowContext.Output[propKeyName] = usersInRole.Select(u => (u as User).UserId).ToArray();
-                    return Outcomes("Done");
+                    await _userManager.RemoveFromRoleAsync(user, roleName);
                 }
+
+                return Outcomes("Done");
             }
-            return Outcomes("Failed");
+            else
+            {
+                return Outcomes("Failed");
+            }
         }
     }
 }

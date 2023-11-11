@@ -1,9 +1,9 @@
+using OrchardCore.Roles.Workflows.Activities;
+using OrchardCore.Roles.Workflows.ViewModels;
 using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.Models;
-using OrchardCore.Users.Workflows.Activities;
-using OrchardCore.Users.Workflows.ViewModels;
 
-namespace OrchardCore.Users.Workflows.Drivers
+namespace OrchardCore.Roles.Workflows.Drivers
 {
     public class RemoveUserRoleTaskDisplayDriver : ActivityDisplayDriver<RemoveUserRoleTask, RemoveUserRoleTaskViewModel>
     {

@@ -1,0 +1,18 @@
+using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Modules;
+using OrchardCore.Roles.Workflows.Activities;
+using OrchardCore.Roles.Workflows.Drivers;
+using OrchardCore.Workflows.Helpers;
+
+namespace OrchardCore.Roles.Workflows
+{
+    [RequireFeatures("OrchardCore.Workflows")]
+    public class Startup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddActivity<RemoveUserRoleTask, RemoveUserRoleTaskDisplayDriver>();
+            services.AddActivity<SelectUsersInRoleTask, SelectUsersInRoleTaskDisplayDriver>();
+        }
+    }
+}

@@ -22,8 +22,6 @@ namespace OrchardCore.Users.Workflows
             services.AddActivity<UserLoggedInEvent, UserLoggedInEventDisplayDriver>();
             services.AddScoped<IUserEventHandler, UserEventHandler>();
             services.AddActivity<AssignUserRoleTask, AssignUserRoleTaskDisplayDriver>();
-            services.AddActivity<RemoveUserRoleTask, RemoveUserRoleTaskDisplayDriver>();
-            services.AddActivity<SelectUsersInRoleTask, SelectUsersInRoleTaskDisplayDriver>();
             services.AddActivity<ValidateUserTask, ValidateUserTaskDisplayDriver>();
         }
     }
