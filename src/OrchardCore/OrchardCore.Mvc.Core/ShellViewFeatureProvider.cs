@@ -31,6 +31,21 @@ namespace OrchardCore.Mvc
         {
             EnsureScopedServices();
 
+            // Check if the feature can be retrieved from the shell scope.
+            var viewsFeature = ShellScope.GetFeature<ViewsFeature>();
+            if (viewsFeature is not null)
+            {
+                foreach (var descriptor in viewsFeature.ViewDescriptors)
+                {
+                    feature.ViewDescriptors.Add(descriptor);
+                }
+
+                return;
+            }
+
+            // Set it as a shell scope feature to be used later on.
+            ShellScope.SetFeature(feature);
+
             PopulateFeatureInternal(feature);
 
             // Apply views feature providers registered at the tenant level.
@@ -123,7 +138,7 @@ namespace OrchardCore.Mvc
 
                 foreach (var assembly in assembliesWithViews)
                 {
-                    var applicationPart = new ApplicationPart[] { new CompiledRazorAssemblyPart(assembly) };
+                    var applicationPart = new ApplicationPart[] { new TenantCompiledRazorAssemblyPart(assembly) };
 
                     foreach (var provider in mvcFeatureProviders)
                     {

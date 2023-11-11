@@ -7,7 +7,6 @@
     var selectedUsers = JsonConvert.SerializeObject(Model.SelectedUsers, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
     var fieldName = Model.PartFieldDefinition.Name;
-    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
     var contentTypeName = Model.TypePartDefinition.Name;
     var searchUrl = Url.RouteUrl(new { area = "OrchardCore.ContentFields", controller = "UserPickerAdmin", action = "SearchUsers", part = partName, field = fieldName, contentType = contentTypeName });
     var vueElementId = $"UserPicker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
@@ -17,9 +16,9 @@
 <script asp-name="vue-multiselect-userpicker" asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-userpicker.js" at="Foot" depends-on="vuejs:2, vue-multiselect:2, vuedraggable:2"></script>
 <style asp-name="vue-multiselect-userpicker" asp-src="~/OrchardCore.ContentFields/Styles/vue-multiselect-userpicker.min.css" debug-src="~/OrchardCore.ContentFields/Styles/vue-multiselect-userpicker.css" depends-on="vue-multiselect:2"></style>
 
-<div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x.UserIds)_FieldWrapper">
-    <label asp-for="UserIds" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.UserIds)_FieldWrapper">
+    <label asp-for="UserIds" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndClasses()">
         <div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-content-type="@contentTypeName" data-editor-type="UserPicker" data-selected-users="@selectedUsers" data-search-url="@searchUrl" data-multiple="@multiple">
 
             <ul class="mb-1 list-group w-lg-75 w-xxl-50 user-picker-default__list" v-show="arrayOfUsers.length" v-cloak>

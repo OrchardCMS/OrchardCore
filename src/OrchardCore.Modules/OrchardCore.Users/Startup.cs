@@ -14,9 +14,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Admin.Models;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Commands;
@@ -27,6 +29,7 @@ using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
+using OrchardCore.Recipes;
 using OrchardCore.Recipes.Services;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Security;
@@ -37,11 +40,13 @@ using OrchardCore.Setup.Events;
 using OrchardCore.Sms;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Controllers;
+using OrchardCore.Users.Deployment;
 using OrchardCore.Users.Drivers;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Liquid;
 using OrchardCore.Users.Models;
+using OrchardCore.Users.Recipes;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 using YesSql.Filters.Query;
@@ -245,8 +250,14 @@ namespace OrchardCore.Users
 
             services.AddTransient<IUsersAdminListFilterProvider, DefaultUsersAdminListFilterProvider>();
             services.AddTransient<IConfigureOptions<ResourceManagementOptions>, UserOptionsConfiguration>();
+            services.AddScoped<IDisplayDriver<Navbar>, UserMenuNavbarDisplayDriver>();
             services.AddScoped<IDisplayDriver<UserMenu>, UserMenuDisplayDriver>();
             services.AddScoped<IShapeTableProvider, UserMenuShapeTableProvider>();
+
+            services.AddRecipeExecutionStep<UsersStep>();
+
+            services.AddScoped<CustomUserSettingsService>();
+            services.AddRecipeExecutionStep<CustomUserSettingsStep>();
         }
     }
 
@@ -494,6 +505,20 @@ namespace OrchardCore.Users
         {
             services.AddScoped<IDisplayDriver<User>, CustomUserSettingsDisplayDriver>();
             services.AddScoped<IPermissionProvider, CustomUserSettingsPermissions>();
+
+            services.AddTransient<IDeploymentSource, CustomUserSettingsDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<CustomUserSettingsDeploymentStep>>();
+            services.AddScoped<IDisplayDriver<DeploymentStep>, CustomUserSettingsDeploymentStepDriver>();
+        }
+    }
+
+    public class UserDeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, AllUsersDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<AllUsersDeploymentStep>>();
+            services.AddScoped<IDisplayDriver<DeploymentStep>, AllUsersDeploymentStepDriver>();
         }
     }
 }

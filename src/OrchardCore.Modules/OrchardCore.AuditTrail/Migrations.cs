@@ -23,13 +23,13 @@ namespace OrchardCore.AuditTrail
             SchemaBuilder.AlterIndexTable<AuditTrailEventIndex>(table => table
                 .CreateIndex("IDX_AuditTrailEventIndex_DocumentId",
                     "DocumentId",
-                    nameof(AuditTrailEventIndex.EventId),
-                    nameof(AuditTrailEventIndex.Category),
-                    nameof(AuditTrailEventIndex.Name),
-                    nameof(AuditTrailEventIndex.CorrelationId),
-                    nameof(AuditTrailEventIndex.UserId),
-                    nameof(AuditTrailEventIndex.NormalizedUserName),
-                    nameof(AuditTrailEventIndex.CreatedUtc)
+                    "EventId",
+                    "Category",
+                    "Name",
+                    "CorrelationId",
+                    "UserId",
+                    "NormalizedUserName",
+                    "CreatedUtc"
                     ),
                 collection: AuditTrailEvent.Collection
             );

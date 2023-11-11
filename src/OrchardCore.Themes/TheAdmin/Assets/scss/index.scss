@@ -4,7 +4,6 @@
 /* Import the files from main folder before importing any component */
 @import 'main/helpers';
 @import 'main/overrides';
-@import 'main/layout';
 
 /* Import the components files */
 @import 'components/action-bar';
@@ -20,13 +19,12 @@
 @import 'components/navbar';
 @import 'components/nouislider';
 @import 'components/pager';
-@import 'components/sidebar-menu';
 @import 'components/sortable';
 @import 'components/tabs';
 @import 'components/trumbowyg';
 @import 'components/validations';
 @import 'components/vue-multiselect';
 
-/* Include themes */
+/* Import themes */
 @import 'themes/light/index';
 @import 'themes/dark/index';

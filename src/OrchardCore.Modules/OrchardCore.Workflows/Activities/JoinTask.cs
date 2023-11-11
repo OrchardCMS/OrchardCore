@@ -7,7 +7,7 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class JoinTask : TaskActivity
+    public class JoinTask : TaskActivity<JoinTask>
     {
         protected readonly IStringLocalizer S;
 
@@ -21,8 +21,6 @@ namespace OrchardCore.Workflows.Activities
         {
             S = localizer;
         }
-
-        public override string Name => nameof(JoinTask);
 
         public override LocalizedString DisplayText => S["Join Task"];
 

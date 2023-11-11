@@ -186,7 +186,7 @@ namespace OrchardCore.Documents
             {
                 await DocumentStore.UpdateAsync(document, async document =>
                 {
-                    await SetInternalAsync(document);
+                    await InvalidateInternalAsync(document);
 
                     if (afterUpdateAsync != null)
                     {
@@ -204,7 +204,7 @@ namespace OrchardCore.Documents
             // But still update the shared cache after committing.
             DocumentStore.AfterCommitSuccess<TDocument>(async () =>
             {
-                await SetInternalAsync(document);
+                await InvalidateInternalAsync(document);
 
                 if (afterUpdateAsync != null)
                 {
@@ -349,6 +349,18 @@ namespace OrchardCore.Documents
                         _memoryCache.Remove(_options.CacheIdKey);
                     }
                 }
+            }
+        }
+
+        protected async Task InvalidateInternalAsync(TDocument document, bool failover = false)
+        {
+            if (_isDistributed)
+            {
+                await _distributedCache.RemoveAsync(_options.CacheIdKey);
+            }
+            else
+            {
+                _memoryCache.Remove(_options.CacheIdKey);
             }
         }
 

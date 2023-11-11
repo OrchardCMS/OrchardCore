@@ -1,4 +1,3 @@
-// bootstrap-select customizations
 @import "../../../node_modules/bootstrap-select/sass/bootstrap-select";
 
 .multiselect__content-wrapper ul {
@@ -20,11 +19,6 @@ html[dir="rtl"] .bootstrap-select .bs-ok-default:after {
 .bootstrap-select {
     .popover-header {
         .close {
-            /*
-            @extend .btn;
-            @extend .btn-close;
-            @extend .float-end;
-                */
             border: 0;
             background: none;
             box-shadow: none;

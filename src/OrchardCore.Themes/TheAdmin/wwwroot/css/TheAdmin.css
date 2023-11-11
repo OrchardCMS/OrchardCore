@@ -1,6 +1,8 @@
 @charset "UTF-8";
-/* Import variables first */
-/* IMPORTANT: Never import Bootstrap directly into the theme. TheAdmin.css will depend on Bootstrap, but we never want to compile it. */
+/* Import variables first */ /* 
+    IMPORTANT: Never import Bootstrap directly into the theme. 
+    TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
+*/
 :root {
   --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
   --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
@@ -12,6 +14,7 @@
   --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
+  --oc-height-dropdown: 250px;
   --oc-top-nav-height: 52px;
   --oc-top-nav-zindex: 1034;
   --oc-footer-height: 40px;
@@ -20,12 +23,21 @@
   --oc-start-navigation-zindex: 1033;
   --oc-link-padding-left: 16px;
   --oc-editor-fullscreen: 1054;
+  --oc-selected-indicator-color: var(--bs-primary);
+  /* Action bar should always be less than dropdown menu */
+  --oc-action-bar-zindex: 983;
+  --oc-second-action-bar-zindex: 980;
+  /* Undefined Bootstrap variables */
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
+  --bs-bg-opacity: 1;
 }
 
 /* Import the files from main folder before importing any component */
-/* IMPORTANT: Never import Bootstrap directly into the theme. TheAdmin.css will depend on Bootstrap, but we never want to compile it. */
+/* 
+    IMPORTANT: Never import Bootstrap directly into the theme. 
+    TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
+*/
 :root {
   --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
   --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
@@ -37,6 +49,7 @@
   --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
+  --oc-height-dropdown: 250px;
   --oc-top-nav-height: 52px;
   --oc-top-nav-zindex: 1034;
   --oc-footer-height: 40px;
@@ -45,8 +58,14 @@
   --oc-start-navigation-zindex: 1033;
   --oc-link-padding-left: 16px;
   --oc-editor-fullscreen: 1054;
+  --oc-selected-indicator-color: var(--bs-primary);
+  /* Action bar should always be less than dropdown menu */
+  --oc-action-bar-zindex: 983;
+  --oc-second-action-bar-zindex: 980;
+  /* Undefined Bootstrap variables */
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
+  --bs-bg-opacity: 1;
 }
 
 .w-xs-25 {
@@ -148,75 +167,23 @@ a:hover {
   text-decoration: underline;
 }
 
-/* IMPORTANT: Never import Bootstrap directly into the theme. TheAdmin.css will depend on Bootstrap, but we never want to compile it. */
-:root {
-  --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
-  --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-scrollbar-color: #CDCDCD;
-  --oc-admin-menu-font-color: var(--bs-secondary-color);
-  --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
-  --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-admin-menu-item-font-color: var(--bs-secondary-color);
-  --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
-  --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
-  --oc-zindex-dropdown: 1000;
-  --oc-top-nav-height: 52px;
-  --oc-top-nav-zindex: 1034;
-  --oc-footer-height: 40px;
-  --oc-start-navigation-width: 260px;
-  --oc-start-navigation-width-when-compact: 48px;
-  --oc-start-navigation-zindex: 1033;
-  --oc-link-padding-left: 16px;
-  --oc-editor-fullscreen: 1054;
-  --bs-dropdown-zindex: 1000;
-  --bs-zindex-fixed: 1030;
+.btn:hover, .button:hover {
+  text-decoration: none;
 }
 
-body {
-  margin-bottom: var(--oc-footer-height);
-  height: 100%;
+.btn-link:focus-visible {
+  text-decoration: none;
 }
 
-.cursor-move {
-  cursor: move;
-}
-
-.cursor-pointer {
-  cursor: pointer;
-}
-
-.ta-content {
-  padding: 15px;
-  margin-left: var(--oc-start-navigation-width);
-  margin-top: var(--oc-top-nav-height);
-  margin-bottom: var(--oc-footer-height);
-  transition: margin-left 0.2s ease-in-out;
-}
-.ta-content h1 {
-  line-height: 40px;
-  font-size: 28px;
-  letter-spacing: -0.04em;
-  font-weight: bold;
-}
-
-@media (max-width: 575.98px) {
-  .ta-content {
-    margin-left: var(--oc-start-navigation-width-when-compact);
-    transition: margin-left 0.5s ease-in-out;
-  }
-}
-.left-sidebar-compact .ta-content {
-  margin-left: var(--oc-start-navigation-width-when-compact);
-}
-
-.preload * {
-  -webkit-transition: none !important;
-  -moz-transition: none !important;
-  -o-transition: none !important;
+.navbar-brand:hover, .navbar-brand:focus {
+  text-decoration: none;
 }
 
 /* Import the components files */
-/* IMPORTANT: Never import Bootstrap directly into the theme. TheAdmin.css will depend on Bootstrap, but we never want to compile it. */
+/* 
+    IMPORTANT: Never import Bootstrap directly into the theme. 
+    TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
+*/
 :root {
   --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
   --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
@@ -228,6 +195,7 @@ body {
   --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
+  --oc-height-dropdown: 250px;
   --oc-top-nav-height: 52px;
   --oc-top-nav-zindex: 1034;
   --oc-footer-height: 40px;
@@ -236,18 +204,23 @@ body {
   --oc-start-navigation-zindex: 1033;
   --oc-link-padding-left: 16px;
   --oc-editor-fullscreen: 1054;
+  --oc-selected-indicator-color: var(--bs-primary);
+  /* Action bar should always be less than dropdown menu */
+  --oc-action-bar-zindex: 983;
+  --oc-second-action-bar-zindex: 980;
+  /* Undefined Bootstrap variables */
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
+  --bs-bg-opacity: 1;
 }
 
-/* Action bar should always be less than dropdown menu */
 .action-bar {
   top: 3.3rem;
-  z-index: calc(var(--bs-dropdown-zindex, 1000) - 20);
+  z-index: var(--oc-action-bar-zindex);
 }
 
 .second-action-bar {
-  z-index: calc(var(--bs-dropdown-zindex, 1000) - 10);
+  z-index: var(--oc-second-action-bar-zindex);
 }
 
 .ta-badge {
@@ -679,11 +652,6 @@ html[dir=rtl] .bootstrap-select .bs-ok-default:after {
 }
 
 .bootstrap-select .popover-header .close {
-  /*
-  @extend .btn;
-  @extend .btn-close;
-  @extend .float-end;
-      */
   border: 0;
   background: none;
   box-shadow: none;
@@ -694,7 +662,10 @@ html[dir=rtl] .bootstrap-select .bs-ok-default:after {
   background: unset;
 }
 
-/* IMPORTANT: Never import Bootstrap directly into the theme. TheAdmin.css will depend on Bootstrap, but we never want to compile it. */
+/* 
+    IMPORTANT: Never import Bootstrap directly into the theme. 
+    TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
+*/
 :root {
   --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
   --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
@@ -706,6 +677,7 @@ html[dir=rtl] .bootstrap-select .bs-ok-default:after {
   --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
+  --oc-height-dropdown: 250px;
   --oc-top-nav-height: 52px;
   --oc-top-nav-zindex: 1034;
   --oc-footer-height: 40px;
@@ -714,8 +686,14 @@ html[dir=rtl] .bootstrap-select .bs-ok-default:after {
   --oc-start-navigation-zindex: 1033;
   --oc-link-padding-left: 16px;
   --oc-editor-fullscreen: 1054;
+  --oc-selected-indicator-color: var(--bs-primary);
+  /* Action bar should always be less than dropdown menu */
+  --oc-action-bar-zindex: 983;
+  --oc-second-action-bar-zindex: 980;
+  /* Undefined Bootstrap variables */
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
+  --bs-bg-opacity: 1;
 }
 
 :root {
@@ -760,70 +738,32 @@ html[dir=rtl] .bootstrap-select .bs-ok-default:after {
 }
 
 .CodeMirror-focused .CodeMirror-activeline-background {
-  background: rgba(100, 100, 100, 0.1) !important;
+  background: rgba(var(--bs-secondary-bg-rgb), 0.1) !important;
 }
 
 .dropdown-menu.scrollable {
   overflow-y: auto;
-  max-height: 250px;
+  max-height: var(--oc-height-dropdown);
+  scrollbar-width: thin;
 }
 
 .btn-dropdown ::-webkit-scrollbar {
   width: 4px;
 }
 .btn-dropdown .dropdown-menu {
-  max-height: 200px;
+  max-height: var(--oc-height-dropdown);
   overflow: hidden auto;
   scrollbar-width: thin;
 }
 
-/* rtl:ignore */
-/*
-[dir="rtl"] .dropdown-menu {
-    left: auto !important;
-    right: 0px !important;
-    transform: translate3d(0px, 38px, 0px) !important;
+.dropdown-item:hover, .dropdown-item:focus {
+  text-decoration: none;
 }
 
-.btn-dropdown-wrapper {
-    &:hover {
-        > .btn-dropdown {
-            border-width: 5px;
-            opacity: 1;
-        }
-    }
-}
-
-
-.btn-dropdown {
-    position: relative;
-    z-index: var(--bs-dropdown-zindex);
-    opacity: 0.8;
-    transition: 0.3s opacity;
-
-    > .btn-group {
-        margin: 0 auto;
-        bottom: 17px;
-    }
-}
-
-.btn-dropdown.show {
-    z-index: calc(var(--bs-dropdown-zindex) + 10);
-}
-
-[dir="ltr"] .btn-dropdown {
-    > .btn-group {
-        left: calc(-14px + 50%);
-    }
-}
-
-[dir="rtl"] .btn-dropdown {
-    > .btn-group {
-        right: calc(-14px + 50%);
-    }
-}
+/* 
+    IMPORTANT: Never import Bootstrap directly into the theme. 
+    TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
 */
-/* IMPORTANT: Never import Bootstrap directly into the theme. TheAdmin.css will depend on Bootstrap, but we never want to compile it. */
 :root {
   --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
   --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
@@ -835,6 +775,7 @@ html[dir=rtl] .bootstrap-select .bs-ok-default:after {
   --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
+  --oc-height-dropdown: 250px;
   --oc-top-nav-height: 52px;
   --oc-top-nav-zindex: 1034;
   --oc-footer-height: 40px;
@@ -843,13 +784,19 @@ html[dir=rtl] .bootstrap-select .bs-ok-default:after {
   --oc-start-navigation-zindex: 1033;
   --oc-link-padding-left: 16px;
   --oc-editor-fullscreen: 1054;
+  --oc-selected-indicator-color: var(--bs-primary);
+  /* Action bar should always be less than dropdown menu */
+  --oc-action-bar-zindex: 983;
+  --oc-second-action-bar-zindex: 980;
+  /* Undefined Bootstrap variables */
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
+  --bs-bg-opacity: 1;
 }
 
 .hint {
   font-size: 0.875em;
-  color: var(--bs-text-body-secondary) !important;
+  color: var(--bs-secondary) !important;
   overflow-wrap: break-word;
   word-wrap: break-word;
   -ms-word-break: break-all;
@@ -8044,7 +7991,7 @@ div.editor-widget.find-widget .button.codicon {
   background-color: transparent;
   border-color: transparent;
   display: flex;
-  color: rgb(97, 97, 97);
+  color: var(--bs-secondary-color);
   box-shadow: none;
 }
 div.editor-widget.find-widget .button.codicon:focus {
@@ -8103,6 +8050,7 @@ div.editor-widget.find-widget .button.codicon:active {
 .ta-navbar-brand {
   white-space: nowrap;
   transition: width 0.2s ease-in-out;
+  color: var(--bs-navbar-brand-color);
 }
 .ta-navbar-brand span {
   font-size: 14px;
@@ -8496,7 +8444,10 @@ ul.pager {
   justify-content: center;
 }
 
-/* IMPORTANT: Never import Bootstrap directly into the theme. TheAdmin.css will depend on Bootstrap, but we never want to compile it. */
+/* 
+    IMPORTANT: Never import Bootstrap directly into the theme. 
+    TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
+*/
 :root {
   --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
   --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
@@ -8508,6 +8459,7 @@ ul.pager {
   --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
+  --oc-height-dropdown: 250px;
   --oc-top-nav-height: 52px;
   --oc-top-nav-zindex: 1034;
   --oc-footer-height: 40px;
@@ -8516,791 +8468,28 @@ ul.pager {
   --oc-start-navigation-zindex: 1033;
   --oc-link-padding-left: 16px;
   --oc-editor-fullscreen: 1054;
+  --oc-selected-indicator-color: var(--bs-primary);
+  /* Action bar should always be less than dropdown menu */
+  --oc-action-bar-zindex: 983;
+  --oc-second-action-bar-zindex: 980;
+  /* Undefined Bootstrap variables */
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
-}
-
-body:not(.left-sidebar-compact) #ta-left-sidebar {
-  background-color: var(--oc-admin-menu-bg-color);
-  z-index: var(--oc-start-navigation-zindex);
-  position: fixed;
-  top: var(--oc-top-nav-height);
-  bottom: 0;
-  left: 0px;
-  width: var(--oc-start-navigation-width);
-  color: var(--oc-admin-menu-font-color);
-  border-right: var(--oc-border-content);
-  transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar ::-webkit-scrollbar {
-  width: 4px;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar ::-webkit-scrollbar-thumb {
-  background-color: var(--oc-scrollbar-color);
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar figure {
-  margin: 0;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar a[aria-expanded=true] .chevron {
-  transform: rotate(90deg);
-  transition-duration: 0.2s;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar a[aria-expanded=false] .chevron {
-  transition-duration: 0.2s;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar .collapse {
-  display: none;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar .collapse.show {
-  display: block;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar .chevron {
-  position: absolute;
-  top: 38%;
-  left: 100%;
-  margin-left: -25px;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar figcaption,
-body:not(.left-sidebar-compact) #ta-left-sidebar a {
-  position: relative;
-  display: block;
-  margin: 0;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav {
-  position: relative;
-  flex: 1 1 auto;
-  height: calc(100% - 51px - 38px);
-  /*.btn-nostyle:focus, .btn-nostyle:active {
-      background-color: rgba(0, 0, 0, 0.3);
-      color: white;
-  }*/
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav ul {
-  margin: 0;
-  padding: 0;
-  white-space: nowrap;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul li {
-  position: relative;
-  margin: 0;
-  padding: 0;
-  display: list-item;
-  list-style: none;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul li .item-label {
-  flex-grow: 1;
-  cursor: pointer;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li {
-  line-height: 3em;
-  width: var(--oc-start-navigation-width);
-  transition: width 0.2s ease-in-out;
-  background-color: var(--oc-admin-menu-bg-color);
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li > figure > ul > li {
-  line-height: 2.5em;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li.active:not(.has-items)::before {
-  border-left: 3px solid;
-  border-left-color: #0078d4;
-  bottom: 0;
-  content: "";
-  left: 0;
-  position: absolute;
-  top: 0;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li.new:after {
-  content: "";
-  width: 92%;
-  height: 1px;
-  background: rgba(140, 130, 115, 0.13);
-  display: block;
-  margin: 0px auto;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin {
-  overflow-y: auto;
-  overflow-x: hidden;
-  height: 100%;
-  margin-bottom: 40px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--oc-scrollbar-color) var(--oc-admin-menu-bg-color);
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin .item-label {
-  padding-left: 0px !important;
-  display: flex;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin .item-label > span.icon {
-  padding: 0 5px;
-  flex-shrink: 0;
-  font-size: 22px;
-  width: var(--oc-start-navigation-width-when-compact);
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin .item-label > span.icon svg {
-  width: 35px;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin .item-label > span.title {
-  flex-grow: 1;
-  font-size: 14px;
-  width: calc(100% - 48px - 45px);
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin > li > figure > figcaption > .item-label > .collapse-icon {
-  color: rgba(255, 0, 0, 0);
-  display: flex;
-  justify-content: center;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav ul li .item-label,
-body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li a:hover,
-body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li a:active,
-body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav li a:visited {
-  color: var(--oc-admin-menu-item-font-color);
-  text-decoration: none;
-  padding-left: 16px;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav .btn-nostyle {
-  background: none;
-  color: inherit;
-  border: none;
-  padding: 0;
-  font: inherit;
-  cursor: pointer;
-  width: 45px;
-  outline: none;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > li > figure > figcaption > .item-label {
-  width: 100%;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items .item-label,
-body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items a:hover,
-body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items a:active,
-body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items a:visited {
-  padding-left: 12px;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar li .item-label:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar li > figure > ul > li.active > .item-label {
-  background: rgba(0, 0, 0, 0.1);
-  color: var(--oc-admin-menu-item-font-color-active) !important;
-  font-weight: 600;
-  padding-left: 48px !important;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar li.active > figure > ul > li.active > .item-label::before {
-  border-left: 3px solid;
-  border-left-color: #0078d4;
-  bottom: 0;
-  content: "";
-  left: 0;
-  position: absolute;
-  top: 0;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar li.active > figure > ul > li > .item-label::before {
-  border-left: 3px solid;
-  border-left-color: rgba(0, 0, 0, 0.2);
-  bottom: 0;
-  content: "";
-  left: 0;
-  position: absolute;
-  top: 0;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items.active > figure > figcaption > .item-label {
-  padding-left: 48px !important;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar li.has-items.active > figure > figcaption > .item-label::before {
-  border-left: 3px solid;
-  border-left-color: rgba(0, 0, 0, 0.1);
-  bottom: 0;
-  content: "";
-  left: 0;
-  position: absolute;
-  top: 0;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar li.active > figure > figcaption > .item-label {
-  background-color: rgba(0, 0, 0, 0.05);
-  font-weight: 600;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar li.active > figure > figcaption > .item-label:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar li .active::before {
-  border-left: 3px solid;
-  border-left-color: rgba(0, 0, 0, 0.05);
-  bottom: 0;
-  content: "";
-  left: 0;
-  position: absolute;
-  top: 0;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar li .active .item-label::before {
-  border-left: 3px solid;
-  border-left-color: rgba(0, 0, 0, 0.1);
-  bottom: 0;
-  content: "";
-  left: 0;
-  position: absolute;
-  top: 0;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar li ul > li > .item-label,
-body:not(.left-sidebar-compact) #ta-left-sidebar li ul > li > figure > figcaption > .item-label {
-  background: rgba(0, 0, 0, 0.05);
-  color: var(--oc-admin-menu-item-font-color) !important;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar li ul > li > .item-label > span.icon,
-body:not(.left-sidebar-compact) #ta-left-sidebar li ul > li > figure > figcaption > .item-label > span.icon {
-  font-size: 16px !important;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar li.active ul > li > figure > figcaption > .item-label::before {
-  border-left: 3px solid;
-  border-left-color: rgba(0, 0, 0, 0.2);
-  bottom: 0;
-  content: "";
-  left: 0;
-  position: absolute;
-  top: 0;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar li ul > li ul > li {
-  background: rgba(0, 0, 0, 0.1);
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar li ul > li ul > li > a {
-  color: var(--oc-admin-menu-item-font-color-active);
-  padding-left: 48px !important;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar li ul > li ul > .active > a {
-  padding-left: 44px !important;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar .footer {
-  background-color: var(--oc-admin-menu-bg-color) !important;
-  position: relative;
-  z-index: 1;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar .footer:before {
-  content: "";
-  width: 92%;
-  height: 1px;
-  background: rgba(140, 130, 115, 0.13);
-  display: block;
-  margin: 0px auto;
-}
-body:not(.left-sidebar-compact) #ta-left-sidebar #filter,
-body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
-  border: none;
-  box-shadow: unset;
-  border-radius: unset;
-}
-
-.left-sidebar-compact #ta-left-sidebar {
-  background-color: var(--oc-admin-menu-bg-color);
-  z-index: var(--oc-start-navigation-zindex);
-  position: fixed;
-  top: var(--oc-top-nav-height);
-  bottom: 0;
-  left: 0px;
-  width: var(--oc-start-navigation-width-when-compact);
-  color: var(--oc-admin-menu-font-color);
-  border-right: var(--oc-border-content);
-  transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
-  font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-}
-.left-sidebar-compact #ta-left-sidebar ::-webkit-scrollbar {
-  width: 4px;
-}
-.left-sidebar-compact #ta-left-sidebar ::-webkit-scrollbar-thumb {
-  background-color: var(--oc-scrollbar-color);
-}
-.left-sidebar-compact #ta-left-sidebar figure {
-  margin: 0;
-}
-.left-sidebar-compact #ta-left-sidebar a[aria-expanded=false] .chevron {
-  transition-duration: 0.2s;
-}
-.left-sidebar-compact #ta-left-sidebar .collapse {
-  display: none;
-}
-.left-sidebar-compact #ta-left-sidebar .collapse.show {
-  display: block;
-}
-.left-sidebar-compact #ta-left-sidebar .chevron {
-  position: absolute;
-  top: 38%;
-  left: 100%;
-  margin-left: -25px;
-}
-.left-sidebar-compact #ta-left-sidebar figcaption,
-.left-sidebar-compact #ta-left-sidebar a {
-  position: relative;
-  display: block;
-  margin: 0;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav {
-  flex: 1 1 auto;
-  height: calc(100% - 51px);
-  overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--oc-scrollbar-color) var(--oc-admin-menu-bg-color);
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav ul {
-  margin: 0;
-  padding: 0;
-  white-space: nowrap;
-  background-color: var(--oc-admin-menu-item-bg-color);
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul li {
-  position: relative;
-  margin: 0;
-  padding: 0;
-  display: list-item;
-  list-style: none;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul li .item-label {
-  cursor: pointer;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li {
-  height: 48px;
-  line-height: 3em;
-  width: calc(var(--oc-start-navigation-width-when-compact) - 1);
-  transition: width 0.2s ease-in-out;
-  background-color: var(--oc-admin-menu-bg-color);
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li:first-child > span.title:after {
-  content: "";
-  width: 75%;
-  height: 1px;
-  background: rgba(0, 0, 0, 0.1);
-  display: block;
-  margin: 0px auto 4px auto;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label > .btn-nostyle {
-  display: none;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > ul > li {
-  line-height: 2.5em;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li:not(.has-items) .item-label > span.icon {
-  font-size: 22px;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul .item-label {
-  padding-left: 0px !important;
-  display: flex;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul .item-label > span.icon {
-  padding: 0 5px;
-  flex-shrink: 0;
-  font-size: 16px;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul .item-label > span.icon svg {
-  width: 35px;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul .item-label > span.icon-none {
-  flex-shrink: 0;
-  font-size: 16px;
-  width: 37px;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul .item-label > span.title {
-  flex-grow: 1;
-  font-size: 14px;
-  width: calc(100% - 48px);
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label > .collapse-icon {
-  color: rgba(255, 0, 0, 0);
-  display: flex;
-  justify-content: center;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label .icon:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label .title:hover {
-  color: var(--oc-admin-menu-font-color-hover);
-  background-color: rgba(0, 0, 0, 0.1);
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.active:not(.has-items) > figure > figcaption > .item-label::before {
-  border-left: 3px solid;
-  border-left-color: #0078d4;
-  bottom: 0;
-  content: "";
-  left: 0;
-  position: absolute;
-  top: 0;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.has-items.visible > figure > figcaption {
-  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.has-items.visible > figure > figcaption > a.item-label {
-  z-index: 9999;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li .item-label:hover:not(:first-child) {
-  color: var(--oc-admin-menu-font-color-hover);
-  background-color: rgba(0, 0, 0, 0.1);
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label > span.icon {
-  display: inline-block !important;
-  color: var(--oc-admin-menu-item-font-color);
-  background-color: var(--oc-admin-menu-bg-color);
-  width: var(--oc-start-navigation-width-when-compact);
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.has-items.active > figure > figcaption > .item-label::before {
-  border-left: 3px solid;
-  border-left-color: #0078d4;
-  bottom: 0;
-  content: "";
-  left: 0;
-  position: absolute;
-  top: 0;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.has-items.visible {
-  -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-  -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-  z-index: 1;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul li .active > figure > figcaption > .item-label:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li {
-  overflow: hidden;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li span.title {
-  display: none;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.visible {
-  overflow: visible;
-  width: calc(var(--oc-start-navigation-width-when-compact) + var(--oc-start-navigation-width));
-  transition: none;
-  position: static;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.visible > figure {
-  position: absolute;
-  z-index: 999;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.visible span.title,
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.visible span.icon {
-  display: block;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > ul {
-  position: absolute;
-  left: var(--oc-start-navigation-width-when-compact);
-  width: var(--oc-start-navigation-width);
-  -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-  -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-  max-height: 250px;
-  z-index: 1;
-  overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--oc-scrollbar-color) var(--oc-admin-menu-bg-color);
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > ul li .item-label:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label {
-  background-color: var(--oc-admin-menu-item-bg-color);
-  color: var(--oc-admin-menu-item-font-color);
-  padding-left: 0px !important;
-  display: flex;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label .title {
-  padding: 0 20px;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label .title:hover {
-  background-color: var(--oc-admin-menu-item-bg-color) !important;
-  color: var(--oc-admin-menu-item-font-color);
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label > span.icon {
-  padding: 0 5px;
-  flex-shrink: 0;
-  font-size: 22px;
-  width: var(--oc-start-navigation-width-when-compact);
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label > span.icon svg {
-  width: 35px;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label > span.title {
-  flex-grow: 1;
-  font-size: 14px;
-  font-weight: bold;
-  width: calc(100% - 48px);
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  width: 260px;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label > span.title:after {
-  content: "";
-  height: 1px;
-  background: rgba(0, 0, 0, 0.1);
-  display: block;
-  margin: 0px auto;
-  position: absolute;
-  width: 75%;
-  left: 63px;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.active:not(.has-items)::before {
-  border-left: 3px solid;
-  border-left-color: #0078d4;
-  bottom: 0;
-  content: "";
-  left: 0;
-  position: absolute;
-  top: 0;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav ul li .item-label,
-.left-sidebar-compact #ta-left-sidebar #left-nav li a:hover,
-.left-sidebar-compact #ta-left-sidebar #left-nav li a:active,
-.left-sidebar-compact #ta-left-sidebar #left-nav li a:visited {
-  text-decoration: none;
-  padding-left: 16px;
-}
-.left-sidebar-compact #ta-left-sidebar #left-nav .btn-nostyle {
-  background: none;
-  color: inherit;
-  border: none;
-  padding: 0;
-  font: inherit;
-  cursor: pointer;
-  width: 45px;
-  outline: none;
-}
-.left-sidebar-compact #ta-left-sidebar li.has-items .item-label,
-.left-sidebar-compact #ta-left-sidebar li.has-items a:hover,
-.left-sidebar-compact #ta-left-sidebar li.has-items a:active,
-.left-sidebar-compact #ta-left-sidebar li.has-items a:visited {
-  padding-left: 12px;
-}
-.left-sidebar-compact #ta-left-sidebar li > figure > ul > li.active ul > li.active .item-label {
-  background: rgba(0, 0, 0, 0.05);
-  color: rgba(var(--oc-admin-menu-item-font-color-active), 0.9) !important;
-  font-weight: 600;
-  padding-left: 48px !important;
-}
-.left-sidebar-compact #ta-left-sidebar li.active > figure > ul > li.active > .item-label::before {
-  border-left: 3px solid;
-  border-left-color: #0078d4;
-  bottom: 0;
-  content: "";
-  left: 0;
-  position: absolute;
-  top: 0;
-}
-.left-sidebar-compact #ta-left-sidebar li.active > figure > ul > li.active ul > li.active .item-label::before {
-  border-left: 3px solid;
-  border-left-color: #0078d4;
-  bottom: 0;
-  content: "";
-  left: 0;
-  position: absolute;
-  top: 0;
-}
-.left-sidebar-compact #ta-left-sidebar li.active > figure > ul > li.active > figure > figcaption > .item-label::before {
-  border-left: 3px solid;
-  border-left-color: #0078d4;
-  bottom: 0;
-  content: "";
-  left: 0;
-  position: absolute;
-  top: 0;
-}
-.left-sidebar-compact #ta-left-sidebar li.active > figure > ul > li .item-label::before {
-  border-left: 3px solid;
-  border-left-color: rgba(0, 0, 0, 0.2);
-  bottom: 0;
-  content: "";
-  left: 0;
-  position: absolute;
-  top: 0;
-}
-.left-sidebar-compact #ta-left-sidebar li.has-items.active > .item-label {
-  padding-left: 48px !important;
-}
-.left-sidebar-compact #ta-left-sidebar li.has-items.active > .item-label::before {
-  border-left: 3px solid;
-  border-left-color: rgba(0, 0, 0, 0.2);
-  bottom: 0;
-  content: "";
-  left: 0;
-  position: absolute;
-  top: 0;
-}
-.left-sidebar-compact #ta-left-sidebar li.active > .item-label {
-  background-color: rgba(0, 0, 0, 0.1);
-  font-weight: 600;
-}
-.left-sidebar-compact #ta-left-sidebar li .active::before {
-  border-left: 3px solid;
-  border-left-color: rgba(0, 0, 0, 0.1);
-  bottom: 0;
-  content: "";
-  left: 0;
-  position: absolute;
-  top: 0;
-}
-.left-sidebar-compact #ta-left-sidebar li .active .item-label::before {
-  border-left: 3px solid;
-  border-left-color: rgba(0, 0, 0, 0.2);
-  bottom: 0;
-  content: "";
-  left: 0;
-  position: absolute;
-  top: 0;
-}
-.left-sidebar-compact #ta-left-sidebar li > figure ul > li > figure .item-label {
-  color: var(--oc-admin-menu-item-font-color) !important;
-}
-.left-sidebar-compact #ta-left-sidebar li > .item-label {
-  color: var(--oc-admin-menu-item-font-color) !important;
-}
-.left-sidebar-compact #ta-left-sidebar li.active > figure ul > li > figure > figcaption > .item-label::before {
-  border-left: 3px solid;
-  border-left-color: rgba(0, 0, 0, 0.2);
-  bottom: 0;
-  content: "";
-  left: 0;
-  position: absolute;
-  top: 0;
-}
-.left-sidebar-compact #ta-left-sidebar li > figure ul > li > figure ul > li {
-  background: rgba(0, 0, 0, 0.1);
-}
-.left-sidebar-compact #ta-left-sidebar li > figure ul > li > figure ul > li > figure > figcaption > a {
-  color: var(--oc-admin-menu-item-font-color-active);
-  padding-left: 48px !important;
-}
-.left-sidebar-compact #ta-left-sidebar li > figure ul > li > figure ul > .active > a {
-  padding-left: 44px !important;
-}
-.left-sidebar-compact #ta-left-sidebar .footer {
-  background-color: var(--oc-admin-menu-bg-color) !important;
-  position: relative;
-  z-index: 1;
-}
-.left-sidebar-compact #ta-left-sidebar .footer:before {
-  content: "";
-  width: 60%;
-  height: 1px;
-  background: rgba(0, 0, 0, 0.1);
-  display: block;
-  margin: 0px auto;
-}
-.left-sidebar-compact #ta-left-sidebar #filter,
-.left-sidebar-compact #ta-left-sidebar #filter:focus {
-  display: none;
-}
-
-.left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li.visible > figure {
-  position: static;
-  z-index: unset;
-}
-.left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li.visible > figure > ul:before {
-  content: attr(data-title);
-  padding: 0 20px;
-  font-size: 14px;
-  font-weight: bold;
-  width: 100%;
-  display: block;
-}
-.left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li.visible > figure > ul > li:first-child::before {
-  background: rgba(0, 0, 0, 0.1);
-  margin: 0px auto;
-  content: "";
-  height: 1px;
-  display: block;
-  position: absolute;
-  width: 90%;
-  left: 15px;
-}
-.left-sidebar-compact.scroll #ta-left-sidebar #left-nav > ul > li > figure > ul {
-  position: absolute;
-  left: var(--oc-start-navigation-width-when-compact);
-  width: var(--oc-start-navigation-width);
-  -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-  -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-  height: calc(100vh - 52px);
-  max-height: unset;
-  z-index: 1;
-  overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--oc-scrollbar-color) var(--oc-admin-menu-bg-color);
-  top: 0px;
-}
-
-/* rtl:ignore */
-.left-sidebar-compact #ta-left-sidebar a[aria-expanded=true] .chevron {
-  transform: rotate(90deg);
-  transition-duration: 0.2s;
-}
-
-html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label {
-  background-color: #f8f9fa !important;
-}
-
-.leftbar-compactor {
-  display: block;
-  width: var(--oc-start-navigation-width-when-compact);
-  height: 50px;
-  padding: 10px;
-  border: none;
-  background-color: transparent;
-  color: var(--oc-admin-menu-font-color);
-  cursor: pointer;
-  font-size: 20px;
-  float: right;
-  transition-duration: 0.2s;
-  display: block;
-  transform: scale(2, 1);
-}
-.leftbar-compactor:focus {
-  outline: none;
-}
-.leftbar-compactor:hover {
-  color: rgb(0, 120, 212);
-  color: var(rgb(0, 120, 212));
-  text-shadow: 0 0 4px rgba(0, 120, 212, 0.5);
-}
-.leftbar-compactor:before {
-  content: "⟪";
-}
-
-.left-sidebar-compact .leftbar-compactor {
-  transition-duration: 0.2s;
-  transform: scale(-2, 1);
-}
-
-/* IMPORTANT: Never import Bootstrap directly into the theme. TheAdmin.css will depend on Bootstrap, but we never want to compile it. */
-:root {
-  --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
-  --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-scrollbar-color: #CDCDCD;
-  --oc-admin-menu-font-color: var(--bs-secondary-color);
-  --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
-  --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
-  --oc-admin-menu-item-font-color: var(--bs-secondary-color);
-  --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
-  --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
-  --oc-zindex-dropdown: 1000;
-  --oc-top-nav-height: 52px;
-  --oc-top-nav-zindex: 1034;
-  --oc-footer-height: 40px;
-  --oc-start-navigation-width: 260px;
-  --oc-start-navigation-width-when-compact: 48px;
-  --oc-start-navigation-zindex: 1033;
-  --oc-link-padding-left: 16px;
-  --oc-editor-fullscreen: 1054;
-  --bs-dropdown-zindex: 1000;
-  --bs-zindex-fixed: 1030;
+  --bs-bg-opacity: 1;
 }
 
 .ui-sortable {
   min-height: 1rem;
 }
 
-/* IMPORTANT: Never import Bootstrap directly into the theme. TheAdmin.css will depend on Bootstrap, but we never want to compile it. */
+ul.ui-sortable:not(:has(> li)) {
+  border: var(--bs-border-width) dashed var(--bs-border-color) !important;
+}
+
+/* 
+    IMPORTANT: Never import Bootstrap directly into the theme. 
+    TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
+*/
 :root {
   --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
   --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
@@ -9312,6 +8501,7 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
   --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
+  --oc-height-dropdown: 250px;
   --oc-top-nav-height: 52px;
   --oc-top-nav-zindex: 1034;
   --oc-footer-height: 40px;
@@ -9320,8 +8510,14 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
   --oc-start-navigation-zindex: 1033;
   --oc-link-padding-left: 16px;
   --oc-editor-fullscreen: 1054;
+  --oc-selected-indicator-color: var(--bs-primary);
+  /* Action bar should always be less than dropdown menu */
+  --oc-action-bar-zindex: 983;
+  --oc-second-action-bar-zindex: 980;
+  /* Undefined Bootstrap variables */
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
+  --bs-bg-opacity: 1;
 }
 
 .tab-pane {
@@ -9479,11 +8675,72 @@ span.field-validation-error {
 }
 
 .field-validation-error {
-  color: var(--bs-text-danger) !important;
+  color: var(--bs-danger) !important;
 }
 
 .field-validation-valid {
   display: none;
+}
+
+.input-validation-error {
+  border-color: var(--bs-form-invalid-border-color);
+  padding-right: calc(1.5em + 0.75rem);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right calc(0.375em + 0.1875rem) center;
+  background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+.input-validation-error:invalid:focus, .form-control.input-validation-error:focus {
+  border-color: var(--bs-form-invalid-border-color);
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-danger-rgb), 0.25);
+}
+
+textarea.form-control.input-validation-error {
+  padding-right: calc(1.5em + 0.75rem);
+  background-position: top calc(0.375em + 0.1875rem) right calc(0.375em + 0.1875rem);
+}
+
+.form-select.input-validation-error {
+  border-color: var(--bs-form-invalid-border-color);
+}
+
+.form-select.input-validation-error:not([multiple])[size="1"] {
+  --bs-form-select-bg-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+  padding-right: 4.125rem;
+  background-position: right 0.75rem center, center right 2.25rem;
+  background-size: 16px 12px, calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+.form-select.input-validation-error:focus {
+  border-color: var(--bs-form-invalid-border-color);
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-danger-rgb), 0.25);
+}
+
+.form-control-color.input-validation-error {
+  width: calc(3rem + 1.5em + 0.75rem);
+}
+
+.form-check-input.input-validation-error {
+  border-color: var(--bs-form-invalid-border-color);
+}
+
+.form-check-input.input-validation-error:checked {
+  background-color: var(--bs-form-invalid-color);
+}
+
+.form-check-input.input-validation-error:focus {
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-danger-rgb), 0.25);
+}
+
+.form-check-input.input-validation-error ~ .form-check-label {
+  color: var(--bs-form-invalid-color);
+}
+
+.input-group > .form-control:not(:focus).input-validation-error,
+.input-group > .form-select:not(:focus).input-validation-error,
+.input-group > .form-floating:not(:focus-within).input-validation-error {
+  z-index: 4;
 }
 
 .vue-multiselect {
@@ -9513,7 +8770,7 @@ span.field-validation-error {
   background-color: var(--bs-body-bg) !important;
 }
 
-/* Include themes */
+/* Import themes */
 /* The light theme is also the default theme. */
 /* Do not wrap the these classes for the light theme specific. */
 .ta-badge {
@@ -9565,26 +8822,26 @@ span.field-validation-error {
 }
 
 .btn-theme {
-  color: #000;
+  color: var(--bs-black);
   background-color: #f8f9fa;
   border-color: #f8f9fa;
 }
 
 .btn-theme:hover {
-  color: #000;
+  color: var(--bs-black);
   background-color: #f9fafb;
   border-color: #f9fafb;
 }
 
 .btn-check:focus + .btn-theme, .btn-theme:focus {
-  color: #000;
+  color: var(--bs-black);
   background-color: #f9fafb;
   border-color: #f9fafb;
   box-shadow: 0 0 0 0.25rem rgba(211, 212, 213, 0.5);
 }
 
 .btn-check:checked + .btn-theme, .btn-check:active + .btn-theme, .btn-theme:active, .btn-theme.active, .show > .btn-theme.dropdown-toggle {
-  color: #000;
+  color: var(--bs-black);
   background-color: #f9fafb;
   border-color: #f9fafb;
 }
@@ -9594,12 +8851,15 @@ span.field-validation-error {
 }
 
 .btn-theme:disabled, .btn-theme.disabled {
-  color: #000;
+  color: var(--bs-black);
   background-color: #f8f9fa;
   border-color: #f8f9fa;
 }
 
-/* IMPORTANT: Never import Bootstrap directly into the theme. TheAdmin.css will depend on Bootstrap, but we never want to compile it. */
+/* 
+    IMPORTANT: Never import Bootstrap directly into the theme. 
+    TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
+*/
 :root {
   --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
   --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
@@ -9611,6 +8871,7 @@ span.field-validation-error {
   --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
   --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
   --oc-zindex-dropdown: 1000;
+  --oc-height-dropdown: 250px;
   --oc-top-nav-height: 52px;
   --oc-top-nav-zindex: 1034;
   --oc-footer-height: 40px;
@@ -9619,13 +8880,19 @@ span.field-validation-error {
   --oc-start-navigation-zindex: 1033;
   --oc-link-padding-left: 16px;
   --oc-editor-fullscreen: 1054;
+  --oc-selected-indicator-color: var(--bs-primary);
+  /* Action bar should always be less than dropdown menu */
+  --oc-action-bar-zindex: 983;
+  --oc-second-action-bar-zindex: 980;
+  /* Undefined Bootstrap variables */
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
+  --bs-bg-opacity: 1;
 }
 
 [data-bs-theme=dark] {
   --oc-scrollbar-color: #76787A;
-  --oc-admin-menu-bg-color: var(--bs-dark-bg);
+  --oc-admin-menu-bg-color: var(--bs-dark);
 }
 [data-bs-theme=dark] .ta-badge {
   background-color: var(--bs-dark);
@@ -9641,39 +8908,39 @@ span.field-validation-error {
   background-color: var(--bs-secondary-bg);
 }
 [data-bs-theme=dark] .card {
-  --bs-card-bg: var(--bs-body);
+  --bs-card-bg: var(--bs-body-bg);
 }
 [data-bs-theme=dark] .modal {
   --bs-modal-bg: var(--bs-dark);
 }
 [data-bs-theme=dark] .bg-theme {
-  background-color: rgba(var(--bs-body-bg-rgb), var(--bs-bg-opacity, 1));
+  background-color: rgba(var(--bs-body-bg-rgb), var(--bs-bg-opacity, 1)) !important;
 }
 [data-bs-theme=dark] .text-theme {
-  color: var(--bs-body-color);
+  color: var(--bs-body-color) !important;
 }
 [data-bs-theme=dark] .text-bg-theme {
-  color: var(--bs-body-color);
-  background-color: rgba(var(--bs-body-bg-rgb), var(--bs-bg-opacity, 1));
+  color: var(--bs-body-color) !important;
+  background-color: rgba(var(--bs-body-bg-rgb), var(--bs-bg-opacity, 1)) !important;
 }
 [data-bs-theme=dark] .btn-theme {
-  color: #fff;
-  background-color: #212529;
-  border-color: #212529;
+  color: var(--bs-white);
+  background-color: var(--bs-gray-900);
+  border-color: var(--bs-gray-900);
 }
 [data-bs-theme=dark] .btn-theme:hover {
-  color: #fff;
+  color: var(--bs-white);
   background-color: #1c1f23;
   border-color: #1a1e21;
 }
 [data-bs-theme=dark] .btn-check:focus + .btn-theme, [data-bs-theme=dark] .btn-theme:focus {
-  color: #fff;
+  color: var(--bs-white);
   background-color: #1c1f23;
   border-color: #1a1e21;
   box-shadow: 0 0 0 0.25rem rgba(66, 70, 73, 0.5);
 }
 [data-bs-theme=dark] .btn-check:checked + .btn-theme, [data-bs-theme=dark] .btn-check:active + .btn-theme, [data-bs-theme=dark] .btn-theme:active, [data-bs-theme=dark] .btn-theme.active, [data-bs-theme=dark] .show > .btn-theme.dropdown-toggle {
-  color: #fff;
+  color: var(--bs-white);
   background-color: #1a1e21;
   border-color: #191c1f;
 }
@@ -9681,7 +8948,7 @@ span.field-validation-error {
   box-shadow: 0 0 0 0.25rem rgba(66, 70, 73, 0.5);
 }
 [data-bs-theme=dark] .btn-theme:disabled, [data-bs-theme=dark] .btn-theme.disabled {
-  color: #fff;
-  background-color: #212529;
-  border-color: #212529;
+  color: var(--bs-white);
+  background-color: var(--bs-gray-900);
+  border-color: var(--bs-gray-900);
 }

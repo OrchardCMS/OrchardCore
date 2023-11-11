@@ -48,7 +48,7 @@ namespace OrchardCore.Environment.Shell
                 _shellsByHostAndPrefix = _shellsByHostAndPrefix.RemoveRange(allHostsAndPrefix);
             }
 
-            if (_default == settings)
+            if (settings.IsDefaultShell())
             {
                 _default = null;
             }

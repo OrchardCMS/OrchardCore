@@ -3,8 +3,8 @@
 
 @await DisplayAsync(await New.ShortcodeModal())
 
-<div class="@Orchard.GetWrapperCssClasses()">
-    <div class="@Orchard.GetEndCssClasses(true)">
+<div class="@Orchard.GetWrapperClasses()">
+    <div class="@Orchard.GetEndClasses(true)">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="Render" checked="@Model.Render" />
             <label class="form-check-label" asp-for="Render">@T["Render"]</label>
@@ -13,17 +13,17 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperCssClasses()" asp-validation-class-for="PageTitle">
-    <label asp-for="PageTitle" class="@Orchard.GetLabelCssClasses()">@T["Page Title"] </label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="PageTitle">
+    <label asp-for="PageTitle" class="@Orchard.GetLabelClasses()">@T["Page Title"] </label>
+    <div class="@Orchard.GetEndClasses()">
         <input asp-for="PageTitle" class="form-control content-preview-text shortcode-modal-input" />
         <span class="hint">@T["Override the default generated web browser page title (recommended to keep under 70 characters)."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperCssClasses()" asp-validation-class-for="MetaDescription">
-    <label asp-for="MetaDescription" class="@Orchard.GetLabelCssClasses()">@T["Meta Description"] </label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="MetaDescription">
+    <label asp-for="MetaDescription" class="@Orchard.GetLabelClasses()">@T["Meta Description"] </label>
+    <div class="@Orchard.GetEndClasses()">
         <textarea asp-for="MetaDescription" class="form-control content-preview-text shortcode-modal-input"></textarea>
         <span class="hint">@T["The meta description to render for this page."]</span>
     </div>
@@ -31,26 +31,26 @@
 
 @if (Model.Settings.DisplayKeywords)
 {
-    <div class="@Orchard.GetWrapperCssClasses()" asp-validation-class-for="MetaKeywords">
-        <label asp-for="MetaKeywords" class="@Orchard.GetLabelCssClasses()">@T["Meta Keywords"] </label>
-        <div class="@Orchard.GetEndCssClasses()">
+    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="MetaKeywords">
+        <label asp-for="MetaKeywords" class="@Orchard.GetLabelClasses()">@T["Meta Keywords"] </label>
+        <div class="@Orchard.GetEndClasses()">
             <input asp-for="MetaKeywords" class="form-control content-preview-text shortcode-modal-input" />
             <span class="hint">@T["The meta keywords to render for this page, comma separated."]</span>
         </div>
     </div>
 }
 
-<div class="@Orchard.GetWrapperCssClasses()" asp-validation-class-for="Canonical">
-    <label asp-for="Canonical" class="@Orchard.GetLabelCssClasses()"> @T["Canonical"] </label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Canonical">
+    <label asp-for="Canonical" class="@Orchard.GetLabelClasses()"> @T["Canonical"] </label>
+    <div class="@Orchard.GetEndClasses()">
         <input asp-for="Canonical" class="form-control content-preview-text" />
         <span class="hint">@T["Override the default canonical url."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperCssClasses()" asp-validation-class-for="MetaRobots">
-    <label asp-for="MetaRobots" class="@Orchard.GetLabelCssClasses()">@T["Meta Robots"] </label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="MetaRobots">
+    <label asp-for="MetaRobots" class="@Orchard.GetLabelClasses()">@T["Meta Robots"] </label>
+    <div class="@Orchard.GetEndClasses()">
         <input asp-for="MetaRobots" class="form-control content-preview-text shortcode-modal-input" />
         <span class="hint">@T["The robots meta to render for this page."]</span>
     </div>
