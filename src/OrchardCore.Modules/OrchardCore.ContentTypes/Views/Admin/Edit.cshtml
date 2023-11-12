@@ -2,6 +2,7 @@
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.Mvc.Utilities
+@using System.Linq
 
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 @inject OrchardCore.ContentTypes.Services.IContentDefinitionService ContentDefinitionService
@@ -66,7 +67,7 @@
             <h3>@T["Fields"]</h3>
 
             <ul class="list-group sortable" id="fields">
-                @foreach (var fieldDefinition in partDefinitions.OrderBy(x => x.Order).Select(x => x.Part))
+                @foreach (var fieldDefinition in fieldDefinitions)
                 {
                     <li class="list-group-item" style="cursor: move;">
                         <div class="w-100">
@@ -105,7 +106,7 @@
         <h3>@T["Parts"]</h3>
 
         <ul class="list-group sortable" id="parts">
-            @foreach (var partDefinition in partDefinitions)
+            @foreach (var partDefinition in partDefinitions.OrderBy(x => x.Order).Select(x => x.Part))
             {
                 <li class="list-group-item @(partDefinition == typePart ? " bg-faded" : null)" style="cursor: move;">
                     <div class="w-100">
@@ -155,8 +156,8 @@
 </form>
 
 <script at="Foot">
-    $(function () {
+    document.addEventListener('DOMContentLoaded', function () {
         Sortable.create(document.getElementById("fields"));
         Sortable.create(document.getElementById("parts"));
-    })
+    });
 </script>
