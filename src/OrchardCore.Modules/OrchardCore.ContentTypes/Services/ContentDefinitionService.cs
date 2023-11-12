@@ -156,7 +156,7 @@ namespace OrchardCore.ContentTypes.Services
         {
             // First remove all attached parts.
             var typeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(name);
-            var partDefinitions = typeDefinition.Parts.ToArray();
+            var partDefinitions = typeDefinition.Parts.ToList();
             foreach (var partDefinition in partDefinitions)
             {
                 await RemovePartFromTypeAsync(partDefinition.PartDefinition.Name, name);
@@ -349,7 +349,7 @@ namespace OrchardCore.ContentTypes.Services
                 return;
             }
 
-            var fieldDefinitions = partDefinition.Fields.ToArray();
+            var fieldDefinitions = partDefinition.Fields.ToList();
             foreach (var fieldDefinition in fieldDefinitions)
             {
                 await RemoveFieldFromPartAsync(fieldDefinition.Name, name);
@@ -434,7 +434,7 @@ namespace OrchardCore.ContentTypes.Services
         }
 
         public void AlterTypePart(EditTypePartViewModel typePartViewModel)
-            => AlterTypePart(typePartViewModel).ConfigureAwait(false).GetAwaiter().GetResult();
+            => AlterTypePartAsync(typePartViewModel).ConfigureAwait(false).GetAwaiter().GetResult();
 
         public async Task AlterTypePartAsync(EditTypePartViewModel typePartViewModel)
         {
