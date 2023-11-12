@@ -47,7 +47,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
                     // Search for BooleanField
-                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType).GetAwaiter().GetResult();
+                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType).ConfigureAwait(false).GetAwaiter().GetResult();
 
                     // This can occur when content items become orphaned, particularly layer widgets when a layer is removed, before its widgets have been unpublished.
                     if (contentTypeDefinition == null)
