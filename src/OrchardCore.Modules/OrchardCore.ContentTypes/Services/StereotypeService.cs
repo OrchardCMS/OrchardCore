@@ -16,9 +16,7 @@ namespace OrchardCore.ContentTypes.Services
 
         [Obsolete]
         public IEnumerable<StereotypeDescription> GetStereotypes()
-        {
-            return _providers.SelectMany(x => x.GetStereotypes());
-        }
+            => GetStereotypesAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
         public async Task<IEnumerable<StereotypeDescription>> GetStereotypesAsync()
         {

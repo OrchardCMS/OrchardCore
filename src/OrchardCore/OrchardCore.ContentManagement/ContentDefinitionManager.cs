@@ -40,23 +40,7 @@ namespace OrchardCore.ContentManagement
             => (await _contentDefinitionStore.GetContentDefinitionAsync()).Identifier;
 
         public ContentTypeDefinition LoadTypeDefinition(string name)
-        {
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException("Argument cannot be null or empty", nameof(name));
-            }
-
-            if (!_scopedTypeDefinitions.TryGetValue(name, out var typeDefinition))
-            {
-                var contentTypeDefinitionRecord = LoadContentDefinitionRecord()
-                    .ContentTypeDefinitionRecords
-                    .FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
-
-                _scopedTypeDefinitions[name] = typeDefinition = Build(contentTypeDefinitionRecord, LoadContentDefinitionRecord().ContentPartDefinitionRecords);
-            };
-
-            return typeDefinition;
-        }
+            => LoadTypeDefinitionAsync(name).ConfigureAwait(false).GetAwaiter().GetResult();
 
         public async Task<ContentTypeDefinition> LoadTypeDefinitionAsync(string name)
         {
@@ -80,24 +64,7 @@ namespace OrchardCore.ContentManagement
         }
 
         public ContentTypeDefinition GetTypeDefinition(string name)
-        {
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException("Argument cannot be null or empty", nameof(name));
-            }
-
-            var document = GetContentDefinitionRecord();
-            CheckDocumentIdentifier(document);
-
-            return _cachedTypeDefinitions.GetOrAdd(name, n =>
-            {
-                var contentTypeDefinitionRecord = document
-                    .ContentTypeDefinitionRecords
-                    .FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
-
-                return Build(contentTypeDefinitionRecord, GetContentDefinitionRecord().ContentPartDefinitionRecords);
-            });
-        }
+            => GetTypeDefinitionAsync(name).ConfigureAwait(false).GetAwaiter().GetResult();
 
         public async Task<ContentTypeDefinition> GetTypeDefinitionAsync(string name)
         {
@@ -109,27 +76,20 @@ namespace OrchardCore.ContentManagement
             var document = await LoadContentDefinitionRecordAsync();
             CheckDocumentIdentifier(document);
 
+            var records = (await GetContentDefinitionRecordAsync()).ContentPartDefinitionRecords;
+
             return _cachedTypeDefinitions.GetOrAdd(name, n =>
             {
                 var contentTypeDefinitionRecord = document
                     .ContentTypeDefinitionRecords
                     .FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
-                return Build(contentTypeDefinitionRecord, GetContentDefinitionRecord().ContentPartDefinitionRecords);
+                return Build(contentTypeDefinitionRecord, records);
             });
         }
 
         public ContentPartDefinition LoadPartDefinition(string name)
-        {
-            if (!_scopedPartDefinitions.TryGetValue(name, out var partDefinition))
-            {
-                _scopedPartDefinitions[name] = partDefinition = Build(LoadContentDefinitionRecord()
-                    .ContentPartDefinitionRecords
-                    .FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase)));
-            };
-
-            return partDefinition;
-        }
+            => LoadPartDefinitionAsync(name).ConfigureAwait(false).GetAwaiter().GetResult();
 
         public async Task<ContentPartDefinition> LoadPartDefinitionAsync(string name)
         {
@@ -146,17 +106,7 @@ namespace OrchardCore.ContentManagement
         }
 
         public ContentPartDefinition GetPartDefinition(string name)
-        {
-            var document = GetContentDefinitionRecord();
-            CheckDocumentIdentifier(document);
-
-            return _cachedPartDefinitions.GetOrAdd(name, n =>
-            {
-                return Build(document
-                    .ContentPartDefinitionRecords
-                    .FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase)));
-            });
-        }
+            => GetPartDefinitionAsync(name).ConfigureAwait(false).GetAwaiter().GetResult();
 
         public async Task<ContentPartDefinition> GetPartDefinitionAsync(string name)
         {
@@ -172,7 +122,7 @@ namespace OrchardCore.ContentManagement
         }
 
         public IEnumerable<ContentTypeDefinition> LoadTypeDefinitions()
-            => LoadContentDefinitionRecord().ContentTypeDefinitionRecords.Select(x => LoadTypeDefinition(x.Name)).ToList();
+            => LoadTypeDefinitionsAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
         public async Task<IEnumerable<ContentTypeDefinition>> LoadTypeDefinitionsAsync()
         {
@@ -189,7 +139,7 @@ namespace OrchardCore.ContentManagement
         }
 
         public IEnumerable<ContentTypeDefinition> ListTypeDefinitions()
-            => GetContentDefinitionRecord().ContentTypeDefinitionRecords.Select(x => GetTypeDefinition(x.Name)).ToList();
+            => ListTypeDefinitionsAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
         public async Task<IEnumerable<ContentTypeDefinition>> ListTypeDefinitionsAsync()
         {
@@ -206,7 +156,7 @@ namespace OrchardCore.ContentManagement
         }
 
         public IEnumerable<ContentPartDefinition> LoadPartDefinitions()
-            => LoadContentDefinitionRecord().ContentPartDefinitionRecords.Select(x => LoadPartDefinition(x.Name)).ToList();
+            => LoadPartDefinitionsAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
         public async Task<IEnumerable<ContentPartDefinition>> LoadPartDefinitionsAsync()
         {
@@ -223,7 +173,7 @@ namespace OrchardCore.ContentManagement
         }
 
         public IEnumerable<ContentPartDefinition> ListPartDefinitions()
-            => GetContentDefinitionRecord().ContentPartDefinitionRecords.Select(x => GetPartDefinition(x.Name)).ToList();
+            => ListPartDefinitionsAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
         public async Task<IEnumerable<ContentPartDefinition>> ListPartDefinitionsAsync()
         {
@@ -240,10 +190,7 @@ namespace OrchardCore.ContentManagement
         }
 
         public void StoreTypeDefinition(ContentTypeDefinition contentTypeDefinition)
-        {
-            Apply(contentTypeDefinition, Acquire(contentTypeDefinition));
-            UpdateContentDefinitionRecord();
-        }
+            => StoreTypeDefinitionAsync(contentTypeDefinition).ConfigureAwait(false).GetAwaiter().GetResult();
 
         public async Task StoreTypeDefinitionAsync(ContentTypeDefinition contentTypeDefinition)
         {
@@ -253,10 +200,7 @@ namespace OrchardCore.ContentManagement
         }
 
         public void StorePartDefinition(ContentPartDefinition contentPartDefinition)
-        {
-            Apply(contentPartDefinition, Acquire(contentPartDefinition));
-            UpdateContentDefinitionRecord();
-        }
+            => StorePartDefinitionAsync(contentPartDefinition).ConfigureAwait(false).GetAwaiter().GetResult();
 
         public async Task StorePartDefinitionAsync(ContentPartDefinition contentPartDefinition)
         {
@@ -266,16 +210,7 @@ namespace OrchardCore.ContentManagement
         }
 
         public void DeleteTypeDefinition(string name)
-        {
-            var record = LoadContentDefinitionRecord().ContentTypeDefinitionRecords.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
-
-            // deletes the content type record associated
-            if (record != null)
-            {
-                LoadContentDefinitionRecord().ContentTypeDefinitionRecords.Remove(record);
-                UpdateContentDefinitionRecord();
-            }
-        }
+            => DeleteTypeDefinitionAsync(name).ConfigureAwait(false).GetAwaiter().GetResult();
 
         public async Task DeleteTypeDefinitionAsync(string name)
         {
@@ -291,26 +226,8 @@ namespace OrchardCore.ContentManagement
             }
         }
 
-        [Obsolete($"Instead, utilize the {nameof(DeletePartDefinitionAsync)} method. This current method is slated for removal in upcoming releases.")]
         public void DeletePartDefinition(string name)
-        {
-            // remove parts from current types
-            var typesWithPart = LoadTypeDefinitions().Where(typeDefinition => typeDefinition.Parts.Any(part => string.Equals(part.PartDefinition.Name, name, StringComparison.OrdinalIgnoreCase)));
-
-            foreach (var typeDefinition in typesWithPart)
-            {
-                this.AlterTypeDefinition(typeDefinition.Name, builder => builder.RemovePart(name));
-            }
-
-            // delete part
-            var record = LoadContentDefinitionRecord().ContentPartDefinitionRecords.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
-
-            if (record != null)
-            {
-                LoadContentDefinitionRecord().ContentPartDefinitionRecords.Remove(record);
-                UpdateContentDefinitionRecord();
-            }
-        }
+            => DeletePartDefinitionAsync(name).ConfigureAwait(false).GetAwaiter().GetResult();
 
         public async Task DeletePartDefinitionAsync(string name)
         {
@@ -333,17 +250,6 @@ namespace OrchardCore.ContentManagement
             }
         }
 
-        private ContentTypeDefinitionRecord Acquire(ContentTypeDefinition contentTypeDefinition)
-        {
-            var result = LoadContentDefinitionRecord().ContentTypeDefinitionRecords.FirstOrDefault(x => string.Equals(x.Name, contentTypeDefinition.Name, StringComparison.OrdinalIgnoreCase));
-            if (result == null)
-            {
-                result = new ContentTypeDefinitionRecord { Name = contentTypeDefinition.Name, DisplayName = contentTypeDefinition.DisplayName };
-                LoadContentDefinitionRecord().ContentTypeDefinitionRecords.Add(result);
-            }
-            return result;
-        }
-
         private async Task<ContentTypeDefinitionRecord> AcquireAsync(ContentTypeDefinition contentTypeDefinition)
         {
             var document = await LoadContentDefinitionRecordAsync();
@@ -353,17 +259,6 @@ namespace OrchardCore.ContentManagement
             {
                 result = new ContentTypeDefinitionRecord { Name = contentTypeDefinition.Name, DisplayName = contentTypeDefinition.DisplayName };
                 (await LoadContentDefinitionRecordAsync()).ContentTypeDefinitionRecords.Add(result);
-            }
-            return result;
-        }
-
-        private ContentPartDefinitionRecord Acquire(ContentPartDefinition contentPartDefinition)
-        {
-            var result = LoadContentDefinitionRecord().ContentPartDefinitionRecords.FirstOrDefault(x => string.Equals(x.Name, contentPartDefinition.Name, StringComparison.OrdinalIgnoreCase));
-            if (result == null)
-            {
-                result = new ContentPartDefinitionRecord { Name = contentPartDefinition.Name, };
-                LoadContentDefinitionRecord().ContentPartDefinitionRecords.Add(result);
             }
             return result;
         }
@@ -502,34 +397,11 @@ namespace OrchardCore.ContentManagement
         private static ContentFieldDefinition Build(ContentFieldDefinitionRecord source)
             => source == null ? null : new ContentFieldDefinition(source.Name);
 
-        /// <summary>
-        /// Loads the document from the store for updating and that should not be cached.
-        /// </summary>
-        private ContentDefinitionRecord LoadContentDefinitionRecord()
-            => _contentDefinitionStore.LoadContentDefinitionAsync().GetAwaiter().GetResult();
-
         private Task<ContentDefinitionRecord> LoadContentDefinitionRecordAsync()
             => _contentDefinitionStore.LoadContentDefinitionAsync();
 
-        /// <summary>
-        /// Gets the document from the cache for sharing and that should not be updated.
-        /// </summary>
-        private ContentDefinitionRecord GetContentDefinitionRecord()
-            => _contentDefinitionStore.GetContentDefinitionAsync().GetAwaiter().GetResult();
-
         private Task<ContentDefinitionRecord> GetContentDefinitionRecordAsync()
             => _contentDefinitionStore.GetContentDefinitionAsync();
-
-        private void UpdateContentDefinitionRecord()
-        {
-            var contentDefinitionRecord = LoadContentDefinitionRecord();
-
-            _contentDefinitionStore.SaveContentDefinitionAsync(contentDefinitionRecord).GetAwaiter().GetResult();
-
-            // If multiple updates in the same scope, types and parts may need to be rebuilt.
-            _scopedTypeDefinitions.Clear();
-            _scopedPartDefinitions.Clear();
-        }
 
         private async Task UpdateContentDefinitionRecordAsync()
         {

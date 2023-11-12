@@ -15,16 +15,16 @@ namespace OrchardCore.ContentTypes.Services
 
         [Obsolete]
         public IEnumerable<StereotypeDescription> GetStereotypes()
-        {
-            // Harvest all available stereotypes by finding out about the stereotype of all content types
-            var stereotypes = _contentDefinitionService.GetTypes().Where(x => x.Settings["Stereotype"] != null).Select(x => x.Settings["Stereotype"].ToString()).Distinct();
-            return stereotypes.Select(x => new StereotypeDescription { DisplayName = x, Stereotype = x });
-        }
+            => GetStereotypesAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
         public async Task<IEnumerable<StereotypeDescription>> GetStereotypesAsync()
         {
             // Harvest all available stereotypes by finding out about the stereotype of all content types
-            var stereotypes = (await _contentDefinitionService.GetTypesAsync()).Where(x => x.Settings["Stereotype"] != null).Select(x => x.Settings["Stereotype"].ToString()).Distinct();
+            var stereotypes = (await _contentDefinitionService.GetTypesAsync())
+                .Where(x => x.Settings["Stereotype"] != null)
+                .Select(x => x.Settings["Stereotype"].ToString())
+                .Distinct();
+
             return stereotypes.Select(x => new StereotypeDescription { DisplayName = x, Stereotype = x });
         }
     }

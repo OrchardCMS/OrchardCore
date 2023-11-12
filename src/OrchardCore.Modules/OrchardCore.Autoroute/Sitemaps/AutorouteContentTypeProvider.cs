@@ -28,8 +28,7 @@ namespace OrchardCore.Autoroute.Sitemaps
 
         public async Task<string> GetRouteAsync(SitemapBuilderContext context, ContentItem contentItem)
         {
-            var ctd = (await ListRoutableTypeDefinitionsAsync())?
-                .FirstOrDefault(rctd => rctd.Name == contentItem.ContentType);
+            var ctd = (await ListRoutableTypeDefinitionsAsync())?.FirstOrDefault(ctd => ctd.Name == contentItem.ContentType);
 
             if (ctd != null)
             {
@@ -46,10 +45,7 @@ namespace OrchardCore.Autoroute.Sitemaps
 
         [Obsolete]
         public IEnumerable<ContentTypeDefinition> ListRoutableTypeDefinitions()
-        {
-            return _contentDefinitionManager.ListTypeDefinitions()
-                .Where(ctd => ctd.Parts.Any(p => p.Name == nameof(AutoroutePart)));
-        }
+            => ListRoutableTypeDefinitionsAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
         public async Task<IEnumerable<ContentTypeDefinition>> ListRoutableTypeDefinitionsAsync()
         {
