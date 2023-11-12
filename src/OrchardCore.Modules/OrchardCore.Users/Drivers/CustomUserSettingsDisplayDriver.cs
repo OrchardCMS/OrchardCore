@@ -62,7 +62,7 @@ namespace OrchardCore.Users.Drivers
                     .RenderWhen(() => _authorizationService.AuthorizeAsync(userClaim, CustomUserSettingsPermissions.CreatePermissionForType(contentTypeDefinition))));
             }
 
-            return Combine(results.ToArray());
+            return Combine(results);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)

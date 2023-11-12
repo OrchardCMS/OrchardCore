@@ -22,14 +22,19 @@
 
         var defaultPosition = partDefinition.DefaultPosition() ?? "5";
 
-        partDefinitions.Add(new { Part = part, Order = int.Parse(part.GetSettings<ContentTypePartSettings>().Position ?? defaultPosition) });
+        partDefinitions.Add(
+            new
+            {
+                Part = part,
+                Order = int.Parse(part.GetSettings<ContentTypePartSettings>().Position ?? defaultPosition)
+            });
     }
 
-    var fieldDefintions = new List<ContentPartFieldDefinition>();
+    var fieldDefinitions = new List<ContentPartFieldDefinition>();
 
     if (typePart?.PartDefinition?.Fields != null)
     {
-        fieldDefintions = typePart.PartDefinition.Fields
+        fieldDefinitions = typePart.PartDefinition.Fields
         .Select(field => new { Field = field, Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
         .OrderBy(x => x.Order)
         .Select(x => x.Field)
@@ -55,35 +60,35 @@
 
     @await DisplayAsync(Model.Editor)
 
-    @if (fieldDefintions.Count > 0 || fields.Count > 0)
+    @if (fieldDefinitions.Count > 0 || fields.Count > 0)
     {
         <div class="mb-3">
             <h3>@T["Fields"]</h3>
 
             <ul class="list-group sortable" id="fields">
-                @foreach (var fieldDefintion in partDefinitions.OrderBy(x => x.Order).Select(x => x.Part))
+                @foreach (var fieldDefinition in partDefinitions.OrderBy(x => x.Order).Select(x => x.Part))
                 {
                     <li class="list-group-item" style="cursor: move;">
                         <div class="w-100">
                             <div class="float-end">
-                                @if (fields.Any(field => string.Equals(field.Name, fieldDefintion.FieldDefinition.Name, StringComparison.OrdinalIgnoreCase)))
+                                @if (fields.Any(field => string.Equals(field.Name, fieldDefinition.FieldDefinition.Name, StringComparison.OrdinalIgnoreCase)))
                                 {
-                                    <a asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@fieldDefintion.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
+                                    <a asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@fieldDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
                                 }
-                                <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@fieldDefintion.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+                                <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@fieldDefinition.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                             </div>
-                            @fieldDefintion.DisplayName() <span class="hint dashed">@fieldDefintion.FieldDefinition.Name.CamelFriendly()</span>
+                            @fieldDefinition.DisplayName() <span class="hint dashed">@fieldDefinition.FieldDefinition.Name.CamelFriendly()</span>
 
-                            @if (!string.IsNullOrEmpty(fieldDefintion.DisplayMode()))
+                            @if (!string.IsNullOrEmpty(fieldDefinition.DisplayMode()))
                             {
-                                <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Display mode"]"><i class="fa-solid fa-tv text-info" aria-hidden="true"></i> @fieldDefintion.DisplayMode()</span>
+                                <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Display mode"]"><i class="fa-solid fa-tv text-info" aria-hidden="true"></i> @fieldDefinition.DisplayMode()</span>
                             }
-                            @if (!string.IsNullOrEmpty(fieldDefintion.Editor()))
+                            @if (!string.IsNullOrEmpty(fieldDefinition.Editor()))
                             {
-                                <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Editor"]"><i class="fa-solid fa-edit text-info" aria-hidden="true"></i> @fieldDefintion.Editor()</span>
+                                <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Editor"]"><i class="fa-solid fa-edit text-info" aria-hidden="true"></i> @fieldDefinition.Editor()</span>
                             }
                         </div>
-                        <input type="hidden" asp-for="OrderedFieldNames" value="@fieldDefintion.Name" />
+                        <input type="hidden" asp-for="OrderedFieldNames" value="@fieldDefinition.Name" />
                     </li>
                 }
             </ul>

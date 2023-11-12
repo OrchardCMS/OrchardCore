@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,7 +12,6 @@ namespace OrchardCore.ContentTypes.Services
             _contentDefinitionService = contentDefinitionService;
         }
 
-        [Obsolete]
         public IEnumerable<StereotypeDescription> GetStereotypes()
             => GetStereotypesAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 

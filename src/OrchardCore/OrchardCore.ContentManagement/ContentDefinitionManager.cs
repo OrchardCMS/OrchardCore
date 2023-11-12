@@ -73,10 +73,10 @@ namespace OrchardCore.ContentManagement
                 throw new ArgumentException("Argument cannot be null or empty", nameof(name));
             }
 
-            var document = await LoadContentDefinitionRecordAsync();
+            var document = await GetContentDefinitionRecordAsync();
             CheckDocumentIdentifier(document);
 
-            var records = (await GetContentDefinitionRecordAsync()).ContentPartDefinitionRecords;
+            var records = document.ContentPartDefinitionRecords;
 
             return _cachedTypeDefinitions.GetOrAdd(name, n =>
             {
@@ -95,7 +95,7 @@ namespace OrchardCore.ContentManagement
         {
             if (!_scopedPartDefinitions.TryGetValue(name, out var partDefinition))
             {
-                var record = await LoadContentDefinitionRecordAsync();
+                var record = await GetContentDefinitionRecordAsync();
 
                 _scopedPartDefinitions[name] = partDefinition = Build(record
                     .ContentPartDefinitionRecords

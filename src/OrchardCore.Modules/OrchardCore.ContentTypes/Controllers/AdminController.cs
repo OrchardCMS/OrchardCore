@@ -313,7 +313,7 @@ namespace OrchardCore.ContentTypes.Controllers
             var partsToAdd = viewModel.PartSelections.Where(ps => ps.IsSelected).Select(ps => ps.PartName);
             foreach (var partToAdd in partsToAdd)
             {
-                await _contentDefinitionService.AddTypeAsync(partToAdd, typeViewModel.Name);
+                await _contentDefinitionService.AddPartToTypeAsync(partToAdd, typeViewModel.Name);
                 await _notifier.SuccessAsync(H["The \"{0}\" part has been added.", partToAdd]);
             }
 

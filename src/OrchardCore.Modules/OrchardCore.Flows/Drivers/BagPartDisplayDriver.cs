@@ -180,13 +180,6 @@ namespace OrchardCore.Flows.Drivers
 
                 var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
-                if (contentTypeDefinition.IsSecurable())
-                {
-                    widget.Viewable = await AuthorizeAsync(CommonPermissions.ViewContent, contentItem);
-                    widget.Editable = await AuthorizeAsync(CommonPermissions.EditContent, contentItem);
-                    widget.Deletable = await AuthorizeAsync(CommonPermissions.DeleteContent, contentItem);
-                }
-
                 if (contentTypeDefinition == null)
                 {
                     _logger.LogWarning("The Widget content item with id {ContentItemId} has no matching {ContentType} content type definition.", contentItem.ContentItemId, contentItem.ContentType);
@@ -194,6 +187,13 @@ namespace OrchardCore.Flows.Drivers
                     await _notifier.WarningAsync(H["The Widget content item with id {0} has no matching {1} content type definition.", contentItem.ContentItemId, contentItem.ContentType]);
 
                     continue;
+                }
+
+                if (contentTypeDefinition.IsSecurable())
+                {
+                    widget.Viewable = await AuthorizeAsync(CommonPermissions.ViewContent, contentItem);
+                    widget.Editable = await AuthorizeAsync(CommonPermissions.EditContent, contentItem);
+                    widget.Deletable = await AuthorizeAsync(CommonPermissions.DeleteContent, contentItem);
                 }
 
                 widget.ContentTypeDefinition = contentTypeDefinition;

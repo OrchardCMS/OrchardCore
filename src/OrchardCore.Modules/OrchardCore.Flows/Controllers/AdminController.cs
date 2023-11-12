@@ -37,7 +37,7 @@ namespace OrchardCore.Flows.Controllers
             _updateModelAccessor = updateModelAccessor;
         }
 
-        public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string contentItemsName, string targetId, bool flowmetadata, string parentContentType, string partName)
+        public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string contentItemsName, string targetId, bool flowMetadata, string parentContentType, string partName)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -51,7 +51,7 @@ namespace OrchardCore.Flows.Controllers
             var colSize = 12;
             IEnumerable<ContentTypeDefinition> containedContentTypes = null;
 
-            if (flowmetadata)
+            if (flowMetadata)
             {
                 var metadata = new FlowMetadata();
                 contentItem.Weld(metadata);
@@ -94,7 +94,7 @@ namespace OrchardCore.Flows.Controllers
                 ContentItemsName: contentItemsName
             );
             // Only Add ColumnSize Property if Part has FlowMetadata
-            if (flowmetadata)
+            if (flowMetadata)
             {
                 contentCard.ColumnSize = colSize;
             }
@@ -112,7 +112,7 @@ namespace OrchardCore.Flows.Controllers
 
             if (settings?.ContainedContentTypes?.Length == 0)
             {
-                return (await _contentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => t.GetStereotype() == "Widget");
+                return (await _contentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => t.StereotypeEquals("Widget"));
             }
 
             var definitions = new List<ContentTypeDefinition>();
@@ -121,7 +121,7 @@ namespace OrchardCore.Flows.Controllers
             {
                 var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(ct);
 
-                if (definition == null)
+                if (definition == null || !definition.StereotypeEquals("Widget"))
                 {
                     continue;
                 }

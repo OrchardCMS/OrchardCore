@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -12,13 +10,13 @@ namespace OrchardCore.Contents.Sitemaps
 {
     public class ContentTypesSitemapSourceDriver : DisplayDriver<SitemapSource, ContentTypesSitemapSource>
     {
-        private readonly IEnumerable<IRouteableContentTypeProvider> _routeableContentTypeDefinitionProviders;
+        private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
 
         public ContentTypesSitemapSourceDriver(
-            IEnumerable<IRouteableContentTypeProvider> routeableContentTypeDefinitionProviders
+            IRouteableContentTypeCoordinator routeableContentTypeCoordinator
             )
         {
-            _routeableContentTypeDefinitionProviders = routeableContentTypeDefinitionProviders;
+            _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
         }
 
         public override IDisplayResult Display(ContentTypesSitemapSource sitemapSource)
@@ -31,12 +29,7 @@ namespace OrchardCore.Contents.Sitemaps
 
         public override async Task<IDisplayResult> EditAsync(ContentTypesSitemapSource sitemapSource, IUpdateModel updater)
         {
-            var contentTypeDefinitions = new List<ContentTypeDefinition>();
-
-            foreach (var routeableContentTypeDefinitionProviders in _routeableContentTypeDefinitionProviders)
-            {
-                contentTypeDefinitions.AddRange(await routeableContentTypeDefinitionProviders.ListRoutableTypeDefinitionsAsync());
-            }
+            var contentTypeDefinitions = await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync();
 
             var entries = contentTypeDefinitions
                 .Select(ctd => new ContentTypeSitemapEntryViewModel
