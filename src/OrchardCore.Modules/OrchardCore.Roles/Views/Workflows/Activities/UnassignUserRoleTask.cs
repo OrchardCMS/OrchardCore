@@ -47,30 +47,27 @@ public class UnassignUserRoleTask : TaskActivity
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"], S["Failed"]);
-    }
-
+        => Outcomes(S["Done"], S["Failed"]);
+    
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         var userName = await _expressionEvaluator.EvaluateAsync(UserName, workflowContext, null);
 
-        var usr = await _userService.GetUserAsync(userName);
+        var u = await _userService.GetUserAsync(userName);
 
-        if (usr is User user)
+        if (u is User user)
         {
-            if (Roles.Any())
+            foreach(var role in Roles)
             {
-                foreach(var role in Roles)
+                if (user.RoleNames.Contains(role))
                 {
-                    if (user.RoleNames.Contains(role))
-                    {
-                        await _userManager.RemoveFromRoleAsync(user, role);
-                    }
+                    await _userManager.RemoveFromRoleAsync(user, role);
                 }
-                return Outcomes("Done");
             }
+            
+            return Outcomes("Done");
         }
+
         return Outcomes("Failed");
     }
 }

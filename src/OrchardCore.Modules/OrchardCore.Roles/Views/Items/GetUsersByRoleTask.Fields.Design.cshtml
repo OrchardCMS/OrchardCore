@@ -4,6 +4,8 @@
 @using OrchardCore.Roles.Workflows.ViewModels
 @model ActivityViewModel<GetUsersByRoleTask>
 <header>
-    <h4><i class="fa-solid fa-user" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Get users in roles"])</h4>
+    <h4>
+        <i class="fa-solid fa-user" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Get users in roles"])
+    </h4>
 </header>
-<em>@T["Get users in roles {0} to {1}", string.Join(",", Model.Activity.Roles), Model.Activity.OutputKeyName]</em>
+<em>@T["Get users in roles {0} to {1}", string.Join(',', Model.Activity.Roles), Model.Activity.OutputKeyName]</em>

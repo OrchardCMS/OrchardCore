@@ -44,9 +44,8 @@ public class GetUsersByRoleTask : TaskActivity
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"], S["Failed"]);
-    }
+        => Outcomes(S["Done"], S["Failed"]);
+    
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -54,20 +53,27 @@ public class GetUsersByRoleTask : TaskActivity
 
         if (!string.IsNullOrEmpty(propKeyName))
         {
-            if (Roles.Any())
+            var usersInRole = new List<User>();
+            foreach (var role in Roles)
             {
-                HashSet<IUser> usersInRole = new HashSet<IUser>();
-                foreach (var role in Roles)
+                foreach(var u in await _userManager.GetUsersInRoleAsync(role))
                 {
-                    usersInRole.UnionWith(await _userManager.GetUsersInRoleAsync(role));
-                }
-                if (usersInRole.Any())
-                {
-                    workflowContext.Output[propKeyName] = usersInRole.Select(u => (u as User).UserId).ToArray();
-                    return Outcomes("Done");
+                    if(u is not User user) 
+                    {
+                        continue;
+                    }
+
+                    usersInRole.Add(user);
                 }
             }
+            if (usersInRole.Count > 0)
+            {
+                workflowContext.Output[propKeyName] = usersInRole;
+
+                return Outcomes("Done");
+            }
         }
+
         return Outcomes("Failed");
     }
 }

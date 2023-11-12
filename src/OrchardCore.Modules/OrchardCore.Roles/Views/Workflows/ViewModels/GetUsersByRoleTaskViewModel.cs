@@ -8,5 +8,6 @@ public class GetUsersByRoleTaskViewModel
     [Required]
     public string OutputKeyName { get; set; }
 
-    public IEnumerable<string> Roles { get; set; } = new List<string>();
+    [Required]
+    public IEnumerable<string> Roles { get; set; }
 }

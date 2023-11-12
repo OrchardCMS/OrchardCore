@@ -4,10 +4,12 @@
     @for (var i = 0; i < Model.RoleSelections.Count; i++)
     {
         var role = Model.RoleSelections[i];
-        <div class="form-check">
-            <label for="@Html.IdFor(m => m.RoleSelections[i])">
-                <input id="@Html.IdFor(m => m.RoleSelections[i])" name="@Model.HtmlName" type="checkbox" checked="@role.IsSelected" value="@role.Item" />
-                @role.Item
+        va htmlId = Html.IdFor(m => m.RoleSelections[i]);
+
+        <div class="checkbox form-check">
+            <input id="@htmlId" class="form-check-input" name="@Model.HtmlName" type="checkbox" checked="@role.IsSelected" value="@role.Item" />
+            <label for="@htmlId" class="form-check-label">
+@role.Item
             </label>
         </div>
     }
