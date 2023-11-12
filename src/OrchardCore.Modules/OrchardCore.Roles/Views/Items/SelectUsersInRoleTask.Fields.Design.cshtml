@@ -1,9 +1,0 @@
-@using OrchardCore.Workflows.ViewModels
-@using OrchardCore.Workflows.Helpers
-@using OrchardCore.Roles.Workflows.Activities
-@using OrchardCore.Roles.Workflows.ViewModels
-@model ActivityViewModel<SelectUsersInRoleTask>
-<header>
-    <h4><i class="fa-solid fa-user" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Select users in roles"])</h4>
-</header>
-<em>@T["Stores users of roles {0} to {1}", string.Join(",", Model.Activity.Roles), Model.Activity.OutputKeyName]</em>
