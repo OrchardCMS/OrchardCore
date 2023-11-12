@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
@@ -60,7 +61,7 @@ namespace OrchardCore.Queries.Deployment
                 {
                     try
                     {
-                        var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(queryBasedContentViewModel.QueryParameters);
+                        var parameters = JsonSerializer.Deserialize<Dictionary<string, object>>(queryBasedContentViewModel.QueryParameters, JOptions.Default);
                         if (parameters == null)
                         {
                             updater.ModelState.AddModelError(Prefix, nameof(step.QueryParameters), S["Make sure it is a valid JSON object. Example: { key : 'value' }"]);

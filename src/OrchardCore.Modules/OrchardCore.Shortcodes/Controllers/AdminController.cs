@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +11,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Infrastructure.Html;
@@ -164,7 +165,7 @@ namespace OrchardCore.Shortcodes.Controllers
                     Hint = model.Hint,
                     Usage = _htmlSanitizerService.Sanitize(model.Usage),
                     DefaultValue = model.DefaultValue,
-                    Categories = JsonConvert.DeserializeObject<string[]>(model.SelectedCategories)
+                    Categories = JsonSerializer.Deserialize<string[]>(model.SelectedCategories, JOptions.Default)
                 };
 
                 await _shortcodeTemplatesManager.UpdateShortcodeTemplateAsync(model.Name, template);
@@ -261,7 +262,7 @@ namespace OrchardCore.Shortcodes.Controllers
                     Hint = model.Hint,
                     Usage = _htmlSanitizerService.Sanitize(model.Usage),
                     DefaultValue = model.DefaultValue,
-                    Categories = JsonConvert.DeserializeObject<string[]>(model.SelectedCategories)
+                    Categories = JsonSerializer.Deserialize<string[]>(model.SelectedCategories, JOptions.Default)
                 };
 
                 await _shortcodeTemplatesManager.RemoveShortcodeTemplateAsync(sourceName);

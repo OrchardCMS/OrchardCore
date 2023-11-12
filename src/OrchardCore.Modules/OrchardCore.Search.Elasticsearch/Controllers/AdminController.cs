@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -15,8 +17,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
@@ -126,9 +126,9 @@ namespace OrchardCore.Search.Elasticsearch
             };
 
             model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Reset"], Value = nameof(ContentsBulkAction.Reset) },
-                new SelectListItem() { Text = S["Rebuild"], Value = nameof(ContentsBulkAction.Rebuild) },
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
+                new() { Text = S["Reset"], Value = nameof(ContentsBulkAction.Reset) },
+                new() { Text = S["Rebuild"], Value = nameof(ContentsBulkAction.Rebuild) },
+                new() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
             };
 
             return View(model);
@@ -384,7 +384,7 @@ namespace OrchardCore.Search.Elasticsearch
         public async Task<IActionResult> Mappings(string indexName)
         {
             var mappings = await _elasticIndexManager.GetIndexMappings(indexName);
-            var formattedJson = JValue.Parse(mappings).ToString(Formatting.Indented);
+            var formattedJson = JNode.Parse(mappings).ToJsonString(JOptions.Indented);
             return View(new MappingsViewModel
             {
                 IndexName = _elasticIndexManager.GetFullIndexName(indexName),
@@ -453,7 +453,7 @@ namespace OrchardCore.Search.Elasticsearch
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
+            var parameters = JsonSerializer.Deserialize<Dictionary<string, object>>(model.Parameters, JOptions.Default);
             var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(model.DecodedQuery, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions.Value))));
 
             try

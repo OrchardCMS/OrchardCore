@@ -1,14 +1,14 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -24,10 +24,6 @@ namespace OrchardCore.OpenId.Drivers
     public class OpenIdClientSettingsDisplayDriver : SectionDisplayDriver<ISite, OpenIdClientSettings>
     {
         private const string SettingsGroupId = "OrchardCore.OpenId.Client";
-        private static readonly JsonSerializerSettings _jsonSerializerSettings = new()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-        };
 
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -101,7 +97,7 @@ namespace OrchardCore.OpenId.Drivers
                     model.UseIdTokenTokenFlow = true;
                 }
 
-                model.Parameters = JsonConvert.SerializeObject(settings.Parameters, _jsonSerializerSettings);
+                model.Parameters = JsonSerializer.Serialize(settings.Parameters, JOptions.CamelCase);
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
@@ -169,7 +165,7 @@ namespace OrchardCore.OpenId.Drivers
                 {
                     settings.Parameters = string.IsNullOrWhiteSpace(model.Parameters)
                         ? Array.Empty<ParameterSetting>()
-                        : JsonConvert.DeserializeObject<ParameterSetting[]>(model.Parameters);
+                        : JsonSerializer.Deserialize<ParameterSetting[]>(model.Parameters, JOptions.Default);
                 }
                 catch
                 {

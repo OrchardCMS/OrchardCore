@@ -83,7 +83,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
             }
         }
 
-        private static FieldType BuildSchemaBasedFieldType(SqlQuery query, JsonObject querySchema, string fieldTypeName)
+        private static FieldType BuildSchemaBasedFieldType(SqlQuery query, JsonNode querySchema, string fieldTypeName)
         {
             var properties = querySchema["properties"].AsObject();
             if (properties == null)

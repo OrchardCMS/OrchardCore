@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.ViewModels;
@@ -91,7 +92,7 @@ namespace OrchardCore.Search.Elasticsearch
             };
 
             var queryParameters = queryModel.Parameters != null ?
-                JsonConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters)
+                JsonSerializer.Deserialize<Dictionary<string, object>>(queryModel.Parameters, JOptions.Default)
                 : new Dictionary<string, object>();
 
             var result = _elasticQuerySource.ExecuteQueryAsync(elasticQuery, queryParameters);
