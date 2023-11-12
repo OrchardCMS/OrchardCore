@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using System.Text.Json.Serialization;
 
 namespace System.Text.Json.Nodes;
@@ -20,6 +21,7 @@ public static class JOptions
     public static readonly JsonSerializerOptions Indented;
     public static readonly JsonSerializerOptions CamelCase;
     public static readonly JsonSerializerOptions CamelCaseIndented;
+    public static readonly JsonSerializerOptions UnsafeRelaxedJsonEscaping;
     public static readonly JsonDocumentOptions Document;
     public static readonly JsonNodeOptions Node;
 
@@ -40,6 +42,11 @@ public static class JOptions
         CamelCaseIndented = new JsonSerializerOptions(Indented)
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        };
+
+        UnsafeRelaxedJsonEscaping = new JsonSerializerOptions(Default)
+        {
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         };
 
         Document = new JsonDocumentOptions
