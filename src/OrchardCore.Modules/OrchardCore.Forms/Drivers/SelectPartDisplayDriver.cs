@@ -29,7 +29,7 @@ namespace OrchardCore.Forms.Drivers
         {
             return Initialize<SelectPartEditViewModel>("SelectPart_Fields_Edit", m =>
             {
-                m.Options = JsonSerializer.Serialize(part.Options ?? Array.Empty<SelectOption>(), JNode.OptionsCamelCaseIndented);
+                m.Options = JsonSerializer.Serialize(part.Options ?? Array.Empty<SelectOption>(), JOptions.CamelCaseIndented);
                 m.DefaultValue = part.DefaultValue;
                 m.Editor = part.Editor;
             });

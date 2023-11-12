@@ -11,57 +11,10 @@ namespace System.Text.Json.Nodes;
 
 public static class JNode
 {
-    public static readonly JsonSerializerOptions Options = new()
-    {
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        ReferenceHandler = ReferenceHandler.IgnoreCycles,
-        ReadCommentHandling = JsonCommentHandling.Skip,
-        PropertyNameCaseInsensitive = true,
-        AllowTrailingCommas = true,
-        WriteIndented = false,
-    };
-
-    public static readonly JsonSerializerOptions OptionsIndented;
-    public static readonly JsonSerializerOptions OptionsCamelCase;
-    public static readonly JsonSerializerOptions OptionsCamelCaseIndented;
-    public static readonly JsonDocumentOptions DocumentOptions;
-    public static readonly JsonNodeOptions NodeOptions;
-
-    static JNode()
-    {
-        Options.Converters.Add(new JsonDynamicConverter());
-
-        OptionsIndented = new JsonSerializerOptions(Options)
-        {
-            WriteIndented = true
-        };
-
-        OptionsCamelCase = new JsonSerializerOptions(Options)
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
-
-        OptionsCamelCaseIndented = new JsonSerializerOptions(OptionsIndented)
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
-
-        DocumentOptions = new JsonDocumentOptions
-        {
-            CommentHandling = Options.ReadCommentHandling,
-            AllowTrailingCommas = Options.AllowTrailingCommas,
-        };
-
-        NodeOptions = new JsonNodeOptions
-        {
-            PropertyNameCaseInsensitive = Options.PropertyNameCaseInsensitive,
-        };
-    }
-
     /// <summary>
     /// Loads a JSON node (including objects or arrays)  from the provided stream.
     /// </summary>
-    public static Task<JsonNode?> LoadAsync(Stream utf8Json) => LoadAsync(utf8Json, JNode.NodeOptions, JNode.DocumentOptions);
+    public static Task<JsonNode?> LoadAsync(Stream utf8Json) => LoadAsync(utf8Json, JOptions.Node, JOptions.Document);
 
     /// <summary>
     /// Loads a JSON node (including objects or arrays)  from the provided stream.
@@ -71,24 +24,24 @@ public static class JNode
         JsonNodeOptions? nodeOptions = null,
         JsonDocumentOptions documentOptions = default,
         CancellationToken cancellationToken = default)
-        => (await JsonNode.ParseAsync(utf8Json, nodeOptions ?? NodeOptions, documentOptions, cancellationToken));
+        => (await JsonNode.ParseAsync(utf8Json, nodeOptions ?? JOptions.Node, documentOptions, cancellationToken));
 
     /// <summary>
     /// Loads a JSON node (including objects or arrays) from the provided reader.
     /// </summary>
     public static JsonNode? Load(ref Utf8JsonReader reader, JsonNodeOptions? nodeOptions = null)
-        => JsonNode.Parse(ref reader, nodeOptions ?? NodeOptions);
+        => JsonNode.Parse(ref reader, nodeOptions ?? JOptions.Node);
 
     /// <summary>
     /// Parses text representing a single JSON node.
     /// </summary>
-    public static JsonNode? Parse(string json) => Parse(json, NodeOptions, DocumentOptions);
+    public static JsonNode? Parse(string json) => Parse(json, JOptions.Node, JOptions.Document);
 
     /// <summary>
     /// Parses text representing a single JSON node.
     /// </summary>
     public static JsonNode? Parse(string json, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
-        => JsonNode.Parse(json, nodeOptions ?? JNode.NodeOptions, documentOptions);
+        => JsonNode.Parse(json, nodeOptions ?? JOptions.Node, documentOptions);
 
     /// <summary>
     /// Creates a <see cref="JsonNode"/> from an object.
@@ -113,7 +66,7 @@ public static class JNode
             }
         }
 
-        return JsonSerializer.SerializeToNode(obj, options ?? Options);
+        return JsonSerializer.SerializeToNode(obj, options ?? JOptions.Default);
     }
 
     /// <summary>
@@ -125,13 +78,13 @@ public static class JNode
     /// Creates an instance of the specified type from this <see cref="JsonNode"/>.
     /// </summary>
     public static T? ToObject<T>(this JsonNode? jsonNode, JsonSerializerOptions? options = null) =>
-        jsonNode.Deserialize<T>(options ?? Options);
+        jsonNode.Deserialize<T>(options ?? JOptions.Default);
 
     /// <summary>
     /// Creates an instance of the specified type from this <see cref="JsonNode"/>.
     /// </summary>
     public static object? ToObject(this JsonNode? jsonNode, Type type, JsonSerializerOptions? options = null) =>
-        jsonNode.Deserialize(type, options ?? Options);
+        jsonNode.Deserialize(type, options ?? JOptions.Default);
 
     /// <summary>
     /// Gets the value of the specified type of this <see cref="JsonNode"/>.

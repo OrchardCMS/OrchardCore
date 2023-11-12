@@ -10,8 +10,8 @@
         .OrderBy(category => category)
         .ToList();
 
-    var jCategories = JsonSerializer.Serialize(categories, JNode.Options);
-    var jSelectedCategories = JsonSerializer.Serialize(Model.Categories, JNode.Options);
+    var jCategories = JsonSerializer.Serialize(categories, JOptions.Default);
+    var jSelectedCategories = JsonSerializer.Serialize(Model.Categories, JOptions.Default);
 }
 
 <style asp-name="codemirror"></style>

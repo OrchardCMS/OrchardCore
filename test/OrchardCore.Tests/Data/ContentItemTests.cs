@@ -51,9 +51,9 @@ namespace OrchardCore.Tests.Data
             contentItem.GetOrCreate<MyPart>();
             contentItem.Alter<MyPart>(x => x.Text = "test");
 
-            var json = JsonSerializer.Serialize(contentItem, JNode.Options);
+            var json = JsonSerializer.Serialize(contentItem, JOptions.Default);
 
-            var contentItem2 = JsonSerializer.Deserialize<ContentItem>(json, JNode.Options);
+            var contentItem2 = JsonSerializer.Deserialize<ContentItem>(json, JOptions.Default);
 
             Assert.NotNull(contentItem2.Content.MyPart);
             Assert.Equal("test", (string)contentItem2.Content.MyPart.Text);

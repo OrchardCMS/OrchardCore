@@ -45,7 +45,7 @@ namespace OrchardCore.DisplayManagement.Notify
             _htmlEncoder = htmlEncoder;
             _logger = logger;
 
-            _settings = new(JNode.Options);
+            _settings = new(JOptions.Default);
             _settings.Converters.Add(new NotifyEntryConverter(htmlEncoder));
         }
 

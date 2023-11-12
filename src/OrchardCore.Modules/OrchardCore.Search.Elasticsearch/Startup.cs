@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using Elasticsearch.Net;
 using Fluid;
@@ -124,19 +123,16 @@ namespace OrchardCore.Search.Elasticsearch
                     o.IndexPrefix = configuration.GetValue<string>(nameof(o.IndexPrefix));
 
                     var jsonNode = configuration.GetSection(nameof(o.Analyzers)).AsJsonNode();
-                    var jsonElement = JsonSerializer.Deserialize<JsonElement>(jsonNode);
-                    var analyzersObject = JsonObject.Create(jsonElement, JNode.NodeOptions);
-
-                    if (analyzersObject != null)
+                    if (jsonNode is JsonObject jAnalyzers)
                     {
-                        foreach (var analyzer in analyzersObject)
+                        foreach (var analyzer in jAnalyzers)
                         {
-                            if (analyzer.Value == null)
+                            if (analyzer.Value is not JsonObject jAnalyzer)
                             {
                                 continue;
                             }
 
-                            o.Analyzers.Add(analyzer.Key, analyzer.Value.AsObject());
+                            o.Analyzers.Add(analyzer.Key, jAnalyzer);
                         }
                     }
 

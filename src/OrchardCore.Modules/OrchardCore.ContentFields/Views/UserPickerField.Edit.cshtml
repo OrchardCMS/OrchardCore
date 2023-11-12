@@ -4,7 +4,7 @@
 @using OrchardCore.Mvc.Utilities
 @{
     var settings = Model.PartFieldDefinition.GetSettings<UserPickerFieldSettings>();
-    var selectedUsers = JsonSerializer.Serialize(Model.SelectedUsers, JNode.OptionsCamelCase);
+    var selectedUsers = JsonSerializer.Serialize(Model.SelectedUsers, JOptions.CamelCase);
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
     var fieldName = Model.PartFieldDefinition.Name;
     var contentTypeName = Model.TypePartDefinition.Name;

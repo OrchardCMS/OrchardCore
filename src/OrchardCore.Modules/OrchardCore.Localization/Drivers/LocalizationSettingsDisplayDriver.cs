@@ -103,7 +103,7 @@ namespace OrchardCore.Localization.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                var supportedCulture = JsonSerializer.Deserialize<string[]>(model.SupportedCultures, JNode.Options);
+                var supportedCulture = JsonSerializer.Deserialize<string[]>(model.SupportedCultures, JOptions.Default);
                 if (!supportedCulture.Any())
                 {
                     context.Updater.ModelState.AddModelError("SupportedCultures", S["A culture is required"]);

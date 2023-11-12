@@ -84,7 +84,7 @@ namespace OrchardCore.Shells.Azure.Configuration
 
             tenantsSettings[tenant] = settings;
 
-            var tenantsSettingsString = tenantsSettings.ToJsonString(JNode.Options);
+            var tenantsSettingsString = tenantsSettings.ToJsonString(JOptions.Default);
             using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(tenantsSettingsString));
 
             await _shellsFileStore.CreateFileFromStreamAsync(TenantsBlobName, memoryStream);
@@ -104,7 +104,7 @@ namespace OrchardCore.Shells.Azure.Configuration
 
                 tenantsSettings.Remove(tenant);
 
-                var tenantsSettingsString = tenantsSettings.ToJsonString(JNode.Options);
+                var tenantsSettingsString = tenantsSettings.ToJsonString(JOptions.Default);
                 using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(tenantsSettingsString));
 
                 await _shellsFileStore.CreateFileFromStreamAsync(TenantsBlobName, memoryStream);

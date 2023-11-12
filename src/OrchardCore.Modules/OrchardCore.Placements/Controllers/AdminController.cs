@@ -120,7 +120,7 @@ namespace OrchardCore.Placements.Controllers
             {
                 Creating = true,
                 ShapeType = suggestion,
-                Nodes = JsonSerializer.Serialize(template, JNode.OptionsIndented)
+                Nodes = JsonSerializer.Serialize(template, JOptions.Indented)
             };
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -160,7 +160,7 @@ namespace OrchardCore.Placements.Controllers
             var viewModel = new EditShapePlacementViewModel
             {
                 ShapeType = shapeType,
-                Nodes = JsonSerializer.Serialize(placementNodes, JNode.OptionsIndented)
+                Nodes = JsonSerializer.Serialize(placementNodes, JOptions.Indented)
             };
 
             ViewData["ReturnUrl"] = returnUrl;

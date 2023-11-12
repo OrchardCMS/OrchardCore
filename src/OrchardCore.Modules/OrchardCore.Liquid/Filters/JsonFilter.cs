@@ -12,10 +12,10 @@ namespace OrchardCore.Liquid.Filters
     {
         public static ValueTask<FluidValue> Json(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
-            var formatting = JNode.Options;
+            var formatting = JOptions.Default;
             if (arguments.At(0).ToBooleanValue())
             {
-                formatting = JNode.OptionsIndented;
+                formatting = JOptions.Indented;
             }
 
             switch (input.Type)

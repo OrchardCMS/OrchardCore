@@ -28,7 +28,7 @@ namespace OrchardCore.ContentFields.Settings
 
                 model.DefaultValue = settings.DefaultValue;
                 model.Editor = settings.Editor;
-                model.Options = JsonSerializer.Serialize(settings.Options ?? Array.Empty<ListValueOption>(), JNode.OptionsIndented);
+                model.Options = JsonSerializer.Serialize(settings.Options ?? Array.Empty<ListValueOption>(), JOptions.Indented);
             })
             .Location("Editor");
         }
@@ -48,7 +48,7 @@ namespace OrchardCore.ContentFields.Settings
                     settings.Editor = model.Editor;
                     settings.Options = string.IsNullOrWhiteSpace(model.Options)
                         ? Array.Empty<ListValueOption>()
-                        : JsonSerializer.Deserialize<ListValueOption[]>(model.Options, JNode.Options);
+                        : JsonSerializer.Deserialize<ListValueOption[]>(model.Options, JOptions.Default);
                 }
                 catch
                 {

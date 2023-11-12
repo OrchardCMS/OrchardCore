@@ -12,6 +12,6 @@ namespace OrchardCore.Tests.Apis.Context
         }
 
         public static ValueTask<T> ReadAsAsync<T>(this Stream stream) =>
-            JsonSerializer.DeserializeAsync<T>(stream, JNode.Options);
+            JsonSerializer.DeserializeAsync<T>(stream, JOptions.Default);
     }
 }

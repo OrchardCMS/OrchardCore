@@ -45,7 +45,7 @@ namespace OrchardCore.Queries.Controllers
             }
 
             var queryParameters = parameters != null ?
-                JsonSerializer.Deserialize<Dictionary<string, object>>(parameters, JNode.Options)
+                JsonSerializer.Deserialize<Dictionary<string, object>>(parameters, JOptions.Default)
                 : new Dictionary<string, object>();
 
             var result = await _queryManager.ExecuteQueryAsync(query, queryParameters);

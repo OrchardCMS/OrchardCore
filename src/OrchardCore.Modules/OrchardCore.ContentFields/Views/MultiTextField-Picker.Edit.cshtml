@@ -14,8 +14,8 @@
         }
     }
 
-    var jSelectedValues = JsonSerializer.Serialize(selectedValues, JNode.Options);
-    var jOptions = JsonSerializer.Serialize(settings.Options.Select(o => new { value = o.Value, name = o.Name }), JNode.Options);
+    var jSelectedValues = JsonSerializer.Serialize(selectedValues, JOptions.Default);
+    var jOptions = JsonSerializer.Serialize(settings.Options.Select(o => new { value = o.Value, name = o.Name }), JOptions.Default);
 
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
     var fieldName = Model.PartFieldDefinition.Name;

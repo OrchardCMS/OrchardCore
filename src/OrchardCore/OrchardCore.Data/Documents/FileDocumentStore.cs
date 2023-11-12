@@ -101,7 +101,7 @@ namespace OrchardCore.Data.Documents
             try
             {
                 using var stream = File.OpenRead(filename);
-                return await JsonSerializer.DeserializeAsync<T>(stream, JNode.Options);
+                return await JsonSerializer.DeserializeAsync<T>(stream, JOptions.Default);
             }
             finally
             {
@@ -125,7 +125,7 @@ namespace OrchardCore.Data.Documents
             try
             {
                 using var stream = File.Create(filename);
-                await JsonSerializer.SerializeAsync(stream, document, JNode.OptionsIndented);
+                await JsonSerializer.SerializeAsync(stream, document, JOptions.Indented);
             }
             finally
             {

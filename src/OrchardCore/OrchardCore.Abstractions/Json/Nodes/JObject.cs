@@ -55,7 +55,7 @@ public static class JObject
             return JsonObject.Create(jsonElement);
         }
 
-        return JsonObject.Create(JsonSerializer.SerializeToElement(obj, options ?? JNode.Options));
+        return JsonObject.Create(JsonSerializer.SerializeToElement(obj, options ?? JOptions.Default));
     }
 
     /// <summary>

@@ -15,6 +15,6 @@ namespace OrchardCore.Apis.GraphQL.Client
         }
 
         public static ValueTask<T> ReadAsAsync<T>(this Stream stream) =>
-            JsonSerializer.DeserializeAsync<T>(stream, JNode.Options);
+            JsonSerializer.DeserializeAsync<T>(stream, JOptions.Default);
     }
 }

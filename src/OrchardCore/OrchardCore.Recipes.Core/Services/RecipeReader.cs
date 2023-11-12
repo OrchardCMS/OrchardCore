@@ -14,7 +14,7 @@ namespace OrchardCore.Recipes.Services
 
             using var stream = recipeFileInfo.CreateReadStream();
 
-            var recipeDescriptor = await JsonSerializer.DeserializeAsync<RecipeDescriptor>(stream, JNode.Options);
+            var recipeDescriptor = await JsonSerializer.DeserializeAsync<RecipeDescriptor>(stream, JOptions.Default);
 
             recipeDescriptor.FileProvider = recipeFileProvider;
             recipeDescriptor.BasePath = recipeBasePath;

@@ -27,7 +27,7 @@ namespace OrchardCore.ContentFields.Settings
 
                 model.Required = settings.Required;
                 model.Hint = settings.Hint;
-                model.Options = JsonSerializer.Serialize(settings.Options, JNode.OptionsIndented);
+                model.Options = JsonSerializer.Serialize(settings.Options, JOptions.Indented);
             })
             .Location("Content");
         }
@@ -43,7 +43,7 @@ namespace OrchardCore.ContentFields.Settings
                 settings.Hint = model.Hint;
                 try
                 {
-                    settings.Options = JsonSerializer.Deserialize<MultiTextFieldValueOption[]>(model.Options, JNode.Options);
+                    settings.Options = JsonSerializer.Deserialize<MultiTextFieldValueOption[]>(model.Options, JOptions.Default);
                 }
                 catch
                 {

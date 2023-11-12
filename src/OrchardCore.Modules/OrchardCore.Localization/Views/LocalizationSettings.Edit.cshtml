@@ -7,8 +7,8 @@
 
 @{
     // ['fr-FR', 'en-US']
-    var supportedCultures = JsonSerializer.Serialize(Model.Cultures.Where(x => x.Supported).Select(c => c.CultureInfo.Name).ToArray(), JNode.Options);
-    var allCultures = JsonSerializer.Serialize(Model.Cultures.Select(c => new { Name = c.CultureInfo.Name, DisplayName = !string.IsNullOrEmpty(c.CultureInfo.DisplayName) ? c.CultureInfo.DisplayName : c.CultureInfo.NativeName, Supported = c.Supported }).ToArray(), JNode.Options);
+    var supportedCultures = JsonSerializer.Serialize(Model.Cultures.Where(x => x.Supported).Select(c => c.CultureInfo.Name).ToArray(), JOptions.Default);
+    var allCultures = JsonSerializer.Serialize(Model.Cultures.Select(c => new { Name = c.CultureInfo.Name, DisplayName = !string.IsNullOrEmpty(c.CultureInfo.DisplayName) ? c.CultureInfo.DisplayName : c.CultureInfo.NativeName, Supported = c.Supported }).ToArray(), JOptions.Default);
     var defaultCulture = Model.Cultures.Where(x => x.IsDefault).FirstOrDefault().CultureInfo.Name;
     var selectedCulture = Model.Cultures.Except(Model.Cultures.Where(x => x.Supported)).First().CultureInfo.Name;
 }
