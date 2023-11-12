@@ -16,10 +16,10 @@ public static class JValue
 
         if (obj is JsonElement jsonElement)
         {
-            return JsonValue.Create(jsonElement);
+            return JsonValue.Create(jsonElement, JOptions.Node);
         }
 
-        return JsonValue.Create(JsonSerializer.SerializeToElement(obj, options ?? JOptions.Default));
+        return JsonValue.Create(JsonSerializer.SerializeToElement(obj, options ?? JOptions.Default), JOptions.Node);
     }
 
     /// <summary>

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -55,15 +54,12 @@ public static class JNode
 
         if (obj is JsonElement jsonElement)
         {
-            if (jsonElement.ValueKind == JsonValueKind.Object)
+            return jsonElement.ValueKind switch
             {
-                return JsonObject.Create(jsonElement);
-            }
-
-            if (jsonElement.ValueKind == JsonValueKind.Array)
-            {
-                return JsonArray.Create(jsonElement);
-            }
+                JsonValueKind.Object => JsonObject.Create(jsonElement, JOptions.Node),
+                JsonValueKind.Array => JsonArray.Create(jsonElement, JOptions.Node),
+                _ => JsonValue.Create(jsonElement, JOptions.Node),
+            };
         }
 
         return JsonSerializer.SerializeToNode(obj, options ?? JOptions.Default);

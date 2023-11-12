@@ -2,6 +2,9 @@ using System.Text.Json.Serialization;
 
 namespace System.Text.Json.Nodes;
 
+/// <summary>
+/// Centralizes common <see cref="JsonSerializerOptions" /> instances.
+/// </summary>
 public static class JOptions
 {
     public static readonly JsonSerializerOptions Default = new()
