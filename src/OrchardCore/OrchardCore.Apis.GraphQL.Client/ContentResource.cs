@@ -42,7 +42,7 @@ namespace OrchardCore.Apis.GraphQL.Client
                 ["query"] = @"query { " + body + " }",
             };
 
-            var response = await _client.PostJsonAsync("api/graphql", requestJson.ToJsonString());
+            var response = await _client.PostJsonAsync("api/graphql", requestJson.ToJsonString(JNode.Options));
 
             if (!response.IsSuccessStatusCode)
             {
@@ -59,7 +59,7 @@ namespace OrchardCore.Apis.GraphQL.Client
                 ["namedquery"] = name,
             };
 
-            var response = await _client.PostJsonAsync("api/graphql", requestJson.ToJsonString());
+            var response = await _client.PostJsonAsync("api/graphql", requestJson.ToJsonString(JNode.Options));
 
             if (!response.IsSuccessStatusCode)
             {

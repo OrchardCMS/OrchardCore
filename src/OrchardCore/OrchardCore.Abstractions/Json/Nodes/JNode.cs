@@ -24,7 +24,6 @@ public static class JNode
     public static readonly JsonSerializerOptions OptionsIndented;
     public static readonly JsonSerializerOptions OptionsCamelCase;
     public static readonly JsonSerializerOptions OptionsCamelCaseIndented;
-
     public static readonly JsonDocumentOptions DocumentOptions;
     public static readonly JsonNodeOptions NodeOptions;
 
@@ -94,8 +93,28 @@ public static class JNode
     /// <summary>
     /// Creates a <see cref="JsonNode"/> from an object.
     /// </summary>
-    public static JsonNode? FromObject(object? obj, JsonSerializerOptions? options = null) =>
-        JsonSerializer.SerializeToNode(obj, options ?? Options);
+    public static JsonNode? FromObject(object? obj, JsonSerializerOptions? options = null)
+    {
+        if (obj is JsonNode jsonNode)
+        {
+            return jsonNode;
+        }
+
+        if (obj is JsonElement jsonElement)
+        {
+            if (jsonElement.ValueKind == JsonValueKind.Object)
+            {
+                return JsonObject.Create(jsonElement);
+            }
+
+            if (jsonElement.ValueKind == JsonValueKind.Array)
+            {
+                return JsonArray.Create(jsonElement);
+            }
+        }
+
+        return JsonSerializer.SerializeToNode(obj, options ?? Options);
+    }
 
     /// <summary>
     /// Creates a new instance from an existing <see cref="JsonNode"/>.

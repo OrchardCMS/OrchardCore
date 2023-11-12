@@ -45,6 +45,11 @@ public static class JObject
     /// </summary>
     public static JsonObject? FromObject(object? obj, JsonSerializerOptions? options = null)
     {
+        if (obj is JsonObject jsonObject)
+        {
+            return jsonObject;
+        }
+
         if (obj is JsonElement jsonElement)
         {
             return JsonObject.Create(jsonElement);

@@ -1,7 +1,7 @@
-using System;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -27,7 +27,7 @@ namespace OrchardCore.ContentFields.Settings
                 var settings = partFieldDefinition.GetSettings<TextFieldMonacoEditorSettings>();
                 if (string.IsNullOrWhiteSpace(settings.Options))
                 {
-                    settings.Options = JsonConvert.SerializeObject(new { automaticLayout = true, language = "html" }, Formatting.Indented);
+                    settings.Options = JsonSerializer.Serialize(new { automaticLayout = true, language = "html" }, JNode.OptionsIndented);
                 }
 
                 model.Options = settings.Options;
