@@ -59,7 +59,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
             Directory.CreateDirectory(tenantFolder);
 
-            using var streamWriter = File.OpenWrite(appsettings);
+            using var streamWriter = File.Create(appsettings);
             await JsonSerializer.SerializeAsync(streamWriter, configData.ToJsonObject(), JNode.OptionsIndented);
         }
 

@@ -53,7 +53,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
             tenantsSettings[tenant] = settings;
 
-            using var streamWriter = File.OpenWrite(_tenants);
+            using var streamWriter = File.Create(_tenants);
             await JsonSerializer.SerializeAsync(streamWriter, tenantsSettings, JNode.OptionsIndented);
         }
 
@@ -69,7 +69,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
                 tenantsSettings.Remove(tenant);
 
-                using var streamWriter = File.OpenWrite(_tenants);
+                using var streamWriter = File.Create(_tenants);
                 await JsonSerializer.SerializeAsync(streamWriter, tenantsSettings, JNode.OptionsIndented);
             }
         }

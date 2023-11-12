@@ -71,7 +71,7 @@ namespace OrchardCore.Tests.Apis.Context
             using (var zip = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
             {
                 var entry = zip.CreateEntry("Recipe.json");
-                await using var streamWriter = new Utf8JsonWriter(entry.Open());
+                using var streamWriter = new Utf8JsonWriter(entry.Open());
                 recipe.WriteTo(streamWriter);
             }
 

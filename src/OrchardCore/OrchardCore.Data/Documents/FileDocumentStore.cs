@@ -124,7 +124,7 @@ namespace OrchardCore.Data.Documents
             await _semaphore.WaitAsync();
             try
             {
-                using var stream = File.OpenWrite(filename);
+                using var stream = File.Create(filename);
                 await JsonSerializer.SerializeAsync(stream, document, JNode.OptionsIndented);
             }
             finally
