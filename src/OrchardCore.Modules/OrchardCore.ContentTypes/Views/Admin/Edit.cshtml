@@ -10,7 +10,7 @@
 @{
     var typePart = Model.TypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.Name, Model.TypeDefinition.Name, StringComparison.OrdinalIgnoreCase));
 
-    var partDefinitions = new List<dynamic>();
+    var sorted = new List<dynamic>();
 
     foreach (var part in Model.TypeDefinition.Parts)
     {
@@ -23,13 +23,15 @@
 
         var defaultPosition = partDefinition.DefaultPosition() ?? "5";
 
-        partDefinitions.Add(
+        sorted.Add(
             new
             {
                 Part = part,
                 Order = int.Parse(part.GetSettings<ContentTypePartSettings>().Position ?? defaultPosition)
             });
     }
+
+    var partDefinitions = sorted.OrderBy(x => x.Order).Select(x => (ContentTypePartDefinition)x.Part).ToList();
 
     var fieldDefinitions = new List<ContentPartFieldDefinition>();
 
@@ -106,9 +108,9 @@
         <h3>@T["Parts"]</h3>
 
         <ul class="list-group sortable" id="parts">
-            @foreach (var partDefinition in partDefinitions.OrderBy(x => x.Order).Select(x => x.Part))
+            @foreach (var partDefinition in partDefinitions)
             {
-                <li class="list-group-item @(partDefinition == typePart ? " bg-faded" : null)" style="cursor: move;">
+                <li class="list-group-item@(partDefinition == typePart ? " bg-faded" : string.Empty)" style="cursor: move;">
                     <div class="w-100">
                         @partDefinition.DisplayName()
 

@@ -95,7 +95,7 @@ namespace OrchardCore.ContentManagement
         {
             if (!_scopedPartDefinitions.TryGetValue(name, out var partDefinition))
             {
-                var record = await GetContentDefinitionRecordAsync();
+                var record = await LoadContentDefinitionRecordAsync();
 
                 _scopedPartDefinitions[name] = partDefinition = Build(record
                     .ContentPartDefinitionRecords
