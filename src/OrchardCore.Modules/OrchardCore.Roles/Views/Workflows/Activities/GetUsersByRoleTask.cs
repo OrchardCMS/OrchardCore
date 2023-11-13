@@ -43,13 +43,12 @@ public class GetUsersByRoleTask : TaskActivity<GetUsersByRoleTask>
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         => Outcomes(S["Done"], S["Failed"]);
-    
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         var outputKeyName = await _expressionEvaluator.EvaluateAsync(OutputKeyName, workflowContext, null);
 
-        if (!string.IsNullOrEmpty(propKeyName))
+        if (!string.IsNullOrEmpty(outputKeyName))
         {
             var usersInRole = new Dictionary<string, User>();
 
@@ -57,7 +56,7 @@ public class GetUsersByRoleTask : TaskActivity<GetUsersByRoleTask>
             {
                 foreach(var u in await _userManager.GetUsersInRoleAsync(role))
                 {
-                    if(u is not User user) 
+                    if (u is not User user) 
                     {
                         continue;
                     }
