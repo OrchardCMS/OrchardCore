@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -83,7 +84,7 @@ namespace OrchardCore.Shells.Azure.Configuration
                 }
             }
 
-            var configurationString = configData.ToJsonObject().ToJsonString(JOptions.Default);
+            var configurationString = configData.ToJsonObject().ToJsonString(JsonOptions.Default);
             using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(configurationString));
 
             await _shellsFileStore.CreateFileFromStreamAsync(appsettings, memoryStream);
