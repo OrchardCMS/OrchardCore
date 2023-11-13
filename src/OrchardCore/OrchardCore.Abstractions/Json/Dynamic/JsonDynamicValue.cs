@@ -1,4 +1,6 @@
-namespace System.Text.Json.Nodes;
+using System.Text.Json.Nodes;
+
+namespace System.Text.Json.Dynamic;
 
 #nullable enable
 

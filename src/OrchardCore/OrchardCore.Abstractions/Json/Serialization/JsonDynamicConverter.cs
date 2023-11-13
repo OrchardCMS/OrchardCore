@@ -44,6 +44,7 @@ public class JsonDynamicConverter : JsonConverter<object>
                     }
 
                     // BigInteger could be added here.
+
                     if (reader.TryGetDouble(out var d))
                     {
                         return d;

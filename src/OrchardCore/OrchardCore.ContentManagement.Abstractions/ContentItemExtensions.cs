@@ -1,5 +1,6 @@
 using System;
 using System.Text.Json.Nodes;
+using System.Text.Json.Settings;
 using System.Threading.Tasks;
 
 namespace OrchardCore.ContentManagement

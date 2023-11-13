@@ -4,10 +4,12 @@ using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json.Nodes;
+
 
 #nullable enable
 
-namespace System.Text.Json.Nodes;
+namespace System.Text.Json.Dynamic;
 
 [DebuggerDisplay("JsonDynamicArray[{Count}]")]
 public class JsonDynamicArray : DynamicObject, IEnumerable<JsonNode?>

@@ -1,4 +1,4 @@
-namespace System.Text.Json.Nodes;
+namespace System.Text.Json.Settings;
 
 #nullable enable
 

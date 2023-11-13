@@ -2,10 +2,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Reflection;
+using System.Text.Json.Nodes;
+using System.Text.Json.Settings;
+
 
 #nullable enable
 
-namespace System.Text.Json.Nodes;
+namespace System.Text.Json.Dynamic;
 
 [DebuggerDisplay("JsonDynamicObject[{Count}]")]
 public class JsonDynamicObject : DynamicObject
@@ -20,8 +23,8 @@ public class JsonDynamicObject : DynamicObject
 
     public int Count => _jsonObject.Count;
 
-    public JsonDynamicObject Merge(JsonNode? content, JsonMergeSettings? settings = null) =>
-        new(_jsonObject.Merge(content, settings)?.Clone() ?? new JsonObject());
+    public void Merge(JsonNode? content, JsonMergeSettings? settings = null) =>
+        _jsonObject.Merge(content, settings);
 
     public object? this[string key]
     {
