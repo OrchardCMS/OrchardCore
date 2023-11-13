@@ -36,5 +36,51 @@ public static class JValue
     /// <summary>
     /// Creates a new instance from an existing <see cref="JsonValue"/>.
     /// </summary>
-    public static JsonValue? Clone(this JsonValue? value) => value?.DeepClone().AsValue();
+    public static JsonValue? Clone(this JsonValue? jsonValue) => jsonValue?.DeepClone().AsValue();
+
+    /// <summary>
+    /// Gets the raw value of this <see cref="JsonValue"/> without specifying a type.
+    /// </summary>
+    public static object? GetObjectValue(this JsonValue? jsonValue)
+    {
+        if (jsonValue is null)
+        {
+            return null;
+        }
+
+        var valueKind = jsonValue.GetValueKind();
+        switch (valueKind)
+        {
+            case JsonValueKind.Null:
+                return null;
+            case JsonValueKind.False:
+                return false;
+            case JsonValueKind.True:
+                return true;
+            case JsonValueKind.String:
+                return jsonValue.GetValue<string>();
+
+            case JsonValueKind.Number:
+                if (jsonValue.TryGetValue<int>(out var i))
+                {
+                    return i;
+                }
+
+                if (jsonValue.TryGetValue<long>(out var l))
+                {
+                    return l;
+                }
+
+                // BigInteger could be added here.
+                if (jsonValue.TryGetValue<double>(out var d))
+                {
+                    return d;
+                }
+
+                throw new JsonException("Cannot parse number.");
+
+            default:
+                throw new JsonException(string.Format("Unknown token type {0}", valueKind));
+        }
+    }
 }

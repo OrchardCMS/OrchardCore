@@ -25,7 +25,7 @@ public class JsonDynamicValue
         {
             if (!_hasValue)
             {
-                _value = JsonValue?.ToObject<object>();
+                _value = JsonValue?.GetObjectValue();
                 _hasValue = true;
             }
 
