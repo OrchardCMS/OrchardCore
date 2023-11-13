@@ -2,7 +2,7 @@
     <upload> component
 -->
 <template>
-    <div :class="{ 'upload-warning': model?.errorMessage }" class="upload m-2 p-2 pt-0">
+    <div :class="{ 'upload-warning': model?.errorMessage }" class="upload p-2">
         <span v-if="model?.errorMessage" v-on:click="dismissWarning()" class="close-warning">
             <fa-icon icon="fa-solid fa-times"></fa-icon>
         </span>
@@ -32,34 +32,29 @@ export default defineComponent({
         let self = this;
         const uploadInput = document.getElementById(self.uploadInputId ?? 'fileupload');
 
-        uploadInput?.addEventListener('fileuploadprogress', (data: any) => {
+        $(uploadInput).bind('fileuploadprogress', function (e, data) {
             if (data.files[0].name !== self.model.name) {
                 return;
-            }
-
-            self.model.percentage = parseInt((data.loaded / data.total * 100).toString(), 10);
+            }            
+            self.model.percentage = parseInt(data.loaded / data.total * 100, 10);
         });
 
-        uploadInput?.addEventListener('fileuploaddone', (data: any) => {
+        $(uploadInput).bind('fileuploaddone', function (e, data) {
             if (data.files[0].name !== self.model.name) {
                 return;
             }
-
             if (data.result.files[0].error) {
                 self.handleFailure(data.files[0].name, data.result.files[0].error);
-            } else {
-                this.emitter.emit('removalRequest', self.model);
+            } else {  
+              self.emitter.emit('removalRequest', self.model);
             }
         });
 
-        uploadInput?.addEventListener('fileuploadfail', (data: any) => {
+        $(uploadInput).bind('fileuploadfail', function (e, data) {
             if (data.files[0].name !== self.model.name) {
                 return;
             }
-
-            let error = <HTMLInputElement>(document.getElementById('t-error'));
-
-            self.handleFailure(data.files[0].name, error?.value);
+            self.handleFailure(data.files[0].name, $('#t-error').val());
         });
     },
     methods: {

@@ -1,21 +1,19 @@
 <template>
     <div class="mediaApp" v-on:dragover="handleScrollWhileDrag">
+        <div class="alert alert-danger message-warning" v-if="errors.length > 0">
+            <ul>
+                <li v-for="(e, i) in errors" :key="i">{{ e }}</li>
+            </ul>
+        </div>
         <div id="customdropzone">
             <h3>{{ t.DropHere }}</h3>
             <p>{{ t.DropTitle }}</p>
         </div>
-        <div class="alert message-warning" v-if="errors.length > 0">
-            <ul>
-                <li v-for="e in errors">
-                    <p>{{ e }}</p>
-                </li>
-            </ul>
-        </div>
         <div id="mediaContainer" class="align-items-stretch">
             <div id="navigationApp" class="media-container-navigation m-0 p-0" v-cloak>
                 <ol id="folder-tree">
-                    <folder :move-media-list-url="moveMediaListUrl" :model="root" :t="t" :base-path="basePath"
-                        ref="rootFolder" :selected-in-media-app="selectedFolder" :level="1">
+                    <folder :model="root" :t="t" :base-path="basePath" ref="rootFolder"
+                        :selected-in-media-app="selectedFolder" :level="1">
                     </folder>
                 </ol>
             </div>
@@ -26,18 +24,19 @@
                         <div class="breadcrumb-path p-3">
                             <span class="breadcrumb-item" :class="{ active: isHome }">
                                 <a id="t-mediaLibrary" :href="isHome ? 'javascript:void(0)' : '#'"
-                                    v-on:click="selectRoot">{{ t.MediaLibrary }}</a>
+                                    v-on:click="selectRoot">{{
+                                        t.FolderRoot }}</a>
                             </span>
-                            <span v-for="(folder, i) in parents" v-cloak class="breadcrumb-item"
-                                :class="{ active: parents.length - i == 1 }">
+                            <span v-for="(folder, i) in parents" :key="folder.path" v-cloak class="breadcrumb-item"
+                                :class="{ active: parents.length - i == 1, 'no-breadcrumb-divider': i == 0 }">
                                 <a :href="parents.length - i == 1 ? 'javascript:void(0)' : '#'"
                                     v-on:click="selectedFolder = folder;">{{
                                         folder.name }}</a>
                             </span>
                         </div>
                     </nav>
-                    <nav class="nav action-bar pb-3 pt-3 pl-3">
-                        <div class="me-auto ms-4">
+                    <nav class="nav action-bar p-3 flex">
+                        <div class="me-auto">
                             <a :title="isSelectedAll ? t.SelectNone : t.SelectAll" href="javascript:void(0)"
                                 class="btn btn-light btn-sm me-2" v-on:click="selectAll">
                                 <fa-icon v-if="isSelectedAll" icon="fa-regular fa-square-check"></fa-icon>
@@ -50,10 +49,10 @@
                             <a :title="t.Delete" href="javascript:void(0)" class="btn btn-light btn-sm me-2"
                                 @click="() => openModal('nav', 'delete')" :class="{ disabled: selectedMedias.length < 1 }">
                                 <fa-icon icon="fa-solid fa-trash"></fa-icon>
-                                <span class="badge rounded-pill" v-show="selectedMedias.length > 0">{{
+                                <span class="badge rounded-pill ms-1" v-show="selectedMedias.length > 0">{{
                                     selectedMedias.length }}</span>
-                                <ModalConfirm :modal-name="getModalName('nav', 'delete')" :title="t.DeleteMediaTitle"
-                                    @confirm="() => confirm('nav', 'delete')">
+                                <ModalConfirm :t="t" :action-name="t.Delete" :modal-name="getModalName('nav', 'delete')"
+                                    :title="t.DeleteMediaTitle" @confirm="() => confirm('nav', 'delete')">
                                     <p>{{ t.DeleteMediaMessage }}</p>
                                 </ModalConfirm>
                             </a>
@@ -73,13 +72,13 @@
                                 :class="{ selected: smallThumbs }" v-on:click="smallThumbs = true">
                                 <span title="Small Thumbs"><fa-icon icon="fa-solid fa-compress"></fa-icon></span>
                             </button>
-                            <button type="button" id="toggle-thumbsize-button" class="btn btn-light btn-sm me-2"
+                            <button type="button" id="toggle-thumbsize-button" class="btn btn-light btn-sm"
                                 :class="{ selected: !smallThumbs }" v-on:click="smallThumbs = false">
                                 <span title="Large Thumbs"><fa-icon icon="fa-solid fa-expand"></fa-icon></span>
                             </button>
                         </div>
 
-                        <div class="nav-item ms-2">
+                        <div class="nav-item ms-3 me-2">
                             <div class="media-filter">
                                 <div class="input-group input-group-sm">
                                     <fa-icon icon="fa-solid fa-filter icon-inside-input"></fa-icon>
@@ -91,9 +90,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="d-inline-flex ms-2 me-3 mb-1 pt-1">
+                        <div class="d-inline-flex mb-1 pt-1">
                             <div class="btn-group btn-group-sm">
-                                <label for="fileupload" class="btn btn-sm btn-primary fileinput-button upload-button">
+                                <label :title="t.UploadFiles" for="fileupload"
+                                    class="btn btn-sm btn-primary fileinput-button upload-button">
                                     <input id="fileupload" type="file" name="files" multiple />
                                     <fa-icon icon="fa-solid fa-plus"></fa-icon>
                                     {{ t.Upload }}
@@ -123,25 +123,27 @@
         </div>
     </div>
 </template>
- 
+   
 <style lang="scss">
 @import "./assets/scss/media.scss";
 </style>
-
+  
 <script lang="ts">
-import { defineComponent, nextTick } from 'vue'
-import axios from 'axios';
+import { defineComponent, ref } from 'vue'
 import dbg from 'debug';
-import FolderComponent from './components/folderComponent.vue';
-import UploadListComponent from './components/uploadListComponent.vue';
-import MediaItemsGridComponent from './components/mediaItemsGridComponent.vue';
-import MediaItemsTableComponent from './components/mediaItemsTableComponent.vue';
-import PagerComponent from './components/pagerComponent.vue';
+import FolderComponent from './components/FolderComponent.vue';
+import UploadListComponent from './components/UploadListComponent.vue';
+import MediaItemsGridComponent from './components/MediaItemsGridComponent.vue';
+import MediaItemsTableComponent from './components/MediaItemsTableComponent.vue';
+import PagerComponent from './components/PagerComponent.vue';
 import DragDropThumbnail from './assets/drag-thumbnail.png';
 import { ModalsContainer, useVfm } from 'vue-final-modal'
 import ModalConfirm from './components/ModalConfirm.vue'
+import { MediaApiClient, MoveMedia } from "./services/MediaApiClient";
+import { notify, registerNotificationBus } from "./services/Notifier";
 
 const debug = dbg("oc:media-app");
+const rootFolder = ref(null);
 
 export default defineComponent({
     components: {
@@ -153,50 +155,26 @@ export default defineComponent({
         ModalsContainer: ModalsContainer,
         ModalConfirm: ModalConfirm
     },
-    name: "mediaApp",
+    name: "media-app",
     props: {
         basePath: {
             type: String,
             required: true
         },
-        getFoldersUrl: {
+        siteId: {
             type: String,
             required: true
         },
-        deleteFoldersUrl: {
-            type: String,
-            required: true
-        },
-        createFoldersUrl: {
-            type: String,
-            required: true
-        },
-        getMediaItemsUrl: {
-            type: String,
-            required: true
-        },
-        deleteMediaUrl: {
-            type: String,
-            required: true
-        },
-        renameMediaUrl: {
-            type: String,
-            required: true
-        },
-        deleteMediaListUrl: {
-            type: String,
-            required: true
-        },
-        moveMediaListUrl: {
+        translations: {
             type: String,
             required: true
         },
         uploadFilesUrl: {
             type: String,
-            required: true,
+            required: true
         },
-        translations: {
-            type: String,
+        maxUploadChunkSize: {
+            type: Number,
             required: true
         }
     },
@@ -250,18 +228,10 @@ export default defineComponent({
 
         this.emitter.on('mediaListMoved', (errorInfo: never) => {
             self.loadFolder(self.selectedFolder);
-            if (errorInfo) {
-                self.errors.push(errorInfo);
-            }
         })
 
         this.emitter.on('mediaRenamed', (element: any) => {
-            let media = <any>self.mediaItems.filter(function (item: any) {
-                return item.mediaPath === element.oldPath; // mediaPath ??? should it not be .url ?
-            })[0];
-
-            media.mediaPath = element.newPath;
-            media.name = element.newName;
+            self.loadFolder(self.selectedFolder);
         })
 
         this.emitter.on('createFolderRequested', (folderName: any) => {
@@ -300,12 +270,12 @@ export default defineComponent({
             self.selectedMedias = [];
         })
 
-        if (!localStorage.getItem('mediaApplicationPrefs')) {
+        if (!localStorage.getItem('MediaLibraryPrefs' + "-" + this.$props.siteId)) {
             self.selectedFolder = this.root;
             return;
         }
 
-        let mediaApplicationPrefs = localStorage.getItem('mediaApplicationPrefs');
+        let mediaApplicationPrefs = localStorage.getItem('MediaLibraryPrefs' + "-" + this.$props.siteId);
 
         if (mediaApplicationPrefs != null) {
             self.currentPrefs = JSON.parse(mediaApplicationPrefs);
@@ -389,7 +359,7 @@ export default defineComponent({
     },
     watch: {
         currentPrefs: function (newPrefs) {
-            localStorage.setItem('mediaApplicationPrefs', JSON.stringify(newPrefs));
+            localStorage.setItem('MediaLibraryPrefs' + "-" + this.$props.siteId, JSON.stringify(newPrefs));
         },
         selectedFolder: function (newFolder) {
             this.mediaFilter = '';
@@ -400,68 +370,73 @@ export default defineComponent({
     },
     mounted: function () {
         let me = this;
-        (<any>this.$refs.rootFolder).toggle();
+        registerNotificationBus();
+
+        if (me.currentPrefs.selectedFolder != null) {
+            (<any>me.$refs.rootFolder).selectFolder(me.currentPrefs.selectedFolder);
+        }
+        else {
+            (<any>me.$refs.rootFolder).select();
+        }
 
         let chunkedFileUploadId = crypto.randomUUID();
 
-        nextTick(() => {
-            let fileInput: JQueryFileUpload;
-            fileInput = <JQueryFileUpload>$('#fileupload');
-            fileInput
-                .fileupload({
-                    dropZone: $('#mediaApp'),
-                    limitConcurrentUploads: 20,
-                    dataType: 'json',
-                    url: me.uploadUrl() ?? "",
-                    maxChunkSize: Number($('#maxUploadChunkSize').val() || 0),
-                    formData: function () {
-                        var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
+        let fileInput = $('#fileupload');
 
-                        return [
-                            { name: 'path', value: me.selectedFolder.path },
-                            { name: '__RequestVerificationToken', value: antiForgeryToken },
-                            { name: '__chunkedFileUploadId', value: chunkedFileUploadId },
-                        ]
-                    },
-                    done: function (e: any, data: any) {
-                        $.each(data.result.files, function (index, file: any) {
-                            if (!file.error) {
-                                me.mediaItems.push(<never>file)
-                            }
-                        });
-                    }
-                })
-                .on('fileuploadchunkbeforesend', (e: any, options: any) => {
-                    let file = options.files[0];
-                    // Here we replace the blob with a File object to ensure the file name and others are preserved for the backend.
-                    options.blob = new File(
-                        [options.blob],
-                        file.name,
-                        {
-                            type: file.type,
-                            lastModified: file.lastModified,
-                        });
-                });
+        fileInput
+            .fileupload({
+                dropZone: $('#mediaApp'),
+                limitConcurrentUploads: 20,
+                dataType: 'json',
+                url: me.uploadFilesUrl,
+                maxChunkSize: me.maxUploadChunkSize,
+                formData: function () {
+                    var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
 
-            $(document).on('dragover', function (e: any) {
-                let dt = e.originalEvent.dataTransfer;
-
-                if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') != -1 : dt.types.contains('Files'))) {
-                    let dropZone = $('#customdropzone'),
-                        timeout = (<any>window).dropZoneTimeout;
-
-                    if (timeout) {
-                        clearTimeout(timeout);
-                    } else {
-                        dropZone.addClass('in');
-                    }
-
-                    (<any>window).dropZoneTimeout = setTimeout(function () {
-                        (<any>window).dropZoneTimeout = null;
-                        dropZone.removeClass('in');
-                    }, 100);
+                    return [
+                        { name: 'path', value: me.selectedFolder.path },
+                        { name: '__RequestVerificationToken', value: antiForgeryToken },
+                        { name: '__chunkedFileUploadId', value: chunkedFileUploadId },
+                    ]
+                },
+                done: function (e: any, data: any) {
+                    $.each(data.result.files, function (index, file: any) {
+                        if (!file.error) {
+                            me.mediaItems.push(<never>file)
+                        }
+                    });
                 }
+            })
+            .on('fileuploadchunkbeforesend', (e: any, options: any) => {
+                let file = options.files[0];
+                // Here we replace the blob with a File object to ensure the file name and others are preserved for the backend.
+                options.blob = new File(
+                    [options.blob],
+                    file.name,
+                    {
+                        type: file.type,
+                        lastModified: file.lastModified,
+                    });
             });
+
+        $(document).on('dragover', function (e: any) {
+            let dt = e.originalEvent.dataTransfer;
+
+            if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') != -1 : dt.types.contains('Files'))) {
+                let dropZone = $('#customdropzone'),
+                    timeout = (<any>window).dropZoneTimeout;
+
+                if (timeout) {
+                    clearTimeout(timeout);
+                } else {
+                    dropZone.addClass('in');
+                }
+
+                (<any>window).dropZoneTimeout = setTimeout(function () {
+                    (<any>window).dropZoneTimeout = null;
+                    dropZone.removeClass('in');
+                }, 100);
+            }
         });
     },
     methods: {
@@ -482,16 +457,6 @@ export default defineComponent({
 
             uVfm.close(this.getModalName(media, action));
         },
-        uploadUrl: function () {
-
-            if (!this.selectedFolder) {
-                return null;
-            }
-
-            let urlValue = this.basePath + this.$props.uploadFilesUrl;
-
-            return urlValue + (urlValue.indexOf('?') == -1 ? '?' : '&') + "path=" + encodeURIComponent(this.selectedFolder.path);
-        },
         selectRoot: function () {
             this.selectedFolder = this.root;
         },
@@ -499,47 +464,48 @@ export default defineComponent({
             let self = this;
 
             if (elem) {
-                axios({
-                    method: 'post',
-                    headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val(), "Content-Type": "application/json" },
-                    url: self.$props.basePath + self.$props.moveMediaListUrl,
-                    data: {
+
+                const apiClient = new MediaApiClient(this.basePath);
+                apiClient
+                    .moveMediaList(new MoveMedia({
                         mediaNames: elem.mediaNames,
                         sourceFolder: elem.sourceFolder,
-                        targetFolder: elem.targetFolder
-                    }
-                })
-                    .then((response) => {
+                        targetFolder: elem.targetFolder,
+                    }))
+                    .then((res) => {
                         self.emitter.emit('mediaListMoved'); // MediaApp will listen to this, and then it will reload page so the moved medias won't be there anymore
                     })
-                    .catch((error) => {
-                        console.error(error);
-                        self.emitter.emit('mediaListMoved', error.responseText);
-                    });
+                    .catch(async (error) => {
+                        error.response.text().then((text: any) => {
+                            const error = JSON.parse(text);
+                            self.emitter.emit('mediaListMoved', error.detail);
+                            notify({ summary: self.t.ErrorMovingFile, detail: error.detail, severity: SeverityLevel.Error });
+                        })
+                    })
             }
         },
         loadFolder: function (folder: any) {
             this.errors = [];
             this.selectedMedias = [];
             let self = this;
-            let mediaUrl = this.$props.basePath + this.$props.getMediaItemsUrl;
-            debug("loadFolder (folder.path):", folder);
 
-            if (mediaUrl != null) {
-                axios.get(mediaUrl + (mediaUrl.indexOf('?') == -1 ? '?' : '&') + "path=" + encodeURIComponent(folder.path))
-                    .then((response) => {
-                        response.data.forEach(function (item: any) {
+            if (this.basePath != null) {
+                const apiClient = new MediaApiClient(this.basePath);
+                apiClient
+                    .getMediaItems(folder.path, null)
+                    .then((response: any) => {
+                        response.forEach(function (item: any) {
                             item.open = false;
                         });
-                        self.mediaItems = response.data;
+                        self.mediaItems = response;
                         self.selectedMedias = [];
                         self.sortBy = '';
                         self.sortAsc = true;
                     })
-                    .catch((e) => {
-                        debug('loadFolder: error loading folder:', folder, e);
+                    .catch(async (error) => {
+                        debug('loadFolder: error loading folder:', folder, error);
                         self.selectRoot();
-                    });
+                    })
             }
         },
         selectAll: function () {
@@ -556,6 +522,7 @@ export default defineComponent({
             }
         },
         invertSelection: function () {
+            this.isSelectedAll = false;
             let temp = [];
             for (let i = 0; i < this.filteredMediaItems.length; i++) {
                 if (this.isMediaSelected(this.filteredMediaItems[i]) == false) {
@@ -591,15 +558,19 @@ export default defineComponent({
                 }
             }
 
-            axios.post(
-                self.basePath + self.$props.deleteFoldersUrl + "?path=" + encodeURIComponent(folder.path),
-                config)
-                .then((response) => {
+            const apiClient = new MediaApiClient(this.basePath);
+            apiClient
+                .deleteFolder(folder.path)
+                .then((response: any) => {
                     self.emitter.emit('deleteFolder', folder);
                 })
-                .catch((error) => {
-                    console.error(error.message);
-                });
+                .catch(async (error) => {
+                    error.response.text().then((text: any) => {
+                        const error = JSON.parse(text);
+                        debug('deleteFolder error: ', folder, error.detail);
+                        notify({ summary: self.t.ErrorDeleteFolder, detail: error.detail, severity: SeverityLevel.Error });
+                    })
+                })
         },
         createFolder: function (folderName: any) {
             let self = this;
@@ -609,51 +580,39 @@ export default defineComponent({
                 return;
             }
 
-            axios({
-                method: 'post',
-                headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
-                url: self.$props.basePath + self.$props.createFoldersUrl + "?path=" + encodeURIComponent(self.selectedFolder.path) + "&name=" + encodeURIComponent(folderName),
-            })
-                .then((response) => {
-                    this.emitter.emit('addFolder', { selectedFolder: self.selectedFolder, data: response.data });
+            const apiClient = new MediaApiClient(this.basePath);
+            apiClient
+                .createFolder(self.selectedFolder.path, folderName)
+                .then((response: any) => {
+                    self.emitter.emit('addFolder', { selectedFolder: self.selectedFolder, data: response });
                 })
-                .catch((error) => {
-                    console.error(error);
-                    $('#createFolderModal-errors').empty();
-                    $('<div class="alert alert-danger" role="alert"></div>').text(error.message).appendTo($('#createFolderModal-errors'));
-                });
+                .catch(async (error) => {
+                    notify({ summary: self.t.ErrorCreateFolder, detail: error.response.detail, severity: SeverityLevel.Error });
+                })
         },
         renameMedia: function (element: any) {
-            $('#renameMediaModal-errors').empty(); // TODO use a slot
-
             let self = this;
             let newName = element.newName;
             let media = element.media;
 
-            debug("Rename media", newName, newName);
+            debug("Rename media", media.name, newName, this.basePath);
 
-            let oldPath = media.url.replace('/media/', ''); // TODO make this better
-            let newPath = oldPath.replace(media.name, newName);
+            const oldPath = media.mediaPath; // TODO make this better
+            const newPath = oldPath.replace(media.name, newName);
 
-            axios({
-                method: 'post',
-                headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
-                url: self.$props.basePath + self.$props.renameMediaUrl + "?oldPath=" + encodeURIComponent(oldPath) + "&newPath=" + encodeURIComponent(newPath),
-            })
-                .then((response) => {
-                    this.emitter.emit('mediaRenamed', { newName: newName, newPath: newPath, oldPath: oldPath });
+            const apiClient = new MediaApiClient(this.basePath);
+            apiClient
+                .moveMedia(oldPath, newPath)
+                .then((response: any) => {
+                    self.emitter.emit('mediaRenamed', { newName: newName, newPath: newPath, oldPath: oldPath });
                 })
-                .catch((error) => {
-                    $('#renameMediaModal-errors').empty();
-                    $('<div class="alert alert-danger" role="alert"></div>').text(error.message).appendTo($('#renameMediaModal-errors'));
-                });
-
-            $('#old-item-name').val(media.name); // TODO remove probably
-            $('#renameMediaModal .modal-body input').val(media.name).focus(); // TODO remove probably
+                .catch(async (error) => {
+                    error.response.text().then((text: any) => {
+                        const error = JSON.parse(text);
+                        notify({ summary: self.t.ErrorRenamingFile, detail: error.detail, severity: SeverityLevel.Error });
+                    })
+                })
         },
-        /*         selectAndDeleteMedia: function (media: any) {
-                    //this.deleteMedia();
-                }, */
         deleteMediaList: function () {
             let mediaList = this.selectedMedias;
             let self = this;
@@ -668,15 +627,10 @@ export default defineComponent({
                 imagePaths.push(mediaList[i].mediaPath);
             }
 
-            const config = {
-                headers: {
-                    "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val(),
-                    "Content-Type": "application/json"
-                }
-            }
-
-            axios.post(self.basePath + self.deleteMediaListUrl, JSON.stringify(imagePaths), config)
-                .then((response) => {
+            const apiClient = new MediaApiClient(this.basePath);
+            apiClient
+                .deleteMediaList(imagePaths)
+                .then((response: any) => {
                     for (let i = 0; i < self.selectedMedias.length; i++) {
                         let index = self.mediaItems && self.mediaItems.indexOf(self.selectedMedias[i]);
                         if (index > -1) {
@@ -687,9 +641,12 @@ export default defineComponent({
                     self.selectedMedias = [];
                     self.isSelectedAll = false;
                 })
-                .catch((error) => {
-                    console.error(error.message);
-                });
+                .catch(async (error) => {
+                    error.response.text().then((text: any) => {
+                        const error = JSON.parse(text);
+                        notify({ summary: self.t.ErrorDeleteFiles, detail: error.detail, severity: SeverityLevel.Error });
+                    })
+                })
         },
         deleteMediaItem: function (media: any) {
             let self = this;
@@ -700,22 +657,23 @@ export default defineComponent({
 
             debug("delete media item", media);
 
-            axios({
-                method: 'post',
-                headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
-                url: self.$props.basePath + self.$props.deleteMediaUrl + "?path=" + encodeURIComponent(media.mediaPath)
-            })
-                .then((response) => {
+            const apiClient = new MediaApiClient(this.basePath);
+            apiClient
+                .deleteMedia(media.mediaPath)
+                .then((response: any) => {
                     let index = self.mediaItems && self.mediaItems.indexOf(media)
                     if (index > -1) {
                         self.mediaItems.splice(index, 1);
                         self.emitter.emit('mediaDeleted', media)
                     }
                 })
-                .catch((e) => {
-                    debug('deleteMediaItem: error deleting media item:', media, e);
-                    console.error(e);
-                });
+                .catch(async (error) => {
+                    error.response.text().then((text: any) => {
+                        const error = JSON.parse(text);
+                        debug('deleteMediaItem: error deleting media item:', media, error);
+                        notify({ summary: self.t.ErrorDeleteFile, detail: error.detail, severity: SeverityLevel.Error });
+                    })
+                })
         },
         handleDragStart: function (element: any) {
             // first part of move media to folder:
@@ -756,3 +714,4 @@ export default defineComponent({
     }
 });
 </script>
+  

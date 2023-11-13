@@ -7,21 +7,23 @@
         <title>Vite + Vue + TS</title>
     </head>
     <body>
-        <div
-            id="mediaApp"
-            data-translations="{&quot;NewFolder&quot;:&quot;New folder&quot;,&quot;DeleteFolderTitle&quot;:&quot;Delete media folder&quot;,&quot;DeleteFolderMessage&quot;:&quot;Are you sure you want to delete this folder?&quot;,&quot;DeleteMediaTitle&quot;:&quot;Delete media&quot;,&quot;DeleteMediaMessage&quot;:&quot;Are you sure you want to delete this/these media item(s)?&quot;,&quot;RenameMediaTitle&quot;:&quot;Rename media&quot;,&quot;RenameMediaMessage&quot;:&quot;New name&quot;,&quot;MoveMediaTitle&quot;:&quot;Move media&quot;,&quot;MoveMediaMessage&quot;:&quot;Are you sure you want to move the selected media to this folder?&quot;,&quot;CreateFolderTitle&quot;:&quot;Create folder&quot;,&quot;CreateFolderMessage&quot;:&quot;Folder name&quot;,&quot;SameFolderMessage&quot;:&quot;The media is already on this folder&quot;,&quot;EditButton&quot;:&quot;Edit&quot;,&quot;DeleteButton&quot;:&quot;Delete&quot;,&quot;ViewButton&quot;:&quot;View&quot;,&quot;SelectAll&quot;:&quot;Select All&quot;,&quot;FolderEmpty&quot;:&quot;This folder is empty&quot;,&quot;FolderFilterEmpty&quot;:&quot;Nothing to show with this filter&quot;,&quot;Upload&quot;:&quot;Upload&quot;,&quot;SelectNone&quot;:&quot;Select None&quot;,&quot;Invert&quot;:&quot;Invert&quot;,&quot;Delete&quot;:&quot;Delete&quot;,&quot;DropHere&quot;:&quot;Drop your media here&quot;,&quot;DropTitle&quot;:&quot;Your files will be uploaded to the current folder when you drop them here&quot;,&quot;MediaLibrary&quot;:&quot;Media Library&quot;,&quot;Filter&quot;:&quot;Filter...&quot;,&quot;Error&quot;:&quot;This file exceeds the maximum upload size&quot;,&quot;Uploads&quot;:&quot;Uploads&quot;,&quot;Errors&quot;:&quot;Errors&quot;,&quot;ClearErrors&quot;:&quot;Clear Errors&quot;,&quot;ImageHeader&quot;:&quot;Image&quot;,&quot;NameHeader&quot;:&quot;Name&quot;,&quot;LastModifyHeader&quot;:&quot;Last modification&quot;,&quot;SizeHeader&quot;:&quot;Size&quot;,&quot;TypeHeader&quot;:&quot;Type&quot;,&quot;PagerFirstButton&quot;:&quot;First&quot;,&quot;PagerPreviousButton&quot;:&quot;Previous&quot;,&quot;PagerNextButton&quot;:&quot;Next&quot;,&quot;PagerLastButton&quot;:&quot;Last&quot;,&quot;PagerPageSizeLabel&quot;:&quot;Page Size&quot;,&quot;PagerPageLabel&quot;:&quot;Page:&quot;,&quot;PagerTotalLabel&quot;:&quot;Total items:&quot;}"
-            data-base-path="https://localhost:5001"
-            data-get-folders-url="/api/media/GetFolders"
-            data-delete-folders-url="/api/media/DeleteFolder"
-            data-create-folders-url="/api/media/CreateFolder"
-            data-get-media-items-url="/api/media/GetMediaItems"
-            data-delete-media-url="/api/media/DeleteMedia"
-            data-rename-media-url="/api/media/MoveMedia"
-            data-delete-media-list-url="/api/media/DeleteMediaList"
-            data-move-media-list-url="/api/media/MoveMediaList"
-            data-upload-files-url="/api/media/Upload"
-            data-max-upload-chunk-size="104857600"
-        ></div>
+        <div id="mediaApp">
+            <media-app
+                site-id="dev"
+                translations="{&quot;NewFolder&quot;:&quot;New folder&quot;,&quot;DeleteFolderTitle&quot;:&quot;Delete media folder&quot;,&quot;DeleteFolderMessage&quot;:&quot;Are you sure you want to delete this folder?&quot;,&quot;DeleteMediaTitle&quot;:&quot;Delete media&quot;,&quot;DeleteMediaMessage&quot;:&quot;Are you sure you want to delete this/these media item(s)?&quot;,&quot;RenameMediaTitle&quot;:&quot;Rename media&quot;,&quot;RenameMediaMessage&quot;:&quot;New name&quot;,&quot;MoveMediaTitle&quot;:&quot;Move media&quot;,&quot;MoveMediaMessage&quot;:&quot;Are you sure you want to move the selected media to this folder?&quot;,&quot;CreateFolderTitle&quot;:&quot;Create folder&quot;,&quot;CreateFolderMessage&quot;:&quot;Folder name&quot;,&quot;SameFolderMessage&quot;:&quot;The media is already on this folder&quot;,&quot;EditButton&quot;:&quot;Edit&quot;,&quot;DeleteButton&quot;:&quot;Delete&quot;,&quot;ViewButton&quot;:&quot;View&quot;,&quot;SelectAll&quot;:&quot;Select All&quot;,&quot;FolderEmpty&quot;:&quot;This folder is empty&quot;,&quot;FolderFilterEmpty&quot;:&quot;Nothing to show with this filter&quot;,&quot;Upload&quot;:&quot;Upload&quot;,&quot;SelectNone&quot;:&quot;Select None&quot;,&quot;Invert&quot;:&quot;Invert&quot;,&quot;Delete&quot;:&quot;Delete&quot;,&quot;DropHere&quot;:&quot;Drop your media here&quot;,&quot;DropTitle&quot;:&quot;Your files will be uploaded to the current folder when you drop them here&quot;,&quot;MediaLibrary&quot;:&quot;Media Library&quot;,&quot;Filter&quot;:&quot;Filter...&quot;,&quot;Error&quot;:&quot;This file exceeds the maximum upload size&quot;,&quot;Uploads&quot;:&quot;Uploads&quot;,&quot;Errors&quot;:&quot;Errors&quot;,&quot;ClearErrors&quot;:&quot;Clear Errors&quot;,&quot;ImageHeader&quot;:&quot;Image&quot;,&quot;NameHeader&quot;:&quot;Name&quot;,&quot;LastModifyHeader&quot;:&quot;Last modification&quot;,&quot;SizeHeader&quot;:&quot;Size&quot;,&quot;TypeHeader&quot;:&quot;Type&quot;,&quot;PagerFirstButton&quot;:&quot;First&quot;,&quot;PagerPreviousButton&quot;:&quot;Previous&quot;,&quot;PagerNextButton&quot;:&quot;Next&quot;,&quot;PagerLastButton&quot;:&quot;Last&quot;,&quot;PagerPageSizeLabel&quot;:&quot;Page Size&quot;,&quot;PagerPageLabel&quot;:&quot;Page:&quot;,&quot;PagerTotalLabel&quot;:&quot;Total items:&quot;}"
+                base-path="https://localhost:5001"
+                get-folders-url="/api/media/GetFolders"
+                delete-folders-url="/api/media/DeleteFolder"
+                create-folders-url="/api/media/CreateFolder"
+                get-media-items-url="/api/media/GetMediaItems"
+                delete-media-url="/api/media/DeleteMedia"
+                rename-media-url="/api/media/MoveMedia"
+                delete-media-list-url="/api/media/DeleteMediaList"
+                move-media-list-url="/api/media/MoveMediaList"
+                upload-files-url="/api/media/Upload"
+                :max-upload-chunk-size="104857600"            
+            ></media-app>
+        </div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script src="https://cdn.jsdelivr.net/npm/jquery.ui.widget@1.10.3/jquery.ui.widget.js" integrity="sha256-JWVTvlTW2PnGhHvs+9zaxmc7IbqNfe5Xlw5hRajWM18=" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/10.32.0/js/jquery.fileupload.min.js" integrity="sha512-P7EUiLYW7QUrhYrLgaJ++ok2j2I7Pu0UgGnrpLowujPZicu7mIR0V/Trq+7kl/0nEkp6yNGh8eFJY1JUv3dkPA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>

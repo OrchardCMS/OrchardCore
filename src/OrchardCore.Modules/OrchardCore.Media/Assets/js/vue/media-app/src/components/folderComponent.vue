@@ -1,52 +1,56 @@
 <template>
     <li :class="{ selected: isSelected }" v-on:dragleave.prevent="handleDragLeave();"
         v-on:dragover.prevent.stop="handleDragOver();" v-on:drop.prevent.stop="moveMediaToFolder(model, $event)">
-        <ModalConfirm :modal-name="getModalName('media', 'move')" :title="t.MoveMediaTitle"
-            @confirm="() => confirm('media', 'move')">
-            <p>{{ t.MoveMediaMessage }}</p>
+        <ModalConfirm :t="t" :action-name="t.MoveMediaTitle" :modal-name="getModalName('media', 'move')"
+            :title="t.MoveMediaTitle" @confirm="() => confirm('media', 'move')">
+            <label>{{ t.MoveMediaMessage }}</label>
         </ModalConfirm>
         <div :class="{ folderhovered: isHovered, treeroot: level == 1 }">
             <a href="javascript:void(0)" :style="{ 'padding-left': padding + 'px' }" v-on:click="select" draggable="false"
                 class="folder-menu-item">
                 <span v-on:click.stop="toggle" class="expand">
-                    <fa-icon v-if="!empty && open" icon="fas fa-chevron-down"></fa-icon>
-                    <fa-icon v-if="!empty && !open" icon="fas fa-chevron-up"></fa-icon>
+                    <fa-icon v-if="open" icon="fas fa-chevron-down"></fa-icon>
+                    <fa-icon v-if="!open" icon="fas fa-chevron-up"></fa-icon>
                 </span>
-                <div class="folder-name ms-2">{{ model?.name }}</div>
+                <div class="folder-name ms-2">{{ model?.name ?? t.MediaLibrary }}</div>
                 <div class="btn-group folder-actions">
-                    <a v-cloak href="javascript:void(0)" class="btn btn-sm" @click="() => openModal('folder', 'create')"
-                        v-if="isSelected || isRoot"><fa-icon icon="fas fa-plus"></fa-icon>
-                        <ModalInputConfirm action-name="Create folder" :modal-name="getModalName('folder', 'create')"
-                            :new-name="t.NewFolder" :title="t.CreateFolderTitle"
-                            @confirm="(folderName) => confirm(folderName, 'create')">
-                            <p>{{ t.CreateFolderMessage }}</p>
+                    <a v-cloak href="javascript:void(0)" :title="t.CreateFolderTitle" class="btn btn-primary btn-sm"
+                        @click="() => openModal('folder', 'create')" v-if="isSelected || isRoot"><fa-icon
+                            icon="fas fa-plus"></fa-icon>
+                        <ModalInputConfirm :t="t" :action-name="t.CreateFolderTitle"
+                            :modal-name="getModalName('folder', 'create')" :new-name="t.NewFolder"
+                            :title="t.CreateFolderTitle" @confirm="(folderName) => confirm(folderName, 'create')">
+                            <label>{{ t.CreateFolderMessage }}</label>
                         </ModalInputConfirm>
                     </a>
-                    <a v-cloak href="javascript:void(0)" class="btn btn-sm" @click="() => openModal('folder', 'delete')"
-                        v-if="isSelected && !isRoot"><fa-icon icon="fas fa-trash"></fa-icon>
-                        <ModalConfirm :modal-name="getModalName('folder', 'delete')" :title="t.DeleteFolderTitle"
-                            @confirm="() => confirm('folder', 'delete')">
-                            <p>{{ t.DeleteFolderMessage }}</p>
+                    <a v-cloak href="javascript:void(0)" :title="t.DeleteFolderTitle" class="btn btn-primary btn-sm"
+                        @click="() => openModal('folder', 'delete')" v-if="isSelected && !isRoot"><fa-icon
+                            icon="fas fa-trash"></fa-icon>
+                        <ModalConfirm :t="t" :action-name="t.Delete" :modal-name="getModalName('folder', 'delete')"
+                            :title="t.DeleteFolderTitle" @confirm="() => confirm('folder', 'delete')">
+                            <label>{{ t.DeleteFolderMessage }}</label>
                         </ModalConfirm>
                     </a>
                 </div>
             </a>
         </div>
         <ol v-show="open">
-            <folder :move-media-list-url="moveMediaListUrl" v-for="folder in children" :base-path="basePath" :t="t" :key="folder.path" :model="folder"
+            <folder v-for="folder in children" :base-path="basePath" :t="t" :key="folder.path" :model="folder"
                 :selected-in-media-app="selectedInMediaApp" :level="(level ? level : 0) + 1">
             </folder>
         </ol>
     </li>
 </template>
-
+  
 <script lang="ts">
 import { defineComponent } from 'vue'
-import axios from 'axios';
 import dbg from 'debug';
 import { useVfm } from 'vue-final-modal'
 import ModalConfirm from './ModalConfirm.vue'
 import ModalInputConfirm from './ModalInputConfirm.vue'
+import { MediaApiClient } from "../services/MediaApiClient";
+import { SeverityLevel } from "../interfaces/Interfaces"
+import { notify } from "../services/Notifier.js";
 
 const debug = dbg("oc:media-app");
 let moveAssetsState = <any>{};
@@ -56,6 +60,7 @@ export default defineComponent({
         ModalConfirm: ModalConfirm,
         ModalInputConfirm: ModalInputConfirm,
     },
+    expose: ['select', 'selectFolder'],
     name: "folder",
     props: {
         model: <any>Object,
@@ -69,10 +74,6 @@ export default defineComponent({
             type: Object,
             required: true,
         },
-        moveMediaListUrl: {
-            type: String,
-            required: true
-        },
     },
     data() {
         return {
@@ -81,7 +82,6 @@ export default defineComponent({
             parent: null,
             isHovered: false,
             padding: 0,
-            getFoldersUrl: document.getElementById('mediaApp')?.dataset.getFoldersUrl,
         }
     },
     computed: {
@@ -89,20 +89,20 @@ export default defineComponent({
             return !this.children || this.children.length == 0;
         },
         isSelected: function () {
-            return (this.selectedInMediaApp?.name == this.model?.name) && (this.selectedInMediaApp?.path == this.model?.path);
+            return (this.selectedInMediaApp?.name == this.$props.model?.name) && (this.selectedInMediaApp?.path == this.$props.model?.path);
         },
         isRoot: function () {
             return this.model?.path === '';
         }
     },
     mounted() {
-        if ((this.isRoot == false) && (this.isAncestorOfSelectedFolder())) {
+        if (this.isAncestorOfSelectedFolder()) {
             this.toggle();
         }
 
         let level = this.level ? this.level : 0;
 
-        this.padding = level < 3 ? 16 : 16 + (level * 8);
+        this.padding = level < 3 ? 8 : (level * 8);
     },
     created: function () {
         let self = this;
@@ -138,26 +138,30 @@ export default defineComponent({
     },
     methods: {
         isAncestorOfSelectedFolder: function () {
-/*             let parentFolder = mediaApp.selectedFolder;
+            let parentFolder = this.selectedInMediaApp;
 
             while (parentFolder) {
                 if (parentFolder.path == this.model.path) {
                     return true;
                 }
                 parentFolder = parentFolder.parent;
-            } */
+            }
 
             return false;
         },
         toggle: function () {
             this.open = !this.open;
 
-            if (this.open && !this.children) {
+            if (this.open) {
                 this.loadChildren();
             }
         },
         select: function () {
             this.emitter.emit('folderSelected', this.model);
+            this.loadChildren();
+        },
+        selectFolder: function (folder: any) {
+            this.emitter.emit('folderSelected', folder);
             this.loadChildren();
         },
         createFolder: function (media: String) {
@@ -173,17 +177,18 @@ export default defineComponent({
                 this.open = true;
             }
 
-            axios.get(this.basePath + this.getFoldersUrl + "?path=" + encodeURIComponent(self.model?.path))
+            const apiClient = new MediaApiClient(this.basePath);
+            apiClient
+                .getFolders(self.model?.path)
                 .then((response) => {
-                    self.children = response.data;
+                    self.children = response;
                     self.children.forEach(function (c: any) {
                         c.parent = self.model;
                     });
                 })
-                .catch((error) => {
-                    //emtpy = false;
-                    console.error(error.responseText);
-                });
+                .catch(async (error) => {
+                    notify({ summary: self.t.ErrorGetFolders, detail: error.response?.detail, severity: SeverityLevel.Error });
+                })
         },
         handleDragOver: function () {
             this.isHovered = true;
@@ -234,7 +239,6 @@ export default defineComponent({
         },
         openModal: function (media: String, action: String) {
             const uVfm = useVfm();
-
             uVfm.open(this.getModalName(media, action));
         },
         confirm: function (media: String, action: String) {
@@ -264,3 +268,4 @@ export default defineComponent({
     }
 });
 </script>
+  

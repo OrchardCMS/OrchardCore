@@ -1,11 +1,4 @@
 import { createApp } from 'vue'
-//import FolderComponent from './components/folderComponent.vue';
-//import MediaItemsGridComponent from './components/mediaItemsGridComponent.vue'
-//import MediaItemsTableComponent from './components/mediaItemsTableComponent.vue'
-//import PagerComponent from './components/pagerComponent.vue'
-//import SortIndicatorComponent from './components/sortIndicatorComponent.vue'
-//import '../node_modules/bootstrap/dist/css/bootstrap.css'
-import './style.css'
 import App from './App.vue'
 import mitt from 'mitt'
 /* import the fontawesome core */
@@ -16,20 +9,19 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { far } from '@fortawesome/free-regular-svg-icons'
 import { createVfm } from 'vue-final-modal'
-import 'vue-final-modal/style.css'
 
 const emitter = mitt();
-const mountEl = document.querySelector("#mediaApp") as HTMLElement | null;
 const vfm = createVfm();
 
 /* add icons to the library */
 library.add(fas);
 library.add(far);
 
-const app = createApp(App, { ...mountEl?.dataset });
+const app = createApp({ name: "media-library" });
+app.component('media-app', App);
 app.component('fa-icon', FontAwesomeIcon);
 app.config.globalProperties.emitter = emitter;
-
+ 
 app.use(vfm);
 app.mount('#mediaApp');
-export default emitter
+export default emitter 
