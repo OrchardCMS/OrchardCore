@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -43,7 +44,7 @@ namespace OrchardCore.Shells.Database.Configuration
             var document = await GetDocumentAsync();
             if (document.ShellsSettings is not null)
             {
-                var shellsSettingsString = document.ShellsSettings.ToJsonString(JOptions.Default);
+                var shellsSettingsString = document.ShellsSettings.ToJsonString(JsonOptions.Default);
                 builder.AddTenantJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(shellsSettingsString)));
             }
         }
@@ -54,7 +55,7 @@ namespace OrchardCore.Shells.Database.Configuration
             if (document.ShellsSettings is not null && document.ShellsSettings.ContainsKey(tenant))
             {
                 var shellSettings = new JsonObject { [tenant] = document.ShellsSettings[tenant] };
-                var shellSettingsString = shellSettings.ToJsonString(JOptions.Default);
+                var shellSettingsString = shellSettings.ToJsonString(JsonOptions.Default);
                 builder.AddTenantJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(shellSettingsString)));
             }
         }

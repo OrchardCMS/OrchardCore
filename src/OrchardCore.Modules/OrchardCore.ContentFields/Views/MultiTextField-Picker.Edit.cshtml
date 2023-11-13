@@ -1,6 +1,5 @@
 @model OrchardCore.ContentFields.ViewModels.EditMultiTextFieldViewModel
 @using System.Text.Json
-@using System.Text.Json.Nodes
 @using OrchardCore.Mvc.Utilities
 @{
     var settings = Model.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
@@ -14,8 +13,8 @@
         }
     }
 
-    var jSelectedValues = JsonSerializer.Serialize(selectedValues, JOptions.Default);
-    var jOptions = JsonSerializer.Serialize(settings.Options.Select(o => new { value = o.Value, name = o.Name }), JOptions.Default);
+    var jSelectedValues = JsonConvert.SerializeObject(selectedValues);
+    var jOptions = JsonConvert.SerializeObject(settings.Options.Select(o => new { value = o.Value, name = o.Name }));
 
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
     var fieldName = Model.PartFieldDefinition.Name;

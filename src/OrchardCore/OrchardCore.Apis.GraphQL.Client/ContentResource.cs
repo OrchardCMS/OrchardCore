@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
@@ -25,7 +26,7 @@ namespace OrchardCore.Apis.GraphQL.Client
             };
 
             var response = await _client
-                .PostJsonAsync("api/graphql", requestJson.ToJsonString(JOptions.Default));
+                .PostJsonAsync("api/graphql", requestJson.ToJsonString(JsonOptions.Default));
 
             if (!response.IsSuccessStatusCode && response.StatusCode != System.Net.HttpStatusCode.Unauthorized)
             {
@@ -42,7 +43,7 @@ namespace OrchardCore.Apis.GraphQL.Client
                 ["query"] = @"query { " + body + " }",
             };
 
-            var response = await _client.PostJsonAsync("api/graphql", requestJson.ToJsonString(JOptions.Default));
+            var response = await _client.PostJsonAsync("api/graphql", requestJson.ToJsonString(JsonOptions.Default));
 
             if (!response.IsSuccessStatusCode)
             {
@@ -59,7 +60,7 @@ namespace OrchardCore.Apis.GraphQL.Client
                 ["namedquery"] = name,
             };
 
-            var response = await _client.PostJsonAsync("api/graphql", requestJson.ToJsonString(JOptions.Default));
+            var response = await _client.PostJsonAsync("api/graphql", requestJson.ToJsonString(JsonOptions.Default));
 
             if (!response.IsSuccessStatusCode)
             {

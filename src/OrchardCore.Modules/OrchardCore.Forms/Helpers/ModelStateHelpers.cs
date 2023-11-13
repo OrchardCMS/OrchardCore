@@ -18,12 +18,12 @@ namespace OrchardCore.Forms.Helpers
                 ErrorMessages = x.Value.Errors.Select(err => err.ErrorMessage).ToList(),
             });
 
-            return JsonSerializer.Serialize(errorList, JOptions.Default);
+            return JsonConvert.SerializeObject(errorList);
         }
 
         public static ModelStateDictionary DeserializeModelState(string serialisedErrorList)
         {
-            var errorList = JsonSerializer.Deserialize<List<ModelStateTransferValue>>(serialisedErrorList, JOptions.Default);
+            var errorList = JsonConvert.DeserializeObject<List<ModelStateTransferValue>>(serialisedErrorList);
             var modelState = new ModelStateDictionary();
 
             foreach (var item in errorList)

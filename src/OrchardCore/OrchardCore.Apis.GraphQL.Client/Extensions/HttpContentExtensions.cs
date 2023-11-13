@@ -1,7 +1,6 @@
 using System.IO;
 using System.Net.Http;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Apis.GraphQL.Client
@@ -15,6 +14,6 @@ namespace OrchardCore.Apis.GraphQL.Client
         }
 
         public static ValueTask<T> ReadAsAsync<T>(this Stream stream) =>
-            JsonSerializer.DeserializeAsync<T>(stream, JOptions.Default);
+            JsonSerializer.DeserializeAsync<T>(stream, JsonOptions.Default);
     }
 }

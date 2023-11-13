@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -103,7 +102,7 @@ namespace OrchardCore.Localization.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                var supportedCulture = JsonSerializer.Deserialize<string[]>(model.SupportedCultures, JOptions.Default);
+                var supportedCulture = JsonConvert.DeserializeObject<string[]>(model.SupportedCultures);
                 if (!supportedCulture.Any())
                 {
                     context.Updater.ModelState.AddModelError("SupportedCultures", S["A culture is required"]);

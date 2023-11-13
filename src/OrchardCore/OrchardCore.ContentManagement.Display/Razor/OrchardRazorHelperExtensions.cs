@@ -59,7 +59,7 @@ public static class OrchardRazorHelperExtensions
         }
         else
         {
-            builder.AppendHtml(JsonSerializer.Serialize(content));
+            builder.AppendHtml(JsonConvert.SerializeObject(content));
         }
 
         builder.AppendHtml(")</script>");

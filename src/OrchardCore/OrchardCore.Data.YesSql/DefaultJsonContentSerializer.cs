@@ -12,23 +12,13 @@ namespace YesSql.Serialization
 
         public DefaultJsonContentSerializer()
         {
-            _options = new()
-            {
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                ReferenceHandler = ReferenceHandler.IgnoreCycles,
-            };
-
+            _options = new(JsonOptions.Base);
             _options.Converters.Add(JsonDynamicConverter.Instance);
         }
 
         public DefaultJsonContentSerializer(IEnumerable<IJsonTypeInfoResolver> typeInfoResolvers)
         {
-            _options = new()
-            {
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                ReferenceHandler = ReferenceHandler.IgnoreCycles,
-            };
-
+            _options = new(JsonOptions.Base);
             foreach (var resolver in typeInfoResolvers)
             {
                 _options.TypeInfoResolverChain.Add(resolver);

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -75,7 +76,7 @@ namespace OrchardCore.Shells.Database.Configuration
             var configuration = configurations[tenant] as JsonObject;
             if (configuration is not null)
             {
-                var configurationString = configuration.ToJsonString(JOptions.Default);
+                var configurationString = configuration.ToJsonString(JsonOptions.Default);
                 builder.AddTenantJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(configurationString)));
             }
         }

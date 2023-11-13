@@ -93,7 +93,7 @@ namespace OrchardCore.Cors.Controllers
 
             var model = new CorsSettingsViewModel();
             var configJson = Request.Form["CorsSettings"].First();
-            model.Policies = JsonSerializer.Deserialize<CorsPolicyViewModel[]>(configJson);
+            model.Policies = JsonConvert.DeserializeObject<CorsPolicyViewModel[]>(configJson);
 
             var corsPolicies = new List<CorsPolicySetting>();
 

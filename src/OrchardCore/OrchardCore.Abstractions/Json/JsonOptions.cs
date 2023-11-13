@@ -1,14 +1,15 @@
 using System.Text.Encodings.Web;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
-namespace System.Text.Json.Nodes;
+namespace System.Text.Json;
 
 /// <summary>
 /// Centralizes common <see cref="JsonSerializerOptions" /> instances.
 /// </summary>
-public static class JOptions
+public static class JsonOptions
 {
-    public static readonly JsonSerializerOptions Default = new()
+    public static readonly JsonSerializerOptions Base = new()
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         ReferenceHandler = ReferenceHandler.IgnoreCycles,
@@ -18,15 +19,18 @@ public static class JOptions
         WriteIndented = false,
     };
 
+    public static readonly JsonSerializerOptions Default;
     public static readonly JsonSerializerOptions Indented;
     public static readonly JsonSerializerOptions CamelCase;
     public static readonly JsonSerializerOptions CamelCaseIndented;
     public static readonly JsonSerializerOptions UnsafeRelaxedJsonEscaping;
+
     public static readonly JsonDocumentOptions Document;
     public static readonly JsonNodeOptions Node;
 
-    static JOptions()
+    static JsonOptions()
     {
+        Default = new JsonSerializerOptions(Base);
         Default.Converters.Add(new JsonDynamicConverter());
 
         Indented = new JsonSerializerOptions(Default)

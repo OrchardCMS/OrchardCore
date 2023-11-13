@@ -120,7 +120,7 @@ namespace OrchardCore.Placements.Controllers
             {
                 Creating = true,
                 ShapeType = suggestion,
-                Nodes = JsonSerializer.Serialize(template, JOptions.Indented)
+                Nodes = JsonConvert.SerializeObject(template, System.Text.Json.JsonOptions.Indented)
             };
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -160,7 +160,7 @@ namespace OrchardCore.Placements.Controllers
             var viewModel = new EditShapePlacementViewModel
             {
                 ShapeType = shapeType,
-                Nodes = JsonSerializer.Serialize(placementNodes, JOptions.Indented)
+                Nodes = JsonConvert.SerializeObject(placementNodes, System.Text.Json.JsonOptions.Indented)
             };
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -186,7 +186,7 @@ namespace OrchardCore.Placements.Controllers
 
             try
             {
-                var placementNodes = JsonSerializer.Deserialize<PlacementNode[]>(viewModel.Nodes)
+                var placementNodes = JsonConvert.DeserializeObject<PlacementNode[]>(viewModel.Nodes)
                     ?? Enumerable.Empty<PlacementNode>();
 
                 // Remove empty nodes.

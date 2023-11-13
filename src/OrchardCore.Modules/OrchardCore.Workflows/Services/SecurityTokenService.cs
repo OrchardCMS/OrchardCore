@@ -20,7 +20,7 @@ namespace OrchardCore.Workflows.Services
 
         public string CreateToken<T>(T payload, TimeSpan lifetime)
         {
-            var json = JsonSerializer.Serialize(payload);
+            var json = JsonConvert.SerializeObject(payload);
 
             return _dataProtector.Protect(json, _clock.UtcNow.Add(lifetime));
         }
@@ -35,7 +35,7 @@ namespace OrchardCore.Workflows.Services
 
                 if (_clock.UtcNow < expiration.ToUniversalTime())
                 {
-                    payload = JsonSerializer.Deserialize<T>(json);
+                    payload = JsonConvert.DeserializeObject<T>(json);
                     return true;
                 }
             }

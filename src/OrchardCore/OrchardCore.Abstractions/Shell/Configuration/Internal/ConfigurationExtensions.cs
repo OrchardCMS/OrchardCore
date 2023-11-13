@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -96,7 +97,7 @@ public static class ConfigurationExtensions
             return new Dictionary<string, string>();
         }
 
-        var configurationString = jConfiguration.ToJsonString(JOptions.Default);
+        var configurationString = jConfiguration.ToJsonString(JsonOptions.Default);
         using var ms = new MemoryStream(Encoding.UTF8.GetBytes(configurationString));
 
         return await JsonConfigurationParser.ParseAsync(ms);

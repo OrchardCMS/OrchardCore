@@ -183,7 +183,7 @@ namespace OrchardCore.Workflows.Http.Scripting
 
                                 try
                                 {
-                                    result = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+                                    result = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
                                 }
                                 catch
                                 {

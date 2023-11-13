@@ -147,7 +147,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                     var parameters = context.GetArgument<string>("parameters");
 
                     var queryParameters = parameters != null ?
-                        JsonSerializer.Deserialize<Dictionary<string, object>>(parameters, JOptions.Default)
+                        JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                         : new Dictionary<string, object>();
 
                     var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
@@ -185,7 +185,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                     var parameters = context.GetArgument<string>("parameters");
 
                     var queryParameters = parameters != null ?
-                        JsonSerializer.Deserialize<Dictionary<string, object>>(parameters, JOptions.Default)
+                        JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                         : new Dictionary<string, object>();
 
                     var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);

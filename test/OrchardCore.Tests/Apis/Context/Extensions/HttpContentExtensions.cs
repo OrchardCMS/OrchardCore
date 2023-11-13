@@ -1,5 +1,4 @@
 using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace OrchardCore.Tests.Apis.Context
 {
@@ -12,6 +11,6 @@ namespace OrchardCore.Tests.Apis.Context
         }
 
         public static ValueTask<T> ReadAsAsync<T>(this Stream stream) =>
-            JsonSerializer.DeserializeAsync<T>(stream, JOptions.Default);
+            JsonSerializer.DeserializeAsync<T>(stream, System.Text.Json.JsonOptions.Default);
     }
 }

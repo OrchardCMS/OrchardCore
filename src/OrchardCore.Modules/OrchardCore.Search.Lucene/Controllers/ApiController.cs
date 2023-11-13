@@ -89,7 +89,7 @@ namespace OrchardCore.Search.Lucene.Controllers
             };
 
             var queryParameters = queryModel.Parameters != null ?
-                JsonSerializer.Deserialize<Dictionary<string, object>>(queryModel.Parameters)
+                JsonConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters)
                 : new Dictionary<string, object>();
 
             return _luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);

@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Execution;
@@ -101,7 +100,7 @@ namespace OrchardCore.Apis.GraphQL
                         }
                         else
                         {
-                            request = await JsonSerializer.DeserializeAsync<GraphQLRequest>(context.Request.Body, JOptions.CamelCase);
+                            request = await JsonSerializer.DeserializeAsync<GraphQLRequest>(context.Request.Body, JsonOptions.CamelCase);
                         }
                     }
                     else
@@ -189,7 +188,7 @@ namespace OrchardCore.Apis.GraphQL
 
             if (context.Request.Query.ContainsKey("variables"))
             {
-                request.Variables = JsonSerializer.Deserialize<JsonElement>(context.Request.Query["variables"], JOptions.CamelCase);
+                request.Variables = JsonConvert.DeserializeObject<JsonElement>(context.Request.Query["variables"], JsonOptions.CamelCase);
             }
 
             if (context.Request.Query.ContainsKey("operationName"))

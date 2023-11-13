@@ -2,7 +2,6 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -97,7 +96,7 @@ namespace OrchardCore.OpenId.Drivers
                     model.UseIdTokenTokenFlow = true;
                 }
 
-                model.Parameters = JsonSerializer.Serialize(settings.Parameters, JOptions.CamelCase);
+                model.Parameters = JsonConvert.SerializeObject(settings.Parameters, JsonOptions.CamelCase);
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
@@ -165,7 +164,7 @@ namespace OrchardCore.OpenId.Drivers
                 {
                     settings.Parameters = string.IsNullOrWhiteSpace(model.Parameters)
                         ? Array.Empty<ParameterSetting>()
-                        : JsonSerializer.Deserialize<ParameterSetting[]>(model.Parameters, JOptions.Default);
+                        : JsonConvert.DeserializeObject<ParameterSetting[]>(model.Parameters);
                 }
                 catch
                 {

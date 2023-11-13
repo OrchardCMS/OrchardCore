@@ -2,7 +2,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using OrchardCore.Data.Documents;
 
@@ -15,20 +14,13 @@ namespace OrchardCore.Documents
     {
         public static readonly DefaultDocumentSerializer Instance = new();
 
-        private static readonly JsonSerializerOptions _options = new()
-        {
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            ReferenceHandler = ReferenceHandler.IgnoreCycles,
-            PropertyNameCaseInsensitive = true,
-        };
-
         public DefaultDocumentSerializer()
         {
         }
 
         public Task<byte[]> SerializeAsync<TDocument>(TDocument document, int compressThreshold = int.MaxValue) where TDocument : class, IDocument, new()
         {
-            var data = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(document, _options));
+            var data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(document));
             if (data.Length >= compressThreshold)
             {
                 data = Compress(data);
@@ -44,7 +36,7 @@ namespace OrchardCore.Documents
                 data = Decompress(data);
             }
 
-            var document = JsonSerializer.Deserialize<TDocument>(Encoding.UTF8.GetString(data), _options);
+            var document = JsonConvert.DeserializeObject<TDocument>(Encoding.UTF8.GetString(data));
 
             return Task.FromResult(document);
         }

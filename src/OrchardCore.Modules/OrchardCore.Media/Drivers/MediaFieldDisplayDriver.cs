@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -78,7 +77,7 @@ namespace OrchardCore.Media.Drivers
                     }
                 }
 
-                model.Paths = JsonSerializer.Serialize(itemPaths, JOptions.CamelCase);
+                model.Paths = JsonConvert.SerializeObject(itemPaths, JsonOptions.CamelCase);
                 model.TempUploadFolder = _attachedMediaFieldFileService.MediaFieldsTempSubFolder;
                 model.Field = field;
                 model.Part = context.ContentPart;
@@ -97,7 +96,7 @@ namespace OrchardCore.Media.Drivers
                 // Deserializing an empty string doesn't return an array
                 var items = string.IsNullOrWhiteSpace(model.Paths)
                     ? new List<EditMediaFieldItemInfo>()
-                    : JsonSerializer.Deserialize<List<EditMediaFieldItemInfo>>(model.Paths, JOptions.CamelCase);
+                    : JsonConvert.DeserializeObject<List<EditMediaFieldItemInfo>>(model.Paths, JsonOptions.CamelCase);
 
                 // If it's an attached media field editor the files are automatically handled by _attachedMediaFieldFileService.
                 if (string.Equals(context.PartFieldDefinition.Editor(), "Attached", StringComparison.OrdinalIgnoreCase))

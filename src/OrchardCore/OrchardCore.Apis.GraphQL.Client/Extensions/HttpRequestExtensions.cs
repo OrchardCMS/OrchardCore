@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Apis.GraphQL.Client
@@ -13,13 +12,6 @@ namespace OrchardCore.Apis.GraphQL.Client
     /// </summary>
     internal static class HttpRequestExtensions
     {
-        private static readonly JsonSerializerOptions _options = new()
-        {
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            ReferenceHandler = ReferenceHandler.IgnoreCycles,
-            PropertyNameCaseInsensitive = true,
-        };
-
         /// <summary>
         /// The patch as json async.
         /// </summary>
@@ -47,7 +39,7 @@ namespace OrchardCore.Apis.GraphQL.Client
             JsonSerializerOptions options = null)
         {
             var content = new StringContent(
-                JsonSerializer.Serialize(value, options ?? _options),
+                JsonConvert.SerializeObject(value, options),
                 Encoding.UTF8,
                 "application/json");
 
@@ -112,7 +104,7 @@ namespace OrchardCore.Apis.GraphQL.Client
             JsonSerializerOptions options = null)
         {
             var content = new StringContent(
-                JsonSerializer.Serialize(value, options ?? _options),
+                JsonConvert.SerializeObject(value, options),
                 Encoding.UTF8,
                 "application/json");
 
@@ -146,7 +138,7 @@ namespace OrchardCore.Apis.GraphQL.Client
             JsonSerializerOptions options = null)
         {
             var content = new StringContent(
-                JsonSerializer.Serialize(value, options ?? _options),
+                JsonConvert.SerializeObject(value, options),
                 Encoding.UTF8,
                 "application/json");
 

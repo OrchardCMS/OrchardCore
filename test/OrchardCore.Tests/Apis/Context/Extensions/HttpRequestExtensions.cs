@@ -1,6 +1,4 @@
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace OrchardCore.Tests.Apis.Context
 {
@@ -9,13 +7,6 @@ namespace OrchardCore.Tests.Apis.Context
     /// </summary>
     internal static class HttpRequestExtensions
     {
-        private readonly static JsonSerializerOptions _jsonOptions = new()
-        {
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            ReferenceHandler = ReferenceHandler.IgnoreCycles,
-            PropertyNameCaseInsensitive = true,
-        };
-
         /// <summary>
         /// The patch as json async.
         /// </summary>
@@ -43,7 +34,7 @@ namespace OrchardCore.Tests.Apis.Context
             JsonSerializerOptions options = null)
         {
             var content = new StringContent(
-                JsonSerializer.Serialize(value, options ?? _jsonOptions),
+                JsonConvert.SerializeObject(value, options),
                 Encoding.UTF8,
                 "application/json");
 
@@ -108,7 +99,7 @@ namespace OrchardCore.Tests.Apis.Context
             JsonSerializerOptions options = null)
         {
             var content = new StringContent(
-                JsonSerializer.Serialize(value, options ?? _jsonOptions),
+                JsonConvert.SerializeObject(value, options),
                 Encoding.UTF8,
                 "application/json");
 
@@ -142,7 +133,7 @@ namespace OrchardCore.Tests.Apis.Context
             JsonSerializerOptions options = null)
         {
             var content = new StringContent(
-                JsonSerializer.Serialize(value, options ?? _jsonOptions),
+                JsonConvert.SerializeObject(value, options),
                 Encoding.UTF8,
                 "application/json");
 

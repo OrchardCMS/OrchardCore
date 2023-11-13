@@ -1,5 +1,4 @@
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Tests.Data
@@ -18,9 +17,9 @@ namespace OrchardCore.Tests.Data
                 Published = true,
             };
 
-            var json = JsonSerializer.Serialize(contentItem);
+            var json = JsonConvert.SerializeObject(contentItem);
 
-            var contentItem2 = JsonSerializer.Deserialize<ContentItem>(json);
+            var contentItem2 = JsonConvert.DeserializeObject<ContentItem>(json);
 
             Assert.Equal(0, contentItem2.Id); // Should be 0 as we dont serialize it.
             Assert.Equal(contentItem.ContentItemId, contentItem2.ContentItemId);
@@ -36,9 +35,9 @@ namespace OrchardCore.Tests.Data
             var myPart = new MyPart { Text = "test" };
             contentItem.Weld(myPart);
 
-            var json = JsonSerializer.Serialize(contentItem);
+            var json = JsonConvert.SerializeObject(contentItem);
 
-            var contentItem2 = JsonSerializer.Deserialize<ContentItem>(json);
+            var contentItem2 = JsonConvert.DeserializeObject<ContentItem>(json);
 
             Assert.NotNull(contentItem2.Content.MyPart);
             Assert.Equal("test", (string)contentItem2.Content.MyPart.Text);
@@ -51,9 +50,9 @@ namespace OrchardCore.Tests.Data
             contentItem.GetOrCreate<MyPart>();
             contentItem.Alter<MyPart>(x => x.Text = "test");
 
-            var json = JsonSerializer.Serialize(contentItem, JOptions.Default);
+            var json = JsonConvert.SerializeObject(contentItem);
 
-            var contentItem2 = JsonSerializer.Deserialize<ContentItem>(json, JOptions.Default);
+            var contentItem2 = JsonConvert.DeserializeObject<ContentItem>(json);
 
             Assert.NotNull(contentItem2.Content.MyPart);
             Assert.Equal("test", (string)contentItem2.Content.MyPart.Text);
@@ -66,9 +65,9 @@ namespace OrchardCore.Tests.Data
             contentItem.GetOrCreate<MyPart>();
             contentItem.Alter<MyPart>(x => x.Text = "test");
 
-            var json = JsonSerializer.Serialize(contentItem);
+            var json = JsonConvert.SerializeObject(contentItem);
 
-            var contentItem2 = JsonSerializer.Deserialize<ContentItem>(json);
+            var contentItem2 = JsonConvert.DeserializeObject<ContentItem>(json);
 
             //Assert.NotNull((contentItem2.Content as JsonObject)[nameof(MyPart)]);
             //Assert.Equal("test", (contentItem2.Content as JsonObject)[nameof(MyPart)][nameof(MyPart.Text)].ToString());
@@ -83,7 +82,7 @@ namespace OrchardCore.Tests.Data
             contentItem.GetOrCreate<MyPart>();
             contentItem.Alter<MyPart>(x => x.Text = "test");
 
-            var json = JsonSerializer.Serialize(contentItem);
+            var json = JsonConvert.SerializeObject(contentItem);
 
             Assert.Contains(@"""MyPart"":{""Text"":""test""}", json);
         }
@@ -100,7 +99,7 @@ namespace OrchardCore.Tests.Data
                 x.Alter<MyField>("myField", f => f.Value = 123);
             });
 
-            var json = JsonSerializer.Serialize(contentItem);
+            var json = JsonConvert.SerializeObject(contentItem);
 
             Assert.Contains(@"""MyPart"":{""Text"":""test"",""myField"":{""Value"":123}}", json);
         }

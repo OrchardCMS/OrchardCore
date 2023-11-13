@@ -1,6 +1,5 @@
 using System;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -29,7 +28,7 @@ namespace OrchardCore.Forms.Drivers
         {
             return Initialize<SelectPartEditViewModel>("SelectPart_Fields_Edit", m =>
             {
-                m.Options = JsonSerializer.Serialize(part.Options ?? Array.Empty<SelectOption>(), JOptions.CamelCaseIndented);
+                m.Options = JsonConvert.SerializeObject(part.Options ?? Array.Empty<SelectOption>(), JsonOptions.CamelCaseIndented);
                 m.DefaultValue = part.DefaultValue;
                 m.Editor = part.Editor;
             });
@@ -47,7 +46,7 @@ namespace OrchardCore.Forms.Drivers
                     part.Editor = viewModel.Editor;
                     part.Options = string.IsNullOrWhiteSpace(viewModel.Options)
                         ? Array.Empty<SelectOption>()
-                        : JsonSerializer.Deserialize<SelectOption[]>(viewModel.Options);
+                        : JsonConvert.DeserializeObject<SelectOption[]>(viewModel.Options);
                 }
                 catch
                 {

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -153,7 +152,7 @@ namespace OrchardCore.Tenants.Controllers
                 // the id is immutable whereas the name is mutable
                 Id = featureProfile.Id ?? id,
                 Name = featureProfile.Name ?? id,
-                FeatureRules = JsonSerializer.Serialize(featureProfile.FeatureRules, JOptions.Indented),
+                FeatureRules = JsonConvert.SerializeObject(featureProfile.FeatureRules, System.Text.Json.JsonOptions.Indented),
             };
 
             return View(model);
@@ -237,7 +236,7 @@ namespace OrchardCore.Tenants.Controllers
                 {
                     profile.Id = model.Id;
                     profile.Name = model.Name;
-                    profile.FeatureRules = JsonSerializer.Deserialize<List<FeatureRule>>(model.FeatureRules);
+                    profile.FeatureRules = JsonConvert.DeserializeObject<List<FeatureRule>>(model.FeatureRules);
 
                     var featureProfilesDocument = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
 

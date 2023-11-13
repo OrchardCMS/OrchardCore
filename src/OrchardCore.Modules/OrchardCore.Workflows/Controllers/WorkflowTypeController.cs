@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Dapper;
 using Microsoft.AspNetCore.Authorization;
@@ -33,14 +32,6 @@ namespace OrchardCore.Workflows.Controllers
     [Admin]
     public class WorkflowTypeController : Controller
     {
-        private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            ReferenceHandler = ReferenceHandler.IgnoreCycles,
-            PropertyNameCaseInsensitive = true,
-            WriteIndented = false,
-        };
-
         private readonly PagerOptions _pagerOptions;
         private readonly ISession _session;
         private readonly IActivityLibrary _activityLibrary;
@@ -430,7 +421,7 @@ namespace OrchardCore.Workflows.Controllers
             var viewModel = new WorkflowTypeViewModel
             {
                 WorkflowType = workflowType,
-                WorkflowTypeJson = JsonSerializer.Serialize(workflowTypeData, _jsonSerializerOptions),
+                WorkflowTypeJson = JsonConvert.SerializeObject(workflowTypeData, System.Text.Json.JsonOptions.CamelCase),
                 ActivityThumbnailShapes = activityThumbnailShapes,
                 ActivityDesignShapes = activityDesignShapes,
                 ActivityCategories = _activityLibrary.ListCategories().ToList(),

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,22 +31,6 @@ namespace OrchardCore.Workflows.Controllers
     [Admin]
     public class WorkflowController : Controller
     {
-        private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            ReferenceHandler = ReferenceHandler.IgnoreCycles,
-            PropertyNameCaseInsensitive = true,
-            WriteIndented = false,
-        };
-
-        private static readonly JsonSerializerOptions _jsonSerializerIndentedOptions = new()
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            ReferenceHandler = ReferenceHandler.IgnoreCycles,
-            PropertyNameCaseInsensitive = true,
-            WriteIndented = true,
-        };
-
         private readonly PagerOptions _pagerOptions;
         private readonly ISession _session;
         private readonly IWorkflowManager _workflowManager;
@@ -232,8 +215,8 @@ namespace OrchardCore.Workflows.Controllers
             {
                 Workflow = workflow,
                 WorkflowType = workflowType,
-                WorkflowTypeJson = JsonSerializer.Serialize(workflowTypeData, _jsonSerializerOptions),
-                WorkflowJson = JsonSerializer.Serialize(workflow, _jsonSerializerIndentedOptions),
+                WorkflowTypeJson = JsonConvert.SerializeObject(workflowTypeData, System.Text.Json.JsonOptions.CamelCase),
+                WorkflowJson = JsonConvert.SerializeObject(workflow, System.Text.Json.JsonOptions.CamelCaseIndented),
                 ActivityDesignShapes = activityDesignShapes,
             };
 

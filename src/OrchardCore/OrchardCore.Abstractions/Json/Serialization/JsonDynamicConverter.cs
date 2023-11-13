@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Numerics;
 
 #nullable enable
 
@@ -37,10 +38,20 @@ public class JsonDynamicConverter : JsonConverter<object>
                         return l;
                     }
 
+                    if (reader.TryGetUInt64(out var ul))
+                    {
+                        return ul;
+                    }
+
                     // BigInteger could be added here.
                     if (reader.TryGetDouble(out var d))
                     {
                         return d;
+                    }
+
+                    if (reader.TryGetDecimal(out var dec))
+                    {
+                        return dec;
                     }
 
                     throw new JsonException("Cannot parse number");

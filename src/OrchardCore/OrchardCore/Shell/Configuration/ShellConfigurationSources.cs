@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -60,7 +59,7 @@ namespace OrchardCore.Environment.Shell.Configuration
             Directory.CreateDirectory(tenantFolder);
 
             using var streamWriter = File.Create(appsettings);
-            await JsonSerializer.SerializeAsync(streamWriter, configData.ToJsonObject(), JOptions.Indented);
+            await JsonSerializer.SerializeAsync(streamWriter, configData.ToJsonObject(), JsonOptions.Indented);
         }
 
         public Task RemoveAsync(string tenant)

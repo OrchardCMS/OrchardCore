@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -154,10 +153,7 @@ namespace OrchardCore.OpenId.Services.Managers
             {
                 var properties = await Store.GetPropertiesAsync(application, cancellationToken);
                 properties = properties.SetItem(OpenIdConstants.Properties.Roles,
-                    JsonSerializer.SerializeToElement(roles, new JsonSerializerOptions
-                    {
-                        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-                    }));
+                    JsonSerializer.SerializeToElement(roles, JsonOptions.UnsafeRelaxedJsonEscaping));
 
                 await Store.SetPropertiesAsync(application, properties, cancellationToken);
             }
@@ -194,10 +190,7 @@ namespace OrchardCore.OpenId.Services.Managers
                 {
                     var properties = await Store.GetPropertiesAsync(application, cancellationToken);
                     properties = properties.SetItem(OpenIdConstants.Properties.Roles,
-                        JsonSerializer.SerializeToElement(model.Roles, new JsonSerializerOptions
-                        {
-                            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-                        }));
+                        JsonSerializer.SerializeToElement(model.Roles, JsonOptions.UnsafeRelaxedJsonEscaping));
 
                     await Store.SetPropertiesAsync(application, properties, cancellationToken);
                 }

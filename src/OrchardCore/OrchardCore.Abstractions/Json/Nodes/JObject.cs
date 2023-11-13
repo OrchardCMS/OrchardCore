@@ -52,10 +52,10 @@ public static class JObject
 
         if (obj is JsonElement jsonElement)
         {
-            return JsonObject.Create(jsonElement, JOptions.Node);
+            return JsonObject.Create(jsonElement, JsonOptions.Node);
         }
 
-        return JsonObject.Create(JsonSerializer.SerializeToElement(obj, options ?? JOptions.Default), JOptions.Node);
+        return JsonObject.Create(JsonSerializer.SerializeToElement(obj, options ?? JsonOptions.Default), JsonOptions.Node);
     }
 
     /// <summary>

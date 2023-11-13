@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -61,7 +62,7 @@ namespace OrchardCore.Taxonomies.Drivers
                         IsLeaf = te.IsLeaf
                     });
 
-                    model.TagTermEntries = JNode.FromObject(tagTermEntries, JOptions.CamelCase).ToJsonString(JOptions.Default);
+                    model.TagTermEntries = JNode.FromObject(tagTermEntries, JsonOptions.CamelCase).ToJsonString(JsonOptions.Default);
                 }
 
                 model.Field = field;

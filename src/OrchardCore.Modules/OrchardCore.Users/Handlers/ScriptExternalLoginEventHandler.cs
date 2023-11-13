@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Entities;
@@ -36,7 +35,7 @@ namespace OrchardCore.Users.Handlers
             {
                 var context = new { userName = string.Empty, loginProvider = provider, externalClaims = claims };
 
-                var script = $"js: function generateUsername(context) {{\n{registrationSettings.GenerateUsernameScript}\n}}\nvar context = {JsonSerializer.Serialize(context, JOptions.CamelCase)};\ngenerateUsername(context);\nreturn context;";
+                var script = $"js: function generateUsername(context) {{\n{registrationSettings.GenerateUsernameScript}\n}}\nvar context = {JsonConvert.SerializeObject(context, JsonOptions.CamelCase)};\ngenerateUsername(context);\nreturn context;";
 
                 dynamic evaluationResult = _scriptingManager.Evaluate(script, null, null, null);
                 if (evaluationResult?.userName != null)
@@ -52,7 +51,7 @@ namespace OrchardCore.Users.Handlers
             var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
             if (loginSettings.UseScriptToSyncRoles)
             {
-                var script = $"js: function syncRoles(context) {{\n{loginSettings.SyncRolesScript}\n}}\nvar context={JsonSerializer.Serialize(context, JOptions.CamelCase)};\nsyncRoles(context);\nreturn context;";
+                var script = $"js: function syncRoles(context) {{\n{loginSettings.SyncRolesScript}\n}}\nvar context={JsonConvert.SerializeObject(context, JsonOptions.CamelCase)};\nsyncRoles(context);\nreturn context;";
                 dynamic evaluationResult = _scriptingManager.Evaluate(script, null, null, null);
                 context.RolesToAdd.AddRange((evaluationResult.rolesToAdd as object[]).Select(i => i.ToString()));
                 context.RolesToRemove.AddRange((evaluationResult.rolesToRemove as object[]).Select(i => i.ToString()));

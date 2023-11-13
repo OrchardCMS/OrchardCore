@@ -50,7 +50,7 @@ public static class JArray
             return JsonArray.Create(jsonElement);
         }
 
-        return JsonArray.Create(JsonSerializer.SerializeToElement(obj, options ?? JOptions.Default));
+        return JsonArray.Create(JsonSerializer.SerializeToElement(obj, options ?? JsonOptions.Default));
     }
 
     /// <summary>

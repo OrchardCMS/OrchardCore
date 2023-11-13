@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -101,7 +100,7 @@ namespace OrchardCore.Data.Documents
             try
             {
                 using var stream = File.OpenRead(filename);
-                return await JsonSerializer.DeserializeAsync<T>(stream, JOptions.Default);
+                return await JsonSerializer.DeserializeAsync<T>(stream, JsonOptions.Default);
             }
             finally
             {
@@ -125,7 +124,7 @@ namespace OrchardCore.Data.Documents
             try
             {
                 using var stream = File.Create(filename);
-                await JsonSerializer.SerializeAsync(stream, document, JOptions.Indented);
+                await JsonSerializer.SerializeAsync(stream, document, JsonOptions.Indented);
             }
             finally
             {

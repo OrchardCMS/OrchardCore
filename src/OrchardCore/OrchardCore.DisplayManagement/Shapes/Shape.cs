@@ -248,7 +248,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
                 if (value is string stringValue)
                 {
-                    attributes = JsonSerializer.Deserialize<Dictionary<string, string>>(stringValue);
+                    attributes = JsonConvert.DeserializeObject<Dictionary<string, string>>(stringValue);
 
                     foreach (var attribute in attributes)
                     {

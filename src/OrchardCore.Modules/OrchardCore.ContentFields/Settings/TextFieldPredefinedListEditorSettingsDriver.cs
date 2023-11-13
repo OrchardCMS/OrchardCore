@@ -1,6 +1,5 @@
 using System;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
@@ -28,7 +27,7 @@ namespace OrchardCore.ContentFields.Settings
 
                 model.DefaultValue = settings.DefaultValue;
                 model.Editor = settings.Editor;
-                model.Options = JsonSerializer.Serialize(settings.Options ?? Array.Empty<ListValueOption>(), JOptions.Indented);
+                model.Options = JsonConvert.SerializeObject(settings.Options ?? Array.Empty<ListValueOption>(), JsonOptions.Indented);
             })
             .Location("Editor");
         }
@@ -48,7 +47,7 @@ namespace OrchardCore.ContentFields.Settings
                     settings.Editor = model.Editor;
                     settings.Options = string.IsNullOrWhiteSpace(model.Options)
                         ? Array.Empty<ListValueOption>()
-                        : JsonSerializer.Deserialize<ListValueOption[]>(model.Options, JOptions.Default);
+                        : JsonConvert.DeserializeObject<ListValueOption[]>(model.Options);
                 }
                 catch
                 {

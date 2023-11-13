@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using Microsoft.Extensions.Hosting;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Environment.Extensions;
@@ -52,7 +51,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
             {
                 using var stream = virtualFileInfo.CreateReadStream();
 
-                var placementFile = JsonSerializer.Deserialize<PlacementFile>(stream, JOptions.Default);
+                var placementFile = JsonSerializer.Deserialize<PlacementFile>(stream, JsonOptions.Default);
                 if (placementFile is not null)
                 {
                     ProcessPlacementFile(builder, featureDescriptor, placementFile);

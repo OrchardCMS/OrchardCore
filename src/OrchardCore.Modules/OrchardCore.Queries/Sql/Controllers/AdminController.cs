@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Dapper;
 using Fluid;
@@ -79,14 +78,14 @@ namespace OrchardCore.Queries.Sql.Controllers
             var connection = _store.Configuration.ConnectionFactory.CreateConnection();
             var dialect = _store.Configuration.SqlDialect;
 
-            var parameters = JsonSerializer.Deserialize<Dictionary<string, object>>(model.Parameters, JOptions.Default);
+            var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
 
             var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(model.DecodedQuery, NullEncoder.Default, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
 
             if (SqlParser.TryParse(tokenizedQuery, _store.Configuration.Schema, dialect, _store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {
                 model.RawSql = rawQuery;
-                model.Parameters = JsonSerializer.Serialize(parameters, JOptions.Indented);
+                model.Parameters = JsonConvert.SerializeObject(parameters, System.Text.Json.JsonOptions.Indented);
 
                 try
                 {

@@ -16,8 +16,8 @@ and call @await DisplayAsync(await New.ShortcodeModal()) from the fields view
         .OrderBy(category => category)
         .ToList();
 
-    var jShortcodes = JsonSerializer.Serialize(shortcodeDescriptors.Select(d => new { name = d.Name, categories = d.Categories }), JOptions.Default);
-    var jCategories = JsonSerializer.Serialize(categories, JOptions.Default);
+    var jShortcodes = JsonConvert.SerializeObject(shortcodeDescriptors.Select(d => new { name = d.Name, categories = d.Categories }));
+    var jCategories = JsonConvert.SerializeObject(categories);
 
     <style asp-src="~/OrchardCore.Shortcodes/Styles/shortcodes.min.css" debug-src="~/OrchardCore.Shortcodes/Styles/shortcodes.css" asp-name="shortcodes"></style>
     <script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcodes.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcodes.js" asp-name="shortcodes" at="Foot" depends-on="jQuery, vuejs"></script>
