@@ -391,7 +391,7 @@ namespace OrchardCore.Search.Lucene.Controllers
                 var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(model.IndexName));
                 var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);
 
-                var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
+                var parameters = JConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
 
                 var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(model.DecodedQuery, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions.Value))));
 

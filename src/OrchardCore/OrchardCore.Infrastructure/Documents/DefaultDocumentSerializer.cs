@@ -20,7 +20,7 @@ namespace OrchardCore.Documents
 
         public Task<byte[]> SerializeAsync<TDocument>(TDocument document, int compressThreshold = int.MaxValue) where TDocument : class, IDocument, new()
         {
-            var data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(document));
+            var data = Encoding.UTF8.GetBytes(JConvert.SerializeObject(document));
             if (data.Length >= compressThreshold)
             {
                 data = Compress(data);
@@ -36,7 +36,7 @@ namespace OrchardCore.Documents
                 data = Decompress(data);
             }
 
-            var document = JsonConvert.DeserializeObject<TDocument>(Encoding.UTF8.GetString(data));
+            var document = JConvert.DeserializeObject<TDocument>(Encoding.UTF8.GetString(data));
 
             return Task.FromResult(document);
         }

@@ -30,7 +30,7 @@ namespace OrchardCore.Search.Lucene
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(_indexSettingsFilename));
 
-                File.WriteAllText(_indexSettingsFilename, new JsonObject().ToJsonString(JsonOptions.Indented));
+                File.WriteAllText(_indexSettingsFilename, new JsonObject().ToJsonString(JOptions.Indented));
             }
 
             _content = JObject.Parse(File.ReadAllText(_indexSettingsFilename));
@@ -65,7 +65,7 @@ namespace OrchardCore.Search.Lucene
         {
             lock (this)
             {
-                File.WriteAllText(_indexSettingsFilename, _content.ToJsonString(JsonOptions.Indented));
+                File.WriteAllText(_indexSettingsFilename, _content.ToJsonString(JOptions.Indented));
             }
         }
     }

@@ -62,7 +62,7 @@ namespace OrchardCore.Taxonomies.Drivers
                         IsLeaf = te.IsLeaf
                     });
 
-                    model.TagTermEntries = JNode.FromObject(tagTermEntries, JsonOptions.CamelCase).ToJsonString(JsonOptions.Default);
+                    model.TagTermEntries = JNode.FromObject(tagTermEntries, JOptions.CamelCase).ToJsonString(JOptions.Default);
                 }
 
                 model.Field = field;

@@ -164,7 +164,7 @@ namespace OrchardCore.Shortcodes.Controllers
                     Hint = model.Hint,
                     Usage = _htmlSanitizerService.Sanitize(model.Usage),
                     DefaultValue = model.DefaultValue,
-                    Categories = JsonConvert.DeserializeObject<string[]>(model.SelectedCategories)
+                    Categories = JConvert.DeserializeObject<string[]>(model.SelectedCategories)
                 };
 
                 await _shortcodeTemplatesManager.UpdateShortcodeTemplateAsync(model.Name, template);
@@ -261,7 +261,7 @@ namespace OrchardCore.Shortcodes.Controllers
                     Hint = model.Hint,
                     Usage = _htmlSanitizerService.Sanitize(model.Usage),
                     DefaultValue = model.DefaultValue,
-                    Categories = JsonConvert.DeserializeObject<string[]>(model.SelectedCategories)
+                    Categories = JConvert.DeserializeObject<string[]>(model.SelectedCategories)
                 };
 
                 await _shortcodeTemplatesManager.RemoveShortcodeTemplateAsync(sourceName);

@@ -272,7 +272,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             }
 
             return new ValueTask<ImmutableDictionary<string, JsonElement>>(
-                JsonConvert.DeserializeObject<ImmutableDictionary<string, JsonElement>>(application.Properties.ToString()));
+                JConvert.DeserializeObject<ImmutableDictionary<string, JsonElement>>(application.Properties.ToString()));
         }
 
         /// <inheritdoc/>
@@ -446,7 +446,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 return default;
             }
 
-            application.Properties = JObject.Parse(JsonConvert.SerializeObject(properties, JsonOptions.UnsafeRelaxedJsonEscaping));
+            application.Properties = JObject.Parse(JConvert.SerializeObject(properties, JOptions.UnsafeRelaxedJsonEscaping));
 
             return default;
         }

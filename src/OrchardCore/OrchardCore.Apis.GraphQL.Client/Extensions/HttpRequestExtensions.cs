@@ -39,7 +39,7 @@ namespace OrchardCore.Apis.GraphQL.Client
             JsonSerializerOptions options = null)
         {
             var content = new StringContent(
-                JsonConvert.SerializeObject(value, options),
+                JConvert.SerializeObject(value, options),
                 Encoding.UTF8,
                 "application/json");
 
@@ -104,7 +104,7 @@ namespace OrchardCore.Apis.GraphQL.Client
             JsonSerializerOptions options = null)
         {
             var content = new StringContent(
-                JsonConvert.SerializeObject(value, options),
+                JConvert.SerializeObject(value, options),
                 Encoding.UTF8,
                 "application/json");
 
@@ -138,7 +138,7 @@ namespace OrchardCore.Apis.GraphQL.Client
             JsonSerializerOptions options = null)
         {
             var content = new StringContent(
-                JsonConvert.SerializeObject(value, options),
+                JConvert.SerializeObject(value, options),
                 Encoding.UTF8,
                 "application/json");
 

@@ -44,7 +44,7 @@ namespace OrchardCore.Shells.Database.Configuration
             var document = await GetDocumentAsync();
             if (document.ShellsSettings is not null)
             {
-                var shellsSettingsString = document.ShellsSettings.ToJsonString(JsonOptions.Default);
+                var shellsSettingsString = document.ShellsSettings.ToJsonString(JOptions.Default);
                 builder.AddTenantJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(shellsSettingsString)));
             }
         }
@@ -55,7 +55,7 @@ namespace OrchardCore.Shells.Database.Configuration
             if (document.ShellsSettings is not null && document.ShellsSettings.ContainsKey(tenant))
             {
                 var shellSettings = new JsonObject { [tenant] = document.ShellsSettings[tenant] };
-                var shellSettingsString = shellSettings.ToJsonString(JsonOptions.Default);
+                var shellSettingsString = shellSettings.ToJsonString(JOptions.Default);
                 builder.AddTenantJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(shellSettingsString)));
             }
         }

@@ -96,7 +96,7 @@ namespace OrchardCore.OpenId.Drivers
                     model.UseIdTokenTokenFlow = true;
                 }
 
-                model.Parameters = JsonConvert.SerializeObject(settings.Parameters, JsonOptions.CamelCase);
+                model.Parameters = JConvert.SerializeObject(settings.Parameters, JOptions.CamelCase);
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
@@ -164,7 +164,7 @@ namespace OrchardCore.OpenId.Drivers
                 {
                     settings.Parameters = string.IsNullOrWhiteSpace(model.Parameters)
                         ? Array.Empty<ParameterSetting>()
-                        : JsonConvert.DeserializeObject<ParameterSetting[]>(model.Parameters);
+                        : JConvert.DeserializeObject<ParameterSetting[]>(model.Parameters);
                 }
                 catch
                 {

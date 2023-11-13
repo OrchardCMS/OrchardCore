@@ -153,7 +153,7 @@ namespace OrchardCore.OpenId.Services.Managers
             {
                 var properties = await Store.GetPropertiesAsync(application, cancellationToken);
                 properties = properties.SetItem(OpenIdConstants.Properties.Roles,
-                    JsonSerializer.SerializeToElement(roles, JsonOptions.UnsafeRelaxedJsonEscaping));
+                    JsonSerializer.SerializeToElement(roles, JOptions.UnsafeRelaxedJsonEscaping));
 
                 await Store.SetPropertiesAsync(application, properties, cancellationToken);
             }
@@ -190,7 +190,7 @@ namespace OrchardCore.OpenId.Services.Managers
                 {
                     var properties = await Store.GetPropertiesAsync(application, cancellationToken);
                     properties = properties.SetItem(OpenIdConstants.Properties.Roles,
-                        JsonSerializer.SerializeToElement(model.Roles, JsonOptions.UnsafeRelaxedJsonEscaping));
+                        JsonSerializer.SerializeToElement(model.Roles, JOptions.UnsafeRelaxedJsonEscaping));
 
                     await Store.SetPropertiesAsync(application, properties, cancellationToken);
                 }

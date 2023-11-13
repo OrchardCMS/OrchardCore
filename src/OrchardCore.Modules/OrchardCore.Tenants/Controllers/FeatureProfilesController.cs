@@ -152,7 +152,7 @@ namespace OrchardCore.Tenants.Controllers
                 // the id is immutable whereas the name is mutable
                 Id = featureProfile.Id ?? id,
                 Name = featureProfile.Name ?? id,
-                FeatureRules = JsonConvert.SerializeObject(featureProfile.FeatureRules, System.Text.Json.JsonOptions.Indented),
+                FeatureRules = JConvert.SerializeObject(featureProfile.FeatureRules, JOptions.Indented),
             };
 
             return View(model);
@@ -236,7 +236,7 @@ namespace OrchardCore.Tenants.Controllers
                 {
                     profile.Id = model.Id;
                     profile.Name = model.Name;
-                    profile.FeatureRules = JsonConvert.DeserializeObject<List<FeatureRule>>(model.FeatureRules);
+                    profile.FeatureRules = JConvert.DeserializeObject<List<FeatureRule>>(model.FeatureRules);
 
                     var featureProfilesDocument = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
 

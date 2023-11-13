@@ -12,13 +12,13 @@ namespace YesSql.Serialization
 
         public DefaultJsonContentSerializer()
         {
-            _options = new(JsonOptions.Base);
+            _options = new(JOptions.Base);
             _options.Converters.Add(JsonDynamicConverter.Instance);
         }
 
         public DefaultJsonContentSerializer(IEnumerable<IJsonTypeInfoResolver> typeInfoResolvers)
         {
-            _options = new(JsonOptions.Base);
+            _options = new(JOptions.Base);
             foreach (var resolver in typeInfoResolvers)
             {
                 _options.TypeInfoResolverChain.Add(resolver);

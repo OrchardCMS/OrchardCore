@@ -4,7 +4,7 @@
 @using OrchardCore.Mvc.Utilities
 @{
     var settings = Model.PartFieldDefinition.GetSettings<ContentPickerFieldSettings>();
-    var selectedItems = JsonConvert.SerializeObject(Model.SelectedItems, System.Text.Json.JsonOptions.CamelCase);
+    var selectedItems = JConvert.SerializeObject(Model.SelectedItems, JOptions.CamelCase);
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
     var fieldName = Model.PartFieldDefinition.Name;
     var searchUrl = Url.RouteUrl(new { area = "OrchardCore.ContentFields", controller = "ContentPickerAdmin", action = "SearchContentItems", part = partName, field = fieldName });

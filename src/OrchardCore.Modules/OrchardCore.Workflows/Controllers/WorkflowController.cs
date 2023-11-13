@@ -215,8 +215,8 @@ namespace OrchardCore.Workflows.Controllers
             {
                 Workflow = workflow,
                 WorkflowType = workflowType,
-                WorkflowTypeJson = JsonConvert.SerializeObject(workflowTypeData, System.Text.Json.JsonOptions.CamelCase),
-                WorkflowJson = JsonConvert.SerializeObject(workflow, System.Text.Json.JsonOptions.CamelCaseIndented),
+                WorkflowTypeJson = JConvert.SerializeObject(workflowTypeData, JOptions.CamelCase),
+                WorkflowJson = JConvert.SerializeObject(workflow, JOptions.CamelCaseIndented),
                 ActivityDesignShapes = activityDesignShapes,
             };
 

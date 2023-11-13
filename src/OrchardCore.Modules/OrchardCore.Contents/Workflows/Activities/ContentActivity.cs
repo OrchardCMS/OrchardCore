@@ -127,8 +127,8 @@ namespace OrchardCore.Contents.Workflows.Activities
                 else
                 {
                     // Try to map the result to a content item.
-                    var json = JsonConvert.SerializeObject(result);
-                    content = JsonConvert.DeserializeObject<ContentItem>(json);
+                    var json = JConvert.SerializeObject(result);
+                    content = JConvert.DeserializeObject<ContentItem>(json);
                 }
             }
             else

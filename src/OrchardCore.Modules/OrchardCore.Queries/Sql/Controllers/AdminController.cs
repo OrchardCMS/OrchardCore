@@ -78,14 +78,14 @@ namespace OrchardCore.Queries.Sql.Controllers
             var connection = _store.Configuration.ConnectionFactory.CreateConnection();
             var dialect = _store.Configuration.SqlDialect;
 
-            var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
+            var parameters = JConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
 
             var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(model.DecodedQuery, NullEncoder.Default, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
 
             if (SqlParser.TryParse(tokenizedQuery, _store.Configuration.Schema, dialect, _store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {
                 model.RawSql = rawQuery;
-                model.Parameters = JsonConvert.SerializeObject(parameters, System.Text.Json.JsonOptions.Indented);
+                model.Parameters = JConvert.SerializeObject(parameters, JOptions.Indented);
 
                 try
                 {

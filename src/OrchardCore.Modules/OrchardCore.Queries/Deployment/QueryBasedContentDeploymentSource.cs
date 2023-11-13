@@ -82,7 +82,7 @@ namespace OrchardCore.Queries.Deployment
         {
             try
             {
-                queryParameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters) ?? new();
+                queryParameters = JConvert.DeserializeObject<Dictionary<string, object>>(parameters) ?? new();
                 return true;
             }
             catch (JsonException)

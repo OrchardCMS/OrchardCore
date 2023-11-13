@@ -81,7 +81,7 @@ namespace OrchardCore.DynamicCache.Services
             var cacheKey = await GetCacheKey(context);
 
             _localCache[cacheKey] = value;
-            var esi = JsonConvert.SerializeObject(CacheContextModel.FromCacheContext(context));
+            var esi = JConvert.SerializeObject(CacheContextModel.FromCacheContext(context));
 
             await Task.WhenAll(
                 SetCachedValueAsync(cacheKey, value, context),
@@ -203,7 +203,7 @@ namespace OrchardCore.DynamicCache.Services
                 return null;
             }
 
-            var esiModel = JsonConvert.DeserializeObject<CacheContextModel>(cachedValue);
+            var esiModel = JConvert.DeserializeObject<CacheContextModel>(cachedValue);
             return esiModel.ToCacheContext();
         }
     }

@@ -33,7 +33,7 @@ namespace OrchardCore.Tests.Apis.Lucene
                 },
             };
 
-            var query = JsonConvert.SerializeObject(dynamicQuery);
+            var query = JConvert.SerializeObject(dynamicQuery);
 
             var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
             var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
@@ -69,7 +69,7 @@ namespace OrchardCore.Tests.Apis.Lucene
                 },
             };
 
-            var query = JsonConvert.SerializeObject(dynamicQuery);
+            var query = JConvert.SerializeObject(dynamicQuery);
             var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
             var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
 
@@ -107,7 +107,7 @@ namespace OrchardCore.Tests.Apis.Lucene
                 },
             };
 
-            var query = JsonConvert.SerializeObject(dynamicQuery);
+            var query = JConvert.SerializeObject(dynamicQuery);
 
             var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
             var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();

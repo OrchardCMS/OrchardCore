@@ -100,7 +100,7 @@ namespace OrchardCore.Apis.GraphQL
                         }
                         else
                         {
-                            request = await JsonSerializer.DeserializeAsync<GraphQLRequest>(context.Request.Body, JsonOptions.CamelCase);
+                            request = await JsonSerializer.DeserializeAsync<GraphQLRequest>(context.Request.Body, JOptions.CamelCase);
                         }
                     }
                     else
@@ -188,7 +188,7 @@ namespace OrchardCore.Apis.GraphQL
 
             if (context.Request.Query.ContainsKey("variables"))
             {
-                request.Variables = JsonConvert.DeserializeObject<JsonElement>(context.Request.Query["variables"], JsonOptions.CamelCase);
+                request.Variables = JConvert.DeserializeObject<JsonElement>(context.Request.Query["variables"], JOptions.CamelCase);
             }
 
             if (context.Request.Query.ContainsKey("operationName"))

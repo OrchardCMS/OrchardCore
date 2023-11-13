@@ -102,7 +102,7 @@ namespace OrchardCore.Localization.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                var supportedCulture = JsonConvert.DeserializeObject<string[]>(model.SupportedCultures);
+                var supportedCulture = JConvert.DeserializeObject<string[]>(model.SupportedCultures);
                 if (!supportedCulture.Any())
                 {
                     context.Updater.ModelState.AddModelError("SupportedCultures", S["A culture is required"]);

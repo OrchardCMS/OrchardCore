@@ -60,7 +60,7 @@ namespace OrchardCore.Queries.Deployment
                 {
                     try
                     {
-                        var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(queryBasedContentViewModel.QueryParameters);
+                        var parameters = JConvert.DeserializeObject<Dictionary<string, object>>(queryBasedContentViewModel.QueryParameters);
                         if (parameters == null)
                         {
                             updater.ModelState.AddModelError(Prefix, nameof(step.QueryParameters), S["Make sure it is a valid JSON object. Example: { key : 'value' }"]);

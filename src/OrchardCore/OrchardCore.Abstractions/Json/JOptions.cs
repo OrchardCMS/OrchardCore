@@ -7,7 +7,7 @@ namespace System.Text.Json;
 /// <summary>
 /// Centralizes common <see cref="JsonSerializerOptions" /> instances.
 /// </summary>
-public static class JsonOptions
+public static class JOptions
 {
     public static readonly JsonSerializerOptions Base = new()
     {
@@ -28,7 +28,7 @@ public static class JsonOptions
     public static readonly JsonDocumentOptions Document;
     public static readonly JsonNodeOptions Node;
 
-    static JsonOptions()
+    static JOptions()
     {
         Default = new JsonSerializerOptions(Base);
         Default.Converters.Add(new JsonDynamicConverter());

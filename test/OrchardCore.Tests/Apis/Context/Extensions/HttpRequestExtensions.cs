@@ -34,7 +34,7 @@ namespace OrchardCore.Tests.Apis.Context
             JsonSerializerOptions options = null)
         {
             var content = new StringContent(
-                JsonConvert.SerializeObject(value, options),
+                JConvert.SerializeObject(value, options),
                 Encoding.UTF8,
                 "application/json");
 
@@ -99,7 +99,7 @@ namespace OrchardCore.Tests.Apis.Context
             JsonSerializerOptions options = null)
         {
             var content = new StringContent(
-                JsonConvert.SerializeObject(value, options),
+                JConvert.SerializeObject(value, options),
                 Encoding.UTF8,
                 "application/json");
 
@@ -133,7 +133,7 @@ namespace OrchardCore.Tests.Apis.Context
             JsonSerializerOptions options = null)
         {
             var content = new StringContent(
-                JsonConvert.SerializeObject(value, options),
+                JConvert.SerializeObject(value, options),
                 Encoding.UTF8,
                 "application/json");
 

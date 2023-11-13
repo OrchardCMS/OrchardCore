@@ -384,7 +384,7 @@ namespace OrchardCore.Search.Elasticsearch
         public async Task<IActionResult> Mappings(string indexName)
         {
             var mappings = await _elasticIndexManager.GetIndexMappings(indexName);
-            var formattedJson = JNode.Parse(mappings).ToJsonString(System.Text.Json.JsonOptions.Indented);
+            var formattedJson = JNode.Parse(mappings).ToJsonString(System.Text.Json.JOptions.Indented);
             return View(new MappingsViewModel
             {
                 IndexName = _elasticIndexManager.GetFullIndexName(indexName),
@@ -453,7 +453,7 @@ namespace OrchardCore.Search.Elasticsearch
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
+            var parameters = JConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
             var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(model.DecodedQuery, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions.Value))));
 
             try

@@ -44,7 +44,7 @@ namespace OrchardCore.DisplayManagement.Notify
             _htmlEncoder = htmlEncoder;
             _logger = logger;
 
-            _settings = new(System.Text.Json.JsonOptions.Default);
+            _settings = new(System.Text.Json.JOptions.Default);
             _settings.Converters.Add(new NotifyEntryConverter(htmlEncoder));
         }
 
@@ -175,7 +175,7 @@ namespace OrchardCore.DisplayManagement.Notify
             try
             {
                 var protector = _dataProtectionProvider.CreateProtector(nameof(NotifyFilter));
-                var signed = protector.Protect(JsonConvert.SerializeObject(notifyEntries, _settings));
+                var signed = protector.Protect(JConvert.SerializeObject(notifyEntries, _settings));
                 return WebUtility.UrlEncode(signed);
             }
             catch
@@ -190,7 +190,7 @@ namespace OrchardCore.DisplayManagement.Notify
             {
                 var protector = _dataProtectionProvider.CreateProtector(nameof(NotifyFilter));
                 var decoded = protector.Unprotect(WebUtility.UrlDecode(value));
-                messageEntries = JsonConvert.DeserializeObject<NotifyEntry[]>(decoded, _settings);
+                messageEntries = JConvert.DeserializeObject<NotifyEntry[]>(decoded, _settings);
             }
             catch
             {

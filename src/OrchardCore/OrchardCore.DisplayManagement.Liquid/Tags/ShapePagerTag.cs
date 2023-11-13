@@ -92,7 +92,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
                         if (attributes.Type == FluidValues.String)
                         {
-                            var values = JsonConvert.DeserializeObject<Dictionary<string, string>>(attributes.ToStringValue());
+                            var values = JConvert.DeserializeObject<Dictionary<string, string>>(attributes.ToStringValue());
                             foreach (var value in values)
                             {
                                 objectValue.Attributes.TryAdd(value.Key, value.Value);
@@ -106,7 +106,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
                         if (itemAttributes.Type == FluidValues.String)
                         {
-                            var values = JsonConvert.DeserializeObject<Dictionary<string, string>>(itemAttributes.ToStringValue());
+                            var values = JConvert.DeserializeObject<Dictionary<string, string>>(itemAttributes.ToStringValue());
                             foreach (var value in values)
                             {
                                 objectValue.ItemAttributes.TryAdd(value.Key, value.Value);

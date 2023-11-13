@@ -97,7 +97,7 @@ public static class ConfigurationExtensions
             return new Dictionary<string, string>();
         }
 
-        var configurationString = jConfiguration.ToJsonString(JsonOptions.Default);
+        var configurationString = jConfiguration.ToJsonString(JOptions.Default);
         using var ms = new MemoryStream(Encoding.UTF8.GetBytes(configurationString));
 
         return await JsonConfigurationParser.ParseAsync(ms);

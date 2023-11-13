@@ -5,9 +5,11 @@ namespace System.Text.Json.Nodes;
 public class JsonDynamicValue
 {
     private object? _value;
-    private bool _initialized;
+    private bool _hasValue;
 
-    public JsonDynamicValue(JsonValue? jsonValue, object? value = null)
+    public JsonDynamicValue(JsonValue? jsonValue) => JsonValue = jsonValue;
+
+    public JsonDynamicValue(JsonValue? jsonValue, object? value)
     {
         JsonValue = jsonValue;
         _value = value;
@@ -19,10 +21,10 @@ public class JsonDynamicValue
     {
         get
         {
-            if (!_initialized)
+            if (!_hasValue)
             {
-                _value ??= JsonValue?.ToObject<object>();
-                _initialized = true;
+                _value = JsonValue?.ToObject<object>();
+                _hasValue = true;
             }
 
             return _value;

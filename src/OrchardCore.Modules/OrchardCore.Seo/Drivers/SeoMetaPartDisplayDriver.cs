@@ -37,7 +37,7 @@ namespace OrchardCore.Seo.Drivers
                     model.MetaKeywords = part.MetaKeywords;
                     model.Canonical = part.Canonical;
                     model.MetaRobots = part.MetaRobots;
-                    model.CustomMetaTags = JsonConvert.SerializeObject(part.CustomMetaTags, JsonOptions.CamelCaseIndented);
+                    model.CustomMetaTags = JConvert.SerializeObject(part.CustomMetaTags, JOptions.CamelCaseIndented);
                     model.SeoMetaPart = part;
                     model.Settings = settings;
                 }).Location("Parts#SEO;50"),
@@ -95,7 +95,7 @@ namespace OrchardCore.Seo.Drivers
 
                     part.CustomMetaTags = string.IsNullOrWhiteSpace(partViewModel.CustomMetaTags)
                         ? Array.Empty<MetaEntry>()
-                        : JsonConvert.DeserializeObject<MetaEntry[]>(partViewModel.CustomMetaTags);
+                        : JConvert.DeserializeObject<MetaEntry[]>(partViewModel.CustomMetaTags);
 
                     if (part.Canonical?.IndexOfAny(SeoMetaPart.InvalidCharactersForCanoncial) > -1 || part.Canonical?.IndexOf(' ') > -1)
                     {

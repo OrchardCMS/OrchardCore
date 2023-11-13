@@ -59,7 +59,7 @@ namespace OrchardCore.Environment.Shell.Configuration
             Directory.CreateDirectory(tenantFolder);
 
             using var streamWriter = File.Create(appsettings);
-            await JsonSerializer.SerializeAsync(streamWriter, configData.ToJsonObject(), JsonOptions.Indented);
+            await JsonSerializer.SerializeAsync(streamWriter, configData.ToJsonObject(), JOptions.Indented);
         }
 
         public Task RemoveAsync(string tenant)

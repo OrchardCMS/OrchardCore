@@ -51,7 +51,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
             {
                 using var stream = virtualFileInfo.CreateReadStream();
 
-                var placementFile = JsonSerializer.Deserialize<PlacementFile>(stream, JsonOptions.Default);
+                var placementFile = JsonSerializer.Deserialize<PlacementFile>(stream, JOptions.Default);
                 if (placementFile is not null)
                 {
                     ProcessPlacementFile(builder, featureDescriptor, placementFile);
