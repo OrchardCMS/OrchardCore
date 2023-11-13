@@ -12,7 +12,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Roles.Workflows.Activities;
 
-public class GetUsersByRoleTask : TaskActivity
+public class GetUsersByRoleTask : TaskActivity<GetUsersByRoleTask>
 {
     private readonly UserManager<IUser> _userManager;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
@@ -24,8 +24,6 @@ public class GetUsersByRoleTask : TaskActivity
         _expressionEvaluator = expressionvaluator;
         S = localizer;
     }
-
-    public override string Name => nameof(GetUsersByRoleTask);
 
     public override LocalizedString DisplayText => S["Get Users by Role Task"];
 
@@ -49,11 +47,12 @@ public class GetUsersByRoleTask : TaskActivity
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        var propKeyName = await _expressionEvaluator.EvaluateAsync(OutputKeyName, workflowContext, null);
+        var outputKeyName = await _expressionEvaluator.EvaluateAsync(OutputKeyName, workflowContext, null);
 
         if (!string.IsNullOrEmpty(propKeyName))
         {
-            var usersInRole = new List<User>();
+            var usersInRole = new Dictionary<string, User>();
+
             foreach (var role in Roles)
             {
                 foreach(var u in await _userManager.GetUsersInRoleAsync(role))
@@ -63,15 +62,13 @@ public class GetUsersByRoleTask : TaskActivity
                         continue;
                     }
 
-                    usersInRole.Add(user);
+                    usersInRole.TryAdd(user.UserId, user);
                 }
             }
-            if (usersInRole.Count > 0)
-            {
-                workflowContext.Output[propKeyName] = usersInRole;
+            
+            workflowContext.Output[outputKeyName] = usersInRole.Values;
 
-                return Outcomes("Done");
-            }
+            return Outcomes("Done");
         }
 
         return Outcomes("Failed");

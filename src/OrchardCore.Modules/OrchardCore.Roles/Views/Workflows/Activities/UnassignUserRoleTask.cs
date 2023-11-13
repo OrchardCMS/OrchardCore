@@ -13,7 +13,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Roles.Workflows.Activities;
 
-public class UnassignUserRoleTask : TaskActivity
+public class UnassignUserRoleTask : TaskActivity<UnassignUserRoleTask>
 {
     private readonly UserManager<IUser> _userManager;
     private readonly IUserService _userService;
@@ -27,8 +27,6 @@ public class UnassignUserRoleTask : TaskActivity
         _expressionEvaluator = expressionvaluator;
         S = localizer;
     }
-
-    public override string Name => nameof(UnassignUserRoleTask);
 
     public override LocalizedString DisplayText => S["Unassign User Role Task"];
 

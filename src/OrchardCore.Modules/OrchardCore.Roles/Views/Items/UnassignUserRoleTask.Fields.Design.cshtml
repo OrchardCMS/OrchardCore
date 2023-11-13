@@ -2,7 +2,9 @@
 @using OrchardCore.Workflows.Helpers
 @using OrchardCore.Roles.Workflows.Activities
 @using OrchardCore.Roles.Workflows.ViewModels
+
 @model ActivityViewModel<UnassignUserRoleTask>
+
 <header>
     <h4>
         <i class="fa-solid fa-user" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Unassign user from roles"])
