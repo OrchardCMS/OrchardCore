@@ -37,7 +37,7 @@ namespace OrchardCore.Taxonomies.Indexing
         public override void Describe(DescribeContext<ContentItem> context)
         {
             context.For<TaxonomyIndex>()
-                .Map(contentItem =>
+                .Map(async contentItem =>
                 {
                     // Remove index records of soft deleted items.
                     if (!contentItem.Published && !contentItem.Latest)
@@ -55,7 +55,7 @@ namespace OrchardCore.Taxonomies.Indexing
                     _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
                     // Search for Taxonomy fields
-                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType).GetAwaiter().GetResult();
+                    var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
                     // This can occur when content items become orphaned, particularly layer widgets when a layer is removed, before its widgets have been unpublished.
                     if (contentTypeDefinition == null)
