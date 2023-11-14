@@ -5,7 +5,8 @@ namespace OrchardCore.DisplayManagement.Html;
 
 public static class HtmlContentBuilderExtensions
 {
-    private static readonly HtmlString _seperator = new(" ");
+    private static readonly HtmlString _whitespace = new(" ");
+    private static readonly HtmlString _hyphen = new("-");
 
     public static HtmlContentBuilder AppendSeparatedValue(this HtmlContentBuilder builder, string value)
     {
@@ -25,10 +26,24 @@ public static class HtmlContentBuilderExtensions
 
         // At this point, we already know that the builder has at least one entry, so we append a single space to the class name.
         // We pass create 'HtmlString' here to prevent the builder from preforming string.IsNullOrWhiteSpace again for performance reason.
-        builder.AppendHtml(_seperator);
+        builder.AppendWhitespace();
 
         // We use 'Append' here to ensure that the value is encoded.
         builder.Append(value);
+
+        return builder;
+    }
+
+    public static HtmlContentBuilder AppendWhitespace(this HtmlContentBuilder builder)
+    {
+        builder.AppendHtml(_whitespace);
+
+        return builder;
+    }
+
+    public static HtmlContentBuilder AppendHyphen(this HtmlContentBuilder builder)
+    {
+        builder.AppendHtml(_hyphen);
 
         return builder;
     }

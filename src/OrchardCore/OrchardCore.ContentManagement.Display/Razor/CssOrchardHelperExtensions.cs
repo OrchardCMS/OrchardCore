@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.Mvc.Utilities;
 using OrchardCore.DisplayManagement.Html;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore;
 
@@ -20,11 +20,15 @@ public static class CssOrchardHelperExtensions
 
         if (partDefinition?.PartDefinition != null)
         {
-            builder.AppendSeparatedValue($"{PartWrapperPrefix}-{partDefinition.PartDefinition.Name.HtmlClassify()}");
+            builder.AppendSeparatedValue(PartWrapperPrefix);
+            builder.AppendHyphen();
+            builder.Append(partDefinition.PartDefinition.Name.HtmlClassify());
 
             if (partDefinition.IsNamedPart())
             {
-                builder.AppendSeparatedValue($"{PartWrapperPrefix}-{partDefinition.Name.HtmlClassify()}");
+                builder.AppendSeparatedValue(PartWrapperPrefix);
+                builder.AppendHyphen();
+                builder.Append(partDefinition.Name.HtmlClassify());
             }
         }
 
@@ -41,11 +45,19 @@ public static class CssOrchardHelperExtensions
 
         if (fieldDefinition?.PartDefinition != null)
         {
-            builder.AppendSeparatedValue($"{FieldWrapperPrefix}-{fieldDefinition.PartDefinition.Name}-{fieldDefinition.Name}".HtmlClassify());
+            builder.AppendSeparatedValue(FieldWrapperPrefix);
+            builder.AppendHyphen();
+            builder.Append(fieldDefinition.PartDefinition.Name.HtmlClassify());
+            builder.AppendHyphen();
+            builder.Append(fieldDefinition.Name.HtmlClassify());
 
             if (fieldDefinition.IsNamedPart())
             {
-                builder.AppendSeparatedValue($"{FieldWrapperPrefix}-{fieldDefinition.ContentTypePartDefinition.Name}-{fieldDefinition.Name}".HtmlClassify());
+                builder.AppendSeparatedValue(FieldWrapperPrefix);
+                builder.AppendHyphen();
+                builder.Append(fieldDefinition.ContentTypePartDefinition.Name.HtmlClassify());
+                builder.AppendHyphen();
+                builder.Append(fieldDefinition.Name.HtmlClassify());
             }
         }
 
