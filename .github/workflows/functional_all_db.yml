@@ -1,6 +1,5 @@
 name: Functional Tests - all Databases
 on:
-  pull_request:
   # manual trigger
   workflow_dispatch:
 env:
