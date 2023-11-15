@@ -86,7 +86,7 @@ namespace OrchardCore.Html
                 {
                     if (UpdateBody(contentItemVersion.Content))
                     {
-                        _session.Save(contentItemVersion);
+                        await _session.SaveAsync(contentItemVersion);
                         _logger.LogInformation("A content item version's BodyPart was upgraded: {ContentItemVersionId}", contentItemVersion.ContentItemVersionId);
                     }
 

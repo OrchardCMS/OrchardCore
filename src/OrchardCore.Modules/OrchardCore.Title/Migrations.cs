@@ -63,7 +63,7 @@ namespace OrchardCore.Title
                     if (string.IsNullOrEmpty(contentItemVersion.DisplayText)
                         && UpdateTitle(contentItemVersion.Content))
                     {
-                        _session.Save(contentItemVersion);
+                        await _session.SaveAsync(contentItemVersion);
                         _logger.LogInformation("A content item version's Title was upgraded: {ContentItemVersionId}", contentItemVersion.ContentItemVersionId);
                     }
 

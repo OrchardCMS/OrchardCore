@@ -42,7 +42,7 @@ namespace Members
 
         public int UpdateFrom1()
         {
-            SchemaBuilder.CreateMapIndexTable<MemberIndex>(table =>
+            await SchemaBuilder.CreateMapIndexTableAsync<MemberIndex>(table =>
             {
                 // Make sure to set column length, otherwise migration will not work for all databases
                 table.Column<string>(nameof(MemberIndex.SocialSecurityNumber), column => column.WithLength(11))
@@ -52,7 +52,7 @@ namespace Members
             
             // This will create index on the sql table itself, 
             // which will make fetches by 'SocialSecurityNumber' column faster
-            SchemaBuilder.AlterIndexTable<MemberIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<MemberIndex>(table => table
                 .CreateIndex("IDX_MemberIndex_SocialSecurityNumber",
                     "SocialSecurityNumber")
             );

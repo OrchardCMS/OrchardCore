@@ -143,7 +143,7 @@ namespace OrchardCore.Lists.Services
                             }
                         }
 
-                        _session.Save(contentItem);
+                        await _session.SaveAsync(contentItem);
                     }
 
                     i++;

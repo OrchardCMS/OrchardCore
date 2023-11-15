@@ -97,7 +97,7 @@ namespace OrchardCore.Taxonomies.Controllers
             }
             else
             {
-                _session.Save(taxonomy);
+                await _session.SaveAsync(taxonomy);
             }
 
             var viewModel = new CreatedTagViewModel
