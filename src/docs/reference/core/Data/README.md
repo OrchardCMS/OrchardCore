@@ -107,19 +107,19 @@ public class AdminController : Controller
 
     public async Task<ActionResult> Index()
     {
-       using (var connection = _dbAccessor.CreateConnection())
+       await using (var connection = _dbAccessor.CreateConnection())
        {
-           using(var transaction = connection.BeginTransaction())
+           using (var transaction = await connection.BeginTransactionAsync())
            {
                 var dialect = _store.Configuration.SqlDialect;
                 var customTable = dialect.QuoteForTableName($"{_tablePrefix}CustomTable");
 
                 var selectCommand = $"SELECT * FROM {customTable}";
 
-                var model = connection.QueryAsync<CustomTable>(selectCommand);
+                var model = await connection.QueryAsync<CustomTable>(selectCommand);
 
                 // If an exception occurs the transaction is disposed and rollbacked
-                transaction.Commit();
+                await transaction.CommitAsync();
 
                 return View(model);
             }
