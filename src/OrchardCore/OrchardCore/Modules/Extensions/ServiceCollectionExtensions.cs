@@ -64,6 +64,17 @@ namespace Microsoft.Extensions.DependencyInjection
                 .Select(sd => sd.GetImplementationType()))
             .ToArray();
 
+#if NET8_0_OR_GREATER
+        /// <summary>
+        /// Metrics singletons used to isolate tenants from the host.
+        /// </summary>
+        private static readonly Type[] _metricsTypesToIsolate = new ServiceCollection()
+            .AddMetrics()
+            .Where(sd => sd.Lifetime == ServiceLifetime.Singleton)
+            .Select(sd => sd.GetImplementationType())
+            .ToArray();
+#endif
+
         /// <summary>
         /// Adds OrchardCore services to the host service collection.
         /// </summary>
@@ -90,6 +101,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 AddExtensionServices(builder);
                 AddStaticFiles(builder);
 
+#if NET8_0_OR_GREATER
+                AddMetrics(builder);
+#endif
                 AddRouting(builder);
                 IsolateHttpClient(builder);
                 AddEndpointsApiExplorer(builder);
@@ -270,6 +284,36 @@ namespace Microsoft.Extensions.DependencyInjection
                 app.UseStaticFiles(options);
             });
         }
+
+#if NET8_0_OR_GREATER
+        /// <summary>
+        /// Adds isolated tenant level metrics services.
+        /// </summary>
+        private static void AddMetrics(OrchardCoreBuilder builder)
+        {
+            // 'AddMetrics()' is called by the host.
+
+            builder.ConfigureServices(collection =>
+            {
+                // The 'DefaultMeterFactory' caches 'Meters' in a non thread safe dictionary.
+                // So, we need to register an isolated 'IMeterFactory' singleton per tenant.
+                var descriptorsToRemove = collection
+                    .Where(sd =>
+                        sd is ClonedSingletonDescriptor &&
+                        _metricsTypesToIsolate.Contains(sd.GetImplementationType()))
+                    .ToArray();
+                // Isolate each tenant from the host.
+
+                foreach (var descriptor in descriptorsToRemove)
+                {
+                    collection.Remove(descriptor);
+                }
+
+                collection.AddMetrics();
+            },
+            order: int.MinValue + 100);
+        }
+#endif
 
         /// <summary>
         /// Adds isolated tenant level routing services.

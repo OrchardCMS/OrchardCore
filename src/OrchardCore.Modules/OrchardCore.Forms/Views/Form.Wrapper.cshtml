@@ -1,7 +1,8 @@
 @using Microsoft.AspNetCore.Html
-@using Microsoft.Extensions.Options
+@using OrchardCore.ContentManagement
 @using OrchardCore.Forms.Models
 @using OrchardCore.Mvc.Utilities
+@using OrchardCore.Workflows
 @using OrchardCore.Workflows.Http
 @using OrchardCore.Workflows.Http.Models
 
@@ -25,6 +26,11 @@
     @if (formPart.EnableAntiForgeryToken)
     {
         @Html.AntiForgeryToken()
+    }
+
+    @if (formPart.SaveFormLocation)
+    {
+        <input type="hidden" name="@WorkflowConstants.FormLocationKeyInputName" value="@ViewContext.HttpContext.Request.Path" />
     }
 
     @await DisplayAsync((IHtmlContent)Model.Metadata.ChildContent)

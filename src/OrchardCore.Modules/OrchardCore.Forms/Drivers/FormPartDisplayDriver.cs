@@ -35,6 +35,7 @@ namespace OrchardCore.Forms.Drivers
                 m.WorkflowTypeId = part.WorkflowTypeId;
                 m.EncType = part.EncType;
                 m.EnableAntiForgeryToken = part.EnableAntiForgeryToken;
+                m.SaveFormLocation = part.SaveFormLocation;
                 m.WorkflowPayload = part.WorkflowPayload;
 
                 m.WorkflowTypes.Insert(0, new SelectListItem() { Text = S["None"], Value = string.Empty });
@@ -60,6 +61,7 @@ namespace OrchardCore.Forms.Drivers
                 part.WorkflowTypeId = viewModel.WorkflowTypeId;
                 part.EncType = viewModel.EncType;
                 part.EnableAntiForgeryToken = viewModel.EnableAntiForgeryToken;
+                part.SaveFormLocation = viewModel.SaveFormLocation;
 
                 part.WorkflowPayload = viewModel.WorkflowPayload;
                 if (part.WorkflowPayload.WorkflowId is not null)

@@ -50,7 +50,7 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
 | jquery.easing         | Script | 1.4.1         | -              |
 | jquery-resizable-dom  | Script | 0.35.0        | -              |
-| js-cookie             | Script | 3.0.1         | jQuery         |
+| js-cookie             | Script | 3.0.5         | -              |
 | popper                | Script | 1.16.1        | -              |
 | popperjs              | Script | 2.11.8        | -              |
 | bootstrap             | Script | 4.6.1         | popper         |
@@ -68,8 +68,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | trumbowyg             | Script | 2.27.3        | -              |
 | vue-multiselect       | Script | 2.1.6         | -              |
 | vuedraggable          | Script | 2.24.3        | Sortable       |
-| monaco-loader         | Script | 0.35.0        | -              |
-| monaco                | Script | 0.35.0        | monaco-loader  |
+| monaco-loader         | Script | 0.44.0        | -              |
+| monaco                | Script | 0.44.0        | monaco-loader  |
 | nouislider            | Script | 15.6.1        | -              |
 | nouislider            | Style  | 15.6.1        | -              |
 

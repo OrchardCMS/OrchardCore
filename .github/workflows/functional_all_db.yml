@@ -17,7 +17,7 @@ jobs:
       # We need to install dotnet in the docker container.
     - uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '7.0.x'
+        dotnet-version: '8.0.x'
     - uses: actions/setup-node@v3
       with:
         node-version: "15"
@@ -43,7 +43,7 @@ jobs:
       # We need to install dotnet in the docker container.
     - uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '7.0.x'
+        dotnet-version: '8.0.x'
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
@@ -84,7 +84,7 @@ jobs:
       # We need to install dotnet in the docker container.
     - uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '7.0.x'
+        dotnet-version: '8.0.x'
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
@@ -121,7 +121,7 @@ jobs:
       # We need to install dotnet in the docker container.
     - uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '7.0.x'
+        dotnet-version: '8.0.x'
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
@@ -157,7 +157,7 @@ jobs:
       # We need to install dotnet in the docker container.
     - uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '7.0.x'
+        dotnet-version: '8.0.x'
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional

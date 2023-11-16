@@ -21,6 +21,7 @@ namespace Microsoft.Extensions.Configuration.Json
         /// <param name="stream">The stream to read.</param>
         public override void Load(Stream stream) => Data = JsonConfigurationParser.Parse(stream);
 
+#if !NET8_0_OR_GREATER
         /// <summary>
         /// Dispose the provider.
         /// </summary>
@@ -28,12 +29,8 @@ namespace Microsoft.Extensions.Configuration.Json
         protected override void Dispose(bool disposing)
         {
             base.Dispose(true);
-
-            // OC: Will be part of 'FileConfigurationProvider' in a future version.
-            // if (Source.OwnsFileProvider)
-            {
-                (Source.FileProvider as IDisposable)?.Dispose();
-            }
+            (Source.FileProvider as IDisposable)?.Dispose();
         }
+#endif
     }
 }

@@ -244,6 +244,11 @@ namespace OrchardCore.ContentManagement
                 var partFieldRecord = record.ContentPartFieldDefinitionRecords.FirstOrDefault(r => string.Equals(r.Name, fieldName, StringComparison.OrdinalIgnoreCase));
                 if (partFieldRecord == null)
                 {
+                    if (field.FieldDefinition == null)
+                    {
+                        throw new InvalidOperationException($"The '{field.Name}' field in '{model.Name}' part was defined without a specified type. Please review the migration and explicitly specify the field type.");
+                    }
+
                     partFieldRecord = new ContentPartFieldDefinitionRecord
                     {
                         FieldName = field.FieldDefinition.Name,

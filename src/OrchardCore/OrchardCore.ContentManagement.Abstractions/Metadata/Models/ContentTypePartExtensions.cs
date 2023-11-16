@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.ContentManagement.Metadata.Settings;
 
 namespace OrchardCore.ContentManagement.Metadata.Models
@@ -45,5 +44,8 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         {
             return typePart.GetSettings<ContentTypePartSettings>().DisplayMode;
         }
+
+        public static bool IsNamedPart(this ContentTypePartDefinition typePart)
+            => typePart.PartDefinition.IsReusable() && typePart.Name != typePart.PartDefinition.Name;
     }
 }
