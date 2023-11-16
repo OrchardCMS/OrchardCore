@@ -11,6 +11,6 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Secrets",
     Name = "Secrets",
-    Description = "The secrets feature manages secrets that other modules can contribute to.",
+    Description = "The secrets feature manages secrets that other modules can access and contribute to.",
     Category = "Configuration"
 )]
