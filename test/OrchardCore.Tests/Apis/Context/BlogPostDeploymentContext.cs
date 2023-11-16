@@ -39,7 +39,7 @@ namespace OrchardCore.Tests.Apis.Context
             {
                 var remoteClientService = scope.ServiceProvider.GetRequiredService<RemoteClientService>();
 
-                await remoteClientService.CreateRemoteClientAsync(RemoteDeploymentClientName, RemoteDeploymentApiKey, String.Empty);
+                await remoteClientService.CreateRemoteClientAsync(RemoteDeploymentClientName, RemoteDeploymentApiKey, string.Empty);
             });
         }
 
