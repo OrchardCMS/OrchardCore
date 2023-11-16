@@ -2,7 +2,7 @@
 # A prerequisite is a published application in the .build/release  
 
 ARG TARGET_IMAGE
-FROM ${TARGET_IMAGE}
+FROM ${TARGET_IMAGE} AS aspnet
 
 EXPOSE 80
 ENV ASPNETCORE_URLS http://+:80
