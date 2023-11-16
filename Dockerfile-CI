@@ -1,7 +1,8 @@
 # This Docker file is intended for the CI
 # A prerequisite is a published application in the .build/release  
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+ARG TARGET_IMAGE
+FROM ${TARGET_IMAGE}
 
 EXPOSE 80
 ENV ASPNETCORE_URLS http://+:80
