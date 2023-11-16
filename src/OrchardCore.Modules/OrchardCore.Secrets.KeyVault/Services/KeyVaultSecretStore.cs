@@ -17,7 +17,6 @@ public class KeyVaultSecretStore : ISecretStore
     {
         _keyVaultClientService = keyVaultClientService;
         S = stringLocalizer;
-
     }
 
     public string Name => nameof(KeyVaultSecretStore);
