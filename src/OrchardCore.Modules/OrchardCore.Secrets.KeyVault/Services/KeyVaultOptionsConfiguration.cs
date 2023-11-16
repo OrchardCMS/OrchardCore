@@ -71,7 +71,7 @@ public class KeyVaultOptionsConfiguration : IConfigureOptions<SecretsKeyVaultOpt
             options.Prefix = template.Render(templateContext, NullEncoder.Default);
             options.Prefix = options.Prefix.Replace("\r", string.Empty).Replace("\n", string.Empty);
         }
-        catch (Exception e)
+        catch (Exception e) when (!e.IsFatal())
         {
             _logger.LogCritical(e, "Unable to parse Azure KeyVault Secrets KeyVault Prefix.");
             throw;
