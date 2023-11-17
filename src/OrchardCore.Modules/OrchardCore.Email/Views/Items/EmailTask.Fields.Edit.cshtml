@@ -1,3 +1,4 @@
+@using OrchardCore.Email
 @using OrchardCore.Email.Workflows.ViewModels
 @model EmailTaskViewModel
 
@@ -50,12 +51,15 @@
     <span class="hint">@T["The subject of the email message. With Liquid support."]</span>
 </div>
 
-<div class="mb-3">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="IsHtmlBody" />
-        <label class="form-check-label" asp-for="IsHtmlBody">@T["Does the Body contain HTML?"]</label>
-        <span class="hint dashed">@T["If checked, indicates the body of the email message will be sent as HTML."]</span>
-    </div>
+<div class="mb-3" asp-validation-class-for="Format">
+    <label asp-for="Format">@T["Format"]</label>
+    <select asp-for="Format" class="form-select">
+        <option value="@MailMessageFormat.Text">@nameof(MailMessageFormat.Text)</option>
+        <option value="@MailMessageFormat.Html">@nameof(MailMessageFormat.Html)</option>
+        <option value="@MailMessageFormat.All">@nameof(MailMessageFormat.All)</option>
+    </select>
+    <span asp-validation-for="Format"></span>
+    <span class="hint">@T["The Format of the email message."]</span>
 </div>
 
 <div class="mb-3" id="body">

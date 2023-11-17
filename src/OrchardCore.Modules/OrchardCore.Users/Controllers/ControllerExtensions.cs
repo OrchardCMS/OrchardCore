@@ -40,7 +40,7 @@ namespace OrchardCore.Users.Controllers
                 To = email,
                 Subject = subject,
                 Body = body,
-                IsHtmlBody = true
+                Format = MailMessageFormat.Html
             };
 
             var result = await smtpService.SendAsync(message);

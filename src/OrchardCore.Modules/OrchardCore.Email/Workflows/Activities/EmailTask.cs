@@ -82,12 +82,11 @@ namespace OrchardCore.Email.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public bool IsHtmlBody
+        public MailMessageFormat Format
         {
-            get => GetProperty(() => true);
+            get => GetProperty(() => MailMessageFormat.Text);
             set => SetProperty(value);
         }
-
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
@@ -103,7 +102,7 @@ namespace OrchardCore.Email.Workflows.Activities
             var cc = await _expressionEvaluator.EvaluateAsync(Cc, workflowContext, null);
             var bcc = await _expressionEvaluator.EvaluateAsync(Bcc, workflowContext, null);
             var subject = await _expressionEvaluator.EvaluateAsync(Subject, workflowContext, null);
-            var body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, IsHtmlBody ? _htmlEncoder : null);
+            var body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, Format == MailMessageFormat.Text ? null : _htmlEncoder);
 
             var message = new MailMessage
             {
@@ -116,7 +115,7 @@ namespace OrchardCore.Email.Workflows.Activities
                 ReplyTo = replyTo?.Trim(),
                 Subject = subject?.Trim(),
                 Body = body?.Trim(),
-                IsHtmlBody = IsHtmlBody
+                Format = Format
             };
 
             if (!string.IsNullOrWhiteSpace(sender))

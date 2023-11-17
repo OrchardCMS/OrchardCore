@@ -18,6 +18,6 @@ namespace OrchardCore.Email.Workflows.ViewModels
 
         public string Body { get; set; }
 
-        public bool IsHtmlBody { get; set; }
+        public MailMessageFormat Format { get; set; }
     }
 }

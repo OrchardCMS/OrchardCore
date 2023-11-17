@@ -97,13 +97,13 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
 
         var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
 
-        var setings = (await SiteService.GetSiteSettingsAsync()).As<EmailAuthenticatorLoginSettings>();
+        var settings = (await SiteService.GetSiteSettingsAsync()).As<EmailAuthenticatorLoginSettings>();
         var message = new MailMessage()
         {
             To = await UserManager.GetEmailAsync(user),
-            Subject = await GetSubjectAsync(setings, user, code),
-            Body = await GetBodyAsync(setings, user, code),
-            IsHtmlBody = true,
+            Subject = await GetSubjectAsync(settings, user, code),
+            Body = await GetBodyAsync(settings, user, code),
+            Format = MailMessageFormat.Html
         };
 
         var result = await _smtpService.SendAsync(message);
@@ -175,7 +175,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
             To = await UserManager.GetEmailAsync(user),
             Subject = await GetSubjectAsync(settings, user, code),
             Body = await GetBodyAsync(settings, user, code),
-            IsHtmlBody = true,
+            Format = MailMessageFormat.Html
         };
 
         var result = await _smtpService.SendAsync(message);

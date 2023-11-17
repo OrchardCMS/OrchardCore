@@ -41,12 +41,12 @@ public class EmailNotificationProvider : INotificationMethodProvider
         if (message.IsHtmlPreferred && !string.IsNullOrWhiteSpace(message.HtmlBody))
         {
             mailMessage.Body = message.HtmlBody;
-            mailMessage.IsHtmlBody = true;
+            mailMessage.Format = MailMessageFormat.Html;
         }
         else
         {
             mailMessage.Body = message.TextBody;
-            mailMessage.IsHtmlBody = false;
+            mailMessage.Format = MailMessageFormat.Text;
         }
 
         var result = await _smtpService.SendAsync(mailMessage);

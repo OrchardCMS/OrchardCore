@@ -134,12 +134,12 @@ namespace OrchardCore.Users.Workflows.Activities
 
                     var body = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailTemplate, workflowContext, _htmlEncoder);
 
-                    var message = new MailMessage()
+                    var message = new MailMessage
                     {
                         To = email,
                         Subject = subject,
                         Body = body,
-                        IsHtmlBody = true
+                        Format = MailMessageFormat.Html
                     };
                     var smtpService = _httpContextAccessor.HttpContext.RequestServices.GetService<ISmtpService>();
 
