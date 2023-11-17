@@ -41,7 +41,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [Serilog.AspNetCore](https://github.com/serilog/serilog-aspnetcore) | Serilog integration for ASP.NET Core. | 7.0.0 | [Apache-2.0](https://github.com/serilog/serilog-aspnetcore/blob/dev/LICENSE) |
 | [Shortcodes](https://github.com/sebastienros/shortcodes) | Shortcodes processor for .NET. | 1.3.3 | [MIT](https://github.com/sebastienros/shortcodes/blob/dev/LICENSE) |
 | [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) | General purpose redis client. | 2.7.4 | [MIT](https://github.com/StackExchange/StackExchange.Redis/blob/main/LICENSE) |
-| [YesSql](https://github.com/sebastienros/yessql) | .NET document database working on any RDBMS. | 3.4.0 | [MIT](https://github.com/sebastienros/yessql/blob/dev/LICENSE) |
+| [YesSql](https://github.com/sebastienros/yessql) | .NET document database working on any RDBMS. | 3.5.0 | [MIT](https://github.com/sebastienros/yessql/blob/dev/LICENSE) |
 | [ZString](https://github.com/Cysharp/ZString) | Zero Allocation StringBuilder for .NET Core and Unity. | 2.5.1 | [MIT](https://github.com/Cysharp/ZString/blob/master/LICENSE) |
 
 The below table lists the different libraries used as Resources:
@@ -93,7 +93,7 @@ The below table lists the different Tests libraries:
 | [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) | Powerful .NET library for benchmarking. | 0.13.10 | [MIT](https://github.com/dotnet/BenchmarkDotNet/blob/master/LICENSE.md) |
 | [Cypress](https://github.com/cypress-io/cypress) | Fast, easy and reliable testing for anything that runs in a browser. | 9.6.1 | [MIT](https://github.com/cypress-io/cypress/blob/develop/LICENSE) |
 | [Cypress Orchard](https://www.npmjs.com/package/cypress-orchardcore) | A collection of cypress commands for Orchard Core. | 0.4.5 | MIT |
-| [Moq](https://github.com/moq/moq) | The most popular and friendly mocking framework for .NET. | 4.18.4 | [MIT](https://github.com/moq/moq/blob/main/LICENSE) |
+| [Moq](https://github.com/moq/moq) | The most popular and friendly mocking framework for .NET. | 4.20.69 | [MIT](https://github.com/moq/moq/blob/main/LICENSE) |
 | [VS Test SDK](https://github.com/microsoft/vstest/) | Visual Studio Test Platform. | 17.8.0 | [MIT](https://github.com/microsoft/vstest/blob/master/LICENSE) |
 | [xUnit](https://github.com/xunit/xunit) | Free, open source, community-focused unit testing tool for the .NET Framework. | 2.6.1 | [MIT](https://github.com/xunit/xunit/blob/main/LICENSE) |
 | [xUnit Analyzers](https://github.com/xunit/xunit.analyzers) | Roslyn analyzers for xUnit.net. | 1.5.0 | [MIT](https://github.com/xunit/xunit.analyzers/blob/main/LICENSE) |
