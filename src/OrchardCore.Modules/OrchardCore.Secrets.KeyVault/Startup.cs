@@ -1,10 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
-using OrchardCore.Secrets.KeyVault.Models;
-using OrchardCore.Secrets.KeyVault.Services;
+using OrchardCore.Secrets.Azure.Models;
+using OrchardCore.Secrets.Azure.Services;
 
-namespace OrchardCore.Secrets.KeyVault;
+namespace OrchardCore.Secrets.Azure;
 
 public class Startup : StartupBase
 {

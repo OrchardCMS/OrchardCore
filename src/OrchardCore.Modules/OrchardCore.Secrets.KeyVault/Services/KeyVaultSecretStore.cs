@@ -4,7 +4,7 @@ using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using OrchardCore.Secrets.Models;
 
-namespace OrchardCore.Secrets.KeyVault.Services;
+namespace OrchardCore.Secrets.Azure.Services;
 
 public class KeyVaultSecretStore : ISecretStore
 {

@@ -511,7 +511,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Secrets.Abstrac
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Secrets", "src\OrchardCore.Modules\OrchardCore.Secrets\OrchardCore.Secrets.csproj", "{7DC59AC8-E9EE-4015-AA63-8E18DB4AD88F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Secrets.KeyVault", "src\OrchardCore.Modules\OrchardCore.Secrets.KeyVault\OrchardCore.Secrets.KeyVault.csproj", "{854511CE-6DC6-4AE1-A135-B21A94D7E784}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Secrets.Azure", "src\OrchardCore.Modules\OrchardCore.Secrets.KeyVault\OrchardCore.Secrets.Azure.csproj", "{854511CE-6DC6-4AE1-A135-B21A94D7E784}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

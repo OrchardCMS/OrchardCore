@@ -6,9 +6,9 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
-using OrchardCore.Secrets.KeyVault.Models;
+using OrchardCore.Secrets.Azure.Models;
 
-namespace OrchardCore.Secrets.KeyVault.Services;
+namespace OrchardCore.Secrets.Azure.Services;
 
 public class KeyVaultOptionsConfiguration : IConfigureOptions<SecretsKeyVaultOptions>
 {

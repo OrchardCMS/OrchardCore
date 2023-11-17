@@ -1,4 +1,4 @@
-namespace OrchardCore.Secrets.KeyVault.Models;
+namespace OrchardCore.Secrets.Azure.Models;
 
 public class SecretsKeyVaultOptions
 {
