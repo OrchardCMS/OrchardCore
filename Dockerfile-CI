@@ -1,7 +1,6 @@
 # This Docker file is intended for the CI
 # A prerequisite is a published application in the .build/release  
 
-ARG BUILDPLATFORM
 FROM --platform=$TARGETOS golang:alpine AS build
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-nanoserver-1809 AS build_windows
