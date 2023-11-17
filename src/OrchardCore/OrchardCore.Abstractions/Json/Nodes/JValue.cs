@@ -48,8 +48,8 @@ public static class JValue
             return null;
         }
 
-        var valueKind = jsonValue.GetValueKind();
-        switch (valueKind)
+        var jsonElement = jsonValue.GetValue<JsonElement>();
+        switch (jsonElement.ValueKind)
         {
             case JsonValueKind.Null:
                 return null;
@@ -61,26 +61,31 @@ public static class JValue
                 return jsonValue.GetValue<string>();
 
             case JsonValueKind.Number:
-                if (jsonValue.TryGetValue<int>(out var i))
+                if (jsonElement.TryGetInt32(out var intValue))
                 {
-                    return i;
+                    return intValue;
                 }
 
-                if (jsonValue.TryGetValue<long>(out var l))
+                if (jsonValue.TryGetValue<long>(out var longValue))
                 {
-                    return l;
+                    return longValue;
                 }
 
-                // BigInteger could be added here.
-                if (jsonValue.TryGetValue<double>(out var d))
+                if (jsonValue.TryGetValue<double>(out var doubleValue))
                 {
-                    return d;
+                    return doubleValue;
+                }
+
+                // If the value doesn't fit in a double.
+                if (jsonElement.TryGetBigInteger(out var bigInteger))
+                {
+                    return bigInteger;
                 }
 
                 throw new JsonException("Cannot parse number.");
 
             default:
-                throw new JsonException(string.Format("Unknown token type {0}", valueKind));
+                throw new JsonException(string.Format("Unknown token type {0}", jsonElement.ValueKind));
         }
     }
 }

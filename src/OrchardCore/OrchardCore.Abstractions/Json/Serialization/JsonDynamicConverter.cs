@@ -23,21 +23,25 @@ public class JsonDynamicConverter : JsonConverter<object>
                 return reader.GetString();
 
             case JsonTokenType.Number:
-                if (reader.TryGetInt32(out var i))
+                if (reader.TryGetInt32(out var intObject))
                 {
-                    return i;
+                    return intObject;
                 }
 
-                if (reader.TryGetInt64(out var l))
+                if (reader.TryGetInt64(out var longObject))
                 {
-                    return l;
+                    return longObject;
                 }
 
-                // BigInteger could be added here.
-
-                if (reader.TryGetDouble(out var d))
+                if (reader.TryGetDouble(out var doubleObject))
                 {
-                    return d;
+                    return doubleObject;
+                }
+
+                // If the value doesn't fit in a double.
+                if (JConvert.TryGetBigInteger(ref reader, out var bigInteger))
+                {
+                    return bigInteger;
                 }
 
                 throw new JsonException("Cannot parse number");

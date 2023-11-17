@@ -125,7 +125,7 @@ public static class JNode
         jsonNode is JsonArray jsonArray ? jsonArray.AsEnumerable().Select(node => node.Value<T>()) : Enumerable.Empty<T?>();
 
     /// <summary>
-    /// Creates a <see cref="JsonNode"/> from an object.
+    /// Gets the normalized JSON path by skipping the root part '$'.
     /// </summary>
     public static string? GetNormalizedPath(this string? path)
     {
@@ -143,7 +143,7 @@ public static class JNode
     }
 
     /// <summary>
-    /// Creates a <see cref="JsonNode"/> from an object.
+    /// Gets the normalized JSON path by skipping the root path '$'.
     /// </summary>
     public static string? GetNormalizedPath(this JsonNode jsonNode) => jsonNode.GetPath().GetNormalizedPath();
 
