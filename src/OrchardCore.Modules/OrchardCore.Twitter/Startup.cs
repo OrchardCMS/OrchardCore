@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
@@ -47,7 +48,17 @@ namespace OrchardCore.Twitter
 
             services.AddHttpClient<TwitterClient>()
                 .AddHttpMessageHandler<TwitterClientMessageHandler>()
-                .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(3, attempt => TimeSpan.FromSeconds(0.5 * attempt)));
+                .AddResilienceHandler("oc-handler", builder => builder
+                    .AddRetry(new HttpRetryStrategyOptions
+                    {
+                        Name = "oc-retry",
+                        MaxRetryAttempts = 3
+                    })
+                    .AddTimeout(new HttpTimeoutStrategyOptions
+                    {
+                        Name = "oc-timeout",
+                        Timeout = TimeSpan.FromSeconds(4),
+                    }));
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
