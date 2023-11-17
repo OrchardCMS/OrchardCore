@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Microsoft.AspNetCore.Builder;
@@ -12,10 +13,19 @@ namespace OrchardCore.Localization;
 /// This is mainly used in the localization module to update the current <see cref="RequestLocalizationOptions"/> that
 /// might set from other modules in Orchard Core pipeline.
 /// </remarks>
+[Obsolete("This class is deprecated, and will be removed in the upcoming major release.")]
 public class LocalizationOptionsUpdater
 {
-    private readonly bool _useUserOverride;
     private readonly RequestLocalizationOptions _options;
+
+    /// <summary>
+    /// Initializes a new instance of a <see cref="LocalizationOptionsUpdater"/>.
+    /// </summary>
+    /// <param name="options">The <see cref="RequestLocalizationOptions"/>.</param>
+    public LocalizationOptionsUpdater(RequestLocalizationOptions options)
+    {
+        _options = options;
+    }
 
     /// <summary>
     /// Initializes a new instance of a <see cref="LocalizationOptionsUpdater"/>.
@@ -25,7 +35,7 @@ public class LocalizationOptionsUpdater
     public LocalizationOptionsUpdater(RequestLocalizationOptions options, bool ignoreSystemSettings)
     {
         _options = options;
-        _useUserOverride = !ignoreSystemSettings;
+        _options.CultureInfoUseUserOverride = !ignoreSystemSettings;
     }
 
     /// <summary>
@@ -37,7 +47,7 @@ public class LocalizationOptionsUpdater
         var supportedCultures = new List<CultureInfo>();
         foreach (var culture in cultures)
         {
-            supportedCultures.Add(new CultureInfo(culture, _useUserOverride));
+            supportedCultures.Add(new CultureInfo(culture, _options.CultureInfoUseUserOverride));
         }
 
         _options.SupportedCultures = supportedCultures;
@@ -54,7 +64,7 @@ public class LocalizationOptionsUpdater
         var supportedUICultures = new List<CultureInfo>();
         foreach (var culture in uiCultures)
         {
-            supportedUICultures.Add(new CultureInfo(culture, _useUserOverride));
+            supportedUICultures.Add(new CultureInfo(culture, _options.CultureInfoUseUserOverride));
         }
 
         _options.SupportedUICultures = supportedUICultures;
@@ -68,7 +78,7 @@ public class LocalizationOptionsUpdater
     /// <param name="defaultCulture">The default culture.</param>
     public LocalizationOptionsUpdater SetDefaultCulture(string defaultCulture)
     {
-        _options.DefaultRequestCulture = new RequestCulture(new CultureInfo(defaultCulture, _useUserOverride));
+        _options.DefaultRequestCulture = new RequestCulture(new CultureInfo(defaultCulture, _options.CultureInfoUseUserOverride));
 
         return this;
     }
