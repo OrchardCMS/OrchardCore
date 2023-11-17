@@ -18,15 +18,11 @@ namespace OrchardCore.Email.Services
     /// <summary>
     /// Represents a SMTP service that allows to send emails.
     /// </summary>
-    public class SmtpService : ISmtpService
+    public class SmtpService : EmailServiceBase<SmtpSettings>
     {
         private const string EmailExtension = ".eml";
 
         private static readonly char[] _emailsSeparator = new char[] { ',', ';' };
-
-        private readonly SmtpSettings _options;
-        private readonly ILogger _logger;
-        protected readonly IStringLocalizer S;
 
         /// <summary>
         /// Initializes a new instance of a <see cref="SmtpService"/>.
@@ -37,11 +33,8 @@ namespace OrchardCore.Email.Services
         public SmtpService(
             IOptions<SmtpSettings> options,
             ILogger<SmtpService> logger,
-            IStringLocalizer<SmtpService> stringLocalizer)
+            IStringLocalizer<SmtpService> stringLocalizer) : base(options, logger, stringLocalizer)
         {
-            _options = options.Value;
-            _logger = logger;
-            S = stringLocalizer;
         }
 
         /// <summary>
@@ -50,20 +43,20 @@ namespace OrchardCore.Email.Services
         /// <param name="message">The message to be sent.</param>
         /// <returns>A <see cref="SmtpResult"/> that holds information about the sent message, for instance if it has sent successfully or if it has failed.</returns>
         /// <remarks>This method allows to send an email without setting <see cref="MailMessage.To"/> if <see cref="MailMessage.Cc"/> or <see cref="MailMessage.Bcc"/> is provided.</remarks>
-        public async Task<SmtpResult> SendAsync(MailMessage message)
+        public override async Task<EmailResult> SendAsync(MailMessage message)
         {
-            if (_options == null)
+            if (Options == null)
             {
-                return SmtpResult.Failed(S["SMTP settings must be configured before an email can be sent."]);
+                return (SmtpResult)EmailResult.Failed(S["SMTP settings must be configured before an email can be sent."]);
             }
 
             SmtpResult result;
             var response = default(string);
             try
             {
-                // Set the MailMessage.From, to avoid the confusion between _options.DefaultSender (Author) and submitter (Sender)
+                // Set the MailMessage.From, to avoid the confusion between Options.DefaultSender (Author) and submitter (Sender)
                 var senderAddress = string.IsNullOrWhiteSpace(message.From)
-                    ? _options.DefaultSender
+                    ? Options.DefaultSender
                     : message.From;
 
                 if (!string.IsNullOrWhiteSpace(senderAddress))
@@ -77,31 +70,31 @@ namespace OrchardCore.Email.Services
 
                 if (errors.Count > 0)
                 {
-                    return SmtpResult.Failed(errors.ToArray());
+                    return EmailResult.Failed(errors.ToArray());
                 }
 
                 if (mimeMessage.To.Count == 0 && mimeMessage.Cc.Count == 0 && mimeMessage.Bcc.Count == 0)
                 {
-                    return SmtpResult.Failed(S["The mail message should have at least one of these headers: To, Cc or Bcc."]);
+                    return EmailResult.Failed(S["The mail message should have at least one of these headers: To, Cc or Bcc."]);
                 }
 
-                switch (_options.DeliveryMethod)
+                switch (Options.DeliveryMethod)
                 {
                     case SmtpDeliveryMethod.Network:
                         response = await SendOnlineMessageAsync(mimeMessage);
                         break;
                     case SmtpDeliveryMethod.SpecifiedPickupDirectory:
-                        await SendOfflineMessageAsync(mimeMessage, _options.PickupDirectoryLocation);
+                        await SendOfflineMessageAsync(mimeMessage, Options.PickupDirectoryLocation);
                         break;
                     default:
-                        throw new NotSupportedException($"The '{_options.DeliveryMethod}' delivery method is not supported.");
+                        throw new NotSupportedException($"The '{Options.DeliveryMethod}' delivery method is not supported.");
                 }
 
-                result = SmtpResult.Success;
+                result = new SmtpResult(true);
             }
             catch (Exception ex)
             {
-                result = SmtpResult.Failed(S["An error occurred while sending an email: '{0}'", ex.Message]);
+                result = new SmtpResult(new [] { S["An error occurred while sending an email: '{0}'", ex.Message] });
             }
 
             result.Response = response;
@@ -112,7 +105,7 @@ namespace OrchardCore.Email.Services
         private MimeMessage FromMailMessage(MailMessage message, IList<LocalizedString> errors)
         {
             var submitterAddress = string.IsNullOrWhiteSpace(message.Sender)
-                ? _options.DefaultSender
+                ? Options.DefaultSender
                 : message.Sender;
 
             var mimeMessage = new MimeMessage();
@@ -239,15 +232,15 @@ namespace OrchardCore.Email.Services
             return mimeMessage;
         }
 
-        protected virtual Task OnMessageSendingAsync(SmtpClient client, MimeMessage message) => Task.CompletedTask;
+        private Task OnMessageSendingAsync(SmtpClient client, MimeMessage message) => Task.CompletedTask;
 
         private async Task<string> SendOnlineMessageAsync(MimeMessage message)
         {
             var secureSocketOptions = SecureSocketOptions.Auto;
 
-            if (!_options.AutoSelectEncryption)
+            if (!Options.AutoSelectEncryption)
             {
-                secureSocketOptions = _options.EncryptionMethod switch
+                secureSocketOptions = Options.EncryptionMethod switch
                 {
                     SmtpEncryptionMethod.None => SecureSocketOptions.None,
                     SmtpEncryptionMethod.SslTls => SecureSocketOptions.SslOnConnect,
@@ -262,24 +255,24 @@ namespace OrchardCore.Email.Services
 
             await OnMessageSendingAsync(client, message);
 
-            await client.ConnectAsync(_options.Host, _options.Port, secureSocketOptions);
+            await client.ConnectAsync(Options.Host, Options.Port, secureSocketOptions);
 
-            if (_options.RequireCredentials)
+            if (Options.RequireCredentials)
             {
-                if (_options.UseDefaultCredentials)
+                if (Options.UseDefaultCredentials)
                 {
                     // There's no notion of 'UseDefaultCredentials' in MailKit, so empty credentials is passed in
                     await client.AuthenticateAsync(string.Empty, string.Empty);
                 }
-                else if (!string.IsNullOrWhiteSpace(_options.UserName))
+                else if (!string.IsNullOrWhiteSpace(Options.UserName))
                 {
-                    await client.AuthenticateAsync(_options.UserName, _options.Password);
+                    await client.AuthenticateAsync(Options.UserName, Options.Password);
                 }
             }
 
-            if (!string.IsNullOrEmpty(_options.ProxyHost))
+            if (!string.IsNullOrEmpty(Options.ProxyHost))
             {
-                client.ProxyClient = new Socks5Client(_options.ProxyHost, _options.ProxyPort);
+                client.ProxyClient = new Socks5Client(Options.ProxyHost, Options.ProxyPort);
             }
 
             var response = await client.SendAsync(message);
@@ -306,7 +299,7 @@ namespace OrchardCore.Email.Services
                 return true;
             }
 
-            _logger.LogError(logErrorMessage,
+            Logger.LogError(logErrorMessage,
                 certificate.Subject,
                 certificate.Issuer,
                 certificate.GetCertHashString(),
@@ -317,11 +310,11 @@ namespace OrchardCore.Email.Services
             {
                 foreach (var chainStatus in chain.ChainStatus)
                 {
-                    _logger.LogError("Status: {Status} - {StatusInformation}", chainStatus.Status, chainStatus.StatusInformation);
+                    Logger.LogError("Status: {Status} - {StatusInformation}", chainStatus.Status, chainStatus.StatusInformation);
                 }
             }
 
-            return _options.IgnoreInvalidSslCertificate;
+            return Options.IgnoreInvalidSslCertificate;
         }
     }
 }

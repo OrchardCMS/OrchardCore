@@ -13,19 +13,19 @@ namespace OrchardCore.Email.Controllers
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
-        private readonly ISmtpService _smtpService;
+        private readonly IEmailService _emailService;
         protected readonly IHtmlLocalizer H;
 
         public AdminController(
             IHtmlLocalizer<AdminController> h,
             IAuthorizationService authorizationService,
             INotifier notifier,
-            ISmtpService smtpService)
+            IEmailService emailService)
         {
             H = h;
             _authorizationService = authorizationService;
             _notifier = notifier;
-            _smtpService = smtpService;
+            _emailService = emailService;
         }
 
         [HttpGet]
@@ -51,7 +51,7 @@ namespace OrchardCore.Email.Controllers
             {
                 var message = CreateMessageFromViewModel(model);
 
-                var result = await _smtpService.SendAsync(message);
+                var result = await _emailService.SendAsync(message);
 
                 if (!result.Succeeded)
                 {

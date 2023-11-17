@@ -32,7 +32,7 @@ namespace OrchardCore.Email
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddTransient<IConfigureOptions<SmtpSettings>, SmtpSettingsConfiguration>();
-            services.AddScoped<ISmtpService, SmtpService>();
+            services.AddScoped<IEmailService, SmtpService>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

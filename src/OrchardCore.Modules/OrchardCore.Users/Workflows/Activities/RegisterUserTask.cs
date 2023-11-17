@@ -141,9 +141,9 @@ namespace OrchardCore.Users.Workflows.Activities
                         Body = body,
                         IsHtmlBody = true
                     };
-                    var smtpService = _httpContextAccessor.HttpContext.RequestServices.GetService<ISmtpService>();
+                    var emailService = _httpContextAccessor.HttpContext.RequestServices.GetService<IEmailService>();
 
-                    if (smtpService == null)
+                    if (emailService == null)
                     {
                         var updater = _updateModelAccessor.ModelUpdater;
                         updater?.ModelState.TryAddModelError("", S["No email service is available"]);
@@ -151,7 +151,7 @@ namespace OrchardCore.Users.Workflows.Activities
                     }
                     else
                     {
-                        var result = await smtpService.SendAsync(message);
+                        var result = await emailService.SendAsync(message);
                         if (!result.Succeeded)
                         {
                             var updater = _updateModelAccessor.ModelUpdater;

@@ -11,19 +11,19 @@ namespace OrchardCore.Email.Workflows.Activities
 {
     public class EmailTask : TaskActivity<EmailTask>
     {
-        private readonly ISmtpService _smtpService;
+        private readonly IEmailService _emailService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
         protected readonly IStringLocalizer S;
         private readonly HtmlEncoder _htmlEncoder;
 
         public EmailTask(
-            ISmtpService smtpService,
+            IEmailService emailService,
             IWorkflowExpressionEvaluator expressionEvaluator,
             IStringLocalizer<EmailTask> localizer,
             HtmlEncoder htmlEncoder
         )
         {
-            _smtpService = smtpService;
+            _emailService = emailService;
             _expressionEvaluator = expressionEvaluator;
             S = localizer;
             _htmlEncoder = htmlEncoder;
@@ -124,7 +124,7 @@ namespace OrchardCore.Email.Workflows.Activities
                 message.Sender = sender.Trim();
             }
 
-            var result = await _smtpService.SendAsync(message);
+            var result = await _emailService.SendAsync(message);
             workflowContext.LastResult = result;
 
             if (!result.Succeeded)

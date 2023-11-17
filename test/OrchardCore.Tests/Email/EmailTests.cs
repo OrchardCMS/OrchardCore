@@ -227,7 +227,7 @@ namespace OrchardCore.Tests.Email
             var result = await smtp.SendAsync(message);
 
             // Assert
-            Assert.Null(result.Response);
+            Assert.Null((result as SmtpResult).Response);
         }
 
         private static async Task<string> SendEmailAsync(MailMessage message, string defaultSender = null)
@@ -263,7 +263,7 @@ namespace OrchardCore.Tests.Email
             return content;
         }
 
-        private static ISmtpService CreateSmtpService(SmtpSettings settings)
+        private static IEmailService CreateSmtpService(SmtpSettings settings)
         {
             var options = new Mock<IOptions<SmtpSettings>>();
             options.Setup(o => o.Value).Returns(settings);

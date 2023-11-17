@@ -43,7 +43,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
             Assert.Equal("Failed", result.Outcomes.First());
         }
 
-        private static ISmtpService CreateSmtpService(SmtpSettings settings)
+        private static IEmailService CreateSmtpService(SmtpSettings settings)
         {
             var options = new Mock<IOptions<SmtpSettings>>();
             var logger = new Mock<ILogger<SmtpService>>();

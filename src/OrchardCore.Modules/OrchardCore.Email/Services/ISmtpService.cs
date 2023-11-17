@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Email
@@ -5,6 +6,7 @@ namespace OrchardCore.Email
     /// <summary>
     /// Represents a contract for SMTP service.
     /// </summary>
+    [Obsolete("This interface is deprecated, please use EmailServiceBase instead.")]
     public interface ISmtpService
     {
         /// <summary>

@@ -9,14 +9,8 @@ namespace OrchardCore.Email
     /// <summary>
     /// Represents a settings for SMTP.
     /// </summary>
-    public class SmtpSettings : IValidatableObject
+    public class SmtpSettings : EmailSettings, IValidatableObject
     {
-        /// <summary>
-        /// Gets or sets the default sender mail.
-        /// </summary>
-        [Required(AllowEmptyStrings = false), EmailAddress]
-        public string DefaultSender { get; set; }
-
         /// <summary>
         /// Gets or sets the mail delivery method.
         /// </summary>

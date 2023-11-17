@@ -142,7 +142,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                     Mock.Of<ISite>(s => s.Properties == JObject.FromObject(new { RegistrationSettings = registrationSettings }))
                     )
             );
-            var mockSmtpService = Mock.Of<ISmtpService>(x => x.SendAsync(It.IsAny<MailMessage>()) == Task.FromResult(SmtpResult.Success));
+            var mockEmailService = Mock.Of<IEmailService>(x => x.SendAsync(It.IsAny<MailMessage>()) == Task.FromResult(SmtpResult.Success));
             var mockStringLocalizer = new Mock<IStringLocalizer<RegistrationController>>();
             mockStringLocalizer.Setup(l => l[It.IsAny<string>()])
                 .Returns<string>(s => new LocalizedString(s, s));
@@ -178,8 +178,8 @@ namespace OrchardCore.Tests.OrchardCore.Users
             var mockServiceProvider = new Mock<IServiceProvider>();
 
             mockServiceProvider
-                .Setup(x => x.GetService(typeof(ISmtpService)))
-                .Returns(mockSmtpService);
+                .Setup(x => x.GetService(typeof(IEmailService)))
+                .Returns(mockEmailService);
             mockServiceProvider
                 .Setup(x => x.GetService(typeof(UserManager<IUser>)))
                 .Returns(mockUserManager.Object);
