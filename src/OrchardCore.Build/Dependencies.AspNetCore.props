@@ -24,6 +24,13 @@
     <MicrosoftExtensionsPackagesVersion>8.0.0</MicrosoftExtensionsPackagesVersion>
   </PropertyGroup>
 
+  <!-- When dual-targeting frameworks, add both of them to CommonTargetFrameworks above, when add PropertyGroups like
+  below. -->
+  <!--<PropertyGroup Condition="$(TargetFramework) == 'net7.0'">
+    <AspNetCorePackagesVersion>7.0.14</AspNetCorePackagesVersion>
+    <MicrosoftExtensionsPackagesVersion>7.0.14</MicrosoftExtensionsPackagesVersion>
+  </PropertyGroup>-->
+
   <!-- 'Microsoft.AspNetCore' packages that are not included in the ASP.NET Core shared framework -->
   <ItemGroup>
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Facebook" Version="$(AspNetCorePackagesVersion)" />
