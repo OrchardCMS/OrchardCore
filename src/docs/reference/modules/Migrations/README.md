@@ -40,7 +40,7 @@ namespace Members
             return 1;
         }
 
-        public int UpdateFrom1()
+        public async Task<int> UpdateFrom1Async()
         {
             await SchemaBuilder.CreateMapIndexTableAsync<MemberIndex>(table =>
             {
