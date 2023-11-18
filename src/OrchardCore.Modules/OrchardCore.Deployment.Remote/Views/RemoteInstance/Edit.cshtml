@@ -50,7 +50,7 @@
     </div>
 
     <div class="mb-3" asp-validation-class-for="RsaEncryptionSecret">
-        <label asp-for="RsaEncryptionSecret">@T["Rsa encryption secret"]</label>
+        <label asp-for="RsaEncryptionSecret">@T["RSA encryption secret"]</label>
         @await Component.InvokeAsync(
         "SelectSecret",
         new
@@ -67,7 +67,7 @@
     </div>
 
     <div class="mb-3" asp-validation-class-for="RsaSigningSecret">
-        <label asp-for="RsaSigningSecret">@T["Rsa signing secret"]</label>
+        <label asp-for="RsaSigningSecret">@T["RSA signing secret"]</label>
         @await Component.InvokeAsync(
         "SelectSecret",
         new
