@@ -128,18 +128,6 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         public ContentTypeDefinitionBuilder WithPart(string name, string partName)
             => WithPart(name, new ContentPartDefinition(partName), configuration => { });
 
-        public ContentTypeDefinitionBuilder WithPart(string name, string partName, Action<ContentTypePartDefinitionBuilder> configuration)
-            => WithPart(name, new ContentPartDefinition(partName), configuration);
-
-        public ContentTypeDefinitionBuilder WithPart<TPart>() where TPart : ContentPart
-            => WithPart(typeof(TPart).Name, configuration => { });
-
-        public ContentTypeDefinitionBuilder WithPart<TPart>(string name) where TPart : ContentPart
-            => WithPart(name, new ContentPartDefinition(typeof(TPart).Name), configuration => { });
-
-        public ContentTypeDefinitionBuilder WithPart<TPart>(string name, Action<ContentTypePartDefinitionBuilder> configuration) where TPart : ContentPart
-            => WithPart(name, new ContentPartDefinition(typeof(TPart).Name), configuration);
-
         public ContentTypeDefinitionBuilder WithPart(string partName, Action<ContentTypePartDefinitionBuilder> configuration)
             => WithPart(partName, new ContentPartDefinition(partName), configuration);
 
@@ -163,6 +151,18 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             _parts.Add(configurer.Build());
             return this;
         }
+
+        public ContentTypeDefinitionBuilder WithPart(string name, string partName, Action<ContentTypePartDefinitionBuilder> configuration)
+            => WithPart(name, new ContentPartDefinition(partName), configuration);
+
+        public ContentTypeDefinitionBuilder WithPart<TPart>() where TPart : ContentPart
+            => WithPart(typeof(TPart).Name, configuration => { });
+
+        public ContentTypeDefinitionBuilder WithPart<TPart>(string name) where TPart : ContentPart
+            => WithPart(name, new ContentPartDefinition(typeof(TPart).Name), configuration => { });
+
+        public ContentTypeDefinitionBuilder WithPart<TPart>(string name, Action<ContentTypePartDefinitionBuilder> configuration) where TPart : ContentPart
+            => WithPart(name, new ContentPartDefinition(typeof(TPart).Name), configuration);
 
         public Task<ContentTypeDefinitionBuilder> WithPartAsync(string name, string partName, Func<ContentTypePartDefinitionBuilder, Task> configurationAsync)
             => WithPartAsync(name, new ContentPartDefinition(partName), configurationAsync);
