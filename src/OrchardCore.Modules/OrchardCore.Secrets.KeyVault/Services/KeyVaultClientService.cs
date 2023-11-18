@@ -64,10 +64,11 @@ public class KeyVaultClientService
 
     public async Task RemoveSecretAsync(string name)
     {
-        var operation = await _client.StartDeleteSecretAsync(name);
+        await _client.StartDeleteSecretAsync(name);
 
         // Purging on deletion is not supported, the retention period should be configured
         // on any key vault, knowing that the 'soft-delete' feature will be mandatory soon.
+        // See https://learn.microsoft.com/en-us/azure/key-vault/general/soft-delete-change
 
         // await operation.WaitForCompletionAsync();
         // await _client.PurgeDeletedSecretAsync(operation.Value.Name);
