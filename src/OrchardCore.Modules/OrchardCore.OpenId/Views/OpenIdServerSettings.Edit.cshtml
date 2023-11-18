@@ -129,15 +129,15 @@
 <div class="mb-3" asp-validation-class-for="EncryptionRsaSecret">
     <label asp-for="EncryptionRsaSecret">@T["Encryption RSA secret"]</label>
     @await Component.InvokeAsync(
-    "SelectSecret",
-    new
-    {
-    secretType = "RsaSecret",
-    selectedSecret = Model.EncryptionRsaSecret,
-    htmlId = Html.IdFor(m => m.EncryptionRsaSecret),
-    htmlName = Html.NameFor(m => m.EncryptionRsaSecret),
-    required = false,
-    })
+            "SelectSecret",
+            new
+            {
+                secretType = "RsaSecret",
+                selectedSecret = Model.EncryptionRsaSecret,
+                htmlId = Html.IdFor(m => m.EncryptionRsaSecret),
+                htmlName = Html.NameFor(m => m.EncryptionRsaSecret),
+                required = false,
+            })
     <span asp-validation-for="EncryptionRsaSecret"></span>
     <span class="hint">@T["The secret holding a raw RSA key to use for encryption."]</span>
 </div>
@@ -209,15 +209,15 @@
 <div class="mb-3" asp-validation-class-for="SigningRsaSecret">
     <label asp-for="SigningRsaSecret">@T["Signing RSA secret"]</label>
     @await Component.InvokeAsync(
-    "SelectSecret",
-    new
-    {
-    secretType = "RsaSecret",
-    selectedSecret = Model.SigningRsaSecret,
-    htmlId = Html.IdFor(m => m.SigningRsaSecret),
-    htmlName = Html.NameFor(m => m.SigningRsaSecret),
-    required = false,
-    })
+            "SelectSecret",
+            new
+            {
+                secretType = "RsaSecret",
+                selectedSecret = Model.SigningRsaSecret,
+                htmlId = Html.IdFor(m => m.SigningRsaSecret),
+                htmlName = Html.NameFor(m => m.SigningRsaSecret),
+                required = false,
+            })
     <span asp-validation-for="SigningRsaSecret"></span>
     <span class="hint">@T["The secret holding a raw RSA key to use for signing."]</span>
 </div>

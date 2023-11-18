@@ -13,15 +13,15 @@
         <div asp-validation-class-for="ApiKeySecret">
             <label asp-for="ApiKeySecret">@T["Api Key Secret"]</label>
             @await Component.InvokeAsync(
-            "SelectSecret",
-            new
-            {
-                secretType = "TextSecret",
-                selectedSecret = Model.ApiKeySecret,
-                htmlId = Html.IdFor(m => m.ApiKeySecret),
-                htmlName = Html.NameFor(m => m.ApiKeySecret),
-                required  = false,
-            })
+                     "SelectSecret",
+                     new
+                     {
+                         secretType = "TextSecret",
+                         selectedSecret = Model.ApiKeySecret,
+                         htmlId = Html.IdFor(m => m.ApiKeySecret),
+                         htmlName = Html.NameFor(m => m.ApiKeySecret),
+                         required = false,
+                     })
             <span asp-validation-for="ApiKeySecret"></span>
             <span class="hint">@T["The api key secret."]</span>
         </div>

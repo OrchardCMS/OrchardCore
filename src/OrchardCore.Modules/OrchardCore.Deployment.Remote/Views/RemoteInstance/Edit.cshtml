@@ -28,15 +28,15 @@
         <div asp-validation-class-for="ApiKeySecret">
             <label asp-for="ApiKeySecret">@T["Api Key Secret"]</label>
             @await Component.InvokeAsync(
-            "SelectSecret",
-            new
-            {
-            secretType = "TextSecret",
-            selectedSecret = Model.ApiKeySecret,
-            htmlId = Html.IdFor(m => m.ApiKeySecret),
-            htmlName = Html.NameFor(m => m.ApiKeySecret),
-            required  = false,
-            })
+                     "SelectSecret",
+                     new
+                     {
+                         secretType = "TextSecret",
+                         selectedSecret = Model.ApiKeySecret,
+                         htmlId = Html.IdFor(m => m.ApiKeySecret),
+                         htmlName = Html.NameFor(m => m.ApiKeySecret),
+                         required = false,
+                     })
             <span asp-validation-for="ApiKeySecret"></span>
             <span class="hint">@T["The api key secret."]</span>
         </div>
@@ -52,15 +52,15 @@
     <div class="mb-3" asp-validation-class-for="RsaEncryptionSecret">
         <label asp-for="RsaEncryptionSecret">@T["RSA encryption secret"]</label>
         @await Component.InvokeAsync(
-        "SelectSecret",
-        new
-        {
-        secretType = "RsaSecret",
-        selectedSecret = Model.RsaEncryptionSecret,
-        htmlId = Html.IdFor(m => m.RsaEncryptionSecret),
-        htmlName = Html.NameFor(m => m.RsaEncryptionSecret),
-        required = false,
-        })
+                 "SelectSecret",
+                 new
+                 {
+                     secretType = "RsaSecret",
+                     selectedSecret = Model.RsaEncryptionSecret,
+                     htmlId = Html.IdFor(m => m.RsaEncryptionSecret),
+                     htmlName = Html.NameFor(m => m.RsaEncryptionSecret),
+                     required = false,
+                 })
         <span asp-validation-for="RsaEncryptionSecret"></span>
         <span class="hint">@T["The secret to use when a deployment step encrypts data for transmission to this remote instance."]</span>
         <span class="hint">@T["Note: The public key is used for encryption, the remote instance must have the matching private key."]</span>
@@ -69,15 +69,15 @@
     <div class="mb-3" asp-validation-class-for="RsaSigningSecret">
         <label asp-for="RsaSigningSecret">@T["RSA signing secret"]</label>
         @await Component.InvokeAsync(
-        "SelectSecret",
-        new
-        {
-        secretType = "RsaSecret",
-        selectedSecret = Model.RsaSigningSecret,
-        htmlId = Html.IdFor(m => m.RsaSigningSecret),
-        htmlName = Html.NameFor(m => m.RsaSigningSecret),
-        required = false,
-        })
+                 "SelectSecret",
+                 new
+                 {
+                     secretType = "RsaSecret",
+                     selectedSecret = Model.RsaSigningSecret,
+                     htmlId = Html.IdFor(m => m.RsaSigningSecret),
+                     htmlName = Html.NameFor(m => m.RsaSigningSecret),
+                     required = false,
+                 })
         <span asp-validation-for="RsaSigningSecret"></span>
         <span class="hint">@T["The secret to use when a deployment step signs encrypted data for transmission to this remote instance."]</span>
         <span class="hint">@T["Note: The private key is used for signing, the remote instance must have the matching public key."]</span>
