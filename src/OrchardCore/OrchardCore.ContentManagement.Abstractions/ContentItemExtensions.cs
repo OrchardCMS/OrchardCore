@@ -6,6 +6,39 @@ namespace OrchardCore.ContentManagement
 {
     public static class ContentItemExtensions
     {
+        public static bool TryGet<TPart>(this ContentItem contentItem, out TPart part) where TPart : ContentPart
+            => contentItem.TryGet(typeof(TPart).Name, out part);
+
+        public static bool TryGet<TPart>(this ContentItem contentItem, string name, out TPart part) where TPart : ContentPart
+        {
+            ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
+
+            try
+            {
+                part = contentItem.Get<TPart>(name);
+            }
+            catch
+            {
+                part = null;
+            }
+
+            return part != null;
+        }
+
+        public static bool TryGet(this ContentItem contentItem, Type contentElementType, string name, out ContentElement part)
+        {
+            try
+            {
+                part = contentItem.Get(contentElementType, name);
+            }
+            catch
+            {
+                part = null;
+            }
+
+            return part != null;
+        }
+
         /// <summary>
         /// Gets a content part by its type.
         /// </summary>
@@ -111,7 +144,7 @@ namespace OrchardCore.ContentManagement
             contentItem.Data.Merge(props, jsonMergeSettings);
             contentItem.Elements.Clear();
 
-            // Return to original value or it will be interpreated as a different object by YesSql.
+            // Return to original value or it will be interpreted as a different object by YesSql.
             contentItem.Id = originalDocumentId;
 
             // After merging content here we need to remove all the well known properties from the Data jObject
