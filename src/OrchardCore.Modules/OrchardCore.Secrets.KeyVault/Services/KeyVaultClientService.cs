@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Azure;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Microsoft.Extensions.Options;
@@ -25,14 +26,30 @@ public class KeyVaultClientService
 
     public async Task<string> GetSecretAsync(string name)
     {
+        if (string.IsNullOrEmpty(name))
+        {
+            return null;
+        }
+
         if (!string.IsNullOrEmpty(_prefix))
         {
             name = $"{_prefix}{name}";
         }
 
-        var secret = await _client.GetSecretAsync(name);
+        try
+        {
+            var secret = await _client.GetSecretAsync(name);
+            return secret.Value.Value;
+        }
+        catch (RequestFailedException ex)
+        {
+            if (ex.ErrorCode == "SecretNotFound")
+            {
+                return null;
+            }
 
-        return secret.Value.Value;
+            throw;
+        }
     }
 
     public async Task SetSecretAsync(string name, string secretValue)
