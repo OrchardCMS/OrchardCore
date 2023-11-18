@@ -116,7 +116,7 @@ namespace OrchardCore.Menu.Controllers
             else
             {
                 // Look for the target menu item in the hierarchy.
-                var parentMenuItem = FindMenuItem((JsonObject)menu.Content, menuItemId) as JsonObject;
+                var parentMenuItem = FindMenuItem((JsonObject)menu.Content, menuItemId);
 
                 // Couldn't find targeted menu item.
                 if (parentMenuItem == null)

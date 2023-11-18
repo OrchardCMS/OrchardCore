@@ -48,7 +48,11 @@ public static class JValue
             return null;
         }
 
-        var jsonElement = jsonValue.GetValue<JsonElement>();
+        if (!jsonValue.TryGetValue<JsonElement>(out var jsonElement))
+        {
+            return jsonValue.ToObject<object>();
+        }
+
         switch (jsonElement.ValueKind)
         {
             case JsonValueKind.Null:
@@ -71,15 +75,19 @@ public static class JValue
                     return longValue;
                 }
 
-                if (jsonValue.TryGetValue<double>(out var doubleValue))
+                if (jsonValue.TryGetValue<decimal>(out var decimalValue))
                 {
-                    return doubleValue;
+                    return decimalValue;
                 }
 
-                // If the value doesn't fit in a double.
                 if (jsonElement.TryGetBigInteger(out var bigInteger))
                 {
                     return bigInteger;
+                }
+
+                if (jsonValue.TryGetValue<double>(out var doubleValue))
+                {
+                    return doubleValue;
                 }
 
                 throw new JsonException("Cannot parse number.");

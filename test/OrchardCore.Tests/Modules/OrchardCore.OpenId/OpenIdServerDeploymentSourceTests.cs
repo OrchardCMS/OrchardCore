@@ -108,8 +108,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             var recipeContext = new RecipeExecutionContext
             {
                 RecipeDescriptor = descriptor,
-                // Name = deploy.Property("steps").Value.First.Value<string>("name"),
-                // Step = (JObject)deploy.Property("steps").Value.First,
                 Name = deploy["steps"][0].Value<string>("name"),
                 Step = (JsonObject)deploy["steps"][0],
             };

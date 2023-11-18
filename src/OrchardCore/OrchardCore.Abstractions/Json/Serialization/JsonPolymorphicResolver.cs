@@ -11,10 +11,10 @@ public class JsonPolymorphicResolver : DefaultJsonTypeInfoResolver
     public JsonPolymorphicResolver(IEnumerable<IJsonDerivedTypeInfo> derivedTypes)
     {
         _derivedTypes = derivedTypes
-            .GroupBy(i => i.BaseType)
+            .GroupBy(info => info.BaseType)
             .ToDictionary(
                 group => group.First().BaseType,
-                group => group.Select(x => x.DerivedType).ToArray());
+                group => group.Select(info => info.DerivedType).ToArray());
     }
 
     public override JsonTypeInfo GetTypeInfo(Type type, JsonSerializerOptions options)

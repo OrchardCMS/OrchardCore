@@ -40,8 +40,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             var recipe = JsonNode.Parse(GetRecipeFileContent(recipeName));
             var context = new RecipeExecutionContext
             {
-                // Name = recipe.Property("steps").Value.First.Value<string>("name"),
-                // Step = (JObject)recipe.Property("steps").Value.First,
                 Name = recipe["steps"][0].Value<string>("name"),
                 Step = (JsonObject)recipe["steps"][0],
             };
@@ -133,8 +131,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             var recipe = JsonNode.Parse(GetRecipeFileContent(recipeName));
             var context = new RecipeExecutionContext
             {
-                // Name = recipe.Property("steps").Value.First.Value<string>("name"),
-                // Step = (JObject)recipe.Property("steps").Value.First,
                 Name = recipe["steps"][0].Value<string>("name"),
                 Step = (JsonObject)recipe["steps"][0],
             };

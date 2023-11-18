@@ -33,15 +33,19 @@ public class JsonDynamicConverter : JsonConverter<object>
                     return longObject;
                 }
 
-                if (reader.TryGetDouble(out var doubleObject))
+                if (reader.TryGetDecimal(out var decimalValue))
                 {
-                    return doubleObject;
+                    return decimalValue;
                 }
 
-                // If the value doesn't fit in a double.
                 if (JConvert.TryGetBigInteger(ref reader, out var bigInteger))
                 {
                     return bigInteger;
+                }
+
+                if (reader.TryGetDouble(out var doubleObject))
+                {
+                    return doubleObject;
                 }
 
                 throw new JsonException("Cannot parse number");

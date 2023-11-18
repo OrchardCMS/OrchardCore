@@ -25,8 +25,8 @@ public static class JOptions
     public static readonly JsonSerializerOptions CamelCaseIndented;
     public static readonly JsonSerializerOptions UnsafeRelaxedJsonEscaping;
 
-    public static readonly JsonDocumentOptions Document;
     public static readonly JsonNodeOptions Node;
+    public static readonly JsonDocumentOptions Document;
 
     static JOptions()
     {
@@ -43,9 +43,9 @@ public static class JOptions
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         };
 
-        CamelCaseIndented = new JsonSerializerOptions(Indented)
+        CamelCaseIndented = new JsonSerializerOptions(CamelCase)
         {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = true,
         };
 
         UnsafeRelaxedJsonEscaping = new JsonSerializerOptions(Default)
@@ -53,15 +53,15 @@ public static class JOptions
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         };
 
+        Node = new JsonNodeOptions
+        {
+            PropertyNameCaseInsensitive = Default.PropertyNameCaseInsensitive,
+        };
+
         Document = new JsonDocumentOptions
         {
             CommentHandling = Default.ReadCommentHandling,
             AllowTrailingCommas = Default.AllowTrailingCommas,
-        };
-
-        Node = new JsonNodeOptions
-        {
-            PropertyNameCaseInsensitive = Default.PropertyNameCaseInsensitive,
         };
     }
 }

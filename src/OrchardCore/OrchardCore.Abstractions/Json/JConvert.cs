@@ -21,6 +21,12 @@ public static class JConvert
         => JsonSerializer.Deserialize<TValue>(json, options ?? JOptions.Default);
 
     /// <summary>
+    /// Attempts to read a <see cref="BigInteger"/> value from a <see cref="JsonElement"/>.
+    /// </summary>
+    public static bool TryGetBigInteger(this JsonElement element, out BigInteger big) =>
+        BigInteger.TryParse(element.GetRawText(), NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out big);
+
+    /// <summary>
     /// Attempts to read a <see cref="BigInteger"/> value from a <see cref="Utf8JsonReader"/>.
     /// </summary>
     public static bool TryGetBigInteger(ref Utf8JsonReader reader, out BigInteger big)
@@ -30,10 +36,4 @@ public static class JConvert
         Encoding.UTF8.GetChars(reader.ValueSpan, chars);
         return BigInteger.TryParse(chars, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out big);
     }
-
-    /// <summary>
-    /// Attempts to read a <see cref="BigInteger"/> value from a <see cref="JsonElement"/>.
-    /// </summary>
-    public static bool TryGetBigInteger(this JsonElement element, out BigInteger big) =>
-        BigInteger.TryParse(element.GetRawText(), NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out big);
 }
