@@ -143,20 +143,23 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
-        public ContentPartDefinitionBuilder WithField<TField>(string fieldName, Action<ContentPartFieldDefinitionBuilder> configuration)
-            => WithField(fieldName, part =>
-            {
-                configuration(part);
+        public ContentPartDefinitionBuilder WithField<TField>(string fieldName)
+            => WithField(fieldName, configuration => configuration.OfType(typeof(TField).Name));
 
-                part.OfType(typeof(TField).Name);
+        public ContentPartDefinitionBuilder WithField<TField>(string fieldName, Action<ContentPartFieldDefinitionBuilder> configuration)
+            => WithField(fieldName, field =>
+            {
+                configuration(field);
+
+                field.OfType(typeof(TField).Name);
             });
 
         public Task<ContentPartDefinitionBuilder> WithFieldAsync<TField>(string fieldName, Func<ContentPartFieldDefinitionBuilder, Task> configuration)
-            => WithFieldAsync(fieldName, async part =>
+            => WithFieldAsync(fieldName, async field =>
             {
-                await configuration(part);
+                await configuration(field);
 
-                part.OfType(typeof(TField).Name);
+                field.OfType(typeof(TField).Name);
             });
 
         public async Task<ContentPartDefinitionBuilder> WithFieldAsync(string fieldName, Func<ContentPartFieldDefinitionBuilder, Task> configurationAsync)
