@@ -13,7 +13,7 @@ using SixLabors.ImageSharp.Web.Middleware;
 
 namespace OrchardCore.Media.Services;
 
-[BackgroundTask(Schedule = "0 0 * * *", Description = "'Resized media cache cleanup.")]
+[BackgroundTask(Schedule = "0 0 * * *", Description = "Resized media cache cleanup.")]
 public class ResizedMediaCacheBackgroundTask : IBackgroundTask
 {
     private static readonly EnumerationOptions _enumerationOptions = new() { RecurseSubdirectories = true };
