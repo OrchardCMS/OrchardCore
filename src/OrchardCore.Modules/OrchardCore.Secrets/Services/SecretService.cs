@@ -27,7 +27,7 @@ public class SecretService : ISecretService
             IsReadOnly = store.IsReadOnly,
             DisplayName = store.DisplayName,
         })
-            .ToArray();
+        .ToArray();
 
         _stores = stores;
 
