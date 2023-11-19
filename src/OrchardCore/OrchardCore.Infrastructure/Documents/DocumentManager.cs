@@ -204,7 +204,7 @@ namespace OrchardCore.Documents
             // But still update the shared cache after committing.
             DocumentStore.AfterCommitSuccess<TDocument>(async () =>
             {
-                await InvalidateInternalAsync(document);
+                await SetInternalAsync(document);
 
                 if (afterUpdateAsync != null)
                 {
