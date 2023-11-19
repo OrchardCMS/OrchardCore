@@ -13,7 +13,7 @@
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 
-    <div class="card bg-primary mb-3 position-sticky action-bar">
+    <div class="card text-bg-theme mb-3 position-sticky action-bar" style="position: relative; top: 0;">
         <div class="card-body">
             <div class="row gx-3">
                 <div class="col">
@@ -29,10 +29,10 @@
         </div>
     </div>
     <ul class="list-group with-checkbox">
-        @if (Model.Entries.Any())
+        @if (Model.Entries.Count > 0)
         {
             <li class="list-group-item bg-primary">
-                <div class="row">
+                <div class="row gx-3">
                     <div class="col">
                         <div class="form-check my-1">
                             <input type="checkbox" class="form-check-input" id="select-all">
@@ -81,7 +81,7 @@
         else
         {
             <li class="list-group-item">
-                <div class="alert alert-info" role="alert">
+                <div class="alert alert-info mb-0" role="alert">
                     @T["<strong>Nothing here!</strong> There are no secrets for the moment."]
                 </div>
             </li>
