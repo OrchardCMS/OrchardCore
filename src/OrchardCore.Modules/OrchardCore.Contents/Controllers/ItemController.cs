@@ -1,13 +1,9 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
-using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Environment.Shell.Scope;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Contents.Controllers
 {
@@ -32,19 +28,6 @@ namespace OrchardCore.Contents.Controllers
 
         public async Task<IActionResult> Display(string contentItemId, string jsonPath)
         {
-            //var siteService = ShellScope.Services.GetService<ISiteService>();
-            //var documentStore = ShellScope.Services.GetService<IDocumentStore>();
-
-            //var siteSettings = await siteService.LoadSiteSettingsAsync();
-            //await siteService.UpdateSiteSettingsAsync(siteSettings);
-
-            //await documentStore.CommitAsync();
-
-            //siteSettings = await siteService.LoadSiteSettingsAsync();
-            //await siteService.UpdateSiteSettingsAsync(siteSettings);
-
-            // await documentStore.CommitAsync();
-
             var contentItem = await _contentManager.GetAsync(contentItemId, jsonPath);
 
             if (contentItem == null)
