@@ -66,6 +66,16 @@ namespace OrchardCore.Workflows.Activities
             return Task.CompletedTask;
         }
 
+        public virtual Task OnWorkflowRestartingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task OnWorkflowRestartedAsync(WorkflowExecutionContext context)
+        {
+            return Task.CompletedTask;
+        }
+
         public virtual Task OnWorkflowResumingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;

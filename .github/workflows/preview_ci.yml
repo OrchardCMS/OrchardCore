@@ -22,13 +22,15 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: "15"
+    - uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
     - name: Set build number 
       if: matrix.os == 'ubuntu-latest'
       run: echo "BuildNumber=$(( $GITHUB_RUN_NUMBER + 16368 ))" >> $GITHUB_ENV
     - name: Build
       run: |
-        dotnet build -c Release -f net7.0
-        dotnet build -c Release -f net6.0
+        dotnet build -c Release -f net8.0
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
@@ -64,7 +66,7 @@ jobs:
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item -Recurse -Confirm:$false
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests -Recurse | Remove-Item -Recurse -Confirm:$false
         $output = [System.IO.Path]::GetFullPath("./.build/release")
-        dotnet publish -c Release --property:PublishDir=$output --no-build --framework net7.0
+        dotnet publish -c Release --property:PublishDir=$output --no-build --framework net8.0
         docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-linux:dev .
         docker push orchardproject/orchardcore-cms-linux:dev
     - name: Deploy preview docker image for windows
@@ -73,7 +75,7 @@ jobs:
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item -Recurse -Confirm:$false
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests -Recurse | Remove-Item -Recurse -Confirm:$false
         $output = [System.IO.Path]::GetFullPath("./.build/release")
-        dotnet publish -c Release --property:PublishDir=$output --no-build --framework net7.0
+        dotnet publish -c Release --property:PublishDir=$output --no-build --framework net8.0
         docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-windows:dev .
         echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u="${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
         docker push orchardproject/orchardcore-cms-windows:dev

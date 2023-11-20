@@ -21,10 +21,12 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: "15"
+    - uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
     - name: Build
       run: |
-        dotnet build -c Release -f net7.0
-        dotnet build -c Release -f net6.0
+        dotnet build -c Release -f net8.0
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj

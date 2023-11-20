@@ -13,6 +13,5 @@ jobs:
     - uses: actions/checkout@v3
     - name: Build and test
       run: |
-        dotnet build -c Release -f net7.0
-        dotnet build -c Release -f net6.0
+        dotnet build -c Release -f net8.0
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj

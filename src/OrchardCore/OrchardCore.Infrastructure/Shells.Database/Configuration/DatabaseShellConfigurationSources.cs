@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Environment.Shell.Configuration.Internal;
 using OrchardCore.Shells.Database.Extensions;
 using OrchardCore.Shells.Database.Models;
 using YesSql;
@@ -76,7 +77,8 @@ namespace OrchardCore.Shells.Database.Configuration
             var configuration = configurations.GetValue(tenant) as JObject;
             if (configuration is not null)
             {
-                builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(configuration.ToString(Formatting.None))));
+                var configurationString = await configuration.ToStringAsync(Formatting.None);
+                builder.AddTenantJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(configurationString)));
             }
         }
 
@@ -100,22 +102,23 @@ namespace OrchardCore.Shells.Database.Configuration
                     configurations = new JObject();
                 }
 
-                var config = configurations.GetValue(tenant) as JObject ?? new JObject();
+                var configData = await (configurations
+                    .GetValue(tenant) as JObject)
+                    .ToConfigurationDataAsync();
 
                 foreach (var key in data.Keys)
                 {
                     if (data[key] is not null)
                     {
-                        config[key] = data[key];
+                        configData[key] = data[key];
                     }
                     else
                     {
-                        config.Remove(key);
+                        configData.Remove(key);
                     }
                 }
 
-                configurations[tenant] = config;
-
+                configurations[tenant] = configData.ToJObject();
                 document.ShellConfigurations = configurations;
 
                 session.Save(document, checkConcurrency: true);

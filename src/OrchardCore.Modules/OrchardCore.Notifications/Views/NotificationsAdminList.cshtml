@@ -7,7 +7,7 @@
 
 @if (Model.Header != null && Model.Header.Search != null)
 {
-    <div class="card bg-primary mb-3 position-sticky action-bar">
+    <div class="card text-bg-theme mb-3 position-sticky action-bar">
         <div class="card-body">
             <div class="row gx-3">
                 <div class="col">
@@ -24,7 +24,7 @@
 <div class="list-group with-checkbox notification-container">
     @if (Model.Header != null && (Model.Header.Summary != null || Model.Header.Actions != null))
     {
-        <div class="list-group-item bg-primary">
+        <div class="list-group-item text-bg-theme">
             <div class="row gx-3">
                 @if (Model.Header.Summary != null)
                 {

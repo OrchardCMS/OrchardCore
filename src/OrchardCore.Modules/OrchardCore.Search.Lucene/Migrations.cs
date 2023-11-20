@@ -197,11 +197,11 @@ namespace OrchardCore.Search.Lucene
 
                     await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
 
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
                 catch (Exception e)
                 {
-                    transaction.Rollback();
+                    await transaction.RollbackAsync();
                     logger.LogError(e, "An error occurred while updating Lucene indices settings and queries");
 
                     throw;

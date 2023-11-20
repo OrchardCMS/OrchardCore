@@ -87,12 +87,19 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
             {
                 await connection.OpenAsync();
                 using var transaction = connection.BeginTransaction(store.Configuration.IsolationLevel);
+                try
+                {
+                    // Remove all tables of this tenant.
+                    shellDbTablesInfo.Configure(transaction, _logger, throwOnError: false);
+                    shellDbTablesInfo.RemoveAllTables();
 
-                // Remove all tables of this tenant.
-                shellDbTablesInfo.Configure(transaction, _logger, throwOnError: false);
-                shellDbTablesInfo.RemoveAllTables();
-
-                transaction.Commit();
+                    await transaction.CommitAsync();
+                }
+                catch
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
             }
         }
         catch (Exception ex)

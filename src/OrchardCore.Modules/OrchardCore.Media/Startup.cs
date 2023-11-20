@@ -47,6 +47,7 @@ using OrchardCore.Modules.FileProviders;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Shortcodes;
 using SixLabors.ImageSharp.Web.Caching;
@@ -73,6 +74,10 @@ namespace OrchardCore.Media
         {
             services.AddSingleton<IAnchorTag, MediaAnchorTag>();
 
+            // Resized media and remote media caches cleanups.
+            services.AddSingleton<IBackgroundTask, ResizedMediaCacheBackgroundTask>();
+            services.AddSingleton<IBackgroundTask, RemoteMediaCacheBackgroundTask>();
+
             services.Configure<TemplateOptions>(o =>
             {
                 o.MemberAccessStrategy.Register<DisplayMediaFieldViewModel>();
@@ -82,6 +87,8 @@ namespace OrchardCore.Media
             })
             .AddLiquidFilter<AssetUrlFilter>("asset_url")
             .AddLiquidFilter<ResizeUrlFilter>("resize_url");
+
+            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
 
             services.AddTransient<IConfigureOptions<MediaOptions>, MediaOptionsConfiguration>();
 
@@ -97,6 +104,7 @@ namespace OrchardCore.Media
                 {
                     Directory.CreateDirectory(mediaPath);
                 }
+
                 return new MediaFileProvider(options.AssetsRequestPath, mediaPath);
             });
 

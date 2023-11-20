@@ -1,3 +1,4 @@
+@using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.Spatial.ViewModels
 @using OrchardCore.Spatial.Settings
 @using OrchardCore.Mvc.Utilities
@@ -5,11 +6,10 @@
 @model EditGeoPointFieldViewModel
 @{
     var settings = Model.PartFieldDefinition.Settings.ToObject<GeoPointFieldSettings>();
-    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
-<div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x)_FieldWrapper">
-    <div class="@Orchard.GetEndCssClasses(true)">
+<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x)_FieldWrapper">
+    <div class="@Orchard.GetEndClasses(true)">
         <div class="row">
             <div class="col-md-6">
                 <label asp-for="Latitude">@T["Latitude"]</label>

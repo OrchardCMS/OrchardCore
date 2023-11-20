@@ -55,6 +55,8 @@ namespace OrchardCore.Queries.Sql.Controllers
         [HttpPost]
         public async Task<IActionResult> Query(AdminQueryViewModel model)
         {
+            model.FactoryName = _store.Configuration.ConnectionFactory.GetType().FullName;
+
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSqlQueries))
             {
                 return Forbid();
@@ -73,14 +75,12 @@ namespace OrchardCore.Queries.Sql.Controllers
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            var connection = _store.Configuration.ConnectionFactory.CreateConnection();
+            await using var connection = _store.Configuration.ConnectionFactory.CreateConnection();
             var dialect = _store.Configuration.SqlDialect;
 
             var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
 
             var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(model.DecodedQuery, NullEncoder.Default, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
-
-            model.FactoryName = _store.Configuration.ConnectionFactory.GetType().FullName;
 
             if (SqlParser.TryParse(tokenizedQuery, _store.Configuration.Schema, dialect, _store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {

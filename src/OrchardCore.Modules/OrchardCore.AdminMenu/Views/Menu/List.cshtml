@@ -4,8 +4,8 @@
     int endIndex = startIndex + Model.AdminMenu.Count - 1;
 }
 
-<style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css" at="Head" depends-on="admin, jQuery-ui"></style>
-<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.js" at="Foot" depends-on="admin, jQuery-ui"></script>
+<style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css" at="Head" depends-on="jQuery-ui"></style>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.js" at="Foot" depends-on="jQuery-ui"></script>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Admin Menus"])</h1></zone>
 
@@ -15,7 +15,7 @@
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 
-    <div class="card mb-3 bg-primary position-sticky action-bar">
+    <div class="card mb-3 text-bg-theme position-sticky action-bar">
         <div class="card-body">
             <div class="row gx-3">
                 <div class="col">
@@ -34,7 +34,7 @@
     <ul class="list-group with-checkbox">
         @if (Model.AdminMenu.Any())
         {
-            <li class="list-group-item bg-primary">
+            <li class="list-group-item text-bg-theme">
                 <div class="row gx-3">
                     <div class="col">
                         <div class="form-check my-1">

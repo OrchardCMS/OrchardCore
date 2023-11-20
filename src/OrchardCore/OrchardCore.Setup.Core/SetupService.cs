@@ -245,10 +245,9 @@ namespace OrchardCore.Setup.Services
             // Update the shell state.
             await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
 
-            await (await _shellHost.GetScopeAsync(shellSettings)).UsingAsync(async scope =>
+            await (await _shellHost.GetScopeAsync(shellSettings.Name)).UsingAsync(async scope =>
             {
                 var handlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();
-
                 await handlers.InvokeAsync((handler) => handler.SucceededAsync(), _logger);
             });
 

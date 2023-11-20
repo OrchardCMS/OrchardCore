@@ -151,6 +151,14 @@
     </div>
 </div>
 
+<div class="mb-3" asp-validation-class-for="IgnoreInvalidSslCertificate">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="IgnoreInvalidSslCertificate" />
+        <label class="form-check-label" asp-for="IgnoreInvalidSslCertificate">@T["Ignore Invalid SSL Certificate"]</label>
+        <span class="hint dashed">@T["Ignores SSL certificate check if it's invalid."]</span>
+    </div>
+</div>
+
 <script at="Foot">
     $(function () {
         function showSelectedCollapse() {

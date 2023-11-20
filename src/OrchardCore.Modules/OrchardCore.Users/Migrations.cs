@@ -67,15 +67,15 @@ namespace OrchardCore.Users
             );
 
             SchemaBuilder.CreateMapIndexTable<UserByClaimIndex>(table => table
-               .Column<string>(nameof(UserByClaimIndex.ClaimType))
-               .Column<string>(nameof(UserByClaimIndex.ClaimValue)),
+               .Column<string>("ClaimType")
+               .Column<string>("ClaimValue"),
                 null);
 
             SchemaBuilder.AlterIndexTable<UserByClaimIndex>(table => table
                 .CreateIndex("IDX_UserByClaimIndex_DocumentId",
                     "DocumentId",
-                    nameof(UserByClaimIndex.ClaimType),
-                    nameof(UserByClaimIndex.ClaimValue))
+                    "ClaimType",
+                    "ClaimValue")
             );
 
             // Shortcut other migration steps on new content definition schemas.
@@ -96,8 +96,8 @@ namespace OrchardCore.Users
         public int UpdateFrom2()
         {
             SchemaBuilder.CreateMapIndexTable<UserByClaimIndex>(table => table
-               .Column<string>(nameof(UserByClaimIndex.ClaimType))
-               .Column<string>(nameof(UserByClaimIndex.ClaimValue)),
+               .Column<string>("ClaimType")
+               .Column<string>("ClaimValue"),
                 null);
 
             return 3;
@@ -107,7 +107,7 @@ namespace OrchardCore.Users
         public int UpdateFrom3()
         {
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .AddColumn<bool>(nameof(UserIndex.IsEnabled), c => c.NotNull().WithDefault(true)));
+                .AddColumn<bool>("IsEnabled", c => c.NotNull().WithDefault(true)));
 
             return 4;
         }
@@ -198,8 +198,8 @@ namespace OrchardCore.Users
             SchemaBuilder.AlterIndexTable<UserByClaimIndex>(table => table
                 .CreateIndex("IDX_UserByClaimIndex_DocumentId",
                     "DocumentId",
-                    nameof(UserByClaimIndex.ClaimType),
-                    nameof(UserByClaimIndex.ClaimValue))
+                    "ClaimType",
+                    "ClaimValue")
             );
 
             return 9;
@@ -219,13 +219,13 @@ namespace OrchardCore.Users
         public int UpdateFrom10()
         {
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .AddColumn<bool>(nameof(UserIndex.IsLockoutEnabled), c => c.NotNull().WithDefault(false)));
+                .AddColumn<bool>("IsLockoutEnabled", c => c.NotNull().WithDefault(false)));
 
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .AddColumn<DateTime?>(nameof(UserIndex.LockoutEndUtc), c => c.Nullable()));
+                .AddColumn<DateTime?>("LockoutEndUtc", c => c.Nullable()));
 
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .AddColumn<int>(nameof(UserIndex.AccessFailedCount), c => c.NotNull().WithDefault(0)));
+                .AddColumn<int>("AccessFailedCount", c => c.NotNull().WithDefault(0)));
 
             return 11;
         }
@@ -255,16 +255,15 @@ namespace OrchardCore.Users
                 var documentTableName = session.Store.Configuration.TableNameConvention.GetDocumentTable();
                 var table = $"{session.Store.Configuration.TablePrefix}{documentTableName}";
 
+                logger.LogDebug("Updating User Settings");
+
                 using var connection = dbConnectionAccessor.CreateConnection();
                 await connection.OpenAsync();
-
                 using var transaction = connection.BeginTransaction(session.Store.Configuration.IsolationLevel);
                 var dialect = session.Store.Configuration.SqlDialect;
 
                 try
                 {
-                    logger.LogDebug("Updating User Settings");
-
                     var quotedTableName = dialect.QuoteForTableName(table, session.Store.Configuration.Schema);
                     var quotedContentColumnName = dialect.QuoteForColumnName("Content");
                     var quotedTypeColumnName = dialect.QuoteForColumnName("Type");
@@ -273,11 +272,11 @@ namespace OrchardCore.Users
 
                     await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
 
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
                 catch (Exception e)
                 {
-                    transaction.Rollback();
+                    await transaction.RollbackAsync();
                     logger.LogError(e, "An error occurred while updating User Settings");
 
                     throw;
