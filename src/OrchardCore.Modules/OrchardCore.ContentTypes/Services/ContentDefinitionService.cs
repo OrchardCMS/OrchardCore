@@ -60,7 +60,7 @@ namespace OrchardCore.ContentTypes.Services
         }
 
         public IEnumerable<EditTypeViewModel> LoadTypes()
-            => LoadTypesAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            => LoadTypesAsync().GetAwaiter().GetResult();
 
         public async Task<IEnumerable<EditTypeViewModel>> LoadTypesAsync()
             => (await _contentDefinitionManager.LoadTypeDefinitionsAsync())
@@ -68,7 +68,7 @@ namespace OrchardCore.ContentTypes.Services
                 .OrderBy(m => m.DisplayName);
 
         public IEnumerable<EditTypeViewModel> GetTypes()
-            => GetTypesAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            => GetTypesAsync().GetAwaiter().GetResult();
 
         public async Task<IEnumerable<EditTypeViewModel>> GetTypesAsync()
             => (await _contentDefinitionManager.ListTypeDefinitionsAsync())
@@ -76,7 +76,7 @@ namespace OrchardCore.ContentTypes.Services
                 .OrderBy(m => m.DisplayName);
 
         public EditTypeViewModel LoadType(string name)
-            => LoadTypeAsync(name).ConfigureAwait(false).GetAwaiter().GetResult();
+            => LoadTypeAsync(name).GetAwaiter().GetResult();
 
         public async Task<EditTypeViewModel> LoadTypeAsync(string name)
         {
@@ -91,7 +91,7 @@ namespace OrchardCore.ContentTypes.Services
         }
 
         public EditTypeViewModel GetType(string name)
-            => GetTypeAsync(name).ConfigureAwait(false).GetAwaiter().GetResult();
+            => GetTypeAsync(name).GetAwaiter().GetResult();
 
         public async Task<EditTypeViewModel> GetTypeAsync(string name)
         {
@@ -106,7 +106,7 @@ namespace OrchardCore.ContentTypes.Services
         }
 
         public ContentTypeDefinition AddType(string name, string displayName)
-            => AddTypeAsync(name, displayName).ConfigureAwait(false).GetAwaiter().GetResult();
+            => AddTypeAsync(name, displayName).GetAwaiter().GetResult();
 
         public async Task<ContentTypeDefinition> AddTypeAsync(string name, string displayName)
         {
@@ -131,7 +131,7 @@ namespace OrchardCore.ContentTypes.Services
                 }
             }
 
-            while (await _contentDefinitionManager.LoadTypeDefinitionAsync(name) != null)
+            while ((await _contentDefinitionManager.LoadTypeDefinitionAsync(name)) is not null)
             {
                 name = VersionName(name);
             }
@@ -150,7 +150,7 @@ namespace OrchardCore.ContentTypes.Services
         }
 
         public void RemoveType(string name, bool deleteContent)
-            => RemoveTypeAsync(name, deleteContent).ConfigureAwait(false).GetAwaiter().GetResult();
+            => RemoveTypeAsync(name, deleteContent).GetAwaiter().GetResult();
 
         public async Task RemoveTypeAsync(string name, bool deleteContent)
         {
@@ -174,7 +174,7 @@ namespace OrchardCore.ContentTypes.Services
         }
 
         public void AddPartToType(string partName, string typeName)
-            => AddPartToTypeAsync(partName, typeName).ConfigureAwait(false).GetAwaiter().GetResult();
+            => AddPartToTypeAsync(partName, typeName).GetAwaiter().GetResult();
 
         public async Task AddPartToTypeAsync(string partName, string typeName)
         {
@@ -183,7 +183,7 @@ namespace OrchardCore.ContentTypes.Services
         }
 
         public void AddReusablePartToType(string name, string displayName, string description, string partName, string typeName)
-            => AddReusablePartToTypeAsync(name, displayName, description, partName, typeName).ConfigureAwait(false).GetAwaiter().GetResult();
+            => AddReusablePartToTypeAsync(name, displayName, description, partName, typeName).GetAwaiter().GetResult();
 
         public async Task AddReusablePartToTypeAsync(string name, string displayName, string description, string partName, string typeName)
         {
@@ -197,7 +197,7 @@ namespace OrchardCore.ContentTypes.Services
         }
 
         public void RemovePartFromType(string partName, string typeName)
-            => RemovePartFromTypeAsync(partName, typeName).ConfigureAwait(false).GetAwaiter().GetResult();
+            => RemovePartFromTypeAsync(partName, typeName).GetAwaiter().GetResult();
 
         public async Task RemovePartFromTypeAsync(string partName, string typeName)
         {
@@ -206,7 +206,7 @@ namespace OrchardCore.ContentTypes.Services
         }
 
         public IEnumerable<EditPartViewModel> LoadParts(bool metadataPartsOnly)
-            => LoadPartsAsync(metadataPartsOnly).ConfigureAwait(false).GetAwaiter().GetResult();
+            => LoadPartsAsync(metadataPartsOnly).GetAwaiter().GetResult();
 
         public async Task<IEnumerable<EditPartViewModel>> LoadPartsAsync(bool metadataPartsOnly)
         {
@@ -236,7 +236,7 @@ namespace OrchardCore.ContentTypes.Services
         }
 
         public IEnumerable<EditPartViewModel> GetParts(bool metadataPartsOnly)
-            => GetPartsAsync(metadataPartsOnly).ConfigureAwait(false).GetAwaiter().GetResult();
+            => GetPartsAsync(metadataPartsOnly).GetAwaiter().GetResult();
 
         public async Task<IEnumerable<EditPartViewModel>> GetPartsAsync(bool metadataPartsOnly)
         {
@@ -266,7 +266,7 @@ namespace OrchardCore.ContentTypes.Services
         }
 
         public EditPartViewModel LoadPart(string name)
-            => LoadPartAsync(name).ConfigureAwait(false).GetAwaiter().GetResult();
+            => LoadPartAsync(name).GetAwaiter().GetResult();
 
         public async Task<EditPartViewModel> LoadPartAsync(string name)
         {
@@ -290,7 +290,7 @@ namespace OrchardCore.ContentTypes.Services
         }
 
         public EditPartViewModel GetPart(string name)
-            => GetPartAsync(name).ConfigureAwait(false).GetAwaiter().GetResult();
+            => GetPartAsync(name).GetAwaiter().GetResult();
 
         public async Task<EditPartViewModel> GetPartAsync(string name)
         {
@@ -314,7 +314,7 @@ namespace OrchardCore.ContentTypes.Services
         }
 
         public EditPartViewModel AddPart(CreatePartViewModel partViewModel)
-            => AddPartAsync(partViewModel).ConfigureAwait(false).GetAwaiter().GetResult();
+            => AddPartAsync(partViewModel).GetAwaiter().GetResult();
 
         public async Task<EditPartViewModel> AddPartAsync(CreatePartViewModel partViewModel)
         {
@@ -337,7 +337,7 @@ namespace OrchardCore.ContentTypes.Services
         }
 
         public void RemovePart(string name)
-            => RemovePartAsync(name).ConfigureAwait(false).GetAwaiter().GetResult();
+            => RemovePartAsync(name).GetAwaiter().GetResult();
 
         public async Task RemovePartAsync(string name)
         {
@@ -360,19 +360,19 @@ namespace OrchardCore.ContentTypes.Services
         }
 
         public IEnumerable<Type> GetFields()
-            => GetFieldsAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            => GetFieldsAsync().GetAwaiter().GetResult();
 
         public Task<IEnumerable<Type>> GetFieldsAsync()
             => Task.FromResult(_contentFieldTypes);
 
         public void AddFieldToPart(string fieldName, string fieldTypeName, string partName)
-            => AddFieldToPartAsync(fieldName, fieldName, fieldTypeName, partName).ConfigureAwait(false).GetAwaiter().GetResult();
+            => AddFieldToPartAsync(fieldName, fieldName, fieldTypeName, partName).GetAwaiter().GetResult();
 
         public Task AddFieldToPartAsync(string fieldName, string fieldTypeName, string partName)
             => AddFieldToPartAsync(fieldName, fieldName, fieldTypeName, partName);
 
         public void AddFieldToPart(string fieldName, string displayName, string fieldTypeName, string partName)
-            => AddFieldToPartAsync(fieldName, displayName, fieldTypeName, partName).ConfigureAwait(false).GetAwaiter().GetResult();
+            => AddFieldToPartAsync(fieldName, displayName, fieldTypeName, partName).GetAwaiter().GetResult();
 
         public async Task AddFieldToPartAsync(string fieldName, string displayName, string fieldTypeName, string partName)
         {
@@ -405,7 +405,7 @@ namespace OrchardCore.ContentTypes.Services
         }
 
         public void RemoveFieldFromPart(string fieldName, string partName)
-            => RemoveFieldFromPartAsync(fieldName, partName).ConfigureAwait(false).GetAwaiter().GetResult();
+            => RemoveFieldFromPartAsync(fieldName, partName).GetAwaiter().GetResult();
 
         public async Task RemoveFieldFromPartAsync(string fieldName, string partName)
         {
@@ -418,7 +418,7 @@ namespace OrchardCore.ContentTypes.Services
         }
 
         public void AlterField(EditPartViewModel partViewModel, EditFieldViewModel fieldViewModel)
-            => AlterFieldAsync(partViewModel, fieldViewModel).ConfigureAwait(false).GetAwaiter().GetResult();
+            => AlterFieldAsync(partViewModel, fieldViewModel).GetAwaiter().GetResult();
 
         public async Task AlterFieldAsync(EditPartViewModel partViewModel, EditFieldViewModel fieldViewModel)
         {
@@ -434,7 +434,7 @@ namespace OrchardCore.ContentTypes.Services
         }
 
         public void AlterTypePart(EditTypePartViewModel typePartViewModel)
-            => AlterTypePartAsync(typePartViewModel).ConfigureAwait(false).GetAwaiter().GetResult();
+            => AlterTypePartAsync(typePartViewModel).GetAwaiter().GetResult();
 
         public async Task AlterTypePartAsync(EditTypePartViewModel typePartViewModel)
         {
@@ -453,7 +453,7 @@ namespace OrchardCore.ContentTypes.Services
         }
 
         public void AlterTypePartsOrder(ContentTypeDefinition typeDefinition, string[] partNames)
-            => AlterTypePartsOrderAsync(typeDefinition, partNames).ConfigureAwait(false).GetAwaiter().GetResult();
+            => AlterTypePartsOrderAsync(typeDefinition, partNames).GetAwaiter().GetResult();
 
         public Task AlterTypePartsOrderAsync(ContentTypeDefinition typeDefinition, string[] partNames)
             => _contentDefinitionManager.AlterTypeDefinitionAsync(typeDefinition.Name, type =>
@@ -469,7 +469,7 @@ namespace OrchardCore.ContentTypes.Services
             });
 
         public void AlterPartFieldsOrder(ContentPartDefinition partDefinition, string[] fieldNames)
-            => AlterPartFieldsOrderAsync(partDefinition, fieldNames).ConfigureAwait(false).GetAwaiter().GetResult();
+            => AlterPartFieldsOrderAsync(partDefinition, fieldNames).GetAwaiter().GetResult();
 
         public Task AlterPartFieldsOrderAsync(ContentPartDefinition partDefinition, string[] fieldNames)
             => _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, type =>
@@ -485,7 +485,7 @@ namespace OrchardCore.ContentTypes.Services
             });
 
         public string GenerateContentTypeNameFromDisplayName(string displayName)
-            => GenerateContentTypeNameFromDisplayNameAsync(displayName).ConfigureAwait(false).GetAwaiter().GetResult();
+            => GenerateContentTypeNameFromDisplayNameAsync(displayName).GetAwaiter().GetResult();
 
         public async Task<string> GenerateContentTypeNameFromDisplayNameAsync(string displayName)
         {
@@ -500,7 +500,7 @@ namespace OrchardCore.ContentTypes.Services
         }
 
         public string GenerateFieldNameFromDisplayName(string partName, string displayName)
-            => GenerateFieldNameFromDisplayNameAsync(partName, displayName).ConfigureAwait(false).GetAwaiter().GetResult();
+            => GenerateFieldNameFromDisplayNameAsync(partName, displayName).GetAwaiter().GetResult();
 
         public async Task<string> GenerateFieldNameFromDisplayNameAsync(string partName, string displayName)
         {

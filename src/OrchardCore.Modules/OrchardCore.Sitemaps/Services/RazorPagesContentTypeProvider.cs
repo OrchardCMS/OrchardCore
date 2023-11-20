@@ -45,7 +45,7 @@ namespace OrchardCore.Sitemaps.Services
         }
 
         public IEnumerable<ContentTypeDefinition> ListRoutableTypeDefinitions()
-            => ListRoutableTypeDefinitionsAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            => ListRoutableTypeDefinitionsAsync().GetAwaiter().GetResult();
 
         public async Task<IEnumerable<ContentTypeDefinition>> ListRoutableTypeDefinitionsAsync()
         {

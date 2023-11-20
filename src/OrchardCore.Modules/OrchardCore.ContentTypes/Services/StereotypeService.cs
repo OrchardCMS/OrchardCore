@@ -13,7 +13,7 @@ namespace OrchardCore.ContentTypes.Services
         }
 
         public IEnumerable<StereotypeDescription> GetStereotypes()
-            => GetStereotypesAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            => GetStereotypesAsync().GetAwaiter().GetResult();
 
         public async Task<IEnumerable<StereotypeDescription>> GetStereotypesAsync()
         {
