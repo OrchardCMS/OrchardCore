@@ -22,7 +22,7 @@
     "null-loader": "^4.0.1",
     "prop-types": "15.8.1",
     "style-loader": "^3.3.3",
-    "ts-loader": "^9.4.4",
+    "ts-loader": "^9.5.1",
     "typescript": "^5.2.2",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4"
