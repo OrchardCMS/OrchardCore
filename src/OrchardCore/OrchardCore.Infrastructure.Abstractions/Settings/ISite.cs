@@ -38,6 +38,4 @@ public interface ISite : IEntity
     CacheMode CacheMode { get; set; }
 
     T As<T>() where T : new();
-
-    ISite Put<T>(T aspect) where T : new();
 }

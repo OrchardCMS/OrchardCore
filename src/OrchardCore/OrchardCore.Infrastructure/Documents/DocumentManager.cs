@@ -93,6 +93,7 @@ namespace OrchardCore.Documents
             }
 
             document.Identifier = IdGenerator.GenerateId();
+            document.isMutable = true;
 
             return document;
         }
@@ -181,6 +182,7 @@ namespace OrchardCore.Documents
             }
 
             document.Identifier ??= IdGenerator.GenerateId();
+            document.isMutable = true;
 
             if (!_isVolatile)
             {
