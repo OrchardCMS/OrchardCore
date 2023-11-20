@@ -320,7 +320,7 @@ namespace OrchardCore.ContentTypes.Services
         {
             var name = partViewModel.Name;
 
-            if (await _contentDefinitionManager.LoadPartDefinitionAsync(name) != null)
+            if ((await _contentDefinitionManager.LoadPartDefinitionAsync(name)) != null)
             {
                 throw new Exception(S["Cannot add part named '{0}'. It already exists.", name]);
             }
