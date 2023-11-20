@@ -41,7 +41,7 @@ jobs:
       run: echo "BuildNumber=$(( $GITHUB_RUN_NUMBER + 15471 ))" >> $GITHUB_ENV
     - name: Build
       run: |
-        dotnet build -c Release -f net8.0 -p:Version=${{ steps.get_version.outputs.VERSION }}
+        dotnet build -c Release -p:Version=${{ steps.get_version.outputs.VERSION }}
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
