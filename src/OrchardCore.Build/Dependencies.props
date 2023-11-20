@@ -18,7 +18,7 @@
     <PackageManagement Include="Azure.Storage.Blobs" Version="12.19.1" />
     <PackageManagement Include="BenchmarkDotNet" Version="0.13.10" />
     <PackageManagement Include="Castle.Core" Version="5.1.1" />
-    <PackageManagement Include="DocumentFormat.OpenXml" Version="2.20.0" />
+    <PackageManagement Include="DocumentFormat.OpenXml" Version="3.0.0" />
     <PackageManagement Include="Fluid.Core" Version="2.5.0" />
     <PackageManagement Include="GraphQL" Version="4.8.0" />
     <PackageManagement Include="GraphQL.DataLoader" Version="4.8.0" />
@@ -58,9 +58,9 @@
     <PackageManagement Include="StackExchange.Redis" Version="2.7.4" />
     <PackageManagement Include="StyleCop.Analyzers" Version="1.1.118" />
     <PackageManagement Include="System.Linq.Async" Version="6.0.1" />
-    <PackageManagement Include="xunit" Version="2.6.1" />
-    <PackageManagement Include="xunit.analyzers" Version="1.5.0" />
-    <PackageManagement Include="xunit.runner.visualstudio" Version="2.5.3" />
+    <PackageManagement Include="xunit" Version="2.6.2" />
+    <PackageManagement Include="xunit.analyzers" Version="1.6.0" />
+    <PackageManagement Include="xunit.runner.visualstudio" Version="2.5.4" />
     <PackageManagement Include="YesSql" Version="4.0.0-beta-0002" />
     <PackageManagement Include="YesSql.Abstractions" Version="4.0.0-beta-0002" />
     <PackageManagement Include="YesSql.Core" Version="4.0.0-beta-0002" />
