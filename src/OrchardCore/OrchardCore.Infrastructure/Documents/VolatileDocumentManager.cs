@@ -99,6 +99,7 @@ namespace OrchardCore.Documents
 
                 document.Identifier ??= IdGenerator.GenerateId();
 
+                // A volatile document can't be invalidated.
                 await SetInternalAsync(document);
 
                 if (delegates.AfterUpdateDelegateAsync != null)
