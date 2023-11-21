@@ -11,7 +11,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Notifications.Activities;
 
-public class NotifyUserTask : NotifyUserTaskActivity
+public class NotifyUserTask : NotifyUserTaskActivity<NotifyUserTask>
 {
     public NotifyUserTask(
        INotificationService notificationCoordinator,
@@ -26,8 +26,6 @@ public class NotifyUserTask : NotifyUserTaskActivity
        localizer)
     {
     }
-
-    public override string Name => nameof(NotifyUserTask);
 
     public override LocalizedString DisplayText => S["Notify User Task"];
 

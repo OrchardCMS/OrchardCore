@@ -9,7 +9,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class ScriptTask : TaskActivity
+    public class ScriptTask : TaskActivity<ScriptTask>
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
         protected readonly IStringLocalizer S;
@@ -19,8 +19,6 @@ namespace OrchardCore.Workflows.Activities
             _scriptEvaluator = scriptEvaluator;
             S = localizer;
         }
-
-        public override string Name => nameof(ScriptTask);
 
         public override LocalizedString DisplayText => S["Script Task"];
 

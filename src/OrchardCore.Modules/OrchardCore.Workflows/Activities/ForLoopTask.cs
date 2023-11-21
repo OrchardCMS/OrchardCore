@@ -8,7 +8,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class ForLoopTask : TaskActivity
+    public class ForLoopTask : TaskActivity<ForLoopTask>
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
         protected readonly IStringLocalizer S;
@@ -18,8 +18,6 @@ namespace OrchardCore.Workflows.Activities
             _scriptEvaluator = scriptEvaluator;
             S = localizer;
         }
-
-        public override string Name => nameof(ForLoopTask);
 
         public override LocalizedString DisplayText => S["For Loop Task"];
 

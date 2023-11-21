@@ -5,7 +5,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Tests.Workflows.Activities
 {
-    public class AddTask : TaskActivity
+    public class AddTask : TaskActivity<AddTask>
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
         protected readonly IStringLocalizer S;
@@ -15,8 +15,6 @@ namespace OrchardCore.Tests.Workflows.Activities
             _scriptEvaluator = scriptEvaluator;
             S = stringLocalizer;
         }
-
-        public override string Name => nameof(AddTask);
 
         public override LocalizedString DisplayText => S["Add Task"];
 

@@ -26,11 +26,4 @@
     <PackageReference Include="Castle.Core" />
   </ItemGroup>
 
-  <!-- Ditto OrchardCore.Abstractions re: six half dozen -->
-  <ItemGroup>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>OrchardCore.Abstractions.Tests</_Parameter1>
-    </AssemblyAttribute>
-  </ItemGroup>
-
 </Project>

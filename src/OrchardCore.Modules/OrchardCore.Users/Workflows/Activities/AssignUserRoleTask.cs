@@ -11,22 +11,24 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Workflows.Activities
 {
-    public class AssignUserRoleTask : TaskActivity
+    public class AssignUserRoleTask : TaskActivity<AssignUserRoleTask>
     {
         private readonly UserManager<IUser> _userManager;
         private readonly IUserService _userService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
         protected readonly IStringLocalizer S;
 
-        public AssignUserRoleTask(UserManager<IUser> userManager, IUserService userService, IWorkflowExpressionEvaluator expressionvaluator, IStringLocalizer<AssignUserRoleTask> localizer)
+        public AssignUserRoleTask(
+            UserManager<IUser> userManager,
+            IUserService userService,
+            IWorkflowExpressionEvaluator expressionEvaluator,
+            IStringLocalizer<AssignUserRoleTask> localizer)
         {
             _userManager = userManager;
             _userService = userService;
-            _expressionEvaluator = expressionvaluator;
+            _expressionEvaluator = expressionEvaluator;
             S = localizer;
         }
-
-        public override string Name => nameof(AssignUserRoleTask);
 
         public override LocalizedString DisplayText => S["Assign User Role Task"];
 

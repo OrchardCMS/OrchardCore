@@ -117,7 +117,7 @@ namespace OrchardCore.Roles.Services
                 updated = true;
 
                 missingFeatures.Remove(feature.Id);
-                UpdateRoleAsync(role, providers, _logger);
+                UpdateRolesForEnabledFeature(role, providers, _logger);
             }
 
             if (updated)
@@ -175,7 +175,7 @@ namespace OrchardCore.Roles.Services
             }
         }
 
-        private static bool UpdateRoleAsync(Role role, IEnumerable<IPermissionProvider> providers, ILogger logger)
+        private static bool UpdateRolesForEnabledFeature(Role role, IEnumerable<IPermissionProvider> providers, ILogger logger)
         {
             var stereotypes = providers
                 .SelectMany(provider => provider.GetDefaultStereotypes())

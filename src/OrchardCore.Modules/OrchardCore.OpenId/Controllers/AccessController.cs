@@ -593,6 +593,9 @@ namespace OrchardCore.OpenId.Controllers
                 if (user != null)
                 {
                     principal = await service.CreatePrincipalAsync(user);
+                    // Copy the granted scopes and resources from the original authorization code/refresh token principal
+                    principal.SetScopes(info.Principal.GetScopes());
+                    principal.SetResources(await GetResourcesAsync(info.Principal.GetScopes()));
                 }
             }
 

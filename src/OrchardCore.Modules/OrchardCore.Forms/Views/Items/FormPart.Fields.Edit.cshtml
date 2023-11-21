@@ -25,7 +25,7 @@
     <label asp-for="EncType" class="@Orchard.GetLabelClasses()">@T["EncType"]</label>
     <div class="@Orchard.GetEndClasses()">
         <select asp-for="EncType" class="form-select content-preview-select">
-            <option value="application/x-www-form-urlencoded">application/x-www-form-urlencoded	</option>
+            <option value="application/x-www-form-urlencoded">application/x-www-form-urlencoded </option>
             <option value="multipart/form-data">multipart/form-data</option>
             <option value="text/plain">text/plain</option>
         </select>
@@ -39,6 +39,16 @@
             <input asp-for="EnableAntiForgeryToken" class="form-check-input" />
             <label asp-for="EnableAntiForgeryToken" class="form-check-label">@T["Anti Forgery Token"]</label>
             <span class="hint">@T["Check to generate an Anti Forgery Token in the form."]</span>
+        </div>
+    </div>
+</div>
+
+<div class="@Orchard.GetWrapperClasses()">
+    <div class="@Orchard.GetEndClasses(true)">
+        <div class="form-check">
+            <input asp-for="SaveFormLocation" class="form-check-input" />
+            <label asp-for="SaveFormLocation" class="form-check-label">@T["Save Form Location"]</label>
+            <span class="hint">@T["Check in order to store the current form location. This stored location can later be used to return the user to their initial location."]</span>
         </div>
     </div>
 </div>

@@ -24,7 +24,7 @@ else
 
 <div class="@Orchard.GetWrapperClasses()">
     <label asp-for="Html" class="@Orchard.GetLabelClasses()">@Model.TypePartDefinition.DisplayName()</label>
-    <div class="@Orchard.GetEndCssClasses()">
+    <div class="@Orchard.GetEndClasses()">
         @if (culture.IsRightToLeft())
         {
             <div style="text-align:right">

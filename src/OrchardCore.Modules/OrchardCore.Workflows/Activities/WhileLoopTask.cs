@@ -7,7 +7,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class WhileLoopTask : TaskActivity
+    public class WhileLoopTask : TaskActivity<WhileLoopTask>
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
         protected readonly IStringLocalizer S;
@@ -17,8 +17,6 @@ namespace OrchardCore.Workflows.Activities
             _scriptEvaluator = scriptEvaluator;
             S = localizer;
         }
-
-        public override string Name => nameof(WhileLoopTask);
 
         public override LocalizedString DisplayText => S["While Loop Task"];
 
