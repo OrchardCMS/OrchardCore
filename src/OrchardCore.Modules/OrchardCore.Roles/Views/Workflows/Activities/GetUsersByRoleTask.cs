@@ -1,6 +1,7 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Users;
@@ -18,10 +19,10 @@ public class GetUsersByRoleTask : TaskActivity<GetUsersByRoleTask>
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
     protected readonly IStringLocalizer S;
 
-    public GetUsersByRoleTask(UserManager<IUser> userManager, IWorkflowExpressionEvaluator expressionvaluator, IStringLocalizer<GetUsersByRoleTask> localizer)
+    public GetUsersByRoleTask(UserManager<IUser> userManager, IWorkflowExpressionEvaluator expressionEvaluator, IStringLocalizer<GetUsersByRoleTask> localizer)
     {
         _userManager = userManager;
-        _expressionEvaluator = expressionvaluator;
+        _expressionEvaluator = expressionEvaluator;
         S = localizer;
     }
 
@@ -50,22 +51,22 @@ public class GetUsersByRoleTask : TaskActivity<GetUsersByRoleTask>
 
         if (!string.IsNullOrEmpty(outputKeyName))
         {
-            var usersInRole = new Dictionary<string, User>();
+            var usersInRole = new Dictionary<string, string>();
 
             foreach (var role in Roles)
             {
-                foreach(var u in await _userManager.GetUsersInRoleAsync(role))
+                foreach (var u in await _userManager.GetUsersInRoleAsync(role))
                 {
-                    if (u is not User user) 
+                    if (u is not User user)
                     {
                         continue;
                     }
 
-                    usersInRole.TryAdd(user.UserId, user);
+                    usersInRole.TryAdd(user.Id.ToString(), user.UserId);
                 }
             }
-            
-            workflowContext.Output[outputKeyName] = usersInRole.Values;
+
+            workflowContext.Output[outputKeyName] = FluidValue.Create(usersInRole, new TemplateOptions());
 
             return Outcomes("Done");
         }
