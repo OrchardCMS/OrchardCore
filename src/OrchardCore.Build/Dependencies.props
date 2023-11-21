@@ -36,7 +36,7 @@
     <PackageManagement Include="MailKit" Version="4.3.0" />
     <PackageManagement Include="Markdig" Version="0.33.0" />
     <PackageManagement Include="MessagePack" Version="2.2.60" />
-    <PackageManagement Include="Microsoft.Identity.Web" Version="2.15.3" />
+    <PackageManagement Include="Microsoft.Identity.Web" Version="2.15.5" />
     <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     <PackageManagement Include="MimeKit" Version="4.3.0" />
