@@ -370,19 +370,8 @@ namespace OrchardCore.ContentManagement
             }
         }
 
-        private static async Task<IEnumerable<T>> GetAsync<T>(IEnumerable<ContentTypeDefinitionRecord> records, Func<string, Task<T>> getter)
-        {
-            var results = new List<T>();
-
-            foreach (var record in records)
-            {
-                results.Add(await getter(record.Name));
-            }
-
-            return results;
-        }
-
-        private static async Task<IEnumerable<T>> GetAsync<T>(IEnumerable<ContentPartDefinitionRecord> records, Func<string, Task<T>> getter)
+        private static async Task<IEnumerable<T>> GetAsync<T, TRecord>(IEnumerable<TRecord> records, Func<string, Task<T>> getter)
+            where TRecord : INamedContentDefinitionRecord
         {
             var results = new List<T>();
 

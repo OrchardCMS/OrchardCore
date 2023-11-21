@@ -3,12 +3,12 @@ using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.ContentManagement.Metadata.Records
 {
-    public class ContentPartDefinitionRecord
+    public class ContentPartDefinitionRecord : INamedContentDefinitionRecord
     {
         public ContentPartDefinitionRecord()
         {
-            ContentPartFieldDefinitionRecords = new List<ContentPartFieldDefinitionRecord>();
-            Settings = new JObject();
+            ContentPartFieldDefinitionRecords = [];
+            Settings = [];
         }
 
         public string Name { get; set; }
