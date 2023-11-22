@@ -12,9 +12,6 @@ namespace OrchardCore.ContentTypes.Services
             _contentDefinitionService = contentDefinitionService;
         }
 
-        public IEnumerable<StereotypeDescription> GetStereotypes()
-            => GetStereotypesAsync().GetAwaiter().GetResult();
-
         public async Task<IEnumerable<StereotypeDescription>> GetStereotypesAsync()
         {
             // Harvest all available stereotypes by finding out about the stereotype of all content types

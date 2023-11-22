@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,10 +41,6 @@ namespace OrchardCore.Autoroute.Sitemaps
 
             return null;
         }
-
-        [Obsolete]
-        public IEnumerable<ContentTypeDefinition> ListRoutableTypeDefinitions()
-            => ListRoutableTypeDefinitionsAsync().GetAwaiter().GetResult();
 
         public async Task<IEnumerable<ContentTypeDefinition>> ListRoutableTypeDefinitionsAsync()
         {

@@ -29,9 +29,6 @@ namespace OrchardCore.Sitemaps.Services
             return null;
         }
 
-        public IEnumerable<ContentTypeDefinition> ListRoutableTypeDefinitions()
-            => ListRoutableTypeDefinitionsAsync().GetAwaiter().GetResult();
-
         public async Task<IEnumerable<ContentTypeDefinition>> ListRoutableTypeDefinitionsAsync()
         {
             var results = new List<ContentTypeDefinition>();

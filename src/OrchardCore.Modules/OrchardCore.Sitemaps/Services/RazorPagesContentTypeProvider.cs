@@ -44,14 +44,11 @@ namespace OrchardCore.Sitemaps.Services
             return Task.FromResult<string>(null);
         }
 
-        public IEnumerable<ContentTypeDefinition> ListRoutableTypeDefinitions()
-            => ListRoutableTypeDefinitionsAsync().GetAwaiter().GetResult();
-
         public async Task<IEnumerable<ContentTypeDefinition>> ListRoutableTypeDefinitionsAsync()
         {
-            var ctds = await _contentDefinitionManager.ListTypeDefinitionsAsync();
-            var rctds = ctds.Where(ctd => _options.ContentTypeOptions.Any(o => o.ContentType == ctd.Name));
-            return rctds;
+            var definitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
+
+            return definitions.Where(definition => _options.ContentTypeOptions.Any(o => o.ContentType == definition.Name));
         }
     }
 }
