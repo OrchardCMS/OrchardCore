@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.ContentsTransfer;
+
 public class ContentHandlerOptions
 {
-    public readonly Dictionary<Type, List<Type>> ContentParts = new();
+    public readonly Dictionary<Type, List<Type>> ContentParts = [];
 
-    public readonly Dictionary<Type, List<Type>> ContentFields = new();
+    public readonly Dictionary<Type, List<Type>> ContentFields = [];
 
     internal void AddPartHandler(Type contentPartType, Type handlerType)
     {
@@ -42,7 +43,7 @@ public class ContentHandlerOptions
 
         if (!ContentParts.TryGetValue(contentPartType, out var handlers))
         {
-            handlers = new List<Type>();
+            handlers = [];
             ContentParts.Add(contentPartType, handlers);
         }
 
@@ -58,7 +59,7 @@ public class ContentHandlerOptions
 
         if (!ContentFields.TryGetValue(contentFieldType, out var handlers))
         {
-            handlers = new List<Type>();
+            handlers = [];
             ContentFields.Add(contentFieldType, handlers);
         }
 

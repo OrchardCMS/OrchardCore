@@ -6,6 +6,13 @@
 
 @inject IOptions<ContentImportOptions> ContentImportOptions
 
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="List" asp-controller="Admin">@T["Bulk Transfers"]</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@RenderTitleSegments(T["Export"])</li>
+    </ol>
+</nav>
+
 <div class="card text-bg-theme mb-3">
     <div class="card-header fw-bold">@T["Export contents"]</div>
     <div class="card-body">

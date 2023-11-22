@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentsTransfer.Models;
+using OrchardCore.ContentsTransfer.Controllers;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 
@@ -30,66 +30,26 @@ public class AdminMenu : INavigationProvider
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
     {
         if (!string.Equals("admin", name, StringComparison.OrdinalIgnoreCase))
         {
-            return;
+            return Task.CompletedTask;
         }
 
-        var controllerName = typeof(AdminController).ControllerName();
+        var adminControllerName = typeof(AdminController).ControllerName();
 
-        builder.Add(S["Content"], content => content
-
-            .Add(S["Imports"], S["Imports"].PrefixPosition(), imports =>
-            {
-                foreach (var contentTypeDefinition in _contentDefinitionManager.LoadTypeDefinitions())
-                {
-                    var settings = contentTypeDefinition.GetSettings<ContentTypeTransferSettings>();
-                    if (!settings.AllowBulkImport)
+        builder
+            .Add(S["Content"], content => content
+                .Add(S["Bulk Transfers"], S["Bulk Transfers"].PrefixPosition(), transfer => transfer
+                    .Action(nameof(AdminController.List), adminControllerName, new
                     {
-                        continue;
-                    }
+                        area = ContentTransferConstants.Feature.ModuleId
+                    })
+                    .Permission(ContentTransferPermissions.ListContentTransferEntries)
+                )
+            );
 
-                    imports.Add(S["Import {0}", contentTypeDefinition.DisplayName], S["Import {0}", contentTypeDefinition.DisplayName].PrefixPosition(),
-                        contentTypeBuilder => contentTypeBuilder
-                            .Action(nameof(AdminController.Import), controllerName, new
-                            {
-                                area = ContentTransferConstants.Feature.ModuleId,
-                                contentTypeId = contentTypeDefinition.Name,
-                            })
-                            .Permission(ContentTransferPermissions.ImportContentFromFile)
-                            .Resource(contentTypeDefinition.Name)
-                        );
-                }
-            })
-        );
-
-        var showExport = false;
-
-        foreach (var contentTypeDefinition in _contentDefinitionManager.LoadTypeDefinitions())
-        {
-            // check settings
-            var settings = contentTypeDefinition.GetSettings<ContentTypeTransferSettings>();
-            if (settings.AllowBulkExport
-                && await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, ContentTransferPermissions.ExportContentFromFile, (object)contentTypeDefinition.Name))
-            {
-                showExport = true;
-                break;
-            }
-        }
-
-        if (showExport)
-        {
-            builder
-                .Add(S["Content"], content => content
-                    .Add(S["Export"], S["Export"].PrefixPosition(), exports => exports
-                        .Action("Export", "Admin", new
-                        {
-                            area = ContentTransferConstants.Feature.ModuleId
-                        })
-                    )
-                );
-        }
+        return Task.CompletedTask;
     }
 }

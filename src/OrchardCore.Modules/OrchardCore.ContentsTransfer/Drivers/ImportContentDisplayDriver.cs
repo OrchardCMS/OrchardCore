@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
 using OrchardCore.ContentsTransfer.Models;
 using OrchardCore.ContentsTransfer.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
@@ -13,7 +12,6 @@ namespace CrestApps.Contents.Imports.Drivers;
 
 public class ImportContentDisplayDriver : DisplayDriver<ImportContent>
 {
-    private readonly ContentImportOptions _contentImportOptions;
     protected readonly IStringLocalizer S;
 
     private static readonly HashSet<string> _allowedExtensions = new()
@@ -24,19 +22,15 @@ public class ImportContentDisplayDriver : DisplayDriver<ImportContent>
     };
 
     public ImportContentDisplayDriver(
-        IOptions<ContentImportOptions> contentImportOptions,
         IStringLocalizer<ImportContentDisplayDriver> stringLocalizer
         )
     {
-        _contentImportOptions = contentImportOptions.Value;
         S = stringLocalizer;
     }
 
     public override IDisplayResult Edit(ImportContent model)
-    {
-        return Initialize<ContentImportViewModel>("ImportContentFile_Edit", viewModel => viewModel.File = model.File)
+        => Initialize<ContentImportViewModel>("ImportContentFile_Edit", viewModel => viewModel.File = model.File)
             .Location("Content:1");
-    }
 
     public override async Task<IDisplayResult> UpdateAsync(ImportContent model, UpdateEditorContext context)
     {

@@ -1,0 +1,32 @@
+@using OrchardCore.ContentsTransfer
+@model ListContentTransferEntryOptions
+
+@if (Model.ImportableTypes?.Count == 0)
+{
+    return;
+}
+
+@if (Model.ImportableTypes.Count == 1)
+{
+    <a class="btn btn-secondary" href="@Url.RouteUrl(new { area = ContentTransferConstants.Feature.ModuleId, controller = "Admin", action = "Import", contentTypeId = Model.ImportableTypes.First().Value, returnUrl = FullRequestPath })">
+        @T["Import {0}", Model.ImportableTypes.First().Text]
+    </a>
+}
+else
+{
+    <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="new-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            @T["Import"]
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end scrollable" aria-labelledby="bulk-action-menu-button">
+            @foreach (var item in Model.ImportableTypes)
+            {
+                <li>
+                    <a class="dropdown-item" href="@Url.RouteUrl(new { area = ContentTransferConstants.Feature.ModuleId, controller = "Admin", action = "Import", contentTypeId = @item.Value, returnUrl = FullRequestPath })">
+                        @T[Html.Encode(item.Text)]
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+}
