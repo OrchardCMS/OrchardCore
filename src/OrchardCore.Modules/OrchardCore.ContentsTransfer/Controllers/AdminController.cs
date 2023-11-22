@@ -9,84 +9,265 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OfficeOpenXml;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentsTransfer.Indexes;
 using OrchardCore.ContentsTransfer.Models;
+using OrchardCore.ContentsTransfer.Services;
 using OrchardCore.ContentsTransfer.ViewModels;
-using OrchardCore.ContentTransfer;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Media.Services;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
+using OrchardCore.Routing;
 using YesSql;
+using YesSql.Filters.Query;
+using YesSql.Services;
 
-namespace OrchardCore.ContentsTransfer;
+namespace OrchardCore.ContentsTransfer.Controllers;
 
-public class AdminController : Controller
+public class AdminController : Controller, IUpdateModel
 {
-    private static readonly JsonMergeSettings _updateJsonMergeSettings = new JsonMergeSettings
+    private static readonly JsonMergeSettings _updateJsonMergeSettings = new()
     {
         MergeArrayHandling = MergeArrayHandling.Replace,
         MergeNullValueHandling = MergeNullValueHandling.Ignore,
     };
 
-
-    private readonly IDisplayManager<ImportContent> _displayManager;
     private readonly IAuthorizationService _authorizationService;
+    private readonly ISession _session;
+
+    private readonly IDisplayManager<ContentTransferEntry> _entryDisplayManager;
+    private readonly IContentTransferEntryAdminListQueryService _entriesAdminListQueryService;
+    private readonly IDisplayManager<ListContentTransferEntryOptions> _entryOptionsDisplayManager;
+    private readonly INotifier _notifier;
+    private readonly IShapeFactory _shapeFactory;
+    private readonly PagerOptions _pagerOptions;
+    private readonly IClock _clock;
+    private readonly IContentTransferFileStore _contentTransferFileStore;
+    private readonly IContentManager _contentManager;
+    private readonly IDisplayManager<ImportContent> _displayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IContentImportManager _contentImportManager;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
-    private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly IContentManager _contentManager;
-    private readonly INotifier _notifier;
-    private readonly ISession _session;
-    private readonly IClock _clock;
-    private readonly IContentManagerSession _contentManagerSession;
-    private readonly IUpdateModelAccessor _updateModelAccessor;
-    private readonly IContentTransferFileStore _contentTransferFileStore;
-    private readonly ILogger _logger;
 
+    protected readonly dynamic New;
     protected readonly IStringLocalizer S;
+    private readonly IContentDefinitionManager _contentDefinitionManager;
     protected readonly IHtmlLocalizer H;
 
     public AdminController(
-        IDisplayManager<ImportContent> displayManager,
         IAuthorizationService authorizationService,
+        ISession session,
+        IShapeFactory shapeFactory,
+        IOptions<PagerOptions> pagerOptions,
+        IDisplayManager<ContentTransferEntry> entryDisplayManager,
+        IContentTransferEntryAdminListQueryService entriesAdminListQueryService,
+        IDisplayManager<ListContentTransferEntryOptions> entryOptionsDisplayManager,
+        INotifier notifier,
         IStringLocalizer<AdminController> stringLocalizer,
+        IContentDefinitionManager contentDefinitionManager,
+        IHtmlLocalizer<AdminController> htmlLocalizer,
+        IContentTransferFileStore contentTransferFileStore,
+        IContentManager contentManager,
+        IDisplayManager<ImportContent> displayManager,
+        IUpdateModelAccessor updateModelAccessor,
         IContentImportManager contentImportManager,
         IContentItemDisplayManager contentItemDisplayManager,
-        IContentDefinitionManager contentDefinitionManager,
-        IContentManager contentManager,
-        IHtmlLocalizer<AdminController> htmlLocalizer,
-        IContentManagerSession contentManagerSession,
-        IUpdateModelAccessor updateModelAccessor,
-        IContentTransferFileStore contentTransferFileStore,
-        INotifier notifier,
-        ISession session,
-        IClock clock,
-        ILogger<AdminController> logger)
+        IClock clock)
     {
-        _displayManager = displayManager;
         _authorizationService = authorizationService;
+        _session = session;
+        New = shapeFactory;
+        _entryDisplayManager = entryDisplayManager;
+        _entriesAdminListQueryService = entriesAdminListQueryService;
+        _entryOptionsDisplayManager = entryOptionsDisplayManager;
+        _notifier = notifier;
         S = stringLocalizer;
+        _contentDefinitionManager = contentDefinitionManager;
+        H = htmlLocalizer;
+        _contentTransferFileStore = contentTransferFileStore;
+        _contentManager = contentManager;
+        _displayManager = displayManager;
+        _updateModelAccessor = updateModelAccessor;
         _contentImportManager = contentImportManager;
         _contentItemDisplayManager = contentItemDisplayManager;
-        _contentDefinitionManager = contentDefinitionManager;
-        _contentManager = contentManager;
-        _notifier = notifier;
-        _session = session;
+        _shapeFactory = shapeFactory;
+        _pagerOptions = pagerOptions.Value;
         _clock = clock;
-        H = htmlLocalizer;
-        _contentManagerSession = contentManagerSession;
-        _updateModelAccessor = updateModelAccessor;
-        _contentTransferFileStore = contentTransferFileStore;
-        _logger = logger;
+    }
+
+    public async Task<IActionResult> List(
+        [ModelBinder(BinderType = typeof(ContentTransferEntryFilterEngineModelBinder), Name = "q")] QueryFilterResult<ContentTransferEntry> queryFilterResult,
+        PagerParameters pagerParameters,
+        ListContentTransferEntryOptions options)
+    {
+        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, ContentTransferPermissions.ListContentTransferEntries))
+        {
+            return Forbid();
+        }
+
+        options.FilterResult = queryFilterResult;
+
+        // The search text is provided back to the UI.
+        options.SearchText = options.FilterResult.ToString();
+        options.OriginalSearchText = options.SearchText;
+
+        // Populate route values to maintain previous route data when generating page links.
+        options.RouteValues.TryAdd("q", options.FilterResult.ToString());
+
+        options.Statuses =
+        [
+            new(S["New"], nameof(ContentTransferEntryStatus.New)),
+            new(S["Processing"], nameof(ContentTransferEntryStatus.Processing)),
+            new(S["Completed"], nameof(ContentTransferEntryStatus.Completed)),
+            new(S["Completed With Errors"], nameof(ContentTransferEntryStatus.CompletedWithErrors)),
+            new(S["Failed"], nameof(ContentTransferEntryStatus.Failed)),
+        ];
+
+        options.Sorts =
+        [
+            new(S["Recently created"], nameof(ContentTransferEntryOrder.Latest)),
+            new(S["Previously created"], nameof(ContentTransferEntryOrder.Oldest)),
+        ];
+
+        options.BulkActions =
+        [
+            new(S["Remove"], nameof(ContentTransferEntryBulkAction.Remove)),
+        ];
+
+        options.ImportableTypes = [];
+
+        foreach (var contentTypeDefinition in _contentDefinitionManager.ListTypeDefinitions())
+        {
+            var settings = contentTypeDefinition.GetSettings<ContentTypeTransferSettings>();
+
+            if (!settings.AllowBulkImport || !await _authorizationService.AuthorizeAsync(HttpContext.User, ContentTransferPermissions.ImportContentFromFile, (object)contentTypeDefinition.Name))
+            {
+                continue;
+            }
+
+            options.ImportableTypes.Add(new SelectListItem(contentTypeDefinition.DisplayName, contentTypeDefinition.Name));
+        }
+
+        var routeData = new RouteData(options.RouteValues);
+        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+
+        var queryResult = await _entriesAdminListQueryService.QueryAsync(pager.Page, pager.PageSize, options, this);
+
+        var pagerShape = (await New.Pager(pager)).TotalItemCount(queryResult.TotalCount).RouteData(routeData);
+
+        var summaries = new List<dynamic>();
+
+        foreach (var entry in queryResult.Entries)
+        {
+            dynamic shape = await _entryDisplayManager.BuildDisplayAsync(entry, this, "SummaryAdmin");
+            shape.ContentTransferEntry = entry;
+
+            summaries.Add(shape);
+        }
+
+        var startIndex = (pagerShape.Page - 1) * pagerShape.PageSize + 1;
+        options.StartIndex = startIndex;
+        options.EndIndex = startIndex + summaries.Count - 1;
+        options.EntriesCount = summaries.Count;
+        options.TotalItemCount = pagerShape.TotalItemCount;
+
+        var header = await _entryOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
+
+        var shapeViewModel = await _shapeFactory.CreateAsync<ListContentTransferEntriesViewModel>("ContentTransferEntriesAdminList", viewModel =>
+        {
+            viewModel.Options = options;
+            viewModel.Header = header;
+            viewModel.Entries = summaries;
+            viewModel.Pager = pagerShape;
+        });
+
+        return View(shapeViewModel);
+    }
+
+    [HttpPost, ActionName(nameof(List))]
+    [FormValueRequired("submit.Filter")]
+    public async Task<ActionResult> ListFilterPOST(ListContentTransferEntryOptions options)
+    {
+        // When the user has typed something into the search input, no further evaluation of the form post is required.
+        if (!string.Equals(options.SearchText, options.OriginalSearchText, StringComparison.OrdinalIgnoreCase))
+        {
+            return RedirectToAction(nameof(List), new RouteValueDictionary { { "q", options.SearchText } });
+        }
+
+        // Evaluate the values provided in the form post and map them to the filter result and route values.
+        await _entryOptionsDisplayManager.UpdateEditorAsync(options, this, false, string.Empty, string.Empty);
+
+        // The route value must always be added after the editors have updated the models.
+        options.RouteValues.TryAdd("q", options.FilterResult.ToString());
+
+        return RedirectToAction(nameof(List), options.RouteValues);
+    }
+
+    [HttpPost, ActionName(nameof(List))]
+    [FormValueRequired("submit.BulkAction")]
+    public async Task<ActionResult> ListPOST(ListContentTransferEntryOptions options, IEnumerable<string> itemIds)
+    {
+        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, ContentTransferPermissions.ListContentTransferEntries))
+        {
+            return Forbid();
+        }
+
+        if (itemIds?.Count() > 0)
+        {
+            var notifications = await _session.Query<ContentTransferEntry, ContentTransferEntryIndex>(x => x.EntryId.IsIn(itemIds)).ListAsync();
+            var utcNow = _clock.UtcNow;
+            var counter = 0;
+
+            switch (options.BulkAction)
+            {
+                case ContentTransferEntryBulkAction.Remove:
+                    foreach (var notification in notifications)
+                    {
+                        _session.Delete(notification);
+                        counter++;
+                    }
+                    if (counter > 0)
+                    {
+                        await _notifier.SuccessAsync(H["{0} {1} removed successfully.", counter, H.Plural(counter, "entry", "entries")]);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return RedirectToAction(nameof(List));
+    }
+
+    public async Task<IActionResult> Delete(string entryId, string returnUrl)
+    {
+        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, ContentTransferPermissions.DeleteContentTransferEntries))
+        {
+            return Forbid();
+        }
+
+        if (!string.IsNullOrWhiteSpace(entryId))
+        {
+            var entry = await _session.Query<ContentTransferEntry, ContentTransferEntryIndex>(x => x.EntryId == entryId).FirstOrDefaultAsync();
+
+            if (entry != null)
+            {
+                _session.Delete(entry);
+            }
+        }
+
+        return RedirectTo(returnUrl);
     }
 
     public async Task<IActionResult> Import(string contentTypeId)
@@ -201,7 +382,7 @@ public class AdminController : Controller
 
             await _notifier.SuccessAsync(H["The file was successfully added to the queue for processing."]);
 
-            return RedirectToAction(nameof(Import));
+            return RedirectToAction(nameof(List));
         }
 
         var context = new ImportContentContext()
@@ -296,7 +477,6 @@ public class AdminController : Controller
             Extensions = new List<SelectListItem>()
             {
                 new (S["Excel Workbook"], ".xlsx"),
-                new (S["CSV (comma delimited)"], ".csv"),
             },
             Extension = ".xlsx",
         };
@@ -393,7 +573,7 @@ public class AdminController : Controller
 
         worksheet.Protection.IsProtected = false;
         worksheet.Protection.AllowSelectLockedCells = false;
-        package.Save();
+        await package.SaveAsync();
         content.Seek(0, SeekOrigin.Begin);
 
         // TODO, download the file in a specific format.
@@ -402,4 +582,11 @@ public class AdminController : Controller
 
     private string CurrentUserId()
         => User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+    private IActionResult RedirectTo(string returnUrl)
+    {
+        return !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)
+            ? (IActionResult)this.LocalRedirect(returnUrl, true)
+            : RedirectToAction(nameof(List));
+    }
 }

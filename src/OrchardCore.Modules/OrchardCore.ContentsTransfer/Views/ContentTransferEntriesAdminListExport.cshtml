@@ -1,0 +1,6 @@
+@using OrchardCore.ContentsTransfer
+@model ListContentTransferEntryOptions
+
+<a class="btn btn-secondary" href="@Url.RouteUrl(new { area = ContentTransferConstants.Feature.ModuleId, controller = "Admin", action = "Export", returnUrl = FullRequestPath })">
+    @T["Export"]
+</a>

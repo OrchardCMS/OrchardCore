@@ -7,6 +7,9 @@ namespace OrchardCore.ContentsTransfer;
 
 public class ContentTransferPermissions
 {
+    public static readonly Permission ListContentTransferEntries = new("ListContentTransferEntries", "List content transfer entries");
+    public static readonly Permission DeleteContentTransferEntries = new("DeleteContentTransferEntries", "Delete content transfer entries", new[] { ListContentTransferEntries });
+
     public static readonly Permission ImportContentFromFile = new("ImportContentFromFile", "Import content items from file");
     public static readonly Permission ImportContentFromFileOfType = new("ImportContentFromFile_{0}", "Import {0} content items from file", new[] { ImportContentFromFile });
 

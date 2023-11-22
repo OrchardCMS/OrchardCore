@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using OrchardCore.ContentTransfer;
 using OrchardCore.FileStorage;
 
 namespace OrchardCore.ContentsTransfer.Services;
@@ -16,7 +15,7 @@ public class ContentTransferFileStore : IContentTransferFileStore
     }
     public Task CopyFileAsync(string srcPath, string dstPath)
         => _fileStore.CopyFileAsync(srcPath, dstPath);
-    
+
     public Task<string> CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
         => _fileStore.CreateFileFromStreamAsync(path, inputStream, overwrite);
 

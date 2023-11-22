@@ -17,7 +17,6 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentsTransfer.Indexes;
 using OrchardCore.ContentsTransfer.Models;
-using OrchardCore.ContentTransfer;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using YesSql;
@@ -98,6 +97,8 @@ public class ImportFilesBackgroundTask : IBackgroundTask
 
             var progressPart = entry.As<ImportFileProcessStatsPart>();
 
+            progressPart.TotalRecords = dataTable.Rows.Count;
+
             var contentItems = new List<ContentItem>();
 
             foreach (DataRow row in dataTable.Rows)
@@ -109,6 +110,10 @@ public class ImportFilesBackgroundTask : IBackgroundTask
 
                     continue;
                 }
+
+                var rowIndex = dataTable.Rows.IndexOf(row);
+
+                progressPart.CurrentRow = rowIndex;
 
                 var mapContext = new ContentImportContext()
                 {
@@ -122,7 +127,7 @@ public class ImportFilesBackgroundTask : IBackgroundTask
                 // ImportAsync could change the content item id.
                 await contentImportManager.ImportAsync(mapContext);
 
-                contentItems.Insert(dataTable.Rows.IndexOf(row), mapContext.ContentItem);
+                contentItems.Insert(rowIndex, mapContext.ContentItem);
 
                 if (contentItems.Count == batchSize)
                 {

@@ -10,6 +10,7 @@ using OfficeOpenXml;
 using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentFields.Fields;
+using OrchardCore.ContentsTransfer.Controllers;
 using OrchardCore.ContentsTransfer.Drivers;
 using OrchardCore.ContentsTransfer.Handlers;
 using OrchardCore.ContentsTransfer.Handlers.Fields;
@@ -17,7 +18,6 @@ using OrchardCore.ContentsTransfer.Indexes;
 using OrchardCore.ContentsTransfer.Migrations;
 using OrchardCore.ContentsTransfer.Models;
 using OrchardCore.ContentsTransfer.Services;
-using OrchardCore.ContentTransfer;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
@@ -30,6 +30,7 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Title.Models;
+using YesSql.Filters.Query;
 
 namespace OrchardCore.ContentsTransfer;
 
@@ -73,6 +74,25 @@ public class Startup : StartupBase
         services.AddScoped<INavigationProvider, AdminMenu>();
         services.Configure<ContentImportOptions>(_configuration.GetSection("OrchardCore_ContentsTransfer"));
         services.AddSingleton<IBackgroundTask, ImportFilesBackgroundTask>();
+
+
+        services.AddScoped<IContentTransferEntryAdminListQueryService, DefaultContentTransferEntryAdminListQueryService>();
+        services.AddScoped<IDisplayDriver<ListContentTransferEntryOptions>, ListContentTransferEntryOptionsDisplayDriver>();
+        services.AddScoped<IDisplayDriver<ContentTransferEntry>, ContentTransferEntryDisplayDriver>();
+        services.AddTransient<IContentTransferEntryAdminListFilterProvider, DefaultContentTransferEntryAdminListFilterProvider>();
+        services.AddSingleton<IContentTransferEntryAdminListFilterParser>(sp =>
+        {
+            var filterProviders = sp.GetServices<IContentTransferEntryAdminListFilterProvider>();
+            var builder = new QueryEngineBuilder<ContentTransferEntry>();
+            foreach (var provider in filterProviders)
+            {
+                provider.Build(builder);
+            }
+
+            var parser = builder.Build();
+
+            return new DefaultContentTypeEntryAdminListFilterParser(parser);
+        });
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -103,6 +123,13 @@ public class Startup : StartupBase
             areaName: ContentTransferConstants.Feature.ModuleId,
             pattern: _adminOptions.AdminUrlPrefix + "/export/contents/{contentTypeId}/download-file/{extension}",
             defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.DownloadExport) }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "ListContentTransferEntries",
+            areaName: ContentTransferConstants.Feature.ModuleId,
+            pattern: _adminOptions.AdminUrlPrefix + "/content-transfer-entries",
+            defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.List) }
         );
     }
 }

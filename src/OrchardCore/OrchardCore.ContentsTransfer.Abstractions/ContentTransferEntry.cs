@@ -1,7 +1,7 @@
 using System;
 using OrchardCore.Entities;
 
-namespace OrchardCore.ContentTransfer;
+namespace OrchardCore.ContentsTransfer;
 
 public class ContentTransferEntry : Entity
 {

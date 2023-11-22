@@ -1,0 +1,65 @@
+@model ContentTransferEntryViewModel
+
+@using OrchardCore.ContentManagement
+@using System.Globalization
+@using OrchardCore.ContentsTransfer
+@using OrchardCore.ContentsTransfer.ViewModels
+@using OrchardCore.Entities
+
+<span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@await DisplayAsync(await New.DateTime(Utc: Model.ContentTransferEntry.CreatedUtc, Format: "g"))">
+    <i class="fa-solid fa-calendar text-secondary" aria-hidden="true"></i>
+    <time datetime="@Model.ContentTransferEntry.CreatedUtc.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture)">
+        @await DisplayAsync(await New.Timespan(Utc: Model.ContentTransferEntry.CreatedUtc))
+    </time>
+</span>
+
+<span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="Status">
+
+    @if (Model.ContentTransferEntry.Status == ContentTransferEntryStatus.New)
+    {
+        @T["New"]
+    }
+    else if (Model.ContentTransferEntry.Status == ContentTransferEntryStatus.Processing)
+    {
+        @T["Processing"]
+    }
+    else if (Model.ContentTransferEntry.Status == ContentTransferEntryStatus.Completed)
+    {
+        @T["Completed"]
+    }
+    else if (Model.ContentTransferEntry.Status == ContentTransferEntryStatus.CompletedWithErrors)
+    {
+        @T["Completed with errors"]
+    }
+    else if (Model.ContentTransferEntry.Status == ContentTransferEntryStatus.Failed)
+    {
+        @T["Failed"]
+    }
+</span>
+
+@if (Model.ContentTransferEntry.Status == ContentTransferEntryStatus.Processing)
+{
+    var part = Model.ContentTransferEntry.As<ImportFileProcessStatsPart>();
+
+    @if (part.TotalRecords > 0)
+    {
+        var process = part.TotalProcessed / part.TotalRecords;
+
+        <div class="badge ta-badge font-weight-normal d-inline" data-bs-toggle="tooltip" title="Status">
+
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: @(process)%;" aria-valuenow="@process" aria-valuemin="0" aria-valuemax="100">@(process)%</div>
+            </div>
+        </div>
+    }
+
+    @if (Model.ContentTransferEntry.ProcessSaveUtc.HasValue)
+    {
+        <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Last time the process saved at"]">
+            <i class="fa-solid fa-calendar text-secondary" aria-hidden="true"></i>
+            <time datetime="@Model.ContentTransferEntry.ProcessSaveUtc.Value.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture)">
+                @await DisplayAsync(await New.Timespan(Utc: Model.ContentTransferEntry.ProcessSaveUtc.Value))
+            </time>
+        </span>
+    }
+}

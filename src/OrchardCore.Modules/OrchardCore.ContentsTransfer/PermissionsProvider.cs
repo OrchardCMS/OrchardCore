@@ -19,6 +19,8 @@ public class PermissionsProvider : IPermissionProvider
     {
         var permissions = new List<Permission>()
         {
+            ContentTransferPermissions.ListContentTransferEntries,
+            ContentTransferPermissions.DeleteContentTransferEntries,
             ContentTransferPermissions.ImportContentFromFile,
             ContentTransferPermissions.ExportContentFromFile,
         };
@@ -41,6 +43,8 @@ public class PermissionsProvider : IPermissionProvider
                     Name = "Administrator",
                     Permissions = new[]
                     {
+                        ContentTransferPermissions.ListContentTransferEntries,
+                        ContentTransferPermissions.DeleteContentTransferEntries,
                         ContentTransferPermissions.ImportContentFromFile,
                         ContentTransferPermissions.ExportContentFromFile,
                     }

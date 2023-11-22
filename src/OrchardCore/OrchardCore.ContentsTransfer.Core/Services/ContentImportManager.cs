@@ -36,10 +36,7 @@ public class ContentImportManager : IContentImportManager
 
     public async Task<IReadOnlyCollection<ImportColumn>> GetColumnsAsync(ImportContentContext context)
     {
-        if (context == null)
-        {
-            throw new ArgumentNullException(nameof(context));
-        }
+        ArgumentNullException.ThrowIfNull(context, nameof(context));
 
         var contentItem = await _contentManager.NewAsync(context.ContentTypeDefinition.Name);
 

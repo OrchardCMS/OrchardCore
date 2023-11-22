@@ -1,6 +1,6 @@
 using OrchardCore.FileStorage;
 
-namespace OrchardCore.ContentTransfer;
+namespace OrchardCore.ContentsTransfer;
 
 public interface IContentTransferFileStore : IFileStore
 {
