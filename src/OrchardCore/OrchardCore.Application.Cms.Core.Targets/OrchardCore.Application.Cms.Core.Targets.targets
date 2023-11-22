@@ -23,9 +23,10 @@
 
   <Target
     Name="CopyPackageTranslationFiles"
-    Condition="'$(TargetFramework)' != '' AND $(TargetFrameworks.EndsWith($(TargetFramework)))"
-    AfterTargets="Build">
-    <Message Text="Copying translation files: $(MSBuildProjectName)" Importance="high" />
+    AfterTargets="Build"
+    Condition="'$(IsCrossTargetingBuild)' == 'true'">
+    <Message Text="Copying translation files: $(MSBuildProjectName) ('$(TargetFramework)'/'$(TargetFrameworks)')" Importance="high" />
+    <Message Text="TargetFrameworks.EndsWith(TargetFramework): '$(TargetFrameworks.EndsWith($(TargetFramework)))'" Importance="high" />
     <Copy
       SourceFiles="%(PackageTranslationFiles.FullPath)"
       DestinationFolder="Localization\%(RecursiveDir)"
@@ -33,6 +34,18 @@
       SkipUnchangedFiles="true" />
   </Target>
 
+  <Target
+    Name="CopyPackageTranslationFiles2"    
+    AfterTargets="Build">
+    <Message Text="IsInnerBuild: '$(IsInnerBuild)' IsCrossTargetingBuild: '$(IsCrossTargetingBuild)' TargetFrameworks: '$(TargetFrameworks)' TargetFramework: '$(TargetFramework)'" Importance="high" />
+  </Target>
+
+  <Target
+    Name="CopyPackageTranslationFiles3"
+    BeforeTargets="DispatchToInnerBuilds">
+    <Message Text="########## DispatchToInnerBuilds %%%%%%%%%% ICTB: '$(IsCrossTargetingBuild)' TFS: '$(TargetFrameworks)' TF: '$(TargetFramework)'" Importance="high" />
+  </Target>
+  
   <Target Name="PublishTranslationFiles" BeforeTargets="GetCopyToPublishDirectoryItems">
     <Message Text="Publishing translation files: $(MSBuildProjectName)" Importance="high" />
     <ItemGroup>
