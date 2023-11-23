@@ -1,3 +1,6 @@
+using System;
+using System.Threading.Tasks;
+using Dapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -19,15 +22,15 @@ namespace OrchardCore.Search.Lucene
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            var contentTypeDefinitions = _contentDefinitionManager.LoadTypeDefinitions();
+            var contentTypeDefinitions = await _contentDefinitionManager.LoadTypeDefinitionsAsync();
 
             foreach (var contentTypeDefinition in contentTypeDefinitions)
             {
                 foreach (var partDefinition in contentTypeDefinition.Parts)
                 {
-                    _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
+                    await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
                     {
                         if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings) &&
                             !partDefinition.Settings.ContainsKey(nameof(LuceneContentIndexSettings)))
@@ -53,7 +56,7 @@ namespace OrchardCore.Search.Lucene
                                 }
                             }
 
-                            // We remove unecessary properties from old releases.
+                            // We remove unnecessary properties from old releases.
                             existingPartSettings["Analyzed"]?.Parent.Remove();
                             existingPartSettings["Tokenized"]?.Parent.Remove();
                             existingPartSettings["Template"]?.Parent.Remove();
@@ -66,83 +69,83 @@ namespace OrchardCore.Search.Lucene
                 }
             }
 
-            var partDefinitions = _contentDefinitionManager.LoadPartDefinitions();
+            var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync();
 
             foreach (var partDefinition in partDefinitions)
             {
-                _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
-                {
-                    if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings) &&
-                        !partDefinition.Settings.ContainsKey(nameof(LuceneContentIndexSettings)))
-                    {
-                        var included = existingPartSettings["Included"];
-                        var analyzed = existingPartSettings["Analyzed"];
+                await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
+                 {
+                     if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings) &&
+                         !partDefinition.Settings.ContainsKey(nameof(LuceneContentIndexSettings)))
+                     {
+                         var included = existingPartSettings["Included"];
+                         var analyzed = existingPartSettings["Analyzed"];
 
-                        if (included != null)
-                        {
-                            if (analyzed != null)
-                            {
-                                if ((bool)included && !(bool)analyzed)
-                                {
-                                    existingPartSettings["Keyword"] = true;
-                                }
-                            }
-                            else
-                            {
-                                if ((bool)included)
-                                {
-                                    existingPartSettings["Keyword"] = true;
-                                }
-                            }
-                        }
+                         if (included != null)
+                         {
+                             if (analyzed != null)
+                             {
+                                 if ((bool)included && !(bool)analyzed)
+                                 {
+                                     existingPartSettings["Keyword"] = true;
+                                 }
+                             }
+                             else
+                             {
+                                 if ((bool)included)
+                                 {
+                                     existingPartSettings["Keyword"] = true;
+                                 }
+                             }
+                         }
 
-                        // We remove unecessary properties from old releases.
-                        existingPartSettings["Analyzed"]?.Parent.Remove();
-                        existingPartSettings["Tokenized"]?.Parent.Remove();
-                        existingPartSettings["Template"]?.Parent.Remove();
+                         // We remove unnecessary properties from old releases.
+                         existingPartSettings["Analyzed"]?.Parent.Remove();
+                         existingPartSettings["Tokenized"]?.Parent.Remove();
+                         existingPartSettings["Template"]?.Parent.Remove();
 
-                        partDefinition.Settings.Add(new JProperty(nameof(LuceneContentIndexSettings), existingPartSettings));
-                    }
+                         partDefinition.Settings.Add(new JProperty(nameof(LuceneContentIndexSettings), existingPartSettings));
+                     }
 
-                    partDefinition.Settings.Remove("ContentIndexSettings");
+                     partDefinition.Settings.Remove("ContentIndexSettings");
 
-                    foreach (var fieldDefinition in partDefinition.Fields)
-                    {
-                        if (fieldDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingFieldSettings)
-                        && !fieldDefinition.Settings.TryGetValue(nameof(LuceneContentIndexSettings), out var existingLuceneFieldSettings))
-                        {
-                            var included = existingFieldSettings["Included"];
-                            var analyzed = existingFieldSettings["Analyzed"];
+                     foreach (var fieldDefinition in partDefinition.Fields)
+                     {
+                         if (fieldDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingFieldSettings)
+                         && !fieldDefinition.Settings.TryGetValue(nameof(LuceneContentIndexSettings), out var existingLuceneFieldSettings))
+                         {
+                             var included = existingFieldSettings["Included"];
+                             var analyzed = existingFieldSettings["Analyzed"];
 
-                            if (included != null)
-                            {
-                                if (analyzed != null)
-                                {
-                                    if ((bool)included && !(bool)analyzed)
-                                    {
-                                        existingFieldSettings["Keyword"] = true;
-                                    }
-                                }
-                                else
-                                {
-                                    if ((bool)included)
-                                    {
-                                        existingFieldSettings["Keyword"] = true;
-                                    }
-                                }
-                            }
+                             if (included != null)
+                             {
+                                 if (analyzed != null)
+                                 {
+                                     if ((bool)included && !(bool)analyzed)
+                                     {
+                                         existingFieldSettings["Keyword"] = true;
+                                     }
+                                 }
+                                 else
+                                 {
+                                     if ((bool)included)
+                                     {
+                                         existingFieldSettings["Keyword"] = true;
+                                     }
+                                 }
+                             }
 
-                            // We remove unecessary properties from old releases.
-                            existingFieldSettings["Analyzed"]?.Parent.Remove();
-                            existingFieldSettings["Tokenized"]?.Parent.Remove();
-                            existingFieldSettings["Template"]?.Parent.Remove();
+                             // We remove unnecessary properties from old releases.
+                             existingFieldSettings["Analyzed"]?.Parent.Remove();
+                             existingFieldSettings["Tokenized"]?.Parent.Remove();
+                             existingFieldSettings["Template"]?.Parent.Remove();
 
-                            fieldDefinition.Settings.Add(new JProperty(nameof(LuceneContentIndexSettings), existingFieldSettings));
-                        }
+                             fieldDefinition.Settings.Add(new JProperty(nameof(LuceneContentIndexSettings), existingFieldSettings));
+                         }
 
-                        fieldDefinition.Settings.Remove("ContentIndexSettings");
-                    }
-                });
+                         fieldDefinition.Settings.Remove("ContentIndexSettings");
+                     }
+                 });
             }
 
             // Defer this until after the subsequent migrations have succeeded as the schema has changed.

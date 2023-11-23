@@ -79,6 +79,9 @@ namespace OrchardCore.Queries.Sql.Controllers
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
+            await using var connection = _store.Configuration.ConnectionFactory.CreateConnection();
+            var dialect = _store.Configuration.SqlDialect;
+
             var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
             var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(model.DecodedQuery, NullEncoder.Default, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
             var dialect = _store.Configuration.SqlDialect;

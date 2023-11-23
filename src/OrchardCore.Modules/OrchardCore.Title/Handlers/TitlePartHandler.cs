@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -62,7 +61,7 @@ namespace OrchardCore.Title.Handlers
                 return;
             }
 
-            var settings = GetSettings(part);
+            var settings = await GetSettingsAsync(part);
 
             // Do not compute the title if the user can modify it.
             if (settings.Options == TitlePartOptions.Editable || settings.Options == TitlePartOptions.EditableRequired)
@@ -100,9 +99,9 @@ namespace OrchardCore.Title.Handlers
             }
         }
 
-        private TitlePartSettings GetSettings(TitlePart part)
+        private async Task<TitlePartSettings> GetSettingsAsync(TitlePart part)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(TitlePart)));
 
             return contentTypePartDefinition.GetSettings<TitlePartSettings>();

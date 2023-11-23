@@ -173,7 +173,7 @@ namespace OrchardCore.Search.Lucene.Controllers
                     .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" }),
                 Analyzers = _luceneAnalyzerManager.GetAnalyzers()
                     .Select(x => new SelectListItem { Text = x.Name, Value = x.Name }),
-                IndexedContentTypes = IsCreate ? _contentDefinitionManager.ListTypeDefinitions()
+                IndexedContentTypes = IsCreate ? (await _contentDefinitionManager.ListTypeDefinitionsAsync())
                     .Select(x => x.Name).ToArray() : settings.IndexedContentTypes,
                 StoreSourceData = !IsCreate && settings.StoreSourceData
             };
