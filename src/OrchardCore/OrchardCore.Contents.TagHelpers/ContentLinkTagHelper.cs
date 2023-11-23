@@ -182,7 +182,7 @@ namespace OrchardCore.Contents.TagHelpers
                 }
                 else
                 {
-                    var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+                    var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
                     output.Content.Append(typeDefinition.ToString());
                 }
             }

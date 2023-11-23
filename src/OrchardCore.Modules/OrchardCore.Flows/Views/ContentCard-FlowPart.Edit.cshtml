@@ -5,7 +5,7 @@
 
 @{
     var contentItem = (IContent)Model.ContentItem;
-    var contentTypeDisplayText = ContentDefinitionManager.GetTypeDefinition((string)Model.ContentItem.ContentType).DisplayName;
+    var contentTypeDisplayText = (await ContentDefinitionManager.GetTypeDefinitionAsync((string)Model.ContentItem.ContentType)).DisplayName;
     var contentItemDisplayText = contentItem.ContentItem.DisplayText;
     var widgetContentTypes = (IEnumerable<ContentTypeDefinition>)Model.ContainedContentTypes;
 
@@ -39,17 +39,19 @@
                         <ul class="dropdown-menu dropdown-menu-end">
                             @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
                             {
-                                <li><a class="dropdown-item insert-widget btn-sm"
-                                   data-target-id="@Model.TargetId"
-                                   data-html-field-prefix="@Model.HtmlFieldPrefix"
-                                   data-prefixes-name="@Model.PrefixesName"
-                                   data-flowmetadata="true"
-                                   data-parent-content-type="@Model.ParentContentType"
-                                   data-part-name="@Model.CollectionPartName"
-                                   data-contenttypes-name="@Model.ContentTypesName"
-                                   data-contentitems-name="@Model.ContentItemsName"
-                                   data-widget-type="@type.Name"
-                                   href="javascript:;">@type.DisplayName</a></li>
+                                <li>
+                                    <a class="dropdown-item insert-widget btn-sm"
+                                       data-target-id="@Model.TargetId"
+                                       data-html-field-prefix="@Model.HtmlFieldPrefix"
+                                       data-prefixes-name="@Model.PrefixesName"
+                                       data-flowmetadata="true"
+                                       data-parent-content-type="@Model.ParentContentType"
+                                       data-part-name="@Model.CollectionPartName"
+                                       data-contenttypes-name="@Model.ContentTypesName"
+                                       data-contentitems-name="@Model.ContentItemsName"
+                                       data-widget-type="@type.Name"
+                                       href="javascript:;">@type.DisplayName</a>
+                                </li>
                             }
                         </ul>
                     </div>
