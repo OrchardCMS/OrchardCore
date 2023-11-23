@@ -31,7 +31,6 @@ public class AdminController : Controller, IUpdateModel
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly ISession _session;
-
     private readonly IDisplayManager<Notification> _notificationDisplayManager;
     private readonly INotificationsAdminListQueryService _notificationsAdminListQueryService;
     private readonly IDisplayManager<ListNotificationOptions> _notificationOptionsDisplayManager;
@@ -40,7 +39,6 @@ public class AdminController : Controller, IUpdateModel
     private readonly PagerOptions _pagerOptions;
     private readonly IClock _clock;
 
-    protected readonly dynamic New;
     protected readonly IStringLocalizer S;
     protected readonly IHtmlLocalizer H;
 
@@ -68,7 +66,6 @@ public class AdminController : Controller, IUpdateModel
         _pagerOptions = pagerOptions.Value;
         _clock = clock;
 
-        New = shapeFactory;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -114,7 +111,14 @@ public class AdminController : Controller, IUpdateModel
 
         var queryResult = await _notificationsAdminListQueryService.QueryAsync(pager.Page, pager.PageSize, options, this);
 
-        var pagerShape = (await New.Pager(pager)).TotalItemCount(queryResult.TotalCount).RouteData(routeData);
+        dynamic pagerShape = await _shapeFactory.CreateAsync("Pager", Arguments.From(new
+        {
+            pager.Page,
+            pager.PageSize,
+            TotalItemCount = queryResult.TotalCount
+        }));
+
+        pagerShape.RouteData(routeData);
 
         var notificationSummaries = new List<dynamic>();
 

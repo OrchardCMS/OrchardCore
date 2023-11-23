@@ -63,9 +63,12 @@ public class ListNotificationOptionsDisplayDriver : DisplayDriver<ListNotificati
         m.Sorts = model.Sorts;
         m.Statuses = model.Statuses;
         m.BulkActions = model.BulkActions;
+        m.BulkAction = m.BulkAction;
         m.StartIndex = model.StartIndex;
         m.EndIndex = model.EndIndex;
+        m.NotificationsCount = model.NotificationsCount;
         m.TotalItemCount = model.TotalItemCount;
         m.OrderBy = model.OrderBy;
+        m.FilterResult = model.FilterResult;
     }
 }
