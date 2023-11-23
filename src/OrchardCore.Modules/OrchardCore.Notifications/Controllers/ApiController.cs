@@ -71,7 +71,5 @@ public class ApiController : Controller
         });
     }
     private string CurrentUserId()
-    {
-        return User.FindFirstValue(ClaimTypes.NameIdentifier);
-    }
+        => User.FindFirstValue(ClaimTypes.NameIdentifier);
 }
