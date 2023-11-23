@@ -9,29 +9,34 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Email.Services;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Entities;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Drivers
 {
     public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSettings>
     {
-        public const string GroupId = "email";
+        public const string GroupId = "smtp email";
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
+        private readonly ISiteService _site;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
+        private string _defaultSender;
 
         public SmtpSettingsDisplayDriver(
             IDataProtectionProvider dataProtectionProvider,
             IShellHost shellHost,
             ShellSettings shellSettings,
+            ISiteService site,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService)
         {
             _dataProtectionProvider = dataProtectionProvider;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
+            _site = site;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
         }
@@ -40,16 +45,23 @@ namespace OrchardCore.Email.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
+            if (!await _authorizationService.AuthorizeAsync(user, SmtpPermissions.ManageSmtpEmailSettings))
             {
                 return null;
+            }
+
+            if (_defaultSender == null)
+            {
+                var emailSettings = (await _site.GetSiteSettingsAsync()).As<EmailSettings>();
+
+                _defaultSender = emailSettings.DefaultSender;
             }
 
             var shapes = new List<IDisplayResult>
             {
                 Initialize<SmtpSettings>("SmtpSettings_Edit", model =>
                 {
-                    model.DefaultSender = settings.DefaultSender;
+                    model.DefaultSender = _defaultSender;
                     model.DeliveryMethod = settings.DeliveryMethod;
                     model.PickupDirectoryLocation = settings.PickupDirectoryLocation;
                     model.Host = settings.Host;
@@ -78,7 +90,7 @@ namespace OrchardCore.Email.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
+            if (!await _authorizationService.AuthorizeAsync(user, SmtpPermissions.ManageSmtpEmailSettings))
             {
                 return null;
             }

@@ -18,18 +18,31 @@ namespace OrchardCore.Email
 {
     public class Startup : StartupBase
     {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddScoped<IDisplayDriver<ISite>, EmailSettingsDisplayDriver>();
+            services.AddScoped<INavigationProvider, AdminMenu>();
+
+            services.AddTransient<IConfigureOptions<EmailSettings>, EmailSettingsConfiguration>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Email.Smtp")]
+    public class SmtpStartup : StartupBase
+    {
         private readonly AdminOptions _adminOptions;
 
-        public Startup(IOptions<AdminOptions> adminOptions)
+        public SmtpStartup(IOptions<AdminOptions> adminOptions)
         {
             _adminOptions = adminOptions.Value;
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddScoped<IPermissionProvider, SmtpPermissions>();
             services.AddScoped<IDisplayDriver<ISite>, SmtpSettingsDisplayDriver>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddScoped<INavigationProvider, SmtpAdminMenu>();
 
             services.AddTransient<IConfigureOptions<SmtpSettings>, SmtpSettingsConfiguration>();
             services.AddScoped<IEmailService, SmtpService>();
@@ -39,8 +52,8 @@ namespace OrchardCore.Email
         {
             routes.MapAreaControllerRoute(
                 name: "EmailIndex",
-                areaName: "OrchardCore.Email",
-                pattern: _adminOptions.AdminUrlPrefix + "/Email/Index",
+                areaName: "OrchardCore.Email.Smtp",
+                pattern: _adminOptions.AdminUrlPrefix + "/Email/Smtp/Index",
                 defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
             );
         }
