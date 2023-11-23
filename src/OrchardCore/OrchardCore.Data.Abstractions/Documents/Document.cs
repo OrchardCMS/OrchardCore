@@ -10,9 +10,9 @@ namespace OrchardCore.Data.Documents
         public string Identifier { get; set; }
 
         /// <summary>
-        /// Whether the document was loaded for updating.
+        /// Whether the document was got for caching.
         /// </summary>
         [JsonIgnore]
-        public bool isMutable { get; set; }
+        public bool IsReadOnly { get; set; } = true;
     }
 }

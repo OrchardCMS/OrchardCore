@@ -10,6 +10,6 @@ namespace OrchardCore.Data.Documents
         /// <summary>
         /// Whether the document was loaded for updating.
         /// </summary>
-        bool isMutable { get; set; }
+        bool IsReadOnly { get; set; }
     }
 }

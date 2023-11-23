@@ -30,7 +30,7 @@ namespace OrchardCore.Settings
         public T As<T>() where T : new()
         {
             var name = typeof(T).Name;
-            if (isMutable)
+            if (!IsReadOnly)
             {
                 return this.As<T>(name);
             }

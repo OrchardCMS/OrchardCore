@@ -93,7 +93,7 @@ namespace OrchardCore.Documents
             }
 
             document.Identifier = IdGenerator.GenerateId();
-            document.isMutable = true;
+            document.IsReadOnly = false;
 
             return document;
         }
@@ -182,7 +182,7 @@ namespace OrchardCore.Documents
             }
 
             document.Identifier ??= IdGenerator.GenerateId();
-            document.isMutable = true;
+            document.IsReadOnly = false;
 
             if (!_isVolatile)
             {
@@ -308,6 +308,8 @@ namespace OrchardCore.Documents
 
         protected async Task SetInternalAsync(TDocument document, bool failover = false)
         {
+            document.IsReadOnly = true;
+
             if (!failover)
             {
                 await UpdateDistributedCacheAsync(document);
