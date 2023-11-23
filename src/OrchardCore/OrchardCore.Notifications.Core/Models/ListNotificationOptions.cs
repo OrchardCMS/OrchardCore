@@ -26,7 +26,7 @@ public class ListNotificationOptions
     public int StartIndex { get; set; }
 
     [BindNever]
-    public int NotficationsItemsCount { get; set; }
+    public int NotificationsCount { get; set; }
 
     [BindNever]
     public int TotalItemCount { get; set; }

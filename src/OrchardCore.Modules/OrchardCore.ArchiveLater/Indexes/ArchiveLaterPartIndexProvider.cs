@@ -23,7 +23,7 @@ public class ArchiveLaterPartIndexProvider : ContentHandlerBase, IIndexProvider,
         _serviceProvider = serviceProvider;
     }
 
-    public override Task UpdatedAsync(UpdateContentContext context)
+    public override async Task UpdatedAsync(UpdateContentContext context)
     {
         var part = context.ContentItem.As<ArchiveLaterPart>();
 
@@ -31,15 +31,13 @@ public class ArchiveLaterPartIndexProvider : ContentHandlerBase, IIndexProvider,
         {
             _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (!contentTypeDefinition.Parts.Any(pd => pd.Name == nameof(ArchiveLaterPart)))
             {
                 context.ContentItem.Remove<ArchiveLaterPart>();
                 _partRemoved.Add(context.ContentItem.ContentItemId);
             }
         }
-
-        return Task.CompletedTask;
     }
 
     public string CollectionName { get; set; }

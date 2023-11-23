@@ -1,6 +1,6 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.Data.Migration;
 using OrchardCore.Modules;
 
@@ -16,9 +16,9 @@ namespace OrchardCore.Contents.AuditTrail
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterPartDefinition(nameof(AuditTrailPart), part => part
+            await _contentDefinitionManager.AlterPartDefinitionAsync("AuditTrailPart", part => part
                 .Attachable()
                 .WithDescription("Allows editors to enter a comment to be saved into the Audit Trail event when saving a content item."));
 

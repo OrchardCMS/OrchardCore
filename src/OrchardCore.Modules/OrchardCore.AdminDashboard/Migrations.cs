@@ -32,7 +32,7 @@ namespace OrchardCore.AdminDashboard
                     "Position")
             );
 
-            _contentDefinitionManager.AlterPartDefinition("DashboardPart", builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync("DashboardPart", builder => builder
                 .Attachable()
                 .WithDescription("Provides a way to add widgets to a dashboard.")
                 );

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,8 +25,8 @@ public class UserNotificationPreferencesPartDisplayDriver : SectionDisplayDriver
     {
         var result = Initialize<UserNotificationViewModel>("UserNotificationPreferencesPart_Edit", model =>
         {
-            var sortedMethods = new List<string>(part.Methods ?? Array.Empty<string>());
-            var optout = part.Optout ?? Array.Empty<string>();
+            var sortedMethods = new List<string>(part.Methods ?? []);
+            var optout = part.Optout ?? [];
 
             // By default the use is opted into all available methods until explicitly optout.
             model.Methods = _notificationMethodProviders.Select(x => x.Method).Except(optout).ToArray();
@@ -61,11 +60,11 @@ public class UserNotificationPreferencesPartDisplayDriver : SectionDisplayDriver
 
         if (await updater.TryUpdateModelAsync(model, Prefix))
         {
-            var sortedMethods = new List<string>(model.SortedMethods ?? Array.Empty<string>());
+            var sortedMethods = new List<string>(model.SortedMethods ?? []);
 
             if (sortedMethods.Count > 0)
             {
-                // Important to execute this code only when selectedOrdrededMethods has at least one element to avoid exception.
+                // Important to execute this code only when sortedMethods has at least one element to avoid exception.
                 // Store all methods in the same order they appear.
                 part.Methods = _notificationMethodProviders
                     .OrderBy(provider => sortedMethods.IndexOf(provider.Method))
@@ -80,7 +79,7 @@ public class UserNotificationPreferencesPartDisplayDriver : SectionDisplayDriver
                     .ToArray();
             }
 
-            var selectedMethods = new List<string>(model.Methods ?? Array.Empty<string>());
+            var selectedMethods = new List<string>(model.Methods ?? []);
 
             // Store any method that is not selected as an optout.
             part.Optout = _notificationMethodProviders.Where(provider => !selectedMethods.Contains(provider.Method))

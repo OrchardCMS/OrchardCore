@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
 using OrchardCore.Media.Fields;
@@ -16,9 +17,9 @@ namespace OrchardCore.Media
 
         // This migration does not need to run on new installations, but because there is no
         // initial migration record, there is no way to shortcut the Create migration.
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.MigrateFieldSettings<MediaField, MediaFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<MediaField, MediaFieldSettings>();
 
             return 1;
         }

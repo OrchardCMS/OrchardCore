@@ -7,8 +7,8 @@ namespace OrchardCore.ContentManagement.Metadata.Records
     {
         public ContentPartDefinitionRecord()
         {
-            ContentPartFieldDefinitionRecords = new List<ContentPartFieldDefinitionRecord>();
-            Settings = new JObject();
+            ContentPartFieldDefinitionRecords = [];
+            Settings = [];
         }
 
         public string Name { get; set; }

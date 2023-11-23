@@ -30,9 +30,11 @@ namespace OrchardCore.ContentLocalization.Handlers
 
         public override async Task LocalizingAsync(LocalizationContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
+            {
                 return;
+            }
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
@@ -49,9 +51,11 @@ namespace OrchardCore.ContentLocalization.Handlers
 
         public override async Task LocalizedAsync(LocalizationContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
+            {
                 return;
+            }
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {

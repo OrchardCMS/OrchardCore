@@ -54,7 +54,7 @@ namespace OrchardCore.Lists.Drivers
                 // The content type must be included to prevent any contained items,
                 // such as widgets, from also having a ContainedPart shape built for them.
 
-                // Attach ContainedPart to the contentitem during edit to provide handlers container info.
+                // Attach ContainedPart to the content item during edit to provide handlers container info.
                 await model.AlterAsync<ContainedPart>(async part =>
                 {
                     part.ListContentItemId = viewModel.ContainerId;
@@ -113,7 +113,7 @@ namespace OrchardCore.Lists.Drivers
 
             if (!string.IsNullOrEmpty(containerContentType))
             {
-                var definition = _contentDefinitionManager.GetTypeDefinition(containerContentType);
+                var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(containerContentType);
 
                 if (definition != null)
                 {
@@ -127,9 +127,9 @@ namespace OrchardCore.Lists.Drivers
                         if (container != null)
                         {
                             // Add list part navigation.
-                            results.Add(Initialize<ListPartNavigationAdminViewModel>("ListPartNavigationAdmin", model =>
+                            results.Add(Initialize<ListPartNavigationAdminViewModel>("ListPartNavigationAdmin", async model =>
                             {
-                                model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
+                                model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(settings)).ToArray();
                                 model.Container = container;
                                 model.EnableOrdering = settings.EnableOrdering;
                                 model.ContainerContentTypeDefinition = definition;
@@ -148,13 +148,13 @@ namespace OrchardCore.Lists.Drivers
         }
 
         private IDisplayResult GetListPartHeader(ContentItem containerContentItem, ListPartSettings listPartSettings)
-            => Initialize<ListPartHeaderAdminViewModel>("ListPartHeaderAdmin", model =>
+            => Initialize<ListPartHeaderAdminViewModel>("ListPartHeaderAdmin", async model =>
             {
                 model.ContainerContentItem = containerContentItem;
 
                 if (listPartSettings != null)
                 {
-                    model.ContainedContentTypeDefinitions = GetContainedContentTypes(listPartSettings).ToArray();
+                    model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(listPartSettings)).ToArray();
                     model.EnableOrdering = listPartSettings.EnableOrdering;
                 }
             }).Location("Content:1");
@@ -164,10 +164,26 @@ namespace OrchardCore.Lists.Drivers
         private async Task<ContentItem> GetContainerAsync(string containerId)
             => await _contentManager.GetAsync(containerId) ?? await _contentManager.GetAsync(containerId, VersionOptions.Latest);
 
-        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ListPartSettings settings)
-            => settings.ContainedContentTypes
-            ?.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
-            .Where(definition => definition is not null)
-            ?? Enumerable.Empty<ContentTypeDefinition>();
+        private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ListPartSettings settings)
+        {
+            if (settings.ContainedContentTypes == null)
+            {
+                return Enumerable.Empty<ContentTypeDefinition>();
+            }
+
+            var definitions = new List<ContentTypeDefinition>();
+
+            foreach (var contentTypeDefinition in settings.ContainedContentTypes)
+            {
+                var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentTypeDefinition);
+
+                if (definition is not null)
+                {
+                    definitions.Add(definition);
+                }
+            }
+
+            return definitions;
+        }
     }
 }

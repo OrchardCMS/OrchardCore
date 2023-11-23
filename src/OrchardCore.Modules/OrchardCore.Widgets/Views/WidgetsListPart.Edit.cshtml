@@ -12,7 +12,7 @@
 
 @{
     var htmlFieldPrefix = ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
-    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetStereotype() == "Widget");
+    var widgetContentTypes = (await ContentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => t.GetStereotype() == "Widget");
     var parentContentType = Model.WidgetsListPart.ContentItem.ContentType;
     string partName = ((dynamic)Model).Metadata.Name;
 }

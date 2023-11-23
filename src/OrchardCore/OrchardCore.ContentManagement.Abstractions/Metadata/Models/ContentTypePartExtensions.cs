@@ -17,7 +17,9 @@ namespace OrchardCore.ContentManagement.Metadata.Models
                     displayName = typePart.ContentTypeDefinition.DisplayName;
                 }
                 else
+                {
                     displayName = typePart.PartDefinition.DisplayName();
+                }
             }
 
             return displayName;

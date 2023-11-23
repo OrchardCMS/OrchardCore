@@ -38,12 +38,12 @@ namespace OrchardCore.Users.Drivers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public override Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
         {
-            var contentTypeDefinitions = GetContentTypeDefinitions();
+            var contentTypeDefinitions = await GetContentTypeDefinitionsAsync();
             if (!contentTypeDefinitions.Any())
             {
-                return Task.FromResult<IDisplayResult>(null);
+                return null;
             }
 
             var results = new List<IDisplayResult>();
@@ -62,13 +62,15 @@ namespace OrchardCore.Users.Drivers
                     .RenderWhen(() => _authorizationService.AuthorizeAsync(userClaim, CustomUserSettingsPermissions.CreatePermissionForType(contentTypeDefinition))));
             }
 
-            return Task.FromResult<IDisplayResult>(Combine(results.ToArray()));
+            return Combine(results);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
         {
             var userClaim = _httpContextAccessor.HttpContext.User;
-            foreach (var contentTypeDefinition in GetContentTypeDefinitions())
+            var contentTypeDefinitions = await GetContentTypeDefinitionsAsync();
+
+            foreach (var contentTypeDefinition in contentTypeDefinitions)
             {
                 if (!await _authorizationService.AuthorizeAsync(userClaim, CustomUserSettingsPermissions.CreatePermissionForType(contentTypeDefinition)))
                 {
@@ -84,9 +86,8 @@ namespace OrchardCore.Users.Drivers
             return await EditAsync(user, context);
         }
 
-        private IEnumerable<ContentTypeDefinition> GetContentTypeDefinitions()
-            => _contentDefinitionManager
-                .ListTypeDefinitions()
+        private async Task<IEnumerable<ContentTypeDefinition>> GetContentTypeDefinitionsAsync()
+            => (await _contentDefinitionManager.ListTypeDefinitionsAsync())
                 .Where(x => x.GetStereotype() == "CustomUserSettings");
 
         private async Task<ContentItem> GetUserSettingsAsync(User user, ContentTypeDefinition settingsType, Action isNew = null)

@@ -47,7 +47,7 @@ namespace OrchardCore.Markdown.GraphQL
             var shortcodeService = serviceProvider.GetRequiredService<IShortcodeService>();
             var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
-            var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(ctx.Source.ContentItem.ContentType);
+            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(ctx.Source.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "MarkdownBodyPart"));
             var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
 
@@ -55,7 +55,7 @@ namespace OrchardCore.Markdown.GraphQL
             // so filters must be run after the markdown has been processed.
             var html = markdownService.ToHtml(ctx.Source.Markdown);
 
-            // The liquid rendering is for backwards compatability and can be removed in a future version.
+            // The liquid rendering is for backwards compatibility and can be removed in a future version.
             if (!settings.SanitizeHtml)
             {
                 var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();

@@ -10,9 +10,7 @@ public class CoreNotificationEventsHandler : NotificationEventsHandler
 {
     public override Task CreatingAsync(NotificationContext context)
     {
-        var user = context.Notify as User;
-
-        if (user != null)
+        if (context.Notify is User user)
         {
             context.Notification.UserId = user.UserId;
         }

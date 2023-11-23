@@ -12,7 +12,7 @@
         .Select(x => x.Field)
         .ToList();
 
-    var fields = ContentDefinitionService.GetFields().ToList();
+    var fields = (await ContentDefinitionService.GetFieldsAsync()).ToList();
 }
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Content Part - {0}", Model.DisplayName])</h1></zone>
 

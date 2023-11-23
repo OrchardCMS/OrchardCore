@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
@@ -13,9 +14,9 @@ namespace OrchardCore.Sitemaps
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterPartDefinition("SitemapPart", builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync("SitemapPart", builder => builder
                 .Attachable()
                 .WithDescription("Provides an optional part that allows content items to be excluded, or configured, on a content item."));
 

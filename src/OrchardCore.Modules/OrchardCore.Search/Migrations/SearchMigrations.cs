@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
@@ -11,14 +12,14 @@ public class SearchMigrations : DataMigration
     public SearchMigrations(IContentDefinitionManager contentDefinitionManager)
         => _contentDefinitionManager = contentDefinitionManager;
 
-    public int Create()
+    public async Task<int> CreateAsync()
     {
-        _contentDefinitionManager.AlterPartDefinition("SearchFormPart", part => part
+        await _contentDefinitionManager.AlterPartDefinitionAsync("SearchFormPart", part => part
             .WithDisplayName("Search Form Part")
             .Attachable()
         );
 
-        _contentDefinitionManager.AlterTypeDefinition("SearchForm", type => type
+        await _contentDefinitionManager.AlterTypeDefinitionAsync("SearchForm", type => type
             .Stereotype("Widget")
             .DisplayedAs("Search Form")
             .WithDescription("Provides a search form")

@@ -1008,12 +1008,12 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentException($"{nameof(code)} cannot be null or empty.");
             }
 
-            var mergedCodes = await GetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, cancellationToken).ConfigureAwait(false) ?? string.Empty;
+            var mergedCodes = (await GetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, cancellationToken)) ?? string.Empty;
             var splitCodes = mergedCodes.Split(';');
             if (splitCodes.Contains(code))
             {
                 var updatedCodes = new List<string>(splitCodes.Where(s => s != code));
-                await ReplaceCodesAsync(user, updatedCodes, cancellationToken).ConfigureAwait(false);
+                await ReplaceCodesAsync(user, updatedCodes, cancellationToken);
 
                 return true;
             }
@@ -1028,7 +1028,7 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            var mergedCodes = await GetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, cancellationToken).ConfigureAwait(false) ?? "";
+            var mergedCodes = (await GetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, cancellationToken)) ?? "";
             if (mergedCodes.Length > 0)
             {
                 // non-allocating version of mergedCodes.Split(';').Length

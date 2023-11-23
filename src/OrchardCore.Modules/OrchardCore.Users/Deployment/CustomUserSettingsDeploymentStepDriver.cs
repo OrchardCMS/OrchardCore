@@ -28,11 +28,11 @@ namespace OrchardCore.Users.Deployment
 
         public override IDisplayResult Edit(CustomUserSettingsDeploymentStep step)
         {
-            return Initialize<CustomUserSettingsDeploymentStepViewModel>("CustomUserSettingsDeploymentStep_Fields_Edit", model =>
+            return Initialize<CustomUserSettingsDeploymentStepViewModel>("CustomUserSettingsDeploymentStep_Fields_Edit", async model =>
             {
                 model.IncludeAll = step.IncludeAll;
                 model.SettingsTypeNames = step.SettingsTypeNames;
-                model.AllSettingsTypeNames = _customUserSettingsService.GetAllSettingsTypeNames().ToArray();
+                model.AllSettingsTypeNames = (await _customUserSettingsService.GetAllSettingsTypeNamesAsync()).ToArray();
             })
             .Location("Content");
         }

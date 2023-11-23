@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
@@ -14,14 +15,14 @@ namespace OrchardCore.Forms
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
             // Form
-            _contentDefinitionManager.AlterPartDefinition("FormPart", part => part
+            await _contentDefinitionManager.AlterPartDefinitionAsync("FormPart", part => part
                 .Attachable()
                 .WithDescription("Turns your content item into a form."));
 
-            _contentDefinitionManager.AlterTypeDefinition("Form", type => type
+            await _contentDefinitionManager.AlterTypeDefinitionAsync("Form", type => type
                 .WithPart("TitlePart", part => part
                     .WithSettings(new TitlePartSettings { RenderTitle = false })
                     .WithPosition("0")
@@ -34,28 +35,28 @@ namespace OrchardCore.Forms
                 .Stereotype("Widget"));
 
             // FormElement
-            _contentDefinitionManager.AlterPartDefinition("FormElementPart", part => part
+            await _contentDefinitionManager.AlterPartDefinitionAsync("FormElementPart", part => part
                 .WithDescription("Provides attributes common to all form elements."));
 
-            _contentDefinitionManager.AlterPartDefinition("FormElementLabelPart", part => part
+            await _contentDefinitionManager.AlterPartDefinitionAsync("FormElementLabelPart", part => part
                 .Attachable()
                 .WithDescription("Provides a way to capture element's label.")
             );
 
-            _contentDefinitionManager.AlterPartDefinition("FormElementValidationPart", part => part
+            await _contentDefinitionManager.AlterPartDefinitionAsync("FormElementValidationPart", part => part
                 .Attachable()
                 .WithDescription("Provides validation options to form elements.")
             );
 
             // FormInputElement
-            _contentDefinitionManager.AlterPartDefinition("FormInputElementPart", part => part
+            await _contentDefinitionManager.AlterPartDefinitionAsync("FormInputElementPart", part => part
                 .WithDescription("Provides attributes common to all input form elements."));
 
             // Label
-            _contentDefinitionManager.AlterPartDefinition("LabelPart", part => part
+            await _contentDefinitionManager.AlterPartDefinitionAsync("LabelPart", part => part
                 .WithDescription("Provides label properties."));
 
-            _contentDefinitionManager.AlterTypeDefinition("Label", type => type
+            await _contentDefinitionManager.AlterTypeDefinitionAsync("Label", type => type
                 .WithPart("TitlePart", part => part
                     .WithSettings(new TitlePartSettings { RenderTitle = false })
                 )
@@ -64,10 +65,10 @@ namespace OrchardCore.Forms
                 .Stereotype("Widget"));
 
             // Input
-            _contentDefinitionManager.AlterPartDefinition("InputPart", part => part
+            await _contentDefinitionManager.AlterPartDefinitionAsync("InputPart", part => part
                 .WithDescription("Provides input field properties."));
 
-            _contentDefinitionManager.AlterTypeDefinition("Input", type => type
+            await _contentDefinitionManager.AlterTypeDefinitionAsync("Input", type => type
                 .WithPart("FormInputElementPart", part => part
                     .WithPosition("1")
                 )
@@ -86,10 +87,10 @@ namespace OrchardCore.Forms
                 .Stereotype("Widget"));
 
             // TextArea
-            _contentDefinitionManager.AlterPartDefinition("TextAreaPart", part => part
+            await _contentDefinitionManager.AlterPartDefinitionAsync("TextAreaPart", part => part
                 .WithDescription("Provides text area properties."));
 
-            _contentDefinitionManager.AlterTypeDefinition("TextArea", type => type
+            await _contentDefinitionManager.AlterTypeDefinitionAsync("TextArea", type => type
                 .WithPart("FormInputElementPart", part => part
                     .WithPosition("1")
                 )
@@ -108,10 +109,10 @@ namespace OrchardCore.Forms
                 .Stereotype("Widget"));
 
             // Select
-            _contentDefinitionManager.AlterPartDefinition("SelectPart", part => part
+            await _contentDefinitionManager.AlterPartDefinitionAsync("SelectPart", part => part
                 .WithDescription("Provides select field properties."));
 
-            _contentDefinitionManager.AlterTypeDefinition("Select", type => type
+            await _contentDefinitionManager.AlterTypeDefinitionAsync("Select", type => type
                 .WithPart("FormInputElementPart", part => part
                     .WithPosition("1")
                 )
@@ -130,28 +131,28 @@ namespace OrchardCore.Forms
                 .Stereotype("Widget"));
 
             // Button
-            _contentDefinitionManager.AlterPartDefinition("ButtonPart", part => part
+            await _contentDefinitionManager.AlterPartDefinitionAsync("ButtonPart", part => part
                 .WithDescription("Provides button properties."));
 
-            _contentDefinitionManager.AlterTypeDefinition("Button", type => type
+            await _contentDefinitionManager.AlterTypeDefinitionAsync("Button", type => type
                 .WithPart("FormInputElementPart")
                 .WithPart("FormElementPart")
                 .WithPart("ButtonPart")
                 .Stereotype("Widget"));
 
             // Validation Summary
-            _contentDefinitionManager.AlterPartDefinition("ValidationSummaryPart", part => part
+            await _contentDefinitionManager.AlterPartDefinitionAsync("ValidationSummaryPart", part => part
                 .WithDescription("Displays a validation summary."));
 
-            _contentDefinitionManager.AlterTypeDefinition("ValidationSummary", type => type
+            await _contentDefinitionManager.AlterTypeDefinitionAsync("ValidationSummary", type => type
                 .WithPart("ValidationSummaryPart")
                 .Stereotype("Widget"));
 
             // Validation
-            _contentDefinitionManager.AlterPartDefinition("ValidationPart", part => part
+            await _contentDefinitionManager.AlterPartDefinitionAsync("ValidationPart", part => part
                 .WithDescription("Displays a field validation error."));
 
-            _contentDefinitionManager.AlterTypeDefinition("Validation", type => type
+            await _contentDefinitionManager.AlterTypeDefinitionAsync("Validation", type => type
                 .WithPart("ValidationPart")
                 .Stereotype("Widget"));
 
@@ -160,13 +161,13 @@ namespace OrchardCore.Forms
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom1()
+        public async Task<int> UpdateFrom1Async()
         {
-            _contentDefinitionManager.AlterTypeDefinition("Form", type => type
+            await _contentDefinitionManager.AlterTypeDefinitionAsync("Form", type => type
                 .WithPart("TitlePart", part => part.MergeSettings<TitlePartSettings>(setting => setting.RenderTitle = false))
             );
 
-            _contentDefinitionManager.AlterTypeDefinition("Label", type => type
+            await _contentDefinitionManager.AlterTypeDefinitionAsync("Label", type => type
                 .WithPart("TitlePart", part => part.MergeSettings<TitlePartSettings>(setting => setting.RenderTitle = false))
             );
 
@@ -174,9 +175,9 @@ namespace OrchardCore.Forms
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom2()
+        public async Task<int> UpdateFrom2Async()
         {
-            _contentDefinitionManager.AlterTypeDefinition("Form", type => type
+            await _contentDefinitionManager.AlterTypeDefinitionAsync("Form", type => type
                 .WithPart("TitlePart", part => part
                     .WithPosition("0")
                 )
@@ -189,19 +190,19 @@ namespace OrchardCore.Forms
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom3()
+        public async Task<int> UpdateFrom3Async()
         {
-            _contentDefinitionManager.AlterPartDefinition("FormElementLabelPart", part => part
+            await _contentDefinitionManager.AlterPartDefinitionAsync("FormElementLabelPart", part => part
                 .Attachable()
                 .WithDescription("Provides a way to capture element's label.")
             );
 
-            _contentDefinitionManager.AlterPartDefinition("FormElementValidationPart", part => part
+            await _contentDefinitionManager.AlterPartDefinitionAsync("FormElementValidationPart", part => part
                 .Attachable()
                 .WithDescription("Provides validation options to form elements.")
             );
 
-            _contentDefinitionManager.AlterTypeDefinition("Select", type => type
+            await _contentDefinitionManager.AlterTypeDefinitionAsync("Select", type => type
                 .WithPart("FormInputElementPart", part => part
                     .WithPosition("1")
                 )
@@ -219,7 +220,7 @@ namespace OrchardCore.Forms
                 )
             );
 
-            _contentDefinitionManager.AlterTypeDefinition("Input", type => type
+            await _contentDefinitionManager.AlterTypeDefinitionAsync("Input", type => type
                 .WithPart("FormInputElementPart", part => part
                     .WithPosition("1")
                 )
@@ -237,7 +238,7 @@ namespace OrchardCore.Forms
                 )
             );
 
-            _contentDefinitionManager.AlterTypeDefinition("TextArea", type => type
+            await _contentDefinitionManager.AlterTypeDefinitionAsync("TextArea", type => type
                 .WithPart("FormInputElementPart", part => part
                     .WithPosition("1")
                 )

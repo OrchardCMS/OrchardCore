@@ -152,9 +152,9 @@ namespace OrchardCore.Autoroute.Handlers
 
         public override Task GetContentItemAspectAsync(ContentItemAspectContext context, AutoroutePart part)
         {
-            return context.ForAsync<RouteHandlerAspect>(aspect =>
+            return context.ForAsync<RouteHandlerAspect>(async aspect =>
             {
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
+                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
                 var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "AutoroutePart"));
                 var settings = contentTypePartDefinition.GetSettings<AutoroutePartSettings>();
                 if (settings.ManageContainedItemRoutes)
@@ -163,8 +163,6 @@ namespace OrchardCore.Autoroute.Handlers
                     aspect.Absolute = part.Absolute;
                     aspect.Disabled = part.Disabled;
                 }
-
-                return Task.CompletedTask;
             });
         }
 
@@ -380,7 +378,7 @@ namespace OrchardCore.Autoroute.Handlers
                 return;
             }
 
-            var pattern = GetPattern(part);
+            var pattern = await GetPatternAsync(part);
 
             if (!string.IsNullOrEmpty(pattern))
             {
@@ -422,9 +420,9 @@ namespace OrchardCore.Autoroute.Handlers
         /// <summary>
         /// Get the pattern from the AutoroutePartSettings property for its type.
         /// </summary>
-        private string GetPattern(AutoroutePart part)
+        private async Task<string> GetPatternAsync(AutoroutePart part)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(AutoroutePart)));
             var pattern = contentTypePartDefinition.GetSettings<AutoroutePartSettings>().Pattern;
 

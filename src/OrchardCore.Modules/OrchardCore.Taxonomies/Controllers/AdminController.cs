@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -54,7 +53,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 return NotFound();
             }
 
-            if (_contentDefinitionManager.GetTypeDefinition(id) == null)
+            if (await _contentDefinitionManager.GetTypeDefinitionAsync(id) == null)
             {
                 return NotFound();
             }
@@ -85,7 +84,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 return NotFound();
             }
 
-            if (_contentDefinitionManager.GetTypeDefinition(id) == null)
+            if (await _contentDefinitionManager.GetTypeDefinitionAsync(id) == null)
             {
                 return NotFound();
             }
@@ -97,7 +96,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             ContentItem taxonomy;
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Taxonomy");
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Taxonomy");
 
             if (!contentTypeDefinition.IsDraftable())
             {
@@ -214,7 +213,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             ContentItem taxonomy;
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Taxonomy");
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Taxonomy");
 
             if (!contentTypeDefinition.IsDraftable())
             {
@@ -288,7 +287,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             ContentItem taxonomy;
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Taxonomy");
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Taxonomy");
 
             if (!contentTypeDefinition.IsDraftable())
             {

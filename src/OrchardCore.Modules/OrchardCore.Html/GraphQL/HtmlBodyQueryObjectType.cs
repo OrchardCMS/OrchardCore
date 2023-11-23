@@ -36,7 +36,7 @@ namespace OrchardCore.Html.GraphQL
             var shortcodeService = ctx.RequestServices.GetRequiredService<IShortcodeService>();
             var contentDefinitionManager = ctx.RequestServices.GetRequiredService<IContentDefinitionManager>();
 
-            var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(ctx.Source.ContentItem.ContentType);
+            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(ctx.Source.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "HtmlBodyPart"));
             var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 

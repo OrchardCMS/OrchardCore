@@ -174,7 +174,7 @@ namespace OrchardCore.Search.Elasticsearch
                     .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }),
                 Analyzers = _elasticSearchOptions.Analyzers
                     .Select(x => new SelectListItem { Text = x.Key, Value = x.Key }),
-                IndexedContentTypes = IsCreate ? _contentDefinitionManager.ListTypeDefinitions()
+                IndexedContentTypes = IsCreate ? (await _contentDefinitionManager.ListTypeDefinitionsAsync())
                     .Select(x => x.Name).ToArray() : settings.IndexedContentTypes,
                 StoreSourceData = settings.StoreSourceData
             };

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,12 +19,13 @@ namespace OrchardCore.Users
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
-            => Task.FromResult(_contentDefinitionManager.ListTypeDefinitions()
+        public async Task<IEnumerable<Permission>> GetPermissionsAsync()
+            => (await _contentDefinitionManager.ListTypeDefinitionsAsync())
                 .Where(x => x.GetStereotype() == "CustomUserSettings")
-                .Select(type => CreatePermissionForType(type)));
+                .Select(type => CreatePermissionForType(type));
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes() => Enumerable.Empty<PermissionStereotype>();
+        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+            => Enumerable.Empty<PermissionStereotype>();
 
         public static Permission CreatePermissionForType(ContentTypeDefinition type) =>
             new(

@@ -23,7 +23,7 @@ public class PublishLaterPartIndexProvider : ContentHandlerBase, IIndexProvider,
         _serviceProvider = serviceProvider;
     }
 
-    public override Task UpdatedAsync(UpdateContentContext context)
+    public override async Task UpdatedAsync(UpdateContentContext context)
     {
         var part = context.ContentItem.As<PublishLaterPart>();
 
@@ -35,15 +35,13 @@ public class PublishLaterPartIndexProvider : ContentHandlerBase, IIndexProvider,
             _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
             // Search for this part.
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (!contentTypeDefinition.Parts.Any(ctpd => ctpd.Name == nameof(PublishLaterPart)))
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
+            if (!contentTypeDefinition.Parts.Any(ctd => ctd.Name == nameof(PublishLaterPart)))
             {
                 context.ContentItem.Remove<PublishLaterPart>();
                 _partRemoved.Add(context.ContentItem.ContentItemId);
             }
         }
-
-        return Task.CompletedTask;
     }
 
     public string CollectionName { get; set; }

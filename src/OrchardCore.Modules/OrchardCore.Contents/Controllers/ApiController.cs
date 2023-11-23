@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -101,7 +100,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (contentItem == null)
             {
-                if (string.IsNullOrEmpty(model?.ContentType) || _contentDefinitionManager.GetTypeDefinition(model.ContentType) == null)
+                if (string.IsNullOrEmpty(model?.ContentType) || await _contentDefinitionManager.GetTypeDefinitionAsync(model.ContentType) == null)
                 {
                     return BadRequest();
                 }

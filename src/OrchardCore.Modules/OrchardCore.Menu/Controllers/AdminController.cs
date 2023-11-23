@@ -80,7 +80,7 @@ namespace OrchardCore.Menu.Controllers
 
             ContentItem menu;
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Menu");
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Menu");
 
             if (!contentTypeDefinition.IsDraftable())
             {
@@ -185,7 +185,7 @@ namespace OrchardCore.Menu.Controllers
 
             ContentItem menu;
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Menu");
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Menu");
 
             if (!contentTypeDefinition.IsDraftable())
             {
@@ -251,7 +251,7 @@ namespace OrchardCore.Menu.Controllers
 
             ContentItem menu;
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Menu");
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Menu");
 
             if (!contentTypeDefinition.IsDraftable())
             {

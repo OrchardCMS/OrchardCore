@@ -30,11 +30,11 @@ namespace OrchardCore.CustomSettings.Deployment
 
         public override IDisplayResult Edit(CustomSettingsDeploymentStep step)
         {
-            return Initialize<CustomSettingsDeploymentStepViewModel>("CustomSettingsDeploymentStep_Fields_Edit", model =>
+            return Initialize<CustomSettingsDeploymentStepViewModel>("CustomSettingsDeploymentStep_Fields_Edit", async model =>
             {
                 model.IncludeAll = step.IncludeAll;
                 model.SettingsTypeNames = step.SettingsTypeNames;
-                model.AllSettingsTypeNames = _customSettingsService.GetAllSettingsTypeNames().ToArray();
+                model.AllSettingsTypeNames = (await _customSettingsService.GetAllSettingsTypeNamesAsync()).ToArray();
             }).Location("Content");
         }
 

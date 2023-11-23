@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentLocalization.Models;
@@ -33,15 +32,15 @@ namespace OrchardCore.ContentLocalization.Sitemaps
 
         public async Task GetContentItemsAsync(ContentTypesSitemapSource source, ContentItemsQueryContext queryContext)
         {
-            var routeableContentTypeDefinitions = _routeableContentTypeCoordinator.ListRoutableTypeDefinitions();
+            var routeableContentTypeDefinitions = await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync();
 
             if (source.IndexAll)
             {
                 // Assumption here is that at least one content type will be localized.
-                var rctdNames = routeableContentTypeDefinitions.Select(rctd => rctd.Name);
+                var ctdNames = routeableContentTypeDefinitions.Select(ctd => ctd.Name);
 
                 var queryResults = await _session.Query<ContentItem>()
-                    .With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(rctdNames))
+                    .With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(ctdNames))
                     .OrderBy(x => x.CreatedUtc)
                     .ListAsync();
 

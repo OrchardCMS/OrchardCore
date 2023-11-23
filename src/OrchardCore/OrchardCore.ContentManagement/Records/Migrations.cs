@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
@@ -98,9 +99,9 @@ namespace OrchardCore.ContentManagement.Records
 
         // Migrate content type definitions. This only needs to run on old content definition schemas.
         // This code can be removed in a later version.
-        public int UpdateFrom3()
+        public async Task<int> UpdateFrom3Async()
         {
-            var contentTypeDefinitions = _contentDefinitionManager.LoadTypeDefinitions();
+            var contentTypeDefinitions = await _contentDefinitionManager.LoadTypeDefinitionsAsync();
             foreach (var contentTypeDefinition in contentTypeDefinitions)
             {
                 var existingContentTypeSettings = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>();
@@ -113,7 +114,7 @@ namespace OrchardCore.ContentManagement.Records
                     contentTypeDefinition.Settings.Remove(property.Name);
                 }
 
-                _contentDefinitionManager.AlterTypeDefinition(contentTypeDefinition.Name, builder =>
+                await _contentDefinitionManager.AlterTypeDefinitionAsync(contentTypeDefinition.Name, builder =>
                 {
                     builder.WithSettings(existingContentTypeSettings);
 
@@ -141,9 +142,9 @@ namespace OrchardCore.ContentManagement.Records
 
         // Migration content part definitions.
         // This code can be removed in a later version.
-        public int UpdateFrom4()
+        public async Task<int> UpdateFrom4Async()
         {
-            var partDefinitions = _contentDefinitionManager.LoadPartDefinitions();
+            var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync();
             foreach (var partDefinition in partDefinitions)
             {
                 var existingPartSettings = partDefinition.Settings.ToObject<ContentPartSettings>();
@@ -156,7 +157,7 @@ namespace OrchardCore.ContentManagement.Records
                     partDefinition.Settings.Remove(property.Name);
                 }
 
-                _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
+                await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
                 {
                     partBuilder.WithSettings(existingPartSettings);
                     foreach (var fieldDefinition in partDefinition.Fields)

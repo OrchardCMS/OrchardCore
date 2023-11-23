@@ -21,8 +21,7 @@ Allows adding, editing and removing the registered applications.
 ## Authorization Server
 
 Enables authentication of external applications using the OpenID Connect/OAuth 2.0 standards.  
-It is based on the [`OpenIddict`](https://github.com/openiddict/openiddict-core) library allowing.  
-Orchard Core to act as identity provider to support token authentication without the need of an external identity provider.  
+It is based on the [`OpenIddict`](https://github.com/openiddict/openiddict-core) library allowing Orchard Core to act as identity provider to support token authentication without the need of an external identity provider.
 
 - Orchard Core can also be used as an identity provider for centralizing the user access permissions to external applications.
 - Orchard Core services.
