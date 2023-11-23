@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using OrchardCore.ArchiveLater.Indexes;
 using OrchardCore.ArchiveLater.Models;
 using OrchardCore.ContentManagement.Metadata;
@@ -17,9 +18,9 @@ public class Migrations : DataMigration
         _contentDefinitionManager = contentDefinitionManager;
     }
 
-    public int Create()
+    public async Task<int> CreateAsync()
     {
-        _contentDefinitionManager.AlterPartDefinition(nameof(ArchiveLaterPart), builder => builder
+        await _contentDefinitionManager.AlterPartDefinitionAsync(nameof(ArchiveLaterPart), builder => builder
             .Attachable()
             .WithDescription("Adds the ability to schedule content items to be archived at a given future date and time."));
 

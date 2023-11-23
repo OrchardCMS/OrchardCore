@@ -18,7 +18,7 @@
 @{
     var updater = ModelUpdaterAccessor.ModelUpdater;
     var canAddTerm = Model.TaxonomyPart.ContentItem.Id != 0;
-    var termContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => !t.HasStereotype()).OrderBy(x => x.DisplayName);
+    var termContentTypes = (await ContentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => !t.HasStereotype()).OrderBy(x => x.DisplayName);
     var index = 0;
 }
 <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="TermContentType">
@@ -35,7 +35,7 @@
     <div class="@Orchard.GetEndClasses(true)">
         @if (canAddTerm && Model.TermContentType != null)
         {
-            var termContentType = ContentDefinitionManager.GetTypeDefinition(Model.TermContentType);
+            var termContentType = await ContentDefinitionManager.GetTypeDefinitionAsync(Model.TermContentType);
             @if (termContentType != null)
             {
                 <a class="btn btn-primary btn-sm"
