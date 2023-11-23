@@ -24,7 +24,7 @@ namespace OrchardCore.Email.Azure
                     .Add(S["Settings"], settings => settings
                         .Add(S["Email"], S["Email"].PrefixPosition(), email => email
                             .AddClass("email").Id("email")
-                            .Add(S["Azure Email Options"], S["Azure Email Options"].PrefixPosition(), options => options
+                            .Add(S["Azure Email Settings"], S["Azure Email Settings"].PrefixPosition(), options => options
                                 .Action("Options", "Admin", new { area = "OrchardCore.Email.Azure" })
                                 .Permission(Permissions.ViewAzureEmailOptions)
                                 .LocalNav())

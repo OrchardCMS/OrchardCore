@@ -9,7 +9,7 @@
 <div class="mb-3 row">
     <label asp-for="DefaultSender" class="col-sm-2 col-form-label">@T["Default Sender"]</label>
     <div class="col-sm-10">
-        <code><input type="text" class="form-control-plaintext" value="@Model.DefaultSender" readonly /></code>
+        <code><input asp-for="DefaultSender" class="form-control-plaintext" disabled /></code>
     </div>
 </div>
 
