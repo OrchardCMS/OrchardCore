@@ -30,7 +30,7 @@
         "OrchardCore.Deployment",
         "OrchardCore.Diagnostics",
         "OrchardCore.DynamicCache",
-        "OrchardCore.Email",
+        "OrchardCore.Email.Smtp",
         "OrchardCore.ReCaptcha",
         "OrchardCore.Features",
         "OrchardCore.Flows",
