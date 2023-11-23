@@ -47,7 +47,7 @@ namespace OrchardCore.Email.Services
         {
             if (Settings == null)
             {
-                return (SmtpResult)EmailResult.Failed(S["SMTP settings must be configured before an email can be sent."]);
+                return EmailResult.Failed(S["SMTP settings must be configured before an email can be sent."]);
             }
 
             SmtpResult result;
