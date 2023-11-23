@@ -339,7 +339,7 @@ namespace OrchardCore.ContentManagement
                     typePart,
                     partDefinitionRecords.FirstOrDefault(part => part.Name.EqualsOrdinalIgnoreCase(typePart.PartName)))),
                 source.Settings)
-            :null;
+            : null;
 
         private static ContentTypePartDefinition Build(
             ContentTypePartDefinitionRecord source,
