@@ -19,6 +19,12 @@ namespace OrchardCore.Modules
         }
 
         public static bool EqualsOrdinalIgnoreCase(this string first, string second)
-            => first.Equals(second, StringComparison.OrdinalIgnoreCase);
+            => string.Equals(first, second, StringComparison.OrdinalIgnoreCase);
+
+        public static bool StartsWithOrdinalIgnoreCase(this string first, string second)
+            => first.StartsWith(second ?? "", StringComparison.OrdinalIgnoreCase);
+
+        public static bool EndsWithOrdinalIgnoreCase(this string first, string second)
+            => first.EndsWith(second, StringComparison.OrdinalIgnoreCase);
     }
 }
