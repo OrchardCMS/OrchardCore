@@ -22,7 +22,7 @@ namespace OrchardCore.Email.Services
     {
         private const string EmailExtension = ".eml";
 
-        private static readonly char[] _emailsSeparator = new char[] { ',', ';' };
+        private static readonly char[] _emailsSeparator = [',', ';'];
 
         /// <summary>
         /// Initializes a new instance of a <see cref="SmtpService"/>.
@@ -45,7 +45,7 @@ namespace OrchardCore.Email.Services
         /// <remarks>This method allows to send an email without setting <see cref="MailMessage.To"/> if <see cref="MailMessage.Cc"/> or <see cref="MailMessage.Bcc"/> is provided.</remarks>
         public override async Task<EmailResult> SendAsync(MailMessage message)
         {
-            if (Options == null)
+            if (Settings == null)
             {
                 return (SmtpResult)EmailResult.Failed(S["SMTP settings must be configured before an email can be sent."]);
             }
@@ -56,7 +56,7 @@ namespace OrchardCore.Email.Services
             {
                 // Set the MailMessage.From, to avoid the confusion between Options.DefaultSender (Author) and submitter (Sender)
                 var senderAddress = string.IsNullOrWhiteSpace(message.From)
-                    ? Options.DefaultSender
+                    ? Settings.DefaultSender
                     : message.From;
 
                 if (!string.IsNullOrWhiteSpace(senderAddress))
@@ -78,16 +78,16 @@ namespace OrchardCore.Email.Services
                     return EmailResult.Failed(S["The mail message should have at least one of these headers: To, Cc or Bcc."]);
                 }
 
-                switch (Options.DeliveryMethod)
+                switch (Settings.DeliveryMethod)
                 {
                     case SmtpDeliveryMethod.Network:
                         response = await SendOnlineMessageAsync(mimeMessage);
                         break;
                     case SmtpDeliveryMethod.SpecifiedPickupDirectory:
-                        await SendOfflineMessageAsync(mimeMessage, Options.PickupDirectoryLocation);
+                        await SendOfflineMessageAsync(mimeMessage, Settings.PickupDirectoryLocation);
                         break;
                     default:
-                        throw new NotSupportedException($"The '{Options.DeliveryMethod}' delivery method is not supported.");
+                        throw new NotSupportedException($"The '{Settings.DeliveryMethod}' delivery method is not supported.");
                 }
 
                 result = new SmtpResult(true);
@@ -105,7 +105,7 @@ namespace OrchardCore.Email.Services
         private MimeMessage FromMailMessage(MailMessage message, IList<LocalizedString> errors)
         {
             var submitterAddress = string.IsNullOrWhiteSpace(message.Sender)
-                ? Options.DefaultSender
+                ? Settings.DefaultSender
                 : message.Sender;
 
             var mimeMessage = new MimeMessage();
@@ -238,9 +238,9 @@ namespace OrchardCore.Email.Services
         {
             var secureSocketOptions = SecureSocketOptions.Auto;
 
-            if (!Options.AutoSelectEncryption)
+            if (!Settings.AutoSelectEncryption)
             {
-                secureSocketOptions = Options.EncryptionMethod switch
+                secureSocketOptions = Settings.EncryptionMethod switch
                 {
                     SmtpEncryptionMethod.None => SecureSocketOptions.None,
                     SmtpEncryptionMethod.SslTls => SecureSocketOptions.SslOnConnect,
@@ -255,24 +255,24 @@ namespace OrchardCore.Email.Services
 
             await OnMessageSendingAsync(client, message);
 
-            await client.ConnectAsync(Options.Host, Options.Port, secureSocketOptions);
+            await client.ConnectAsync(Settings.Host, Settings.Port, secureSocketOptions);
 
-            if (Options.RequireCredentials)
+            if (Settings.RequireCredentials)
             {
-                if (Options.UseDefaultCredentials)
+                if (Settings.UseDefaultCredentials)
                 {
                     // There's no notion of 'UseDefaultCredentials' in MailKit, so empty credentials is passed in
                     await client.AuthenticateAsync(string.Empty, string.Empty);
                 }
-                else if (!string.IsNullOrWhiteSpace(Options.UserName))
+                else if (!string.IsNullOrWhiteSpace(Settings.UserName))
                 {
-                    await client.AuthenticateAsync(Options.UserName, Options.Password);
+                    await client.AuthenticateAsync(Settings.UserName, Settings.Password);
                 }
             }
 
-            if (!string.IsNullOrEmpty(Options.ProxyHost))
+            if (!string.IsNullOrEmpty(Settings.ProxyHost))
             {
-                client.ProxyClient = new Socks5Client(Options.ProxyHost, Options.ProxyPort);
+                client.ProxyClient = new Socks5Client(Settings.ProxyHost, Settings.ProxyPort);
             }
 
             var response = await client.SendAsync(message);
@@ -314,7 +314,7 @@ namespace OrchardCore.Email.Services
                 }
             }
 
-            return Options.IgnoreInvalidSslCertificate;
+            return Settings.IgnoreInvalidSslCertificate;
         }
     }
 }

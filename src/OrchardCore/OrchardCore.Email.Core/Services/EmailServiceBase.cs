@@ -22,12 +22,12 @@ namespace OrchardCore.Email.Services
             ILogger<EmailServiceBase<TEmailSettings>> logger,
             IStringLocalizer<EmailServiceBase<TEmailSettings>> stringLocalizer)
         {
-            Options = options.Value;
+            Settings = options.Value;
             Logger = logger;
             S = stringLocalizer;
         }
 
-        protected TEmailSettings Options { get; }
+        protected TEmailSettings Settings { get; }
 
         protected ILogger Logger { get; }
 
