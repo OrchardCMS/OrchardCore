@@ -28,13 +28,13 @@ public interface IContentDefinitionManager
 
     Task<ContentPartDefinition> GetPartDefinitionAsync(string name);
 
-    Task StoreTypeDefinitionAsync(ContentTypeDefinition contentTypeDefinition);
-
-    Task StorePartDefinitionAsync(ContentPartDefinition contentPartDefinition);
-
     Task DeleteTypeDefinitionAsync(string name);
 
     Task DeletePartDefinitionAsync(string name);
+
+    Task StoreTypeDefinitionAsync(ContentTypeDefinition contentTypeDefinition);
+
+    Task StorePartDefinitionAsync(ContentPartDefinition contentPartDefinition);
 
     /// <summary>
     /// Returns an unique identifier that is updated when content definitions have changed.

@@ -118,24 +118,6 @@ namespace OrchardCore.ContentManagement
             return GetPartDefinition(document, name);
         }
 
-        public async Task StoreTypeDefinitionAsync(ContentTypeDefinition contentTypeDefinition)
-        {
-            var document = await _contentDefinitionStore.LoadContentDefinitionAsync();
-
-            Apply(contentTypeDefinition, Acquire(document, contentTypeDefinition));
-
-            await UpdateContentDefinitionRecordAsync(document);
-        }
-
-        public async Task StorePartDefinitionAsync(ContentPartDefinition contentPartDefinition)
-        {
-            var document = await _contentDefinitionStore.LoadContentDefinitionAsync();
-
-            Apply(contentPartDefinition, Acquire(document, contentPartDefinition));
-
-            await UpdateContentDefinitionRecordAsync(document);
-        }
-
         public async Task DeleteTypeDefinitionAsync(string name)
         {
             ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
@@ -178,6 +160,24 @@ namespace OrchardCore.ContentManagement
                 document.ContentPartDefinitionRecords.Remove(record);
                 await UpdateContentDefinitionRecordAsync(document);
             }
+        }
+
+        public async Task StoreTypeDefinitionAsync(ContentTypeDefinition contentTypeDefinition)
+        {
+            var document = await _contentDefinitionStore.LoadContentDefinitionAsync();
+
+            Apply(contentTypeDefinition, Acquire(document, contentTypeDefinition));
+
+            await UpdateContentDefinitionRecordAsync(document);
+        }
+
+        public async Task StorePartDefinitionAsync(ContentPartDefinition contentPartDefinition)
+        {
+            var document = await _contentDefinitionStore.LoadContentDefinitionAsync();
+
+            Apply(contentPartDefinition, Acquire(document, contentPartDefinition));
+
+            await UpdateContentDefinitionRecordAsync(document);
         }
 
         public async Task<string> GetIdentifierAsync() => (await _contentDefinitionStore.GetContentDefinitionAsync()).Identifier;
@@ -364,7 +364,7 @@ namespace OrchardCore.ContentManagement
             ? new ContentPartFieldDefinition(
                 Build(new ContentFieldDefinitionRecord
                 {
-                    Name = source.FieldName
+                    Name = source.FieldName,
                 }),
                 source.Name,
                 source.Settings)

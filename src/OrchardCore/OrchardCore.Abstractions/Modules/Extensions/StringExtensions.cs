@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
 
+#nullable enable
+
 namespace OrchardCore.Modules
 {
     public static class StringExtensions
@@ -18,13 +20,13 @@ namespace OrchardCore.Modules
                 ToArray();
         }
 
-        public static bool EqualsOrdinalIgnoreCase(this string first, string second)
-            => string.Equals(first, second, StringComparison.OrdinalIgnoreCase);
+        public static bool EqualsOrdinalIgnoreCase(this string? a, string? b)
+            => string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
 
-        public static bool StartsWithOrdinalIgnoreCase(this string first, string second)
-            => first.StartsWith(second, StringComparison.OrdinalIgnoreCase);
+        public static bool StartsWithOrdinalIgnoreCase(this string? a, string? b) =>
+            a is not null && b is not null && a.StartsWith(b, StringComparison.OrdinalIgnoreCase);
 
-        public static bool EndsWithOrdinalIgnoreCase(this string first, string second)
-            => first.EndsWith(second, StringComparison.OrdinalIgnoreCase);
+        public static bool EndsWithOrdinalIgnoreCase(this string? a, string? b) =>
+            a is not null && b is not null && a.EndsWith(b, StringComparison.OrdinalIgnoreCase);
     }
 }
