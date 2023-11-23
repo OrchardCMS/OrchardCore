@@ -17,5 +17,8 @@ namespace OrchardCore.Modules
                 Select(x => Convert.ToByte(hex.Substring(x, 2), 16)).
                 ToArray();
         }
+
+        public static bool EqualsOrdinalIgnoreCase(this string first, string second)
+            => first.Equals(second, StringComparison.OrdinalIgnoreCase);
     }
 }

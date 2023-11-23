@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.ContentManagement.Metadata.Records
 {
-    public class ContentTypeDefinitionRecord : INamedContentDefinitionRecord
+    public class ContentTypeDefinitionRecord
     {
         public ContentTypeDefinitionRecord()
         {
