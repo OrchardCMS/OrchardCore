@@ -16,6 +16,6 @@
 <div class="mb-3 row">
     <label asp-for="ConnectionString" class="col-sm-2 col-form-label">@T["Connection String"]</label>
     <div class="col-sm-10 mt-2">
-        <code>@(string.IsNullOrEmpty(Model.ConnectionString) ? T["Configured"] : T["Not Configured"])</code>
+        <code>@(string.IsNullOrEmpty(Model.ConnectionString) ? T["Not Configured"] : T["Configured"])</code>
     </div>
 </div>
