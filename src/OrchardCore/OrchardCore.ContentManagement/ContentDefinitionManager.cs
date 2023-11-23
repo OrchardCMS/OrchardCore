@@ -72,16 +72,14 @@ namespace OrchardCore.ContentManagement
         {
             ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
 
-            if (!_scopedTypeDefinitions.TryGetValue(name, out var typeDefinition))
+            if (_scopedTypeDefinitions.TryGetValue(name, out var typeDefinition))
             {
-                var document = await _contentDefinitionStore.LoadContentDefinitionAsync();
-
-                return _scopedTypeDefinitions[name] = Build(
-                    document.ContentTypeDefinitionRecords.FirstOrDefault(type => type.Name.EqualsOrdinalIgnoreCase(name)),
-                    document.ContentPartDefinitionRecords);
+                return typeDefinition;
             }
 
-            return typeDefinition;
+            var document = await _contentDefinitionStore.LoadContentDefinitionAsync();
+
+            return LoadTypeDefinition(document, name);
         }
 
         public async Task<ContentTypeDefinition> GetTypeDefinitionAsync(string name)
@@ -92,27 +90,21 @@ namespace OrchardCore.ContentManagement
 
             CheckDocumentIdentifier(document);
 
-            return _cachedTypeDefinitions.GetOrAdd(name, name =>
-            {
-                return Build(
-                    document.ContentTypeDefinitionRecords.FirstOrDefault(type => type.Name.EqualsOrdinalIgnoreCase(name)),
-                    document.ContentPartDefinitionRecords);
-            });
+            return GetTypeDefinition(document, name);
         }
 
         public async Task<ContentPartDefinition> LoadPartDefinitionAsync(string name)
         {
             ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
 
-            if (!_scopedPartDefinitions.TryGetValue(name, out var partDefinition))
+            if (_scopedPartDefinitions.TryGetValue(name, out var partDefinition))
             {
-                var document = await _contentDefinitionStore.LoadContentDefinitionAsync();
-
-                return _scopedPartDefinitions[name] = Build(
-                    document.ContentPartDefinitionRecords.FirstOrDefault(part => part.Name.EqualsOrdinalIgnoreCase(name)));
+                return partDefinition;
             }
 
-            return partDefinition;
+            var document = await _contentDefinitionStore.LoadContentDefinitionAsync();
+
+            return LoadPartDefinition(document, name);
         }
 
         public async Task<ContentPartDefinition> GetPartDefinitionAsync(string name)
@@ -122,11 +114,6 @@ namespace OrchardCore.ContentManagement
             var document = await _contentDefinitionStore.GetContentDefinitionAsync();
 
             CheckDocumentIdentifier(document);
-
-            if (_cachedPartDefinitions.TryGetValue(name, out var partDefinition))
-            {
-                return partDefinition;
-            }
 
             return GetPartDefinition(document, name);
         }
@@ -229,7 +216,7 @@ namespace OrchardCore.ContentManagement
                 result = new ContentTypeDefinitionRecord
                 {
                     Name = contentTypeDefinition.Name,
-                    DisplayName = contentTypeDefinition.DisplayName
+                    DisplayName = contentTypeDefinition.DisplayName,
                 };
 
                 document.ContentTypeDefinitionRecords.Add(result);
@@ -284,7 +271,7 @@ namespace OrchardCore.ContentManagement
                     {
                         PartName = part.PartDefinition.Name,
                         Name = part.Name,
-                        Settings = part.Settings
+                        Settings = part.Settings,
                     };
 
                     record.ContentTypePartDefinitionRecords.Add(typePartRecord);
@@ -320,13 +307,15 @@ namespace OrchardCore.ContentManagement
                 {
                     if (field.FieldDefinition is null)
                     {
-                        throw new InvalidOperationException($"The '{field.Name}' field in '{model.Name}' part was defined without a specified type. Please review the migration and explicitly specify the field type.");
+                        throw new InvalidOperationException(
+                            $"The '{field.Name}' field in '{model.Name}' part was defined without a specified type." +
+                            " Please review the migration and explicitly specify the field type.");
                     }
 
                     partFieldRecord = new ContentPartFieldDefinitionRecord
                     {
                         FieldName = field.FieldDefinition.Name,
-                        Name = field.Name
+                        Name = field.Name,
                     };
 
                     record.ContentPartFieldDefinitionRecords.Add(partFieldRecord);
@@ -342,37 +331,44 @@ namespace OrchardCore.ContentManagement
         private static ContentTypeDefinition Build(
             ContentTypeDefinitionRecord source,
             IList<ContentPartDefinitionRecord> partDefinitionRecords) =>
-            source is null ? null : new ContentTypeDefinition(
+            source is not null
+            ? new ContentTypeDefinition(
                 source.Name,
                 source.DisplayName,
                 source.ContentTypePartDefinitionRecords.Select(typePart => Build(
                     typePart,
                     partDefinitionRecords.FirstOrDefault(part => part.Name.EqualsOrdinalIgnoreCase(typePart.PartName)))),
-                source.Settings);
+                source.Settings)
+            :null;
 
         private static ContentTypePartDefinition Build(
             ContentTypePartDefinitionRecord source,
             ContentPartDefinitionRecord partDefinitionRecord) =>
-            source is null ? null : new ContentTypePartDefinition(
+            source is not null
+            ? new ContentTypePartDefinition(
                 source.Name,
                 Build(partDefinitionRecord) ?? new ContentPartDefinition(source.PartName, [], []),
-                source.Settings);
+                source.Settings)
+            : null;
 
         private static ContentPartDefinition Build(ContentPartDefinitionRecord source) =>
-            source is null ? null : new ContentPartDefinition(
+            source is not null
+            ? new ContentPartDefinition(
                 source.Name,
                 source.ContentPartFieldDefinitionRecords.Select(Build),
-                source.Settings);
+                source.Settings)
+            : null;
 
         private static ContentPartFieldDefinition Build(ContentPartFieldDefinitionRecord source) =>
-            source is null ? null : new ContentPartFieldDefinition(
+            source is not null
+            ? new ContentPartFieldDefinition(
                 Build(new ContentFieldDefinitionRecord
                 {
                     Name = source.FieldName
                 }),
                 source.Name,
-                source.Settings
-            );
+                source.Settings)
+            : null;
 
         private static ContentFieldDefinition Build(ContentFieldDefinitionRecord source)
             => source is null ? null : new ContentFieldDefinition(source.Name);

@@ -22,7 +22,7 @@ namespace OrchardCore.Modules
             => string.Equals(first, second, StringComparison.OrdinalIgnoreCase);
 
         public static bool StartsWithOrdinalIgnoreCase(this string first, string second)
-            => first.StartsWith(second ?? "", StringComparison.OrdinalIgnoreCase);
+            => first.StartsWith(second, StringComparison.OrdinalIgnoreCase);
 
         public static bool EndsWithOrdinalIgnoreCase(this string first, string second)
             => first.EndsWith(second, StringComparison.OrdinalIgnoreCase);
