@@ -184,10 +184,10 @@ namespace OrchardCore.ContentManagement
 
         private ContentTypeDefinition LoadTypeDefinition(ContentDefinitionRecord document, string name) =>
             !_scopedTypeDefinitions.TryGetValue(name, out var typeDefinition)
-                ? _scopedTypeDefinitions[name] = Build(
-                    document.ContentTypeDefinitionRecords.FirstOrDefault(type => type.Name.EqualsOrdinalIgnoreCase(name)),
-                    document.ContentPartDefinitionRecords)
-                : typeDefinition;
+            ? _scopedTypeDefinitions[name] = Build(
+                document.ContentTypeDefinitionRecords.FirstOrDefault(type => type.Name.EqualsOrdinalIgnoreCase(name)),
+                document.ContentPartDefinitionRecords)
+            : typeDefinition;
 
         private ContentTypeDefinition GetTypeDefinition(ContentDefinitionRecord document, string name) =>
             _cachedTypeDefinitions.GetOrAdd(name, name => Build(
@@ -196,9 +196,9 @@ namespace OrchardCore.ContentManagement
 
         private ContentPartDefinition LoadPartDefinition(ContentDefinitionRecord document, string name) =>
             !_scopedPartDefinitions.TryGetValue(name, out var partDefinition)
-                ? _scopedPartDefinitions[name] = Build(
-                    document.ContentPartDefinitionRecords.FirstOrDefault(part => part.Name.EqualsOrdinalIgnoreCase(name)))
-                : partDefinition;
+            ? _scopedPartDefinitions[name] = Build(
+                document.ContentPartDefinitionRecords.FirstOrDefault(part => part.Name.EqualsOrdinalIgnoreCase(name)))
+            : partDefinition;
 
         private ContentPartDefinition GetPartDefinition(ContentDefinitionRecord document, string name) =>
             _cachedPartDefinitions.GetOrAdd(name, name => Build(
