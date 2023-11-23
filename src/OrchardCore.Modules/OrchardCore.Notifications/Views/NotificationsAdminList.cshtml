@@ -22,7 +22,7 @@
 }
 
 <div class="list-group with-checkbox notification-container">
-    @if (Model.Header != null && (Model.Header.Summary != null || Model.Header.Actions != null))
+    @if (Model.Header?.Summary != null || Model.Header?.Actions != null)
     {
         <div class="list-group-item text-bg-theme">
             <div class="row gx-3">
