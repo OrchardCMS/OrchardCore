@@ -2,7 +2,7 @@
 @inject IContentDefinitionManager ContentDefinitionManager
 @{
     ContentItem contentItem = Model.ContentItem;
-    var contentTypeDefinition = ContentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+    var contentTypeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
     var typeDisplayName = contentTypeDefinition?.DisplayName ?? contentItem.ContentType.CamelFriendly();
 
     var returnUrl = Context.Request.Query["returnUrl"];

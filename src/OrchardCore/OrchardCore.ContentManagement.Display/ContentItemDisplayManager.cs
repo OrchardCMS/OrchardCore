@@ -56,7 +56,7 @@ namespace OrchardCore.ContentManagement.Display
                 throw new ArgumentNullException(nameof(contentItem));
             }
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType)
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType)
                 ?? throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
 
             var actualDisplayType = string.IsNullOrEmpty(displayType) ? "Detail" : displayType;
@@ -128,7 +128,7 @@ namespace OrchardCore.ContentManagement.Display
                 throw new ArgumentNullException(nameof(contentItem));
             }
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType)
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType)
                 ?? throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
 
             var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);
@@ -179,7 +179,7 @@ namespace OrchardCore.ContentManagement.Display
                 throw new ArgumentNullException(nameof(contentItem));
             }
 
-            var contentTypeDefinition = _contentDefinitionManager.LoadTypeDefinition(contentItem.ContentType)
+            var contentTypeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(contentItem.ContentType)
                 ?? throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
 
             var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);
