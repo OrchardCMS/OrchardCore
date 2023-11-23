@@ -1,0 +1,21 @@
+@model OrchardCore.Email.Azure.ViewModels.OptionsViewModel
+<h1>@RenderTitleSegments(T["Azure email options"])</h1>
+
+<p class="alert alert-secondary">
+    @T["Azure email is configured with appsettings.json."]
+    <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Email.Azure/#configuration" target="_blank">@T["See documentation"]</a>
+</p>
+
+<div class="mb-3 row">
+    <label asp-for="DefaultSender" class="col-sm-2 col-form-label">@T["Default Sender"]</label>
+    <div class="col-sm-10">
+        <code><input type="text" class="form-control-plaintext" value="@Model.DefaultSender" readonly /></code>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label asp-for="ConnectionString" class="col-sm-2 col-form-label">@T["Connection String"]</label>
+    <div class="col-sm-10 mt-2">
+        <code>@(string.IsNullOrEmpty(Model.ConnectionString) ? T["Configured"] : T["Not Configured"])</code>
+    </div>
+</div>

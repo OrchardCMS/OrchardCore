@@ -1,10 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Email.Drivers;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Email
+namespace OrchardCore.Email.Azure
 {
     public class AdminMenu : INavigationProvider
     {
@@ -25,10 +24,10 @@ namespace OrchardCore.Email
                     .Add(S["Settings"], settings => settings
                         .Add(S["Email"], S["Email"].PrefixPosition(), email => email
                             .AddClass("email").Id("email")
-                            .Add(S["SMTP Settings"], S["SMTP Settings"].PrefixPosition(), options => options
-                               .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmtpSettingsDisplayDriver.GroupId })
-                               .Permission(Permissions.ManageEmailSettings)
-                               .LocalNav())
+                            .Add(S["Azure Email Options"], S["Azure Email Options"].PrefixPosition(), options => options
+                                .Action("Options", "Admin", new { area = "OrchardCore.Email.Azure" })
+                                .Permission(Permissions.ViewAzureEmailOptions)
+                                .LocalNav())
                 )));
 
             return Task.CompletedTask;
