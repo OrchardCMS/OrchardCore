@@ -3,48 +3,46 @@ using System.Threading.Tasks;
 using Azure;
 using Azure.Communication.Email;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Email.Services;
 
 namespace OrchardCore.Email.Azure.Services;
 
-public class AzureEmailService : IEmailService
+public class AzureEmailService : EmailServiceBase<AzureEmailSettings>
 {
-    private readonly AzureEmailSettings _options;
-    protected readonly IStringLocalizer S;
-
     /// <summary>
     /// Initializes a new instance of a <see cref="AzureEmailService"/>.
     /// </summary>
-    /// <param name="options">The <see cref="IOptions{TOptions}"/>.</param>
+    /// <param name="options">The <see cref="IOptions{AzureEmailSettings}"/>.</param>
+    /// <param name="logger">The <see cref="ILogger{AzureEmailService}"/>.</param>
     /// <param name="stringLocalizer">The <see cref="IStringLocalizer{AzureEmailService}"/>.</param>
     public AzureEmailService(
         IOptions<AzureEmailSettings> options,
-        IStringLocalizer<AzureEmailService> stringLocalizer)
+        ILogger<AzureEmailService> logger,
+        IStringLocalizer<AzureEmailService> stringLocalizer) : base(options, logger, stringLocalizer)
     {
-        _options = options.Value;
-        S = stringLocalizer;
     }
 
-    public async Task<EmailResult> SendAsync(MailMessage message)
+    public async override Task<EmailResult> SendAsync(MailMessage message)
     {
         if (message == null)
         {
             throw new ArgumentNullException(nameof(message));
         }
 
-        if (_options == null)
+        if (Settings == null)
         {
             return EmailResult.Failed(S["Azure Email settings must be configured before an email can be sent."]);
         }
 
         EmailResult result;
-        var client = new EmailClient(_options.ConnectionString);
+        var client = new EmailClient(Settings.ConnectionString);
 
         try
         {
-            // Set the MailMessage.From, to avoid the confusion between _options.DefaultSender (Author) and submitter (Sender)
             var senderAddress = string.IsNullOrWhiteSpace(message.From)
-                ? _options.DefaultSender
+                ? Settings.DefaultSender
                 : message.From;
 
             if (!string.IsNullOrWhiteSpace(senderAddress))
@@ -59,8 +57,7 @@ public class AzureEmailService : IEmailService
                 ? null
                 : message.Body;
 
-            await client.SendAsync(
-                WaitUntil.Completed, senderAddress, message.To, message.Subject, htmlContent, plainTextContent: plainTextContent);
+            await client.SendAsync(WaitUntil.Completed, senderAddress, message.To, message.Subject, htmlContent, plainTextContent: plainTextContent);
 
             result = EmailResult.Success;
         }
