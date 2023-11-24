@@ -16,10 +16,17 @@ namespace OrchardCore.GitHub.Configuration
 {
     public class GitHubHandler : OAuthHandler<GitHubOptions>
     {
+
+#if !NET8_0_OR_GREATER
+        public GitHubHandler(IOptionsMonitor<GitHubOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
+            : base(options, logger, encoder, clock)
+        { }
+#else
         public GitHubHandler(IOptionsMonitor<GitHubOptions> options, ILoggerFactory logger, UrlEncoder encoder)
             : base(options, logger, encoder)
         {
         }
+#endif
 
         protected override async Task<AuthenticationTicket> CreateTicketAsync(ClaimsIdentity identity, AuthenticationProperties properties, OAuthTokenResponse tokens)
         {
