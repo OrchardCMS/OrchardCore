@@ -6,6 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "Provides email settings configuration and a default email service based on Azure Communication Services (ACS).",
-    Dependencies = ["OrchardCore.Resources"],
+    Dependencies = ["OrchardCore.Email"],
     Category = "Messaging"
 )]
