@@ -182,7 +182,6 @@ namespace OrchardCore.Documents
             }
 
             document.Identifier ??= IdGenerator.GenerateId();
-            document.IsReadOnly = false;
 
             if (!_isVolatile)
             {

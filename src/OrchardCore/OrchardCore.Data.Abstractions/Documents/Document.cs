@@ -10,7 +10,7 @@ namespace OrchardCore.Data.Documents
         public string Identifier { get; set; }
 
         /// <summary>
-        /// Whether the document was got for caching.
+        /// Whether the document is immutable or not.
         /// </summary>
         [JsonIgnore]
         public bool IsReadOnly { get; set; } = true;
