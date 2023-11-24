@@ -17,22 +17,14 @@ namespace OrchardCore.DataProtection.Azure
     public class Startup : StartupBase
     {
         private readonly IShellConfiguration _configuration;
-        private readonly ShellOptions _shellOptions;
-        private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
         // Local instance since it can be discarded once the startup is over.
         private readonly FluidParser _fluidParser = new();
 
-        public Startup(
-            IShellConfiguration configuration,
-            IOptions<ShellOptions> shellOptions,
-            ShellSettings shellSettings,
-            ILogger<Startup> logger)
+        public Startup(IShellConfiguration configuration, ILogger<Startup> logger)
         {
             _configuration = configuration;
-            _shellOptions = shellOptions.Value;
-            _shellSettings = shellSettings;
             _logger = logger;
         }
 
@@ -57,10 +49,15 @@ namespace OrchardCore.DataProtection.Azure
 
                 services.Initialize(async sp =>
                 {
-                    var options = sp.GetRequiredService<BlobOptions>();
-                    var configuration = sp.GetRequiredService<IShellConfiguration>();
-                    options.ContainerName = await GetBlobContainerNameAsync(options);
-                    options.BlobName = await GetBlobNameAsync(options);
+                    var blobOptions = sp.GetRequiredService<BlobOptions>();
+                    var shellOptions = sp.GetRequiredService<IOptions<ShellOptions>>().Value;
+                    var shellSettings = sp.GetRequiredService<ShellSettings>();
+
+                    var fluidParser = new FluidParser();
+                    var logger = sp.GetRequiredService<ILogger<Startup>>();
+
+                    await ConfigureContainerNameAsync(blobOptions, shellSettings, fluidParser, logger);
+                    await ConfigureBlobNameAsync(blobOptions, shellOptions, shellSettings, fluidParser, logger);
                 });
             }
             else
@@ -69,55 +66,59 @@ namespace OrchardCore.DataProtection.Azure
             }
         }
 
-        private async Task<string> GetBlobContainerNameAsync(BlobOptions options)
+        private static async Task ConfigureContainerNameAsync(
+            BlobOptions blobOptions,
+            ShellSettings shellSettings,
+            FluidParser fluidParser,
+            ILogger logger)
         {
-            var containerName = options.ContainerName;
             try
             {
                 // Use Fluid directly as the service provider has not been built.
                 var templateOptions = new TemplateOptions();
                 templateOptions.MemberAccessStrategy.Register<ShellSettings>();
                 var templateContext = new TemplateContext(templateOptions);
-                templateContext.SetValue("ShellSettings", _shellSettings);
+                templateContext.SetValue("ShellSettings", shellSettings);
 
-                var template = _fluidParser.Parse(containerName);
+                var template = fluidParser.Parse(blobOptions.ContainerName);
 
                 // container name must be lowercase
-                containerName = template.Render(templateContext, NullEncoder.Default).ToLower();
-                containerName = containerName.Replace("\r", string.Empty).Replace("\n", string.Empty);
+                var containerName = template.Render(templateContext, NullEncoder.Default).ToLower();
+                blobOptions.ContainerName = containerName.Replace("\r", string.Empty).Replace("\n", string.Empty);
             }
             catch (Exception e)
             {
-                _logger.LogCritical(e, "Unable to parse data protection connection string.");
+                logger.LogCritical(e, "Unable to parse data protection connection string.");
                 throw;
             }
 
-            if (options.CreateContainer)
+            if (blobOptions.CreateContainer)
             {
                 try
                 {
-                    _logger.LogDebug("Testing data protection container {ContainerName} existence", containerName);
-                    var _blobContainer = new BlobContainerClient(options.ConnectionString, containerName);
-                    var response = await _blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
-                    _logger.LogDebug("Data protection container {ContainerName} created.", containerName);
+                    logger.LogDebug("Testing data protection container {ContainerName} existence", blobOptions.ContainerName);
+                    var blobContainer = new BlobContainerClient(blobOptions.ConnectionString, blobOptions.ContainerName);
+                    var response = await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
+                    logger.LogDebug("Data protection container {ContainerName} created.", blobOptions.ContainerName);
                 }
                 catch (Exception)
                 {
-                    _logger.LogCritical("Unable to connect to Azure Storage to configure data protection storage. Ensure that an application setting containing a valid Azure Storage connection string is available at `Modules:OrchardCore.DataProtection.Azure:ConnectionString`.");
-
+                    logger.LogCritical("Unable to connect to Azure Storage to configure data protection storage. Ensure that an application setting containing a valid Azure Storage connection string is available at `Modules:OrchardCore.DataProtection.Azure:ConnectionString`.");
                     throw;
                 }
             }
-
-            return containerName;
         }
 
-        private async Task<string> GetBlobNameAsync(BlobOptions options)
+        private static async Task ConfigureBlobNameAsync(
+            BlobOptions blobOptions,
+            ShellOptions shellOptions,
+            ShellSettings shellSettings,
+            FluidParser fluidParser,
+            ILogger logger)
         {
-            var blobName = options.BlobName;
-            if (string.IsNullOrEmpty(blobName))
+            if (string.IsNullOrEmpty(blobOptions.BlobName))
             {
-                blobName = $"{_shellOptions.ShellsContainerName}/{_shellSettings.Name}/DataProtectionKeys.xml";
+                blobOptions.BlobName = $"{shellOptions.ShellsContainerName}/{shellSettings.Name}/DataProtectionKeys.xml";
             }
             else
             {
@@ -127,21 +128,19 @@ namespace OrchardCore.DataProtection.Azure
                     var templateOptions = new TemplateOptions();
                     var templateContext = new TemplateContext(templateOptions);
                     templateOptions.MemberAccessStrategy.Register<ShellSettings>();
-                    templateContext.SetValue("ShellSettings", _shellSettings);
+                    templateContext.SetValue("ShellSettings", shellSettings);
 
-                    var template = _fluidParser.Parse(blobName);
+                    var template = fluidParser.Parse(blobOptions.BlobName);
 
-                    blobName = await template.RenderAsync(templateContext, NullEncoder.Default);
-                    blobName = blobName.Replace("\r", string.Empty).Replace("\n", string.Empty);
+                    var blobName = await template.RenderAsync(templateContext, NullEncoder.Default);
+                    blobOptions.BlobName = blobName.Replace("\r", string.Empty).Replace("\n", string.Empty);
                 }
                 catch (Exception e)
                 {
-                    _logger.LogCritical(e, "Unable to parse data protection blob name.");
+                    logger.LogCritical(e, "Unable to parse data protection blob name.");
                     throw;
                 }
             }
-
-            return blobName;
         }
 
         // Assume that this module will override default configuration, so set the Order to a value above the default.
