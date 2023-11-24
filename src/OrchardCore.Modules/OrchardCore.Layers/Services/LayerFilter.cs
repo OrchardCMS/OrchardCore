@@ -93,7 +93,7 @@ namespace OrchardCore.Layers.Services
                 var updater = _modelUpdaterAccessor.ModelUpdater;
 
                 var layersCache = new Dictionary<string, bool>();
-                var contentDefinitions = _contentDefinitionManager.ListTypeDefinitions();
+                var contentDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
 
                 foreach (var widget in widgets)
                 {

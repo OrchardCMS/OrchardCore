@@ -91,7 +91,7 @@ namespace OrchardCore.Contents.Controllers
             string contentTypeId = "",
             string stereotype = "")
         {
-            var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions()
+            var contentTypeDefinitions = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
                 .OrderBy(ctd => ctd.DisplayName)
                 .ToList();
 
@@ -106,7 +106,7 @@ namespace OrchardCore.Contents.Controllers
                 options.SelectedContentType = contentTypeId;
             }
 
-            // The filter is bound seperately and mapped to the options.
+            // The filter is bound separately and mapped to the options.
             // The options must still be bound so that options that are not filters are still bound.
             options.FilterResult = queryFilterResult;
 
@@ -117,7 +117,7 @@ namespace OrchardCore.Contents.Controllers
                 // When the selected content type is provided via the route or options a placeholder node is used to apply a filter.
                 options.FilterResult.TryAddOrReplace(new ContentTypeFilterNode(options.SelectedContentType));
 
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(options.SelectedContentType);
+                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(options.SelectedContentType);
                 if (contentTypeDefinition == null)
                 {
                     return NotFound();
@@ -132,7 +132,7 @@ namespace OrchardCore.Contents.Controllers
                 options.FilterResult.TryAddOrReplace(new StereotypeFilterNode(stereotype));
 
                 var availableContentTypeDefinitions = contentTypeDefinitions
-                    .Where(defintion => defintion.StereotypeEquals(stereotype, StringComparison.OrdinalIgnoreCase))
+                    .Where(definition => definition.StereotypeEquals(stereotype, StringComparison.OrdinalIgnoreCase))
                     .ToArray();
 
                 if (availableContentTypeDefinitions.Length > 0)
@@ -343,7 +343,7 @@ namespace OrchardCore.Contents.Controllers
             {
                 await _contentManager.SaveDraftAsync(contentItem);
 
-                var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
                 await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
                     ? H["Your content draft has been saved."]
@@ -361,7 +361,7 @@ namespace OrchardCore.Contents.Controllers
             }
 
             var stayOnSamePage = submitPublish == "submit.PublishAndContinue";
-            // Pass a dummy contentitem to the authorization check to check for "own" variations permissions.
+            // Pass a dummy content item to the authorization check to check for "own" variations permissions.
             if (!await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.PublishContent, id, CurrentUserId()))
             {
                 return Forbid();
@@ -371,7 +371,7 @@ namespace OrchardCore.Contents.Controllers
             {
                 await _contentManager.PublishAsync(contentItem);
 
-                var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
                 await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
                     ? H["Your content has been published."]
@@ -426,7 +426,7 @@ namespace OrchardCore.Contents.Controllers
             {
                 await _contentManager.SaveDraftAsync(contentItem);
 
-                var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
                 await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
                     ? H["Your content draft has been saved."]
@@ -456,7 +456,7 @@ namespace OrchardCore.Contents.Controllers
             {
                 await _contentManager.PublishAsync(contentItem);
 
-                var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
                 await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
                     ? H["Your content has been published."]
@@ -513,7 +513,7 @@ namespace OrchardCore.Contents.Controllers
             {
                 await _contentManager.DiscardDraftAsync(contentItem);
 
-                var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
                 await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
                     ? H["The draft has been removed."]
@@ -537,7 +537,7 @@ namespace OrchardCore.Contents.Controllers
             {
                 await _contentManager.RemoveAsync(contentItem);
 
-                var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
                 await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
                     ? H["That content has been removed."]
@@ -563,7 +563,7 @@ namespace OrchardCore.Contents.Controllers
 
             await _contentManager.PublishAsync(contentItem);
 
-            var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
             if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
             {
@@ -593,7 +593,7 @@ namespace OrchardCore.Contents.Controllers
 
             await _contentManager.UnpublishAsync(contentItem);
 
-            var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
             if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
             {

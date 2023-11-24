@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement.Metadata;
@@ -17,60 +18,60 @@ namespace OrchardCore.ContentFields
 
         // This migration does not need to run on new installations, but because there is no
         // initial migration record, there is no way to shortcut the Create migration.
-        public int Create()
+        public async Task<int> CreateAsync()
         {
             // Boolean field
-            _contentDefinitionManager.MigrateFieldSettings<BooleanField, BooleanFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<BooleanField, BooleanFieldSettings>();
 
             // Content picker field
-            _contentDefinitionManager.MigrateFieldSettings<ContentPickerField, ContentPickerFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<ContentPickerField, ContentPickerFieldSettings>();
 
             // Date field
-            _contentDefinitionManager.MigrateFieldSettings<DateField, DateFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<DateField, DateFieldSettings>();
 
             // Date time field
-            _contentDefinitionManager.MigrateFieldSettings<DateTimeField, DateTimeFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<DateTimeField, DateTimeFieldSettings>();
 
             // Html field
-            _contentDefinitionManager.MigrateFieldSettings<HtmlField, HtmlFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<HtmlField, HtmlFieldSettings>();
 
             // Link field
-            _contentDefinitionManager.MigrateFieldSettings<LinkField, LinkFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<LinkField, LinkFieldSettings>();
 
             // Localization set content picker field
-            _contentDefinitionManager.MigrateFieldSettings<LocalizationSetContentPickerField, LocalizationSetContentPickerFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<LocalizationSetContentPickerField, LocalizationSetContentPickerFieldSettings>();
 
             // MultiText field
-            _contentDefinitionManager.MigrateFieldSettings<MultiTextField, MultiTextFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<MultiTextField, MultiTextFieldSettings>();
 
             // Numeric field
-            _contentDefinitionManager.MigrateFieldSettings<NumericField, NumericFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<NumericField, NumericFieldSettings>();
 
             // Text field
-            _contentDefinitionManager.MigrateFieldSettings<TextField, TextFieldHeaderDisplaySettings>();
-            _contentDefinitionManager.MigrateFieldSettings<TextField, TextFieldPredefinedListEditorSettings>();
-            _contentDefinitionManager.MigrateFieldSettings<TextField, TextFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<TextField, TextFieldHeaderDisplaySettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<TextField, TextFieldPredefinedListEditorSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<TextField, TextFieldSettings>();
 
             // Time field
-            _contentDefinitionManager.MigrateFieldSettings<TimeField, TimeFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<TimeField, TimeFieldSettings>();
 
             // Youtube field
-            _contentDefinitionManager.MigrateFieldSettings<YoutubeField, YoutubeFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<YoutubeField, YoutubeFieldSettings>();
 
             // Shortcut other migration steps on new content definition schemas.
             return 2;
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom1()
+        public async Task<int> UpdateFrom1Async()
         {
-            // For backwards compatability with liquid filters we disable html sanitization on existing field definitions.
-            var partDefinitions = _contentDefinitionManager.LoadPartDefinitions();
+            // For backwards compatibility with liquid filters we disable html sanitization on existing field definitions.
+            var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync();
             foreach (var partDefinition in partDefinitions)
             {
                 if (partDefinition.Fields.Any(x => x.FieldDefinition.Name == "HtmlField"))
                 {
-                    _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
+                    await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
                     {
                         foreach (var fieldDefinition in partDefinition.Fields.Where(x => x.FieldDefinition.Name == "HtmlField"))
                         {
