@@ -6,14 +6,14 @@ namespace OrchardCore.Email
     /// <summary>
     /// Represents the result of sending an email.
     /// </summary>
-    public class SmtpResult : EmailResult
+    public class SmtpEmailResult : EmailResult
     {
-        public SmtpResult(bool succeeded)
+        public SmtpEmailResult(bool succeeded)
         {
             Succeeded = succeeded;
         }
 
-        public SmtpResult(IEnumerable<LocalizedString> errors)
+        public SmtpEmailResult(IEnumerable<LocalizedString> errors)
         {
             Errors = errors;
             Succeeded = false;

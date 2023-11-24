@@ -18,22 +18,22 @@ namespace OrchardCore.Email.Services
     /// <summary>
     /// Represents a SMTP service that allows to send emails.
     /// </summary>
-    public class SmtpService : EmailServiceBase<SmtpSettings>
+    public class SmtpEmailService : EmailServiceBase<SmtpEmailSettings>
     {
         private const string EmailExtension = ".eml";
 
         private static readonly char[] _emailsSeparator = [',', ';'];
 
         /// <summary>
-        /// Initializes a new instance of a <see cref="SmtpService"/>.
+        /// Initializes a new instance of a <see cref="SmtpEmailService"/>.
         /// </summary>
         /// <param name="options">The <see cref="IOptions{SmtpSettings}"/>.</param>
         /// <param name="logger">The <see cref="ILogger{SmtpService}"/>.</param>
         /// <param name="stringLocalizer">The <see cref="IStringLocalizer{SmtpService}"/>.</param>
-        public SmtpService(
-            IOptions<SmtpSettings> options,
-            ILogger<SmtpService> logger,
-            IStringLocalizer<SmtpService> stringLocalizer) : base(options, logger, stringLocalizer)
+        public SmtpEmailService(
+            IOptions<SmtpEmailSettings> options,
+            ILogger<SmtpEmailService> logger,
+            IStringLocalizer<SmtpEmailService> stringLocalizer) : base(options, logger, stringLocalizer)
         {
         }
 
@@ -41,7 +41,7 @@ namespace OrchardCore.Email.Services
         /// Sends the specified message to an SMTP server for delivery.
         /// </summary>
         /// <param name="message">The message to be sent.</param>
-        /// <returns>A <see cref="SmtpResult"/> that holds information about the sent message, for instance if it has sent successfully or if it has failed.</returns>
+        /// <returns>A <see cref="SmtpEmailResult"/> that holds information about the sent message, for instance if it has sent successfully or if it has failed.</returns>
         /// <remarks>This method allows to send an email without setting <see cref="MailMessage.To"/> if <see cref="MailMessage.Cc"/> or <see cref="MailMessage.Bcc"/> is provided.</remarks>
         public override async Task<EmailResult> SendAsync(MailMessage message)
         {
@@ -50,7 +50,7 @@ namespace OrchardCore.Email.Services
                 return EmailResult.Failed(S["SMTP settings must be configured before an email can be sent."]);
             }
 
-            SmtpResult result;
+            SmtpEmailResult result;
             var response = default(string);
             try
             {
@@ -90,11 +90,11 @@ namespace OrchardCore.Email.Services
                         throw new NotSupportedException($"The '{Settings.DeliveryMethod}' delivery method is not supported.");
                 }
 
-                result = new SmtpResult(true);
+                result = new SmtpEmailResult(true);
             }
             catch (Exception ex)
             {
-                result = new SmtpResult(new [] { S["An error occurred while sending an email: '{0}'", ex.Message] });
+                result = new SmtpEmailResult(new [] { S["An error occurred while sending an email: '{0}'", ex.Message] });
             }
 
             result.Response = response;

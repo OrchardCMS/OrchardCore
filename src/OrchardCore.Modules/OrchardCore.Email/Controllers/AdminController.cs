@@ -41,7 +41,7 @@ namespace OrchardCore.Email.Controllers
         }
 
         [HttpPost, ActionName(nameof(Index))]
-        public async Task<IActionResult> IndexPost(SmtpSettingsViewModel model)
+        public async Task<IActionResult> IndexPost(SmtpEmailSettingsViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageEmailSettings))
             {
@@ -72,7 +72,7 @@ namespace OrchardCore.Email.Controllers
             return View(model);
         }
 
-        private static MailMessage CreateMessageFromViewModel(SmtpSettingsViewModel testSettings)
+        private static MailMessage CreateMessageFromViewModel(SmtpEmailSettingsViewModel testSettings)
         {
             var message = new MailMessage
             {

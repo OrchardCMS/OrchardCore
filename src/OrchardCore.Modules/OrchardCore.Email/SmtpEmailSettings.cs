@@ -9,7 +9,7 @@ namespace OrchardCore.Email
     /// <summary>
     /// Represents a settings for SMTP.
     /// </summary>
-    public class SmtpSettings : EmailSettings, IValidatableObject
+    public class SmtpEmailSettings : EmailSettings, IValidatableObject
     {
         /// <summary>
         /// Gets or sets the mail delivery method.
@@ -81,7 +81,7 @@ namespace OrchardCore.Email
         /// <inheritdocs />
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            var S = validationContext.GetService<IStringLocalizer<SmtpSettings>>();
+            var S = validationContext.GetService<IStringLocalizer<SmtpEmailSettings>>();
 
             switch (DeliveryMethod)
             {

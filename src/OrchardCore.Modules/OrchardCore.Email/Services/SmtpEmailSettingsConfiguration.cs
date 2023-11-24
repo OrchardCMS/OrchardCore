@@ -6,27 +6,27 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Services
 {
-    public class SmtpSettingsConfiguration : IConfigureOptions<SmtpSettings>
+    public class SmtpEmailSettingsConfiguration : IConfigureOptions<SmtpEmailSettings>
     {
         private readonly ISiteService _site;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ILogger _logger;
 
-        public SmtpSettingsConfiguration(
+        public SmtpEmailSettingsConfiguration(
             ISiteService site,
             IDataProtectionProvider dataProtectionProvider,
-            ILogger<SmtpSettingsConfiguration> logger)
+            ILogger<SmtpEmailSettingsConfiguration> logger)
         {
             _site = site;
             _dataProtectionProvider = dataProtectionProvider;
             _logger = logger;
         }
 
-        public void Configure(SmtpSettings options)
+        public void Configure(SmtpEmailSettings options)
         {
             var settings = _site.GetSiteSettingsAsync()
                 .GetAwaiter().GetResult()
-                .As<SmtpSettings>();
+                .As<SmtpEmailSettings>();
 
             options.DefaultSender = settings.DefaultSender;
             options.DeliveryMethod = settings.DeliveryMethod;
@@ -44,7 +44,7 @@ namespace OrchardCore.Email.Services
             {
                 try
                 {
-                    var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration));
+                    var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpEmailSettingsConfiguration));
                     options.Password = protector.Unprotect(settings.Password);
                 }
                 catch

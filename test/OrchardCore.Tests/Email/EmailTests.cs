@@ -192,7 +192,7 @@ namespace OrchardCore.Tests.Email
                 Subject = "Test",
                 Body = "Test Message"
             };
-            var settings = new SmtpSettings
+            var settings = new SmtpEmailSettings
             {
                 DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory
             };
@@ -216,7 +216,7 @@ namespace OrchardCore.Tests.Email
                 Subject = "Test",
                 Body = "Test Message"
             };
-            var settings = new SmtpSettings
+            var settings = new SmtpEmailSettings
             {
                 DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory
             };
@@ -227,7 +227,7 @@ namespace OrchardCore.Tests.Email
             var result = await smtp.SendAsync(message);
 
             // Assert
-            Assert.Null((result as SmtpResult).Response);
+            Assert.Null((result as SmtpEmailResult).Response);
         }
 
         private static async Task<string> SendEmailAsync(MailMessage message, string defaultSender = null)
@@ -242,7 +242,7 @@ namespace OrchardCore.Tests.Email
 
             Directory.CreateDirectory(pickupDirectoryPath);
 
-            var settings = new SmtpSettings
+            var settings = new SmtpEmailSettings
             {
                 DefaultSender = defaultSender,
                 DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
@@ -263,14 +263,14 @@ namespace OrchardCore.Tests.Email
             return content;
         }
 
-        private static IEmailService CreateSmtpService(SmtpSettings settings)
+        private static IEmailService CreateSmtpService(SmtpEmailSettings settings)
         {
-            var options = new Mock<IOptions<SmtpSettings>>();
+            var options = new Mock<IOptions<SmtpEmailSettings>>();
             options.Setup(o => o.Value).Returns(settings);
 
-            var logger = new Mock<ILogger<SmtpService>>();
-            var localizer = new Mock<IStringLocalizer<SmtpService>>();
-            var smtp = new SmtpService(options.Object, logger.Object, localizer.Object);
+            var logger = new Mock<ILogger<SmtpEmailService>>();
+            var localizer = new Mock<IStringLocalizer<SmtpEmailService>>();
+            var smtp = new SmtpEmailService(options.Object, logger.Object, localizer.Object);
 
             return smtp;
         }

@@ -44,15 +44,15 @@ namespace OrchardCore.Email
             services.AddScoped<IDisplayDriver<ISite>, SmtpSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, SmtpAdminMenu>();
 
-            services.AddTransient<IConfigureOptions<SmtpSettings>, SmtpSettingsConfiguration>();
-            services.AddScoped<IEmailService, SmtpService>();
+            services.AddTransient<IConfigureOptions<SmtpEmailSettings>, SmtpEmailSettingsConfiguration>();
+            services.AddScoped<IEmailService, SmtpEmailService>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaControllerRoute(
                 name: "EmailIndex",
-                areaName: "OrchardCore.Email.Smtp",
+                areaName: "OrchardCore.Email",
                 pattern: _adminOptions.AdminUrlPrefix + "/Email/Smtp/Index",
                 defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
             );

@@ -14,7 +14,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Drivers
 {
-    public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSettings>
+    public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpEmailSettings>
     {
         public const string GroupId = "smtp email";
         private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -41,7 +41,7 @@ namespace OrchardCore.Email.Drivers
             _authorizationService = authorizationService;
         }
 
-        public override async Task<IDisplayResult> EditAsync(SmtpSettings settings, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(SmtpEmailSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -59,7 +59,7 @@ namespace OrchardCore.Email.Drivers
 
             var shapes = new List<IDisplayResult>
             {
-                Initialize<SmtpSettings>("SmtpSettings_Edit", model =>
+                Initialize<SmtpEmailSettings>("SmtpEmailSettings_Edit", model =>
                 {
                     model.DefaultSender = _defaultSender;
                     model.DeliveryMethod = settings.DeliveryMethod;
@@ -80,13 +80,13 @@ namespace OrchardCore.Email.Drivers
 
             if (settings?.DefaultSender != null)
             {
-                shapes.Add(Dynamic("SmtpSettings_TestButton").Location("Actions").OnGroup(GroupId));
+                shapes.Add(Dynamic("SmtpEmailSettings_TestButton").Location("Actions").OnGroup(GroupId));
             }
 
             return Combine(shapes);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(SmtpSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(SmtpEmailSettings section, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -108,7 +108,7 @@ namespace OrchardCore.Email.Drivers
                 else
                 {
                     // encrypt the password
-                    var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration));
+                    var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpEmailSettingsConfiguration));
                     section.Password = protector.Protect(section.Password);
                 }
 

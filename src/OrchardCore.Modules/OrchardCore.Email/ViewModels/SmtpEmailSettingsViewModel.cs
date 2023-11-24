@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace OrchardCore.Email.ViewModels
 {
-    public class SmtpSettingsViewModel
+    public class SmtpEmailSettingsViewModel
     {
         [Required(AllowEmptyStrings = false)]
         public string To { get; set; }

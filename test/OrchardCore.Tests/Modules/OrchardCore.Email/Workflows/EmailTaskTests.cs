@@ -14,7 +14,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
         public async Task ExecuteTask_WhenToAndCcAndBccAreNotSet_ShouldFails()
         {
             // Arrange
-            var smtpService = CreateSmtpService(new SmtpSettings());
+            var smtpService = CreateSmtpService(new SmtpEmailSettings());
             var task = new EmailTask(
                 smtpService,
                 new SimpleWorkflowExpressionEvaluator(),
@@ -43,12 +43,12 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
             Assert.Equal("Failed", result.Outcomes.First());
         }
 
-        private static IEmailService CreateSmtpService(SmtpSettings settings)
+        private static IEmailService CreateSmtpService(SmtpEmailSettings settings)
         {
-            var options = new Mock<IOptions<SmtpSettings>>();
-            var logger = new Mock<ILogger<SmtpService>>();
-            var localizer = new Mock<IStringLocalizer<SmtpService>>();
-            var smtp = new SmtpService(options.Object, logger.Object, localizer.Object);
+            var options = new Mock<IOptions<SmtpEmailSettings>>();
+            var logger = new Mock<ILogger<SmtpEmailService>>();
+            var localizer = new Mock<IStringLocalizer<SmtpEmailService>>();
+            var smtp = new SmtpEmailService(options.Object, logger.Object, localizer.Object);
 
             options.Setup(o => o.Value).Returns(settings);
 
