@@ -3,22 +3,30 @@ using System.Threading.Tasks;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Fluid;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Configuration;
 
 namespace OrchardCore.DataProtection.Azure
 {
     public class BlobOptionsSetup
     {
+        private readonly IShellConfiguration _configuration;
         private readonly ShellOptions _shellOptions;
         private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
         private readonly FluidParser _fluidParser = new();
 
-        public BlobOptionsSetup(IOptions<ShellOptions> shellOptions, ShellSettings shellSettings, ILogger<BlobOptionsSetup> logger)
+        public BlobOptionsSetup(
+            IShellConfiguration configuration,
+            IOptions<ShellOptions> shellOptions,
+            ShellSettings shellSettings,
+            ILogger<BlobOptionsSetup> logger)
         {
+            _configuration = configuration;
             _shellOptions = shellOptions.Value;
             _shellSettings = shellSettings;
             _logger = logger;
@@ -26,6 +34,7 @@ namespace OrchardCore.DataProtection.Azure
 
         public async Task ConfigureAsync(BlobOptions options)
         {
+            _configuration.Bind("OrchardCore_DataProtection_Azure", options);
             await ConfigureContainerNameAsync(options);
             await ConfigureBlobNameAsync(options);
         }

@@ -21,13 +21,12 @@ namespace OrchardCore.DataProtection.Azure
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            var options = new BlobOptions();
-
-            _configuration.Bind("OrchardCore_DataProtection_Azure", options);
-            if (!string.IsNullOrWhiteSpace(options.ConnectionString))
+            var connectionString = _configuration.GetValue<string>("OrchardCore_DataProtection_Azure:ConnectionString");
+            if (!string.IsNullOrWhiteSpace(connectionString))
             {
                 services
-                    .AddSingleton(options)
+                    .AddSingleton(new BlobOptions())
+                    .AddTransient<BlobOptionsSetup>()
                     .AddDataProtection()
                     .PersistKeysToAzureBlobStorage(sp =>
                     {
