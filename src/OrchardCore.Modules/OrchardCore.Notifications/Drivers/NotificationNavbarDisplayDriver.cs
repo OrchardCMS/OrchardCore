@@ -37,8 +37,8 @@ public class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
             var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var notifications = (await _session.Query<Notification, NotificationIndex>(x => x.UserId == userId && !x.IsRead, collection: NotificationConstants.NotificationCollection)
                 .OrderByDescending(x => x.CreatedAtUtc)
-            .Take(MaxVisibleNotifications + 1)
-            .ListAsync()).ToList();
+                .Take(MaxVisibleNotifications + 1)
+                .ListAsync()).ToList();
 
             model.Notifications = notifications;
             model.MaxVisibleNotifications = MaxVisibleNotifications;
