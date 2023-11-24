@@ -114,7 +114,10 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - [Logging Serilog](core/Logging.Serilog/README.md)
 - [Mini Profiler](modules/MiniProfiler/README.md)
 - [Response Compression](modules/ResponseCompression/README.md)
-- [Email](modules/Email/README.md)
+- Email:
+  - [Email](modules/Email/README.md)
+  - [SMTP Email](modules/Email.Smtp/README.md)
+  - [Media Email](modules/Email.Azure/README.md)
 - [Redis](modules/Redis/README.md)
 - [Deployment](modules/Deployment/README.md)
 - [Diagnostics](modules/Diagnostics/README.md)
