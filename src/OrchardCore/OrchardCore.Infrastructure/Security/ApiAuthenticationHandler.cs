@@ -15,6 +15,19 @@ namespace OrchardCore.Security
     {
         private readonly IOptions<AuthenticationOptions> _authenticationOptions;
 
+#if !NET8_0_OR_GREATER
+        public ApiAuthenticationHandler(
+            IOptions<AuthenticationOptions> authenticationOptions,
+            IOptionsMonitor<ApiAuthorizationOptions> options,
+            ILoggerFactory logger,
+            UrlEncoder encoder,
+            ISystemClock clock)
+            : base(options, logger, encoder, clock)
+        {
+            _authenticationOptions = authenticationOptions;
+        }
+#else
+
         public ApiAuthenticationHandler(
             IOptions<AuthenticationOptions> authenticationOptions,
             IOptionsMonitor<ApiAuthorizationOptions> options,
@@ -24,6 +37,7 @@ namespace OrchardCore.Security
         {
             _authenticationOptions = authenticationOptions;
         }
+#endif
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
