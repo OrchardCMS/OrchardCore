@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Email.Services;
 
 namespace OrchardCore.Email.Services;
 
@@ -10,8 +9,8 @@ public class NullEmailService : EmailServiceBase<EmailSettings>
 {
     public NullEmailService(
         IOptions<EmailSettings> options,
-        ILogger<EmailServiceBase<EmailSettings>> logger,
-        IStringLocalizer<EmailServiceBase<EmailSettings>> stringLocalizer) : base(options, logger, stringLocalizer)
+        ILogger<NullEmailService> logger,
+        IStringLocalizer<NullEmailService> stringLocalizer) : base(options, logger, stringLocalizer)
     {
     }
 

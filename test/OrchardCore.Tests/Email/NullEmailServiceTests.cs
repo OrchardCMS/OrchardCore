@@ -13,9 +13,9 @@ public class NullEmailServiceTests
         {
             DefaultSender = "info@orchardcore.net"
         });
-        var stringLocalizer = Mock.Of<IStringLocalizer<EmailServiceBase<EmailSettings>>>();
+        var stringLocalizer = Mock.Of<IStringLocalizer<NullEmailService>>();
         var logCollector = FakeLogCollector.Create(new FakeLogCollectorOptions());
-        var logger = new FakeLogger<EmailServiceBase<EmailSettings>>(logCollector);
+        var logger = new FakeLogger<NullEmailService>(logCollector);
         var emailService = new NullEmailService(emailOptions, logger, stringLocalizer);
         var message = new MailMessage
         {
