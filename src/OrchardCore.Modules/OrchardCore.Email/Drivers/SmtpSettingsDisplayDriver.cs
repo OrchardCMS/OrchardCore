@@ -78,7 +78,7 @@ namespace OrchardCore.Email.Drivers
                 }).Location("Content:5").OnGroup(GroupId),
             };
 
-            if (settings?.DefaultSender != null)
+            if (_defaultSender != null)
             {
                 shapes.Add(Dynamic("SmtpEmailSettings_TestButton").Location("Actions").OnGroup(GroupId));
             }
@@ -97,9 +97,12 @@ namespace OrchardCore.Email.Drivers
 
             if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
-                var previousPassword = section.Password;
                 await context.Updater.TryUpdateModelAsync(section, Prefix);
 
+                // Don't check the DefaultSender from within SmtpEmailSettings
+                context.Updater.ModelState.Remove($"{nameof(ISite)}.{nameof(SmtpEmailSettings.DefaultSender)}");
+
+                var previousPassword = section.Password;
                 // Restore password if the input is empty, meaning that it has not been reset.
                 if (string.IsNullOrWhiteSpace(section.Password))
                 {
