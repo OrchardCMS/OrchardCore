@@ -23,7 +23,7 @@
 
   <Target
     Name="BeforeDispatchToInnerBuilds"
-    DependsOnTargets="_ComputeTargetFrameworkItems"
+    AfterTargets="_ComputeTargetFrameworkItems"
     BeforeTargets="DispatchToInnerBuilds">
 
   <ItemGroup>
