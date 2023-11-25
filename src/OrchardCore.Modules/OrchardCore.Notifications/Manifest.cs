@@ -18,9 +18,9 @@ using OrchardCore.Modules.Manifest;
     Name = "Email Notifications",
     Description = "Provides a way to send email notifications to users.",
     Category = "Notifications",
-    Dependencies =
-    [
+    Dependencies = new[]
+    {
         "OrchardCore.Notifications",
         "OrchardCore.Email",
-    ]
+    }
 )]
