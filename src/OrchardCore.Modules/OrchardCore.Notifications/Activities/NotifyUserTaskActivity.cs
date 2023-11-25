@@ -63,9 +63,7 @@ public abstract class NotifyUserTaskActivity : TaskActivity
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"], S["Failed"], S["Failed: no user found"]);
-    }
+        => Outcomes(S["Done"], S["Failed"], S["Failed: no user found"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
