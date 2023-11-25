@@ -69,13 +69,13 @@ namespace OrchardCore.Email
         [Obsolete("This property is deprecated, please use IsHtmlBody instead.", true)]
         public bool IsBodyHtml { get; set; }
 
-            /// <summary>
+        /// <summary>
         /// Gets or sets whether the message body is plain text.
         /// </summary>
         [Obsolete("This property is deprecated, please use IsHtmlBody instead.", true)]
         public bool IsBodyText { get; set; }
 
-            /// <summary>
+        /// <summary>
         /// Gets or sets whether the message body is an HTML or not. Default is <c>false</c> which is plain text.
         /// </summary>
         [Obsolete("This property is deprecated, please use Format instead.", true)]
