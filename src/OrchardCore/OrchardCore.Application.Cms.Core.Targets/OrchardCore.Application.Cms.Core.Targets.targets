@@ -27,11 +27,24 @@
     BeforeTargets="DispatchToInnerBuilds">
 
     <ItemGroup>
-      <_InnerBuildProjects>
-        <Properties>IsCrossTargetedBuild=true</Properties>
-      </_InnerBuildProjects>
-    </ItemGroup>
+    <_InnerBuildProjects>
+      <Properties>IsCrossTargetedBuild=true;%(_InnerBuildProjects.Properties)</Properties>
+    </_InnerBuildProjects>
+  </ItemGroup>
 
+  </Target>
+
+  <Target
+    Name="CopyPackageTranslationFiles"
+    Condition="'$(IsCrossTargetedBuild)' != 'true'"
+    AfterTargets="Build">
+
+    <Message Text="Copying translation files: $(MSBuildProjectName)" Importance="high" />
+    <Copy
+      SourceFiles="%(PackageTranslationFiles.FullPath)"
+      DestinationFolder="Localization\%(RecursiveDir)"
+      Condition="'@(PackageTranslationFiles)' != ''"
+      SkipUnchangedFiles="true" />
   </Target>
 
   <Target Name="PublishTranslationFiles" BeforeTargets="GetCopyToPublishDirectoryItems">
