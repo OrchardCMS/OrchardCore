@@ -88,12 +88,6 @@ namespace OrchardCore.Email.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public MailMessageFormat Format
-        {
-            get => GetProperty(() => MailMessageFormat.Text);
-            set => SetProperty(value);
-        }
-
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes(S["Done"], S["Failed"]);

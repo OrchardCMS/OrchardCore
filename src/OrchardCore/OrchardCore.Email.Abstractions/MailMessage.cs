@@ -49,6 +49,7 @@ namespace OrchardCore.Email
         /// <summary>
         /// Gets or sets the message content aka body.
         /// </summary>
+        [Obsolete("This property is deprecated, please use Content instead.", true)]
         public string Body { get; set; }
 
         /// <summary>
@@ -57,14 +58,9 @@ namespace OrchardCore.Email
         public MailMessageBody Content { get; set; }
 
         /// <summary>
-        /// Gets or sets the message format. Default is <see cref="MailMessageFormat.Text"/>.
-        /// </summary>
-        public MailMessageFormat Format { get; set; } = MailMessageFormat.Text;
-
-        /// <summary>
         /// Gets or sets the message content as plain text.
         /// </summary>
-        [Obsolete("This property is deprecated, please use Body instead.", true)]
+        [Obsolete("This property is deprecated, please use Content instead.", true)]
         public string BodyText { get; set; }
 
         /// <summary>

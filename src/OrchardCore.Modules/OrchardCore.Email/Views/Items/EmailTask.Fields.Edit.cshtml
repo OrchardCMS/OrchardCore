@@ -1,6 +1,14 @@
-@using OrchardCore.Email
 @using OrchardCore.Email.Workflows.ViewModels
 @model EmailTaskViewModel
+@functions
+{
+    private enum MailMessageFormat
+    {
+        Text,
+        Html,
+        All
+    }
+}
 
 <div class="mb-3" asp-validation-class-for="AuthorExpression">
     <label asp-for="AuthorExpression">@T["From"]</label>
@@ -54,12 +62,11 @@
 <div class="mb-3">
     <label>@T["Format"]</label>
     <select class="form-select">
-        <option>Text</option>
-        <option>Html</option>
-        <option>All</option>
+        <option value="@MailMessageFormat.Text">@nameof(MailMessageFormat.Text)</option>
+        <option value="@MailMessageFormat.Html">@nameof(MailMessageFormat.Html)</option>
+        <option value="@MailMessageFormat.All">@nameof(MailMessageFormat.All)</option>
     </select>
-
-    <span class="hint">@T["The Format of the email message."]</span>
+    <span class="hint">@T["The format of the email message."]</span>
 </div>
 
 <div class="mb-3" id="textBody">

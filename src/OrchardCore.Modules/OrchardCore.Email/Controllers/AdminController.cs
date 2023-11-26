@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -93,7 +92,7 @@ namespace OrchardCore.Email.Controllers
 
             if (!string.IsNullOrWhiteSpace(testSettings.Body))
             {
-                message.Body = testSettings.Body;
+                message.Content  = new MailMessageBody { Text = testSettings.Body };
             }
 
             return message;
