@@ -214,21 +214,11 @@ namespace OrchardCore.Email.Services
 
             mimeMessage.Subject = message.Subject;
 
-            var body = new BodyBuilder();
-            switch (message.Format)
+            var body = new BodyBuilder
             {
-                case MailMessageFormat.Html:
-                    body.HtmlBody = message.Body;
-                    break;
-                case MailMessageFormat.All:
-                    body.TextBody = message.Body;
-                    body.HtmlBody = message.Body;
-                    break;
-                case MailMessageFormat.Text:
-                default:
-                    body.TextBody = message.Body;
-                    break;
-            }
+                TextBody = message.Content?.Text,
+                HtmlBody = message.Content?.Html
+            };
 
             foreach (var attachment in message.Attachments)
             {

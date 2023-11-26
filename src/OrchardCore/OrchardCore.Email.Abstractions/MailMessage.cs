@@ -49,8 +49,12 @@ namespace OrchardCore.Email
         /// <summary>
         /// Gets or sets the message content aka body.
         /// </summary>
-        /// <remarks>This property is work in conjunction with <see cref="Format"/> to determine the body type.</remarks>
         public string Body { get; set; }
+
+        /// <summary>
+        /// Gets or sets the message content aka body.
+        /// </summary>
+        public MailMessageBody Content { get; set; }
 
         /// <summary>
         /// Gets or sets the message format. Default is <see cref="MailMessageFormat.Text"/>.

@@ -76,7 +76,13 @@ namespace OrchardCore.Email.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public WorkflowExpression<string> Body
+        public WorkflowExpression<string> TextBody
+        {
+            get => GetProperty(() => new WorkflowExpression<string>());
+            set => SetProperty(value);
+        }
+
+        public WorkflowExpression<string> HtmlBody
         {
             get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
@@ -102,7 +108,8 @@ namespace OrchardCore.Email.Workflows.Activities
             var cc = await _expressionEvaluator.EvaluateAsync(Cc, workflowContext, null);
             var bcc = await _expressionEvaluator.EvaluateAsync(Bcc, workflowContext, null);
             var subject = await _expressionEvaluator.EvaluateAsync(Subject, workflowContext, null);
-            var body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, Format == MailMessageFormat.Text ? null : _htmlEncoder);
+            var textBody = await _expressionEvaluator.EvaluateAsync(TextBody, workflowContext, null);
+            var htmlBody = await _expressionEvaluator.EvaluateAsync(HtmlBody, workflowContext, _htmlEncoder);
 
             var message = new MailMessage
             {
@@ -114,8 +121,11 @@ namespace OrchardCore.Email.Workflows.Activities
                 // Email reply-to header https://tools.ietf.org/html/rfc4021#section-2.1.4
                 ReplyTo = replyTo?.Trim(),
                 Subject = subject?.Trim(),
-                Body = body?.Trim(),
-                Format = Format
+                Content = new MailMessageBody
+                {
+                    Text = textBody?.Trim(),
+                    Html = htmlBody?.Trim()
+                }
             };
 
             if (!string.IsNullOrWhiteSpace(sender))
