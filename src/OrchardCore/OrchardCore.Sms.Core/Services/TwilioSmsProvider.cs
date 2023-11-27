@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 using OrchardCore.Sms.Models;
 
@@ -31,20 +30,20 @@ public class TwilioSmsProvider : ISmsProvider
     private readonly ISiteService _siteService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ILogger<TwilioSmsProvider> _logger;
-    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly HttpClient _httpClient;
     protected readonly IStringLocalizer S;
 
     public TwilioSmsProvider(
         ISiteService siteService,
         IDataProtectionProvider dataProtectionProvider,
         ILogger<TwilioSmsProvider> logger,
-        IHttpClientFactory httpClientFactory,
+        HttpClient httpClient,
         IStringLocalizer<TwilioSmsProvider> stringLocalizer)
     {
         _siteService = siteService;
         _dataProtectionProvider = dataProtectionProvider;
         _logger = logger;
-        _httpClientFactory = httpClientFactory;
+        _httpClient = httpClient;
         S = stringLocalizer;
     }
 
@@ -103,13 +102,11 @@ public class TwilioSmsProvider : ISmsProvider
 
     private HttpClient GetHttpClient(TwilioSettings settings)
     {
-        var client = _httpClientFactory.CreateClient(TechnicalName);
-
         var token = $"{settings.AccountSID}:{settings.AuthToken}";
         var base64Token = Convert.ToBase64String(Encoding.ASCII.GetBytes(token));
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64Token);
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64Token);
 
-        return client;
+        return _httpClient;
     }
 
     private TwilioSettings _settings;

@@ -5,13 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Settings;
 using OrchardCore.Sms.ViewModels;
 
@@ -22,27 +19,21 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IShellHost _shellHost;
-    private readonly ILogger _logger;
-    private readonly IServiceProvider _serviceProvider;
     private readonly ShellSettings _shellSettings;
-    private readonly SmsProviderOptions _smsProviderOptions;
+    private readonly IDictionary<string, ISmsProvider> _smsProviders;
 
     public SmsSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IOptions<SmsProviderOptions> smsProviderOptions,
         IShellHost shellHost,
-        ILogger<SmsSettingsDisplayDriver> logger,
-        IServiceProvider serviceProvider,
+        IDictionary<string, ISmsProvider> smsProviders,
         ShellSettings shellSettings)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _shellHost = shellHost;
-        _logger = logger;
-        _serviceProvider = serviceProvider;
+        _smsProviders = smsProviders;
         _shellSettings = shellSettings;
-        _smsProviderOptions = smsProviderOptions.Value;
     }
 
     public override async Task<IDisplayResult> EditAsync(SmsSettings settings, BuildEditorContext context)
@@ -95,23 +86,15 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
         {
             var items = new List<SelectListItem>();
 
-            foreach (var providerPair in _smsProviderOptions.Providers)
+            foreach (var provider in _smsProviders)
             {
-                try
-                {
-                    var provider = _serviceProvider.CreateInstance<ISmsProvider>(providerPair.Value);
-
-                    items.Add(new SelectListItem(provider.Name, providerPair.Key));
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Unable to resolve an SMS Provider with the technical name '{technicalName}'.", providerPair.Key);
-                }
+                items.Add(new SelectListItem(provider.Value.Name, provider.Key));
             }
 
-            _providers = items
-                  .OrderBy(item => item.Text)
-                  .ToArray();
+            _providers =
+            [
+                .. items.OrderBy(item => item.Text),
+            ];
         }
 
         return _providers;

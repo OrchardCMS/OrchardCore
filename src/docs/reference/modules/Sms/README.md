@@ -21,6 +21,37 @@ The `OrchardCore.Sms` module provides you with the capability to integrate addit
 ```csharp
     services.AddSmsProvider<YourCustomImplemenation>("A technical name for your implementation")
 ```
+## Sending SMS Message
+
+An SMS message can be send by injecting `ISmsService` and invoke the `SendAsync` method. For instance
+
+```c#
+public class Test
+{
+    private ISmsService _smsService;
+
+    public Test(ISmsService smsService)
+    {
+        _smsService = smsService;
+    }
+
+    public async Task SendSmsMessage()
+    {
+        var message = new SmsMessage
+        {
+            To = "17023451234",
+            Message = "It's easy to send an SMS message using Orcahred!",
+        };
+
+        var result = await _smsService.SendAsync(message);
+
+        if (result.Succeeded) 
+        {
+            // message was sent!
+        }
+    }
+}
+```
 
 ## Workflows
 

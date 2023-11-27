@@ -1,15 +1,9 @@
-using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
+﻿using System.Threading.Tasks;
 
 namespace OrchardCore.Sms;
 
-public interface ISmsProvider
+public interface ISmsService
 {
-    /// <summary>
-    /// The name of the provider.
-    /// </summary>
-    LocalizedString Name { get; }
-
     /// <summary>
     /// Send the given message.
     /// </summary>
