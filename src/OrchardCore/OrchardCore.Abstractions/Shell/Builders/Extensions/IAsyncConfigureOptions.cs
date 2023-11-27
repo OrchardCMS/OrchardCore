@@ -10,5 +10,5 @@ public interface IAsyncConfigureOptions<TOptions> where TOptions : class, IAsync
     /// <summary>
     /// Configures asynchronously an options instance.
     /// </summary>
-    Task ConfigureAsync(TOptions options);
+    ValueTask ConfigureAsync(TOptions options);
 }
