@@ -1,9 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email.Drivers;
 using OrchardCore.Email.Services;
@@ -24,13 +24,12 @@ namespace OrchardCore.Email.Controllers
             IHtmlLocalizer<AdminController> h,
             IAuthorizationService authorizationService,
             INotifier notifier,
-            IEnumerable<IEmailService> emailServices)
+            IServiceProvider serviceProvider)
         {
             H = h;
             _authorizationService = authorizationService;
             _notifier = notifier;
-            // Gets SmtpEmailService instance in case there're many IEmailService implementations registered in the DI container
-            _emailService = emailServices.OfType<SmtpEmailService>().Single();
+            _emailService = serviceProvider.GetKeyedService<IEmailService>(nameof(SmtpEmailService));
         }
 
         [HttpGet]

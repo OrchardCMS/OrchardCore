@@ -40,7 +40,7 @@ namespace OrchardCore.Email.Azure
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddTransient<IConfigureOptions<AzureEmailSettings>, AzureEmailSettingsConfiguration>();
-            services.AddScoped<IEmailService, AzureEmailService>();
+            services.AddKeyedScoped<IEmailService, AzureEmailService>(nameof(AzureEmailService));
 
             var connectionString = _configuration[$"OrchardCore_Email_Azure:{nameof(AzureEmailSettings.ConnectionString)}"];
 

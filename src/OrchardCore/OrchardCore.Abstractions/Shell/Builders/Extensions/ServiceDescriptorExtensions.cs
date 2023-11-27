@@ -7,6 +7,11 @@ namespace OrchardCore.Environment.Shell.Builders
     {
         public static Type GetImplementationType(this ServiceDescriptor descriptor)
         {
+            if (descriptor.IsKeyedService)
+            {
+                return null;
+            }
+
             if (descriptor is ClonedSingletonDescriptor cloned)
             {
                 // Use the parent descriptor as it was before being cloned.
