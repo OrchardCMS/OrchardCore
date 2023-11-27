@@ -21,8 +21,7 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services, Func<TOptions, ValueTask> configureAsync)
         where TOptions : class, IAsyncOptions, new()
     {
-        var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(TOptions));
-        if (descriptor is null)
+        if (!services.Any(d => d.ServiceType == typeof(TOptions)))
         {
             services.AddSingleton(new TOptions());
         }
@@ -43,14 +42,12 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection Configure<TOptions, TConfigure>(this IServiceCollection services)
         where TOptions : class, IAsyncOptions, new() where TConfigure : IAsyncConfigureOptions<TOptions>
     {
-        var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(TOptions));
-        if (descriptor is null)
+        if (!services.Any(d => d.ServiceType == typeof(TOptions)))
         {
             services.AddSingleton(new TOptions());
         }
 
-        descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(TConfigure));
-        if (descriptor is null)
+        if (!services.Any(d => d.ServiceType == typeof(TConfigure)))
         {
             services.AddTransient(typeof(TConfigure));
             services.Initialize(async sp =>
