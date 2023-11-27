@@ -11,7 +11,7 @@ using OrchardCore.Environment.Shell.Configuration;
 
 namespace OrchardCore.DataProtection.Azure;
 
-public class BlobOptionsSetup
+public class BlobOptionsSetup : IAsyncConfigureOptions<BlobOptions>
 {
     private readonly FluidParser _fluidParser = new();
 
