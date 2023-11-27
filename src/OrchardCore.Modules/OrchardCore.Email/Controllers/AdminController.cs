@@ -48,7 +48,7 @@ namespace OrchardCore.Email.Controllers
 
             if (ModelState.IsValid)
             {
-                var result = await _smtpService.SendAsync(model.To, model.Cc, model.Bcc, model.ReplyTo, model.Subject, model.Body, isHtmlBody: false);
+                var result = await _smtpService.SendAsync(model.To, model.Subject, model.Body, false, model.Cc, model.Bcc, model.ReplyTo);
 
                 if (!result.Succeeded)
                 {
