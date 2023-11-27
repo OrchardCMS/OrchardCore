@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -49,9 +48,7 @@ namespace OrchardCore.Email.Controllers
 
             if (ModelState.IsValid)
             {
-                var message = CreateMessageFromViewModel(model);
-
-                var result = await _smtpService.SendAsync(message);
+                var result = await _smtpService.SendAsync(model.To, model.Cc, model.Bcc, model.ReplyTo, model.Subject, model.Body, isHtmlBody: false);
 
                 if (!result.Succeeded)
                 {
@@ -69,34 +66,6 @@ namespace OrchardCore.Email.Controllers
             }
 
             return View(model);
-        }
-
-        private static MailMessage CreateMessageFromViewModel(SmtpSettingsViewModel testSettings)
-        {
-            var message = new MailMessage
-            {
-                To = testSettings.To,
-                Bcc = testSettings.Bcc,
-                Cc = testSettings.Cc,
-                ReplyTo = testSettings.ReplyTo
-            };
-
-            if (!string.IsNullOrWhiteSpace(testSettings.Sender))
-            {
-                message.Sender = testSettings.Sender;
-            }
-
-            if (!string.IsNullOrWhiteSpace(testSettings.Subject))
-            {
-                message.Subject = testSettings.Subject;
-            }
-
-            if (!string.IsNullOrWhiteSpace(testSettings.Body))
-            {
-                message.Body = testSettings.Body;
-            }
-
-            return message;
         }
     }
 }

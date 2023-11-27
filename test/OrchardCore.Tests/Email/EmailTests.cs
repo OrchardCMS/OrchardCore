@@ -187,11 +187,6 @@ namespace OrchardCore.Tests.Email
         public async Task SendEmail_WithoutToAndCcAndBccHeaders_ShouldThrowsException()
         {
             // Arrange
-            var message = new MailMessage
-            {
-                Subject = "Test",
-                Body = "Test Message"
-            };
             var settings = new SmtpSettings
             {
                 DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory
@@ -200,7 +195,7 @@ namespace OrchardCore.Tests.Email
             var smtp = CreateSmtpService(settings);
 
             // Act
-            var result = await smtp.SendAsync(message);
+            var result = await smtp.SendAsync(to: null, "Test", "Test Message");
 
             // Assert
             Assert.True(result.Errors.Any());
@@ -210,12 +205,6 @@ namespace OrchardCore.Tests.Email
         public async Task SendOfflineEmailHasNoResponse()
         {
             // Arrange
-            var message = new MailMessage
-            {
-                To = "info@oc.com",
-                Subject = "Test",
-                Body = "Test Message"
-            };
             var settings = new SmtpSettings
             {
                 DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory
@@ -224,7 +213,7 @@ namespace OrchardCore.Tests.Email
             var smtp = CreateSmtpService(settings);
 
             // Act
-            var result = await smtp.SendAsync(message);
+            var result = await smtp.SendAsync("info@oc.com", "Test", "Test Message");
 
             // Assert
             Assert.Null(result.Response);

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
@@ -14,7 +13,6 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email;
-using OrchardCore.Entities;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
@@ -98,15 +96,12 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
 
         var setings = (await SiteService.GetSiteSettingsAsync()).As<EmailAuthenticatorLoginSettings>();
-        var message = new MailMessage()
-        {
-            To = await UserManager.GetEmailAsync(user),
-            Subject = await GetSubjectAsync(setings, user, code),
-            Body = await GetBodyAsync(setings, user, code),
-            IsHtmlBody = true,
-        };
 
-        var result = await _smtpService.SendAsync(message);
+        var result = await _smtpService.SendAsync(
+            await UserManager.GetEmailAsync(user),
+            await GetSubjectAsync(setings, user, code),
+            await GetBodyAsync(setings, user, code),
+            isHtmlBody: true);
 
         if (!result.Succeeded)
         {
@@ -170,15 +165,11 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         var settings = (await SiteService.GetSiteSettingsAsync()).As<EmailAuthenticatorLoginSettings>();
         var code = await UserManager.GenerateTwoFactorTokenAsync(user, TokenOptions.DefaultEmailProvider);
 
-        var message = new MailMessage()
-        {
-            To = await UserManager.GetEmailAsync(user),
-            Subject = await GetSubjectAsync(settings, user, code),
-            Body = await GetBodyAsync(settings, user, code),
-            IsHtmlBody = true,
-        };
-
-        var result = await _smtpService.SendAsync(message);
+        var result = await _smtpService.SendAsync(
+            await UserManager.GetEmailAsync(user),
+            await GetSubjectAsync(settings, user, code),
+            await GetBodyAsync(settings, user, code),
+            isHtmlBody: true);
 
         return Ok(new
         {

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -134,13 +133,6 @@ namespace OrchardCore.Users.Workflows.Activities
 
                     var body = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailTemplate, workflowContext, _htmlEncoder);
 
-                    var message = new MailMessage()
-                    {
-                        To = email,
-                        Subject = subject,
-                        Body = body,
-                        IsHtmlBody = true
-                    };
                     var smtpService = _httpContextAccessor.HttpContext.RequestServices.GetService<ISmtpService>();
 
                     if (smtpService == null)
@@ -151,7 +143,8 @@ namespace OrchardCore.Users.Workflows.Activities
                     }
                     else
                     {
-                        var result = await smtpService.SendAsync(message);
+                        var result = await smtpService.SendAsync(email, subject, body, isHtmlBody: true);
+
                         if (!result.Succeeded)
                         {
                             var updater = _updateModelAccessor.ModelUpdater;
