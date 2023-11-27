@@ -101,7 +101,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         {
             To = await UserManager.GetEmailAsync(user),
             Subject = await GetSubjectAsync(settings, user, code),
-            Content = new MailMessageBody { Html = await GetBodyAsync(settings, user, code) }
+            Body = new MailMessageBody { Html = await GetBodyAsync(settings, user, code) }
         };
 
         var result = await _smtpService.SendAsync(message);
@@ -172,7 +172,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         {
             To = await UserManager.GetEmailAsync(user),
             Subject = await GetSubjectAsync(settings, user, code),
-            Content = new MailMessageBody { Html = await GetBodyAsync(settings, user, code) }
+            Body = new MailMessageBody { Html = await GetBodyAsync(settings, user, code) }
         };
 
         var result = await _smtpService.SendAsync(message);

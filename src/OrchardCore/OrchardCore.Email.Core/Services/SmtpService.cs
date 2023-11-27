@@ -216,8 +216,8 @@ namespace OrchardCore.Email.Services
 
             var body = new BodyBuilder
             {
-                TextBody = message.Content?.Text,
-                HtmlBody = message.Content?.Html
+                TextBody = message.Body?.Text,
+                HtmlBody = message.Body?.Html
             };
 
             foreach (var attachment in message.Attachments)

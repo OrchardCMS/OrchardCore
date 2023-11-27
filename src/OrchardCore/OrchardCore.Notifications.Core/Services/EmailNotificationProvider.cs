@@ -35,15 +35,15 @@ public class EmailNotificationProvider : INotificationMethodProvider
         {
             To = user.Email,
             Subject = message.Summary,
-            Content = new MailMessageBody()
+            Body = new MailMessageBody()
         };
         if (message.IsHtmlPreferred && !string.IsNullOrWhiteSpace(message.HtmlBody))
         {
-            mailMessage.Content.Html = message.HtmlBody;
+            mailMessage.Body.Html = message.HtmlBody;
         }
         else
         {
-            mailMessage.Content.Text = message.TextBody;
+            mailMessage.Body.Text = message.TextBody;
         }
 
         var result = await _smtpService.SendAsync(mailMessage);

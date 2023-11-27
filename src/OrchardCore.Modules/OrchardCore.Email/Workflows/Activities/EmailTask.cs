@@ -115,7 +115,7 @@ namespace OrchardCore.Email.Workflows.Activities
                 // Email reply-to header https://tools.ietf.org/html/rfc4021#section-2.1.4
                 ReplyTo = replyTo?.Trim(),
                 Subject = subject?.Trim(),
-                Content = new MailMessageBody
+                Body = new MailMessageBody
                 {
                     Text = textBody?.Trim(),
                     Html = htmlBody?.Trim()

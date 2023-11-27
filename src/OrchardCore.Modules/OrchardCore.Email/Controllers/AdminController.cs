@@ -92,7 +92,7 @@ namespace OrchardCore.Email.Controllers
 
             if (!string.IsNullOrWhiteSpace(testSettings.Body))
             {
-                message.Content  = new MailMessageBody { Text = testSettings.Body };
+                message.Body  = new MailMessageBody { Text = testSettings.Body };
             }
 
             return message;

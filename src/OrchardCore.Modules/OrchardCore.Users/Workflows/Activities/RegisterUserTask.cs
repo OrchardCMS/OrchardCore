@@ -138,7 +138,7 @@ namespace OrchardCore.Users.Workflows.Activities
                     {
                         To = email,
                         Subject = subject,
-                        Content = new MailMessageBody { Html = body }
+                        Body = new MailMessageBody { Html = body }
                     };
                     var smtpService = _httpContextAccessor.HttpContext.RequestServices.GetService<ISmtpService>();
 
