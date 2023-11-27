@@ -3,12 +3,12 @@ using System.Threading.Tasks;
 namespace Microsoft.Extensions.Options;
 
 /// <summary>
-/// Used to configure asynchronously the <typeparamref name="TOptions"/> type.
+/// Used to configure asynchronously a type of options just after a tenant container is created.
 /// </summary>
 public interface IAsyncConfigureOptions<TOptions> where TOptions : class, IAsyncOptions
 {
     /// <summary>
-    /// Invoked to configure asynchronously a <typeparamref name="TOptions"/> instance.
+    /// Configures asynchronously an options instance.
     /// </summary>
     Task ConfigureAsync(TOptions options);
 }
