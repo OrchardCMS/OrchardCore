@@ -30,10 +30,12 @@ namespace OrchardCore.Email.Services
         /// <param name="options">The <see cref="IOptions{SmtpSettings}"/>.</param>
         /// <param name="logger">The <see cref="ILogger{SmtpService}"/>.</param>
         /// <param name="stringLocalizer">The <see cref="IStringLocalizer{SmtpService}"/>.</param>
+        /// <param name="emailAddressValidator">The <see cref="IEmailAddressValidator"/>.</param>
         public SmtpEmailService(
             IOptions<SmtpEmailSettings> options,
             ILogger<SmtpEmailService> logger,
-            IStringLocalizer<SmtpEmailService> stringLocalizer) : base(options, logger, stringLocalizer)
+            IStringLocalizer<SmtpEmailService> stringLocalizer,
+            IEmailAddressValidator emailAddressValidator) : base(options, logger, stringLocalizer, emailAddressValidator)
         {
         }
 
@@ -112,9 +114,9 @@ namespace OrchardCore.Email.Services
 
             if (!string.IsNullOrEmpty(submitterAddress))
             {
-                if (MailboxAddress.TryParse(submitterAddress, out var mailBox))
+                if (IsValidEmail(submitterAddress))
                 {
-                    mimeMessage.Sender = mailBox;
+                    mimeMessage.Sender = MailboxAddress.Parse(submitterAddress);
 
                 }
                 else
@@ -127,9 +129,9 @@ namespace OrchardCore.Email.Services
             {
                 foreach (var address in message.From.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
                 {
-                    if (MailboxAddress.TryParse(address, out var mailBox))
+                    if (IsValidEmail(address))
                     {
-                        mimeMessage.From.Add(mailBox);
+                        mimeMessage.From.Add(MailboxAddress.Parse(address));
                     }
                     else
                     {
@@ -142,9 +144,9 @@ namespace OrchardCore.Email.Services
             {
                 foreach (var address in message.To.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
                 {
-                    if (MailboxAddress.TryParse(address, out var mailBox))
+                    if (IsValidEmail(address))
                     {
-                        mimeMessage.To.Add(mailBox);
+                        mimeMessage.To.Add(MailboxAddress.Parse(address));
                     }
                     else
                     {
@@ -157,9 +159,9 @@ namespace OrchardCore.Email.Services
             {
                 foreach (var address in message.Cc.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
                 {
-                    if (MailboxAddress.TryParse(address, out var mailBox))
+                    if (IsValidEmail(address))
                     {
-                        mimeMessage.Cc.Add(mailBox);
+                        mimeMessage.Cc.Add(MailboxAddress.Parse(address));
                     }
                     else
                     {
@@ -172,9 +174,9 @@ namespace OrchardCore.Email.Services
             {
                 foreach (var address in message.Bcc.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
                 {
-                    if (MailboxAddress.TryParse(address, out var mailBox))
+                    if (IsValidEmail(address))
                     {
-                        mimeMessage.Bcc.Add(mailBox);
+                        mimeMessage.Bcc.Add(MailboxAddress.Parse(address));
                     }
                     else
                     {
@@ -194,9 +196,9 @@ namespace OrchardCore.Email.Services
             {
                 foreach (var address in message.ReplyTo.Split(_emailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    if (MailboxAddress.TryParse(address, out var mailBox))
+                    if (IsValidEmail(address))
                     {
-                        mimeMessage.ReplyTo.Add(mailBox);
+                        mimeMessage.ReplyTo.Add(MailboxAddress.Parse(address));
                     }
                     else
                     {

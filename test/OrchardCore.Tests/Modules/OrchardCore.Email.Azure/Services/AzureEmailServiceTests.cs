@@ -13,9 +13,12 @@ public class AzureEmailServiceTests
             DefaultSender = "<<Sender>>",
             ConnectionString = "<<ConnectionString>>"
         });
-        var stringLocalizer = Mock.Of<IStringLocalizer<AzureEmailService>>();
         var logger = new FakeLogger<AzureEmailService>();
-        var emailService = new AzureEmailService(emailOptions, logger, stringLocalizer);
+        var emailService = new AzureEmailService(
+            emailOptions,
+            logger,
+            Mock.Of<IStringLocalizer<AzureEmailService>>(),
+            new EmailAddressValidator());
         var message = new MailMessage
         {
             To = "hishamco_2007@hotmail.com",

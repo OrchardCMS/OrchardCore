@@ -43,17 +43,12 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
             Assert.Equal("Failed", result.Outcomes.First());
         }
 
-        private static IEmailService CreateSmtpService(SmtpEmailSettings settings)
-        {
-            var options = new Mock<IOptions<SmtpEmailSettings>>();
-            var logger = new Mock<ILogger<SmtpEmailService>>();
-            var localizer = new Mock<IStringLocalizer<SmtpEmailService>>();
-            var smtp = new SmtpEmailService(options.Object, logger.Object, localizer.Object);
-
-            options.Setup(o => o.Value).Returns(settings);
-
-            return smtp;
-        }
+        private static SmtpEmailService CreateSmtpService(SmtpEmailSettings settings) => new(
+            Options.Create(settings),
+            Mock.Of<ILogger<SmtpEmailService>>(),
+            Mock.Of<IStringLocalizer<SmtpEmailService>>(),
+            new EmailAddressValidator()
+        );
 
         private class SimpleWorkflowExpressionEvaluator : IWorkflowExpressionEvaluator
         {

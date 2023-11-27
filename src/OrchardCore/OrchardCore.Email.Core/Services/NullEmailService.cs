@@ -10,7 +10,8 @@ public class NullEmailService : EmailServiceBase<EmailSettings>
     public NullEmailService(
         IOptions<EmailSettings> options,
         ILogger<NullEmailService> logger,
-        IStringLocalizer<NullEmailService> stringLocalizer) : base(options, logger, stringLocalizer)
+        IStringLocalizer<NullEmailService> stringLocalizer,
+        IEmailAddressValidator emailAddressValidator) : base(options, logger, stringLocalizer, emailAddressValidator)
     {
     }
 

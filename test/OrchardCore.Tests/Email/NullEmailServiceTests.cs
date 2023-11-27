@@ -13,10 +13,12 @@ public class NullEmailServiceTests
         {
             DefaultSender = "info@orchardcore.net"
         });
-        var stringLocalizer = Mock.Of<IStringLocalizer<NullEmailService>>();
         var logCollector = FakeLogCollector.Create(new FakeLogCollectorOptions());
-        var logger = new FakeLogger<NullEmailService>(logCollector);
-        var emailService = new NullEmailService(emailOptions, logger, stringLocalizer);
+        var emailService = new NullEmailService(
+            emailOptions,
+            new FakeLogger<NullEmailService>(logCollector),
+            Mock.Of<IStringLocalizer<NullEmailService>>(),
+            Mock.Of<IEmailAddressValidator>());
         var message = new MailMessage
         {
             To = "hishamco_2007@hotmail.com",

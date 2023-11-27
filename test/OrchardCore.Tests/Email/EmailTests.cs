@@ -263,16 +263,11 @@ namespace OrchardCore.Tests.Email
             return content;
         }
 
-        private static IEmailService CreateSmtpService(SmtpEmailSettings settings)
-        {
-            var options = new Mock<IOptions<SmtpEmailSettings>>();
-            options.Setup(o => o.Value).Returns(settings);
-
-            var logger = new Mock<ILogger<SmtpEmailService>>();
-            var localizer = new Mock<IStringLocalizer<SmtpEmailService>>();
-            var smtp = new SmtpEmailService(options.Object, logger.Object, localizer.Object);
-
-            return smtp;
-        }
+        private static SmtpEmailService CreateSmtpService(SmtpEmailSettings settings) => new(
+            Options.Create(settings),
+            Mock.Of<ILogger<SmtpEmailService>>(),
+            Mock.Of<IStringLocalizer<SmtpEmailService>>(),
+            new EmailAddressValidator()
+        );
     }
 }
