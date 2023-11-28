@@ -13,35 +13,8 @@ public static class ServiceDescriptorExtensions
             return cloned.Parent.GetImplementationType();
         }
 
-        if (descriptor.ServiceKey == null)
+        if (descriptor.IsKeyedService())
         {
-            if (descriptor.IsKeyedService())
-            {
-                throw new InvalidOperationException("This service descriptor is keyed. Your service provider may not support keyed services.");
-            }
-
-            if (descriptor.ImplementationType != null)
-            {
-                return descriptor.ImplementationType;
-            }
-
-            if (descriptor.ImplementationInstance != null)
-            {
-                return descriptor.ImplementationInstance.GetType();
-            }
-
-            if (descriptor.ImplementationFactory != null)
-            {
-                return descriptor.ImplementationFactory.GetType().GenericTypeArguments[2];
-            }
-        }
-        else
-        {
-            if (!descriptor.IsKeyedService())
-            {
-                throw new InvalidOperationException("This service descriptor is not keyed.");
-            }
-
             if (descriptor.KeyedImplementationType != null)
             {
                 return descriptor.KeyedImplementationType;
@@ -54,12 +27,29 @@ public static class ServiceDescriptorExtensions
 
             if (descriptor.KeyedImplementationFactory != null)
             {
-                return descriptor.KeyedImplementationFactory.GetType().GenericTypeArguments[2];
+                return descriptor.KeyedImplementationFactory.GetType().GenericTypeArguments[1];
+            }
+        }
+        else
+        {
+            if (descriptor.ImplementationType != null)
+            {
+                return descriptor.ImplementationType;
+            }
+
+            if (descriptor.ImplementationInstance != null)
+            {
+                return descriptor.ImplementationInstance.GetType();
+            }
+
+            if (descriptor.ImplementationFactory != null)
+            {
+                return descriptor.ImplementationFactory.GetType().GenericTypeArguments[1];
             }
         }
 
         return null;
     }
 
-    private static bool IsKeyedService(this ServiceDescriptor descriptor) => descriptor.ServiceKey != null;
+    internal static bool IsKeyedService(this ServiceDescriptor descriptor) => descriptor.ServiceKey != null;
 }
