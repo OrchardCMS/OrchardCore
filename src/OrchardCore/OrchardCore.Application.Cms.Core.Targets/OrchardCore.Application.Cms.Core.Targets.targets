@@ -23,15 +23,14 @@
 
   <Target
     Name="CopyPackageTranslationFiles"
-    AfterTargets="Build"
-    Condition="'$(IsCrossTargetingBuild)' == 'true'">
-    <Message Text="Copying translation files: $(MSBuildProjectName) ('$(TargetFramework)'/'$(TargetFrameworks)')" Importance="high" />
-    <Message Text="TargetFrameworks.EndsWith(TargetFramework): '$(TargetFrameworks.EndsWith($(TargetFramework)))'" Importance="high" />
+    AfterTargets="Build">
+    <Message Text="Copying translation files: $(MSBuildProjectName)" Importance="high" />
     <Copy
       SourceFiles="%(PackageTranslationFiles.FullPath)"
       DestinationFolder="Localization\%(RecursiveDir)"
       Condition="'@(PackageTranslationFiles)' != ''"
-      SkipUnchangedFiles="true" />
+      SkipUnchangedFiles="true"
+      OverwriteReadOnlyFiles="false" />
   </Target>
 
   <Target
