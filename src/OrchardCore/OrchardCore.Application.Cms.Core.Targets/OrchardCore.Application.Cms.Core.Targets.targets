@@ -33,18 +33,6 @@
       OverwriteReadOnlyFiles="false" />
   </Target>
 
-  <Target
-    Name="CopyPackageTranslationFiles2"    
-    AfterTargets="Build">
-    <Message Text="IsInnerBuild: '$(IsInnerBuild)' IsCrossTargetingBuild: '$(IsCrossTargetingBuild)' TargetFrameworks: '$(TargetFrameworks)' TargetFramework: '$(TargetFramework)'" Importance="high" />
-  </Target>
-
-  <Target
-    Name="CopyPackageTranslationFiles3"
-    BeforeTargets="DispatchToInnerBuilds">
-    <Message Text="########## DispatchToInnerBuilds %%%%%%%%%% ICTB: '$(IsCrossTargetingBuild)' TFS: '$(TargetFrameworks)' TF: '$(TargetFramework)'" Importance="high" />
-  </Target>
-  
   <Target Name="PublishTranslationFiles" BeforeTargets="GetCopyToPublishDirectoryItems">
     <Message Text="Publishing translation files: $(MSBuildProjectName)" Importance="high" />
     <ItemGroup>
