@@ -25,15 +25,22 @@ namespace OrchardCore.Search.Lucene
             _shellSettings = shellSettings;
         }
 
-        // This migration does not need to run on a new installation, but because there is no initial
-        // migration record, the 'Create' migration is used with a tenant setup in progress checking.
+        // New installations don't need to be upgraded, but because there is no initial migration record,
+        // 'UpgradeAsync()' is called from 'CreateAsync()' and only if a tenant setup is not in progress.
         public async Task<int> CreateAsync()
         {
-            if (_shellSettings.IsInitializing())
+            if (!_shellSettings.IsInitializing())
             {
-                return 1;
+                await UpgradeAsync();
             }
 
+            // Shortcut other migration steps on new content definition schemas.
+            return 1;
+        }
+
+        // Upgrade an existing installation.
+        private async Task UpgradeAsync()
+        {
             var contentTypeDefinitions = await _contentDefinitionManager.LoadTypeDefinitionsAsync();
 
             foreach (var contentTypeDefinition in contentTypeDefinitions)
@@ -218,8 +225,6 @@ namespace OrchardCore.Search.Lucene
                     throw;
                 }
             });
-
-            return 1;
         }
     }
 }
