@@ -13,19 +13,35 @@ namespace OrchardCore.Environment.Shell.Builders
                 return cloned.Parent.GetImplementationType();
             }
 
-            if (descriptor.ImplementationType != null)
+            if (descriptor.ServiceKey == null)
             {
-                return descriptor.ImplementationType;
+                if (descriptor.ImplementationType != null)
+                {
+                    return descriptor.ImplementationType;
+                }
+                else if (descriptor.ImplementationInstance != null)
+                {
+                    return descriptor.ImplementationInstance.GetType();
+                }
+                else if (descriptor.ImplementationFactory != null)
+                {
+                    return descriptor.ImplementationFactory.GetType().GenericTypeArguments[1];
+                }
             }
-
-            if (descriptor.ImplementationInstance != null)
+            else
             {
-                return descriptor.ImplementationInstance.GetType();
-            }
-
-            if (descriptor.ImplementationFactory != null)
-            {
-                return descriptor.ImplementationFactory.GetType().GenericTypeArguments[1];
+                if (descriptor.KeyedImplementationType != null)
+                {
+                    return descriptor.KeyedImplementationType;
+                }
+                else if (descriptor.KeyedImplementationInstance != null)
+                {
+                    return descriptor.KeyedImplementationInstance.GetType();
+                }
+                else if (descriptor.KeyedImplementationFactory != null)
+                {
+                    return descriptor.KeyedImplementationFactory.GetType().GenericTypeArguments[2];
+                }
             }
 
             return null;
