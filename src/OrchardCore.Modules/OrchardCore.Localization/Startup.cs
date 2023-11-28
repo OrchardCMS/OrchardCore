@@ -26,13 +26,12 @@ namespace OrchardCore.Localization
     {
         public override int ConfigureOrder => -100;
 
-        /// <inheritdocs />
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IDisplayDriver<ISite>, LocalizationSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<ILocalizationService, LocalizationService>();
+            services.AddSingleton<ILocalizationService, LocalizationService>();
 
             services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization").
                 AddDataAnnotationsPortableObjectLocalization();
@@ -40,23 +39,9 @@ namespace OrchardCore.Localization
             services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
         }
 
-        /// <inheritdocs />
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var localizationService = serviceProvider.GetService<ILocalizationService>();
-
-            var defaultCulture = localizationService.GetDefaultCultureAsync().GetAwaiter().GetResult();
-            var supportedCultures = localizationService.GetSupportedCulturesAsync().GetAwaiter().GetResult();
-
-            var localizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
-            var ignoreSystemSettings = serviceProvider.GetService<IOptions<CultureOptions>>().Value.IgnoreSystemSettings;
-
-            new LocalizationOptionsUpdater(localizationOptions, ignoreSystemSettings)
-                .SetDefaultCulture(defaultCulture)
-                .AddSupportedCultures(supportedCultures)
-                .AddSupportedUICultures(supportedCultures);
-
-            app.UseRequestLocalization(localizationOptions);
+            app.UseMiddleware<RequestLocalizationMiddleware>();
         }
     }
 

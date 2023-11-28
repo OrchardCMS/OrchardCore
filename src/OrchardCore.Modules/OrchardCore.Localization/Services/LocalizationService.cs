@@ -1,58 +1,57 @@
 using System.Globalization;
 using System.Threading.Tasks;
-using OrchardCore.Entities;
 using OrchardCore.Localization.Models;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Localization.Services
+namespace OrchardCore.Localization.Services;
+
+/// <summary>
+/// Represents a localization service.
+/// </summary>
+public class LocalizationService : ILocalizationService
 {
+    private static readonly string _defaultCulture = CultureInfo.InstalledUICulture.Name;
+    private static readonly string[] _supportedCultures = [CultureInfo.InstalledUICulture.Name];
+
+    private readonly ISiteService _siteService;
+
+    private LocalizationSettings _localizationSettings;
+
     /// <summary>
-    /// Represents a localization service.
+    /// Creates a new instance of <see cref="LocalizationService"/>.
     /// </summary>
-    public class LocalizationService : ILocalizationService
+    /// <param name="siteService">The <see cref="ISiteService"/>.</param>
+    public LocalizationService(ISiteService siteService)
     {
-        private static readonly string _defaultCulture = CultureInfo.InstalledUICulture.Name;
-        private static readonly string[] _supportedCultures = new[] { CultureInfo.InstalledUICulture.Name };
+        _siteService = siteService;
+    }
 
-        private readonly ISiteService _siteService;
+    /// <inheritdocs />
+    public async Task<string> GetDefaultCultureAsync()
+    {
+        var settings = await GetLocalizationSettingsAsync();
 
-        private LocalizationSettings _localizationSettings;
+        return settings.DefaultCulture ?? _defaultCulture;
+    }
 
-        /// <summary>
-        /// Creates a new instance of <see cref="LocalizationService"/>.
-        /// </summary>
-        /// <param name="siteService">The <see cref="ISiteService"/>.</param>
-        public LocalizationService(ISiteService siteService)
+    /// <inheritdocs />
+    public async Task<string[]> GetSupportedCulturesAsync()
+    {
+        var settings = await GetLocalizationSettingsAsync();
+
+        return settings.SupportedCultures?.Length == 0
+            ? _supportedCultures
+            : settings.SupportedCultures;
+    }
+
+    private async Task<LocalizationSettings> GetLocalizationSettingsAsync()
+    {
+        if (_localizationSettings == null)
         {
-            _siteService = siteService;
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            _localizationSettings = siteSettings.As<LocalizationSettings>();
         }
 
-        /// <inheritdocs />
-        public async Task<string> GetDefaultCultureAsync()
-        {
-            await InitializeLocalizationSettingsAsync();
-
-            return _localizationSettings.DefaultCulture ?? _defaultCulture;
-        }
-
-        /// <inheritdocs />
-        public async Task<string[]> GetSupportedCulturesAsync()
-        {
-            await InitializeLocalizationSettingsAsync();
-
-            return _localizationSettings.SupportedCultures == null || _localizationSettings.SupportedCultures.Length == 0
-                ? _supportedCultures
-                : _localizationSettings.SupportedCultures
-                ;
-        }
-
-        private async Task InitializeLocalizationSettingsAsync()
-        {
-            if (_localizationSettings == null)
-            {
-                var siteSettings = await _siteService.GetSiteSettingsAsync();
-                _localizationSettings = siteSettings.As<LocalizationSettings>();
-            }
-        }
+        return _localizationSettings;
     }
 }
