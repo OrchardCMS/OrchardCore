@@ -15,36 +15,107 @@ namespace OrchardCore.Environment.Shell.Builders
 
             if (descriptor.ServiceKey == null)
             {
-                if (descriptor.ImplementationType != null)
+                var implementationType = GetImplementationTypeInternal(descriptor);
+                var implementationInstance = GetImplementationInstance(descriptor);
+                var implementationFactory = GetImplementationFactory(descriptor);
+
+                if (implementationType != null)
                 {
-                    return descriptor.ImplementationType;
+                    return implementationType;
                 }
-                else if (descriptor.ImplementationInstance != null)
+                else if (implementationInstance != null)
                 {
-                    return descriptor.ImplementationInstance.GetType();
+                    return implementationInstance.GetType();
                 }
-                else if (descriptor.ImplementationFactory != null)
+                else if (implementationFactory != null)
                 {
-                    return descriptor.ImplementationFactory.GetType().GenericTypeArguments[1];
+                    return implementationFactory.GetType().GenericTypeArguments[1];
                 }
             }
             else
             {
-                if (descriptor.KeyedImplementationType != null)
+                var keyedImplementationType = GetKeyedImplementationType(descriptor);
+                var keyedImplementationInstance = GetKeyedImplementationInstance(descriptor);
+                var keyedImplementationFactory = GetKeyedImplementationFactory(descriptor);
+
+                if (keyedImplementationType != null)
                 {
-                    return descriptor.KeyedImplementationType;
+                    return keyedImplementationType;
                 }
-                else if (descriptor.KeyedImplementationInstance != null)
+                else if (keyedImplementationInstance != null)
                 {
-                    return descriptor.KeyedImplementationInstance.GetType();
+                    return keyedImplementationInstance.GetType();
                 }
-                else if (descriptor.KeyedImplementationFactory != null)
+                else if (keyedImplementationFactory != null)
                 {
-                    return descriptor.KeyedImplementationFactory.GetType().GenericTypeArguments[2];
+                    return keyedImplementationFactory.GetType().GenericTypeArguments[2];
                 }
             }
 
             return null;
         }
+
+        private static Type GetImplementationTypeInternal(ServiceDescriptor descriptor)
+        {
+            if (IsKeyedService(descriptor))
+            {
+                throw new InvalidOperationException("The keyed descriptor misuse.");
+            }
+
+            return descriptor.ImplementationType;
+        }
+
+
+        private static object GetImplementationInstance(ServiceDescriptor descriptor)
+        {
+            if (IsKeyedService(descriptor))
+            {
+                throw new InvalidOperationException("The keyed descriptor misuse.");
+            }
+
+            return descriptor.ImplementationInstance;
+        }
+
+        private static Func<IServiceProvider, object> GetImplementationFactory(ServiceDescriptor descriptor)
+        {
+            if (IsKeyedService(descriptor))
+            {
+                throw new InvalidOperationException("The keyed descriptor misuse.");
+            }
+
+            return (Func<IServiceProvider, object>)descriptor.ImplementationFactory;
+        }
+
+        private static Type GetKeyedImplementationType(ServiceDescriptor descriptor)
+        {
+            if (!IsKeyedService(descriptor))
+            {
+                throw new InvalidOperationException("The keyed descriptor misuse.");
+            }
+
+            return descriptor.KeyedImplementationType;
+        }
+
+        private static object GetKeyedImplementationInstance(ServiceDescriptor descriptor)
+        {
+            if (!IsKeyedService(descriptor))
+            {
+                throw new InvalidOperationException("The keyed descriptor misuse.");
+            }
+
+            return descriptor.KeyedImplementationInstance;
+        }
+
+        private static Func<IServiceProvider, object, object> GetKeyedImplementationFactory(ServiceDescriptor descriptor)
+        {
+            if (!IsKeyedService(descriptor))
+            {
+                throw new InvalidOperationException("The keyed descriptor misuse.");
+            }
+
+            return (Func<IServiceProvider, object, object>)descriptor.KeyedImplementationFactory;
+        }
+
+        private static bool IsKeyedService(ServiceDescriptor descriptor) => descriptor.ServiceKey != null;
     }
 }
