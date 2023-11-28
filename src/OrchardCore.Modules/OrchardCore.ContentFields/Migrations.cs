@@ -4,22 +4,30 @@ using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
+using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.ContentFields
 {
     public class Migrations : DataMigration
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly ShellSettings _shellSettings;
 
-        public Migrations(IContentDefinitionManager contentDefinitionManager)
+        public Migrations(IContentDefinitionManager contentDefinitionManager, ShellSettings shellSettings)
         {
             _contentDefinitionManager = contentDefinitionManager;
+            _shellSettings = shellSettings;
         }
 
-        // This migration does not need to run on new installations, but because there is no
-        // initial migration record, there is no way to shortcut the Create migration.
+        // This migration does not need to run on a new installation, but because there is no initial
+        // migration record, the 'Create' migration is used with a tenant setup in progress checking.
         public async Task<int> CreateAsync()
         {
+            if (_shellSettings.IsInitializing())
+            {
+                return 2;
+            }
+
             // Boolean field
             await _contentDefinitionManager.MigrateFieldSettingsAsync<BooleanField, BooleanFieldSettings>();
 
@@ -55,14 +63,17 @@ namespace OrchardCore.ContentFields
             // Time field
             await _contentDefinitionManager.MigrateFieldSettingsAsync<TimeField, TimeFieldSettings>();
 
-            // Youtube field
+            // YouTube field
             await _contentDefinitionManager.MigrateFieldSettingsAsync<YoutubeField, YoutubeFieldSettings>();
 
-            // Shortcut other migration steps on new content definition schemas.
+            // Keep in sync this upgrade.
+            await UpdateFrom1Async();
+
+            // Shortcut other migration steps that are part of the upgrade process.
             return 2;
         }
 
-        // This code can be removed in a later version.
+        // This step is still part of the upgrade process.
         public async Task<int> UpdateFrom1Async()
         {
             // For backwards compatibility with liquid filters we disable html sanitization on existing field definitions.
