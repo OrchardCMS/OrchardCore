@@ -15,114 +15,51 @@ public static class ServiceDescriptorExtensions
 
         if (descriptor.ServiceKey == null)
         {
-            var implementationType = GetImplementationTypeInternal(descriptor);
-
-            if (implementationType != null)
+            if (descriptor.IsKeyedService())
             {
-                return implementationType;
+                throw new InvalidOperationException("This service descriptor is keyed. Your service provider may not support keyed services.");
             }
-            
-            var implementationInstance = GetImplementationInstance(descriptor);
 
-            if (implementationInstance != null)
+            if (descriptor.ImplementationType != null)
             {
-                return implementationInstance.GetType();
+                return descriptor.ImplementationType;
             }
-            
-            var implementationFactory = GetImplementationFactory(descriptor);
 
-            if (implementationFactory != null)
+            if (descriptor.ImplementationInstance != null)
             {
-                return implementationFactory.GetType().GenericTypeArguments[1];
+                return descriptor.ImplementationInstance.GetType();
+            }
+
+            if (descriptor.ImplementationFactory != null)
+            {
+                return descriptor.ImplementationFactory.GetType().GenericTypeArguments[2];
             }
         }
         else
         {
-            var keyedImplementationType = GetKeyedImplementationType(descriptor);
-
-            if (keyedImplementationType != null)
+            if (!descriptor.IsKeyedService())
             {
-                return keyedImplementationType;
+                throw new InvalidOperationException("This service descriptor is not keyed.");
             }
-            
-            var keyedImplementationInstance = GetKeyedImplementationInstance(descriptor);
 
-            if (keyedImplementationInstance != null)
+            if (descriptor.KeyedImplementationType != null)
             {
-                return keyedImplementationInstance.GetType();
+                return descriptor.KeyedImplementationType;
             }
-            
-            var keyedImplementationFactory = GetKeyedImplementationFactory(descriptor);
 
-            if (keyedImplementationFactory != null)
+            if (descriptor.KeyedImplementationInstance != null)
             {
-                return keyedImplementationFactory.GetType().GenericTypeArguments[2];
+                return descriptor.KeyedImplementationInstance.GetType();
+            }
+
+            if (descriptor.KeyedImplementationFactory != null)
+            {
+                return descriptor.KeyedImplementationFactory.GetType().GenericTypeArguments[2];
             }
         }
 
         return null;
     }
 
-    private static Type GetImplementationTypeInternal(ServiceDescriptor descriptor)
-    {
-        if (IsKeyedService(descriptor))
-        {
-            throw new InvalidOperationException("The keyed descriptor misuse.");
-        }
-
-        return descriptor.ImplementationType;
-    }
-
-    private static object GetImplementationInstance(ServiceDescriptor descriptor)
-    {
-        if (IsKeyedService(descriptor))
-        {
-            throw new InvalidOperationException("The keyed descriptor misuse.");
-        }
-
-        return descriptor.ImplementationInstance;
-    }
-
-    private static Func<IServiceProvider, object> GetImplementationFactory(ServiceDescriptor descriptor)
-    {
-        if (IsKeyedService(descriptor))
-        {
-            throw new InvalidOperationException("The keyed descriptor misuse.");
-        }
-
-        return (Func<IServiceProvider, object>)descriptor.ImplementationFactory;
-    }
-
-    private static Type GetKeyedImplementationType(ServiceDescriptor descriptor)
-    {
-        if (!IsKeyedService(descriptor))
-        {
-            throw new InvalidOperationException("The keyed descriptor misuse.");
-        }
-
-        return descriptor.KeyedImplementationType;
-    }
-
-    private static object GetKeyedImplementationInstance(ServiceDescriptor descriptor)
-    {
-        if (!IsKeyedService(descriptor))
-        {
-            throw new InvalidOperationException("The keyed descriptor misuse.");
-        }
-
-        return descriptor.KeyedImplementationInstance;
-    }
-
-    private static Func<IServiceProvider, object, object> GetKeyedImplementationFactory(ServiceDescriptor descriptor)
-    {
-        if (!IsKeyedService(descriptor))
-        {
-            throw new InvalidOperationException("The keyed descriptor misuse.");
-        }
-
-        return (Func<IServiceProvider, object, object>)descriptor.KeyedImplementationFactory;
-    }
-
-    private static bool IsKeyedService(ServiceDescriptor descriptor) 
-        => descriptor.ServiceKey != null;
+    private static bool IsKeyedService(this ServiceDescriptor descriptor) => descriptor.ServiceKey != null;
 }
