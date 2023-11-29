@@ -98,6 +98,7 @@ nav:
       - Create a website: docs/guides/create-cms-application/README.md
       - Leverage CSPROJ meta information: docs/guides/leverage-csproj-meta-info/README.md
       - Create a Decoupled CMS site: docs/guides/decoupled-cms/README.md
+      - Create a webshop using the Commerce module: https://commerce.orchardcore.net/en/latest/guides/create-webshop/
       - Add an admin menu: docs/guides/add-admin-menu/README.md
       - Implement Full Text search: docs/guides/implement-fulltext-search/README.md
       - Install localization files: docs/guides/install-localization-files/README.md
@@ -192,6 +193,7 @@ nav:
               - Ticket store: docs/reference/modules/Users/TicketStore.md
           - Home Route: docs/reference/modules/HomeRoute/README.md
           - Feeds: docs/reference/modules/Feeds/README.md
+          - Commerce: https://commerce.orchardcore.net/en/latest
       - Core Modules:
           - Audit Trail: docs/reference/modules/AuditTrail/README.md
           - Auto Setup: docs/reference/modules/AutoSetup/README.md
