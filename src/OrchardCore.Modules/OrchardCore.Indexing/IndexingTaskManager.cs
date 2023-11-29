@@ -52,7 +52,10 @@ namespace OrchardCore.Indexing.Services
             {
                 throw new ArgumentNullException(nameof(contentItem));
             }
-
+            if (contentItem.ContentItemId.IsNullOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(contentItem.ContentItemId));
+            }
             // Do not index a preview content item.
             if (_httpContextAccessor.HttpContext?.Features.Get<ContentPreviewFeature>()?.Previewing == true)
             {
