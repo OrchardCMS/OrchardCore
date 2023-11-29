@@ -41,7 +41,7 @@
     <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     <PackageManagement Include="MimeKit" Version="4.3.0" />
     <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.3.8" />
-    <PackageManagement Include="Moq" Version="4.20.69" />
+    <PackageManagement Include="Moq" Version="4.20.70" />
     <PackageManagement Include="ncrontab" Version="3.3.3" />
     <PackageManagement Include="NEST" Version="7.17.5" />
     <PackageManagement Include="Newtonsoft.Json" Version="13.0.3" />
