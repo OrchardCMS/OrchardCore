@@ -5,25 +5,26 @@ using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 
 namespace OrchardCore.ContentFields
 {
     public class Migrations : DataMigration
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ShellSettings _shellSettings;
+        private readonly ShellDescriptor _shellDescriptor;
 
-        public Migrations(IContentDefinitionManager contentDefinitionManager, ShellSettings shellSettings)
+        public Migrations(IContentDefinitionManager contentDefinitionManager, ShellDescriptor shellDescriptor)
         {
             _contentDefinitionManager = contentDefinitionManager;
-            _shellSettings = shellSettings;
+            _shellDescriptor = shellDescriptor;
         }
 
         // New installations don't need to be upgraded, but because there is no initial migration record,
-        // 'UpgradeAsync()' is called from 'CreateAsync()' and only if a tenant setup is not in progress.
+        // 'UpgradeAsync()' is called in 'CreateAsync()', but only if the feature is not newly installed.
         public async Task<int> CreateAsync()
         {
-            if (!_shellSettings.IsInitializing())
+            if (!_shellDescriptor.IsNewlyInstalled("OrchardCore.ContentFields"))
             {
                 await UpgradeAsync();
             }

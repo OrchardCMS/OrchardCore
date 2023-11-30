@@ -109,8 +109,18 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
             }
 
             shellDescriptor.SerialNumber++;
+
             shellDescriptor.Features = _alwaysEnabledFeatures.Union(enabledFeatures).ToList();
-            shellDescriptor.Installed = shellDescriptor.Installed.Union(shellDescriptor.Features).ToList();
+            foreach (var feature in shellDescriptor.Features)
+            {
+                if (shellDescriptor.Installed.Contains(feature))
+                {
+                    continue;
+                }
+
+                feature.SerialNumber = shellDescriptor.SerialNumber;
+                shellDescriptor.Installed.Add(feature);
+            }
 
             if (_logger.IsEnabled(LogLevel.Information))
             {
