@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -107,6 +108,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 AddSameSiteCookieBackwardsCompatibility(builder);
                 AddAuthentication(builder);
                 AddDataProtection(builder);
+                AddKeyedServicesAsDictionary(builder);
 
                 // Register the list of services to be resolved later on
                 services.AddSingleton(services);
@@ -170,6 +172,16 @@ namespace Microsoft.Extensions.DependencyInjection
             });
 
             services.AddSingleton<ISlugService, SlugService>();
+        }
+
+        private static void AddKeyedServicesAsDictionary(OrchardCoreBuilder builder)
+        {
+            var services = builder.ApplicationServices;
+
+            services.AddSingleton(typeof(KeyedServiceCache<,>));
+            services.AddSingleton(services);
+            services.AddTransient(typeof(IDictionary<,>), typeof(KeyedServiceDictionary<,>));
+            services.AddTransient(typeof(IReadOnlyDictionary<,>), typeof(KeyedServiceDictionary<,>));
         }
 
         private static void AddShellServices(OrchardCoreBuilder builder)
@@ -427,7 +439,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         options.Cookie.Name = cookieName;
 
                         // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
-                        // set by the pipeline and comming from the request 'PathBase' which already ends with the
+                        // set by the pipeline and coming from the request 'PathBase' which already ends with the
                         // tenant prefix but may also start by a path related e.g to a virtual folder.
                     });
 
@@ -445,8 +457,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.Configure<CookiePolicyOptions>(options =>
                 {
                     options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
-                    options.OnAppendCookie = cookieContext => CheckSameSiteBackwardsCompatiblity(cookieContext.Context, cookieContext.CookieOptions);
-                    options.OnDeleteCookie = cookieContext => CheckSameSiteBackwardsCompatiblity(cookieContext.Context, cookieContext.CookieOptions);
+                    options.OnAppendCookie = cookieContext => CheckSameSiteBackwardsCompatibility(cookieContext.Context, cookieContext.CookieOptions);
+                    options.OnDeleteCookie = cookieContext => CheckSameSiteBackwardsCompatibility(cookieContext.Context, cookieContext.CookieOptions);
                 });
             })
             .Configure(app =>
@@ -455,7 +467,7 @@ namespace Microsoft.Extensions.DependencyInjection
             });
         }
 
-        private static void CheckSameSiteBackwardsCompatiblity(HttpContext httpContext, CookieOptions options)
+        private static void CheckSameSiteBackwardsCompatibility(HttpContext httpContext, CookieOptions options)
         {
             var userAgent = httpContext.Request.Headers["User-Agent"].ToString();
 
@@ -556,6 +568,35 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.Add(collection);
             });
+        }
+
+        private sealed class KeyedServiceDictionary<TKey, TService>(KeyedServiceCache<TKey, TService> services, IServiceProvider provider)
+            : ReadOnlyDictionary<TKey, TService>(Create(services, provider))
+            where TKey : notnull
+            where TService : notnull
+        {
+            private static Dictionary<TKey, TService> Create(KeyedServiceCache<TKey, TService> services, IServiceProvider provider)
+            {
+                var collection = new Dictionary<TKey, TService>(capacity: services.Keys.Length);
+
+                foreach (var key in services.Keys)
+                {
+                    collection[key] = provider.GetRequiredKeyedService<TService>(key);
+                }
+
+                return collection;
+            }
+        }
+
+        private sealed class KeyedServiceCache<TKey, TService>(IServiceCollection sc)
+            where TKey : notnull
+            where TService : notnull
+        {
+            public TKey[] Keys
+                => sc
+                .Where(service => service.ServiceKey is not null && service.ServiceKey!.GetType() == typeof(TKey) && service.ServiceType == typeof(TService))
+                .Select(service => (TKey)service.ServiceKey)
+                .ToArray();
         }
     }
 }
