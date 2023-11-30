@@ -47,27 +47,22 @@ namespace OrchardCore.Environment.Shell.Builders
                         {
                             // If disposable, register an instance that we resolve immediately from the main container.
                             var instance = service.IsKeyedService
-                                ? serviceProvider.GetRequiredKeyedService(services.Key.ServiceType, services.Key.ServiceKey)
+                                ? serviceProvider.GetKeyedService(services.Key.ServiceType, services.Key.ServiceKey)
                                 : serviceProvider.GetService(services.Key.ServiceType);
 
                             clonedCollection.CloneSingleton(service, instance);
                         }
-                        else
+                        else if (!service.IsKeyedService)
                         {
                             // If not disposable, the singleton can be resolved through a factory when first requested.
-                            if (!service.IsKeyedService)
-                            {
-                                clonedCollection.CloneSingleton(service, sp => serviceProvider.GetService(service.ServiceType));
-                            }
-                            else
-                            {
-                                clonedCollection.CloneSingleton(
-                                    service,
-                                    (sp, key) => serviceProvider.GetRequiredKeyedService(service.ServiceType, key));
-                            }
+                            clonedCollection.CloneSingleton(service, sp => serviceProvider.GetService(service.ServiceType));
 
                             // Note: Most of the time a singleton of a given type is unique and not disposable. So,
                             // most of the time it will be resolved when first requested through a tenant container.
+                        }
+                        else
+                        {
+                            clonedCollection.CloneSingleton(service, (sp, key) => serviceProvider.GetKeyedService(service.ServiceType, key));
                         }
                     }
                     else
