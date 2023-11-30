@@ -23,6 +23,9 @@ namespace OrchardCore.Environment.Shell.Builders
             return (TResult)ActivatorUtilities.CreateInstance(provider, type);
         }
 
+        /// <summary>
+        /// Gets the service object of the specified type with the specified key.
+        /// </summary>
         public static object? GetKeyedService(this IServiceProvider provider, Type serviceType, object? serviceKey)
         {
             ArgumentNullException.ThrowIfNull(provider);
