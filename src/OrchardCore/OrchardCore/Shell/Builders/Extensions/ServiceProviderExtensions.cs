@@ -3,6 +3,8 @@ using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
+#nullable enable
+
 namespace OrchardCore.Environment.Shell.Builders
 {
     public static class ServiceProviderExtensions
@@ -19,7 +21,7 @@ namespace OrchardCore.Environment.Shell.Builders
             var servicesByType = serviceCollection.GroupBy(s => (s.ServiceType, s.ServiceKey));
             foreach (var services in servicesByType)
             {
-                // Prevent hosting 'IStartupFilter' to re-add middlewares to the tenant pipeline.
+                // Prevent hosting 'IStartupFilter' to re-add middleware to the tenant pipeline.
                 if (services.Key.ServiceType == typeof(IStartupFilter))
                 {
                 }
@@ -42,27 +44,29 @@ namespace OrchardCore.Environment.Shell.Builders
                     {
                         // An host singleton is shared across tenant containers but only registered instances are not disposed
                         // by the DI, so we check if it is disposable or if it uses a factory which may return a different type.
-
-                        if (typeof(IDisposable).IsAssignableFrom(service.GetImplementationType()) || service.GetImplementationFactory() is not null)
+                        if (typeof(IDisposable).IsAssignableFrom(service.GetImplementationType()) ||
+                            service.GetImplementationFactory() is not null)
                         {
                             // If disposable, register an instance that we resolve immediately from the main container.
                             var instance = service.IsKeyedService
-                                ? serviceProvider.GetKeyedService(services.Key.ServiceType, services.Key.ServiceKey)
-                                : serviceProvider.GetService(services.Key.ServiceType);
+                                ? serviceProvider.GetRequiredKeyedService(services.Key.ServiceType, services.Key.ServiceKey)
+                                : serviceProvider.GetRequiredService(services.Key.ServiceType);
 
                             clonedCollection.CloneSingleton(service, instance);
                         }
                         else if (!service.IsKeyedService)
                         {
                             // If not disposable, the singleton can be resolved through a factory when first requested.
-                            clonedCollection.CloneSingleton(service, sp => serviceProvider.GetService(service.ServiceType));
+                            clonedCollection.CloneSingleton(service, sp =>
+                                serviceProvider.GetRequiredService(service.ServiceType));
 
                             // Note: Most of the time a singleton of a given type is unique and not disposable. So,
                             // most of the time it will be resolved when first requested through a tenant container.
                         }
                         else
                         {
-                            clonedCollection.CloneSingleton(service, (sp, key) => serviceProvider.GetKeyedService(service.ServiceType, key));
+                            clonedCollection.CloneSingleton(service, (sp, key) =>
+                                serviceProvider.GetRequiredKeyedService(service.ServiceType, key));
                         }
                     }
                     else
@@ -91,7 +95,13 @@ namespace OrchardCore.Environment.Shell.Builders
 
                     for (var i = 0; i < services.Count(); i++)
                     {
-                        clonedCollection.CloneSingleton(services.ElementAt(i), instances.ElementAt(i));
+                        var instance = instances.ElementAt(i);
+                        if (instance is null)
+                        {
+                            continue;
+                        }
+
+                        clonedCollection.CloneSingleton(services.ElementAt(i), instance);
                     }
                 }
 
@@ -110,7 +120,13 @@ namespace OrchardCore.Environment.Shell.Builders
                     {
                         if (services.ElementAt(i).Lifetime == ServiceLifetime.Singleton)
                         {
-                            clonedCollection.CloneSingleton(services.ElementAt(i), instances.ElementAt(i));
+                            var instance = instances.ElementAt(i);
+                            if (instance is null)
+                            {
+                                continue;
+                            }
+
+                            clonedCollection.CloneSingleton(services.ElementAt(i), instance);
                         }
                         else
                         {
