@@ -23,7 +23,7 @@ namespace OrchardCore.Media
         // 'UpgradeAsync()' is called in 'CreateAsync()', but only if the feature is not newly installed.
         public async Task<int> CreateAsync()
         {
-            if (!_shellDescriptor.IsNewlyInstalled("OrchardCore.Media"))
+            if (_shellDescriptor.WasInstalled("OrchardCore.Media"))
             {
                 await UpgradeAsync();
             }

@@ -24,7 +24,7 @@ namespace OrchardCore.ContentFields
         // 'UpgradeAsync()' is called in 'CreateAsync()', but only if the feature is not newly installed.
         public async Task<int> CreateAsync()
         {
-            if (!_shellDescriptor.IsNewlyInstalled("OrchardCore.ContentFields"))
+            if (_shellDescriptor.WasInstalled("OrchardCore.ContentFields"))
             {
                 await UpgradeAsync();
             }

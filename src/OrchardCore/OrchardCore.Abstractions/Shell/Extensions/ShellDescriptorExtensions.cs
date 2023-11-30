@@ -6,9 +6,9 @@ namespace OrchardCore.Environment.Shell;
 public static class ShellDescriptorExtensions
 {
     /// <summary>
-    /// Checks if the specified feature has been newly installed.
+    /// Checks if the specified feature has been already installed.
     /// </summary>
-    public static bool IsNewlyInstalled(this ShellDescriptor shellDescriptor, string featureId)
+    public static bool WasInstalled(this ShellDescriptor shellDescriptor, string featureId)
     {
         var installed = shellDescriptor.Installed.FirstOrDefault(feature => feature.Id == featureId);
         if (installed is null)
@@ -16,6 +16,6 @@ public static class ShellDescriptorExtensions
             return false;
         }
 
-        return installed.SerialNumber == shellDescriptor.SerialNumber;
+        return installed.SerialNumber != shellDescriptor.SerialNumber;
     }
 }

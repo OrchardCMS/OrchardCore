@@ -30,7 +30,7 @@ namespace OrchardCore.Search.Lucene
         // 'UpgradeAsync()' is called in 'CreateAsync()', but only if the feature is not newly installed.
         public async Task<int> CreateAsync()
         {
-            if (!_shellDescriptor.IsNewlyInstalled("OrchardCore.Search.Lucene"))
+            if (_shellDescriptor.WasInstalled("OrchardCore.Search.Lucene"))
             {
                 await UpgradeAsync();
             }
