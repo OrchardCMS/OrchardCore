@@ -1,8 +1,9 @@
 using System;
+using Microsoft.Extensions.DependencyInjection;
 
 #nullable enable
 
-namespace Microsoft.Extensions.DependencyInjection.Extensions
+namespace OrchardCore.Environment.Shell.Builders
 {
     public static class ServiceProviderExtensions
     {
