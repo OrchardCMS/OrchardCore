@@ -15,22 +15,5 @@ public class NullEmailService : EmailServiceBase<EmailSettings>
     {
     }
 
-    public override Task<EmailResult> SendAsync(MailMessage message)
-    {
-        var senderAddress = string.IsNullOrWhiteSpace(message.From)
-            ? Settings.DefaultSender
-            : message.From;
-
-        if (!string.IsNullOrWhiteSpace(senderAddress))
-        {
-            message.From = senderAddress;
-        }
-
-        Logger.LogDebug("From: {from}", message.From);
-        Logger.LogDebug("To: {to}", message.To);
-        Logger.LogDebug("Subject: {subject}", message.Subject);
-        Logger.LogDebug("Body: {body}", message.Body);
-
-        return Task.FromResult(EmailResult.Success);
-    }
+    public override Task<EmailResult> SendAsync(MailMessage message) => Task.FromResult(EmailResult.Success);
 }

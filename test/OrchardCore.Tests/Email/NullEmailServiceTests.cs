@@ -13,10 +13,9 @@ public class NullEmailServiceTests
         {
             DefaultSender = "info@orchardcore.net"
         });
-        var logCollector = FakeLogCollector.Create(new FakeLogCollectorOptions());
         var emailService = new NullEmailService(
             emailOptions,
-            new FakeLogger<NullEmailService>(logCollector),
+            new FakeLogger<NullEmailService>(),
             Mock.Of<IStringLocalizer<NullEmailService>>(),
             Mock.Of<IEmailAddressValidator>());
         var message = new MailMessage
@@ -31,14 +30,5 @@ public class NullEmailServiceTests
 
         // Assert
         Assert.True(result.Succeeded);
-
-        var records = logCollector.GetSnapshot();
-
-        Assert.Equal(4, records.Count);
-        Assert.All(records, r => Assert.True(r.Level == LogLevel.Debug));
-        Assert.Equal($"From: {message.From}", records[0].Message);
-        Assert.Equal($"To: {message.To}", records[1].Message);
-        Assert.Equal($"Subject: {message.Subject}", records[2].Message);
-        Assert.Equal($"Body: {message.Body}", records[3].Message);
     }
 }

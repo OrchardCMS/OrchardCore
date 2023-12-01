@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Email.Services;
 using OrchardCore.Email.Workflows.Activities;
 using OrchardCore.Email.Workflows.Drivers;
 using OrchardCore.Modules;
@@ -11,6 +12,8 @@ namespace OrchardCore.Email.Workflows
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddKeyedScoped<IEmailService, NullEmailService>(nameof(NullEmailService));
+
             services.AddActivity<EmailTask, EmailTaskDisplayDriver>();
         }
     }
