@@ -38,21 +38,15 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
         S = stringLocalizer;
     }
 
-    public override async Task<IDisplayResult> EditAsync(TwilioSettings settings, BuildEditorContext context)
+    public override IDisplayResult Edit(TwilioSettings settings)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
-
-        if (!await _authorizationService.AuthorizeAsync(user, SmsPermissions.ManageSmsSettings))
-        {
-            return null;
-        }
-
         return Initialize<TwilioSettingsViewModel>("TwilioSettings_Edit", model =>
         {
             model.PhoneNumber = settings.PhoneNumber;
             model.AccountSID = settings.AccountSID;
             model.HasAuthToken = !string.IsNullOrEmpty(settings.AuthToken);
-        }).Location("Content:5")
+        }).Location("Content:5#Twilio")
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
         .OnGroup(SmsSettings.GroupId);
     }
 

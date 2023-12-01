@@ -49,7 +49,7 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
         {
             model.DefaultProvider = settings.DefaultProviderName;
             model.Providers = GetProviders();
-        }).Location("Content:1")
+        }).Location("Content:1#Providers")
         .OnGroup(SmsSettings.GroupId);
     }
 

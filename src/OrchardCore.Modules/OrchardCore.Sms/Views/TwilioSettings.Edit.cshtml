@@ -4,7 +4,7 @@
 
 @model TwilioSettingsViewModel
 
-<div class="sms-settings-container d-none" data-provider-name="@(TwilioSmsProvider.TechnicalName)">
+<div class="sms-settings-container" data-provider-name="@(TwilioSmsProvider.TechnicalName)">
     <h4>@T["Twilio Account Info"]</h4>
     <div class="mb-3" asp-validation-class-for="PhoneNumber">
         <label asp-for="PhoneNumber">@T["Phone Number"]</label>
@@ -25,7 +25,7 @@
         <span asp-validation-for="AuthToken"></span>
         @if (Model.HasAuthToken)
         {
-            <span class="hint">@T["Auth token was securly saved. Enter a new value if you wish to replace the existing secret."]</span>
+            <span class="hint">@T["Auth token was securely saved. Enter a new value if you wish to replace the existing secret."]</span>
         }
     </div>
 </div>
