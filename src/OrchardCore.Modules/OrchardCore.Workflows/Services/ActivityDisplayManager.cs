@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
@@ -9,7 +10,6 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Options;
 
