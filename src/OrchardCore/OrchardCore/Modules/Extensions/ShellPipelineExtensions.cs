@@ -79,7 +79,7 @@ public static class ShellPipelineExtensions
         // 'OrderBy' performs a stable sort, so the order is preserved among equal 'ConfigureOrder' values.
         var startups = builder.ApplicationServices.GetServices<IStartup>().OrderBy(s => s.ConfigureOrder);
 
-        // First call 'UseRouting()'.
+        // First 'UseRouting()'.
         builder.UseRouting();
 
         // Try to retrieve the current 'IEndpointRouteBuilder'.
@@ -89,7 +89,7 @@ public static class ShellPipelineExtensions
             throw new InvalidOperationException("Failed to retrieve the current endpoint route builder.");
         }
 
-        // Use the retrieved route builder to call async and non async 'Configure' methods.
+        // So that async and non async 'Configure()' can be called outside the below 'UseEndpoints()'.
         var services = ShellScope.Services;
         foreach (var startup in startups)
         {
@@ -101,7 +101,7 @@ public static class ShellPipelineExtensions
             startup.Configure(builder, routes, services);
         }
 
-        // Finally call 'UseEndpoints()' knowing that routes are already configured.
+        // Finally 'UseEndpoints()' knowing that routes have been configured above.
         builder.UseEndpoints(routes => { });
     }
 }
