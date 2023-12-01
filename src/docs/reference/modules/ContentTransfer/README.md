@@ -1,6 +1,6 @@
 # Content Transfer (`OrchardCore.ContentTransfer`)
 
-This feature provides you a way to bulk import and export content using Excel files. One the feature is enabled, you can navigate to `Content` > `Bulk Transfers` to import/export files.
+This feature provides you a way to bulk import and export content using Excel files. One the feature is enabled, you can navigate to `Content` > `Bulk Import` to import data. To bulk export data using Excel, navigate to `Content` > `Bulk Export`.
 
 ## Adding a Custom Part Importer
 
@@ -157,4 +157,97 @@ Finally, you can register the custom implementation like this
 
 ```
 services.AddContentFieldImportHandler<TextField, TextFieldImportHandler>();
+```
+
+
+## Adding a Custom Content Item Importer
+
+You have the option to establish a field importer for a custom field by either implementing the `IContentImportHandler` interface. The following illustrates an example of defining the common properties importer.
+
+```
+public class CommonContentImportHandler : ContentImportHandlerBase, IContentImportHandler
+{
+    private readonly IContentItemIdGenerator _contentItemIdGenerator;
+    protected readonly IStringLocalizer S;
+
+    public CommonContentImportHandler(
+        IStringLocalizer<TitlePartContentImportHandler> stringLocalizer,
+        IContentItemIdGenerator contentItemIdGenerator)
+    {
+        _contentItemIdGenerator = contentItemIdGenerator;
+        S = stringLocalizer; ;
+    }
+
+    public IReadOnlyCollection<ImportColumn> GetColumns(ImportContentContext context)
+    {
+        return new[]
+        {
+            new ImportColumn()
+            {
+                Name = nameof(ContentItem.ContentItemId),
+                Description = S["The id for the {0}", context.ContentTypeDefinition.DisplayName],
+            },
+            new ImportColumn()
+            {
+                Name = nameof(ContentItem.CreatedUtc),
+                Description = S["The UTC created datetime value {0}", context.ContentTypeDefinition.DisplayName],
+                Type = ImportColumnType.ExportOnly,
+            },
+            new ImportColumn()
+            {
+                Name = nameof(ContentItem.ModifiedUtc),
+                Description = S["The UTC last modified datetime value {0}", context.ContentTypeDefinition.DisplayName],
+                Type = ImportColumnType.ExportOnly,
+            },
+        };
+    }
+
+    public Task ImportAsync(ContentImportContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(context.ContentItem, nameof(context.ContentItem));
+        ArgumentNullException.ThrowIfNull(context.Row, nameof(context.Row));
+
+        foreach (DataColumn column in context.Columns)
+        {
+            if (Is(column.ColumnName, nameof(ContentItem.ContentItemId)))
+            {
+                var contentItemId = context.Row[column]?.ToString();
+
+                if (string.IsNullOrWhiteSpace(contentItemId))
+                {
+                    continue;
+                }
+
+                var fakeId = _contentItemIdGenerator.GenerateUniqueId(new ContentItem());
+
+                if (fakeId.Length == contentItemId.Length)
+                {
+                    context.ContentItem.ContentItemId = contentItemId;
+                }
+            }
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task ExportAsync(ContentExportContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(context.ContentItem, nameof(context.ContentItem));
+        ArgumentNullException.ThrowIfNull(context.Row, nameof(context.Row));
+
+        context.Row[nameof(ContentItem.ContentItemId)] = context.ContentItem.ContentItemId;
+        context.Row[nameof(ContentItem.CreatedUtc)] = context.ContentItem.CreatedUtc;
+        context.Row[nameof(ContentItem.ModifiedUtc)] = context.ContentItem.ModifiedUtc;
+
+        return Task.CompletedTask;
+    }
+}
+```
+
+Finally, you can register the custom implementation like this
+
+```
+services.AddScoped<IContentImportHandler, CommonContentImportHandler>();
 ```
