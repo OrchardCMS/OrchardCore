@@ -6,7 +6,6 @@ namespace OrchardCore.Modules
 {
     /// <summary>
     /// An implementation of this interface allows to configure asynchronously the tenant pipeline.
-    /// pipeline of a module.
     /// </summary>
     public interface IAsyncStartup
     {
