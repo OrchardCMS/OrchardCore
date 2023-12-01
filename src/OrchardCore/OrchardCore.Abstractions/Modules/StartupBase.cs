@@ -25,6 +25,6 @@ namespace OrchardCore.Modules
         }
 
         /// <inheritdoc />
-        public virtual ValueTask ConfigureAsync(IApplicationBuilder app, IServiceProvider serviceProvider) => default;
+        public virtual ValueTask ConfigureAsync(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider) => default;
     }
 }

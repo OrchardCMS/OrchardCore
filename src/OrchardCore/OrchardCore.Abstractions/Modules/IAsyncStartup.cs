@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 
 namespace OrchardCore.Modules
 {
@@ -10,11 +11,11 @@ namespace OrchardCore.Modules
     public interface IAsyncStartup
     {
         /// <summary>
-        /// This async method gets called before any <see cref="IStartup.Configure"/> and can collaborate
-        /// to build the tenant pipeline, but is not intended to configure the route/endpoint middleware.
+        /// This method gets called by the runtime. Use this method to configure the tenant pipeline.
         /// </summary>
         /// <param name="builder"></param>
+        /// <param name="routes"></param>
         /// <param name="serviceProvider"></param>
-        ValueTask ConfigureAsync(IApplicationBuilder builder, IServiceProvider serviceProvider);
+        ValueTask ConfigureAsync(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider);
     }
 }

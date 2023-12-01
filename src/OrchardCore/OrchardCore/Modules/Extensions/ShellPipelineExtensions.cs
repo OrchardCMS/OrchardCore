@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
@@ -17,6 +18,8 @@ namespace OrchardCore.Modules;
 
 public static class ShellPipelineExtensions
 {
+    private const string EndpointRouteBuilder = "__EndpointRouteBuilder";
+
     private static readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new();
 
     /// <summary>
@@ -76,21 +79,29 @@ public static class ShellPipelineExtensions
         // 'OrderBy' performs a stable sort, so the order is preserved among equal 'ConfigureOrder' values.
         var startups = builder.ApplicationServices.GetServices<IStartup>().OrderBy(s => s.ConfigureOrder);
 
+        // First call 'UseRouting()'.
+        builder.UseRouting();
+
+        // Try to retrieve the current 'IEndpointRouteBuilder'.
+        if (!builder.Properties.TryGetValue(EndpointRouteBuilder, out var obj) ||
+            obj is not IEndpointRouteBuilder routes)
+        {
+            throw new InvalidOperationException("Failed to retrieve the current endpoint route builder.");
+        }
+
+        // Use the retrieved route builder to call async and non async 'Configure' methods.
         var services = ShellScope.Services;
         foreach (var startup in startups)
         {
             if (startup is IAsyncStartup asyncStartup)
             {
-                await asyncStartup.ConfigureAsync(builder, services);
+                await asyncStartup.ConfigureAsync(builder, routes, services);
             }
+
+            startup.Configure(builder, routes, services);
         }
 
-        builder.UseRouting().UseEndpoints(routes =>
-        {
-            foreach (var startup in startups)
-            {
-                startup.Configure(builder, routes, services);
-            }
-        });
+        // Finally call 'UseEndpoints()' knowing that routes are already configured.
+        builder.UseEndpoints(routes => { });
     }
 }

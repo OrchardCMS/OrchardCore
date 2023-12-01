@@ -98,12 +98,11 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// This async action gets called before any <see cref="IStartup.Configure"/> and can collaborate
-        /// to build the tenant pipeline, but is not intended to configure the route/endpoint middleware.
+        /// This async action gets called for each tenant. Use this method to configure the tenant pipeline.
         /// </summary>
         /// <param name="configureAsync">The async action to execute when configuring the request's pipeline for a tenant.</param>
         /// <param name="order">The order of the action to execute. Lower values will be executed first.</param>
-        public OrchardCoreBuilder Configure(Func<IApplicationBuilder, IServiceProvider, ValueTask> configureAsync, int order = 0)
+        public OrchardCoreBuilder Configure(Func<IApplicationBuilder, IEndpointRouteBuilder, IServiceProvider, ValueTask> configureAsync, int order = 0)
         {
             if (!_actions.TryGetValue(order, out var actions))
             {
@@ -119,14 +118,23 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// This async action gets called before any <see cref="IStartup.Configure"/> and can collaborate
-        /// to build the tenant pipeline, but is not intended to configure the route/endpoint middleware.
+        /// This async action gets called for each tenant. Use this method to configure the tenant pipeline.
+        /// </summary>
+        /// <param name="configureAsync">The async action to execute when configuring the request's pipeline for a tenant.</param>
+        /// <param name="order">The order of the action to execute. Lower values will be executed first.</param>
+        public OrchardCoreBuilder Configure(Func<IApplicationBuilder, IEndpointRouteBuilder, ValueTask> configureAsync, int order = 0)
+        {
+            return Configure((app, routes, sp) => configureAsync(app, routes), order);
+        }
+
+        /// <summary>
+        /// This async action gets called for each tenant. Use this method to configure the tenant pipeline.
         /// </summary>
         /// <param name="configureAsync">The async action to execute when configuring the request's pipeline for a tenant.</param>
         /// <param name="order">The order of the action to execute. Lower values will be executed first.</param>
         public OrchardCoreBuilder Configure(Func<IApplicationBuilder, ValueTask> configureAsync, int order = 0)
         {
-            return Configure((app, sp) => configureAsync(app), order);
+            return Configure((app, routes, sp) => configureAsync(app), order);
         }
 
         public OrchardCoreBuilder EnableFeature(string id)

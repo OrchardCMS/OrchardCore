@@ -39,7 +39,7 @@ namespace OrchardCore.Modules
             }
         }
 
-        public override async ValueTask ConfigureAsync(IApplicationBuilder app, IServiceProvider serviceProvider)
+        public override async ValueTask ConfigureAsync(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             foreach (var asyncConfigure in _actions.AsyncConfigureActions)
             {
@@ -48,7 +48,7 @@ namespace OrchardCore.Modules
                     continue;
                 }
 
-                await asyncConfigure.Invoke(app, serviceProvider);
+                await asyncConfigure(app, routes, serviceProvider);
             }
         }
     }
