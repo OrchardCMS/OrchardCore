@@ -6,7 +6,16 @@ builder.Host.UseNLogHost();
 
 builder.Services
     .AddOrchardCms()
-    .AddSetupFeatures("OrchardCore.AutoSetup");
+    .AddSetupFeatures("OrchardCore.AutoSetup")
+    .Configure(async (builder) =>
+     {
+         await Task.Delay(1000);
+     })
+    .Configure(async (builder, sp) =>
+    {
+        await Task.Delay(1000);
+    })
+    ;
 
 var app = builder.Build();
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -94,6 +95,38 @@ namespace Microsoft.Extensions.DependencyInjection
         public OrchardCoreBuilder Configure(Action<IApplicationBuilder> configure, int order = 0)
         {
             return Configure((app, routes, sp) => configure(app), order);
+        }
+
+        /// <summary>
+        /// This async action gets called before any <see cref="IStartup.Configure"/> and can collaborate
+        /// to build the tenant pipeline, but is not intended to configure the route/endpoint middleware.
+        /// </summary>
+        /// <param name="configureAsync">The async action to execute when configuring the request's pipeline for a tenant.</param>
+        /// <param name="order">The order of the action to execute. Lower values will be executed first.</param>
+        public OrchardCoreBuilder Configure(Func<IApplicationBuilder, IServiceProvider, ValueTask> configureAsync, int order = 0)
+        {
+            if (!_actions.TryGetValue(order, out var actions))
+            {
+                actions = _actions[order] = new StartupActions(order);
+
+                ApplicationServices.AddTransient<IStartup>(sp => new StartupActionsStartup(
+                    sp.GetRequiredService<IServiceProvider>(), actions, order));
+            }
+
+            actions.AsyncConfigureActions.Add(configureAsync);
+
+            return this;
+        }
+
+        /// <summary>
+        /// This async action gets called before any <see cref="IStartup.Configure"/> and can collaborate
+        /// to build the tenant pipeline, but is not intended to configure the route/endpoint middleware.
+        /// </summary>
+        /// <param name="configureAsync">The async action to execute when configuring the request's pipeline for a tenant.</param>
+        /// <param name="order">The order of the action to execute. Lower values will be executed first.</param>
+        public OrchardCoreBuilder Configure(Func<IApplicationBuilder, ValueTask> configureAsync, int order = 0)
+        {
+            return Configure((app, sp) => configureAsync(app), order);
         }
 
         public OrchardCoreBuilder EnableFeature(string id)

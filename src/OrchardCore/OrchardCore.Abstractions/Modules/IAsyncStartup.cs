@@ -10,8 +10,8 @@ namespace OrchardCore.Modules
     public interface IAsyncStartup
     {
         /// <summary>
-        /// This method gets called before any <see cref="IStartup.Configure"/> and can collaborate to
-        /// build the tenant pipeline, but is not intended to configure the route/endpoint middleware.
+        /// This async method gets called before any <see cref="IStartup.Configure"/> and can collaborate
+        /// to build the tenant pipeline, but is not intended to configure the route/endpoint middleware.
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="serviceProvider"></param>
