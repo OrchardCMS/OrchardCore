@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
+using Microsoft.IdentityModel.Validators;
 using OrchardCore.Microsoft.Authentication.Settings;
 using MicrosoftIdentityDefaults = Microsoft.Identity.Web.Constants;
 
@@ -38,7 +39,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             options.SignInScheme = "Identity.External";
             options.UseTokenLifetime = true;
             options.SaveTokens = _azureADSettings.SaveTokens;
-
+            options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.GetAadIssuerValidator(options.Authority, options.Backchannel).Validate;
         }
 
         public void Configure(OpenIdConnectOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
