@@ -1,6 +1,5 @@
 using MimeKit;
 using OrchardCore.Email;
-using OrchardCore.Email.Core;
 using OrchardCore.Email.Services;
 
 namespace OrchardCore.Tests.Email
