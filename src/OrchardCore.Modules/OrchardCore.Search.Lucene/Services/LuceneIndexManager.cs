@@ -11,7 +11,7 @@ using Lucene.Net.Index;
 using Lucene.Net.Search;
 using Lucene.Net.Spatial.Prefix;
 using Lucene.Net.Spatial.Prefix.Tree;
-using Lucene.Net.Store;
+using LStore = Lucene.Net.Store;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Contents.Indexing;
@@ -362,7 +362,7 @@ namespace OrchardCore.Search.Lucene
             return doc;
         }
 
-        private BaseDirectory CreateDirectory(string indexName)
+        private LStore.BaseDirectory CreateDirectory(string indexName)
         {
             lock (this)
             {
@@ -376,7 +376,7 @@ namespace OrchardCore.Search.Lucene
                 // Lucene is not thread safe on this call.
                 lock (_synLock)
                 {
-                    return FSDirectory.Open(path);
+                    return LStore.FSDirectory.Open(path);
                 }
             }
         }
@@ -395,7 +395,7 @@ namespace OrchardCore.Search.Lucene
                         var config = new IndexWriterConfig(LuceneSettings.DefaultVersion, analyzer)
                         {
                             OpenMode = OpenMode.CREATE_OR_APPEND,
-                            WriteLockTimeout = Lucene.Net.Store.Lock.LOCK_POLL_INTERVAL * 3
+                            WriteLockTimeout = LStore.Lock.LOCK_POLL_INTERVAL * 3
                         };
 
                         writer = new IndexWriterWrapper(directory, config);
@@ -428,7 +428,7 @@ namespace OrchardCore.Search.Lucene
             var pool = _indexPools.GetOrAdd(indexName, n =>
             {
                 var path = new DirectoryInfo(PathExtensions.Combine(_rootPath, indexName));
-                var reader = DirectoryReader.Open(FSDirectory.Open(path));
+                var reader = DirectoryReader.Open(LStore.FSDirectory.Open(path));
                 return new IndexReaderPool(reader);
             });
 
