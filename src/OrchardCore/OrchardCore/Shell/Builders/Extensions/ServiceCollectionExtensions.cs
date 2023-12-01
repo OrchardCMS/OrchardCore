@@ -17,6 +17,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 : new ClonedSingletonDescriptor(parent, implementationInstance);
 
             services.Add(cloned);
+
             return services;
         }
 
@@ -27,6 +28,7 @@ namespace OrchardCore.Environment.Shell.Builders
         {
             var cloned = new ClonedSingletonDescriptor(parent, implementationFactory);
             collection.Add(cloned);
+
             return collection;
         }
 
@@ -37,6 +39,7 @@ namespace OrchardCore.Environment.Shell.Builders
         {
             var cloned = new ClonedSingletonDescriptor(parent, parent.ServiceKey, implementationFactory);
             collection.Add(cloned);
+
             return collection;
         }
     }
