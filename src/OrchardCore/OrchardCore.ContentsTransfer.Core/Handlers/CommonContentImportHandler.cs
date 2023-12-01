@@ -46,25 +46,9 @@ public class CommonContentImportHandler : ContentImportHandlerBase, IContentImpo
 
     public Task ImportAsync(ContentImportContext context)
     {
-        if (context == null)
-        {
-            throw new ArgumentNullException(nameof(context));
-        }
-
-        if (context.ContentItem == null)
-        {
-            throw new ArgumentNullException(nameof(context.ContentItem));
-        }
-
-        if (context.Columns == null)
-        {
-            throw new ArgumentNullException(nameof(context.Columns));
-        }
-
-        if (context.Row == null)
-        {
-            throw new ArgumentNullException(nameof(context.Row));
-        }
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(context.ContentItem, nameof(context.ContentItem));
+        ArgumentNullException.ThrowIfNull(context.Row, nameof(context.Row));
 
         foreach (DataColumn column in context.Columns)
         {
@@ -84,8 +68,6 @@ public class CommonContentImportHandler : ContentImportHandlerBase, IContentImpo
                     // Just check if the given id matched the fakeId length.
                     context.ContentItem.ContentItemId = contentItemId;
                 }
-
-                continue;
             }
         }
 
@@ -94,15 +76,9 @@ public class CommonContentImportHandler : ContentImportHandlerBase, IContentImpo
 
     public Task ExportAsync(ContentExportContext context)
     {
-        if (context.ContentItem == null)
-        {
-            throw new ArgumentNullException(nameof(context.ContentItem));
-        }
-
-        if (context.Row == null)
-        {
-            throw new ArgumentNullException(nameof(context.Row));
-        }
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(context.ContentItem, nameof(context.ContentItem));
+        ArgumentNullException.ThrowIfNull(context.Row, nameof(context.Row));
 
         // TODO, add settings to allow exporting the following columns.
         context.Row[nameof(ContentItem.ContentItemId)] = context.ContentItem.ContentItemId;

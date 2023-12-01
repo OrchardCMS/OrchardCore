@@ -23,9 +23,4 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Navigation.Core\OrchardCore.Navigation.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Indexes\" />
-    <Folder Include="Views\Items\" />
-  </ItemGroup>
-
 </Project>

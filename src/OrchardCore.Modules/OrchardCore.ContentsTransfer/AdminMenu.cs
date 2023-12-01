@@ -41,12 +41,19 @@ public class AdminMenu : INavigationProvider
 
         builder
             .Add(S["Content"], content => content
-                .Add(S["Bulk Transfers"], S["Bulk Transfers"].PrefixPosition(), transfer => transfer
+                .Add(S["Bulk Import"], S["Bulk Import"].PrefixPosition(), transfer => transfer
                     .Action(nameof(AdminController.List), adminControllerName, new
                     {
                         area = ContentTransferConstants.Feature.ModuleId
                     })
                     .Permission(ContentTransferPermissions.ListContentTransferEntries)
+                )
+                .Add(S["Bulk Export"], S["Bulk Export"].PrefixPosition(), transfer => transfer
+                    .Action(nameof(AdminController.Export), adminControllerName, new
+                    {
+                        area = ContentTransferConstants.Feature.ModuleId
+                    })
+                    .Permission(ContentTransferPermissions.ExportContentFromFile)
                 )
             );
 
