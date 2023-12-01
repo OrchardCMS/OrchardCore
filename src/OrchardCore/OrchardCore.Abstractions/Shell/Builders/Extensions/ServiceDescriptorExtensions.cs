@@ -44,18 +44,21 @@ namespace OrchardCore.Environment.Shell.Builders
         public static bool TryGetImplementationType(this ServiceDescriptor serviceDescriptor, out Type? type)
         {
             type = serviceDescriptor.GetImplementationType();
+
             return type is not null;
         }
 
         public static bool TryGetImplementationInstance(this ServiceDescriptor serviceDescriptor, out object? instance)
         {
             instance = serviceDescriptor.GetImplementationInstance();
+
             return instance is not null;
         }
 
         public static bool TryGetImplementationFactory(this ServiceDescriptor serviceDescriptor, out object? factory)
         {
             factory = serviceDescriptor.GetImplementationFactory();
+
             return factory is not null;
         }
 
@@ -66,6 +69,7 @@ namespace OrchardCore.Environment.Shell.Builders
         internal static bool TryGetImplementationTypeInternal(this ServiceDescriptor serviceDescriptor, out Type? type)
         {
             type = serviceDescriptor.GetImplementationTypeInternal();
+
             return type is not null;
         }
     }
