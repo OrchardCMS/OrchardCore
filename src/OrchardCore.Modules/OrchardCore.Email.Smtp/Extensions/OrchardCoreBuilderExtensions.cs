@@ -6,13 +6,13 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class OrchardCoreBuilderExtensions
     {
-        public static OrchardCoreBuilder ConfigureEmailSettings(this OrchardCoreBuilder builder)
+        public static OrchardCoreBuilder ConfigureSmtpEmailSettings(this OrchardCoreBuilder builder)
         {
             builder.ConfigureServices((tenantServices, serviceProvider) =>
             {
-                var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Email");
+                var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Email_Smtp");
 
-                tenantServices.PostConfigure<EmailSettings>(settings => configurationSection.Bind(settings));
+                tenantServices.PostConfigure<SmtpEmailSettings>(settings => configurationSection.Bind(settings));
             });
 
             return builder;

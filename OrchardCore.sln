@@ -505,9 +505,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Sms.Abstraction
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Sms", "src\OrchardCore.Modules\OrchardCore.Sms\OrchardCore.Sms.csproj", "{CBF6DB53-FD0C-47F8-9E60-A1D247ACFD05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Sms.Core", "src\OrchardCore\OrchardCore.Sms.Core\OrchardCore.Sms.Core.csproj", "{20356393-B16D-466C-8203-877A534E287D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Sms.Core", "src\OrchardCore\OrchardCore.Sms.Core\OrchardCore.Sms.Core.csproj", "{20356393-B16D-466C-8203-877A534E287D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Email.Azure", "src\OrchardCore.Modules\OrchardCore.Email.Azure\OrchardCore.Email.Azure.csproj", "{91DD6469-20AE-4F94-AF49-C13E8FCA4343}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Email.Azure", "src\OrchardCore.Modules\OrchardCore.Email.Azure\OrchardCore.Email.Azure.csproj", "{91DD6469-20AE-4F94-AF49-C13E8FCA4343}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Email.Smtp", "src\OrchardCore.Modules\OrchardCore.Email.Smtp\OrchardCore.Email.Smtp.csproj", "{44BF04A1-5C0C-4773-9C1E-FE1013841857}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1341,6 +1343,10 @@ Global
 		{91DD6469-20AE-4F94-AF49-C13E8FCA4343}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91DD6469-20AE-4F94-AF49-C13E8FCA4343}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91DD6469-20AE-4F94-AF49-C13E8FCA4343}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44BF04A1-5C0C-4773-9C1E-FE1013841857}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44BF04A1-5C0C-4773-9C1E-FE1013841857}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44BF04A1-5C0C-4773-9C1E-FE1013841857}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44BF04A1-5C0C-4773-9C1E-FE1013841857}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1573,6 +1579,7 @@ Global
 		{CBF6DB53-FD0C-47F8-9E60-A1D247ACFD05} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{20356393-B16D-466C-8203-877A534E287D} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{91DD6469-20AE-4F94-AF49-C13E8FCA4343} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
+		{44BF04A1-5C0C-4773-9C1E-FE1013841857} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}

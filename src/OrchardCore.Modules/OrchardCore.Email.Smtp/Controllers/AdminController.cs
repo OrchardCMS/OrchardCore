@@ -35,7 +35,7 @@ namespace OrchardCore.Email.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageEmailSettings))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSmtpEmailSettings))
             {
                 return Forbid();
             }
@@ -46,7 +46,7 @@ namespace OrchardCore.Email.Controllers
         [HttpPost, ActionName(nameof(Index))]
         public async Task<IActionResult> IndexPost(SmtpEmailSettingsViewModel model)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageEmailSettings))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSmtpEmailSettings))
             {
                 return Forbid();
             }

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Email.Services;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;

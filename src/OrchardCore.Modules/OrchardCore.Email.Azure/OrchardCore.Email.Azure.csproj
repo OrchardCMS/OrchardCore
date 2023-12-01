@@ -1,12 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <!-- NuGet properties-->
-    <Title>OrchardCore Email</Title>
+    <Title>OrchardCore Azure Email</Title>
     <Description>$(OCFrameworkDescription)
 
-      Provides email settings configuration and a default email service based on SMTP.</Description>
+      Provides email settings configuration and a default email service based on Azure Communication Services.</Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
   </PropertyGroup>
 
@@ -17,10 +17,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Admin.Abstractions\OrchardCore.Admin.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Email.Core\OrchardCore.Email.Core.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Email.Abstractions\OrchardCore.Email.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Navigation.Core\OrchardCore.Navigation.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
   </ItemGroup>
 
   <ItemGroup>

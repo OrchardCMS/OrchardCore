@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Email;
+using OrchardCore.Email.Services;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Workflows.Abstractions.Models;

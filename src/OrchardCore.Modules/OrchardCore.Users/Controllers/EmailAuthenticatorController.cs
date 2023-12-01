@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email;
+using OrchardCore.Email.Services;
 using OrchardCore.Entities;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;

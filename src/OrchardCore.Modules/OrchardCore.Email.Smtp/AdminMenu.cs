@@ -25,9 +25,9 @@ namespace OrchardCore.Email
                     .Add(S["Settings"], settings => settings
                         .Add(S["Email"], S["Email"].PrefixPosition(), email => email
                             .AddClass("email").Id("email")
-                            .Add(S["Email Settings"], S["Email Settings"].PrefixPosition(), options => options
-                               .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = EmailSettingsDisplayDriver.GroupId })
-                               .Permission(Permissions.ManageEmailSettings)
+                            .Add(S["SMTP Settings"], S["SMTP Settings"].PrefixPosition(), options => options
+                               .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmtpSettingsDisplayDriver.GroupId })
+                               .Permission(Permissions.ManageSmtpEmailSettings)
                                .LocalNav())
                 )));
 

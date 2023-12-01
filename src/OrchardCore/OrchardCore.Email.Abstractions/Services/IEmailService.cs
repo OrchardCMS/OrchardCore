@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace OrchardCore.Email;
+namespace OrchardCore.Email.Services;
 
 /// <summary>
 /// Represents a contract for email service.

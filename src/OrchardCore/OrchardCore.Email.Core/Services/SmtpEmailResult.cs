@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Localization;
 
-namespace OrchardCore.Email
+namespace OrchardCore.Email.Services
 {
     /// <summary>
     /// Represents the result of sending an email.

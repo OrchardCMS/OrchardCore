@@ -7,13 +7,13 @@ namespace OrchardCore.Email
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageEmailSettings = new("ManageEmailSettings", "Manage Email Settings");
+        public static readonly Permission ManageSmtpEmailSettings = new("ManageSmtpEmailSettings", "Manage SMTP Email Settings");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
             return Task.FromResult(new[]
             {
-                ManageEmailSettings,
+                ManageSmtpEmailSettings,
             }
             .AsEnumerable());
         }
@@ -25,7 +25,7 @@ namespace OrchardCore.Email
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageEmailSettings },
+                    Permissions = new[] { ManageSmtpEmailSettings },
                 },
             };
         }
