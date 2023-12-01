@@ -31,7 +31,7 @@ public static class ShellPipelineExtensions
         {
             if (!context.HasPipeline())
             {
-                context.Pipeline = context.BuildPipeline();
+                context.Pipeline = await context.BuildPipelineInternalAsync();
             }
         }
         finally
@@ -43,21 +43,19 @@ public static class ShellPipelineExtensions
     /// <summary>
     /// Builds the tenant pipeline.
     /// </summary>
-    private static IShellPipeline BuildPipeline(this ShellContext context)
+    private static async ValueTask<IShellPipeline> BuildPipelineInternalAsync(this ShellContext context)
     {
         var features = context.ServiceProvider.GetService<IServer>()?.Features;
         var builder = new ApplicationBuilder(context.ServiceProvider, features ?? new FeatureCollection());
         var startupFilters = builder.ApplicationServices.GetService<IEnumerable<IStartupFilter>>();
 
-        Action<IApplicationBuilder> configure = builder =>
-        {
-            ConfigurePipeline(builder);
-        };
-
+        Action<IApplicationBuilder> configure = builder => { };
         foreach (var filter in startupFilters.Reverse())
         {
             configure = filter.Configure(configure);
         }
+
+        await ConfigurePipelineAsync(builder);
 
         configure(builder);
 
@@ -72,13 +70,21 @@ public static class ShellPipelineExtensions
     /// <summary>
     /// Configures the tenant pipeline.
     /// </summary>
-    private static void ConfigurePipeline(IApplicationBuilder builder)
+    private static async ValueTask ConfigurePipelineAsync(IApplicationBuilder builder)
     {
         // 'IStartup' instances are ordered by module dependencies with a 'ConfigureOrder' of 0 by default.
         // 'OrderBy' performs a stable sort, so the order is preserved among equal 'ConfigureOrder' values.
         var startups = builder.ApplicationServices.GetServices<IStartup>().OrderBy(s => s.ConfigureOrder);
 
         var services = ShellScope.Services;
+        foreach (var startup in startups)
+        {
+            if (startup is IAsyncStartup asyncStartup)
+            {
+                await asyncStartup.ConfigureAsync(builder, services);
+            }
+        }
+
         builder.UseRouting().UseEndpoints(routes =>
         {
             foreach (var startup in startups)
