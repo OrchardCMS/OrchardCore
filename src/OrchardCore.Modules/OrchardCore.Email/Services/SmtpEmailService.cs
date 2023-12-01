@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
@@ -21,8 +21,6 @@ namespace OrchardCore.Email.Services
     public class SmtpEmailService : EmailServiceBase<SmtpEmailSettings>
     {
         private const string EmailExtension = ".eml";
-
-        private static readonly char[] _emailsSeparator = [',', ';'];
 
         /// <summary>
         /// Initializes a new instance of a <see cref="SmtpEmailService"/>.
@@ -47,6 +45,8 @@ namespace OrchardCore.Email.Services
         /// <remarks>This method allows to send an email without setting <see cref="MailMessage.To"/> if <see cref="MailMessage.Cc"/> or <see cref="MailMessage.Bcc"/> is provided.</remarks>
         public override async Task<EmailResult> SendAsync(MailMessage message)
         {
+            ArgumentNullException.ThrowIfNull(message);
+
             if (Settings == null)
             {
                 return EmailResult.Failed(S["SMTP settings must be configured before an email can be sent."]);
@@ -66,19 +66,14 @@ namespace OrchardCore.Email.Services
                     message.From = senderAddress;
                 }
 
-                var errors = new List<LocalizedString>();
-
-                var mimeMessage = FromMailMessage(message, errors);
+                ValidateMailMessage(message, out var errors);
 
                 if (errors.Count > 0)
                 {
-                    return EmailResult.Failed(errors.ToArray());
+                    return EmailResult.Failed([.. errors]);
                 }
 
-                if (mimeMessage.To.Count == 0 && mimeMessage.Cc.Count == 0 && mimeMessage.Bcc.Count == 0)
-                {
-                    return EmailResult.Failed(S["The mail message should have at least one of these headers: To, Cc or Bcc."]);
-                }
+                var mimeMessage = FromMailMessage(message);
 
                 switch (Settings.DeliveryMethod)
                 {
@@ -104,108 +99,26 @@ namespace OrchardCore.Email.Services
             return result;
         }
 
-        private MimeMessage FromMailMessage(MailMessage message, IList<LocalizedString> errors)
+        private MimeMessage FromMailMessage(MailMessage message)
         {
+            var mimeMessage = new MimeMessage();
             var submitterAddress = string.IsNullOrWhiteSpace(message.Sender)
                 ? Settings.DefaultSender
                 : message.Sender;
 
-            var mimeMessage = new MimeMessage();
-
             if (!string.IsNullOrEmpty(submitterAddress))
             {
-                if (IsValidEmail(submitterAddress))
-                {
-                    mimeMessage.Sender = MailboxAddress.Parse(submitterAddress);
-
-                }
-                else
-                {
-                    errors.Add(S["Invalid email address: '{0}'", submitterAddress]);
-                }
+                mimeMessage.Sender = MailboxAddress.Parse(submitterAddress);
             }
 
-            if (!string.IsNullOrWhiteSpace(message.From))
-            {
-                foreach (var address in message.From.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
-                {
-                    if (IsValidEmail(address))
-                    {
-                        mimeMessage.From.Add(MailboxAddress.Parse(address));
-                    }
-                    else
-                    {
-                        errors.Add(S["Invalid email address: '{0}'", address]);
-                    }
-                }
-            }
+            mimeMessage.From.AddRange(message.GetSender().Select(MailboxAddress.Parse));
 
-            if (!string.IsNullOrWhiteSpace(message.To))
-            {
-                foreach (var address in message.To.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
-                {
-                    if (IsValidEmail(address))
-                    {
-                        mimeMessage.To.Add(MailboxAddress.Parse(address));
-                    }
-                    else
-                    {
-                        errors.Add(S["Invalid email address: '{0}'", address]);
-                    }
-                }
-            }
+            var recipients = message.GetRecipients();
+            mimeMessage.To.AddRange(recipients.To.Select(MailboxAddress.Parse));
+            mimeMessage.Cc.AddRange(recipients.Cc.Select(MailboxAddress.Parse));
+            mimeMessage.Bcc.AddRange(recipients.Bcc.Select(MailboxAddress.Parse));
 
-            if (!string.IsNullOrWhiteSpace(message.Cc))
-            {
-                foreach (var address in message.Cc.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
-                {
-                    if (IsValidEmail(address))
-                    {
-                        mimeMessage.Cc.Add(MailboxAddress.Parse(address));
-                    }
-                    else
-                    {
-                        errors.Add(S["Invalid email address: '{0}'", address]);
-                    }
-                }
-            }
-
-            if (!string.IsNullOrWhiteSpace(message.Bcc))
-            {
-                foreach (var address in message.Bcc.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
-                {
-                    if (IsValidEmail(address))
-                    {
-                        mimeMessage.Bcc.Add(MailboxAddress.Parse(address));
-                    }
-                    else
-                    {
-                        errors.Add(S["Invalid email address: '{0}'", address]);
-                    }
-                }
-            }
-
-            if (string.IsNullOrWhiteSpace(message.ReplyTo))
-            {
-                foreach (var address in mimeMessage.From)
-                {
-                    mimeMessage.ReplyTo.Add(address);
-                }
-            }
-            else
-            {
-                foreach (var address in message.ReplyTo.Split(_emailsSeparator, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    if (IsValidEmail(address))
-                    {
-                        mimeMessage.ReplyTo.Add(MailboxAddress.Parse(address));
-                    }
-                    else
-                    {
-                        errors.Add(S["Invalid email address: '{0}'", address]);
-                    }
-                }
-            }
+            mimeMessage.ReplyTo.AddRange(message.GetReplyTo().Select(MailboxAddress.Parse));
 
             mimeMessage.Subject = message.Subject;
 

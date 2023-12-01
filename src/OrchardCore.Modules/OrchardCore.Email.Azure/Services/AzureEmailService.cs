@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Azure;
@@ -13,8 +14,6 @@ namespace OrchardCore.Email.Azure.Services;
 
 public class AzureEmailService : EmailServiceBase<AzureEmailSettings>
 {
-    private static readonly char[] _emailsSeparator = [',', ';'];
-
     /// <summary>
     /// Initializes a new instance of a <see cref="AzureEmailService"/>.
     /// </summary>
@@ -32,10 +31,7 @@ public class AzureEmailService : EmailServiceBase<AzureEmailSettings>
 
     public async override Task<EmailResult> SendAsync(MailMessage message)
     {
-        if (message == null)
-        {
-            throw new ArgumentNullException(nameof(message));
-        }
+        ArgumentNullException.ThrowIfNull(message);
 
         if (Settings == null)
         {
@@ -56,14 +52,16 @@ public class AzureEmailService : EmailServiceBase<AzureEmailSettings>
                 message.From = senderAddress;
             }
 
-            var htmlContent = message.IsHtmlBody
-                ? message.Body
-                : null;
-            var plainTextContent = message.IsHtmlBody
-                ? null
-                : message.Body;
+            ValidateMailMessage(message, out var errors);
 
-            await client.SendAsync(WaitUntil.Completed, senderAddress, message.To, message.Subject, htmlContent, plainTextContent: plainTextContent);
+            if (errors.Count > 0)
+            {
+                return EmailResult.Failed([.. errors]);
+            }
+
+            var emailMessage = FromMailMessage(message);
+
+            await client.SendAsync(WaitUntil.Completed, emailMessage);
 
             result = EmailResult.Success;
         }
@@ -75,67 +73,28 @@ public class AzureEmailService : EmailServiceBase<AzureEmailSettings>
         return result;
     }
 
-    private EmailMessage FromMailMessage(MailMessage message, IList<LocalizedString> errors)
+    private EmailMessage FromMailMessage(MailMessage message)
     {
-        var sender = string.IsNullOrWhiteSpace(message.Sender)
-            ? Settings.DefaultSender
-            : message.Sender;
+        var recipients = message.GetRecipients();
 
-        IList<EmailAddress> toRecipients = null;
-        if (!string.IsNullOrWhiteSpace(message.To))
+        List<EmailAddress> toRecipients = null;
+        if (recipients.To.Count > 0)
         {
-            toRecipients = new List<EmailAddress>();
-
-            foreach (var address in message.To.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
-            {
-                if (IsValidEmail(address))
-                {
-                    toRecipients.Add(new EmailAddress(address));
-                }
-                else
-                {
-                    errors.Add(S["Invalid email address: '{0}'", address]);
-                }
-            }
+            toRecipients = [.. recipients.To.Select(r => new EmailAddress(r))];
         }
 
-        IList<EmailAddress> ccRecipients = null;
-        if (!string.IsNullOrWhiteSpace(message.Cc))
+        List<EmailAddress> ccRecipients = null;
+        if (recipients.Cc.Count > 0)
         {
-            ccRecipients = new List<EmailAddress>();
-
-            foreach (var address in message.Cc.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
-            {
-                if (IsValidEmail(address))
-                {
-                    ccRecipients.Add(new EmailAddress(address));
-                }
-                else
-                {
-                    errors.Add(S["Invalid email address: '{0}'", address]);
-                }
-            }
+            ccRecipients = [.. recipients.Cc.Select(r => new EmailAddress(r))];
         }
 
-        IList<EmailAddress> bccRecipients = null;
-        if (!string.IsNullOrWhiteSpace(message.Bcc))
+        List<EmailAddress> bccRecipients = null;
+        if (recipients.Bcc.Count > 0)
         {
-            bccRecipients = new List<EmailAddress>();
-
-            foreach (var address in message.Bcc.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
-            {
-                if (IsValidEmail(address))
-                {
-                    bccRecipients.Add(new EmailAddress(address));
-                }
-                else
-                {
-                    errors.Add(S["Invalid email address: '{0}'", address]);
-                }
-            }
+            ccRecipients = [.. recipients.Bcc.Select(r => new EmailAddress(r))];
         }
 
-        var recipients = new EmailRecipients(toRecipients, ccRecipients, bccRecipients);
         var content = new EmailContent(message.Subject);
         if (message.IsHtmlBody)
         {
@@ -146,21 +105,14 @@ public class AzureEmailService : EmailServiceBase<AzureEmailSettings>
             content.PlainText = message.Body;
         }
 
-        var emailMessage = new EmailMessage(sender, recipients, content);
+        var emailMessage = new EmailMessage(
+            message.From,
+            new EmailRecipients(toRecipients, ccRecipients, bccRecipients),
+            content);
 
-        if (!string.IsNullOrWhiteSpace(message.ReplyTo))
+        foreach (var address in message.GetReplyTo())
         {
-            foreach (var address in message.ReplyTo.Split(_emailsSeparator, StringSplitOptions.RemoveEmptyEntries))
-            {
-                if (IsValidEmail(address))
-                {
-                    emailMessage.ReplyTo.Add(new EmailAddress(address));
-                }
-                else
-                {
-                    errors.Add(S["Invalid email address: '{0}'", address]);
-                }
-            }
+            emailMessage.ReplyTo.Add(new EmailAddress(address));
         }
 
         foreach (var attachment in message.Attachments)
@@ -172,7 +124,11 @@ public class AzureEmailService : EmailServiceBase<AzureEmailSettings>
 
                 attachment.Stream.Read(data, 0, (int)attachment.Stream.Length);
 
-                emailMessage.Attachments.Add(new EmailAttachment(attachment.Filename, MediaTypeNames.Application.Pdf, new BinaryData(data)));
+                // TODO: Attachment should be added if the mime type supported
+                emailMessage.Attachments.Add(new EmailAttachment(
+                    attachment.Filename,
+                    MediaTypeNames.Application.Pdf,
+                    new BinaryData(data)));
             }
         }
 
