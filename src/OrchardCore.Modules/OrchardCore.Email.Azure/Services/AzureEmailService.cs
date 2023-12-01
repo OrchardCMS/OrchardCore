@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using System.Threading.Tasks;
 using Azure;
 using Azure.Communication.Email;
@@ -14,6 +14,73 @@ namespace OrchardCore.Email.Azure.Services;
 
 public class AzureEmailService : EmailServiceBase<AzureEmailSettings>
 {
+    // https://learn.microsoft.com/en-us/azure/communication-services/concepts/email/email-attachment-allowed-mime-types
+    private static readonly Dictionary<string, string> _allowedMimeTypes = new()
+    {
+        { ".3gp", "video/3gpp" },
+        { ".3g2", "video/3gpp2" },
+        { ".7z", "application/x-7z-compressed" },
+        { ".aac", "audio/aac" },
+        { ".avi", "video/x-msvideo" },
+        { ".bmp", "image/bmp" },
+        { ".csv", "text/csv" },
+        { ".doc", "application/msword" },
+        { ".docm", "application/vnd.ms-word.document.macroEnabled.12" },
+        { ".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document" },
+        { ".eot", "application/vnd.ms-fontobject" },
+        { ".epub", "application/epub+zip" },
+        { ".gif", "image/gif" },
+        { ".gz", "application/gzip" },
+        { ".ico", "image/vnd.microsoft.icon" },
+        { ".ics", "text/calendar" },
+        { ".jpg", "image/jpeg" },
+        { ".jpeg", "image/jpeg" },
+        { ".json", "application/json" },
+        { ".mid", ".midi audio/midi" },
+        { ".midi", ".midi audio/midi" },
+        { ".mp3", "audio/mpeg" },
+        { ".mp4", "video/mp4" },
+        { ".mpeg", "video/mpeg" },
+        { ".oga", "audio/ogg" },
+        { ".ogv", "video/ogg" },
+        { ".ogx", "application/ogg" },
+        { ".one", "application/onenote" },
+        { ".opus", "audio/opus" },
+        { ".otf", "font/otf" },
+        { ".pdf", "application/pdf" },
+        { ".png", "image/png" },
+        { ".ppsm", "application/vnd.ms-powerpoint.slideshow.macroEnabled.12" },
+        { ".ppsx", "application/vnd.openxmlformats-officedocument.presentationml.slideshow" },
+        { ".ppt", "application/vnd.ms-powerpoint" },
+        { ".pptm", "application/vnd.ms-powerpoint.presentation.macroEnabled.12" },
+        { ".pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation" },
+        { ".pub", "application/vnd.ms-publisher" },
+        { ".rar", "application/x-rar-compressed" },
+        { ".rpmsg", "application/vnd.ms-outlook" },
+        { ".rtf", "application/rtf" },
+        { ".svg", "image/svg+xml" },
+        { ".tar", "application/x-tar" },
+        { ".tif", "image/tiff" },
+        { ".tiff", "image/tiff" },
+        { ".ttf", "font/ttf" },
+        { ".txt", "text/plain" },
+        { ".vsd", "application/vnd.visio" },
+        { ".wav", "audio/wav" },
+        { ".weba", "audio/webm" },
+        { ".webm", "video/webm" },
+        { ".webp", "image/webp" },
+        { ".wma", "audio/x-ms-wma" },
+        { ".wmv", "video/x-ms-wmv" },
+        { ".woff", "font/woff" },
+        { ".woff2", "font/woff2" },
+        { ".xls", "application/vnd.ms-excel" },
+        { ".xlsb", "application/vnd.ms-excel.sheet.binary.macroEnabled.12" },
+        { ".xlsm", "application/vnd.ms-excel.sheet.macroEnabled.12" },
+        { ".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" },
+        { ".xml", "application/xml, text/xml" },
+        { ".zip", "application/zip" }
+    };
+
     /// <summary>
     /// Initializes a new instance of a <see cref="AzureEmailService"/>.
     /// </summary>
@@ -120,15 +187,20 @@ public class AzureEmailService : EmailServiceBase<AzureEmailSettings>
             // Stream must not be null, otherwise it would try to get the filesystem path
             if (attachment.Stream != null)
             {
-                var data = new byte[attachment.Stream.Length];
+                var extension = Path.GetExtension(attachment.Filename);
 
-                attachment.Stream.Read(data, 0, (int)attachment.Stream.Length);
+                if (_allowedMimeTypes.TryGetValue(extension, out var contentType))
+                {
+                    var data = new byte[attachment.Stream.Length];
 
-                // TODO: Attachment should be added if the mime type supported
-                emailMessage.Attachments.Add(new EmailAttachment(
-                    attachment.Filename,
-                    MediaTypeNames.Application.Pdf,
-                    new BinaryData(data)));
+                    attachment.Stream.Read(data, 0, (int)attachment.Stream.Length);
+
+                    emailMessage.Attachments.Add(new EmailAttachment(attachment.Filename, contentType, new BinaryData(data)));
+                }
+                else
+                {
+                    Logger.LogWarning("The mime type for the attachment '{attachment}' is not supported.", attachment.Filename);
+                }
             }
         }
 
