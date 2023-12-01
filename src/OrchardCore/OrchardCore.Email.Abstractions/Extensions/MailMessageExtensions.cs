@@ -8,9 +8,9 @@ public static class MailMessageExtensions
 {
     private static readonly char[] _emailsSeparator = [',', ';'];
 
-    public static MailRecipients GetRecipients(this MailMessage message)
+    public static MailMessageRecipients GetRecipients(this MailMessage message)
     {
-        var recipients = new MailRecipients();
+        var recipients = new MailMessageRecipients();
         recipients.To.AddRange(message.To?
             .Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
             ?? Enumerable.Empty<string>());
