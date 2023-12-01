@@ -29,7 +29,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             if (existing == null)
             {
                 _fields = new List<ContentPartFieldDefinition>();
-                _settings = new JObject();
+                _settings = [];
             }
             else
             {
@@ -106,10 +106,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentPartDefinitionBuilder WithSettings<T>(T settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings, nameof(settings));
 
             var jObject = JObject.FromObject(settings, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
             _settings[typeof(T).Name] = jObject;
@@ -118,16 +115,11 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         }
 
         public ContentPartDefinitionBuilder WithField(string fieldName)
-        {
-            return WithField(fieldName, configuration => { });
-        }
+            => WithField(fieldName, configuration => { });
 
         public ContentPartDefinitionBuilder WithField(string fieldName, Action<ContentPartFieldDefinitionBuilder> configuration)
         {
-            if (string.IsNullOrWhiteSpace(fieldName))
-            {
-                throw new ArgumentException($"'{nameof(fieldName)}' cannot be null or empty.");
-            }
+            ArgumentException.ThrowIfNullOrWhiteSpace(fieldName, nameof(fieldName));
 
             var existingField = _fields.FirstOrDefault(x => string.Equals(x.Name, fieldName, StringComparison.OrdinalIgnoreCase));
             if (existingField != null)
@@ -151,12 +143,28 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
+        public ContentPartDefinitionBuilder WithField<TField>(string fieldName)
+            => WithField(fieldName, configuration => configuration.OfType(typeof(TField).Name));
+
+        public ContentPartDefinitionBuilder WithField<TField>(string fieldName, Action<ContentPartFieldDefinitionBuilder> configuration)
+            => WithField(fieldName, field =>
+            {
+                configuration(field);
+
+                field.OfType(typeof(TField).Name);
+            });
+
+        public Task<ContentPartDefinitionBuilder> WithFieldAsync<TField>(string fieldName, Func<ContentPartFieldDefinitionBuilder, Task> configuration)
+            => WithFieldAsync(fieldName, async field =>
+            {
+                await configuration(field);
+
+                field.OfType(typeof(TField).Name);
+            });
+
         public async Task<ContentPartDefinitionBuilder> WithFieldAsync(string fieldName, Func<ContentPartFieldDefinitionBuilder, Task> configurationAsync)
         {
-            if (string.IsNullOrWhiteSpace(fieldName))
-            {
-                throw new ArgumentException($"'{nameof(fieldName)}' cannot be null or empty.");
-            }
+            ArgumentException.ThrowIfNullOrWhiteSpace(fieldName, nameof(fieldName));
 
             var existingField = _fields.FirstOrDefault(x => string.Equals(x.Name, fieldName, StringComparison.OrdinalIgnoreCase));
 
@@ -214,19 +222,14 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
 
             public override string Name
-            {
-                get { return _fieldName; }
-            }
+                => _fieldName;
 
             public override string FieldType
-            {
-                get { return _fieldDefinition.Name; }
-            }
+                => _fieldDefinition.Name;
+
 
             public override string PartName
-            {
-                get { return _partDefinition.Name; }
-            }
+                => _partDefinition.Name;
 
             public override ContentPartFieldDefinitionBuilder OfType(ContentFieldDefinition fieldDefinition)
             {

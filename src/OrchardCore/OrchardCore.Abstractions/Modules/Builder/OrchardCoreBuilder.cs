@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
 
@@ -103,7 +104,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 for (var index = 0; index < services.Count; index++)
                 {
                     var service = services[index];
-                    if (service.ImplementationInstance is ShellFeature feature &&
+                    if (service.GetImplementationInstance() is ShellFeature feature &&
                         string.Equals(feature.Id, id, StringComparison.OrdinalIgnoreCase))
                     {
                         return;
