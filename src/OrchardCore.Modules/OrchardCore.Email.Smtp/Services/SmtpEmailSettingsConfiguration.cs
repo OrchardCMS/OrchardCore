@@ -1,26 +1,18 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Services
 {
-    public class SmtpEmailSettingsConfiguration : IConfigureOptions<SmtpEmailSettings>
+    public class SmtpEmailSettingsConfiguration(
+        ISiteService site,
+        IDataProtectionProvider dataProtectionProvider,
+        ILogger<SmtpEmailSettingsConfiguration> logger) : IConfigureOptions<SmtpEmailSettings>
     {
-        private readonly ISiteService _site;
-        private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger _logger;
-
-        public SmtpEmailSettingsConfiguration(
-            ISiteService site,
-            IDataProtectionProvider dataProtectionProvider,
-            ILogger<SmtpEmailSettingsConfiguration> logger)
-        {
-            _site = site;
-            _dataProtectionProvider = dataProtectionProvider;
-            _logger = logger;
-        }
+        private readonly ISiteService _site = site;
+        private readonly IDataProtectionProvider _dataProtectionProvider = dataProtectionProvider;
+        private readonly ILogger _logger = logger;
 
         public void Configure(SmtpEmailSettings options)
         {

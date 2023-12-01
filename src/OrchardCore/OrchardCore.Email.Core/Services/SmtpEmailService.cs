@@ -18,30 +18,19 @@ namespace OrchardCore.Email.Services
     /// <summary>
     /// Represents a SMTP service that allows to send emails.
     /// </summary>
-    public class SmtpEmailService : EmailServiceBase<SmtpEmailSettings>
+    /// <param name="options">The <see cref="IOptions{SmtpSettings}"/>.</param>
+    /// <param name="logger">The <see cref="ILogger{SmtpService}"/>.</param>
+    /// <param name="stringLocalizer">The <see cref="IStringLocalizer{SmtpService}"/>.</param>
+    /// <param name="emailAddressValidator">The <see cref="IEmailAddressValidator"/>.</param>
+    public class SmtpEmailService(
+        IOptions<SmtpEmailSettings> options,
+        ILogger<SmtpEmailService> logger,
+        IStringLocalizer<SmtpEmailService> stringLocalizer,
+        IEmailAddressValidator emailAddressValidator) : EmailServiceBase<SmtpEmailSettings>(options, logger, stringLocalizer, emailAddressValidator)
     {
         private const string EmailExtension = ".eml";
 
-        /// <summary>
-        /// Initializes a new instance of a <see cref="SmtpEmailService"/>.
-        /// </summary>
-        /// <param name="options">The <see cref="IOptions{SmtpSettings}"/>.</param>
-        /// <param name="logger">The <see cref="ILogger{SmtpService}"/>.</param>
-        /// <param name="stringLocalizer">The <see cref="IStringLocalizer{SmtpService}"/>.</param>
-        /// <param name="emailAddressValidator">The <see cref="IEmailAddressValidator"/>.</param>
-        public SmtpEmailService(
-            IOptions<SmtpEmailSettings> options,
-            ILogger<SmtpEmailService> logger,
-            IStringLocalizer<SmtpEmailService> stringLocalizer,
-            IEmailAddressValidator emailAddressValidator) : base(options, logger, stringLocalizer, emailAddressValidator)
-        {
-        }
-
-        /// <summary>
-        /// Sends the specified message to an SMTP server for delivery.
-        /// </summary>
-        /// <param name="message">The message to be sent.</param>
-        /// <returns>A <see cref="SmtpEmailResult"/> that holds information about the sent message, for instance if it has sent successfully or if it has failed.</returns>
+        /// <inheritdoc/>
         /// <remarks>This method allows to send an email without setting <see cref="MailMessage.To"/> if <see cref="MailMessage.Cc"/> or <see cref="MailMessage.Bcc"/> is provided.</remarks>
         public override async Task<EmailResult> SendAsync(MailMessage message)
         {

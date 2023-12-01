@@ -12,7 +12,18 @@ using OrchardCore.Email.Services;
 
 namespace OrchardCore.Email.Azure.Services;
 
-public class AzureEmailService : EmailServiceBase<AzureEmailSettings>
+/// <summary>
+/// Represents an Azure service that allows to send emails.
+/// </summary>
+/// <param name="options">The <see cref="IOptions{AzureEmailSettings}"/>.</param>
+/// <param name="logger">The <see cref="ILogger{AzureEmailService}"/>.</param>
+/// <param name="stringLocalizer">The <see cref="IStringLocalizer{AzureEmailService}"/>.</param>
+/// <param name="emailAddressValidator">The <see cref="IEmailAddressValidator"/>.</param>
+public class AzureEmailService(
+    IOptions<AzureEmailSettings> options,
+    ILogger<AzureEmailService> logger,
+    IStringLocalizer<AzureEmailService> stringLocalizer,
+    IEmailAddressValidator emailAddressValidator) : EmailServiceBase<AzureEmailSettings>(options, logger, stringLocalizer, emailAddressValidator)
 {
     // https://learn.microsoft.com/en-us/azure/communication-services/concepts/email/email-attachment-allowed-mime-types
     private static readonly Dictionary<string, string> _allowedMimeTypes = new()
@@ -81,21 +92,7 @@ public class AzureEmailService : EmailServiceBase<AzureEmailSettings>
         { ".zip", "application/zip" }
     };
 
-    /// <summary>
-    /// Initializes a new instance of a <see cref="AzureEmailService"/>.
-    /// </summary>
-    /// <param name="options">The <see cref="IOptions{AzureEmailSettings}"/>.</param>
-    /// <param name="logger">The <see cref="ILogger{AzureEmailService}"/>.</param>
-    /// <param name="stringLocalizer">The <see cref="IStringLocalizer{AzureEmailService}"/>.</param>
-    /// <param name="emailAddressValidator">The <see cref="IEmailAddressValidator"/>.</param>
-    public AzureEmailService(
-        IOptions<AzureEmailSettings> options,
-        ILogger<AzureEmailService> logger,
-        IStringLocalizer<AzureEmailService> stringLocalizer,
-        IEmailAddressValidator emailAddressValidator) : base(options, logger, stringLocalizer, emailAddressValidator)
-    {
-    }
-
+    /// <inheritdoc/>
     public async override Task<EmailResult> SendAsync(MailMessage message)
     {
         ArgumentNullException.ThrowIfNull(message);

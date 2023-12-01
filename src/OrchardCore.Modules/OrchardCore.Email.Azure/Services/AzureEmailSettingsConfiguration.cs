@@ -2,21 +2,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OrchardCore.Email.Azure;
 using OrchardCore.Environment.Shell.Configuration;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Services
 {
-    public class AzureEmailSettingsConfiguration : IConfigureOptions<AzureEmailSettings>
+    public class AzureEmailSettingsConfiguration(IShellConfiguration shellConfiguration, ISiteService site) : IConfigureOptions<AzureEmailSettings>
     {
-        private readonly IShellConfiguration _shellConfiguration;
-        private readonly ISiteService _site;
-
-        public AzureEmailSettingsConfiguration(IShellConfiguration shellConfiguration, ISiteService site)
-        {
-            _shellConfiguration = shellConfiguration;
-            _site = site;
-        }
+        private readonly IShellConfiguration _shellConfiguration = shellConfiguration;
+        private readonly ISiteService _site = site;
 
         public void Configure(AzureEmailSettings options)
         {
