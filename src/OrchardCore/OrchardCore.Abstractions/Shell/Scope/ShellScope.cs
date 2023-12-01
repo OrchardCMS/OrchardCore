@@ -301,6 +301,14 @@ namespace OrchardCore.Environment.Shell.Scope
             (var locker, var locked) = await ShellContext.TryAcquireShellActivateLockAsync();
             if (!locked)
             {
+                // The retry logic increases the delay between 2 attempts (max of 10s), so if there are too
+                // many concurrent requests, one may experience a timeout while waiting before a new retry.
+                if (ShellContext.IsActivated)
+                {
+                    // Don't throw if the shell is activated.
+                    return;
+                }
+
                 throw new TimeoutException($"Failed to acquire a lock before activating the tenant: {ShellContext.Settings.Name}");
             }
 

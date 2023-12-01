@@ -8,10 +8,6 @@ namespace Microsoft.Extensions.Internal;
 
 internal readonly struct ValueStopwatch
 {
-#if !NET7_0_OR_GREATER
-    private static readonly double TimestampToTicks = TimeSpan.TicksPerSecond / (double)Stopwatch.Frequency;
-#endif
-
     private readonly long _startTimestamp;
 
     public readonly bool IsActive => _startTimestamp != 0;
@@ -34,12 +30,6 @@ internal readonly struct ValueStopwatch
 
         var end = Stopwatch.GetTimestamp();
 
-#if !NET7_0_OR_GREATER
-        var timestampDelta = end - _startTimestamp;
-        var ticks = (long)(TimestampToTicks * timestampDelta);
-        return new TimeSpan(ticks);
-#else
         return Stopwatch.GetElapsedTime(_startTimestamp, end);
-#endif
     }
 }
