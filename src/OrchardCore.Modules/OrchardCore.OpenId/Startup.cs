@@ -20,6 +20,7 @@ using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
@@ -355,7 +356,7 @@ namespace OrchardCore.OpenId
             for (var index = services.Count - 1; index >= 0; index--)
             {
                 var descriptor = services[index];
-                if (descriptor.ServiceType == serviceType && descriptor.ImplementationType == implementationType)
+                if (descriptor.ServiceType == serviceType && descriptor.GetImplementationType() == implementationType)
                 {
                     services.RemoveAt(index);
                 }
