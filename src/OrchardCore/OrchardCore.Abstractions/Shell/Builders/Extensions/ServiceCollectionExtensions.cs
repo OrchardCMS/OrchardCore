@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
     /// Registers a delegate used to configure asynchronously a type of options just after a tenant container is created.
     /// </summary>
     public static IServiceCollection Configure<TOptions>(
-        this IServiceCollection services, Func<TOptions, ValueTask> configureAsync)
+        this IServiceCollection services, Func<IServiceProvider, TOptions, ValueTask> configureAsync)
         where TOptions : class, IAsyncOptions, new()
     {
         if (!services.Any(d => d.ServiceType == typeof(TOptions)))
@@ -29,7 +29,7 @@ public static class ServiceCollectionExtensions
         services.Initialize(async sp =>
         {
             var options = sp.GetRequiredService<TOptions>();
-            await configureAsync(options);
+            await configureAsync(sp, options);
         });
 
         return services;
