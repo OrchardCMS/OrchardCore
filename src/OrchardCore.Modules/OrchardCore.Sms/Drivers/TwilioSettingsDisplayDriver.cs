@@ -62,7 +62,7 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
 
         var model = new TwilioSettingsViewModel();
 
-        if (await context.Updater.TryUpdateModelAsync(model, Prefix) && model.DefaultProvider == TwilioSmsProvider.TechnicalName)
+        if (await context.Updater.TryUpdateModelAsync(model, Prefix))
         {
             if (string.IsNullOrWhiteSpace(model.PhoneNumber))
             {
