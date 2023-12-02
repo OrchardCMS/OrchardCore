@@ -17,7 +17,7 @@
 <form asp-action="Edit" method="post" class="no-multisubmit">
     <h2>@T["Edit Role Detail"]</h2>
     <div class="mb-3" asp-validation-class-for="RoleDescription">
-        <label asp-for="RoleDescription">@T["Role description"]</label>
+        <label asp-for="RoleDescription" class="form-label">@T["Role description"]</label>
         <input asp-for="RoleDescription" class="form-control" />
     </div>
     <hr class="my-3">

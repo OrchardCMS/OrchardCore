@@ -10,14 +10,14 @@
     <hr />
     <div asp-validation-summary="All"></div>
     <div class="mb-3">
-        <label asp-for="UserName" class="col-md-3 control-label">@T["Username"]</label>
+        <label asp-for="UserName" class="col-md-3 form-label">@T["Username"]</label>
         <div class="col-md-9">
             <input asp-for="UserName" class="form-control" autofocus />
             <span asp-validation-for="UserName" class="text-danger"></span>
         </div>
     </div>
     <div class="mb-3">
-        <label asp-for="Email" class="col-md-3 control-label">@T["Email"]</label>
+        <label asp-for="Email" class="col-md-3 form-label">@T["Email"]</label>
         <div class="col-md-9">
             <input asp-for="Email" class="form-control" />
             <span asp-validation-for="Email" class="text-danger"></span>

@@ -120,14 +120,14 @@
 <p class="alert alert-info">@T["These options are all optional and are for advanced users only."]</p>
 
 <div class="mb-3" asp-validation-class-for="Authority">
-    <label asp-for="Authority">@T["Authority"]</label>
+    <label asp-for="Authority" class="form-label">@T["Authority"]</label>
     <input asp-for="Authority" class="form-control" />
     <span asp-validation-for="Authority"></span>
     <span class="hint">@T["The base URL of the identity server (this site). If none is provided, a default value based on the site host is automatically computed."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="EncryptionCertificateStoreLocation">
-    <label asp-for="EncryptionCertificateStoreLocation">@T["Encryption Certificate Store Location"]</label>
+    <label asp-for="EncryptionCertificateStoreLocation" class="form-label">@T["Encryption Certificate Store Location"]</label>
     <select asp-for="EncryptionCertificateStoreLocation" class="form-select">
         <option value="">@T["None"]</option>
 
@@ -141,7 +141,7 @@
 </div>
 
 <div class="mb-3" asp-validation-class-for="EncryptionCertificateStoreName">
-    <label asp-for="EncryptionCertificateStoreName">@T["Encryption Certificate Store Name"]</label>
+    <label asp-for="EncryptionCertificateStoreName" class="form-label">@T["Encryption Certificate Store Name"]</label>
     <select asp-for="EncryptionCertificateStoreName" class="form-select">
         <option value="">@T["None"]</option>
 
@@ -157,7 +157,7 @@
 <div class="mb-3" asp-validation-class-for="EncryptionCertificateThumbprint">
     @if (Model.AvailableCertificates.Count != 0)
     {
-        <label asp-for="EncryptionCertificateThumbprint">@T["Encryption Certificate"]</label>
+        <label asp-for="EncryptionCertificateThumbprint" class="form-label">@T["Encryption Certificate"]</label>
         <select asp-for="EncryptionCertificateThumbprint" class="form-select">
             <option value="">@T["None"]</option>
 
@@ -191,7 +191,7 @@
 </div>
 
 <div class="mb-3" asp-validation-class-for="SigningCertificateStoreLocation">
-    <label asp-for="SigningCertificateStoreLocation">@T["Signing Certificate Store Location"]</label>
+    <label asp-for="SigningCertificateStoreLocation" class="form-label">@T["Signing Certificate Store Location"]</label>
     <select asp-for="SigningCertificateStoreLocation" class="form-select">
         <option value="">@T["None"]</option>
 
@@ -205,7 +205,7 @@
 </div>
 
 <div class="mb-3" asp-validation-class-for="SigningCertificateStoreName">
-    <label asp-for="SigningCertificateStoreName">@T["Signing Certificate Store Name"]</label>
+    <label asp-for="SigningCertificateStoreName" class="form-label">@T["Signing Certificate Store Name"]</label>
     <select asp-for="SigningCertificateStoreName" class="form-select">
         <option value="">@T["None"]</option>
 
@@ -221,7 +221,7 @@
 <div class="mb-3" asp-validation-class-for="SigningCertificateThumbprint">
     @if (Model.AvailableCertificates.Count != 0)
     {
-        <label asp-for="SigningCertificateThumbprint">@T["Signing Certificate"]</label>
+        <label asp-for="SigningCertificateThumbprint" class="form-label">@T["Signing Certificate"]</label>
         <select asp-for="SigningCertificateThumbprint" class="form-select">
             <option value="">@T["None"]</option>
 
@@ -263,7 +263,7 @@
 </div>
 
 <div class="mb-3" asp-validation-class-for="AccessTokenFormat">
-    <label asp-for="AccessTokenFormat">@T["Token Format"]</label>
+    <label asp-for="AccessTokenFormat" class="form-label">@T["Token Format"]</label>
     <select asp-for="AccessTokenFormat" class="form-select">
         <option value="@OpenIdServerSettings.TokenFormat.DataProtection" selected="@(Model.AccessTokenFormat == OpenIdServerSettings.TokenFormat.DataProtection)">
             @T["ASP.NET Core Data Protection"]
