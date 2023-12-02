@@ -22,6 +22,6 @@ namespace OrchardCore.Environment.Shell.Descriptor.Models
         /// <summary>
         /// Gets or sets the list of installed features in the shell.
         /// </summary>
-        public IList<ShellFeature> Installed { get; set; } = new List<ShellFeature>();
+        public IList<InstalledShellFeature> Installed { get; set; } = new List<InstalledShellFeature>();
     }
 }
