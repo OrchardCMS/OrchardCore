@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,12 +42,12 @@ namespace OrchardCore.Localization
         }
 
         /// <inheritdocs />
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        public override async ValueTask ConfigureAsync(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var localizationService = serviceProvider.GetService<ILocalizationService>();
 
-            var defaultCulture = localizationService.GetDefaultCultureAsync().GetAwaiter().GetResult();
-            var supportedCultures = localizationService.GetSupportedCulturesAsync().GetAwaiter().GetResult();
+            var defaultCulture = await localizationService.GetDefaultCultureAsync();
+            var supportedCultures = await localizationService.GetSupportedCulturesAsync();
 
             var localizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
             var ignoreSystemSettings = serviceProvider.GetService<IOptions<CultureOptions>>().Value.IgnoreSystemSettings;
