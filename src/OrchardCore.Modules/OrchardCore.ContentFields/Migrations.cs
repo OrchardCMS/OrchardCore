@@ -21,10 +21,10 @@ namespace OrchardCore.ContentFields
         }
 
         // New installations don't need to be upgraded, but because there is no initial migration record,
-        // 'UpgradeAsync()' is called in 'CreateAsync()', but only if the feature is not newly installed.
+        // 'UpgradeAsync' is called in a new 'CreateAsync' but only if the feature was already installed.
         public async Task<int> CreateAsync()
         {
-            if (_shellDescriptor.WasInstalled("OrchardCore.ContentFields"))
+            if (_shellDescriptor.WasFeatureAlreadyInstalled("OrchardCore.ContentFields"))
             {
                 await UpgradeAsync();
             }

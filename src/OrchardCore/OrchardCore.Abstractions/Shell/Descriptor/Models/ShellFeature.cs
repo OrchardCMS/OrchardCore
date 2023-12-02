@@ -20,11 +20,6 @@ namespace OrchardCore.Environment.Shell.Descriptor.Models
         [JsonIgnore]
         public bool AlwaysEnabled { get; set; }
 
-        /// <summary>
-        /// The version number of the descriptor when the feature was installed.
-        /// </summary>
-        public int SerialNumber { get; set; }
-
         public bool Equals(ShellFeature other)
         {
             if (other == null)
