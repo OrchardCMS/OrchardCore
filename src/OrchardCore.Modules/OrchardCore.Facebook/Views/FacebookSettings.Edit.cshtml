@@ -29,10 +29,10 @@
 
 <div class="row">
     <div class="col-lg-6 col-xl-3">
-        <label class="form-label">@T["Javascript SDK Version"]</label>
+        <label asp-for="Version" class="form-label">@T["Javascript SDK Version"]</label>
     </div>
     <div class="col-lg-6 col-xl-9">
-        <label class="form-label">@T["Javascript Sdk js"]</label>
+        <label asp-for="SdkJs" class="form-label">@T["Javascript Sdk js"]</label>
     </div>
     <div class="mb-3 col-lg-6 col-xl-3" asp-validation-class-for="Version">
         <input asp-for="Version" class="form-control" value="@Model.Version" />
