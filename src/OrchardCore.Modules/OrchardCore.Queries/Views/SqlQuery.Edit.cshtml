@@ -25,11 +25,15 @@
 
 <script at="Foot">
     $(function () {
-        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), { mode: "text/x-pgsql",
-            indentWithTabs: true, smartIndent: true, matchBrackets : true, lineNumbers: true, styleActiveLine: true, viewportMargin: Infinity,
-            extraKeys: {"Ctrl-Space": "autocomplete"},
-            hintOptions: {tables: {
-              ContentItemIndex: ["DocumentId"]
-            }} });
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), {
+            mode: "text/x-pgsql",
+            indentWithTabs: true, smartIndent: true, matchBrackets: true, lineNumbers: true, styleActiveLine: true, viewportMargin: Infinity,
+            extraKeys: { "Ctrl-Space": "autocomplete" },
+            hintOptions: {
+                tables: {
+                    ContentItemIndex: ["DocumentId"]
+                }
+            }
+        });
     });
 </script>

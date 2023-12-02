@@ -73,7 +73,9 @@
                 </tr>
             </thead>
             <tbody>
-                @{ int row = 1; }
+                @{
+                    int row = 1;
+                }
                 @foreach (var document in Model.Documents)
                 {
                     <tr>
@@ -92,7 +94,7 @@
     </div>
 }
 <script at="Foot">
-    $(function() {
+    $(function () {
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.DecodedQuery)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.Parameters)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
     });

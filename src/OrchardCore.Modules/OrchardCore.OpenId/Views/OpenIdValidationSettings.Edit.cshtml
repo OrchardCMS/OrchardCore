@@ -5,8 +5,8 @@
 
 <p class="alert alert-warning">
     @T["To be able to validate tokens issued by a separate tenant, " +
-       "you must register a custom scope in the server options " +
-       "of the tenant hosting the authorization server."]
+            "you must register a custom scope in the server options " +
+            "of the tenant hosting the authorization server."]
 </p>
 
 <div class="mb-3" asp-validation-class-for="Tenant">
@@ -50,7 +50,7 @@
     </div>
 </div>
 
-    <script at="Foot">
+<script at="Foot">
     $(function () {
         var authority = $('#@Html.IdFor(model => model.Authority)');
         var audience = $('#@Html.IdFor(model => model.Audience)');
@@ -75,4 +75,4 @@
 
         tenant.trigger('change');
     });
-    </script>
+</script>
