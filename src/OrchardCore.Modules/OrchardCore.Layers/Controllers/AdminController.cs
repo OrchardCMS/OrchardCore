@@ -96,7 +96,7 @@ namespace OrchardCore.Layers.Controllers
             var model = new LayersIndexViewModel { Layers = layers.Layers.ToList() };
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var contentDefinitions = _contentDefinitionManager.ListTypeDefinitions();
+            var contentDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
 
             model.Zones = siteSettings.As<LayerSettings>().Zones ?? Array.Empty<string>();
             model.Widgets = new Dictionary<string, List<dynamic>>();

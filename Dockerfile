@@ -1,4 +1,5 @@
-FROM --platform=$TARGETOS golang:alpine AS build
+FROM --platform=$BUILDPLATFORM golang:alpine AS build
+ARG TARGETOS
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 LABEL stage=build-env
