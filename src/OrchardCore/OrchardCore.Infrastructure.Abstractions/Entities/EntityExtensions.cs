@@ -62,7 +62,7 @@ namespace OrchardCore.Entities
 
         public static bool TryGet<T>(this IEntity entity, out T aspect) where T : new()
         {
-            if (entity.Properties.TryGetValue(typeof(T).Name, out var value))
+            if (entity.Properties.TryGetPropertyValue(typeof(T).Name, out var value))
             {
                 aspect = value.ToObject<T>();
 

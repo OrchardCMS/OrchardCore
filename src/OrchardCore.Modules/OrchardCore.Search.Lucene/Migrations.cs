@@ -95,29 +95,29 @@ namespace OrchardCore.Search.Lucene
                         var included = existingPartSettings["Included"];
                         var analyzed = existingPartSettings["Analyzed"];
 
-                         if (included != null)
-                         {
-                             if (analyzed != null)
-                             {
-                                 if ((bool)included && !(bool)analyzed)
-                                 {
-                                     existingPartSettings["Keyword"] = true;
-                                 }
-                             }
-                             else
-                             {
-                                 if ((bool)included)
-                                 {
-                                     existingPartSettings["Keyword"] = true;
-                                 }
-                             }
-                         }
+                        if (included != null)
+                        {
+                            if (analyzed != null)
+                            {
+                                if ((bool)included && !(bool)analyzed)
+                                {
+                                    existingPartSettings["Keyword"] = true;
+                                }
+                            }
+                            else
+                            {
+                                if ((bool)included)
+                                {
+                                    existingPartSettings["Keyword"] = true;
+                                }
+                            }
+                        }
 
                         var jExistingPartSettings = existingPartSettings.Clone();
                         partDefinition.Settings.Add(nameof(LuceneContentIndexSettings), jExistingPartSettings);
                     }
 
-                     partDefinition.Settings.Remove("ContentIndexSettings");
+                    partDefinition.Settings.Remove("ContentIndexSettings");
 
                     foreach (var fieldDefinition in partDefinition.Fields)
                     {
@@ -127,31 +127,31 @@ namespace OrchardCore.Search.Lucene
                             var included = existingFieldSettings["Included"];
                             var analyzed = existingFieldSettings["Analyzed"];
 
-                             if (included != null)
-                             {
-                                 if (analyzed != null)
-                                 {
-                                     if ((bool)included && !(bool)analyzed)
-                                     {
-                                         existingFieldSettings["Keyword"] = true;
-                                     }
-                                 }
-                                 else
-                                 {
-                                     if ((bool)included)
-                                     {
-                                         existingFieldSettings["Keyword"] = true;
-                                     }
-                                 }
-                             }
+                            if (included != null)
+                            {
+                                if (analyzed != null)
+                                {
+                                    if ((bool)included && !(bool)analyzed)
+                                    {
+                                        existingFieldSettings["Keyword"] = true;
+                                    }
+                                }
+                                else
+                                {
+                                    if ((bool)included)
+                                    {
+                                        existingFieldSettings["Keyword"] = true;
+                                    }
+                                }
+                            }
 
                             var jExistingFieldSettings = existingFieldSettings.Clone();
                             fieldDefinition.Settings.Add(nameof(LuceneContentIndexSettings), jExistingFieldSettings);
                         }
 
-                         fieldDefinition.Settings.Remove("ContentIndexSettings");
-                     }
-                 });
+                        fieldDefinition.Settings.Remove("ContentIndexSettings");
+                    }
+                });
             }
 
             // Defer this until after the subsequent migrations have succeeded as the schema has changed.
