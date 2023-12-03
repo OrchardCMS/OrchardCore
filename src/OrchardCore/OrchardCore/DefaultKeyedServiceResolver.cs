@@ -11,8 +11,6 @@ public class DefaultKeyedServiceResolver(IServiceCollection services) : IKeyedSe
     private readonly IServiceCollection _services = services;
 
     public IReadOnlyDictionary<TKey, TService> GetServices<TKey, TService>()
-    {
-        return _services.Where(service => service.ServiceKey is not null && service.ServiceKey!.GetType() == typeof(TKey) && service.ServiceType == typeof(TService))
+        => _services.Where(service => service.ServiceKey is not null && service.ServiceKey!.GetType() == typeof(TKey) && service.ServiceType == typeof(TService))
                  .ToFrozenDictionary(service => (TKey)Convert.ChangeType(service.ServiceKey, typeof(TKey)), service => (TService)service.KeyedImplementationInstance);
-    }
 }
