@@ -56,9 +56,9 @@ namespace OrchardCore.Search.Lucene
                             var included = existingPartSettings["Included"];
                             var analyzed = existingPartSettings["Analyzed"];
 
-                            if (included != null)
+                            if (included is not null)
                             {
-                                if (analyzed != null)
+                                if (analyzed is not null)
                                 {
                                     if ((bool)included && !(bool)analyzed)
                                     {
@@ -74,8 +74,14 @@ namespace OrchardCore.Search.Lucene
                                 }
                             }
 
-                            var jExistingPartSettings = existingPartSettings.Clone();
-                            partDefinition.Settings.Add(nameof(LuceneContentIndexSettings), jExistingPartSettings);
+                            var jExistingPartSettings = existingPartSettings.AsObject();
+
+                            // We remove unnecessary properties from old releases.
+                            jExistingPartSettings.Remove("Analyzed");
+                            jExistingPartSettings.Remove("Tokenized");
+                            jExistingPartSettings.Remove("Template");
+
+                            partDefinition.Settings.Add(nameof(LuceneContentIndexSettings), jExistingPartSettings.Clone());
                         }
 
                         partDefinition.Settings.Remove("ContentIndexSettings");
@@ -113,8 +119,14 @@ namespace OrchardCore.Search.Lucene
                             }
                         }
 
-                        var jExistingPartSettings = existingPartSettings.Clone();
-                        partDefinition.Settings.Add(nameof(LuceneContentIndexSettings), jExistingPartSettings);
+                        var jExistingPartSettings = existingPartSettings.AsObject();
+
+                        // We remove unnecessary properties from old releases.
+                        jExistingPartSettings.Remove("Analyzed");
+                        jExistingPartSettings.Remove("Tokenized");
+                        jExistingPartSettings.Remove("Template");
+
+                        partDefinition.Settings.Add(nameof(LuceneContentIndexSettings), jExistingPartSettings.Clone());
                     }
 
                     partDefinition.Settings.Remove("ContentIndexSettings");
@@ -145,8 +157,14 @@ namespace OrchardCore.Search.Lucene
                                 }
                             }
 
-                            var jExistingFieldSettings = existingFieldSettings.Clone();
-                            fieldDefinition.Settings.Add(nameof(LuceneContentIndexSettings), jExistingFieldSettings);
+                            var jExistingFieldSettings = existingFieldSettings.AsObject();
+
+                            // We remove unnecessary properties from old releases.
+                            jExistingFieldSettings.Remove("Analyzed");
+                            jExistingFieldSettings.Remove("Tokenized");
+                            jExistingFieldSettings.Remove("Template");
+
+                            fieldDefinition.Settings.Add(nameof(LuceneContentIndexSettings), jExistingFieldSettings.Clone());
                         }
 
                         fieldDefinition.Settings.Remove("ContentIndexSettings");
