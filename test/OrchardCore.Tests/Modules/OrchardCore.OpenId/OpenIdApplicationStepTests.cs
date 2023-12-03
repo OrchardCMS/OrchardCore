@@ -1,11 +1,9 @@
-using OpenIddict.Abstractions;
 using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Recipes;
 using OrchardCore.OpenId.YesSql.Models;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Tests.Utilities;
-using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
 {
@@ -88,7 +86,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             };
             actual.RedirectUris.UnionWith(new[] { new Uri("https://localhost/x") });
             actual.Roles.UnionWith(new[] { "x" });
-            actual.Permissions.UnionWith(new[] { $"{Permissions.Prefixes.Scope}x" });
+            actual.Permissions.UnionWith(new[] { $"{OpenIddictConstants.Permissions.Prefixes.Scope}x" });
 
             var actualDb = new OpenIdApplication
             {
