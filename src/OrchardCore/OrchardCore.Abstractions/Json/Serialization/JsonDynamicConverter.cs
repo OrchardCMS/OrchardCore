@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Dynamic;
 
 #nullable enable
 
@@ -67,7 +66,7 @@ public class JsonDynamicConverter : JsonConverter<object>
                 throw new JsonException("Cannot parse array.");
 
             case JsonTokenType.StartObject:
-                IDictionary<string, object?> dictionary = new ExpandoObject();
+                var dictionary = new Dictionary<string, object?>();
                 while (reader.Read())
                 {
                     switch (reader.TokenType)
