@@ -821,6 +821,10 @@ html[dir=rtl] .bootstrap-select .bs-ok-default:after {
   border-radius: 0.375rem;
 }
 
+.form-label {
+  margin-bottom: 0.25rem;
+}
+
 .label-link {
   float: right;
   font-size: 12px;
