@@ -80,8 +80,10 @@ public class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewModel> : Ac
     public override IDisplayResult Display(TActivity activity)
     {
         return Combine(
-            Shape($"{typeof(TActivity).Name}_Fields_Thumbnail", new ActivityViewModel<TActivity>(activity)).Location("Thumbnail", "Content"),
-            Shape($"{typeof(TActivity).Name}_Fields_Design", new ActivityViewModel<TActivity>(activity)).Location("Design", "Content")
+            Shape($"{typeof(TActivity).Name}_Fields_Thumbnail", new ActivityViewModel<TActivity>(activity))
+                .Location("Thumbnail", "Content"),
+            Shape($"{typeof(TActivity).Name}_Fields_Design", new ActivityViewModel<TActivity>(activity))
+                .Location("Design", "Content")
         );
     }
 }

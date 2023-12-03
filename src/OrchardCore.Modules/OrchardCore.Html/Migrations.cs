@@ -29,9 +29,9 @@ namespace OrchardCore.Html
             _logger = logger;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterPartDefinition("HtmlBodyPart", builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync("HtmlBodyPart", builder => builder
                 .Attachable()
                 .WithDescription("Provides an HTML Body for your content item."));
 
@@ -57,15 +57,15 @@ namespace OrchardCore.Html
         public async Task<int> UpdateFrom3()
         {
             // Update content type definitions
-            foreach (var contentType in _contentDefinitionManager.LoadTypeDefinitions())
+            foreach (var contentType in await _contentDefinitionManager.LoadTypeDefinitionsAsync())
             {
                 if (contentType.Parts.Any(x => x.PartDefinition.Name == "BodyPart"))
                 {
-                    _contentDefinitionManager.AlterTypeDefinition(contentType.Name, x => x.RemovePart("BodyPart").WithPart("HtmlBodyPart"));
+                    await _contentDefinitionManager.AlterTypeDefinitionAsync(contentType.Name, x => x.RemovePart("BodyPart").WithPart("HtmlBodyPart"));
                 }
             }
 
-            _contentDefinitionManager.DeletePartDefinition("BodyPart");
+            await _contentDefinitionManager.DeletePartDefinitionAsync("BodyPart");
 
             // We are patching all content item versions by moving the Title to DisplayText
             // This step doesn't need to be executed for a brand new site
@@ -131,14 +131,14 @@ namespace OrchardCore.Html
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom4()
+        public async Task<int> UpdateFrom4()
         {
             // For backwards compatibility with liquid filters we disable html sanitization on existing field definitions.
-            foreach (var contentType in _contentDefinitionManager.LoadTypeDefinitions())
+            foreach (var contentType in await _contentDefinitionManager.LoadTypeDefinitionsAsync())
             {
                 if (contentType.Parts.Any(x => x.PartDefinition.Name == "HtmlBodyPart"))
                 {
-                    _contentDefinitionManager.AlterTypeDefinition(contentType.Name, x => x.WithPart("HtmlBodyPart", part =>
+                    await _contentDefinitionManager.AlterTypeDefinitionAsync(contentType.Name, x => x.WithPart("HtmlBodyPart", part =>
                     {
                         part.MergeSettings<HtmlBodyPartSettings>(x => x.SanitizeHtml = false);
                     }));

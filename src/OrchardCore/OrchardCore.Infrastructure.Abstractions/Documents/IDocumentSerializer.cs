@@ -6,7 +6,7 @@ namespace OrchardCore.Documents
     /// <summary>
     /// Serializes and deserializes an <see cref="IDocument"/> into and from a sequence of bytes.
     /// </summary>
-    public interface IDocumentSerialiser
+    public interface IDocumentSerializer
     {
         /// <summary>
         /// Serializes an <see cref="IDocument"/> into a sequence of bytes.

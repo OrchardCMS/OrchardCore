@@ -31,7 +31,7 @@ namespace OrchardCore.Alias.Indexes
             _serviceProvider = serviceProvider;
         }
 
-        public override Task UpdatedAsync(UpdateContentContext context)
+        public override async Task UpdatedAsync(UpdateContentContext context)
         {
             var part = context.ContentItem.As<AliasPart>();
 
@@ -43,19 +43,19 @@ namespace OrchardCore.Alias.Indexes
                 _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
                 // Search for this part.
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-                if (!contentTypeDefinition.Parts.Any(ctpd => ctpd.Name == nameof(AliasPart)))
+                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
+                if (!contentTypeDefinition.Parts.Any(ctd => ctd.Name == nameof(AliasPart)))
                 {
                     context.ContentItem.Remove<AliasPart>();
                     _partRemoved.Add(context.ContentItem.ContentItemId);
                 }
             }
-
-            return Task.CompletedTask;
         }
 
         public string CollectionName { get; set; }
+
         public Type ForType() => typeof(ContentItem);
+
         public void Describe(IDescriptor context) => Describe((DescribeContext<ContentItem>)context);
 
         public void Describe(DescribeContext<ContentItem> context)

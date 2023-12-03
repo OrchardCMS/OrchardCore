@@ -52,7 +52,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 return Unauthorized();
             }
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Taxonomy");
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Taxonomy");
             var versionOption = VersionOptions.Latest;
 
             if (contentTypeDefinition.IsDraftable())

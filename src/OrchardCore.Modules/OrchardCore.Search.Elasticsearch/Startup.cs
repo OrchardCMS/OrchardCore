@@ -19,6 +19,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -260,7 +261,7 @@ namespace OrchardCore.Search.Elasticsearch
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            if (services.Any(d => d.ImplementationType == typeof(ElasticsearchService)))
+            if (services.Any(d => d.GetImplementationType() == typeof(ElasticsearchService)))
             {
                 services.AddTransient<IDeploymentSource, ElasticIndexDeploymentSource>();
                 services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticIndexDeploymentStep>());
@@ -286,7 +287,7 @@ namespace OrchardCore.Search.Elasticsearch
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            if (services.Any(d => d.ImplementationType == typeof(ElasticsearchService)))
+            if (services.Any(d => d.GetImplementationType() == typeof(ElasticsearchService)))
             {
                 services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
             }
@@ -298,7 +299,7 @@ namespace OrchardCore.Search.Elasticsearch
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            if (services.Any(d => d.ImplementationType == typeof(ElasticsearchService)))
+            if (services.Any(d => d.GetImplementationType() == typeof(ElasticsearchService)))
             {
                 services.AddScoped<IContentPickerResultProvider, ElasticContentPickerResultProvider>();
                 services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldElasticEditorSettingsDriver>();

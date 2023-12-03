@@ -1,11 +1,14 @@
 using System;
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Search.Lucene.Model;
 using YesSql;
@@ -15,21 +18,37 @@ namespace OrchardCore.Search.Lucene
     public class Migrations : DataMigration
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly ShellDescriptor _shellDescriptor;
 
-        public Migrations(IContentDefinitionManager contentDefinitionManager)
+        public Migrations(IContentDefinitionManager contentDefinitionManager, ShellDescriptor shellDescriptor)
         {
             _contentDefinitionManager = contentDefinitionManager;
+            _shellDescriptor = shellDescriptor;
         }
 
-        public int Create()
+        // New installations don't need to be upgraded, but because there is no initial migration record,
+        // 'UpgradeAsync' is called in a new 'CreateAsync' but only if the feature was already installed.
+        public async Task<int> CreateAsync()
         {
-            var contentTypeDefinitions = _contentDefinitionManager.LoadTypeDefinitions();
+            if (_shellDescriptor.WasFeatureAlreadyInstalled("OrchardCore.Search.Lucene"))
+            {
+                await UpgradeAsync();
+            }
+
+            // Shortcut other migration steps on new content definition schemas.
+            return 1;
+        }
+
+        // Upgrade an existing installation.
+        private async Task UpgradeAsync()
+        {
+            var contentTypeDefinitions = await _contentDefinitionManager.LoadTypeDefinitionsAsync();
 
             foreach (var contentTypeDefinition in contentTypeDefinitions)
             {
                 foreach (var partDefinition in contentTypeDefinition.Parts)
                 {
-                    _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
+                    await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
                     {
                         if (partDefinition.Settings.TryGetPropertyValue("ContentIndexSettings", out var existingPartSettings) &&
                             !partDefinition.Settings.ContainsKey(nameof(LuceneContentIndexSettings)))
@@ -64,11 +83,11 @@ namespace OrchardCore.Search.Lucene
                 }
             }
 
-            var partDefinitions = _contentDefinitionManager.LoadPartDefinitions();
+            var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync();
 
             foreach (var partDefinition in partDefinitions)
             {
-                _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
+                await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
                 {
                     if (partDefinition.Settings.TryGetPropertyValue("ContentIndexSettings", out var existingPartSettings) &&
                         !partDefinition.Settings.ContainsKey(nameof(LuceneContentIndexSettings)))
@@ -76,29 +95,29 @@ namespace OrchardCore.Search.Lucene
                         var included = existingPartSettings["Included"];
                         var analyzed = existingPartSettings["Analyzed"];
 
-                        if (included != null)
-                        {
-                            if (analyzed != null)
-                            {
-                                if ((bool)included && !(bool)analyzed)
-                                {
-                                    existingPartSettings["Keyword"] = true;
-                                }
-                            }
-                            else
-                            {
-                                if ((bool)included)
-                                {
-                                    existingPartSettings["Keyword"] = true;
-                                }
-                            }
-                        }
+                         if (included != null)
+                         {
+                             if (analyzed != null)
+                             {
+                                 if ((bool)included && !(bool)analyzed)
+                                 {
+                                     existingPartSettings["Keyword"] = true;
+                                 }
+                             }
+                             else
+                             {
+                                 if ((bool)included)
+                                 {
+                                     existingPartSettings["Keyword"] = true;
+                                 }
+                             }
+                         }
 
                         var jExistingPartSettings = existingPartSettings.Clone();
                         partDefinition.Settings.Add(nameof(LuceneContentIndexSettings), jExistingPartSettings);
                     }
 
-                    partDefinition.Settings.Remove("ContentIndexSettings");
+                     partDefinition.Settings.Remove("ContentIndexSettings");
 
                     foreach (var fieldDefinition in partDefinition.Fields)
                     {
@@ -108,31 +127,31 @@ namespace OrchardCore.Search.Lucene
                             var included = existingFieldSettings["Included"];
                             var analyzed = existingFieldSettings["Analyzed"];
 
-                            if (included != null)
-                            {
-                                if (analyzed != null)
-                                {
-                                    if ((bool)included && !(bool)analyzed)
-                                    {
-                                        existingFieldSettings["Keyword"] = true;
-                                    }
-                                }
-                                else
-                                {
-                                    if ((bool)included)
-                                    {
-                                        existingFieldSettings["Keyword"] = true;
-                                    }
-                                }
-                            }
+                             if (included != null)
+                             {
+                                 if (analyzed != null)
+                                 {
+                                     if ((bool)included && !(bool)analyzed)
+                                     {
+                                         existingFieldSettings["Keyword"] = true;
+                                     }
+                                 }
+                                 else
+                                 {
+                                     if ((bool)included)
+                                     {
+                                         existingFieldSettings["Keyword"] = true;
+                                     }
+                                 }
+                             }
 
                             var jExistingFieldSettings = existingFieldSettings.Clone();
                             fieldDefinition.Settings.Add(nameof(LuceneContentIndexSettings), jExistingFieldSettings);
                         }
 
-                        fieldDefinition.Settings.Remove("ContentIndexSettings");
-                    }
-                });
+                         fieldDefinition.Settings.Remove("ContentIndexSettings");
+                     }
+                 });
             }
 
             // Defer this until after the subsequent migrations have succeeded as the schema has changed.
@@ -195,8 +214,6 @@ namespace OrchardCore.Search.Lucene
                     throw;
                 }
             });
-
-            return 1;
         }
     }
 }

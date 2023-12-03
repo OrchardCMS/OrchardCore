@@ -56,7 +56,7 @@ namespace OrchardCore.Markdown.GraphQL
             var paths = jsonPath.Split('.');
             var partName = paths[0];
             var fieldName = paths[1];
-            var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(ctx.Source.ContentItem.ContentType);
+            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(ctx.Source.ContentItem.ContentType);
             var contentPartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.Name, partName));
             var contentPartFieldDefinition = contentPartDefinition.PartDefinition.Fields.FirstOrDefault(x => string.Equals(x.Name, fieldName));
 
@@ -66,7 +66,7 @@ namespace OrchardCore.Markdown.GraphQL
             // so filters must be run after the markdown has been processed.
             var html = markdownService.ToHtml(ctx.Source.Markdown);
 
-            // The liquid rendering is for backwards compatability and can be removed in a future version.
+            // The liquid rendering is for backwards compatibility and can be removed in a future version.
             if (!settings.SanitizeHtml)
             {
                 var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();

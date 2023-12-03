@@ -75,7 +75,7 @@ namespace OrchardCore.Queries.Sql.Controllers
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            var connection = _store.Configuration.ConnectionFactory.CreateConnection();
+            await using var connection = _store.Configuration.ConnectionFactory.CreateConnection();
             var dialect = _store.Configuration.SqlDialect;
 
             var parameters = JConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
