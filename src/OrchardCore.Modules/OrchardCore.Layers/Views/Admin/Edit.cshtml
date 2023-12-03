@@ -32,7 +32,7 @@
 
     @await DisplayAsync(Model.LayerRule)
 
-    <input class="button mt-3" type="submit" value="@T["Save"]" />
+    <input class="btn btn-primary mt-3" type="submit" value="@T["Save"]" />
 </form>
 
 @await DisplayAsync(await New.ConditionsModal(Thumbnails: Model.Thumbnails, Name: Model.Name))
