@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -39,7 +38,7 @@ using SameSiteMode = Microsoft.AspNetCore.Http.SameSiteMode;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static partial class ServiceCollectionExtensions
     {
         /// <summary>
         /// Routing singleton and global config types used to isolate tenants from the host.
@@ -108,7 +107,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 AddSameSiteCookieBackwardsCompatibility(builder);
                 AddAuthentication(builder);
                 AddDataProtection(builder);
-                AddKeyedServicesAsDictionary(builder);
+                AddKeyedServiceDictionary(builder);
 
                 // Register the list of services to be resolved later on
                 services.AddSingleton(services);
@@ -174,14 +173,12 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<ISlugService, SlugService>();
         }
 
-        private static void AddKeyedServicesAsDictionary(OrchardCoreBuilder builder)
+        private static void AddKeyedServiceDictionary(OrchardCoreBuilder builder)
         {
             var services = builder.ApplicationServices;
 
-            services.AddSingleton(typeof(KeyedServiceCache<,>));
-            services.AddSingleton(services);
-            services.AddTransient(typeof(IDictionary<,>), typeof(KeyedServiceDictionary<,>));
-            services.AddTransient(typeof(IReadOnlyDictionary<,>), typeof(KeyedServiceDictionary<,>));
+            services.AddSingleton(typeof(IKeyedServiceResolver), new DefaultKeyedServiceResolver(services));
+            services.AddTransient(typeof(IKeyedServiceDictionary<,>), typeof(KeyedServiceDictionary<,>));
         }
 
         private static void AddShellServices(OrchardCoreBuilder builder)
@@ -235,7 +232,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ConfigureServices(services =>
             {
-                services.AddSingleton<IModuleStaticFileProvider>(serviceProvider =>
+                services.AddSingleton(serviceProvider =>
                 {
                     var env = serviceProvider.GetRequiredService<IHostEnvironment>();
                     var appContext = serviceProvider.GetRequiredService<IApplicationContext>();
@@ -568,35 +565,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.Add(collection);
             });
-        }
-
-        private sealed class KeyedServiceDictionary<TKey, TService>(KeyedServiceCache<TKey, TService> services, IServiceProvider provider)
-            : ReadOnlyDictionary<TKey, TService>(Create(services, provider))
-            where TKey : notnull
-            where TService : notnull
-        {
-            private static Dictionary<TKey, TService> Create(KeyedServiceCache<TKey, TService> services, IServiceProvider provider)
-            {
-                var collection = new Dictionary<TKey, TService>(capacity: services.Keys.Length);
-
-                foreach (var key in services.Keys)
-                {
-                    collection[key] = provider.GetRequiredKeyedService<TService>(key);
-                }
-
-                return collection;
-            }
-        }
-
-        private sealed class KeyedServiceCache<TKey, TService>(IServiceCollection sc)
-            where TKey : notnull
-            where TService : notnull
-        {
-            public TKey[] Keys
-                => sc
-                .Where(service => service.ServiceKey is not null && service.ServiceKey!.GetType() == typeof(TKey) && service.ServiceType == typeof(TService))
-                .Select(service => (TKey)service.ServiceKey)
-                .ToArray();
         }
     }
 }

@@ -3,7 +3,7 @@ namespace OrchardCore.Tests.DependencyInjection;
 public class KeyedServices
 {
     [Fact]
-    public void AbleToResolveKeyedServiceAsDictionary()
+    public void AbleToResolveKeyedServiceAsIKeyedServiceDictionary()
     {
         var services = new ServiceCollection();
 
@@ -15,7 +15,7 @@ public class KeyedServices
 
         var serviceProvider = services.BuildServiceProvider();
 
-        var keyService = serviceProvider.GetService<IDictionary<string, IService>>();
+        var keyService = serviceProvider.GetService<IKeyedServiceDictionary<string, IService>>();
 
         Assert.NotNull(keyService);
         Assert.Equal(3, keyService.Count);
@@ -25,7 +25,7 @@ public class KeyedServices
     }
 
     [Fact]
-    public void AbleToResolveKeyedServiceAsReadOnlyDictionary()
+    public void AbleToResolveKeyedServiceFromKeyedResolver()
     {
         var services = new ServiceCollection();
 
@@ -36,8 +36,8 @@ public class KeyedServices
         services.AddKeyedTransient<IService, Service3>("c");
 
         var serviceProvider = services.BuildServiceProvider();
-
-        var keyService = serviceProvider.GetService<IReadOnlyDictionary<string, IService>>();
+        var resolver = serviceProvider.GetService<IKeyedServiceResolver>();
+        var keyService = resolver.GetServices<string, IService>();
 
         Assert.NotNull(keyService);
         Assert.Equal(3, keyService.Count);
