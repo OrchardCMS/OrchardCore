@@ -79,7 +79,7 @@ This service provides methods to build SQL queries that can will be use the synt
 
 ### Handling prefixed tables
 
-Each tenant in an Orchard Core application can have a table prefix. When building custom queries it 
+Each tenant in an Orchard Core application can have a table prefix. When building custom queries it
 is necessary to take it into account. It is available by resolving `ShellSettings` and accessing the `TablePrefix` setting.
 It is available from the `OrchardCore.Environment.Shell` namespace in the `OrchardCore.Abstractions` package.
 
