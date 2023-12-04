@@ -58,9 +58,9 @@ public static class ShellPipelineExtensions
             configure = filter.Configure(configure);
         }
 
-        await ConfigurePipelineAsync(builder);
-
         configure(builder);
+
+        await ConfigurePipelineAsync(builder);
 
         var shellPipeline = new ShellRequestPipeline
         {
