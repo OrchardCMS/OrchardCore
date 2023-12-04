@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using OrchardCore;
+using OrchardCore.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

@@ -1,3 +1,5 @@
+using OrchardCore.Extensions;
+
 namespace OrchardCore.Tests.DependencyInjection;
 
 public class KeyedServicesTests
@@ -9,10 +11,10 @@ public class KeyedServicesTests
 
         services.AddOrchardCore();
 
-        services.AddKeyedTransient<IService, Service1>("a");
-        services.AddKeyedTransient<IService, Service2>("b");
-        services.AddKeyedTransient<IService, Service3>("c");
-        services.AddKeyedTransient<IService, Service2>("a");
+        services.AddKeyedTransient<IService, Service1>("a")
+             .AddKeyedTransient<IService, Service2>("b")
+             .AddKeyedTransient<IService, Service3>("c")
+             .AddKeyedTransient<IService, Service2>("a");
 
         var serviceProvider = services.BuildServiceProvider();
 
@@ -37,10 +39,10 @@ public class KeyedServicesTests
 
         services.AddOrchardCore();
 
-        services.AddKeyedTransient<IService, Service1>("a");
-        services.AddKeyedTransient<IService, Service2>("b");
-        services.AddKeyedTransient<IService, Service3>("c");
-        services.AddKeyedTransient<IService, Service2>("a");
+        services.AddKeyedTransient<IService, Service1>("a")
+             .AddKeyedTransient<IService, Service2>("b")
+             .AddKeyedTransient<IService, Service3>("c")
+             .AddKeyedTransient<IService, Service2>("a");
 
         var serviceProvider = services.BuildServiceProvider();
         var resolver = serviceProvider.GetService<IKeyedServiceResolver>();
@@ -63,16 +65,14 @@ public class KeyedServicesTests
         var services = new ServiceCollection();
 
         services.AddOrchardCore();
-
-        services.AddKeyedTransient<IService, Service1>("a");
-        services.AddKeyedTransient<IService, Service2>("b");
-        services.AddKeyedTransient<IService, Service3>("c");
-        services.AddKeyedTransient<IService, Service2>("a");
+        services.AddKeyedTransient<IService, Service1>("a")
+            .AddKeyedTransient<IService, Service2>("b")
+            .AddKeyedTransient<IService, Service3>("c")
+            .AddKeyedTransient<IService, Service2>("a");
 
         var serviceProvider = services.BuildServiceProvider();
         var resolver = serviceProvider.GetService<IKeyedServiceResolver>();
         var keyService = resolver.GetServices<string, IService>();
-
 
         Assert.NotNull(keyService);
         Assert.Contains(keyService, x => x.Key == "a");

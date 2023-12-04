@@ -12,8 +12,10 @@ public class DefaultKeyedServiceResolver(IServiceCollection serviceCollection, I
 
     public IEnumerable<KeyValuePair<TKey, TService>> GetServices<TKey, TService>()
     {
-        var keys = _serviceCollection.Where(service => service.IsKeyedService && service.ServiceKey.GetType() == typeof(TKey) && service.ServiceType == typeof(TService))
-         .Select(service => (TKey)Convert.ChangeType(service.ServiceKey, typeof(TKey)))
+        var keyType = typeof(TKey);
+
+        var keys = _serviceCollection.Where(service => service.IsKeyedService && service.ServiceKey.GetType() == keyType && service.ServiceType == typeof(TService))
+         .Select(service => (TKey)Convert.ChangeType(service.ServiceKey, keyType))
          .Distinct()
          .ToList();
 
