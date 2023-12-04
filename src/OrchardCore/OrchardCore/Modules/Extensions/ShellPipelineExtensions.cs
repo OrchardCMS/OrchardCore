@@ -18,7 +18,7 @@ namespace OrchardCore.Modules;
 
 public static class ShellPipelineExtensions
 {
-    private const string EndpointRouteBuilder = "__EndpointRouteBuilder";
+    public const string EndpointRouteBuilder = "__EndpointRouteBuilder";
 
     private static readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new();
 
