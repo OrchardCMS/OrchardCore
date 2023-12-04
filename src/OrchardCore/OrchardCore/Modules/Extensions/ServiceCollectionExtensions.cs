@@ -176,8 +176,8 @@ namespace Microsoft.Extensions.DependencyInjection
         private static void AddKeyedServiceDictionary(OrchardCoreBuilder builder)
         {
             var services = builder.ApplicationServices;
-
-            services.AddSingleton(typeof(IKeyedServiceResolver), new DefaultKeyedServiceResolver(services));
+            services.AddSingleton(services);
+            services.AddSingleton<IKeyedServiceResolver, DefaultKeyedServiceResolver>();
             services.AddTransient(typeof(IKeyedServiceDictionary<,>), typeof(KeyedServiceDictionary<,>));
         }
 

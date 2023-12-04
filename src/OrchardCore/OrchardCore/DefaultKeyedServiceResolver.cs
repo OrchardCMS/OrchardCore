@@ -1,16 +1,31 @@
 using System;
-using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore;
 
-public class DefaultKeyedServiceResolver(IServiceCollection services) : IKeyedServiceResolver
+public class DefaultKeyedServiceResolver(IServiceCollection serviceCollection, IServiceProvider serviceProvider) : IKeyedServiceResolver
 {
-    private readonly IServiceCollection _services = services;
+    private readonly IServiceCollection _serviceCollection = serviceCollection;
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
 
-    public IReadOnlyDictionary<TKey, TService> GetServices<TKey, TService>()
-        => _services.Where(service => service.ServiceKey is not null && service.ServiceKey!.GetType() == typeof(TKey) && service.ServiceType == typeof(TService))
-                 .ToFrozenDictionary(service => (TKey)Convert.ChangeType(service.ServiceKey, typeof(TKey)), service => (TService)service.KeyedImplementationInstance);
+    public IEnumerable<KeyValuePair<TKey, TService>> GetServices<TKey, TService>()
+    {
+        var keys = _serviceCollection.Where(service => service.IsKeyedService && service.ServiceKey.GetType() == typeof(TKey) && service.ServiceType == typeof(TService))
+         .Select(service => (TKey)Convert.ChangeType(service.ServiceKey, typeof(TKey)))
+         .Distinct()
+         .ToList();
+
+        var services = new List<KeyValuePair<TKey, TService>>();
+
+        foreach (var key in keys)
+        {
+            var keyedServices = _serviceProvider.GetKeyedServices<TService>(key);
+
+            services.AddRange(keyedServices.Select(keyedService => new KeyValuePair<TKey, TService>(key, keyedService)));
+        }
+
+        return services;
+    }
 }
