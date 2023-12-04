@@ -11,7 +11,7 @@ using OrchardCore.Environment.Shell.Configuration;
 
 namespace OrchardCore.DataProtection.Azure;
 
-public class BlobOptionsSetup
+public class BlobOptionsSetup : IAsyncConfigureOptions<BlobOptions>
 {
     private readonly FluidParser _fluidParser = new();
 
@@ -32,14 +32,14 @@ public class BlobOptionsSetup
         _logger = logger;
     }
 
-    public async Task ConfigureAsync(BlobOptions options)
+    public async ValueTask ConfigureAsync(BlobOptions options)
     {
         _configuration.Bind("OrchardCore_DataProtection_Azure", options);
         await ConfigureContainerNameAsync(options);
         await ConfigureBlobNameAsync(options);
     }
 
-    private async Task ConfigureContainerNameAsync(BlobOptions options)
+    private async ValueTask ConfigureContainerNameAsync(BlobOptions options)
     {
         try
         {
@@ -78,7 +78,7 @@ public class BlobOptionsSetup
         }
     }
 
-    private async Task ConfigureBlobNameAsync(BlobOptions options)
+    private async ValueTask ConfigureBlobNameAsync(BlobOptions options)
     {
         if (string.IsNullOrEmpty(options.BlobName))
         {

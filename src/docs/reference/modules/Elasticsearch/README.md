@@ -4,13 +4,13 @@ The Elasticsearch module allows you to manage Elasticsearch indices.
 
 ## How to use
 
-You can use an Elasticsearch cloud service like offered on https://www.elastic.co or install it on-premises. For development and testing purposes, it is also available to be deployed with Docker.
+You can use an Elasticsearch cloud service like offered on <https://www.elastic.co> or install it on-premises. For development and testing purposes, it is also available to be deployed with Docker.
 
 ### Install Elasticsearch 7.x with Docker compose
 
 Elasticsearch uses a mmapfs directory by default to store its indices. The default operating system limits on mmap counts is likely to be too low, which may result in out of memory exceptions.
 
-https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html
+<https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html>
 
 For Docker with WSL2, you will need to persist this setting by using a .wslconfig file.
 
@@ -28,7 +28,7 @@ Then exit any WSL instance, `wsl --shutdown`, and restart.
 vm.max_map_count = 262144
 ```
 
-Elasticsearch v7.17.5 Docker Compose file : 
+Elasticsearch v7.17.5 Docker Compose file :
 [docker-compose.yml](docker-compose.yml)
 
 - Copy this file in a folder named Elasticsearch somewhere safe.
@@ -37,7 +37,7 @@ Elasticsearch v7.17.5 Docker Compose file :
 
 Advice: don't remove this file from its folder if you want to remove all their containers at once later on in Docker desktop.
 
-You should get this result in Docker Desktop app: 
+You should get this result in Docker Desktop app:
 
 ![Elasticsearch docker containers](images/elasticsearch-docker.png)
 
@@ -118,7 +118,7 @@ It doesn't delete existing entries from the index.
 }
 ```
 
-To reset all indices:   
+To reset all indices:
 
 ```json
 {
@@ -150,7 +150,7 @@ Deletes and recreates the full index content.
 }
 ```
 
-To rebuild all indices:   
+To rebuild all indices:
 
 ```json
 {
@@ -206,7 +206,7 @@ Verbs: `POST` and `GET`
 ## Elasticsearch Queries
 
 The Elasticsearch module provides a management UI and APIs for querying Elasticsearch data using ElasticSearch Queries.
-See: https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html
+See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html>
 
 ## Elasticsearch configuration
 
@@ -234,9 +234,9 @@ The Elasticsearch module connection configuration can be set globally in the app
 !!! note
     When `CloudConnectionPool` connection type is used, `CertificateFingerprint` is not needed.
 
-The connection types documentation and examples can be found at this url: 
+The connection types documentation and examples can be found at this url:
 
-https://www.elastic.co/guide/en/elasticsearch/client/net-api/7.17/connection-pooling.html
+<https://www.elastic.co/guide/en/elasticsearch/client/net-api/7.17/connection-pooling.html>
 
 ## Elasticsearch Analyzers
 
@@ -255,7 +255,7 @@ As of version 1.6, [built-in](https://www.elastic.co/guide/en/elasticsearch/refe
 }
 ```
 
-At the same time, you may define custom analyzers using the [appsettings.json](../../core/Configuration/README.md) file as well. In the following example, we are enabling the [standard](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-standard-analyzer.html) analyzer, customizing the [stop](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-stop-analyzer.html) analyzer and creating a [custom analyzer](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-custom-analyzer.html) named `english_analyzer`. 
+At the same time, you may define custom analyzers using the [appsettings.json](../../core/Configuration/README.md) file as well. In the following example, we are enabling the [standard](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-standard-analyzer.html) analyzer, customizing the [stop](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-stop-analyzer.html) analyzer and creating a [custom analyzer](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-custom-analyzer.html) named `english_analyzer`.
 
 ```json
 "OrchardCore_Elasticsearch": {
@@ -318,7 +318,7 @@ There may be differences between Lucene and Elasticsearch indexed fields. Lucene
 
 ### Indexed vs Stored
 
-When we say that a field is indexed it means that it is parsed by the configured Analyzer that is set on the index (Elasticsearch also allows to pass custom Analyzers on Queries too). 
+When we say that a field is indexed it means that it is parsed by the configured Analyzer that is set on the index (Elasticsearch also allows to pass custom Analyzers on Queries too).
 
 Though, when a field is stored it can have different contexts.
 

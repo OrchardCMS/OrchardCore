@@ -2,7 +2,7 @@
 @model HttpRedirectTaskViewModel
 
 <div class="mb-3" asp-validation-class-for="Location">
-    <label asp-for="Location">@T["Location"]</label>
+    <label asp-for="Location" class="form-label">@T["Location"]</label>
     <input type="text" asp-for="Location" class="form-control code" />
     <span asp-validation-for="Location"></span>
     <span class="hint">@T["The URL to redirect to. With Liquid support."]</span>

@@ -10,7 +10,7 @@
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 
 <div class="mb-3" asp-validation-class-for="UsersCanRegister">
-    <label asp-for="UsersCanRegister">@T["Configure users registration."]</label>
+    <label asp-for="UsersCanRegister" class="form-label">@T["Configure users registration."]</label>
     <select asp-for="UsersCanRegister" class="form-select">
         <option value="@UserRegistrationType.NoRegistration" selected="@(Model.UsersCanRegister == UserRegistrationType.NoRegistration)">@T["No Registration"]</option>
         <option value="@UserRegistrationType.AllowRegistration" selected="@(Model.UsersCanRegister == UserRegistrationType.AllowRegistration)">@T["Allow Registration"]</option>
@@ -154,7 +154,7 @@
         }
     }
 
-    window.onload=function () {
+    window.onload = function () {
         refresh();
 
         $("#@Html.IdFor(m => m.UsersCanRegister)").change(function () {

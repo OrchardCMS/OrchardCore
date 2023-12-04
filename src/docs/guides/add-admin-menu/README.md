@@ -43,7 +43,7 @@ We also need a reference to the `OrchardCore.Admin` package in order to be able 
 ```dotnet add .\MyModule\MyModule.csproj package OrchardCore.Admin --version 1.7.2-*```
 
 !!! note
-    To use the development branch of the template add ` --source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --version 1.7.2-*`
+    To use the development branch of the template add `--source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --version 1.7.2-*`
 
 ## Adding our controller and views
 

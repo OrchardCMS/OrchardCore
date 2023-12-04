@@ -40,7 +40,7 @@
 
                 <div class="form-floating mb-3">
                     <input asp-for="VerificationCode" class="form-control" autocomplete="off" />
-                    <label asp-for="VerificationCode">@T["Verification code"]</label>
+                    <label asp-for="VerificationCode" class="form-label">@T["Verification code"]</label>
                     <span asp-validation-for="VerificationCode" class="text-danger"></span>
                 </div>
                 @if (Model.AllowRememberDevice)
