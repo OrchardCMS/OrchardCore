@@ -390,6 +390,10 @@ namespace OrchardCore.ContentTypes.Services
         public Task AlterTypePartsOrderAsync(ContentTypeDefinition typeDefinition, string[] partNames)
             => _contentDefinitionManager.AlterTypeDefinitionAsync(typeDefinition.Name, type =>
             {
+                if (partNames is null)
+                {
+                    return;
+                }
                 for (var i = 0; i < partNames.Length; i++)
                 {
                     var partDefinition = typeDefinition.Parts.FirstOrDefault(x => x.Name == partNames[i]);
