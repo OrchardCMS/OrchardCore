@@ -397,7 +397,13 @@ namespace OrchardCore.ContentTypes.Services
 
                 for (var i = 0; i < partNames.Length; i++)
                 {
-                    var partDefinition = typeDefinition.Parts.FirstOrDefault(x => x.Name == partNames[i]);
+                    var partDefinition = typeDefinition.Parts?.FirstOrDefault(x => x.Name == partNames[i]);
+                    
+                    if (partDefinition == null)
+                    {
+                        continue;
+                    }
+
                     type.WithPart(partNames[i], partDefinition.PartDefinition, part =>
                     {
                         part.MergeSettings<ContentTypePartSettings>(x => x.Position = i.ToString());
