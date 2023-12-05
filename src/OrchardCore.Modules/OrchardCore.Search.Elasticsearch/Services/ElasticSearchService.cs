@@ -1,8 +1,13 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Fluid.Values;
 using Microsoft.Extensions.Logging;
 using Nest;
-using OrchardCore.Entities;
+using OrchardCore.Liquid;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
@@ -12,10 +17,16 @@ namespace OrchardCore.Search.Elasticsearch.Services;
 
 public class ElasticsearchService : ISearchService
 {
+    public const string RawSearchType = "raw";
+    public const string QueryStringSearchType = "query_string";
+
     private readonly ISiteService _siteService;
     private readonly ElasticIndexManager _elasticIndexManager;
     private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
     private readonly IElasticSearchQueryService _elasticsearchQueryService;
+    private readonly IElasticClient _elasticClient;
+    private readonly JavaScriptEncoder _javaScriptEncoder;
+    private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly ILogger _logger;
 
     public ElasticsearchService(
@@ -23,6 +34,9 @@ public class ElasticsearchService : ISearchService
         ElasticIndexManager elasticIndexManager,
         ElasticIndexSettingsService elasticIndexSettingsService,
         IElasticSearchQueryService elasticsearchQueryService,
+        IElasticClient elasticClient,
+        JavaScriptEncoder javaScriptEncoder,
+        ILiquidTemplateManager liquidTemplateManager,
         ILogger<ElasticsearchService> logger
         )
     {
@@ -30,6 +44,9 @@ public class ElasticsearchService : ISearchService
         _elasticIndexManager = elasticIndexManager;
         _elasticIndexSettingsService = elasticIndexSettingsService;
         _elasticsearchQueryService = elasticsearchQueryService;
+        _elasticClient = elasticClient;
+        _javaScriptEncoder = javaScriptEncoder;
+        _liquidTemplateManager = liquidTemplateManager;
         _logger = logger;
     }
 
@@ -65,7 +82,25 @@ public class ElasticsearchService : ISearchService
         {
             QueryContainer query = null;
 
-            if (searchSettings.AllowElasticQueryStringQueryInSearch)
+            if (searchSettings.SearchType == RawSearchType)
+            {
+                var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(searchSettings.DefaultQuery, _javaScriptEncoder,
+                    new Dictionary<string, FluidValue>()
+                    {
+                        ["term"] = new StringValue(term)
+                    });
+
+                try
+                {
+                    using var stream = new MemoryStream(Encoding.UTF8.GetBytes(tokenizedContent));
+
+                    var searchRequest = await _elasticClient.RequestResponseSerializer.DeserializeAsync<SearchRequest>(stream);
+
+                    query = searchRequest.Query;
+                }
+                catch { }
+            }
+            else if (searchSettings.SearchType == "query_string")
             {
                 query = new QueryStringQuery
                 {
@@ -74,15 +109,13 @@ public class ElasticsearchService : ISearchService
                     Query = term
                 };
             }
-            else
+
+            query ??= new MultiMatchQuery
             {
-                query = new MultiMatchQuery
-                {
-                    Fields = searchSettings.DefaultSearchFields,
-                    Analyzer = await _elasticIndexSettingsService.GetQueryAnalyzerAsync(index),
-                    Query = term
-                };
-            }
+                Fields = searchSettings.DefaultSearchFields,
+                Analyzer = await _elasticIndexSettingsService.GetQueryAnalyzerAsync(index),
+                Query = term
+            };
 
             result.ContentItemIds = await _elasticsearchQueryService.ExecuteQueryAsync(index, query, null, start, pageSize);
             result.Success = true;
