@@ -80,9 +80,9 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
 #pragma warning restore CS0618 // Type or member is obsolete
 
                 model.SearchTypes = [
-                    new(S["Multi-match query"], string.Empty),
-                    new(S["String query"], ElasticsearchService.QueryStringSearchType),
-                    new(S["Raw query"], ElasticsearchService.RawSearchType),
+                    new(S["Multi-Match Query (Default)"], string.Empty),
+                    new(S["Query String Query"], ElasticsearchService.QueryStringSearchType),
+                    new(S["Raw Query"], ElasticsearchService.RawSearchType),
                 ];
             }).Location("Content:2")
             .OnGroup(GroupId);
