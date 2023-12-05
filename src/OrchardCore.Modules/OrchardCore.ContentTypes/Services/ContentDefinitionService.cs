@@ -322,7 +322,7 @@ namespace OrchardCore.ContentTypes.Services
         {
             if (string.IsNullOrEmpty(fieldName))
             {
-                throw new ArgumentException("The 'fieldName' can't be null or empty.", nameof(fieldName));
+                throw new ArgumentException("The '{fieldName}' can't be null or empty.", nameof(fieldName));
             }
 
             var partDefinition = await _contentDefinitionManager.LoadPartDefinitionAsync(partName);
@@ -394,6 +394,7 @@ namespace OrchardCore.ContentTypes.Services
                 {
                     return;
                 }
+
                 for (var i = 0; i < partNames.Length; i++)
                 {
                     var partDefinition = typeDefinition.Parts.FirstOrDefault(x => x.Name == partNames[i]);
@@ -407,6 +408,11 @@ namespace OrchardCore.ContentTypes.Services
         public Task AlterPartFieldsOrderAsync(ContentPartDefinition partDefinition, string[] fieldNames)
             => _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, type =>
             {
+                if (fieldNames is null)
+                {
+                    return;
+                }
+
                 for (var i = 0; i < fieldNames.Length; i++)
                 {
                     var fieldDefinition = partDefinition.Fields.FirstOrDefault(x => x.Name == fieldNames[i]);
@@ -441,9 +447,9 @@ namespace OrchardCore.ContentTypes.Services
                 var type = await _contentDefinitionManager.LoadTypeDefinitionAsync(partName)
                     ?? throw new ArgumentException("The part doesn't exist: " + partName);
 
-                var typePart = type.Parts.FirstOrDefault(x => x.PartDefinition.Name == partName);
+                var typePart = type.Parts?.FirstOrDefault(x => x.PartDefinition.Name == partName);
 
-                // Id passed in might be that of a type w/ no implicit field.
+                // If passed in might be that of a type w/ no implicit field.
                 if (typePart == null)
                 {
                     return displayName;
