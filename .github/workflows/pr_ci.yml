@@ -27,6 +27,9 @@ jobs:
     - name: Build
       run: |
         dotnet build -c Release
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      if: matrix.os == 'ubuntu-latest'
     - name: Testing preview docker image for linux and windows
       shell: pwsh
       if: matrix.os == 'ubuntu-latest'
