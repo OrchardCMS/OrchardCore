@@ -34,7 +34,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [NEST](https://github.com/elastic/elasticsearch-net) | .NET Library for Elasticsearch | 7.17.5 | [Apache-2.0](https://github.com/elastic/elasticsearch-net/blob/main/LICENSE.txt) |
 | [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json) | Json.NET is a popular high-performance JSON framework for .NET | 13.0.3 | [MIT](https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md) |
 | [NJsonSchema](https://github.com/RicoSuter/NJsonSchema) | JSON Schema reader, generator and validator for .NET | 10.9.0 | [MIT](https://github.com/RicoSuter/NJsonSchema/blob/master/LICENSE.md) |
-| [NLog.Web.AspNetCore](https://github.com/NLog/NLog.Web/tree/master/src/NLog.Web.AspNetCore) | NLog integration for ASP.NET. | 5.3.5 | [BSD-3-Clause](https://github.com/NLog/NLog.Web/blob/master/LICENSE) |
+| [NLog.Web.AspNetCore](https://github.com/NLog/NLog.Web/tree/master/src/NLog.Web.AspNetCore) | NLog integration for ASP.NET. | 5.3.7 | [BSD-3-Clause](https://github.com/NLog/NLog.Web/blob/master/LICENSE) |
 | [Noda Time](https://github.com/nodatime/nodatime) | A better date and time API for .NET. | 3.1.9 | [Apache-2.0](https://github.com/nodatime/nodatime/blob/master/LICENSE.txt) |
 | [OpenIddict](https://github.com/openiddict/openiddict-core) | Flexible and versatile OAuth 2.0/OpenID Connect stack for .NET. | 4.10.1 | [Apache-2.0](https://github.com/openiddict/openiddict-core/blob/dev/LICENSE.md)) |
 | [PdfPig](https://github.com/UglyToad/PdfPig/) | Library to read and extract text and other content from PDF files. | 0.1.8 | [Apache-2.0](https://github.com/UglyToad/PdfPig/blob/master/LICENSE) |
