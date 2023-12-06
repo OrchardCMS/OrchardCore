@@ -27,6 +27,23 @@ jobs:
     - name: Build
       run: |
         dotnet build -c Release
+    - name: Testing preview docker image for linux
+      shell: pwsh
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item -Recurse -Confirm:$false
+        Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests -Recurse | Remove-Item -Recurse -Confirm:$false
+        $output = [System.IO.Path]::GetFullPath("./.build/release")
+        dotnet publish -c Release --property:PublishDir=$output --no-build --framework net8.0
+        docker buildx build -f Dockerfile-CI --platform=linux/amd64 -t orchardproject/orchardcore-cms-linux:dev .
+    - name: Testing preview docker image for windows
+      if: matrix.os == 'windows-latest'
+      run: |
+        Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item -Recurse -Confirm:$false
+        Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests -Recurse | Remove-Item -Recurse -Confirm:$false
+        $output = [System.IO.Path]::GetFullPath("./.build/release")
+        dotnet publish -c Release --property:PublishDir=$output --no-build --framework net8.0
+        docker buildx build -f Dockerfile-CI --platform=windows/amd64 -t orchardproject/orchardcore-cms-windows:dev .
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
