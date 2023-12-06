@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
 using OrchardCore.OpenId.Abstractions.Descriptors;
-using Xunit;
-using static OpenIddict.Abstractions.OpenIddictConstants.Permissions;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
 {
@@ -25,12 +21,12 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 new[] { new Uri("https://localhost:111/redirect"), new Uri("https://localhost:222/redirect") },
                 null,
                 new[] {
-                    GrantTypes.AuthorizationCode,
-                    GrantTypes.RefreshToken,
-                    Endpoints.Authorization,
-                    Endpoints.Logout,
-                    Endpoints.Token,
-                    ResponseTypes.Code,
+                    OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode,
+                    OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
+                    OpenIddictConstants.Permissions.Endpoints.Authorization,
+                    OpenIddictConstants.Permissions.Endpoints.Logout,
+                    OpenIddictConstants.Permissions.Endpoints.Token,
+                    OpenIddictConstants.Permissions.ResponseTypes.Code,
                 });
 
             AddWithHashsets(
@@ -47,13 +43,13 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 new[] { new Uri("https://localhost/redirect") },
                 new[] { "role1", "role2" },
                 new[] {
-                    GrantTypes.ClientCredentials,
-                    Endpoints.Token,
-                    $"{Prefixes.Scope}scope1"
+                    OpenIddictConstants.Permissions.GrantTypes.ClientCredentials,
+                    OpenIddictConstants.Permissions.Endpoints.Token,
+                    $"{OpenIddictConstants.Permissions.Prefixes.Scope}scope1"
                 });
         }
 
-        private void UnionIfNotNull<TItem>(ISet<TItem> itemSet, IEnumerable<TItem> items)
+        private static void UnionIfNotNull<TItem>(ISet<TItem> itemSet, IEnumerable<TItem> items)
         {
             if (items != null)
             {

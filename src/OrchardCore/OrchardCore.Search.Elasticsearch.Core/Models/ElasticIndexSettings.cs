@@ -11,6 +11,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Models
 
         public string AnalyzerName { get; set; }
 
+        public string QueryAnalyzerName { get; set; }
+
         public bool IndexLatest { get; set; }
 
         public string[] IndexedContentTypes { get; set; }

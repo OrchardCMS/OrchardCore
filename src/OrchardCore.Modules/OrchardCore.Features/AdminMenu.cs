@@ -7,7 +7,7 @@ namespace OrchardCore.Features
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
@@ -16,20 +16,19 @@ namespace OrchardCore.Features
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
 
             builder
-                .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, configuration => configuration
-                    .AddClass("menu-configuration").Id("configuration")
+                .Add(S["Configuration"], configuration => configuration
                     .Add(S["Features"], S["Features"].PrefixPosition(), deployment => deployment
                         // Since features admin accepts tenant, always pass empty string to create valid link for current tenant.
-                        .Action("Features", "Admin", new { area = "OrchardCore.Features", tenant = String.Empty })
+                        .Action("Features", "Admin", new { area = FeaturesConstants.FeatureId, tenant = string.Empty })
                         .Permission(Permissions.ManageFeatures)
                         .LocalNav()
-                    ), priority: 1
+                    )
                 );
 
             return Task.CompletedTask;

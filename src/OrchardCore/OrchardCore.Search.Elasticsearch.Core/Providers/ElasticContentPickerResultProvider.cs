@@ -31,7 +31,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Providers
 
             var fieldSettings = searchContext.PartFieldDefinition?.GetSettings<ContentPickerFieldElasticEditorSettings>();
 
-            if (!String.IsNullOrWhiteSpace(fieldSettings?.Index))
+            if (!string.IsNullOrWhiteSpace(fieldSettings?.Index))
             {
                 indexName = fieldSettings.Index;
             }
@@ -48,7 +48,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Providers
                 ISearchResponse<Dictionary<string, object>> searchResponse = null;
                 var elasticTopDocs = new ElasticTopDocs();
 
-                if (String.IsNullOrWhiteSpace(searchContext.Query))
+                if (string.IsNullOrWhiteSpace(searchContext.Query))
                 {
                     searchResponse = await elasticClient.SearchAsync<Dictionary<string, object>>(s => s
                         .Index(_indexPrefix + indexName)

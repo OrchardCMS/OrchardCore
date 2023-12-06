@@ -26,7 +26,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - [CORS](modules/Cors/README.md)
 - [ReCaptcha](modules/ReCaptcha/README.md)
 - [Sanitizer](core/Sanitizer/README.md)
-- [Security](modules/Security/README.md) 
+- [Security](modules/Security/README.md)
 
 ### Authentication and User Management
 
@@ -36,9 +36,11 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
   - [Twitter](modules/Twitter/README.md)
   - [GitHub](modules/GitHub/README.md)
   - [Google](modules/Google/README.md)
-- Users: 
+- Users:
   - [Overview](modules/Users/README.md)
   - [Custom User Settings](modules/Users/CustomUserSettings/README.md)
+  - [Notifications](modules/Notifications/README.md)
+  - [Ticket store](modules/Users/TicketStore.md)
 - [OpenId](modules/OpenId/README.md)
 - [Roles](modules/Roles/README.md)
 
@@ -46,7 +48,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 
 - [Contents](modules/Contents/README.md)
 - [Content Types](modules/ContentTypes/README.md)
-- Content Parts: 
+- Content Parts:
   - [Add Parts to your Content](modules/ContentParts/README.md)
   - [Title](modules/Title/README.md)
   - [Autoroute](modules/Autoroute/README.md)
@@ -54,7 +56,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
   - [Html](modules/Html/README.md)
   - [Markdown](modules/Markdown/README.md)
   - [List](modules/Lists/README.md)
-  - [Flow](modules/Flow/README.md) 
+  - [Flow](modules/Flow/README.md)
   - [Bag](modules/Flow/BagPart.md)
   - [Publish Later](modules/PublishLater/README.md)
   - [SEO Meta](modules/Seo/README.md)
@@ -115,7 +117,9 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - [Email](modules/Email/README.md)
 - [Redis](modules/Redis/README.md)
 - [Deployment](modules/Deployment/README.md)
+- [Diagnostics](modules/Diagnostics/README.md)
 - [Remote Deployment](modules/Deployment.Remote/README.md)
+- [Sms](modules/Sms/README.md)
 
 ### Localization
 

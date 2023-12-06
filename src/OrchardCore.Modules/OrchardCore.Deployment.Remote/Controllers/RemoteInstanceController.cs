@@ -26,9 +26,10 @@ namespace OrchardCore.Deployment.Remote.Controllers
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
         private readonly RemoteInstanceService _service;
-        private readonly dynamic New;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
+
+        protected readonly dynamic New;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public RemoteInstanceController(
             RemoteInstanceService service,
@@ -65,8 +66,6 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 remoteInstances = remoteInstances.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            var count = remoteInstances.Count();
-
             var startIndex = pager.GetStartIndex();
             var pageSize = pager.PageSize;
 
@@ -74,7 +73,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             var routeData = new RouteData();
             routeData.Values.Add("Options.Search", options.Search);
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(remoteInstances.Count).RouteData(routeData);
 
             var model = new RemoteInstanceIndexViewModel
             {
@@ -243,7 +242,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                         await _notifier.SuccessAsync(H["Remote instances successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
 
@@ -252,29 +251,28 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
         private void ValidateViewModel(EditRemoteInstanceViewModel model)
         {
-            if (String.IsNullOrWhiteSpace(model.Name))
+            if (string.IsNullOrWhiteSpace(model.Name))
             {
                 ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.Name), S["The name is mandatory."]);
             }
 
-            if (String.IsNullOrWhiteSpace(model.ClientName))
+            if (string.IsNullOrWhiteSpace(model.ClientName))
             {
                 ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.ClientName), S["The client name is mandatory."]);
             }
 
-            if (String.IsNullOrWhiteSpace(model.ApiKey))
+            if (string.IsNullOrWhiteSpace(model.ApiKey))
             {
                 ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.ApiKey), S["The api key is mandatory."]);
             }
 
-            if (String.IsNullOrWhiteSpace(model.Url))
+            if (string.IsNullOrWhiteSpace(model.Url))
             {
                 ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.Url), S["The url is mandatory."]);
             }
             else
             {
-                Uri uri;
-                if (!Uri.TryCreate(model.Url, UriKind.Absolute, out uri))
+                if (!Uri.TryCreate(model.Url, UriKind.Absolute, out _))
                 {
                     ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.Url), S["The url is invalid."]);
                 }

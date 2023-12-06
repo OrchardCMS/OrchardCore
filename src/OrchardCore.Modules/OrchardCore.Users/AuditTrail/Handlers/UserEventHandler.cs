@@ -42,12 +42,12 @@ namespace OrchardCore.Users.AuditTrail.Handlers
                     (
                         name: UserAuditTrailEventConfiguration.LogInFailed,
                         category: UserAuditTrailEventConfiguration.User,
-                        correlationId: String.Empty,
-                        userId: String.Empty,
+                        correlationId: string.Empty,
+                        userId: string.Empty,
                         userName: userName,
                         new AuditTrailUserEvent
                         {
-                            UserId = String.Empty,
+                            UserId = string.Empty,
                             UserName = userName
                         }
                     ));
@@ -91,12 +91,12 @@ namespace OrchardCore.Users.AuditTrail.Handlers
 
             var userId = await _userManager.GetUserIdAsync(user);
 
-            if (String.IsNullOrEmpty(userIdActual))
+            if (string.IsNullOrEmpty(userIdActual))
             {
                 userIdActual = userId;
             }
 
-            if (String.IsNullOrEmpty(userNameActual))
+            if (string.IsNullOrEmpty(userNameActual))
             {
                 userNameActual = userName;
             }

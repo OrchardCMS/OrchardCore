@@ -3,12 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Search.Abstractions;
-using OrchardCore.Search.Model;
+using OrchardCore.Search.Models;
 using OrchardCore.Search.ViewModels;
 using OrchardCore.Settings;
 
@@ -43,14 +44,12 @@ namespace OrchardCore.Search.Drivers
 
             return Initialize<SearchSettingsViewModel>("SearchSettings_Edit", model =>
             {
-                var searchProviders = _serviceProvider.GetServices<SearchProvider>();
+                var searchServices = _serviceProvider.GetServices<ISearchService>();
 
-                if (searchProviders.Any())
-                {
-                    model.SearchProviders = searchProviders;
-                }
-
-                model.SearchProviderAreaName = settings.SearchProviderAreaName;
+                model.SearchServices = searchServices.Select(service => new SelectListItem(service.Name, service.Name)).ToList();
+                model.Placeholder = settings.Placeholder;
+                model.PageTitle = settings.PageTitle;
+                model.ProviderName = settings.ProviderName;
             }).Location("Content:2").OnGroup(GroupId);
         }
 
@@ -63,13 +62,16 @@ namespace OrchardCore.Search.Drivers
                 return null;
             }
 
-            if (context.GroupId == GroupId)
+            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
                 var model = new SearchSettingsViewModel();
 
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                section.SearchProviderAreaName = model.SearchProviderAreaName;
+                if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+                {
+                    section.ProviderName = model.ProviderName;
+                    section.Placeholder = model.Placeholder;
+                    section.PageTitle = model.PageTitle;
+                }
             }
 
             return await EditAsync(section, context);

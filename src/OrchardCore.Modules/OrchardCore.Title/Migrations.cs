@@ -14,7 +14,7 @@ namespace OrchardCore.Title
 {
     public class Migrations : DataMigration
     {
-        private IContentDefinitionManager _contentDefinitionManager;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
         private readonly ILogger _logger;
 
@@ -28,9 +28,9 @@ namespace OrchardCore.Title
             _logger = logger;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterPartDefinition("TitlePart", builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync("TitlePart", builder => builder
                 .Attachable()
                 .WithDescription("Provides a Title for your content item.")
                 .WithDefaultPosition("0")
@@ -46,7 +46,7 @@ namespace OrchardCore.Title
             // We are patching all content item versions by moving the Title to DisplayText
             // This step doesn't need to be executed for a brand new site
 
-            var lastDocumentId = 0;
+            var lastDocumentId = 0L;
 
             for (; ; )
             {
@@ -60,7 +60,7 @@ namespace OrchardCore.Title
 
                 foreach (var contentItemVersion in contentItemVersions)
                 {
-                    if (String.IsNullOrEmpty(contentItemVersion.DisplayText)
+                    if (string.IsNullOrEmpty(contentItemVersion.DisplayText)
                         && UpdateTitle(contentItemVersion.Content))
                     {
                         _session.Save(contentItemVersion);
@@ -73,7 +73,7 @@ namespace OrchardCore.Title
                 await _session.SaveChangesAsync();
             }
 
-            bool UpdateTitle(JToken content)
+            static bool UpdateTitle(JToken content)
             {
                 var changed = false;
 
@@ -81,7 +81,7 @@ namespace OrchardCore.Title
                 {
                     var title = content["TitlePart"]?["Title"]?.Value<string>();
 
-                    if (!String.IsNullOrWhiteSpace(title))
+                    if (!string.IsNullOrWhiteSpace(title))
                     {
                         content["DisplayText"] = title;
                         changed = true;

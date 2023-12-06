@@ -5,9 +5,11 @@ theme:
   logo: docs/assets/images/orchard-logo.png
   favicon: docs/assets/images/favicon.png
   features:
+    - navigation.footer
     - header.autohide
     - navigation.instant
     - navigation.tabs
+    - content.tabs.link
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
@@ -62,7 +64,8 @@ markdown_extensions:
   - pymdownx.snippets:
       check_paths: true
   - pymdownx.superfences
-  - pymdownx.tabbed
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.tasklist
   - pymdownx.tilde
   - toc:
@@ -105,7 +108,7 @@ nav:
       - Understanding Content Definitions Stores: docs/guides/content-definitions/README.md
       - Change password configuration: docs/guides/password-configuration/README.md
       - Change lockout configuration: docs/guides/lockout-configuration/README.md
-      - Azure AD integration: docs/guides/azuread-integration/README.md
+      - Microsoft Entra ID (Azure AD) integration: docs/guides/microsoft-entra-id-integration/README.md
       - Create a Liquid Widget: docs/guides/create-liquid-widget/README.md
       - Query Content Items Based on Taxonomy: docs/guides/query-content-items-based-on-taxonomy/README.md
       - Gulp pipeline: docs/guides/gulp-pipeline/README.md
@@ -125,6 +128,7 @@ nav:
       - Publishing a new release: docs/topics/publishing-releases/README.md
       - Using Docker: docs/topics/docker/README.md
       - Using local NuGet packages: docs/topics/local-nuget-packages/README.md
+      - Managing the Orchard Core Red Hat Ecosystem Catalog certification:  docs/topics/red-hat-ecosystem-catalog-certification/README.md
   - Reference:
       - docs/reference/README.md
       - CMS Modules:
@@ -166,6 +170,7 @@ nav:
           - Rules: docs/reference/modules/Rules/README.md
           - Shortcodes: docs/reference/modules/Shortcodes/README.md
           - Sitemaps: docs/reference/modules/Sitemaps/README.md
+          - SMS: docs/reference/modules/Sms/README.md
           - Spatial: docs/reference/modules/Spatial/README.md
           - XML-RPC: docs/reference/modules/XmlRpc/README.md
           - Menu: docs/reference/modules/Menu/README.md
@@ -183,6 +188,8 @@ nav:
           - Users:
               - Overview: docs/reference/modules/Users/README.md
               - Custom User Settings: docs/reference/modules/Users/CustomUserSettings/README.md
+              - Notifications: docs/reference/modules/Notifications/README.md
+              - Ticket store: docs/reference/modules/Users/TicketStore.md
           - Home Route: docs/reference/modules/HomeRoute/README.md
           - Feeds: docs/reference/modules/Feeds/README.md
       - Core Modules:
@@ -235,6 +242,10 @@ nav:
       - Owners: docs/resources/owners/README.md
       - Workshops: docs/resources/workshops/README.md
   - Releases:
+      - 1.7.2: docs/releases/1.7.2.md
+      - 1.7.1: docs/releases/1.7.1.md
+      - 1.7.0: docs/releases/1.7.0.md
+      - 1.6.0: docs/releases/1.6.0.md
       - 1.5.0: docs/releases/1.5.0.md
       - 1.4.0: docs/releases/1.4.0.md
       - 1.3.0: docs/releases/1.3.0.md

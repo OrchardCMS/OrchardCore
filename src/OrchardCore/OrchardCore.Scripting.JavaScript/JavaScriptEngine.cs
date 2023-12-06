@@ -41,7 +41,7 @@ namespace OrchardCore.Scripting.JavaScript
                 ThrowInvalidScopeTypeException();
             }
 
-            var parsedAst = _memoryCache.GetOrCreate(script, static entry => Engine.PrepareScript((string) entry.Key));
+            var parsedAst = _memoryCache.GetOrCreate(script, static entry => Engine.PrepareScript((string)entry.Key));
 
             var result = jsScope.Engine.Evaluate(parsedAst).ToObject();
 

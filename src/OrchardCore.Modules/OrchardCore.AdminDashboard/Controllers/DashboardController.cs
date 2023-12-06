@@ -4,10 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.AdminDashboard.Models;
 using OrchardCore.AdminDashboard.Services;
@@ -17,9 +14,7 @@ using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Notify;
 
 namespace OrchardCore.AdminDashboard.Controllers
 {
@@ -32,12 +27,7 @@ namespace OrchardCore.AdminDashboard.Controllers
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly INotifier _notifier;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-        private readonly dynamic New;
         private readonly YesSql.ISession _session;
-        private readonly ILogger _logger;
 
         public DashboardController(
             IAuthorizationService authorizationService,
@@ -46,12 +36,7 @@ namespace OrchardCore.AdminDashboard.Controllers
             IContentItemDisplayManager contentItemDisplayManager,
             IContentDefinitionManager contentDefinitionManager,
             IUpdateModelAccessor updateModelAccessor,
-            IShapeFactory shapeFactory,
-            INotifier notifier,
-            IStringLocalizer<DashboardController> stringLocalizer,
-            IHtmlLocalizer<DashboardController> htmlLocalizer,
-            YesSql.ISession session,
-            ILogger<DashboardController> logger)
+            YesSql.ISession session)
         {
             _authorizationService = authorizationService;
             _adminDashboardService = adminDashboardService;
@@ -59,36 +44,43 @@ namespace OrchardCore.AdminDashboard.Controllers
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentDefinitionManager = contentDefinitionManager;
             _updateModelAccessor = updateModelAccessor;
-            New = shapeFactory;
-            _notifier = notifier;
-            S = stringLocalizer;
-            H = htmlLocalizer;
             _session = session;
-            _logger = logger;
         }
 
         public async Task<IActionResult> Index()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.AccessAdminDashboard))
+            var model = new AdminDashboardViewModel()
             {
-                return Forbid();
-            }
-
-            var widgets = await _adminDashboardService.GetWidgetsAsync(x => x.Published);
-            var wrappers = new List<DashboardWrapper>();
-            foreach (var item in widgets)
-            {
-                wrappers.Add(new DashboardWrapper
-                {
-                    Dashboard = item,
-                    Content = await _contentItemDisplayManager.BuildDisplayAsync(item, _updateModelAccessor.ModelUpdater, "DetailAdmin")
-                });
-            }
-
-            var model = new AdminDashboardViewModel
-            {
-                Dashboards = wrappers.ToArray()
+                CanManageDashboard = await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminDashboard),
             };
+
+            if (model.CanManageDashboard || await _authorizationService.AuthorizeAsync(User, Permissions.AccessAdminDashboard))
+            {
+                var wrappers = new List<DashboardWrapper>();
+                var widgetContentTypes = await GetDashboardWidgetsAsync();
+
+                var widgets = await _adminDashboardService.GetWidgetsAsync(x => x.Published);
+                foreach (var widget in widgets)
+                {
+                    if (!widgetContentTypes.ContainsKey(widget.ContentType))
+                    {
+                        continue;
+                    }
+
+                    if (!model.CanManageDashboard && !await _authorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, widget))
+                    {
+                        continue;
+                    }
+
+                    wrappers.Add(new DashboardWrapper
+                    {
+                        Dashboard = widget,
+                        Content = await _contentItemDisplayManager.BuildDisplayAsync(widget, _updateModelAccessor.ModelUpdater, "DetailAdmin")
+                    });
+                }
+
+                model.Dashboards = wrappers.ToArray();
+            }
 
             return View(model);
         }
@@ -100,37 +92,43 @@ namespace OrchardCore.AdminDashboard.Controllers
                 return Forbid();
             }
 
-            // Set Manage Dashboard Feature
+            // Set Manage Dashboard Feature.
             Request.HttpContext.Features.Set(new DashboardFeature()
             {
                 IsManageRequest = true
             });
 
             var dashboardCreatable = new List<SelectListItem>();
+            var widgetContentTypes = await GetDashboardWidgetsAsync();
 
-            var widgetContentTypes = _contentDefinitionManager.ListTypeDefinitions()
-                    .Where(t => t.TryGetStereotype(out var stereotype) && stereotype.Contains("DashboardWidget"))
-                    .OrderBy(x => x.DisplayName);
-            foreach (var ctd in widgetContentTypes)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            foreach (var ctd in widgetContentTypes.Values.OrderBy(x => x.DisplayName))
             {
-                var contentItem = await _contentManager.NewAsync(ctd.Name);
-                contentItem.Owner = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var authorized = await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem);
-                if (authorized)
+                if (!await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, ctd.Name, userId))
                 {
-                    dashboardCreatable.Add(new SelectListItem(ctd.DisplayName, ctd.Name));
+                    continue;
                 }
+
+                dashboardCreatable.Add(new SelectListItem(ctd.DisplayName, ctd.Name));
             }
 
             var widgets = await _adminDashboardService.GetWidgetsAsync(x => x.Latest);
             var wrappers = new List<DashboardWrapper>();
-            foreach (var item in widgets)
+            foreach (var widget in widgets)
             {
+                if (!widgetContentTypes.ContainsKey(widget.ContentType)
+                    || !await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.EditContent, widget.ContentType, userId))
+                {
+                    continue;
+                }
+
                 var wrapper = new DashboardWrapper
                 {
-                    Dashboard = item,
-                    Content = await _contentItemDisplayManager.BuildDisplayAsync(item, _updateModelAccessor.ModelUpdater, "DetailAdmin")
+                    Dashboard = widget,
+                    Content = await _contentItemDisplayManager.BuildDisplayAsync(widget, _updateModelAccessor.ModelUpdater, "DetailAdmin")
                 };
+
                 wrappers.Add(wrapper);
             }
 
@@ -142,6 +140,7 @@ namespace OrchardCore.AdminDashboard.Controllers
 
             return View(model);
         }
+
         [HttpPost]
         public async Task<IActionResult> Update([FromForm] DashboardPartViewModel[] parts)
         {
@@ -150,17 +149,17 @@ namespace OrchardCore.AdminDashboard.Controllers
                 return Unauthorized();
             }
 
-            var contentItemIds = parts.Select(i => i.ContentItemId).ToArray();
+            var contentItemIds = parts.Select(i => i.ContentItemId).ToList();
 
-            // Load the latest version first if any
-            var latestItems = await _contentManager.GetAsync(contentItemIds, true);
-
-            var publishedItems = await _contentManager.GetAsync(contentItemIds, false);
+            // Load the latest version first if any.
+            var latestItems = await _contentManager.GetAsync(contentItemIds, VersionOptions.Latest);
 
             if (latestItems == null)
             {
                 return NotFound();
             }
+
+            var publishedItems = await _contentManager.GetAsync(contentItemIds, VersionOptions.Published);
 
             foreach (var contentItem in latestItems)
             {
@@ -170,7 +169,7 @@ namespace OrchardCore.AdminDashboard.Controllers
                     return Forbid();
                 }
 
-                var partViewModel = parts.Where(m => m.ContentItemId == contentItem.ContentItemId).FirstOrDefault();
+                var partViewModel = parts.FirstOrDefault(m => m.ContentItemId == contentItem.ContentItemId);
 
                 dashboardPart.Position = partViewModel?.Position ?? 0;
                 dashboardPart.Width = partViewModel?.Width ?? 1;
@@ -182,9 +181,9 @@ namespace OrchardCore.AdminDashboard.Controllers
 
                 if (contentItem.IsPublished() == false)
                 {
-                    var publishedVersion = publishedItems.Where(p => p.ContentItemId == contentItem.ContentItemId).FirstOrDefault();
+                    var publishedVersion = publishedItems.FirstOrDefault(p => p.ContentItemId == contentItem.ContentItemId);
                     var publishedMetaData = publishedVersion?.As<DashboardPart>();
-                    if (publishedVersion != null && publishedMetaData != null)
+                    if (publishedMetaData != null)
                     {
                         publishedMetaData.Position = partViewModel.Position;
                         publishedMetaData.Width = partViewModel.Width;
@@ -193,18 +192,19 @@ namespace OrchardCore.AdminDashboard.Controllers
                         _session.Save(publishedVersion);
                     }
                 }
-
             }
 
-            if (Request.Headers != null && Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            if (Request.Headers != null && Request.Headers.XRequestedWith == "XMLHttpRequest")
             {
                 return Ok();
             }
-            else
-            {
-                return RedirectToAction(nameof(Manage));
-            }
 
+            return RedirectToAction(nameof(Manage));
         }
+
+        private async Task<Dictionary<string, ContentTypeDefinition>> GetDashboardWidgetsAsync()
+            => (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+            .Where(t => t.StereotypeEquals("DashboardWidget"))
+            .ToDictionary(ctd => ctd.Name, ctd => ctd);
     }
 }

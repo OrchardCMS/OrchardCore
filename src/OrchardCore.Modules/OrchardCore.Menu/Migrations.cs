@@ -4,6 +4,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
 using OrchardCore.Menu.Models;
+using OrchardCore.Recipes;
 using OrchardCore.Recipes.Services;
 using YesSql;
 
@@ -22,7 +23,7 @@ namespace OrchardCore.Menu
 
         public async Task<int> CreateAsync()
         {
-            await _recipeMigrator.ExecuteAsync("menu.recipe.json", this);
+            await _recipeMigrator.ExecuteAsync($"menu{RecipesConstants.RecipeExtension}", this);
 
             // Shortcut other migration steps on new content definition schemas.
             return 4;
@@ -32,7 +33,7 @@ namespace OrchardCore.Menu
         // This code can be removed in a later version.
         public async Task<int> UpdateFrom1Async()
         {
-            await _recipeMigrator.ExecuteAsync("content-menu-updatefrom1.recipe.json", this);
+            await _recipeMigrator.ExecuteAsync($"content-menu-updatefrom1{RecipesConstants.RecipeExtension}", this);
 
             return 2;
         }
@@ -41,7 +42,7 @@ namespace OrchardCore.Menu
         // This code can be removed in a later version.
         public async Task<int> UpdateFrom2Async()
         {
-            await _recipeMigrator.ExecuteAsync("html-menu-updatefrom2.recipe.json", this);
+            await _recipeMigrator.ExecuteAsync($"html-menu-updatefrom2{RecipesConstants.RecipeExtension}", this);
 
             return 3;
         }

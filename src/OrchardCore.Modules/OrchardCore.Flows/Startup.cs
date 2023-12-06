@@ -45,6 +45,7 @@ namespace OrchardCore.Flows
             services.AddContentPart<FlowPart>()
                 .UseDisplayDriver<FlowPartDisplayDriver>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, FlowPartSettingsDisplayDriver>();
+            services.AddScoped<IContentPartIndexHandler, FlowPartIndexHandler>();
 
             services.AddScoped<IContentDisplayDriver, FlowMetadataDisplayDriver>();
 

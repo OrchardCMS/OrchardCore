@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Utilities;
 
 namespace OrchardCore.ContentManagement.Metadata.Builders
@@ -28,7 +29,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             if (existing == null)
             {
                 _fields = new List<ContentPartFieldDefinition>();
-                _settings = new JObject();
+                _settings = [];
             }
             else
             {
@@ -46,7 +47,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             {
                 throw new ArgumentException("Content part name must start with a letter", "name");
             }
-            if (!String.Equals(Name, Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(Name, Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
             {
                 throw new ArgumentException("Content part name contains invalid characters", "name");
             }
@@ -66,7 +67,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentPartDefinitionBuilder RemoveField(string fieldName)
         {
-            var existingField = _fields.SingleOrDefault(x => String.Equals(x.Name, fieldName, StringComparison.OrdinalIgnoreCase));
+            var existingField = _fields.SingleOrDefault(x => string.Equals(x.Name, fieldName, StringComparison.OrdinalIgnoreCase));
             if (existingField != null)
             {
                 _fields.Remove(existingField);
@@ -105,10 +106,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentPartDefinitionBuilder WithSettings<T>(T settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings, nameof(settings));
 
             var jObject = JObject.FromObject(settings, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
             _settings[typeof(T).Name] = jObject;
@@ -117,13 +115,13 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         }
 
         public ContentPartDefinitionBuilder WithField(string fieldName)
-        {
-            return WithField(fieldName, configuration => { });
-        }
+            => WithField(fieldName, configuration => { });
 
         public ContentPartDefinitionBuilder WithField(string fieldName, Action<ContentPartFieldDefinitionBuilder> configuration)
         {
-            var existingField = _fields.FirstOrDefault(x => String.Equals(x.Name, fieldName, StringComparison.OrdinalIgnoreCase));
+            ArgumentException.ThrowIfNullOrWhiteSpace(fieldName, nameof(fieldName));
+
+            var existingField = _fields.FirstOrDefault(x => string.Equals(x.Name, fieldName, StringComparison.OrdinalIgnoreCase));
             if (existingField != null)
             {
                 var toRemove = _fields.Where(x => x.Name == fieldName).ToArray();
@@ -137,14 +135,38 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
                 existingField = new ContentPartFieldDefinition(null, fieldName, new JObject());
             }
             var configurer = new FieldConfigurerImpl(existingField, _part);
+            // Assume that the display name is the same as the field name.
+            // Set the display name before invoking the given action, to allow the action to set the display-name explicitly.
+            configurer.WithDisplayName(fieldName);
             configuration(configurer);
             _fields.Add(configurer.Build());
             return this;
         }
 
+        public ContentPartDefinitionBuilder WithField<TField>(string fieldName)
+            => WithField(fieldName, configuration => configuration.OfType(typeof(TField).Name));
+
+        public ContentPartDefinitionBuilder WithField<TField>(string fieldName, Action<ContentPartFieldDefinitionBuilder> configuration)
+            => WithField(fieldName, field =>
+            {
+                configuration(field);
+
+                field.OfType(typeof(TField).Name);
+            });
+
+        public Task<ContentPartDefinitionBuilder> WithFieldAsync<TField>(string fieldName, Func<ContentPartFieldDefinitionBuilder, Task> configuration)
+            => WithFieldAsync(fieldName, async field =>
+            {
+                await configuration(field);
+
+                field.OfType(typeof(TField).Name);
+            });
+
         public async Task<ContentPartDefinitionBuilder> WithFieldAsync(string fieldName, Func<ContentPartFieldDefinitionBuilder, Task> configurationAsync)
         {
-            var existingField = _fields.FirstOrDefault(x => String.Equals(x.Name, fieldName, StringComparison.OrdinalIgnoreCase));
+            ArgumentException.ThrowIfNullOrWhiteSpace(fieldName, nameof(fieldName));
+
+            var existingField = _fields.FirstOrDefault(x => string.Equals(x.Name, fieldName, StringComparison.OrdinalIgnoreCase));
 
             if (existingField != null)
             {
@@ -160,6 +182,9 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
 
             var configurer = new FieldConfigurerImpl(existingField, _part);
+            // Assume that the display name is the same as the field name.
+            // Set the display name before invoking the given action, to allow the action to set the display-name explicitly.
+            configurer.WithDisplayName(fieldName);
 
             await configurationAsync(configurer);
 
@@ -188,7 +213,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
                 {
                     throw new ArgumentException("Content field name must start with a letter", "name");
                 }
-                if (!String.Equals(_fieldName, _fieldName.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+                if (!string.Equals(_fieldName, _fieldName.ToSafeName(), StringComparison.OrdinalIgnoreCase))
                 {
                     throw new ArgumentException("Content field name contains invalid characters", "name");
                 }
@@ -197,19 +222,14 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
 
             public override string Name
-            {
-                get { return _fieldName; }
-            }
+                => _fieldName;
 
             public override string FieldType
-            {
-                get { return _fieldDefinition.Name; }
-            }
+                => _fieldDefinition.Name;
+
 
             public override string PartName
-            {
-                get { return _partDefinition.Name; }
-            }
+                => _partDefinition.Name;
 
             public override ContentPartFieldDefinitionBuilder OfType(ContentFieldDefinition fieldDefinition)
             {

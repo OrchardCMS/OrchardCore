@@ -35,15 +35,15 @@ namespace OrchardCore.Search.Lucene
         private readonly IClock _clock;
         private readonly ILogger _logger;
         private readonly string _rootPath;
-        private bool _disposing;
-        private readonly ConcurrentDictionary<string, IndexReaderPool> _indexPools = new ConcurrentDictionary<string, IndexReaderPool>(StringComparer.OrdinalIgnoreCase);
-        private readonly ConcurrentDictionary<string, IndexWriterWrapper> _writers = new ConcurrentDictionary<string, IndexWriterWrapper>(StringComparer.OrdinalIgnoreCase);
-        private readonly ConcurrentDictionary<string, DateTime> _timestamps = new ConcurrentDictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
+        private bool _disposed;
+        private readonly ConcurrentDictionary<string, IndexReaderPool> _indexPools = new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, IndexWriterWrapper> _writers = new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, DateTime> _timestamps = new(StringComparer.OrdinalIgnoreCase);
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
         private readonly SpatialContext _ctx;
         private readonly GeohashPrefixTree _grid;
-        private readonly static object _synLock = new object();
+        private readonly static object _synLock = new();
 
         public LuceneIndexManager(
             IClock clock,
@@ -64,14 +64,14 @@ namespace OrchardCore.Search.Lucene
             _luceneAnalyzerManager = luceneAnalyzerManager;
             _luceneIndexSettingsService = luceneIndexSettingsService;
 
-            // Typical geospatial context
-            // These can also be constructed from SpatialContextFactory
+            // Typical geospatial context.
+            // These can also be constructed from SpatialContextFactory.
             _ctx = SpatialContext.Geo;
 
-            var maxLevels = 11; // Results in sub-meter precision for geohash
+            var maxLevels = 11; // Results in sub-meter precision for geohash.
 
-            // TODO demo lookup by detail distance
-            // This can also be constructed from SpatialPrefixTreeFactory
+            // TODO demo lookup by detail distance.
+            // This can also be constructed from SpatialPrefixTreeFactory.
             _grid = new GeohashPrefixTree(_ctx, maxLevels);
         }
 
@@ -130,7 +130,7 @@ namespace OrchardCore.Search.Lucene
 
         public bool Exists(string indexName)
         {
-            if (String.IsNullOrWhiteSpace(indexName))
+            if (string.IsNullOrWhiteSpace(indexName))
             {
                 return false;
             }
@@ -198,12 +198,12 @@ namespace OrchardCore.Search.Lucene
         {
             var doc = new Document
             {
-                // Always store the content item id and version id
+                // Always store the content item id and version id.
                 // These fields need to be indexed as a StringField because it needs to be searchable for the writer.DeleteDocuments method.
                 // Else it won't be able to prune oldest draft from the indexes.
                 // Maybe eventually find a way to remove a document from a StoredDocument.
                 new StringField("ContentItemId", documentIndex.ContentItemId.ToString(), Field.Store.YES),
-                new StringField("ContentItemVersionId", documentIndex.ContentItemVersionId.ToString(), Field.Store.YES)
+                new StringField("ContentItemVersionId", documentIndex.ContentItemVersionId.ToString(), Field.Store.YES),
             };
 
             if (indexSettings.StoreSourceData)
@@ -221,7 +221,7 @@ namespace OrchardCore.Search.Lucene
                 switch (entry.Type)
                 {
                     case DocumentIndex.Types.Boolean:
-                        // Store "true"/"false" for booleans
+                        // Store "true"/"false" for booleans.
                         doc.Add(new StringField(entry.Name, Convert.ToString(entry.Value).ToLowerInvariant(), store));
 
                         if (indexSettings.StoreSourceData)
@@ -261,7 +261,7 @@ namespace OrchardCore.Search.Lucene
                         break;
 
                     case DocumentIndex.Types.Integer:
-                        if (entry.Value != null && Int64.TryParse(entry.Value.ToString(), out var value))
+                        if (entry.Value != null && long.TryParse(entry.Value.ToString(), out var value))
                         {
                             doc.Add(new Int64Field(entry.Name, value, store));
 
@@ -294,7 +294,7 @@ namespace OrchardCore.Search.Lucene
                         break;
 
                     case DocumentIndex.Types.Text:
-                        if (entry.Value != null && !String.IsNullOrEmpty(Convert.ToString(entry.Value)))
+                        if (entry.Value != null && !string.IsNullOrEmpty(Convert.ToString(entry.Value)))
                         {
                             var stringValue = Convert.ToString(entry.Value);
 
@@ -373,7 +373,7 @@ namespace OrchardCore.Search.Lucene
                     path.Create();
                 }
 
-                // Lucene is not thread safe on this call
+                // Lucene is not thread safe on this call.
                 lock (_synLock)
                 {
                     return FSDirectory.Open(path);
@@ -446,7 +446,7 @@ namespace OrchardCore.Search.Lucene
                 {
                     if (_logger.IsEnabled(LogLevel.Information))
                     {
-                        _logger.LogInformation("Freeing writer for: " + writer.Key);
+                        _logger.LogInformation("Freeing writer for: '{IndexName}'.", writer.Key);
                     }
 
                     writer.Value.IsClosing = true;
@@ -457,7 +457,7 @@ namespace OrchardCore.Search.Lucene
                 {
                     if (_logger.IsEnabled(LogLevel.Information))
                     {
-                        _logger.LogInformation("Freeing reader for: " + reader.Key);
+                        _logger.LogInformation("Freeing reader for: '{IndexName}'.", reader.Key);
                     }
 
                     reader.Value.Dispose();
@@ -480,7 +480,7 @@ namespace OrchardCore.Search.Lucene
                 {
                     if (_logger.IsEnabled(LogLevel.Information))
                     {
-                        _logger.LogInformation("Freeing writer for: " + indexName);
+                        _logger.LogInformation("Freeing writer for: '{IndexName}'.", indexName);
                     }
 
                     writer.IsClosing = true;
@@ -491,7 +491,7 @@ namespace OrchardCore.Search.Lucene
                 {
                     if (_logger.IsEnabled(LogLevel.Information))
                     {
-                        _logger.LogInformation("Freeing reader for: " + indexName);
+                        _logger.LogInformation("Freeing reader for: '{IndexName}'.", indexName);
                     }
 
                     reader.Dispose();
@@ -505,19 +505,26 @@ namespace OrchardCore.Search.Lucene
 
         public void Dispose()
         {
-            if (_disposing)
+            if (_disposed)
             {
                 return;
             }
 
-            _disposing = true;
+            _disposed = true;
 
             FreeReaderWriter();
+
+            GC.SuppressFinalize(this);
         }
 
         ~LuceneIndexManager()
         {
-            Dispose();
+            if (_disposed)
+            {
+                return;
+            }
+
+            FreeReaderWriter();
         }
     }
 
@@ -565,7 +572,7 @@ namespace OrchardCore.Search.Lucene
             _reader.Dispose();
         }
 
-        public struct IndexReaderLease : IDisposable
+        public readonly struct IndexReaderLease : IDisposable
         {
             private readonly IndexReaderPool _pool;
 

@@ -66,7 +66,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
             foreach (var attribute in output.Attributes)
             {
-                if (String.Equals(attribute.Name, "href", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(attribute.Name, "href", StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }

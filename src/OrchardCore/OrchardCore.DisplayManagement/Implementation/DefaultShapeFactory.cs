@@ -38,10 +38,12 @@ namespace OrchardCore.DisplayManagement.Implementation
 
             if (binderName.EndsWith("Async", StringComparison.Ordinal))
             {
-                binderName = binder.Name.Substring(binder.Name.Length - "Async".Length);
+                binderName = binder.Name[..^"Async".Length];
             }
 
-            result = ShapeFactoryExtensions.CreateAsync(this, binderName, Arguments.From(args, binder.CallInfo.ArgumentNames));
+            result = ShapeFactoryExtensions
+                .CreateAsync(this, binderName, Arguments.From(args, binder.CallInfo.ArgumentNames))
+                .AsTask();
 
             return true;
         }
@@ -74,7 +76,7 @@ namespace OrchardCore.DisplayManagement.Implementation
 
             creating?.Invoke(creatingContext);
 
-            // "creating" events may add behaviors and alter base type
+            // 'Creating' events may add behaviors and alter base type.
             foreach (var ev in _events)
             {
                 ev.Creating(creatingContext);
@@ -88,7 +90,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                 }
             }
 
-            // Create the new instance
+            // Create the new instance.
             var createdContext = new ShapeCreatedContext
             {
                 ServiceProvider = _serviceProvider,
@@ -98,23 +100,19 @@ namespace OrchardCore.DisplayManagement.Implementation
                 Shape = await creatingContext.CreateAsync()
             };
 
-            var shape = createdContext.Shape as IShape;
-
-            if (shape == null)
-            {
-                throw new InvalidOperationException("Invalid base type for shape: " + createdContext.Shape.GetType().ToString());
-            }
+            var shape = createdContext.Shape
+                ?? throw new InvalidOperationException("Invalid base type for shape: " + createdContext.Shape.GetType().ToString());
 
             var shapeMetadata = shape.Metadata;
             shapeMetadata.Type = shapeType;
 
-            // Merge wrappers if there are any
+            // Merge wrappers if there are any.
             if (shapeDescriptor != null && shapeMetadata.Wrappers.Count + shapeDescriptor.Wrappers.Count > 0)
             {
                 shapeMetadata.Wrappers.AddRange(shapeDescriptor.Wrappers);
             }
 
-            // "created" events provides default values and new object initialization
+            // 'Created' events provides default values and new object initialization.
             foreach (var ev in _events)
             {
                 ev.Created(createdContext);

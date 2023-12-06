@@ -28,9 +28,9 @@ namespace OrchardCore.Templates.Controllers
         private readonly AdminTemplatesManager _adminTemplatesManager;
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-        private readonly dynamic New;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
+        protected readonly dynamic New;
 
         public TemplateController(
             IAuthorizationService authorizationService,
@@ -56,7 +56,7 @@ namespace OrchardCore.Templates.Controllers
         {
             options.AdminTemplates = true;
 
-            // Used to provide a different url such that the Admin Templates menu entry doesn't collide with the Templates ones
+            // Used to provide a different url such that the Admin Templates menu entry doesn't collide with the Templates ones.
             return Index(options, pagerParameters);
         }
 
@@ -116,7 +116,7 @@ namespace OrchardCore.Templates.Controllers
             });
         }
 
-        public async Task<IActionResult> Create(TemplateViewModel model, bool adminTemplates = false, string returnUrl = null)
+        public async Task<IActionResult> Create(bool adminTemplates = false, string returnUrl = null)
         {
             if (!adminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
@@ -149,11 +149,11 @@ namespace OrchardCore.Templates.Controllers
 
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrWhiteSpace(model.Name))
+                if (string.IsNullOrWhiteSpace(model.Name))
                 {
                     ModelState.AddModelError(nameof(TemplateViewModel.Name), S["The name is mandatory."]);
                 }
-                else if (String.IsNullOrWhiteSpace(model.Content))
+                else if (string.IsNullOrWhiteSpace(model.Content))
                 {
                     ModelState.AddModelError(nameof(TemplateViewModel.Content), S["The content is mandatory."]);
                 }
@@ -192,7 +192,7 @@ namespace OrchardCore.Templates.Controllers
                 }
             }
 
-            // If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form.
             return View(model);
         }
 
@@ -252,7 +252,7 @@ namespace OrchardCore.Templates.Controllers
 
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrWhiteSpace(model.Name))
+                if (string.IsNullOrWhiteSpace(model.Name))
                 {
                     ModelState.AddModelError(nameof(TemplateViewModel.Name), S["The name is mandatory."]);
                 }
@@ -260,7 +260,7 @@ namespace OrchardCore.Templates.Controllers
                 {
                     ModelState.AddModelError(nameof(TemplateViewModel.Name), S["A template with the same name already exists."]);
                 }
-                else if (String.IsNullOrWhiteSpace(model.Content))
+                else if (string.IsNullOrWhiteSpace(model.Content))
                 {
                     ModelState.AddModelError(nameof(TemplateViewModel.Content), S["The content is mandatory."]);
                 }
@@ -291,8 +291,12 @@ namespace OrchardCore.Templates.Controllers
                 }
             }
 
-            // If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form.
             ViewData["ReturnUrl"] = returnUrl;
+
+            // If the name was changed or removed, prevent a 404 or a failure on the next post.
+            model.Name = sourceName;
+
             return View(model);
         }
 
@@ -357,7 +361,7 @@ namespace OrchardCore.Templates.Controllers
                         await _notifier.SuccessAsync(H["Templates successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
 
@@ -373,7 +377,7 @@ namespace OrchardCore.Templates.Controllers
 
         private IActionResult RedirectToReturnUrlOrIndex(string returnUrl)
         {
-            if ((String.IsNullOrEmpty(returnUrl) == false) && (Url.IsLocalUrl(returnUrl)))
+            if ((string.IsNullOrEmpty(returnUrl) == false) && (Url.IsLocalUrl(returnUrl)))
             {
                 return this.Redirect(returnUrl, true);
             }

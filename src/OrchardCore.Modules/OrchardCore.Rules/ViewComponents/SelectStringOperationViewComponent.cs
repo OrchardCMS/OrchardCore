@@ -28,7 +28,7 @@ namespace OrchardCore.Rules.ViewComponents
                     new SelectListItem(
                         x.DisplayText(_serviceProvider),
                         x.Operator.Name,
-                        String.Equals(x.Factory.Name, selectedOperation, StringComparison.OrdinalIgnoreCase))
+                        string.Equals(x.Factory.Name, selectedOperation, StringComparison.OrdinalIgnoreCase))
                 ).ToList();
 
             var model = new SelectStringOperationViewModel

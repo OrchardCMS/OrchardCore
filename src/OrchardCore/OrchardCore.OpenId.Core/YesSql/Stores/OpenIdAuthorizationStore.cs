@@ -205,7 +205,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.GetAsync<TAuthorization>(int.Parse(identifier, CultureInfo.InvariantCulture), collection: OpenIdCollection);
+            return await _session.GetAsync<TAuthorization>(long.Parse(identifier, CultureInfo.InvariantCulture), collection: OpenIdCollection);
         }
 
         /// <inheritdoc/>
@@ -342,7 +342,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
         /// <inheritdoc/>
         public virtual ValueTask<TAuthorization> InstantiateAsync(CancellationToken cancellationToken)
-            => new ValueTask<TAuthorization>(new TAuthorization { AuthorizationId = Guid.NewGuid().ToString("n") });
+            => new(new TAuthorization { AuthorizationId = Guid.NewGuid().ToString("n") });
 
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TAuthorization> ListAsync(int? count, int? offset, CancellationToken cancellationToken)
@@ -406,10 +406,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 }
                 catch (Exception exception)
                 {
-                    if (exceptions == null)
-                    {
-                        exceptions = new List<Exception>(capacity: 1);
-                    }
+                    exceptions ??= new List<Exception>(capacity: 1);
 
                     exceptions.Add(exception);
                 }

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Models;
 using OrchardCore.ContentManagement.Metadata;
@@ -9,22 +10,19 @@ namespace OrchardCore.Alias
 {
     public class Migrations : DataMigration
     {
-        private IContentDefinitionManager _contentDefinitionManager;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
 
         public Migrations(IContentDefinitionManager contentDefinitionManager)
         {
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterPartDefinition(nameof(AliasPart), builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync(nameof(AliasPart), builder => builder
                 .Attachable()
                 .WithDescription("Provides a way to define custom aliases for content items."));
 
-            // NOTE: The Alias Length has been upgraded from 64 characters to 767.
-            // For existing SQL databases update the AliasPartIndex tables Alias column length manually.
-            // INFO: The Alias Length is now of 740 chars, but this is only used on a new installation.
             SchemaBuilder.CreateMapIndexTable<AliasPartIndex>(table => table
                 .Column<string>("Alias", col => col.WithLength(AliasPart.MaxAliasLength))
                 .Column<string>("ContentItemId", c => c.WithLength(26))

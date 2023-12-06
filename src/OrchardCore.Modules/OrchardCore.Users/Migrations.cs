@@ -1,5 +1,8 @@
 using System;
+using Dapper;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Users.Indexes;
@@ -11,7 +14,6 @@ namespace OrchardCore.Users
 {
     public class Migrations : DataMigration
     {
-        // This is a sequenced migration. On a new schemas this is complete after UpdateFrom2.
         public int Create()
         {
             SchemaBuilder.CreateMapIndexTable<UserIndex>(table => table
@@ -65,19 +67,19 @@ namespace OrchardCore.Users
             );
 
             SchemaBuilder.CreateMapIndexTable<UserByClaimIndex>(table => table
-               .Column<string>(nameof(UserByClaimIndex.ClaimType))
-               .Column<string>(nameof(UserByClaimIndex.ClaimValue)),
+               .Column<string>("ClaimType")
+               .Column<string>("ClaimValue"),
                 null);
 
             SchemaBuilder.AlterIndexTable<UserByClaimIndex>(table => table
                 .CreateIndex("IDX_UserByClaimIndex_DocumentId",
                     "DocumentId",
-                    nameof(UserByClaimIndex.ClaimType),
-                    nameof(UserByClaimIndex.ClaimValue))
+                    "ClaimType",
+                    "ClaimValue")
             );
 
             // Shortcut other migration steps on new content definition schemas.
-            return 12;
+            return 13;
         }
 
         // This code can be removed in a later version.
@@ -94,8 +96,8 @@ namespace OrchardCore.Users
         public int UpdateFrom2()
         {
             SchemaBuilder.CreateMapIndexTable<UserByClaimIndex>(table => table
-               .Column<string>(nameof(UserByClaimIndex.ClaimType))
-               .Column<string>(nameof(UserByClaimIndex.ClaimValue)),
+               .Column<string>("ClaimType")
+               .Column<string>("ClaimValue"),
                 null);
 
             return 3;
@@ -105,7 +107,7 @@ namespace OrchardCore.Users
         public int UpdateFrom3()
         {
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .AddColumn<bool>(nameof(UserIndex.IsEnabled), c => c.NotNull().WithDefault(true)));
+                .AddColumn<bool>("IsEnabled", c => c.NotNull().WithDefault(true)));
 
             return 4;
         }
@@ -124,7 +126,9 @@ namespace OrchardCore.Users
         // The UserName property rather than the NormalizedUserName is used as the ContentItem.Owner property matches the UserName.
         // New users will be created with a generated Id.
         // This code can be removed in a later version.
+#pragma warning disable CA1822 // Mark members as static
         public int UpdateFrom5()
+#pragma warning restore CA1822 // Mark members as static
         {
             // Defer this until after the subsequent migrations have succeded as the schema has changed.
             ShellScope.AddDeferredTask(async scope =>
@@ -143,20 +147,24 @@ namespace OrchardCore.Users
 
         // This buggy migration has been removed.
         // This code can be removed in a later version.
+#pragma warning disable CA1822 // Mark members as static
         public int UpdateFrom6()
+#pragma warning restore CA1822 // Mark members as static
         {
             return 7;
         }
 
         // Migrate any user names replacing '@' with '+' as user names can no longer be an email address.
         // This code can be removed in a later version.
+#pragma warning disable CA1822 // Mark members as static
         public int UpdateFrom7()
+#pragma warning restore CA1822 // Mark members as static
         {
             // Defer this until after the subsequent migrations have succeded as the schema has changed.
             ShellScope.AddDeferredTask(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                var users = await session.Query<User, UserIndex>(u => u.NormalizedUserName.Contains("@")).ListAsync();
+                var users = await session.Query<User, UserIndex>(u => u.NormalizedUserName.Contains('@')).ListAsync();
                 foreach (var user in users)
                 {
                     user.UserName = user.UserName.Replace('@', '+');
@@ -190,8 +198,8 @@ namespace OrchardCore.Users
             SchemaBuilder.AlterIndexTable<UserByClaimIndex>(table => table
                 .CreateIndex("IDX_UserByClaimIndex_DocumentId",
                     "DocumentId",
-                    nameof(UserByClaimIndex.ClaimType),
-                    nameof(UserByClaimIndex.ClaimValue))
+                    "ClaimType",
+                    "ClaimValue")
             );
 
             return 9;
@@ -211,13 +219,13 @@ namespace OrchardCore.Users
         public int UpdateFrom10()
         {
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .AddColumn<bool>(nameof(UserIndex.IsLockoutEnabled), c => c.NotNull().WithDefault(false)));
+                .AddColumn<bool>("IsLockoutEnabled", c => c.NotNull().WithDefault(false)));
 
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .AddColumn<DateTime?>(nameof(UserIndex.LockoutEndUtc), c => c.Nullable()));
+                .AddColumn<DateTime?>("LockoutEndUtc", c => c.Nullable()));
 
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .AddColumn<int>(nameof(UserIndex.AccessFailedCount), c => c.NotNull().WithDefault(0)));
+                .AddColumn<int>("AccessFailedCount", c => c.NotNull().WithDefault(0)));
 
             return 11;
         }
@@ -234,6 +242,48 @@ namespace OrchardCore.Users
             );
 
             return 12;
+        }
+
+        public int UpdateFrom12()
+        {
+            ShellScope.AddDeferredTask(async scope =>
+            {
+                var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                var dbConnectionAccessor = scope.ServiceProvider.GetService<IDbConnectionAccessor>();
+                var logger = scope.ServiceProvider.GetService<ILogger<Migrations>>();
+                var tablePrefix = session.Store.Configuration.TablePrefix;
+                var documentTableName = session.Store.Configuration.TableNameConvention.GetDocumentTable();
+                var table = $"{session.Store.Configuration.TablePrefix}{documentTableName}";
+
+                logger.LogDebug("Updating User Settings");
+
+                using var connection = dbConnectionAccessor.CreateConnection();
+                await connection.OpenAsync();
+                using var transaction = connection.BeginTransaction(session.Store.Configuration.IsolationLevel);
+                var dialect = session.Store.Configuration.SqlDialect;
+
+                try
+                {
+                    var quotedTableName = dialect.QuoteForTableName(table, session.Store.Configuration.Schema);
+                    var quotedContentColumnName = dialect.QuoteForColumnName("Content");
+                    var quotedTypeColumnName = dialect.QuoteForColumnName("Type");
+
+                    var updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, 'OrchardCore.Users.Models.LoginSettings, OrchardCore.Users', 'OrchardCore.Users.Models.LoginSettings, OrchardCore.Users.Core') WHERE {quotedTypeColumnName} = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
+
+                    await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
+
+                    await transaction.CommitAsync();
+                }
+                catch (Exception e)
+                {
+                    await transaction.RollbackAsync();
+                    logger.LogError(e, "An error occurred while updating User Settings");
+
+                    throw;
+                }
+            });
+
+            return 13;
         }
     }
 }

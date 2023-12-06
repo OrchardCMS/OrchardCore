@@ -4,13 +4,11 @@
     -moz-transition: opacity 0.2s 0.2s;
     -webkit-transition: opacity 0.2s 0.2s;
     -o-transition: opacity 0.2s 0.2s;
-    -ms-transition: opacity 0.2s 0.2s;
-    -khtml-transition: opacity 0.2s 0.2s;
 }
 
 .disabled-tree {
     background-color: #f5f5f5;
-    
+
     .tree-name-link {
         color: #808080;
     }
@@ -43,7 +41,6 @@
         }
     }
 }
-
 
 @media only screen and ( min-width: 768px ) {
     .card-columns {

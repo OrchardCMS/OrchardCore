@@ -208,7 +208,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.GetAsync<TToken>(int.Parse(identifier, CultureInfo.InvariantCulture), collection: OpenIdCollection);
+            return await _session.GetAsync<TToken>(long.Parse(identifier, CultureInfo.InvariantCulture), collection: OpenIdCollection);
         }
 
         /// <inheritdoc/>
@@ -396,7 +396,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
         /// <inheritdoc/>
         public virtual ValueTask<TToken> InstantiateAsync(CancellationToken cancellationToken)
-            => new ValueTask<TToken>(new TToken { TokenId = Guid.NewGuid().ToString("n") });
+            => new(new TToken { TokenId = Guid.NewGuid().ToString("n") });
 
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TToken> ListAsync(int? count, int? offset, CancellationToken cancellationToken)
@@ -458,10 +458,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 }
                 catch (Exception exception)
                 {
-                    if (exceptions == null)
-                    {
-                        exceptions = new List<Exception>(capacity: 1);
-                    }
+                    exceptions ??= new List<Exception>(capacity: 1);
 
                     exceptions.Add(exception);
                 }
@@ -610,11 +607,6 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 throw new ArgumentNullException(nameof(token));
             }
 
-            if (string.IsNullOrEmpty(status))
-            {
-                throw new ArgumentException("The status cannot be null or empty.", nameof(status));
-            }
-
             token.Status = status;
 
             return default;
@@ -628,11 +620,6 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 throw new ArgumentNullException(nameof(token));
             }
 
-            if (string.IsNullOrEmpty(subject))
-            {
-                throw new ArgumentException("The subject cannot be null or empty.", nameof(subject));
-            }
-
             token.Subject = subject;
 
             return default;
@@ -644,11 +631,6 @@ namespace OrchardCore.OpenId.YesSql.Stores
             if (token == null)
             {
                 throw new ArgumentNullException(nameof(token));
-            }
-
-            if (string.IsNullOrEmpty(type))
-            {
-                throw new ArgumentException("The token type cannot be null or empty.", nameof(type));
             }
 
             token.Type = type;

@@ -55,10 +55,10 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         public async Task ProcessContentItemsAsync(string indexName = default)
         {
             var allIndices = new Dictionary<string, long>();
-            var lastTaskId = Int32.MaxValue;
+            var lastTaskId = long.MaxValue;
             IEnumerable<ElasticIndexSettings> indexSettingsList = null;
 
-            if (String.IsNullOrEmpty(indexName))
+            if (string.IsNullOrEmpty(indexName))
             {
                 indexSettingsList = await _elasticIndexSettingsService.GetSettingsAsync();
 
@@ -194,7 +194,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                                 var cultureAspect = await contentManager.PopulateAspectAsync<CultureAspect>(context.ContentItem);
                                 var culture = cultureAspect.HasCulture ? cultureAspect.Culture.Name : null;
-                                var ignoreIndexedCulture = settings.Culture == "any" ? false : culture != settings.Culture;
+                                var ignoreIndexedCulture = settings.Culture != "any" && culture != settings.Culture;
 
                                 // Ignore if the content item content type or culture is not indexed in this index
                                 if (!settings.IndexedContentTypes.Contains(context.ContentItem.ContentType) || ignoreIndexedCulture)
@@ -230,7 +230,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                             await _indexManager.SetLastTaskId(indexStatus.Key, lastTaskId);
                         }
                     }
-                    
+
                 }, activateShell: false);
             } while (batch.Length == BatchSize);
         }
@@ -305,15 +305,15 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// <summary>
         /// Synchronizes Elasticsearch content index settings with Lucene ones.
         /// </summary>
-        public Task SyncSettings()
+        public async Task SyncSettings()
         {
-            var contentTypeDefinitions = _contentDefinitionManager.LoadTypeDefinitions();
+            var contentTypeDefinitions = await _contentDefinitionManager.LoadTypeDefinitionsAsync();
 
             foreach (var contentTypeDefinition in contentTypeDefinitions)
             {
                 foreach (var partDefinition in contentTypeDefinition.Parts)
                 {
-                    _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
+                    await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
                     {
                         if (partDefinition.Settings.TryGetValue("LuceneContentIndexSettings", out var existingPartSettings))
                         {
@@ -328,11 +328,11 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 }
             }
 
-            var partDefinitions = _contentDefinitionManager.LoadPartDefinitions();
+            var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync();
 
             foreach (var partDefinition in partDefinitions)
             {
-                _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
+                await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
                 {
                     if (partDefinition.Settings.TryGetValue("LuceneContentIndexSettings", out var existingPartSettings))
                     {
@@ -358,8 +358,6 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     }
                 });
             }
-
-            return Task.CompletedTask;
         }
     }
 }

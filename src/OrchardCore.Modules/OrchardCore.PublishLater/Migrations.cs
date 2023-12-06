@@ -1,7 +1,7 @@
 using System;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
 using OrchardCore.PublishLater.Indexes;
 using OrchardCore.PublishLater.Models;
@@ -18,27 +18,27 @@ public class Migrations : DataMigration
         _contentDefinitionManager = contentDefinitionManager;
     }
 
-    public int Create()
+    public async Task<int> CreateAsync()
     {
-        _contentDefinitionManager.AlterPartDefinition(nameof(PublishLaterPart), builder => builder
+        await _contentDefinitionManager.AlterPartDefinitionAsync("PublishLaterPart", builder => builder
             .Attachable()
             .WithDescription("Adds the ability to schedule content items to be published at a given future date and time."));
 
         SchemaBuilder.CreateMapIndexTable<PublishLaterPartIndex>(table => table
-            .Column<string>(nameof(PublishLaterPartIndex.ContentItemId))
-            .Column<DateTime>(nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc))
-            .Column<bool>(nameof(PublishLaterPartIndex.Published))
-            .Column<bool>(nameof(PublishLaterPartIndex.Latest))
+            .Column<string>("ContentItemId")
+            .Column<DateTime>("ScheduledPublishDateTimeUtc")
+            .Column<bool>("Published")
+            .Column<bool>("Latest")
         );
 
         SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table => table
-            .CreateIndex($"IDX_{nameof(PublishLaterPartIndex)}_{nameof(ContentItemIndex.DocumentId)}",
+            .CreateIndex("IDX_PublishLaterPartIndex_DocumentId",
                 "Id",
-                nameof(ContentItemIndex.DocumentId),
-                nameof(PublishLaterPartIndex.ContentItemId),
-                nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc),
-                nameof(PublishLaterPartIndex.Published),
-                nameof(PublishLaterPartIndex.Latest))
+                "DocumentId",
+                "ContentItemId",
+                "ScheduledPublishDateTimeUtc",
+                "Published",
+                "Latest")
         );
 
         return 3;
@@ -55,9 +55,9 @@ public class Migrations : DataMigration
         );
 
         SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table => table
-            .CreateIndex($"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc)}",
-                nameof(ContentItemIndex.DocumentId),
-                nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc))
+            .CreateIndex($"IDX_PublishLaterPartIndex_ScheduledPublishDateTimeUtc",
+                "DocumentId",
+                "ScheduledPublishDateTimeUtc")
         );
 
         return 2;
@@ -67,25 +67,25 @@ public class Migrations : DataMigration
     {
         SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table =>
         {
-            table.AddColumn<string>(nameof(PublishLaterPartIndex.ContentItemId));
-            table.AddColumn<bool>(nameof(PublishLaterPartIndex.Published));
-            table.AddColumn<bool>(nameof(PublishLaterPartIndex.Latest));
+            table.AddColumn<string>("ContentItemId");
+            table.AddColumn<bool>("Published");
+            table.AddColumn<bool>("Latest");
         });
 
         SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table =>
         {
-            table.DropIndex($"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc)}");
+            table.DropIndex("IDX_PublishLaterPartIndex_ScheduledPublishDateTimeUtc");
         });
 
         SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table =>
         {
-            table.CreateIndex($"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc)}",
+            table.CreateIndex("IDX_PublishLaterPartIndex_ScheduledPublishDateTimeUtc",
                 "Id",
-                nameof(ContentItemIndex.DocumentId),
-                nameof(PublishLaterPartIndex.ContentItemId),
-                nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc),
-                nameof(PublishLaterPartIndex.Published),
-                nameof(PublishLaterPartIndex.Latest));
+                "DocumentId",
+                "ContentItemId",
+                "ScheduledPublishDateTimeUtc",
+                "Published",
+                "Latest");
         });
 
         return 3;

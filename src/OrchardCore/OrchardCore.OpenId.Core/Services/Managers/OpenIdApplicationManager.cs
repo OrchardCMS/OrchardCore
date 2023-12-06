@@ -86,7 +86,7 @@ namespace OrchardCore.OpenId.Services.Managers
             else
             {
                 var properties = await Store.GetPropertiesAsync(application, cancellationToken);
-                if (properties.TryGetValue(OpenIdConstants.Properties.Roles, out JsonElement value))
+                if (properties.TryGetValue(OpenIdConstants.Properties.Roles, out var value))
                 {
                     var builder = ImmutableArray.CreateBuilder<string>();
 

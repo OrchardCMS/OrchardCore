@@ -14,7 +14,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         private const string NameAttribute = "name";
 
         private readonly ILayoutAccessor _layoutAccessor;
-        private readonly ILogger<ZoneTagHelper> _logger;
+        private readonly ILogger _logger;
 
         public ZoneTagHelper(ILayoutAccessor layoutAccessor, ILogger<ZoneTagHelper> logger)
         {
@@ -30,7 +30,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
 
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
-            if (String.IsNullOrEmpty(Name))
+            if (string.IsNullOrEmpty(Name))
             {
                 throw new ArgumentException("The name attribute can't be empty");
             }

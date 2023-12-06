@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
@@ -16,9 +17,9 @@ namespace OrchardCore.Lists
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterPartDefinition("ListPart", builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync("ListPart", builder => builder
                 .Attachable()
                 .WithDescription("Add a list behavior."));
 
@@ -52,9 +53,9 @@ namespace OrchardCore.Lists
 
         // Migrate PartSettings. This only needs to run on old content definition schemas.
         // This code can be removed in a later version.
-        public int UpdateFrom1()
+        public async Task<int> UpdateFrom1Async()
         {
-            _contentDefinitionManager.MigratePartSettings<ListPart, ListPartSettings>();
+            await _contentDefinitionManager.MigratePartSettingsAsync<ListPart, ListPartSettings>();
 
             return 2;
         }
@@ -63,7 +64,10 @@ namespace OrchardCore.Lists
         public int UpdateFrom2()
         {
             SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
-                .CreateIndex("IDX_ContainedPartIndex_DocumentId", "DocumentId", "ListContentItemId", "Order")
+                .CreateIndex("IDX_ContainedPartIndex_DocumentId",
+                "DocumentId",
+                "ListContentItemId",
+                "Order")
             );
 
             return 3;

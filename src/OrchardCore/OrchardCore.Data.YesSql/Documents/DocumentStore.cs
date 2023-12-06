@@ -12,16 +12,15 @@ namespace OrchardCore.Data.Documents
     {
         private readonly ISession _session;
 
-        private readonly Dictionary<Type, object> _loaded = new Dictionary<Type, object>();
+        private readonly Dictionary<Type, object> _loaded = new();
 
-        private readonly List<Type> _afterCommitsSuccess = new List<Type>();
-        private readonly List<Type> _afterCommitsFailure = new List<Type>();
+        private readonly List<Type> _afterCommitsSuccess = new();
+        private readonly List<Type> _afterCommitsFailure = new();
 
         private DocumentStoreCommitSuccessDelegate _afterCommitSuccess;
         private DocumentStoreCommitFailureDelegate _afterCommitFailure;
 
         private bool _canceled;
-        private bool _committed;
 
         public DocumentStore(ISession session)
         {
@@ -54,27 +53,10 @@ namespace OrchardCore.Data.Documents
                 return (false, loaded as T);
             }
 
-            T document = null;
-
-            // For consistency checking a document may be queried after 'SaveChangesAsync()'.
-            if (_committed)
+            var document = await _session.Query<T>().FirstOrDefaultAsync();
+            if (document is not null)
             {
-                // So we create a new session to not get a cached version from 'YesSql'.
-                await using var session = _session.Store.CreateSession();
-                document = await session.Query<T>().FirstOrDefaultAsync();
-            }
-            else
-            {
-                document = await _session.Query<T>().FirstOrDefaultAsync();
-            }
-
-            if (document != null)
-            {
-                if (!_committed)
-                {
-                    _session.Detach(document);
-                }
-
+                _session.Detach(document);
                 return (true, document);
             }
 
@@ -131,7 +113,7 @@ namespace OrchardCore.Data.Documents
         /// <inheritdoc />
         public async Task CommitAsync()
         {
-            if (_session == null)
+            if (_session is null)
             {
                 return;
             }
@@ -140,10 +122,9 @@ namespace OrchardCore.Data.Documents
             {
                 await _session.SaveChangesAsync();
 
-                _committed = true;
                 _loaded.Clear();
 
-                if (!_canceled && _afterCommitSuccess != null)
+                if (!_canceled && _afterCommitSuccess is not null)
                 {
                     foreach (var d in _afterCommitSuccess.GetInvocationList())
                     {
@@ -153,7 +134,7 @@ namespace OrchardCore.Data.Documents
             }
             catch (ConcurrencyException exception)
             {
-                if (_afterCommitFailure != null)
+                if (_afterCommitFailure is not null)
                 {
                     foreach (var d in _afterCommitFailure.GetInvocationList())
                     {

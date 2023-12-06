@@ -1,15 +1,14 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Import Deployment Package"])</h1></zone>
+<div class="card text-bg-theme mb-3">
+    <div class="card-body">
+        <form asp-action="Import" enctype="multipart/form-data" class="no-multisubmit">
+            <div class="mb-3">
+                <label for="file" class="form-label">@T["Select a file"]</label>
+                <input id="file" type="file" name="importedPackage" class="form-control" accept=".zip,.json" />
+            </div>
 
-<form asp-action="Import" enctype="multipart/form-data" class="no-multisubmit">
-    <nav class="card">
-        <ul class="navbar-nav card-body bg-primary">
-            <li class="nav-item">
-                <div class="mb-3">
-                    <label for="file" class="form-label">@T["Select a file"]</label>
-                    <input id="file" type="file" name="importedPackage" class="form-control" accept=".zip,.json" />
-                </div>
-                <button class="btn btn-primary import" type="submit">@T["Import"]</button>
-            </li>
-        </ul>
-    </nav>
-</form>
+            <button class="btn btn-primary import" type="submit">@T["Import"]</button>
+
+        </form>
+    </div>
+</div>

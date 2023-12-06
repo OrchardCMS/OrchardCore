@@ -18,7 +18,7 @@ There are different ways to create sites and modules for Orchard Core. You can l
 
 In this guide we will use our [Code Generation Templates](../../getting-started/templates/). You can install the latest stable release of the templates using this command:
 
-```dotnet new install OrchardCore.ProjectTemplates::1.5.0-*```
+```dotnet new install OrchardCore.ProjectTemplates::1.7.2-*```
 
 !!! note
     To use the development branch of the template add `--nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json`
@@ -30,8 +30,9 @@ Create an empty folder, called `OrchardCore.Mvc`, that will contain our projects
 Next, create the "Hello World" module.
 
 ```dotnet new ocmodulemvc -n OrchardCore.Mvc.HelloWorld```
- 
-Add a project reference to the web application that points to the module.
+
+!!! important
+    Add a project reference to the web application that points to the module.
 
 ```dotnet add OrchardCore.Mvc.Web reference OrchardCore.Mvc.HelloWorld```
 

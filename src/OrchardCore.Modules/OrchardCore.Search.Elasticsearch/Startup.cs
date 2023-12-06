@@ -1,7 +1,11 @@
 using System;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Elasticsearch.Net;
 using Fluid;
+using GraphQL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
@@ -16,19 +20,21 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Queries;
 using OrchardCore.Search.Abstractions;
-using OrchardCore.Search.Abstractions.ViewModels;
 using OrchardCore.Search.Elasticsearch.Core.Deployment;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Providers;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Drivers;
-using OrchardCore.Search.Elasticsearch.Providers;
+using OrchardCore.Search.Elasticsearch.Services;
+using OrchardCore.Search.Lucene.Handler;
+using OrchardCore.Search.ViewModels;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
@@ -56,7 +62,7 @@ namespace OrchardCore.Search.Elasticsearch
             var elasticConfiguration = configuration.Get<ElasticConnectionOptions>();
 
             if (CheckOptions(elasticConfiguration, _logger))
-            {    
+            {
                 services.Configure<ElasticConnectionOptions>(o => o.ConfigurationExists = true);
 
                 IConnectionPool pool = null;
@@ -71,7 +77,7 @@ namespace OrchardCore.Search.Elasticsearch
                     case "CloudConnectionPool":
                         BasicAuthenticationCredentials credentials = null;
 
-                        if (!String.IsNullOrWhiteSpace(elasticConfiguration.Username) && !String.IsNullOrWhiteSpace(elasticConfiguration.Password) && !String.IsNullOrWhiteSpace(elasticConfiguration.CloudId))
+                        if (!string.IsNullOrWhiteSpace(elasticConfiguration.Username) && !string.IsNullOrWhiteSpace(elasticConfiguration.Password) && !string.IsNullOrWhiteSpace(elasticConfiguration.CloudId))
                         {
                             credentials = new BasicAuthenticationCredentials(elasticConfiguration.Username, elasticConfiguration.Password);
                             pool = new CloudConnectionPool(elasticConfiguration.CloudId, credentials);
@@ -97,12 +103,12 @@ namespace OrchardCore.Search.Elasticsearch
 
                 var settings = new ConnectionSettings(pool).ThrowExceptions();
 
-                if (elasticConfiguration.ConnectionType != "CloudConnectionPool" && !String.IsNullOrWhiteSpace(elasticConfiguration.Username) && !String.IsNullOrWhiteSpace(elasticConfiguration.Password))
+                if (elasticConfiguration.ConnectionType != "CloudConnectionPool" && !string.IsNullOrWhiteSpace(elasticConfiguration.Username) && !string.IsNullOrWhiteSpace(elasticConfiguration.Password))
                 {
                     settings.BasicAuthentication(elasticConfiguration.Username, elasticConfiguration.Password);
                 }
 
-                if (!String.IsNullOrWhiteSpace(elasticConfiguration.CertificateFingerprint))
+                if (!string.IsNullOrWhiteSpace(elasticConfiguration.CertificateFingerprint))
                 {
                     settings.CertificateFingerprint(elasticConfiguration.CertificateFingerprint);
                 }
@@ -114,13 +120,45 @@ namespace OrchardCore.Search.Elasticsearch
 
                 var client = new ElasticClient(settings);
                 services.AddSingleton<IElasticClient>(client);
-                services.Configure<ElasticOptions>(o =>
-                    o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.StandardAnalyzer, new StandardAnalyzer())));
+                services.Configure<ElasticsearchOptions>(o =>
+                {
+                    o.IndexPrefix = configuration.GetValue<string>(nameof(o.IndexPrefix));
+
+                    var jsonNode = configuration.GetSection(nameof(o.Analyzers)).AsJsonNode();
+                    var jsonElement = JsonSerializer.Deserialize<JsonElement>(jsonNode);
+
+                    var analyzersObject = JsonObject.Create(jsonElement, new JsonNodeOptions()
+                    {
+                        PropertyNameCaseInsensitive = true,
+                    });
+
+                    if (analyzersObject != null)
+                    {
+                        foreach (var analyzer in analyzersObject)
+                        {
+                            if (analyzer.Value == null)
+                            {
+                                continue;
+                            }
+
+                            o.Analyzers.Add(analyzer.Key, analyzer.Value.AsObject());
+                        }
+                    }
+
+                    if (o.Analyzers.Count == 0)
+                    {
+                        // When no analyzers are configured, we'll define a default analyzer.
+                        o.Analyzers.Add(ElasticsearchConstants.DefaultAnalyzer, new JsonObject
+                        {
+                            ["type"] = "standard",
+                        });
+                    }
+                });
 
                 try
                 {
                     var response = client.Ping();
-                    
+
                     services.Configure<TemplateOptions>(o =>
                     {
                         o.MemberAccessStrategy.Register<SearchIndexViewModel>();
@@ -129,13 +167,15 @@ namespace OrchardCore.Search.Elasticsearch
                     });
 
                     services.AddElasticServices();
-                    services.AddSingleton<SearchProvider, ElasticSearchProvider>();
                     services.AddScoped<IPermissionProvider, Permissions>();
                     services.AddScoped<INavigationProvider, AdminMenu>();
                     services.AddScoped<IDisplayDriver<ISite>, ElasticSettingsDisplayDriver>();
                     services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
                     services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
                     services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
+                    services.AddScoped<ElasticsearchService>();
+                    services.AddScoped<ISearchService>(sp => sp.GetRequiredService<ElasticsearchService>());
+                    services.AddScoped<IAuthorizationHandler, ElasticsearchAuthorizationHandler>();
                 }
                 catch (Exception ex)
                 {
@@ -208,7 +248,7 @@ namespace OrchardCore.Search.Elasticsearch
                 return false;
             }
 
-            if (String.IsNullOrWhiteSpace(elasticConnectionOptions.Url))
+            if (string.IsNullOrWhiteSpace(elasticConnectionOptions.Url))
             {
                 logger.LogError("Elasticsearch is enabled but not active because the 'Url' is missing or empty in application configuration.");
                 optionsAreValid = false;
@@ -229,7 +269,7 @@ namespace OrchardCore.Search.Elasticsearch
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            if (services.Any(d => d.ImplementationType == typeof(ElasticSearchProvider)))
+            if (services.Any(d => d.GetImplementationType() == typeof(ElasticsearchService)))
             {
                 services.AddTransient<IDeploymentSource, ElasticIndexDeploymentSource>();
                 services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticIndexDeploymentStep>());
@@ -255,8 +295,8 @@ namespace OrchardCore.Search.Elasticsearch
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            if (services.Any(d => d.ImplementationType == typeof(ElasticSearchProvider)))
-            { 
+            if (services.Any(d => d.GetImplementationType() == typeof(ElasticsearchService)))
+            {
                 services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
             }
         }
@@ -267,7 +307,7 @@ namespace OrchardCore.Search.Elasticsearch
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            if (services.Any(d => d.ImplementationType == typeof(ElasticSearchProvider)))
+            if (services.Any(d => d.GetImplementationType() == typeof(ElasticsearchService)))
             {
                 services.AddScoped<IContentPickerResultProvider, ElasticContentPickerResultProvider>();
                 services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldElasticEditorSettingsDriver>();

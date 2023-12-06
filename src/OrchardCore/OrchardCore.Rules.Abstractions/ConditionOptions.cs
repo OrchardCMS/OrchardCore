@@ -5,7 +5,7 @@ namespace OrchardCore.Rules
 {
     public class ConditionOptions
     {
-        private readonly Dictionary<Type, Type> _evaluators = new Dictionary<Type, Type>();
+        private readonly Dictionary<Type, Type> _evaluators = new();
         public IReadOnlyDictionary<Type, Type> Evaluators => _evaluators;
 
         internal void AddCondition(Type condition, Type conditionEvaluator)

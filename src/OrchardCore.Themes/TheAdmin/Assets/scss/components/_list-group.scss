@@ -1,0 +1,7 @@
+.with-checkbox .list-group-item {
+    padding: 0.75rem 0.5rem;
+}
+
+.list-group-item + .list-group-item {
+    border-top-width: 0;
+}

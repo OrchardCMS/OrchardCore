@@ -36,3 +36,14 @@ using OrchardCore.Modules.Manifest;
     },
     Category = "Content Management"
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.Media.Indexing",
+    Name = "Media Indexing",
+    Description = "Provides a way to index media files with common format in Lucene and Elasticsearch.",
+    Dependencies = new[]
+    {
+        "OrchardCore.Media"
+    },
+    Category = "Search"
+)]

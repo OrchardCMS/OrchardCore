@@ -31,9 +31,9 @@ namespace OrchardCore.DisplayManagement.Liquid
 {
     public class LiquidViewTemplate
     {
-        public static readonly string ViewsFolder = "Views";
-        public static readonly string ViewExtension = ".liquid";
-        public static readonly MemoryCache Cache = new MemoryCache(new MemoryCacheOptions());
+        public const string ViewsFolder = "Views";
+        public const string ViewExtension = ".liquid";
+        public static readonly MemoryCache Cache = new(new MemoryCacheOptions());
         public IFluidTemplate FluidTemplate { get; }
 
         public LiquidViewTemplate(IFluidTemplate fluidTemplate)
@@ -95,7 +95,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                 }
                 else
                 {
-                    throw new Exception($"Failed to parse liquid file {path}: {String.Join(System.Environment.NewLine, errors)}");
+                    throw new Exception($"Failed to parse liquid file {path}: {string.Join(System.Environment.NewLine, errors)}");
                 }
             });
         }
@@ -156,10 +156,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             var viewContextAccessor = context.Services.GetRequiredService<ViewContextAccessor>();
             var viewContext = viewContextAccessor.ViewContext;
 
-            if (viewContext == null)
-            {
-                viewContext = viewContextAccessor.ViewContext = await GetViewContextAsync(context);
-            }
+            viewContext ??= viewContextAccessor.ViewContext = await GetViewContextAsync(context);
 
             try
             {
@@ -177,10 +174,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             var viewContextAccessor = context.Services.GetRequiredService<ViewContextAccessor>();
             var viewContext = viewContextAccessor.ViewContext;
 
-            if (viewContext == null)
-            {
-                viewContext = viewContextAccessor.ViewContext = await GetViewContextAsync(context);
-            }
+            viewContext ??= viewContextAccessor.ViewContext = await GetViewContextAsync(context);
 
             try
             {

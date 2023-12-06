@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
@@ -11,16 +12,16 @@ namespace OrchardCore.Taxonomies
 {
     public class Migrations : DataMigration
     {
-        private IContentDefinitionManager _contentDefinitionManager;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
 
         public Migrations(IContentDefinitionManager contentDefinitionManager)
         {
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterTypeDefinition("Taxonomy", taxonomy => taxonomy
+            await _contentDefinitionManager.AlterTypeDefinitionAsync("Taxonomy", taxonomy => taxonomy
                 .Draftable()
                 .Versionable()
                 .Creatable()
@@ -63,12 +64,14 @@ namespace OrchardCore.Taxonomies
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
             SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
                 .CreateIndex("IDX_TaxonomyIndex_DocumentId_ContentType",
                     "DocumentId",
-                    "ContentType",
-                    "ContentPart",
-                    "ContentField",
+                    "ContentType(254)",
+                    "ContentPart(254)",
+                    "ContentField(254)",
                     "Published",
                     "Latest")
             );
@@ -79,16 +82,16 @@ namespace OrchardCore.Taxonomies
 
         // Migrate FieldSettings. This only needs to run on old content definition schemas.
         // This code can be removed in a later version.
-        public int UpdateFrom1()
+        public async Task<int> UpdateFrom1Async()
         {
-            _contentDefinitionManager.MigrateFieldSettings<TaxonomyField, TaxonomyFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<TaxonomyField, TaxonomyFieldSettings>();
             return 2;
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom2()
+        public async Task<int> UpdateFrom2Async()
         {
-            _contentDefinitionManager.AlterTypeDefinition("Taxonomy", taxonomy => taxonomy
+            await _contentDefinitionManager.AlterTypeDefinitionAsync("Taxonomy", taxonomy => taxonomy
                 .WithPart("AutoroutePart", part => part
                     .WithPosition("3")
                     .WithSettings(new AutoroutePartSettings
@@ -125,12 +128,14 @@ namespace OrchardCore.Taxonomies
                     "Latest")
             );
 
+            // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
+            // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
             SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
                 .CreateIndex("IDX_TaxonomyIndex_DocumentId_ContentType",
                     "DocumentId",
-                    "ContentType",
-                    "ContentPart",
-                    "ContentField",
+                    "ContentType(254)",
+                    "ContentPart(254)",
+                    "ContentField(254)",
                     "Published",
                     "Latest")
             );
