@@ -22,7 +22,7 @@ namespace OrchardCore.Users.Handlers
             UserRoles = userRoles;
             LoginProvider = loginProvider;
         }
-
+        
         /// <summary>
         /// Gets the login provider.
         /// </summary>

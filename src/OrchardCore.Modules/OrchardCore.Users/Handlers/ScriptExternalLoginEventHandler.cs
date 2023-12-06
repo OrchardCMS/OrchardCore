@@ -68,7 +68,7 @@ namespace OrchardCore.Users.Handlers
                     if (context.PropertiesToUpdate != null)
                     {
 
-                        context.PropertiesToUpdate.Merge(evaluationResult.propertiesToUpdate);
+                        context.PropertiesToUpdate.Merge(evaluationResult.propertiesToUpdate,new JsonMergeSettings { MergeArrayHandling= MergeArrayHandling.Replace});
                     }
                     else
                     {

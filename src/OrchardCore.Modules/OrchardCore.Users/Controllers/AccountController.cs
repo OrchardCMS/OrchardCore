@@ -289,7 +289,6 @@ namespace OrchardCore.Users.Controllers
             var claims = info.Principal.GetSerializableClaims();
             var userRoles = await _userManager.GetRolesAsync(user);
             var context = new UpdateUserContext(user, info.LoginProvider, claims, userRoles);
-
             foreach (var item in _externalLoginHandlers)
             {
                 try
