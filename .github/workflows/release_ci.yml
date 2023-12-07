@@ -69,11 +69,11 @@ jobs:
       uses: docker/setup-buildx-action@v3
     - name: Login to DockerHub
       if: matrix.os == 'ubuntu-latest'
-      uses: docker/login-action@v1
+      uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
-    - name: Deploy release docker image for linux
+    - name: Deploy release docker image for linux and windows
       shell: pwsh
       if: matrix.os == 'ubuntu-latest'
       run: |
@@ -84,10 +84,6 @@ jobs:
         docker buildx build --load -f Dockerfile-CI --platform=linux/amd64 -t orchardproject/orchardcore-cms-linux:latest -t orchardproject/orchardcore-cms-linux:${{ steps.get_version.outputs.VERSION }} .
         docker push orchardproject/orchardcore-cms-linux:latest 
         docker push "orchardproject/orchardcore-cms-linux:${{ steps.get_version.outputs.VERSION }}"
-    - name: Deploy release docker image for windows
-      shell: pwsh
-      if: matrix.os == 'ubuntu-latest'
-      run: |
         docker buildx build --load -f Dockerfile-CI --platform=windows/amd64 -t orchardproject/orchardcore-cms-windows:latest -t orchardproject/orchardcore-cms-windows:${{ steps.get_version.outputs.VERSION }} .
         docker push orchardproject/orchardcore-cms-windows:latest 
         docker push "orchardproject/orchardcore-cms-windows:${{ steps.get_version.outputs.VERSION }}"
