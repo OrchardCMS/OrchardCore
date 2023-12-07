@@ -17,7 +17,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [Fluid.Core](https://github.com/sebastienros/fluid) | .NET Liquid template engine. | 2.5.0 | [MIT](https://github.com/sebastienros/fluid/blob/dev/LICENSE) |
 | [GraphQL](https://github.com/graphql/graphiql) | GraphiQL & GraphQL. | 4.6.1 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
 | [HtmlSanitizer](https://github.com/mganss/HtmlSanitizer) | Cleans HTML to avoid XSS attacks. | 8.1.796-beta | [MIT](https://github.com/mganss/HtmlSanitizer/blob/master/LICENSE.md) |
-| [Image Sharp](https://github.com/SixLabors/ImageSharp.Web) | Middleware for ASP.NET-Core for image manipulation. | 3.0.1 |[Apache-2.0](https://github.com/SixLabors/ImageSharp.Web/blob/master/LICENSE) |
+| [Image Sharp](https://github.com/SixLabors/ImageSharp.Web) | Middleware for ASP.NET-Core for image manipulation. | 3.1.0 |[Apache-2.0](https://github.com/SixLabors/ImageSharp.Web/blob/master/LICENSE) |
 | [Irony.Core](https://github.com/daxnet/irony) | A modified version of the Irony project with .NET Core support | 1.0.7 | [MIT](https://github.com/daxnet/irony/blob/master/LICENSE) |
 | [Jint](https://github.com/sebastienros/jint) | Javascript Interpreter for .NET. | 3.0.0-beta-2056 | [MIT](https://github.com/sebastienros/jint/blob/dev/LICENSE) |
 | [libphonenumber-csharp](https://github.com/twcclegg/libphonenumber-csharp) | .NET library for parsing, formatting, and validating international phone numbers | 8.13.26 | [Apache-2.0](https://github.com/twcclegg/libphonenumber-csharp/blob/main/LICENSE) |
