@@ -27,7 +27,6 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
         private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
         {
             WriteIndented = true,
-
         };
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -41,7 +40,6 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
             IAuthorizationService authorizationService,
             IElasticClient elasticClient,
             IStringLocalizer<ElasticSettingsDisplayDriver> stringLocalizer
-
             )
         {
             _elasticIndexSettingsService = elasticIndexSettingsService;
