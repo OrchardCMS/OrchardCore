@@ -73,9 +73,9 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
-    - name: Deploy release docker image for linux and windows
-      shell: pwsh
+    - name: Deploy release docker images
       if: matrix.os == 'ubuntu-latest'
+      shell: pwsh
       run: |
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item -Recurse -Confirm:$false
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests -Recurse | Remove-Item -Recurse -Confirm:$false
