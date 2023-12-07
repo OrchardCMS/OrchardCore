@@ -81,7 +81,7 @@ public class ElasticsearchService : ISearchService
         {
             QueryContainer query = null;
 
-            if (searchType == ElasticSettings.RawSearchType)
+            if (searchType == ElasticSettings.RawSearchType && !string.IsNullOrWhiteSpace(searchSettings.DefaultQuery))
             {
                 var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(searchSettings.DefaultQuery, _javaScriptEncoder,
                     new Dictionary<string, FluidValue>()
