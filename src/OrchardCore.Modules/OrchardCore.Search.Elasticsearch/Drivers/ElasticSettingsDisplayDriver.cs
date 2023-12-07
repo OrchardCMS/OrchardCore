@@ -27,6 +27,7 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
         private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
         {
             WriteIndented = true,
+
         };
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -40,6 +41,7 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
             IAuthorizationService authorizationService,
             IElasticClient elasticClient,
             IStringLocalizer<ElasticSettingsDisplayDriver> stringLocalizer
+
             )
         {
             _elasticIndexSettingsService = elasticIndexSettingsService;
@@ -60,7 +62,7 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
                 model.SearchTypes = [
                     new(S["Multi-Match Query (Default)"], string.Empty),
                     new(S["Query String Query"], ElasticSettings.QueryStringSearchType),
-                    new(S["Raw Query"], ElasticSettings.RawSearchType),
+                    new(S["Custom Query"], ElasticSettings.CustomSearchType),
                 ];
             }).Location("Content:2")
             .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageElasticIndexes))
@@ -68,48 +70,48 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(ElasticSettings section, BuildEditorContext context)
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageElasticIndexes))
+            if (!string.Equals(GroupId, context.GroupId, StringComparison.OrdinalIgnoreCase))
             {
                 return null;
             }
 
-            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
+            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageElasticIndexes))
             {
-                var model = new ElasticSettingsViewModel();
+                return null;
+            }
 
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
+            var model = new ElasticSettingsViewModel();
 
-                section.DefaultQuery = null;
-                section.SearchIndex = model.SearchIndex;
-                section.DefaultSearchFields = model.SearchFields?.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
-                section.SearchType = model.SearchType ?? string.Empty;
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                if (model.SearchType == ElasticSettings.RawSearchType)
+            section.DefaultQuery = null;
+            section.SearchIndex = model.SearchIndex;
+            section.DefaultSearchFields = model.SearchFields?.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
+            section.SearchType = model.SearchType ?? string.Empty;
+
+            if (model.SearchType == ElasticSettings.CustomSearchType)
+            {
+                if (string.IsNullOrWhiteSpace(model.DefaultQuery))
                 {
-                    if (string.IsNullOrWhiteSpace(model.DefaultQuery))
-                    {
-                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultQuery), S["Please provide the default query."]);
-                    }
-                    else if (!JsonHelpers.TryParse(model.DefaultQuery, out var document))
-                    {
-                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultQuery), S["The provided query is not formatted correctly."]);
-                    }
-                    else
-                    {
-                        section.DefaultQuery = JsonSerializer.Serialize(document, _jsonSerializerOptions);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultQuery), S["Please provide the default query."]);
+                }
+                else if (!JsonHelpers.TryParse(model.DefaultQuery, out var document))
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultQuery), S["The provided query is not formatted correctly."]);
+                }
+                else
+                {
+                    section.DefaultQuery = JsonSerializer.Serialize(document, _jsonSerializerOptions);
 
-                        try
-                        {
-                            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(model.DefaultQuery));
+                    try
+                    {
+                        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(model.DefaultQuery));
 
-                            var searchRequest = await _elasticClient.RequestResponseSerializer.DeserializeAsync<SearchRequest>(stream);
-                        }
-                        catch
-                        {
-                            context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultQuery), S["Invalid query provided."]);
-                        }
+                        var searchRequest = await _elasticClient.RequestResponseSerializer.DeserializeAsync<SearchRequest>(stream);
+                    }
+                    catch
+                    {
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultQuery), S["Invalid query provided."]);
                     }
                 }
             }

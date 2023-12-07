@@ -23,7 +23,7 @@
 
 <div class="mb-3" asp-validation-class-for="SearchType">
     <label asp-for="SearchType" class="form-label">@T["Default search type"]</label>
-    <select asp-for="SearchType" class="form-select" asp-items="Model.SearchTypes" data-raw-type="@ElasticSettings.RawSearchType"></select>
+    <select asp-for="SearchType" class="form-select" asp-items="Model.SearchTypes" data-raw-type="@ElasticSettings.CustomSearchType"></select>
     <span asp-validation-for="SearchType"></span>
 </div>
 

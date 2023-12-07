@@ -90,7 +90,7 @@ Here is an example for setting default search settings:
         "DefaultSearchFields":[
           "Content.ContentItem.FullText"
         ],
-        "SearchType": "", // Use 'raw' for a custom query in DefaultQuery and 'query_string' for a Query String Query search. Leave it blank for the default, which is a Multi-Match Query search.
+        "SearchType": "", // Use 'custom' for a custom query in DefaultQuery and 'query_string' for a Query String Query search. Leave it blank for the default, which is a Multi-Match Query search.
         "DefaultQuery": null,
         "SyncWithLucene":true // Allows to sync content index settings.
       }
