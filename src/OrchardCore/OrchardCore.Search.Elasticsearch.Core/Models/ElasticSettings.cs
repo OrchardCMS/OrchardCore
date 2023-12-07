@@ -5,10 +5,11 @@ namespace OrchardCore.Search.Elasticsearch.Core.Models
 {
     public class ElasticSettings
     {
-        public static readonly string[] FullTextField = [IndexingConstants.FullTextKey];
+        public const string RawSearchType = "raw";
 
-        [Obsolete("This property will be removed in future releases.")]
-        public const string StandardAnalyzer = "standardanalyzer";
+        public const string QueryStringSearchType = "query_string";
+
+        public static readonly string[] FullTextField = [IndexingConstants.FullTextKey];
 
         public string SearchIndex { get; set; }
 
@@ -16,9 +17,24 @@ namespace OrchardCore.Search.Elasticsearch.Core.Models
 
         public string[] DefaultSearchFields { get; set; } = FullTextField;
 
-        [Obsolete("Instead use SearchType property.")]
+        public string SearchType { get; set; }
+
+        [Obsolete("This property will be removed in future releases.")]
+        public const string StandardAnalyzer = "standardanalyzer";
+
+        [Obsolete($"This property will be removed in future releases. Instead use {nameof(SearchType)} property.")]
         public bool AllowElasticQueryStringQueryInSearch { get; set; } = false;
 
-        public string SearchType { get; set; }
+        public string GetSearchType()
+        {
+#pragma warning disable CS0618 // Type or member is obsolete
+            if (SearchType == null && AllowElasticQueryStringQueryInSearch)
+            {
+                return QueryStringSearchType;
+            }
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            return SearchType;
+        }
     }
 }

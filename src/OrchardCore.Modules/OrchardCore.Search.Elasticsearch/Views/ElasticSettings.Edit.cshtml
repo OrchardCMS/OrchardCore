@@ -1,4 +1,4 @@
-@using OrchardCore.Search.Elasticsearch.Services
+@using OrchardCore.Search.Elasticsearch.Core.Models
 
 @model ElasticSettingsViewModel
 
@@ -23,7 +23,7 @@
 
 <div class="mb-3" asp-validation-class-for="SearchType">
     <label asp-for="SearchType" class="form-label">@T["Default search index"]</label>
-    <select asp-for="SearchType" class="form-select" asp-items="Model.SearchTypes" data-raw-type="@ElasticsearchService.RawSearchType"></select>
+    <select asp-for="SearchType" class="form-select" asp-items="Model.SearchTypes" data-raw-type="@ElasticSettings.RawSearchType"></select>
     <span asp-validation-for="SearchType"></span>
 </div>
 

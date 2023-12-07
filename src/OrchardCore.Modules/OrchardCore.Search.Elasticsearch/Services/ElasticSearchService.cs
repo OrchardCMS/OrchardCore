@@ -17,9 +17,6 @@ namespace OrchardCore.Search.Elasticsearch.Services;
 
 public class ElasticsearchService : ISearchService
 {
-    public const string RawSearchType = "raw";
-    public const string QueryStringSearchType = "query_string";
-
     private readonly ISiteService _siteService;
     private readonly ElasticIndexManager _elasticIndexManager;
     private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
@@ -78,11 +75,13 @@ public class ElasticsearchService : ISearchService
             return result;
         }
 
+        var searchType = searchSettings.GetSearchType();
+
         try
         {
             QueryContainer query = null;
 
-            if (searchSettings.SearchType == RawSearchType)
+            if (searchType == ElasticSettings.RawSearchType)
             {
                 var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(searchSettings.DefaultQuery, _javaScriptEncoder,
                     new Dictionary<string, FluidValue>()
@@ -100,7 +99,7 @@ public class ElasticsearchService : ISearchService
                 }
                 catch { }
             }
-            else if (searchSettings.SearchType == "query_string")
+            else if (searchType == ElasticSettings.QueryStringSearchType)
             {
                 query = new QueryStringQuery
                 {

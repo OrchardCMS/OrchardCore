@@ -14,7 +14,6 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
-using OrchardCore.Search.Elasticsearch.Services;
 using OrchardCore.Search.Elasticsearch.ViewModels;
 using OrchardCore.Settings;
 
@@ -52,41 +51,22 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
             S = stringLocalizer;
         }
 
-        public override async Task<IDisplayResult> EditAsync(ElasticSettings settings, BuildEditorContext context)
-        {
-            var user = _httpContextAccessor.HttpContext?.User;
-
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageElasticIndexes))
-            {
-                return null;
-            }
-
-            return Initialize<ElasticSettingsViewModel>("ElasticSettings_Edit", async model =>
+        public override IDisplayResult Edit(ElasticSettings settings)
+            => Initialize<ElasticSettingsViewModel>("ElasticSettings_Edit", async model =>
             {
                 model.SearchIndex = settings.SearchIndex;
                 model.SearchFields = string.Join(", ", settings.DefaultSearchFields ?? []);
                 model.SearchIndexes = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName);
                 model.DefaultQuery = settings.DefaultQuery;
-
-#pragma warning disable CS0618 // Type or member is obsolete
-                if (settings.SearchType == null && settings.AllowElasticQueryStringQueryInSearch)
-                {
-                    model.SearchType = "query_string";
-                }
-                else
-                {
-                    model.SearchType = settings.SearchType;
-                }
-#pragma warning restore CS0618 // Type or member is obsolete
-
+                model.SearchType = settings.GetSearchType();
                 model.SearchTypes = [
                     new(S["Multi-Match Query (Default)"], string.Empty),
-                    new(S["Query String Query"], ElasticsearchService.QueryStringSearchType),
-                    new(S["Raw Query"], ElasticsearchService.RawSearchType),
+                    new(S["Query String Query"], ElasticSettings.QueryStringSearchType),
+                    new(S["Raw Query"], ElasticSettings.RawSearchType),
                 ];
             }).Location("Content:2")
+            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageElasticIndexes))
             .OnGroup(GroupId);
-        }
 
         public override async Task<IDisplayResult> UpdateAsync(ElasticSettings section, BuildEditorContext context)
         {
@@ -108,7 +88,7 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
                 section.DefaultSearchFields = model.SearchFields?.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
                 section.SearchType = model.SearchType ?? string.Empty;
 
-                if (model.SearchType == ElasticsearchService.RawSearchType)
+                if (model.SearchType == ElasticSettings.RawSearchType)
                 {
                     if (string.IsNullOrWhiteSpace(model.DefaultQuery))
                     {
