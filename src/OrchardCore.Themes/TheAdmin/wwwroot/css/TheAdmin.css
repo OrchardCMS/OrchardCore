@@ -8649,6 +8649,13 @@ ul.ui-sortable:not(:has(> li)) {
   fill: var(--bs-body-color);
 }
 
+[dir] .trumbowyg-box .trumbowyg-editor th, [dir] .trumbowyg-box .trumbowyg-editor td {
+  border-width: var(--bs-border-width, 1px);
+  border-style: var(--bs-border-style, solid);
+  border-color: var(--bs-border-color, #dee2e6);
+  padding: 0.5rem;
+}
+
 span.field-validation-error {
   width: 100%;
 }
