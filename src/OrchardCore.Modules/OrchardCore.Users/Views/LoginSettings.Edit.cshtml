@@ -103,12 +103,12 @@
         var editor = $('#@Html.IdFor(x => x.SyncRolesScript)').data('editor');
         if (!keepText) {
             editor.doc.setValue(
-                '/* Uncomment to map AzureAD\n' +
+                '/* Uncomment to map AzureAd\n' +
                 'switch (context.loginProvider) {\n' +
-                '    case "AzureAD":\n' +
+                '    case "AzureAd":\n' +
                 '        context.externalClaims.forEach(claim => {\n' +
-                '            if (claim.Type === "http://schemas.microsoft.com/ws/2008/06/identity/claims/role") {\n' +
-                '                switch (claim.Value) {\n' +
+                '            if (claim.type === "http://schemas.microsoft.com/ws/2008/06/identity/claims/role") {\n' +
+                '                switch (claim.value) {\n' +
                 '                    case "Writer":\n' +
                 '                        context.rolesToAdd.push("Author");\n' +
                 '                        break;\n' +
@@ -116,13 +116,14 @@
                 '                        context.rolesToAdd.push("Administrator");\n' +
                 '                        break;\n' +
                 '                    default:\n' +
-                '                        log("Warning", "Role " + claim.Value + " was not handled");\n' +
+                '                        log("Warning", "Role " + claim.value + " was not handled");\n' +
                 '                        break;\n' +
                 '                }\n' +
                 '            }\n' +
                 '        });\n' +
+                '        break;\n' +
                 '    default:\n' +
-                '        log("Warning", "Provider " + loginProvider + " was not handled");\n' +
+                '        log("Warning", "Provider " + context.loginProvider + " was not handled");\n' +
                 '        break;\n' +
                 '}\n' +
                 '*/\n'
