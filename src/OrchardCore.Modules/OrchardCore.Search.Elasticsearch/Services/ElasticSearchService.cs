@@ -75,13 +75,12 @@ public class ElasticsearchService : ISearchService
             return result;
         }
 
-        var searchType = searchSettings.GetSearchType();
-
         try
         {
+            var searchType = searchSettings.GetSearchType();
             QueryContainer query = null;
 
-            if (searchType == ElasticSettings.CustomSearchType)
+            if (searchType == ElasticSettings.CustomSearchType && !string.IsNullOrWhiteSpace(searchSettings.DefaultQuery))
             {
                 var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(searchSettings.DefaultQuery, _javaScriptEncoder,
                     new Dictionary<string, FluidValue>()
