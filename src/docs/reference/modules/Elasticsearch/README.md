@@ -90,7 +90,8 @@ Here is an example for setting default search settings:
         "DefaultSearchFields":[
           "Content.ContentItem.FullText"
         ],
-        "AllowElasticQueryStringQueryInSearch":false,
+        "SearchType": "", // Use 'custom' for a custom query in DefaultQuery and 'query_string' for a Query String Query search. Leave it blank for the default, which is a Multi-Match Query search.
+        "DefaultQuery": null,
         "SyncWithLucene":true // Allows to sync content index settings.
       }
     }
@@ -169,11 +170,14 @@ Here is an example for creating a Elasticsearch query from a Queries recipe step
 
 ```json
 {
-  "Source": "Elasticsearch",
-  "Name": "RecentBlogPosts",
-  "Index": "Search",
-  "Template": "...", // json encoded query template
-  "ReturnContentItems": true
+  "steps":[
+    {
+        "Source": "Elasticsearch",
+        "Name": "RecentBlogPosts",
+        "Index": "Search",
+        "Template": "...", // json encoded query template
+        "ReturnContentItems": true
+    }
 }
 ```
 
