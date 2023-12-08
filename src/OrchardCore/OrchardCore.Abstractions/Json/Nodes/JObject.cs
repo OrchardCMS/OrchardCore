@@ -36,10 +36,31 @@ public static class JObject
     public static JsonObject? Parse(string json) => JNode.Parse(json)?.AsObject();
 
     /// <summary>
+    /// Tries to parse text representing a single JSON object.
+    /// </summary>
+    public static bool TryParse(string json, out JsonObject? jsonObject) => TryParse(json, out jsonObject, JOptions.Node, JOptions.Document);
+
+    /// <summary>
     /// Parses text representing a single JSON object.
     /// </summary>
     public static JsonObject? Parse(string json, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
         => JNode.Parse(json, nodeOptions, documentOptions)?.AsObject();
+
+    /// <summary>
+    /// Tries to parse text representing a single JSON object.
+    /// </summary>
+    public static bool TryParse(string json, out JsonObject? jsonObject, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
+    {
+        if (!JNode.TryParse(json, out var jsonNode, nodeOptions, documentOptions) ||
+            jsonNode is not JsonObject jObject)
+        {
+            jsonObject = null;
+            return false;
+        }
+
+        jsonObject = jObject;
+        return true;
+    }
 
     /// <summary>
     /// Creates a <see cref="JsonObject"/> from an object.

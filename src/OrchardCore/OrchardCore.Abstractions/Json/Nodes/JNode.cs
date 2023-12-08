@@ -38,10 +38,32 @@ public static class JNode
     public static JsonNode? Parse(string json) => Parse(json, JOptions.Node, JOptions.Document);
 
     /// <summary>
+    /// Tries to parse text representing a single JSON node.
+    /// </summary>
+    public static bool TryParse(string json, out JsonNode? jsonNode) => TryParse(json, out jsonNode, JOptions.Node, JOptions.Document);
+
+    /// <summary>
     /// Parses text representing a single JSON node.
     /// </summary>
     public static JsonNode? Parse(string json, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
         => JsonNode.Parse(json, nodeOptions ?? JOptions.Node, documentOptions);
+
+    /// <summary>
+    /// Tries to parse text representing a single JSON node.
+    /// </summary>
+    public static bool TryParse(string json, out JsonNode? jsonNode, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
+    {
+        try
+        {
+            jsonNode = JsonNode.Parse(json, nodeOptions ?? JOptions.Node, documentOptions);
+            return true;
+        }
+        catch (JsonException)
+        {
+            jsonNode = null;
+            return false;
+        }
+    }
 
     /// <summary>
     /// Creates a <see cref="JsonNode"/> from an object.

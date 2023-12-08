@@ -36,10 +36,31 @@ public static class JArray
     public static JsonArray? Parse(string json) => JNode.Parse(json)?.AsArray();
 
     /// <summary>
+    /// Tries to parse text representing a single JSON array.
+    /// </summary>
+    public static bool TryParse(string json, out JsonArray? jsonArray) => TryParse(json, out jsonArray, JOptions.Node, JOptions.Document);
+
+    /// <summary>
     /// Parses text representing a single JSON array.
     /// </summary>
     public static JsonArray? Parse(string json, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
         => JNode.Parse(json, nodeOptions, documentOptions)?.AsArray();
+
+    /// <summary>
+    /// Tries to parse text representing a single JSON array.
+    /// </summary>
+    public static bool TryParse(string json, out JsonArray? jsonArray, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
+    {
+        if (!JNode.TryParse(json, out var jsonNode, nodeOptions, documentOptions) ||
+            jsonNode is not JsonArray jArray)
+        {
+            jsonArray = null;
+            return false;
+        }
+
+        jsonArray = jArray;
+        return true;
+    }
 
     /// <summary>
     /// Creates a <see cref="JsonArray"/> from an object.
