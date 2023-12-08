@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
@@ -383,7 +384,21 @@ namespace OrchardCore.OpenId.Controllers
                 return NotFound();
             }
 
-            return Redirect("~/");
+            // If no post_logout_redirect_uri was specified, redirect the user agent
+            // to the root page, that should correspond to the home page in most cases.
+            if (string.IsNullOrEmpty(request.PostLogoutRedirectUri))
+            {
+                return Redirect("~/");
+            }
+
+            var redirectUri = QueryHelpers.AddQueryString(request.PostLogoutRedirectUri, new Dictionary<string, string>()
+            {
+                { "state", request.State },
+                { "error", "user_cancelled" },
+                { "error_description", "The user has cancelled the logout request. " }
+            });
+
+            return Redirect(redirectUri);
         }
 
         [AllowAnonymous, HttpPost]
