@@ -5,26 +5,26 @@
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" method="post" class="no-multisubmit">
     <div class="mb-3" asp-validation-class-for="Name">
-        <label asp-for="Name">@T["Name"]</label>
+        <label asp-for="Name" class="form-label">@T["Name"]</label>
         <input asp-for="Name" class="form-control" autofocus />
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
 
     <div class="mb-3" asp-validation-class-for="Url">
-        <label asp-for="Url">@T["Url"]</label>
+        <label asp-for="Url" class="form-label">@T["Url"]</label>
         <input asp-for="Url" class="form-control" />
         <span asp-validation-for="Url" class="text-danger"></span>
     </div>
 
     <div class="mb-3" asp-validation-class-for="ClientName">
-        <label asp-for="ClientName">@T["Client Name"]</label>
+        <label asp-for="ClientName" class="form-label">@T["Client Name"]</label>
         <input asp-for="ClientName" class="form-control" />
         <span asp-validation-for="ClientName" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
         <div asp-validation-class-for="ApiKeySecret">
-            <label asp-for="ApiKeySecret">@T["Api Key Secret"]</label>
+            <label asp-for="ApiKeySecret" class="form-label">@T["Api Key Secret"]</label>
             @await Component.InvokeAsync(
                      "SelectSecret",
                      new
@@ -40,7 +40,7 @@
         </div>
 
         <div class="mt-1 plain-text" asp-validation-class-for="ApiKey">
-            @* <label asp-for="ApiKey">@T["Api Key"]</label> *@
+            @* <label asp-for="ApiKey" class="form-label">@T["Api Key"]</label> *@
             <input asp-for="ApiKey" type="password" class="form-control" />
             <span asp-validation-for="ApiKey" class="text-danger"></span>
             <span class="hint">@T["The plain text api key."]</span>
@@ -48,7 +48,7 @@
     </div>
 
     <div class="mb-3" asp-validation-class-for="RsaEncryptionSecret">
-        <label asp-for="RsaEncryptionSecret">@T["RSA encryption secret"]</label>
+        <label asp-for="RsaEncryptionSecret" class="form-label">@T["RSA encryption secret"]</label>
         @await Component.InvokeAsync(
                  "SelectSecret",
                  new
@@ -65,7 +65,7 @@
     </div>
 
     <div class="mb-3" asp-validation-class-for="RsaSigningSecret">
-        <label asp-for="RsaSigningSecret">@T["RSA signing secret"]</label>
+        <label asp-for="RsaSigningSecret" class="form-label">@T["RSA signing secret"]</label>
         @await Component.InvokeAsync(
                  "SelectSecret",
                  new

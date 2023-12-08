@@ -53,7 +53,6 @@ The File scripting engine provides methods to read file contents.
 | `text` | `file:text('../wwwroot/template.html')` | Returns the content of a text file. |
 | `base64` | `file:base64('../wwwroot/image.jpg')` | Returns the base64 encoded content of a file. |
 
-
 ## JavaScript `OrchardCore.Scripting.JavaScript`
 
 The JavaScript scripting module implements a `IScriptingEngine` that uses [Esprima.NET](https://github.com/sebastienros/esprima-dotnet) to evaluate scripts.
@@ -64,27 +63,27 @@ Here is a list of javascript methods provided by Orchard Modules.
 
 #### Generic functions
 
-| Function | Description 
+| Function | Description
 | -------- | ----------- |
 | `log(level: String, text: String, param: Object): void` | Formats and writes a log message at the specified log level. |
 | `uuid(): String` | Generates a unique identifier for a content item. |
-| `base64(String): String` | Decodes the specified string from Base64 encoding. Use https://www.base64-image.de/ to convert your files to base64. |
+| `base64(String): String` | Decodes the specified string from Base64 encoding. Use <https://www.base64-image.de/> to convert your files to base64. |
 | `html(String): String` | Decodes the specified string from HTML encoding. |
-| `gzip(String): String` | Decodes the specified string from gzip/base64 encoding. Use http://www.txtwizard.net/compression to gzip your strings. |
+| `gzip(String): String` | Decodes the specified string from gzip/base64 encoding. Use <http://www.txtwizard.net/compression> to gzip your strings. |
 
 #### Content (`OrchardCore.Contents`)
 
-| Function | Description 
+| Function | Description
 | -------- | ----------- |
 | `newContentItem(contentTypeName: String): IContent`| Creates a new instance of a ContentType (does not persist)|
 | `createContentItem(contentTypeName: String, publish: Boolean, properties: Object): IContent`| Creates and persists a new ContentItem. Conditionally publishes it. |
 | `updateContentItem(contentItem: IContent, properties: Object)`| Updates an existing content item with the properties |
 | `deleteContentItem(contentItem: IContent)`| Deletes an existing content item |
-| `getUrlPrefix(path: String): String `| Prefixes the path with the Tenant prefix (if specified) |
+| `getUrlPrefix(path: String): String`| Prefixes the path with the Tenant prefix (if specified) |
 
 #### Layers (`OrchardCore.Layers`)
 
-| Function | Description 
+| Function | Description
 | -------- | ----------- |
 | `isHomepage(): Boolean` | Returns true if the current request Url is the current homepage |
 | `isAnonymous(): Boolean` | Returns true if there is no authenticated user on the current request |
@@ -94,14 +93,13 @@ Here is a list of javascript methods provided by Orchard Modules.
 
 #### Queries (`OrchardCore.Queries`)
 
-| Function | Description 
+| Function | Description
 | -------- | ----------- |
 | `executeQuery(name: String, parameters: Dictionary<string,object>): IEnumerable<object>` | Returns the result of the query. |
 
-
 #### HTTP (`OrchardCore.Workflows.Http`)
 
-| Function | Description 
+| Function | Description
 | -------- | ----------- |
 | `httpContext(): HttpContext` | Returns the `HttpContext` which encapsulates all HTTP-specific information about an individual HTTP request. |
 | `queryString(name: String): String | Array` | Returns the entire query string (including the leading `?`) when invoked with no arguments, or the value(s) of the parameter name passed in as an argument. |
@@ -113,7 +111,7 @@ Here is a list of javascript methods provided by Orchard Modules.
 
 #### Recipes (`OrchardCore.Recipes`)
 
-| Function | Description 
+| Function | Description
 | -------- | ----------- |
 | `variables()` | Declare variables at the root of a recipe. Ex: `"variables": { "blogContentItemId": "[js:uuid()]" }`  Retrieve a variable value like this: `"ContentItemId": "[js: variables('blogContentItemId')]"` |
 | `parameters()` | Retrieves the parameters specified during the setup. Ex: `"Owner": "[js: parameters('AdminUserId')]"` See the available [Setup Recipe parameters](../Setup/#recipe-parameters) |

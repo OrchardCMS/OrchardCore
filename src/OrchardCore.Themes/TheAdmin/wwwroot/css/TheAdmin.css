@@ -821,6 +821,10 @@ html[dir=rtl] .bootstrap-select .bs-ok-default:after {
   border-radius: 0.375rem;
 }
 
+.form-label {
+  margin-bottom: 0.25rem;
+}
+
 .label-link {
   float: right;
   font-size: 12px;
@@ -8643,6 +8647,13 @@ ul.ui-sortable:not(:has(> li)) {
 .trumbowyg-fullscreen .trumbowyg-button-group .trumbowyg-fullscreen-button svg {
   color: var(--bs-body-color);
   fill: var(--bs-body-color);
+}
+
+[dir] .trumbowyg-box .trumbowyg-editor th, [dir] .trumbowyg-box .trumbowyg-editor td {
+  border-width: var(--bs-border-width, 1px);
+  border-style: var(--bs-border-style, solid);
+  border-color: var(--bs-border-color, #dee2e6);
+  padding: 0.5rem;
 }
 
 span.field-validation-error {

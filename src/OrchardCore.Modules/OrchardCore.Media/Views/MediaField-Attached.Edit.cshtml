@@ -26,7 +26,7 @@
 
         <input asp-for="Paths" type="hidden" class="paths" :value="paths" data-init="@Model.Paths" />
 
-        <div class="form-control-plaintext media-field-toolbar" v-cloak>
+        <div class="media-field-toolbar mb-1" v-cloak>
             <div class="btn-group" role="group">
                 <button type="button" class="btn btn-secondary btn-sm" :disabled="mediaItems.length < 1" v-on:click="smallThumbs = !smallThumbs">
                     <span v-show="!smallThumbs" title="@T[" Small Thumbs"]"><i class="fa-solid fa-compress-alt" aria-hidden="true"></i></span>
@@ -40,7 +40,7 @@
                 <a href="javascript:;" v-show="allowAnchors" v-on:click="showAnchorModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa-solid fa-crosshairs" aria-hidden="true"></i></a>
                 <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa-solid fa-trash-alt" aria-hidden="true"></i></a>
             </div>
-            <label class="selected-media-name">
+            <label class="selected-media-name form-label">
                 <code class="text-end" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}}{{{{ selectedMedia.mediaText === '' ? '' : ', ' + selectedMedia.mediaText }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
             </label>
         </div>

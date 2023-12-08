@@ -86,7 +86,7 @@ A sample of OpenID Connect Settings recipe step:
 
 ### Client OpenID Connect Apps Configuration
 
-OpenID Connect apps can be set through OpenID Connect Apps menu in the admin dashboard (through the Management Interface feature) 
+OpenID Connect apps can be set through OpenID Connect Apps menu in the admin dashboard (through the Management Interface feature)
 and also through a recipe step.
 
 OpenID Connect apps require the following configuration.
@@ -263,7 +263,7 @@ A sample of Token Validation Settings recipe step:
 
 ## OIDC Client
 
-Authenticates users from an external OpenID Connect identity provider. 
+Authenticates users from an external OpenID Connect identity provider.
 If the site allows to register new users, a local user is linked and the external login is linked.
 If an "email" claim is received, and a local user is found, then the external login is linked to that account, after authenticating.
 
