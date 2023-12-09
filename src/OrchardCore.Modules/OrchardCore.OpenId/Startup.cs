@@ -198,7 +198,7 @@ namespace OrchardCore.OpenId
             });
         }
 
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        public override async ValueTask ConfigureAsync(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var options = serviceProvider.GetRequiredService<IOptions<AdminOptions>>().Value;
 
@@ -209,7 +209,7 @@ namespace OrchardCore.OpenId
                 defaults: new { controller = typeof(ServerConfigurationController).ControllerName(), action = nameof(ServerConfigurationController.Index) }
             );
 
-            var settings = GetServerSettingsAsync().GetAwaiter().GetResult();
+            var settings = await GetServerSettingsAsync();
             if (settings == null)
             {
                 return;
