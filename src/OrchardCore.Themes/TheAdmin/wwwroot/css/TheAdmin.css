@@ -25,8 +25,8 @@
   --oc-editor-fullscreen: 1054;
   --oc-selected-indicator-color: var(--bs-primary);
   /* Action bar should always be less than dropdown menu */
-  --oc-action-bar-zindex: 983;
-  --oc-second-action-bar-zindex: 980;
+  --oc-action-bar-zindex: 980;
+  --oc-second-action-bar-zindex: 983;
   /* Undefined Bootstrap variables */
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
@@ -60,8 +60,8 @@
   --oc-editor-fullscreen: 1054;
   --oc-selected-indicator-color: var(--bs-primary);
   /* Action bar should always be less than dropdown menu */
-  --oc-action-bar-zindex: 983;
-  --oc-second-action-bar-zindex: 980;
+  --oc-action-bar-zindex: 980;
+  --oc-second-action-bar-zindex: 983;
   /* Undefined Bootstrap variables */
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
@@ -206,8 +206,8 @@ a:hover {
   --oc-editor-fullscreen: 1054;
   --oc-selected-indicator-color: var(--bs-primary);
   /* Action bar should always be less than dropdown menu */
-  --oc-action-bar-zindex: 983;
-  --oc-second-action-bar-zindex: 980;
+  --oc-action-bar-zindex: 980;
+  --oc-second-action-bar-zindex: 983;
   /* Undefined Bootstrap variables */
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
@@ -688,8 +688,8 @@ html[dir=rtl] .bootstrap-select .bs-ok-default:after {
   --oc-editor-fullscreen: 1054;
   --oc-selected-indicator-color: var(--bs-primary);
   /* Action bar should always be less than dropdown menu */
-  --oc-action-bar-zindex: 983;
-  --oc-second-action-bar-zindex: 980;
+  --oc-action-bar-zindex: 980;
+  --oc-second-action-bar-zindex: 983;
   /* Undefined Bootstrap variables */
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
@@ -786,8 +786,8 @@ html[dir=rtl] .bootstrap-select .bs-ok-default:after {
   --oc-editor-fullscreen: 1054;
   --oc-selected-indicator-color: var(--bs-primary);
   /* Action bar should always be less than dropdown menu */
-  --oc-action-bar-zindex: 983;
-  --oc-second-action-bar-zindex: 980;
+  --oc-action-bar-zindex: 980;
+  --oc-second-action-bar-zindex: 983;
   /* Undefined Bootstrap variables */
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
@@ -7966,10 +7966,6 @@ input[type=password]::-ms-clear {
   padding: 0.75rem 0.5rem;
 }
 
-.list-group-item + .list-group-item {
-  border-top-width: 0;
-}
-
 .monaco-editor {
   --vscode-foreground: var(--bs-body-color) !important;
   --vscode-editor-background: var(--bs-body-bg) !important;
@@ -8474,8 +8470,8 @@ ul.pager {
   --oc-editor-fullscreen: 1054;
   --oc-selected-indicator-color: var(--bs-primary);
   /* Action bar should always be less than dropdown menu */
-  --oc-action-bar-zindex: 983;
-  --oc-second-action-bar-zindex: 980;
+  --oc-action-bar-zindex: 980;
+  --oc-second-action-bar-zindex: 983;
   /* Undefined Bootstrap variables */
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
@@ -8516,8 +8512,8 @@ ul.ui-sortable:not(:has(> li)) {
   --oc-editor-fullscreen: 1054;
   --oc-selected-indicator-color: var(--bs-primary);
   /* Action bar should always be less than dropdown menu */
-  --oc-action-bar-zindex: 983;
-  --oc-second-action-bar-zindex: 980;
+  --oc-action-bar-zindex: 980;
+  --oc-second-action-bar-zindex: 983;
   /* Undefined Bootstrap variables */
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
@@ -8893,8 +8889,8 @@ textarea.form-control.input-validation-error {
   --oc-editor-fullscreen: 1054;
   --oc-selected-indicator-color: var(--bs-primary);
   /* Action bar should always be less than dropdown menu */
-  --oc-action-bar-zindex: 983;
-  --oc-second-action-bar-zindex: 980;
+  --oc-action-bar-zindex: 980;
+  --oc-second-action-bar-zindex: 983;
   /* Undefined Bootstrap variables */
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
