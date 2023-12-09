@@ -13,7 +13,7 @@ namespace OrchardCore.Recipes.Services
         {
             // TODO: Try to optimize by only reading the required metadata instead of the whole file.
 
-            using var stream = recipeFileInfo.CreateReadStream();
+            await using var stream = recipeFileInfo.CreateReadStream();
             using var reader = new StreamReader(stream);
             using var jsonReader = new JsonTextReader(reader);
 
