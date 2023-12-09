@@ -60,7 +60,7 @@ namespace OrchardCore.Media.Services
                 return;
             }
 
-            // subpath.Value returns an unescaped path value, subPath returns an escaped path value.
+            // subPath.Value returns an unescaped path value, subPath returns an escaped path value.
             var subPathValue = subPath.Value;
 
             var isFileCached = await _mediaFileStoreCache.IsCachedAsync(subPathValue);
