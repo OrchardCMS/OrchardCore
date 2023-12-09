@@ -31,7 +31,7 @@ public class SecretsRecipeStep : IRecipeStepHandler
             var plaintext = kvp.Value["Secret"]?.ToString();
             if (!string.IsNullOrEmpty(plaintext))
             {
-                // Rehyrdate from plaintext to secret type.
+                // Rehydrate from plaintext to secret type.
                 secret = JsonConvert.DeserializeObject(plaintext, secret.GetType()) as SecretBase;
             }
 
