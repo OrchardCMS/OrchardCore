@@ -79,7 +79,7 @@ namespace OrchardCore.Media.Services
 
             // When multiple requests occur for the same file we use a Lazy<Task>
             // to initialize the file store request once.
-            await _workers.GetOrAdd(subPathValue, x => new Lazy<Task>(async () =>
+            await _workers.GetOrAdd(subPathValue, subPathValue => new Lazy<Task>(async () =>
             {
                 try
                 {
@@ -94,7 +94,7 @@ namespace OrchardCore.Media.Services
                 catch (Exception ex)
                 {
                     // Log the error, and pass to pipeline to handle as 404.
-                    // Multiple requests at the same time will all recieve the same 404
+                    // Multiple requests at the same time will all receive the same 404
                     // as we use LazyThreadSafetyMode.ExecutionAndPublication.
                     _logger.LogError(ex, "Error retrieving file from media file store for request path {Path}", subPathValue);
                 }
