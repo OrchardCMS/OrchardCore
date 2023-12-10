@@ -6,6 +6,10 @@
 @using OrchardCore.ContentsTransfer.ViewModels
 @using OrchardCore.Entities
 
+<span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Content Type"]">
+    <i class="fa-regular fa-file text-secondary" aria-hidden="true"></i> @Model.ContentTransferEntry.ContentType
+</span>
+
 <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@await DisplayAsync(await New.DateTime(Utc: Model.ContentTransferEntry.CreatedUtc, Format: "g"))">
     <i class="fa-solid fa-calendar text-secondary" aria-hidden="true"></i>
     <time datetime="@Model.ContentTransferEntry.CreatedUtc.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture)">
@@ -13,7 +17,7 @@
     </time>
 </span>
 
-<span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="Status">
+<span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Status"]">
 
     @if (Model.ContentTransferEntry.Status == ContentTransferEntryStatus.New)
     {
@@ -40,18 +44,6 @@
 @if (Model.ContentTransferEntry.Status == ContentTransferEntryStatus.Processing)
 {
     var part = Model.ContentTransferEntry.As<ImportFileProcessStatsPart>();
-
-    @if (part.TotalRecords > 0)
-    {
-        var process = part.TotalProcessed / part.TotalRecords;
-
-        <div class="badge ta-badge font-weight-normal d-inline" data-bs-toggle="tooltip" title="Status">
-
-            <div class="progress">
-                <div class="progress-bar" role="progressbar" style="width: @(process)%;" aria-valuenow="@process" aria-valuemin="0" aria-valuemax="100">@(process)%</div>
-            </div>
-        </div>
-    }
 
     @if (Model.ContentTransferEntry.ProcessSaveUtc.HasValue)
     {

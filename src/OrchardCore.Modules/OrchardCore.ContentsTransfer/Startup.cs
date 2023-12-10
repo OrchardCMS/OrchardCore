@@ -75,7 +75,6 @@ public class Startup : StartupBase
         services.Configure<ContentImportOptions>(_configuration.GetSection("OrchardCore_ContentsTransfer"));
         services.AddSingleton<IBackgroundTask, ImportFilesBackgroundTask>();
 
-
         services.AddScoped<IContentTransferEntryAdminListQueryService, DefaultContentTransferEntryAdminListQueryService>();
         services.AddScoped<IDisplayDriver<ListContentTransferEntryOptions>, ListContentTransferEntryOptionsDisplayDriver>();
         services.AddScoped<IDisplayDriver<ContentTransferEntry>, ContentTransferEntryDisplayDriver>();
