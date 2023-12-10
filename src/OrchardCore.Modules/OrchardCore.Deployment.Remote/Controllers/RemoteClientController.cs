@@ -194,7 +194,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             if (ModelState.IsValid)
             {
-                await _remoteClientService.TryUpdateRemoteClientAsync(model.Id, model.ClientName, model.ApiKey);
+                await _remoteClientService.UpdateRemoteClientAsync(model.Id, model.ClientName, model.ApiKey);
 
                 await _notifier.SuccessAsync(H["Remote client updated successfully."]);
 

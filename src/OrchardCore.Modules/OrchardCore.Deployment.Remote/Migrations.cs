@@ -1,4 +1,3 @@
-using System;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
@@ -62,22 +61,11 @@ public class Migrations : DataMigration
         {
             var rsaEncryptionSecret = await _secretService.GetOrCreateSecretAsync<RSASecret>(
                 $"OrchardCore.Deployment.Remote.RsaEncryptionSecret.{remoteInstance.ClientName}",
-                secret =>
-                {
-                    using var rsa = RSAGenerator.GenerateRSASecurityKey(2048);
-                    secret.PublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey());
-                    secret.KeyType = RSAKeyType.Public;
-                });
+                secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.Public));
 
             var rsaSigningSecret = await _secretService.GetOrCreateSecretAsync<RSASecret>(
                 $"OrchardCore.Deployment.Remote.RsaSigningSecret.{remoteInstance.ClientName}",
-                secret =>
-                {
-                    using var rsa = RSAGenerator.GenerateRSASecurityKey(2048);
-                    secret.PublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey());
-                    secret.PrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey());
-                    secret.KeyType = RSAKeyType.PublicPrivatePair;
-                });
+                secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivatePair));
 
             var apiKeySecret = await _secretService.GetOrCreateSecretAsync<TextSecret>(
                 $"OrchardCore.Deployment.Remote.ApiKey.{remoteInstance.ClientName}",
@@ -95,22 +83,11 @@ public class Migrations : DataMigration
         {
             var rsaEncryptionSecret = await _secretService.GetOrCreateSecretAsync<RSASecret>(
                 $"OrchardCore.Deployment.Remote.RsaEncryptionSecret.{remoteClient.ClientName}",
-                secret =>
-                {
-                    using var rsa = RSAGenerator.GenerateRSASecurityKey(2048);
-                    secret.PublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey());
-                    secret.PrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey());
-                    secret.KeyType = RSAKeyType.PublicPrivatePair;
-                });
+                secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivatePair));
 
             var rsaSigningSecret = await _secretService.GetOrCreateSecretAsync<RSASecret>(
                 $"OrchardCore.Deployment.Remote.RsaSigningSecret.{remoteClient.ClientName}",
-                secret =>
-                {
-                    using var rsa = RSAGenerator.GenerateRSASecurityKey(2048);
-                    secret.PublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey());
-                    secret.KeyType = RSAKeyType.Public;
-                });
+                secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.Public));
 
             var apiKeySecret = await _secretService.GetOrCreateSecretAsync<TextSecret>(
                 $"OrchardCore.Deployment.Remote.ApiKey.{remoteClient.ClientName}",
@@ -131,7 +108,7 @@ public class Migrations : DataMigration
 
             remoteClient.ProtectedApiKey = [];
 
-            await _remoteClientService.TryUpdateRemoteClientAsync(remoteClient, apiKeySecret.Text);
+            await _remoteClientService.UpdateRemoteClientAsync(remoteClient, apiKeySecret.Text);
         }
     }
 #pragma warning restore CS0618 // Type or member is obsolete

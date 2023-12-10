@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Secrets.Services;
 
@@ -29,5 +30,18 @@ public static class RSAGenerator
         }
 
         return RSA.Create(size);
+    }
+
+    public static void ConfigureRSASecretKeys(RSASecret secret, RSAKeyType keyType)
+    {
+        using var rsa = RSAGenerator.GenerateRSASecurityKey(2048);
+        secret.PublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey());
+
+        if (keyType == RSAKeyType.PublicPrivatePair)
+        {
+            secret.PrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey());
+        }
+
+        secret.KeyType = keyType;
     }
 }
