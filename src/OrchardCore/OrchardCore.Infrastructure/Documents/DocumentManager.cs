@@ -93,6 +93,7 @@ namespace OrchardCore.Documents
             }
 
             document.Identifier = IdGenerator.GenerateId();
+            document.IsReadOnly = false;
 
             return document;
         }
@@ -306,6 +307,8 @@ namespace OrchardCore.Documents
 
         protected async Task SetInternalAsync(TDocument document, bool failover = false)
         {
+            document.IsReadOnly = true;
+
             if (!failover)
             {
                 await UpdateDistributedCacheAsync(document);

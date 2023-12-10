@@ -1,11 +1,15 @@
+using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Documents;
+using OrchardCore.Entities;
 
 namespace OrchardCore.Settings
 {
     // When updating class also update SiteSettingsDeploymentSource and SettingsStep.
     public class SiteSettings : DocumentEntity, ISite
     {
+        private readonly ConcurrentDictionary<string, object> _cache = new();
+
         public string BaseUrl { get; set; }
         public string Calendar { get; set; }
         public int MaxPagedCount { get; set; }
@@ -22,5 +26,24 @@ namespace OrchardCore.Settings
         public RouteValueDictionary HomeRoute { get; set; } = new RouteValueDictionary();
         public bool AppendVersion { get; set; } = true;
         public CacheMode CacheMode { get; set; }
+
+        public T As<T>() where T : new()
+        {
+            var name = typeof(T).Name;
+            if (!IsReadOnly)
+            {
+                return this.As<T>(name);
+            }
+
+            if (_cache.TryGetValue(name, out var obj) && obj is T value)
+            {
+                return value;
+            }
+
+            var settings = this.As<T>(name);
+            _cache[name] = settings;
+
+            return settings;
+        }
     }
 }
