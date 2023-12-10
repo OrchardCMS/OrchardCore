@@ -46,7 +46,7 @@ namespace OrchardCore.Deployment.Remote.Services
             }
         }
 
-        public async Task CreateRemoteInstanceAsync(string name, string url, string clientName, string apiKey, string apiKeySecret, string rsaEncryptionSecret, string rsaSigningSecret)
+        public async Task CreateRemoteInstanceAsync(string name, string url, string clientName)
         {
             var remoteInstanceList = await LoadRemoteInstanceListAsync();
 
@@ -56,16 +56,12 @@ namespace OrchardCore.Deployment.Remote.Services
                 Name = name,
                 Url = url,
                 ClientName = clientName,
-                ApiKey = apiKey,
-                ApiKeySecret = apiKeySecret,
-                RsaEncryptionSecret = rsaEncryptionSecret,
-                RsaSigningSecret = rsaSigningSecret
             });
 
             await _documentManager.UpdateAsync(remoteInstanceList);
         }
 
-        public async Task UpdateRemoteInstance(string id, string name, string url, string clientName, string apiKey, string apiKeySecret, string rsaEncryptionSecret, string rsaSigningSecret)
+        public async Task UpdateRemoteInstanceAsync(string id, string name, string url, string clientName)
         {
             var remoteInstanceList = await LoadRemoteInstanceListAsync();
             var remoteInstance = FindRemoteInstance(remoteInstanceList, id);
@@ -73,15 +69,23 @@ namespace OrchardCore.Deployment.Remote.Services
             remoteInstance.Name = name;
             remoteInstance.Url = url;
             remoteInstance.ClientName = clientName;
-            remoteInstance.ApiKey = apiKey;
-            remoteInstance.ApiKeySecret = apiKeySecret;
-            remoteInstance.RsaEncryptionSecret = rsaEncryptionSecret;
-            remoteInstance.RsaSigningSecret = rsaSigningSecret;
+
+            await _documentManager.UpdateAsync(remoteInstanceList);
+        }
+
+        public async Task UpdateRemoteInstanceAsync(RemoteInstance remoteInstance)
+        {
+            var remoteInstanceList = await LoadRemoteInstanceListAsync();
+            var existingInstance = FindRemoteInstance(remoteInstanceList, remoteInstance.Id);
+
+            existingInstance.Name = remoteInstance.Name;
+            existingInstance.Url = remoteInstance.Url;
+            existingInstance.ClientName = remoteInstance.ClientName;
 
             await _documentManager.UpdateAsync(remoteInstanceList);
         }
 
         private static RemoteInstance FindRemoteInstance(RemoteInstanceList remoteInstanceList, string id) =>
-            remoteInstanceList.RemoteInstances.FirstOrDefault(x => string.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
+            remoteInstanceList.RemoteInstances.FirstOrDefault(remote => string.Equals(remote.Id, id, StringComparison.OrdinalIgnoreCase));
     }
 }

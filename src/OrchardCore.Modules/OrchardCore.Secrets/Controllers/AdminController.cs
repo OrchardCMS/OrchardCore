@@ -25,8 +25,8 @@ namespace OrchardCore.Secrets.Controllers;
 [Admin]
 public class AdminController : Controller
 {
-    private readonly IAuthorizationService _authorizationService;
     private readonly ISecretService _secretService;
+    private readonly IAuthorizationService _authorizationService;
     private readonly IDisplayManager<SecretBase> _displayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly SecretOptions _secretsOptions;
@@ -38,8 +38,8 @@ public class AdminController : Controller
     protected readonly IHtmlLocalizer H;
 
     public AdminController(
-        IAuthorizationService authorizationService,
         ISecretService secretService,
+        IAuthorizationService authorizationService,
         IDisplayManager<SecretBase> displayManager,
         IUpdateModelAccessor updateModelAccessor,
         IOptions<SecretOptions> secretsOptions,
@@ -157,7 +157,7 @@ public class AdminController : Controller
                     await _notifier.SuccessAsync(H["Secrets successfully removed."]);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
+                    throw new InvalidOperationException($"Invalid bulk action '{options.BulkAction}'.");
             }
         }
 

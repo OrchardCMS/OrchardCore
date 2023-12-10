@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
@@ -26,28 +25,28 @@ namespace OrchardCore.Deployment.Remote.Controllers
     {
         private static readonly HttpClient _httpClient = new();
 
+        private readonly RemoteInstanceService _service;
         private readonly IDeploymentManager _deploymentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
-        private readonly RemoteInstanceService _service;
         private readonly ISecretService _secretService;
         private readonly INotifier _notifier;
         protected readonly IHtmlLocalizer H;
 
         public ExportRemoteInstanceController(
-            IAuthorizationService authorizationService,
-            ISession session,
             RemoteInstanceService service,
+            IAuthorizationService authorizationService,
             IDeploymentManager deploymentManager,
             ISecretService secretService,
+            ISession session,
             INotifier notifier,
             IHtmlLocalizer<ExportRemoteInstanceController> localizer)
         {
+            _service = service;
             _authorizationService = authorizationService;
             _deploymentManager = deploymentManager;
-            _session = session;
-            _service = service;
             _secretService = secretService;
+            _session = session;
             _notifier = notifier;
             H = localizer;
         }
@@ -68,8 +67,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             }
 
             var remoteInstance = await _service.GetRemoteInstanceAsync(remoteInstanceId);
-
-            if (remoteInstance == null)
+            if (remoteInstance is null)
             {
                 return NotFound();
             }
@@ -81,7 +79,12 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 archiveFileName = PathExtensions.Combine(Path.GetTempPath(), filename);
 
-                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, new RecipeDescriptor(), remoteInstance.RsaEncryptionSecret, remoteInstance.RsaSigningSecret);
+                var deploymentPlanResult = new DeploymentPlanResult(
+                    fileBuilder,
+                    new RecipeDescriptor(),
+                    $"OrchardCore.Deployment.Remote.RsaEncryptionSecret.{remoteInstance.ClientName}",
+                    $"OrchardCore.Deployment.Remote.RsaSigningSecret.{remoteInstance.ClientName}");
+
                 await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
 
                 if (System.IO.File.Exists(archiveFileName))
@@ -111,15 +114,10 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
                     requestContent.Add(new StringContent(remoteInstance.ClientName), nameof(ImportViewModel.ClientName));
 
-                    if (!string.IsNullOrEmpty(remoteInstance.ApiKeySecret))
-                    {
-                        var secret = await _secretService.GetSecretAsync<TextSecret>(remoteInstance.ApiKeySecret);
-                        requestContent.Add(new StringContent(secret?.Text), nameof(ImportViewModel.ApiKey));
-                    }
-                    else
-                    {
-                        requestContent.Add(new StringContent(remoteInstance.ApiKey), nameof(ImportViewModel.ApiKey));
-                    }
+                    var secret = await _secretService.GetOrCreateSecretAsync<TextSecret>(
+                        $"OrchardCore.Deployment.Remote.ApiKey.{remoteInstance.ClientName}");
+
+                    requestContent.Add(new StringContent(secret.Text), nameof(ImportViewModel.ApiKey));
 
                     response = await _httpClient.PostAsync(remoteInstance.Url, requestContent);
                 }

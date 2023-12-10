@@ -20,7 +20,7 @@ public class DecryptMethodProvider : IGlobalMethodProvider
                     .GetRequiredService<ISecretProtectionProvider>()
                     .CreateDecryptorAsync(protectedData).GetAwaiter().GetResult();
 
-                return decryptor.Decrypt(protectedData);
+                return decryptor.Decrypt();
             })
         };
     }

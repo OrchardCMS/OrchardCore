@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -18,16 +17,18 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
+using OrchardCore.Secrets;
+using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Deployment.Remote.Controllers
 {
     [Admin]
     public class RemoteClientController : Controller
     {
-        private readonly IDataProtector _dataProtector;
+        private readonly RemoteClientService _remoteClientService;
+        private readonly ISecretService _secretService;
         private readonly IAuthorizationService _authorizationService;
         private readonly PagerOptions _pagerOptions;
-        private readonly RemoteClientService _remoteClientService;
         private readonly INotifier _notifier;
 
         protected readonly dynamic New;
@@ -35,24 +36,25 @@ namespace OrchardCore.Deployment.Remote.Controllers
         protected readonly IHtmlLocalizer H;
 
         public RemoteClientController(
-            IDataProtectionProvider dataProtectionProvider,
             RemoteClientService remoteClientService,
+            ISecretService secretService,
             IAuthorizationService authorizationService,
             IOptions<PagerOptions> pagerOptions,
+            INotifier notifier,
             IShapeFactory shapeFactory,
             IStringLocalizer<RemoteClientController> stringLocalizer,
-            IHtmlLocalizer<RemoteClientController> htmlLocalizer,
-            INotifier notifier
+            IHtmlLocalizer<RemoteClientController> htmlLocalizer
             )
         {
+            _remoteClientService = remoteClientService;
+            _secretService = secretService;
             _authorizationService = authorizationService;
             _pagerOptions = pagerOptions.Value;
+            _notifier = notifier;
+
             New = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
-            _notifier = notifier;
-            _remoteClientService = remoteClientService;
-            _dataProtector = dataProtectionProvider.CreateProtector("OrchardCore.Deployment").ToTimeLimitedDataProtector();
         }
 
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
@@ -134,7 +136,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             if (ModelState.IsValid)
             {
-                await _remoteClientService.CreateRemoteClientAsync(model.ClientName, model.ApiKey, model.ApiKeySecret);
+                await _remoteClientService.CreateRemoteClientAsync(model.ClientName, model.ApiKey);
 
                 await _notifier.SuccessAsync(H["Remote client created successfully."]);
                 return RedirectToAction(nameof(Index));
@@ -152,23 +154,20 @@ namespace OrchardCore.Deployment.Remote.Controllers
             }
 
             var remoteClient = await _remoteClientService.GetRemoteClientAsync(id);
-
-            if (remoteClient == null)
+            if (remoteClient is null)
             {
                 return NotFound();
             }
+
+            var secret = await _secretService.GetOrCreateSecretAsync<TextSecret>(
+                $"OrchardCore.Deployment.Remote.ApiKey.{remoteClient.ClientName}");
 
             var model = new EditRemoteClientViewModel
             {
                 Id = remoteClient.Id,
                 ClientName = remoteClient.ClientName,
-                ApiKeySecret = remoteClient.ApiKeySecret,
+                ApiKey = secret.Text,
             };
-
-            if (remoteClient.ProtectedApiKey?.Length > 0)
-            {
-                model.ApiKey = Encoding.UTF8.GetString(_dataProtector.Unprotect(remoteClient.ProtectedApiKey));
-            }
 
             return View(model);
         }
@@ -195,7 +194,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             if (ModelState.IsValid)
             {
-                await _remoteClientService.TryUpdateRemoteClient(model.Id, model.ClientName, model.ApiKey, model.ApiKeySecret);
+                await _remoteClientService.TryUpdateRemoteClientAsync(model.Id, model.ClientName, model.ApiKey);
 
                 await _notifier.SuccessAsync(H["Remote client updated successfully."]);
 
@@ -230,7 +229,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
         [HttpPost, ActionName("Index")]
         [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
+        public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteInstances))
             {
@@ -268,7 +267,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 ModelState.AddModelError(nameof(EditRemoteClientViewModel.ClientName), S["The client name is mandatory."]);
             }
 
-            if (string.IsNullOrWhiteSpace(model.ApiKey) && string.IsNullOrWhiteSpace(model.ApiKeySecret))
+            if (string.IsNullOrWhiteSpace(model.ApiKey))
             {
                 ModelState.AddModelError(nameof(EditRemoteClientViewModel.ApiKey), S["The api key is mandatory."]);
             }

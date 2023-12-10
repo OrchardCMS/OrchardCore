@@ -39,8 +39,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
             var secretService = Mock.Of<ISecretService>();
 
             Mock.Get(secretService).Setup(s => s.GetSecretBindingsAsync()).ReturnsAsync(bindings);
-            Mock.Get(secretService).Setup(s => s.GetSecretAsync(encryptionBinding)).ReturnsAsync(encryptionSecret);
-            Mock.Get(secretService).Setup(s => s.GetSecretAsync(signingBinding)).ReturnsAsync(signingSecret);
+            Mock.Get(secretService).Setup(s => s.GetSecretAsync<RSASecret>(encryptionSecret.Name)).ReturnsAsync(encryptionSecret);
+            Mock.Get(secretService).Setup(s => s.GetSecretAsync<RSASecret>(signingSecret.Name)).ReturnsAsync(signingSecret);
 
             return secretService;
         }
@@ -63,7 +63,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
             var encrypted = encryptor.Encrypt("foo");
 
             var decryptor = await protectionProvider.CreateDecryptorAsync(encrypted);
-            var decrypted = decryptor.Decrypt(encrypted);
+            var decrypted = decryptor.Decrypt();
 
             Assert.Equal("foo", decrypted);
         }
@@ -75,12 +75,11 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
             var encryptor = await protectionProvider.CreateEncryptorAsync("rsaencryptor", "rsasigning");
             var encrypted = encryptor.Encrypt("foo");
 
-
             // Generate new keys for decryption, which will cause the decryptor to throw.
             protectionProvider = new SecretProtectionProvider(GetSecretServiceMock());
             var decryptor = await protectionProvider.CreateDecryptorAsync(encrypted);
 
-            Assert.Throws<CryptographicException>(() => decryptor.Decrypt(encrypted));
+            Assert.Throws<CryptographicException>(() => decryptor.Decrypt());
         }
     }
 }

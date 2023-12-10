@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Secrets.Models;
 using OrchardCore.Secrets.Options;
+using OrchardCore.Secrets.Stores;
 
 namespace OrchardCore.Secrets.Services;
 
@@ -49,6 +50,57 @@ public class SecretService : ISecretService
         return factory.Create();
     }
 
+    public async Task<SecretBase> GetSecretAsync(string name)
+    {
+        var bindings = await GetSecretBindingsAsync();
+        if (!bindings.TryGetValue(name, out var binding))
+        {
+            return null;
+        }
+
+        return await GetSecretAsync(binding);
+    }
+
+    public TSecret CreateSecret<TSecret>() where TSecret : SecretBase, new() => CreateSecret(typeof(TSecret).Name) as TSecret;
+
+    public async Task<TSecret> GetSecretAsync<TSecret>(string name) where TSecret : SecretBase, new()
+    {
+        var bindings = await GetSecretBindingsAsync();
+        if (!bindings.TryGetValue(name, out var binding))
+        {
+            return null;
+        }
+
+        return await GetSecretAsync(binding) as TSecret;
+    }
+
+    public async Task<TSecret> GetOrCreateSecretAsync<TSecret>(string name, Action<TSecret> configure = null)
+        where TSecret : SecretBase, new()
+    {
+        var secret = await GetSecretAsync<TSecret>(name);
+        if (secret is not null)
+        {
+            return secret;
+        }
+
+        var binding = new SecretBinding
+        {
+            Name = name,
+            Store = nameof(DatabaseSecretStore),
+            Type = typeof(TSecret).Name,
+        };
+
+        secret = CreateSecret(typeof(TSecret).Name) as TSecret;
+
+        secret.Name = name;
+
+        configure?.Invoke(secret);
+
+        await UpdateSecretAsync(binding, secret);
+
+        return secret;
+    }
+
     public async Task<SecretBase> GetSecretAsync(SecretBinding binding)
     {
         if (!_activators.TryGetValue(binding.Type, out var factory) ||
@@ -84,12 +136,28 @@ public class SecretService : ISecretService
 
     public IReadOnlyCollection<SecretStoreInfo> GetSecretStoreInfos() => _storeInfos;
 
+    public async Task UpdateSecretAsync(SecretBase secret)
+    {
+        var secretBindings = await GetSecretBindingsAsync();
+        if (!secretBindings.TryGetValue(secret.Name, out var binding))
+        {
+            throw new InvalidOperationException($"The secret '{secret.Name}' doesn't exist.");
+        }
+
+        //if (!string.Equals(binding.Name, binding.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+        //{
+        //    throw new InvalidOperationException("The name contains invalid characters.");
+        //}
+
+        await UpdateSecretAsync(binding, secret);
+    }
+
     public async Task UpdateSecretAsync(SecretBinding binding, SecretBase secret)
     {
-        if (!string.Equals(binding.Name, binding.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
-        {
-            throw new InvalidOperationException("The name contains invalid characters.");
-        }
+        //if (!string.Equals(binding.Name, binding.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+        //{
+        //    throw new InvalidOperationException("The name contains invalid characters.");
+        //}
 
         secret.Name = binding.Name;
 

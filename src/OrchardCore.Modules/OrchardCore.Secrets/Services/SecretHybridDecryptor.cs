@@ -18,7 +18,7 @@ public class SecretHybridDecryptor : ISecretDecryptor
         _signingSecret = signingSecret;
     }
 
-    public string Decrypt(string protectedData)
+    public string Decrypt()
     {
         var protectedBytes = Convert.FromBase64String(_envelope.ProtectedData);
         var signatureBytes = Convert.FromBase64String(_envelope.Signature);

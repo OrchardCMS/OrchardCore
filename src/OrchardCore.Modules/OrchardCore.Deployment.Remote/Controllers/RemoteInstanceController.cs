@@ -16,16 +16,19 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
+using OrchardCore.Secrets;
+using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Deployment.Remote.Controllers
 {
     [Admin]
     public class RemoteInstanceController : Controller
     {
+        private readonly RemoteInstanceService _service;
+        private readonly ISecretService _secretService;
         private readonly IAuthorizationService _authorizationService;
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
-        private readonly RemoteInstanceService _service;
 
         protected readonly dynamic New;
         protected readonly IStringLocalizer S;
@@ -33,21 +36,24 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
         public RemoteInstanceController(
             RemoteInstanceService service,
+            ISecretService secretService,
             IAuthorizationService authorizationService,
             IOptions<PagerOptions> pagerOptions,
+            INotifier notifier,
             IShapeFactory shapeFactory,
             IStringLocalizer<RemoteInstanceController> stringLocalizer,
-            IHtmlLocalizer<RemoteInstanceController> htmlLocalizer,
-            INotifier notifier
+            IHtmlLocalizer<RemoteInstanceController> htmlLocalizer
             )
         {
+            _service = service;
+            _secretService = secretService;
             _authorizationService = authorizationService;
             _pagerOptions = pagerOptions.Value;
+            _notifier = notifier;
+
             New = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
-            _notifier = notifier;
-            _service = service;
         }
 
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
@@ -125,9 +131,22 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 ValidateViewModel(model);
             }
 
+            var secret = await _secretService.GetOrCreateSecretAsync<TextSecret>(
+                $"OrchardCore.Deployment.Remote.ApiKey.{model.ClientName}",
+                secret =>
+                {
+                    secret.Text = model.ApiKey;
+                });
+
+            if (secret.Text != model.ApiKey)
+            {
+                secret.Text = model.ApiKey;
+                await _secretService.UpdateSecretAsync(secret);
+            }
+
             if (ModelState.IsValid)
             {
-                await _service.CreateRemoteInstanceAsync(model.Name, model.Url, model.ClientName, model.ApiKey, model.ApiKeySecret, model.RsaEncryptionSecret, model.RsaSigningSecret);
+                await _service.CreateRemoteInstanceAsync(model.Name, model.Url, model.ClientName);
 
                 await _notifier.SuccessAsync(H["Remote instance created successfully."]);
                 return RedirectToAction(nameof(Index));
@@ -145,22 +164,21 @@ namespace OrchardCore.Deployment.Remote.Controllers
             }
 
             var remoteInstance = await _service.GetRemoteInstanceAsync(id);
-
-            if (remoteInstance == null)
+            if (remoteInstance is null)
             {
                 return NotFound();
             }
+
+            var secret = await _secretService.GetOrCreateSecretAsync<TextSecret>(
+                $"OrchardCore.Deployment.Remote.ApiKey.{remoteInstance.ClientName}");
 
             var model = new EditRemoteInstanceViewModel
             {
                 Id = remoteInstance.Id,
                 Name = remoteInstance.Name,
                 ClientName = remoteInstance.ClientName,
-                ApiKey = remoteInstance.ApiKey,
-                ApiKeySecret = remoteInstance.ApiKeySecret,
+                ApiKey = secret.Text,
                 Url = remoteInstance.Url,
-                RsaEncryptionSecret = remoteInstance.RsaEncryptionSecret,
-                RsaSigningSecret = remoteInstance.RsaSigningSecret,
             };
 
             return View(model);
@@ -175,8 +193,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             }
 
             var remoteInstance = await _service.LoadRemoteInstanceAsync(model.Id);
-
-            if (remoteInstance == null)
+            if (remoteInstance is null)
             {
                 return NotFound();
             }
@@ -186,9 +203,26 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 ValidateViewModel(model);
             }
 
+            var secret = await _secretService.GetOrCreateSecretAsync<TextSecret>(
+                $"OrchardCore.Deployment.Remote.ApiKey.{model.ClientName}",
+                secret =>
+                {
+                    secret.Text = model.ApiKey;
+                });
+
+            if (secret.Text != model.ApiKey)
+            {
+                secret.Text = model.ApiKey;
+                await _secretService.UpdateSecretAsync(secret);
+            }
+
             if (ModelState.IsValid)
             {
-                await _service.UpdateRemoteInstance(model.Id, model.Name, model.Url, model.ClientName, model.ApiKey, model.ApiKeySecret, model.RsaEncryptionSecret, model.RsaSigningSecret);
+                await _service.UpdateRemoteInstanceAsync(
+                    model.Id,
+                    model.Name,
+                    model.Url,
+                    model.ClientName);
 
                 await _notifier.SuccessAsync(H["Remote instance updated successfully."]);
 
@@ -223,7 +257,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
         [HttpPost, ActionName("Index")]
         [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
+        public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteInstances))
             {
@@ -266,7 +300,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.ClientName), S["The client name is mandatory."]);
             }
 
-            if (string.IsNullOrWhiteSpace(model.ApiKey) && string.IsNullOrWhiteSpace(model.ApiKeySecret))
+            if (string.IsNullOrWhiteSpace(model.ApiKey))
             {
                 ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.ApiKey), S["The api key is mandatory."]);
             }
