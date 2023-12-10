@@ -31,7 +31,7 @@ public class ContentTransferService
             throw new ArgumentNullException(nameof(dataTable));
         }
 
-        var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentTypeId);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentTypeId);
 
         if (contentTypeDefinition == null)
         {
@@ -58,7 +58,7 @@ public class ContentTransferService
             var mapContext = new ContentImportContext()
             {
                 ContentItem = await _contentManager.NewAsync(contentTypeId),
-                ContentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentTypeId),
+                ContentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentTypeId),
                 Columns = dataTable.Columns,
                 Row = row,
             };

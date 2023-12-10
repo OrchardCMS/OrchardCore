@@ -40,7 +40,7 @@ public class ContentPickerFieldImportHandler : StandardFieldImportHandler
         }
 
         var settings = context.ContentPartFieldDefinition.GetSettings<ContentPickerFieldSettings>();
-        var contentTypes = GetContentTypes(settings);
+        var contentTypes = await GetContentTypesAsync(settings);
 
         var items = await GetItemsAsync(contentTypes, text?.Trim());
 
@@ -66,7 +66,7 @@ public class ContentPickerFieldImportHandler : StandardFieldImportHandler
     protected override async Task<object> GetValueAsync(ContentFieldExportMapContext context)
     {
         var settings = context.ContentPartFieldDefinition.GetSettings<ContentPickerFieldSettings>();
-        var contentTypes = GetContentTypes(settings);
+        var contentTypes = await GetContentTypesAsync(settings);
 
         var field = context.ContentPart.Get<ContentPickerField>(context.ContentPartFieldDefinition.Name);
 
@@ -85,26 +85,26 @@ public class ContentPickerFieldImportHandler : StandardFieldImportHandler
         return string.Join("|", values);
     }
 
-    private List<string> GetContentTypes(ContentPickerFieldSettings settings)
+    private async Task<List<string>> GetContentTypesAsync(ContentPickerFieldSettings settings)
     {
         List<string> contentTypes;
 
         if (settings.DisplayAllContentTypes)
         {
-            contentTypes = _contentDefinitionManager.ListTypeDefinitions()
+            contentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
                 .Select(x => x.Name)
                 .ToList();
         }
         else if (settings.DisplayedStereotypes != null && settings.DisplayedStereotypes.Length > 0)
         {
-            contentTypes = _contentDefinitionManager.ListTypeDefinitions()
+            contentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
                 .Where(x => x.TryGetStereotype(out var stereotype) && settings.DisplayedStereotypes.Contains(stereotype))
                 .Select(x => x.Name)
                 .ToList();
         }
         else
         {
-            contentTypes = settings.DisplayedContentTypes.ToList();
+            contentTypes = [.. settings.DisplayedContentTypes];
         }
 
         return contentTypes;
