@@ -63,6 +63,8 @@ public class ImportFilesBackgroundTask : IBackgroundTask
 
         foreach (var entry in entries)
         {
+            entry.Status = ContentTransferEntryStatus.Processing;
+
             var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(entry.ContentType);
 
             if (contentTypeDefinition == null)
@@ -85,7 +87,8 @@ public class ImportFilesBackgroundTask : IBackgroundTask
 
             var file = await fileStore.GetFileStreamAsync(fileInfo);
             var errors = new Dictionary<string, string>();
-            using var dataTable = GetDataTable(errors.Add);
+            using var dataTable = GetDataTable(file, errors.Add);
+            await file.DisposeAsync();
 
             if (errors.Count > 0)
             {
@@ -99,7 +102,7 @@ public class ImportFilesBackgroundTask : IBackgroundTask
 
             progressPart.TotalRecords = dataTable.Rows.Count;
 
-            var contentItems = new List<ContentItem>();
+            var contentItems = new Dictionary<int, ContentItem>();
 
             foreach (DataRow row in dataTable.Rows)
             {
@@ -113,6 +116,12 @@ public class ImportFilesBackgroundTask : IBackgroundTask
 
                 var rowIndex = dataTable.Rows.IndexOf(row);
 
+                if (rowIndex > 0 && rowIndex <= progressPart.CurrentRow)
+                {
+                    // At this point, we know that this record was previously processed. Skip it.
+                    continue;
+                }
+
                 progressPart.CurrentRow = rowIndex;
 
                 var mapContext = new ContentImportContext()
@@ -124,10 +133,10 @@ public class ImportFilesBackgroundTask : IBackgroundTask
                 };
 
                 // Important to import the data first as it could identify existing content item.
-                // ImportAsync could change the content item id.
+                // ImportAsync could change the content-item id.
                 await contentImportManager.ImportAsync(mapContext);
 
-                contentItems.Insert(rowIndex, mapContext.ContentItem);
+                contentItems.Add(rowIndex, mapContext.ContentItem);
 
                 if (contentItems.Count == batchSize)
                 {
@@ -146,7 +155,7 @@ public class ImportFilesBackgroundTask : IBackgroundTask
             var nowUtc = _clock.UtcNow;
             entry.ProcessSaveUtc = nowUtc;
             entry.CompletedUtc = nowUtc;
-            entry.Status = progressPart.Errors.Count > 0 ? ContentTransferEntryStatus.CompletedWithErrors : ContentTransferEntryStatus.Completed;
+            entry.Status = progressPart.Errors?.Count > 0 ? ContentTransferEntryStatus.CompletedWithErrors : ContentTransferEntryStatus.Completed;
             entry.Put(progressPart);
 
             _session.Save(entry);
@@ -156,49 +165,49 @@ public class ImportFilesBackgroundTask : IBackgroundTask
         }
     }
 
-    private async Task SavePatchAsync(IList<ContentItem> contentItems, ImportFileProcessStatsPart stats)
+    private async Task SavePatchAsync(Dictionary<int, ContentItem> items, ImportFileProcessStatsPart stats)
     {
-        var existingItemIds = contentItems.Where(x => !string.IsNullOrEmpty(x.ContentItemId)).Select(x => x.ContentItemId).ToList();
+        var existingItemIds = items.Values.Where(x => !string.IsNullOrEmpty(x.ContentItemId)).Select(x => x.ContentItemId).ToList();
 
         // Attempt to find existing content item.
         var existingContentItems = (await _contentManager.GetAsync(existingItemIds, VersionOptions.DraftRequired)).ToDictionary(x => x.ContentItemId, x => x);
 
-        foreach (var contentItem in contentItems)
+        foreach (var item in items)
         {
             ContentValidateResult validationResult;
 
-            if (existingContentItems.TryGetValue(contentItem.ContentItemId, out var existingContentItem))
+            if (existingContentItems.TryGetValue(item.Value.ContentItemId, out var existingContentItem))
             {
                 // At this point, we are updating existing content item.
                 // Merge new values to existing.
-                existingContentItem.Merge(contentItem, _updateJsonMergeSettings);
-
+                existingContentItem.Merge(item, _updateJsonMergeSettings);
                 validationResult = await _contentManager.ValidateAsync(existingContentItem);
 
                 if (validationResult.Succeeded)
                 {
+                    await _contentManager.CreateAsync(existingContentItem, VersionOptions.Draft);
                     await _contentManager.PublishAsync(existingContentItem);
 
                     continue;
                 }
 
-                stats.Errors.Add(contentItems.IndexOf(contentItem));
+                stats.Errors.Add(item.Key);
 
                 continue;
             }
 
             // At this point, we are creating a new content item.
-            validationResult = await _contentManager.ValidateAsync(existingContentItem);
+            validationResult = await _contentManager.ValidateAsync(item.Value);
 
             if (validationResult.Succeeded)
             {
-                await _contentManager.CreateAsync(contentItem, VersionOptions.Draft);
-                await _contentManager.PublishAsync(contentItem);
+                await _contentManager.CreateAsync(item.Value, VersionOptions.Draft);
+                await _contentManager.PublishAsync(item.Value);
 
-                return;
+                continue;
             }
 
-            stats.Errors.Add(contentItems.IndexOf(contentItem));
+            stats.Errors.Add(item.Key);
         }
     }
 
@@ -213,9 +222,8 @@ public class ImportFilesBackgroundTask : IBackgroundTask
         await _session.SaveChangesAsync();
     }
 
-    private DataTable GetDataTable(Action<string, string> error)
+    private DataTable GetDataTable(Stream stream, Action<string, string> error)
     {
-        using var stream = new MemoryStream();
         using var package = new ExcelPackage(stream);
         using var workbook = package.Workbook;
         using var worksheets = workbook.Worksheets;

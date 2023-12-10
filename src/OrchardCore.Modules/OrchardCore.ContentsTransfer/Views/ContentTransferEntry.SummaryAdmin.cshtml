@@ -3,6 +3,7 @@
 @using OrchardCore.Contents
 @using OrchardCore.ContentManagement
 @using Microsoft.AspNetCore.Html
+@using OrchardCore.Entities
 
 @inject IAuthorizationService AuthorizationService
 
@@ -51,6 +52,24 @@
                 </div>
             }
         </div>
+
+        @if (entry.Status == ContentTransferEntryStatus.Processing)
+        {
+            var part = entry.As<ImportFileProcessStatsPart>();
+
+            @if (part?.TotalRecords > 0)
+            {
+                var process = part.TotalProcessed / part.TotalRecords;
+                <div class="row">
+                    <div class="col-12">
+                        <div class="progress" role="progressbar" title="@T["Progress"]" aria-label="@T["Progress"]" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                            <div class="progress-bar" style="width: @(process)%">@(process)%</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+
     </div>
     <div class="col-lg-auto col-12 d-flex justify-content-end">
         <div class="actions">
