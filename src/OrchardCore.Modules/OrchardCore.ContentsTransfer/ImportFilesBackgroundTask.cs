@@ -63,7 +63,7 @@ public class ImportFilesBackgroundTask : IBackgroundTask
 
         foreach (var entry in entries)
         {
-            var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(entry.ContentType);
+            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(entry.ContentType);
 
             if (contentTypeDefinition == null)
             {

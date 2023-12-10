@@ -147,7 +147,7 @@ public class AdminController : Controller, IUpdateModel
 
         options.ImportableTypes = [];
 
-        foreach (var contentTypeDefinition in _contentDefinitionManager.ListTypeDefinitions())
+        foreach (var contentTypeDefinition in await _contentDefinitionManager.ListTypeDefinitionsAsync())
         {
             var settings = contentTypeDefinition.GetSettings<ContentTypeTransferSettings>();
 
@@ -277,7 +277,7 @@ public class AdminController : Controller, IUpdateModel
             return NotFound();
         }
 
-        var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentTypeId);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentTypeId);
 
         if (contentTypeDefinition == null)
         {
@@ -336,7 +336,7 @@ public class AdminController : Controller, IUpdateModel
             return Unauthorized();
         }
 
-        var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentTypeId);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentTypeId);
 
         if (contentTypeDefinition == null)
         {
@@ -410,7 +410,7 @@ public class AdminController : Controller, IUpdateModel
             return NotFound();
         }
 
-        var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentTypeId);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentTypeId);
 
         if (contentTypeDefinition == null)
         {
@@ -481,7 +481,7 @@ public class AdminController : Controller, IUpdateModel
             Extension = ".xlsx",
         };
 
-        foreach (var contentTypeDefinition in _contentDefinitionManager.LoadTypeDefinitions())
+        foreach (var contentTypeDefinition in await _contentDefinitionManager.LoadTypeDefinitionsAsync())
         {
             var settings = contentTypeDefinition.GetSettings<ContentTypeTransferSettings>();
 
@@ -509,7 +509,7 @@ public class AdminController : Controller, IUpdateModel
             return NotFound();
         }
 
-        var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentTypeId);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentTypeId);
 
         if (contentTypeDefinition == null)
         {

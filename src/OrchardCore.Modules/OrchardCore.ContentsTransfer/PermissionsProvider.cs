@@ -15,7 +15,7 @@ public class PermissionsProvider : IPermissionProvider
         _contentDefinitionManager = contentDefinitionManager;
     }
 
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+    public async Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
         var permissions = new List<Permission>()
         {
@@ -25,13 +25,13 @@ public class PermissionsProvider : IPermissionProvider
             ContentTransferPermissions.ExportContentFromFile,
         };
 
-        foreach (var contentTypeDefinition in _contentDefinitionManager.LoadTypeDefinitions())
+        foreach (var contentTypeDefinition in await _contentDefinitionManager.LoadTypeDefinitionsAsync())
         {
             permissions.Add(ContentTypePermissionsHelper.CreateDynamicPermission(ContentTransferPermissions.ImportContentFromFileOfType, contentTypeDefinition.Name));
             permissions.Add(ContentTypePermissionsHelper.CreateDynamicPermission(ContentTransferPermissions.ExportContentFromFileOfType, contentTypeDefinition.Name));
         }
 
-        return Task.FromResult<IEnumerable<Permission>>(permissions);
+        return permissions;
     }
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
