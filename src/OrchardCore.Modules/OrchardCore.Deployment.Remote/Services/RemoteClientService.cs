@@ -105,6 +105,9 @@ namespace OrchardCore.Deployment.Remote.Services
             return remoteClient;
         }
 
+        public Task<bool> TryUpdateRemoteClientAsync(RemoteClient remoteClient, string apiKey)
+            => TryUpdateRemoteClientAsync(remoteClient.Id, remoteClient.ClientName, apiKey);
+
         public async Task<bool> TryUpdateRemoteClientAsync(string id, string clientName, string apiKey)
         {
             var remoteClient = await GetRemoteClientAsync(id);

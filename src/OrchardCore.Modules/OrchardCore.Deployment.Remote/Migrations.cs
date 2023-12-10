@@ -80,13 +80,11 @@ public class Migrations : DataMigration
                 });
 
             var apiKeySecret = await _secretService.GetOrCreateSecretAsync<TextSecret>(
-                $"OrchardCore.Deployment.Remote.ApiKey.{remoteInstance.ClientName}");
-
-            apiKeySecret.Text = remoteInstance.ApiKey;
-
-            await _secretService.UpdateSecretAsync(rsaEncryptionSecret);
-            await _secretService.UpdateSecretAsync(rsaSigningSecret);
-            await _secretService.UpdateSecretAsync(apiKeySecret);
+                $"OrchardCore.Deployment.Remote.ApiKey.{remoteInstance.ClientName}",
+                secret =>
+                {
+                    secret.Text = remoteInstance.ApiKey;
+                });
 
             remoteInstance.ApiKey = null;
             await _remoteInstanceService.UpdateRemoteInstanceAsync(remoteInstance);
@@ -115,30 +113,25 @@ public class Migrations : DataMigration
                 });
 
             var apiKeySecret = await _secretService.GetOrCreateSecretAsync<TextSecret>(
-                $"OrchardCore.Deployment.Remote.ApiKey.{remoteClient.ClientName}");
-
-            if (remoteClient.ProtectedApiKey?.Length > 0)
-            {
-                try
+                $"OrchardCore.Deployment.Remote.ApiKey.{remoteClient.ClientName}",
+                secret =>
                 {
-                    apiKeySecret.Text = Encoding.UTF8.GetString(_dataProtector.Unprotect(remoteClient.ProtectedApiKey));
-                }
-                catch
-                {
-                    _logger.LogError("The Api Key could not be decrypted. It may have been encrypted using a different key.");
-                }
-            }
-
-            await _secretService.UpdateSecretAsync(rsaEncryptionSecret);
-            await _secretService.UpdateSecretAsync(rsaSigningSecret);
-            await _secretService.UpdateSecretAsync(apiKeySecret);
+                    if (remoteClient.ProtectedApiKey?.Length > 0)
+                    {
+                        try
+                        {
+                            secret.Text = Encoding.UTF8.GetString(_dataProtector.Unprotect(remoteClient.ProtectedApiKey));
+                        }
+                        catch
+                        {
+                            _logger.LogError("The Api Key could not be decrypted. It may have been encrypted using a different key.");
+                        }
+                    }
+                });
 
             remoteClient.ProtectedApiKey = [];
 
-            await _remoteClientService.TryUpdateRemoteClientAsync(
-                remoteClient.Id,
-                remoteClient.ClientName,
-                apiKeySecret.Text);
+            await _remoteClientService.TryUpdateRemoteClientAsync(remoteClient, apiKeySecret.Text);
         }
     }
 #pragma warning restore CS0618 // Type or member is obsolete
