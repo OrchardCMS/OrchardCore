@@ -1,4 +1,3 @@
-using System;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -53,9 +52,9 @@ public class TextFieldImportHandler : StandardFieldImportHandler
         {
             var multiText = context.ContentPartFieldDefinition.GetSettings<MultiTextFieldSettings>();
 
-            return multiText?.Options?.Select(x => x.Value)?.ToArray() ?? Array.Empty<string>();
+            return multiText?.Options?.Select(x => x.Value)?.ToArray() ?? [];
         }
 
-        return predefined?.Options?.Select(x => x.Value)?.ToArray() ?? Array.Empty<string>();
+        return predefined?.Options?.Select(x => x.Value)?.ToArray() ?? [];
     }
 }
