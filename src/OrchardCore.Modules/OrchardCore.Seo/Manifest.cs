@@ -11,5 +11,6 @@ using OrchardCore.Modules.Manifest;
     {
         "OrchardCore.Contents",
         "OrchardCore.Recipes.Core",
+        "OrchardCore.Media",
     }
 )]

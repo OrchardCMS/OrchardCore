@@ -25,7 +25,7 @@ public class ContentImportHandlerBase
             return true;
         }
 
-        foreach (var term in importColumn.AdditionalNames ?? Array.Empty<string>())
+        foreach (var term in importColumn.AdditionalNames ?? [])
         {
             if (string.Equals(columnName, term, StringComparison.OrdinalIgnoreCase))
             {
@@ -36,6 +36,6 @@ public class ContentImportHandlerBase
         return false;
     }
 
-    protected static string[] SplitCellValues(DataRow row, DataColumn column, string seperator = ",")
-        => row[column]?.ToString()?.Split(seperator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? Array.Empty<string>();
+    protected static string[] SplitCellValues(DataRow row, DataColumn column, string separator = ",")
+        => row[column]?.ToString()?.Split(separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? [];
 }

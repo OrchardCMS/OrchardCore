@@ -1,6 +1,4 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentsTransfer.Models;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -10,17 +8,6 @@ namespace OrchardCore.ContentsTransfer.Drivers;
 
 public class ListContentTransferEntryOptionsDisplayDriver : DisplayDriver<ListContentTransferEntryOptions>
 {
-    private readonly IAuthorizationService _authorizationService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public ListContentTransferEntryOptionsDisplayDriver(
-        IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor)
-    {
-        _authorizationService = authorizationService;
-        _httpContextAccessor = httpContextAccessor;
-    }
-
     // Maintain the Options prefix for compatibility with binding.
     protected override void BuildPrefix(ListContentTransferEntryOptions model, string htmlFieldPrefix)
     {
@@ -50,9 +37,6 @@ public class ListContentTransferEntryOptionsDisplayDriver : DisplayDriver<ListCo
                 .Location("Search:10"),
             Initialize<ListContentTransferEntryOptions>("ContentTransferEntriesAdminListImport", m => BuildOptionsViewModel(m, model))
                 .Location("Create:10"),
-            Initialize<ListContentTransferEntryOptions>("ContentTransferEntriesAdminListExport", m => BuildOptionsViewModel(m, model))
-                .Location("Create:11")
-                .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, ContentTransferPermissions.ExportContentFromFile)),
             Initialize<ListContentTransferEntryOptions>("ListContentTransferEntriesAdminListActionBarButtons", m => BuildOptionsViewModel(m, model))
                 .Location("ActionBarButtons:10"),
             Initialize<ListContentTransferEntryOptions>("ListContentTransferEntriesAdminListSummary", m => BuildOptionsViewModel(m, model))
