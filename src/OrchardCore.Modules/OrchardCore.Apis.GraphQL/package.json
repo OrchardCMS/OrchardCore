@@ -23,7 +23,7 @@
     "prop-types": "15.8.1",
     "style-loader": "^3.3.3",
     "ts-loader": "^9.4.4",
-    "typescript": "^5.2.2",
+    "typescript": "^5.3.3",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4"
   },
