@@ -41,6 +41,11 @@ public class ContentTransferEntry : Entity
     public string Owner { get; set; }
 
     /// <summary>
+    /// The name of the user who last modified this entry.
+    /// </summary>
+    public string Author { get; set; }
+
+    /// <summary>
     /// The Original file name.
     /// </summary>
     public string UploadedFileName { get; set; }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
@@ -9,15 +10,11 @@ using OrchardCore.Title.Models;
 
 namespace OrchardCore.ContentsTransfer.Handlers;
 
-public class TitlePartContentImportHandler : ContentImportHandlerBase, IContentPartImportHandler
+public class TitlePartContentImportHandler(IStringLocalizer<TitlePartContentImportHandler> stringLocalizer)
+    : ContentImportHandlerBase, IContentPartImportHandler
 {
-    protected readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S = stringLocalizer;
     private ImportColumn _column;
-
-    public TitlePartContentImportHandler(IStringLocalizer<TitlePartContentImportHandler> stringLocalizer)
-    {
-        S = stringLocalizer;
-    }
 
     public IReadOnlyCollection<ImportColumn> GetColumns(ImportContentPartContext context)
     {
@@ -51,14 +48,17 @@ public class TitlePartContentImportHandler : ContentImportHandlerBase, IContentP
         ArgumentNullException.ThrowIfNull(context.Columns, nameof(context.Columns));
         ArgumentNullException.ThrowIfNull(context.Row, nameof(context.Row));
 
-        if (_column?.Name != null)
+        var knownColumn = GetColumns(context).FirstOrDefault();
+
+        if (knownColumn != null)
         {
             foreach (DataColumn column in context.Columns)
             {
-                if (!Is(column.ColumnName, _column))
+                if (!Is(column.ColumnName, knownColumn))
                 {
                     continue;
                 }
+
                 var title = context.Row[column]?.ToString();
 
                 if (string.IsNullOrWhiteSpace(title))
@@ -69,7 +69,7 @@ public class TitlePartContentImportHandler : ContentImportHandlerBase, IContentP
                 context.ContentItem.DisplayText = title;
                 context.ContentItem.Alter<TitlePart>(part =>
                 {
-                    part.Title = title.Trim();
+                    part.Title = title;
                 });
             }
         }

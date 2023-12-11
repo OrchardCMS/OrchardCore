@@ -54,11 +54,11 @@ public class ContentPickerFieldImportHandler : StandardFieldImportHandler
             }
             else if (selectedItems.Length > 0)
             {
-                field.ContentItemIds = new[] { selectedItems[0] };
+                field.ContentItemIds = [selectedItems[0]];
             }
             else
             {
-                field.ContentItemIds = Array.Empty<string>();
+                field.ContentItemIds = [];
             }
         });
     }
