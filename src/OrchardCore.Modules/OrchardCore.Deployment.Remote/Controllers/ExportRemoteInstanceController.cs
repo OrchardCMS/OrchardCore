@@ -60,8 +60,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             }
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
-
-            if (deploymentPlan == null)
+            if (deploymentPlan is null)
             {
                 return NotFound();
             }
@@ -73,8 +72,8 @@ namespace OrchardCore.Deployment.Remote.Controllers
             }
 
             string archiveFileName;
-            var filename = deploymentPlan.Name.ToSafeName() + ".zip";
 
+            var filename = deploymentPlan.Name.ToSafeName() + ".zip";
             using (var fileBuilder = new TemporaryFileBuilder())
             {
                 archiveFileName = PathExtensions.Combine(Path.GetTempPath(), filename);
@@ -96,7 +95,6 @@ namespace OrchardCore.Deployment.Remote.Controllers
             }
 
             HttpResponseMessage response;
-
             try
             {
                 using (var requestContent = new MultipartFormDataContent())

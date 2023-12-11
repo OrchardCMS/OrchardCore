@@ -24,7 +24,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
     [Admin]
     public class RemoteInstanceController : Controller
     {
-        private readonly RemoteInstanceService _service;
+        private readonly RemoteInstanceService _remoteInstanceService;
         private readonly ISecretService _secretService;
         private readonly IAuthorizationService _authorizationService;
         private readonly PagerOptions _pagerOptions;
@@ -35,7 +35,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         protected readonly IHtmlLocalizer H;
 
         public RemoteInstanceController(
-            RemoteInstanceService service,
+            RemoteInstanceService remoteInstanceService,
             ISecretService secretService,
             IAuthorizationService authorizationService,
             IOptions<PagerOptions> pagerOptions,
@@ -45,7 +45,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             IHtmlLocalizer<RemoteInstanceController> htmlLocalizer
             )
         {
-            _service = service;
+            _remoteInstanceService = remoteInstanceService;
             _secretService = secretService;
             _authorizationService = authorizationService;
             _pagerOptions = pagerOptions.Value;
@@ -65,7 +65,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
-            var remoteInstances = (await _service.GetRemoteInstanceListAsync()).RemoteInstances;
+            var remoteInstances = (await _remoteInstanceService.GetRemoteInstanceListAsync()).RemoteInstances;
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
@@ -131,22 +131,9 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 ValidateViewModel(model);
             }
 
-            var secret = await _secretService.GetOrCreateSecretAsync<TextSecret>(
-                $"OrchardCore.Deployment.Remote.ApiKey.{model.ClientName}",
-                secret =>
-                {
-                    secret.Text = model.ApiKey;
-                });
-
-            if (secret.Text != model.ApiKey)
-            {
-                secret.Text = model.ApiKey;
-                await _secretService.UpdateSecretAsync(secret);
-            }
-
             if (ModelState.IsValid)
             {
-                await _service.CreateRemoteInstanceAsync(model.Name, model.Url, model.ClientName);
+                await _remoteInstanceService.CreateRemoteInstanceAsync(model.Name, model.Url, model.ClientName, model.ApiKey);
 
                 await _notifier.SuccessAsync(H["Remote instance created successfully."]);
                 return RedirectToAction(nameof(Index));
@@ -163,7 +150,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 return Forbid();
             }
 
-            var remoteInstance = await _service.GetRemoteInstanceAsync(id);
+            var remoteInstance = await _remoteInstanceService.GetRemoteInstanceAsync(id);
             if (remoteInstance is null)
             {
                 return NotFound();
@@ -176,9 +163,9 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 Id = remoteInstance.Id,
                 Name = remoteInstance.Name,
+                Url = remoteInstance.Url,
                 ClientName = remoteInstance.ClientName,
                 ApiKey = secret.Text,
-                Url = remoteInstance.Url,
             };
 
             return View(model);
@@ -192,7 +179,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 return Forbid();
             }
 
-            var remoteInstance = await _service.LoadRemoteInstanceAsync(model.Id);
+            var remoteInstance = await _remoteInstanceService.LoadRemoteInstanceAsync(model.Id);
             if (remoteInstance is null)
             {
                 return NotFound();
@@ -203,26 +190,14 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 ValidateViewModel(model);
             }
 
-            var secret = await _secretService.GetOrCreateSecretAsync<TextSecret>(
-                $"OrchardCore.Deployment.Remote.ApiKey.{model.ClientName}",
-                secret =>
-                {
-                    secret.Text = model.ApiKey;
-                });
-
-            if (secret.Text != model.ApiKey)
-            {
-                secret.Text = model.ApiKey;
-                await _secretService.UpdateSecretAsync(secret);
-            }
-
             if (ModelState.IsValid)
             {
-                await _service.UpdateRemoteInstanceAsync(
+                await _remoteInstanceService.UpdateRemoteInstanceAsync(
                     model.Id,
                     model.Name,
                     model.Url,
-                    model.ClientName);
+                    model.ClientName,
+                    model.ApiKey);
 
                 await _notifier.SuccessAsync(H["Remote instance updated successfully."]);
 
@@ -241,14 +216,14 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 return Forbid();
             }
 
-            var remoteInstance = await _service.LoadRemoteInstanceAsync(id);
+            var remoteInstance = await _remoteInstanceService.LoadRemoteInstanceAsync(id);
 
             if (remoteInstance == null)
             {
                 return NotFound();
             }
 
-            await _service.DeleteRemoteInstanceAsync(id);
+            await _remoteInstanceService.DeleteRemoteInstanceAsync(id);
 
             await _notifier.SuccessAsync(H["Remote instance deleted successfully."]);
 
@@ -266,7 +241,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             if (itemIds?.Count() > 0)
             {
-                var remoteInstances = (await _service.LoadRemoteInstanceListAsync()).RemoteInstances;
+                var remoteInstances = (await _remoteInstanceService.LoadRemoteInstanceListAsync()).RemoteInstances;
                 var checkedContentItems = remoteInstances.Where(x => itemIds.Contains(x.Id)).ToList();
 
                 switch (options.BulkAction)
@@ -276,12 +251,12 @@ namespace OrchardCore.Deployment.Remote.Controllers
                     case ContentsBulkAction.Remove:
                         foreach (var item in checkedContentItems)
                         {
-                            await _service.DeleteRemoteInstanceAsync(item.Id);
+                            await _remoteInstanceService.DeleteRemoteInstanceAsync(item.Id);
                         }
                         await _notifier.SuccessAsync(H["Remote instances successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
+                        throw new InvalidOperationException($"Invalid bulk action '{options.BulkAction}'.");
                 }
             }
 

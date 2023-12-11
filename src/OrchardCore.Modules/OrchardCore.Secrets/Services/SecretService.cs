@@ -74,7 +74,7 @@ public class SecretService : ISecretService
         return await GetSecretAsync(binding) as TSecret;
     }
 
-    public async Task<TSecret> GetOrCreateSecretAsync<TSecret>(string name, Action<TSecret> configure = null)
+    public async Task<TSecret> GetOrCreateSecretAsync<TSecret>(string name, Action<TSecret> configure = null, string sourceName = null)
         where TSecret : SecretBase, new()
     {
         var secret = await GetSecretAsync<TSecret>(name);
@@ -96,7 +96,14 @@ public class SecretService : ISecretService
 
         configure?.Invoke(secret);
 
-        await UpdateSecretAsync(binding, secret);
+        if (sourceName is not null && sourceName != name && (await GetSecretAsync<TSecret>(sourceName)) is not null)
+        {
+            await UpdateSecretAsync(binding, secret, sourceName);
+        }
+        else
+        {
+            await UpdateSecretAsync(binding, secret);
+        }
 
         return secret;
     }
@@ -144,26 +151,37 @@ public class SecretService : ISecretService
             throw new InvalidOperationException($"The secret '{secret.Name}' doesn't exist.");
         }
 
-        //if (!string.Equals(binding.Name, binding.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
-        //{
-        //    throw new InvalidOperationException("The name contains invalid characters.");
-        //}
-
         await UpdateSecretAsync(binding, secret);
     }
 
-    public async Task UpdateSecretAsync(SecretBinding binding, SecretBase secret)
+    public async Task UpdateSecretAsync(SecretBinding binding, SecretBase secret, string sourceName = null)
     {
-        //if (!string.Equals(binding.Name, binding.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
-        //{
-        //    throw new InvalidOperationException("The name contains invalid characters.");
-        //}
+        SecretBinding existingBinding = null;
+        if (sourceName is not null)
+        {
+            var secretBindings = await GetSecretBindingsAsync();
+            if (!secretBindings.TryGetValue(sourceName, out existingBinding))
+            {
+                throw new InvalidOperationException($"The secret '{secret.Name}' doesn't exist.");
+            }
+        }
+
+        if (!string.Equals(binding.Name, binding.Name.ToSafeNamespace(), StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException("The name contains invalid characters.");
+        }
 
         secret.Name = binding.Name;
 
         var secretStore = _stores.FirstOrDefault(store => string.Equals(store.Name, binding.Store, StringComparison.OrdinalIgnoreCase));
         if (secretStore is not null)
         {
+            // Remove existing binding first.
+            if (existingBinding is not null)
+            {
+                await RemoveSecretAsync(existingBinding);
+            }
+
             await _bindingsManager.UpdateSecretBindingAsync(binding.Name, binding);
 
             // Updating a readonly store is a noop.

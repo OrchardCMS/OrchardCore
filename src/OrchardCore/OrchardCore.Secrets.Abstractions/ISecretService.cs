@@ -11,12 +11,15 @@ public interface ISecretService
     Task<SecretBase> GetSecretAsync(string name);
     TSecret CreateSecret<TSecret>() where TSecret : SecretBase, new();
     Task<TSecret> GetSecretAsync<TSecret>(string name) where TSecret : SecretBase, new();
-    Task<TSecret> GetOrCreateSecretAsync<TSecret>(string name, Action<TSecret> configure = null) where TSecret : SecretBase, new();
+
+    Task<TSecret> GetOrCreateSecretAsync<TSecret>(string name, Action<TSecret> configure = null, string sourceName = null)
+        where TSecret : SecretBase, new();
+
     Task<SecretBase> GetSecretAsync(SecretBinding binding);
     Task UpdateSecretAsync(SecretBase secret);
     Task<IDictionary<string, SecretBinding>> GetSecretBindingsAsync();
     Task<IDictionary<string, SecretBinding>> LoadSecretBindingsAsync();
     IReadOnlyCollection<SecretStoreInfo> GetSecretStoreInfos();
-    Task UpdateSecretAsync(SecretBinding binding, SecretBase secret);
+    Task UpdateSecretAsync(SecretBinding binding, SecretBase secret, string sourceName = null);
     Task RemoveSecretAsync(SecretBinding binding);
 }

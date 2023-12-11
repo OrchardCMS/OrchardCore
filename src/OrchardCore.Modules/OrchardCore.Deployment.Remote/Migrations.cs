@@ -60,38 +60,35 @@ public class Migrations : DataMigration
         foreach (var remoteInstance in remoteInstances)
         {
             var rsaEncryptionSecret = await _secretService.GetOrCreateSecretAsync<RSASecret>(
-                $"OrchardCore.Deployment.Remote.RsaEncryptionSecret.{remoteInstance.ClientName}",
-                secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.Public));
+                name: $"OrchardCore.Deployment.Remote.RsaEncryptionSecret.{remoteInstance.ClientName}",
+                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.Public));
 
             var rsaSigningSecret = await _secretService.GetOrCreateSecretAsync<RSASecret>(
-                $"OrchardCore.Deployment.Remote.RsaSigningSecret.{remoteInstance.ClientName}",
-                secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivatePair));
+                name: $"OrchardCore.Deployment.Remote.RsaSigningSecret.{remoteInstance.ClientName}",
+                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivatePair));
 
             var apiKeySecret = await _secretService.GetOrCreateSecretAsync<TextSecret>(
-                $"OrchardCore.Deployment.Remote.ApiKey.{remoteInstance.ClientName}",
-                secret =>
-                {
-                    secret.Text = remoteInstance.ApiKey;
-                });
+                name: $"OrchardCore.Deployment.Remote.ApiKey.{remoteInstance.ClientName}",
+                configure: secret => secret.Text = remoteInstance.ApiKey);
 
             remoteInstance.ApiKey = null;
-            await _remoteInstanceService.UpdateRemoteInstanceAsync(remoteInstance);
+            await _remoteInstanceService.UpdateRemoteInstanceAsync(remoteInstance, apiKeySecret.Text);
         }
 
         var remoteClients = (await _remoteClientService.GetRemoteClientListAsync()).RemoteClients;
         foreach (var remoteClient in remoteClients)
         {
             var rsaEncryptionSecret = await _secretService.GetOrCreateSecretAsync<RSASecret>(
-                $"OrchardCore.Deployment.Remote.RsaEncryptionSecret.{remoteClient.ClientName}",
-                secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivatePair));
+                name: $"OrchardCore.Deployment.Remote.RsaEncryptionSecret.{remoteClient.ClientName}",
+                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivatePair));
 
             var rsaSigningSecret = await _secretService.GetOrCreateSecretAsync<RSASecret>(
-                $"OrchardCore.Deployment.Remote.RsaSigningSecret.{remoteClient.ClientName}",
-                secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.Public));
+                name: $"OrchardCore.Deployment.Remote.RsaSigningSecret.{remoteClient.ClientName}",
+                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.Public));
 
             var apiKeySecret = await _secretService.GetOrCreateSecretAsync<TextSecret>(
-                $"OrchardCore.Deployment.Remote.ApiKey.{remoteClient.ClientName}",
-                secret =>
+                name: $"OrchardCore.Deployment.Remote.ApiKey.{remoteClient.ClientName}",
+                configure: secret =>
                 {
                     if (remoteClient.ProtectedApiKey?.Length > 0)
                     {

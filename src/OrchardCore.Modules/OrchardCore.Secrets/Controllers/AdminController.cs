@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
@@ -123,10 +122,10 @@ public class AdminController : Controller
             Pager = pagerShape,
         };
 
-        model.Options.ContentsBulkAction = new List<SelectListItem>()
-        {
-            new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) },
-        };
+        model.Options.ContentsBulkAction =
+        [
+            new() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) },
+        ];
 
         return View("Index", model);
     }
@@ -208,7 +207,7 @@ public class AdminController : Controller
                 ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["The name is mandatory."]);
             }
 
-            if (!string.Equals(model.Name, model.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(model.Name, model.Name.ToSafeNamespace(), StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["The name contains invalid characters."]);
             }
@@ -284,19 +283,20 @@ public class AdminController : Controller
         }
 
         var secretBindings = await _secretService.LoadSecretBindingsAsync();
-
         if (ModelState.IsValid)
         {
             if (string.IsNullOrWhiteSpace(model.Name))
             {
                 ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["The name is mandatory."]);
             }
+
             if (!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase))
             {
-                if (!string.Equals(model.Name, model.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+                if (!string.Equals(model.Name, model.Name.ToSafeNamespace(), StringComparison.OrdinalIgnoreCase))
                 {
                     ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["The name contains invalid characters."]);
                 }
+
                 if (secretBindings.ContainsKey(model.Name))
                 {
                     ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["A secret with the same name already exists."]);
@@ -304,26 +304,27 @@ public class AdminController : Controller
             }
         }
 
-        if (!secretBindings.TryGetValue(sourceName, out var binding))
+        if (!secretBindings.TryGetValue(sourceName, out var existingBinding))
         {
             return NotFound();
         }
 
-        var secret = await _secretService.GetSecretAsync(binding);
+        var secret = await _secretService.GetSecretAsync(existingBinding);
 
         var editor = await _displayManager.UpdateEditorAsync(secret, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
         model.Editor = editor;
 
         if (ModelState.IsValid)
         {
-            // Remove this before updating the binding value.
-            await _secretService.RemoveSecretAsync(binding);
+            var binding = new SecretBinding
+            {
+                Name = model.Name,
+                Store = model.SelectedStore,
+                Description = model.Description,
+                Type = model.Type,
+            };
 
-            binding.Name = model.Name;
-            binding.Store = model.SelectedStore;
-            binding.Description = model.Description;
-
-            await _secretService.UpdateSecretAsync(binding, secret);
+            await _secretService.UpdateSecretAsync(binding, secret, sourceName);
 
             return RedirectToAction(nameof(Index));
         }
