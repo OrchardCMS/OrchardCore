@@ -42,13 +42,13 @@ namespace OrchardCore.Deployment.Remote.Controllers
             var remoteClient = remoteClientList.RemoteClients.FirstOrDefault(remote => remote.ClientName == model.ClientName);
             if (remoteClient is null)
             {
-                return StatusCode((int)HttpStatusCode.BadRequest, "The remote client was not provided");
+                return StatusCode((int)HttpStatusCode.BadRequest, "The remote client was not provided.");
             }
 
-            var secret = await _secretService.GetSecretAsync<TextSecret>($"OrchardCore.Deployment.Remote.ApiKey.{model.ClientName}");
-            if (secret is null || secret.Text !=  model.ApiKey)
+            var secret = await _secretService.GetSecretAsync<TextSecret>($"{Secrets.ApiKey}.{model.ClientName}");
+            if (secret is null || secret.Text != model.ApiKey)
             {
-                return StatusCode((int)HttpStatusCode.BadRequest, "The Api Key was not recognized");
+                return StatusCode((int)HttpStatusCode.BadRequest, "The Api Key was not recognized.");
             }
 
             // Create a temporary filename to save the archive

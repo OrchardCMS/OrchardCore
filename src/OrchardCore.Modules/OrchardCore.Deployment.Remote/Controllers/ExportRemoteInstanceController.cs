@@ -81,8 +81,8 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 var deploymentPlanResult = new DeploymentPlanResult(
                     fileBuilder,
                     new RecipeDescriptor(),
-                    $"OrchardCore.Deployment.Remote.RsaEncryptionSecret.{remoteInstance.ClientName}",
-                    $"OrchardCore.Deployment.Remote.RsaSigningSecret.{remoteInstance.ClientName}");
+                    $"{Secrets.Encryption}.{remoteInstance.ClientName}",
+                    $"{Secrets.Signing}.{remoteInstance.ClientName}");
 
                 await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
 
@@ -112,10 +112,10 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
                     requestContent.Add(new StringContent(remoteInstance.ClientName), nameof(ImportViewModel.ClientName));
 
-                    var secret = await _secretService.GetSecretAsync<TextSecret>($"OrchardCore.Deployment.Remote.ApiKey.{remoteInstance.ClientName}");
+                    var secret = await _secretService.GetSecretAsync<TextSecret>($"{Secrets.ApiKey}.{remoteInstance.ClientName}");
                     if (secret is null)
                     {
-                        return StatusCode((int)HttpStatusCode.BadRequest, "The Api Key was not recognized");
+                        return StatusCode((int)HttpStatusCode.BadRequest, "The Api Key doesn't exist.");
                     }
 
                     requestContent.Add(new StringContent(secret.Text), nameof(ImportViewModel.ApiKey));
@@ -129,7 +129,10 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 }
                 else
                 {
-                    await _notifier.ErrorAsync(H["An error occurred while sending the deployment to the remote instance: \"{0} ({1})\"", response.ReasonPhrase, (int)response.StatusCode]);
+                    await _notifier.ErrorAsync(
+                        H["An error occurred while sending the deployment to the remote instance: \"{0} ({1})\".",
+                        response.ReasonPhrase,
+                        (int)response.StatusCode]);
                 }
             }
             finally

@@ -207,7 +207,7 @@ public class AdminController : Controller
                 ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["The name is mandatory."]);
             }
 
-            if (!string.Equals(model.Name, model.Name.ToSafeNamespace(), StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(model.Name, model.Name.ToSafeFullName(), StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["The name contains invalid characters."]);
             }
@@ -292,7 +292,7 @@ public class AdminController : Controller
 
             if (!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase))
             {
-                if (!string.Equals(model.Name, model.Name.ToSafeNamespace(), StringComparison.OrdinalIgnoreCase))
+                if (!string.Equals(model.Name, model.Name.ToSafeFullName(), StringComparison.OrdinalIgnoreCase))
                 {
                     ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["The name contains invalid characters."]);
                 }

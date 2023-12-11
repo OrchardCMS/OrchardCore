@@ -64,15 +64,7 @@ public class SecretService : ISecretService
     public TSecret CreateSecret<TSecret>() where TSecret : SecretBase, new() => CreateSecret(typeof(TSecret).Name) as TSecret;
 
     public async Task<TSecret> GetSecretAsync<TSecret>(string name) where TSecret : SecretBase, new()
-    {
-        var bindings = await GetSecretBindingsAsync();
-        if (!bindings.TryGetValue(name, out var binding))
-        {
-            return null;
-        }
-
-        return await GetSecretAsync(binding) as TSecret;
-    }
+        => await GetSecretAsync(name) as TSecret;
 
     public async Task<TSecret> GetOrCreateSecretAsync<TSecret>(string name, Action<TSecret> configure = null, string sourceName = null)
         where TSecret : SecretBase, new()
@@ -166,7 +158,7 @@ public class SecretService : ISecretService
             }
         }
 
-        if (!string.Equals(binding.Name, binding.Name.ToSafeNamespace(), StringComparison.OrdinalIgnoreCase))
+        if (!string.Equals(binding.Name, binding.Name.ToSafeFullName(), StringComparison.OrdinalIgnoreCase))
         {
             throw new InvalidOperationException("The name contains invalid characters.");
         }

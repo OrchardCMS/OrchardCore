@@ -220,9 +220,9 @@ namespace OrchardCore.Mvc.Utilities
         }
 
         /// <summary>
-        /// Generates a safe namespace allowing the '.' delimiter.
+        /// Generates a safe full name allowing the '.' delimiter.
         /// </summary>
-        public static string ToSafeNamespace(this string name)
+        public static string ToSafeFullName(this string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {

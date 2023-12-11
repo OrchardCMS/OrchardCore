@@ -158,7 +158,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 return NotFound();
             }
 
-            var secret = await _secretService.GetSecretAsync<TextSecret>($"OrchardCore.Deployment.Remote.ApiKey.{remoteClient.ClientName}");
+            var secret = await _secretService.GetSecretAsync<TextSecret>($"{Secrets.ApiKey}.{remoteClient.ClientName}");
             var model = new EditRemoteClientViewModel
             {
                 Id = remoteClient.Id,
