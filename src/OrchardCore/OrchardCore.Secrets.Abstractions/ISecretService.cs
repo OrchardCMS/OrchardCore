@@ -15,8 +15,10 @@ public interface ISecretService
     Task<TSecret> GetOrCreateSecretAsync<TSecret>(string name, Action<TSecret> configure = null, string sourceName = null)
         where TSecret : SecretBase, new();
 
-    Task<SecretBase> GetSecretAsync(SecretBinding binding);
     Task UpdateSecretAsync(SecretBase secret);
+    Task RemoveSecretAsync(string name);
+
+    Task<SecretBase> GetSecretAsync(SecretBinding binding);
     Task<IDictionary<string, SecretBinding>> GetSecretBindingsAsync();
     Task<IDictionary<string, SecretBinding>> LoadSecretBindingsAsync();
     IReadOnlyCollection<SecretStoreInfo> GetSecretStoreInfos();

@@ -156,16 +156,14 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 return NotFound();
             }
 
-            var secret = await _secretService.GetOrCreateSecretAsync<TextSecret>(
-                $"OrchardCore.Deployment.Remote.ApiKey.{remoteInstance.ClientName}");
-
+            var secret = await _secretService.GetSecretAsync<TextSecret>($"OrchardCore.Deployment.Remote.ApiKey.{remoteInstance.ClientName}");
             var model = new EditRemoteInstanceViewModel
             {
                 Id = remoteInstance.Id,
                 Name = remoteInstance.Name,
                 Url = remoteInstance.Url,
                 ClientName = remoteInstance.ClientName,
-                ApiKey = secret.Text,
+                ApiKey = secret?.Text,
             };
 
             return View(model);

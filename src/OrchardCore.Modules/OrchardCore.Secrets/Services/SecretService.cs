@@ -196,6 +196,17 @@ public class SecretService : ISecretService
         }
     }
 
+    public async Task RemoveSecretAsync(string name)
+    {
+        var secretBindings = await GetSecretBindingsAsync();
+        if (!secretBindings.TryGetValue(name, out var binding))
+        {
+            return;
+        }
+
+        await RemoveSecretAsync(binding);
+    }
+
     public async Task RemoveSecretAsync(SecretBinding binding)
     {
         var store = _stores.FirstOrDefault(store => string.Equals(store.Name, binding.Store, StringComparison.OrdinalIgnoreCase))

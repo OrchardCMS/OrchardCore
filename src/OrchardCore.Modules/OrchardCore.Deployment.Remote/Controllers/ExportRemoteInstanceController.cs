@@ -25,7 +25,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
     {
         private static readonly HttpClient _httpClient = new();
 
-        private readonly RemoteInstanceService _service;
+        private readonly RemoteInstanceService _remoteInstanceService;
         private readonly IDeploymentManager _deploymentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
@@ -34,7 +34,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         protected readonly IHtmlLocalizer H;
 
         public ExportRemoteInstanceController(
-            RemoteInstanceService service,
+            RemoteInstanceService remoteInstanceService,
             IAuthorizationService authorizationService,
             IDeploymentManager deploymentManager,
             ISecretService secretService,
@@ -42,7 +42,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             INotifier notifier,
             IHtmlLocalizer<ExportRemoteInstanceController> localizer)
         {
-            _service = service;
+            _remoteInstanceService = remoteInstanceService;
             _authorizationService = authorizationService;
             _deploymentManager = deploymentManager;
             _secretService = secretService;
@@ -65,7 +65,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 return NotFound();
             }
 
-            var remoteInstance = await _service.GetRemoteInstanceAsync(remoteInstanceId);
+            var remoteInstance = await _remoteInstanceService.GetRemoteInstanceAsync(remoteInstanceId);
             if (remoteInstance is null)
             {
                 return NotFound();
@@ -112,8 +112,11 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
                     requestContent.Add(new StringContent(remoteInstance.ClientName), nameof(ImportViewModel.ClientName));
 
-                    var secret = await _secretService.GetOrCreateSecretAsync<TextSecret>(
-                        $"OrchardCore.Deployment.Remote.ApiKey.{remoteInstance.ClientName}");
+                    var secret = await _secretService.GetSecretAsync<TextSecret>($"OrchardCore.Deployment.Remote.ApiKey.{remoteInstance.ClientName}");
+                    if (secret is null)
+                    {
+                        return StatusCode((int)HttpStatusCode.BadRequest, "The Api Key was not recognized");
+                    }
 
                     requestContent.Add(new StringContent(secret.Text), nameof(ImportViewModel.ApiKey));
 

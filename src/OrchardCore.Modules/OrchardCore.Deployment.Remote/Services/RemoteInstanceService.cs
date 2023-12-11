@@ -52,6 +52,10 @@ namespace OrchardCore.Deployment.Remote.Services
                 return;
             }
 
+            await _secretService.RemoveSecretAsync($"OrchardCore.Deployment.Remote.RsaEncryptionSecret.{remoteInstance.ClientName}");
+            await _secretService.RemoveSecretAsync($"OrchardCore.Deployment.Remote.RsaSigningSecret.{remoteInstance.ClientName}");
+            await _secretService.RemoveSecretAsync($"OrchardCore.Deployment.Remote.ApiKey.{remoteInstance.ClientName}");
+
             remoteInstanceList.RemoteInstances.Remove(remoteInstance);
             await _documentManager.UpdateAsync(remoteInstanceList);
         }

@@ -48,13 +48,19 @@ namespace OrchardCore.Deployment.Remote.Services
         public async Task DeleteRemoteClientAsync(string id)
         {
             var remoteClientList = await GetRemoteClientListAsync();
-            var remoteClient = await GetRemoteClientAsync(id);
 
-            if (remoteClient != null)
+            var remoteClient = await GetRemoteClientAsync(id);
+            if (remoteClient is null)
             {
-                remoteClientList.RemoteClients.Remove(remoteClient);
-                _session.Save(remoteClientList);
+                return;
             }
+
+            await _secretService.RemoveSecretAsync($"OrchardCore.Deployment.Remote.RsaEncryptionSecret.{remoteClient.ClientName}");
+            await _secretService.RemoveSecretAsync($"OrchardCore.Deployment.Remote.RsaSigningSecret.{remoteClient.ClientName}");
+            await _secretService.RemoveSecretAsync($"OrchardCore.Deployment.Remote.ApiKey.{remoteClient.ClientName}");
+
+            remoteClientList.RemoteClients.Remove(remoteClient);
+            _session.Save(remoteClientList);
         }
 
         public async Task<RemoteClient> CreateRemoteClientAsync(string clientName, string apiKey)
