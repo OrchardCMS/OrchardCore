@@ -1,6 +1,6 @@
 # Shortcodes (`OrchardCore.Shortcodes`)
 
-Adds Shortcode capabilities. 
+Adds Shortcode capabilities.
 
 Shortcodes are small pieces of code wrapped into \[brackets\] that can add some behavior to content editors, like embedding media files.
 
@@ -29,7 +29,7 @@ Shortcode templates are designed to be able to override a code based Shortcode o
 | `Content` | The inner content provided by the user, if any.
 | `Context` | The context made available to the Shortcode from the caller, e.g. an `HtmlBodyPart`. |
 
-### Example Shortcode Templates :
+### Example Shortcode Templates
 
 #### `[display_text]`
 
@@ -41,7 +41,7 @@ Shortcode templates are designed to be able to override a code based Shortcode o
 | `Content` | `{{ Context.ContentItem.DisplayText }}`<br>`{{ More }}` |
 
 !!! note
-    The `ContentItem` `Context` is only available when the caller, i.e. an `HtmlBodyPart`, has passed the `ContentItem` value to the `Context`. 
+    The `ContentItem` `Context` is only available when the caller, i.e. an `HtmlBodyPart`, has passed the `ContentItem` value to the `Context`.
 
 #### `[site_name]`
 
@@ -52,7 +52,7 @@ Shortcode templates are designed to be able to override a code based Shortcode o
 | `Usage` | [site_name] |
 | `Content` | `{{ Site.SiteName }}` |
 
-####  `[primary]`
+#### `[primary]`
 
 | Parameter | Value |
 | --------- | ----------- |
@@ -132,9 +132,11 @@ services.AddShortcode<ImageShortcodeProvider>("image", describe => {
 The [image] shortcode renders an image from the site's media library.
 
 Example
+
 ```
 [image alt="My lovely image"]my-image.jpg[/image]
 ```
+
 This will render an image tag for the file `my-image.jpg` in the site's media folder.
 
 The following parameters can be used:
@@ -159,9 +161,11 @@ The following parameters can be used:
 The [asset_url] shortcode returns a relative url from the site's media library.
 
 Example
+
 ```
 [asset_url]my-image.jpg[/asset_url]
 ```
+
 This will return a relative url of `/my-tenant/media/my-image.jpg` for the file `my-image.jpg` in the site's media folder.
 
 The following parameters can be used:
@@ -181,16 +185,17 @@ The following parameters can be used:
 ### `[locale]`
 
 The `locale` shortcode conditionally renders content in the specified language. Output is based on the current thread culture.
-This shortcode is only available when the `OrchardCore.Localization` module is enabled. 
+This shortcode is only available when the `OrchardCore.Localization` module is enabled.
 
 Example
+
 ```
 [locale en]English Text[/locale][locale fr]French Text[/locale]
 ```
 
-By default, the shortcode will render the content if the current locale is a parent of the specified language. 
+By default, the shortcode will render the content if the current locale is a parent of the specified language.
 For example, if the current locale is `en-CA` and you specified this shortcode: `[locale en]English Text[/locale]` The output will be `English Text`.
-You can disable this behavior by passing `false` as the second argument of the shortcode. 
+You can disable this behavior by passing `false` as the second argument of the shortcode.
 `[locale en false]English Text[/locale]` would render nothing if the current culture is not exactly `en`.
 
 ## Rendering Shortcodes

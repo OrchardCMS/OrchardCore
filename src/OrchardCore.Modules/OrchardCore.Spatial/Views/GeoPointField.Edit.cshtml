@@ -12,7 +12,7 @@
     <div class="@Orchard.GetEndClasses(true)">
         <div class="row">
             <div class="col-md-6">
-                <label asp-for="Latitude">@T["Latitude"]</label>
+                <label asp-for="Latitude" class="form-label">@T["Latitude"]</label>
                 <input asp-for="Latitude" type="number" min="-90.000000" max="90.000000" step=".000001" placeholder="00.000000" class="form-control content-preview-text" required="@settings.Required" />
                 @if (!string.IsNullOrEmpty(settings.Hint))
                 {
@@ -20,7 +20,7 @@
                 }
             </div>
             <div class="col-md-6">
-                <label asp-for="Longitude">@T["Longitude"]</label>
+                <label asp-for="Longitude" class="form-label">@T["Longitude"]</label>
                 <input asp-for="Longitude" type="number" min="-180.000000" max="180.000000" step=".000001" placeholder="00.000000" class="form-control content-preview-text" required="@settings.Required" />
                 @if (!string.IsNullOrEmpty(settings.Hint))
                 {

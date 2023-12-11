@@ -85,13 +85,13 @@ If you are running on Azure App Services or if you are using Elasticsearch, then
 ## Lucene Queries
 
 The Lucene module provides a management UI and APIs for querying Lucene data using ElasticSearch Queries.
-See: https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html
+See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html>
 
 ### Query Filters
 
-Query filters are used to retrieve records from Lucene without taking care of the boost values on them. So, it is retrieving records just like a SQL database would do. 
+Query filters are used to retrieve records from Lucene without taking care of the boost values on them. So, it is retrieving records just like a SQL database would do.
 
-Here is an example of a filtered query: 
+Here is an example of a filtered query:
 
 ```json
 {
@@ -184,7 +184,7 @@ An alternative to the previous one with [`simple_query_string`](https://www.elas
 
 As you can see it allows to filter on multiple query types. All of the Query types that are available in Lucene are also filters.
 
-So you can use: 
+So you can use:
 
 - `bool`
 - `geo_distance`
@@ -202,8 +202,8 @@ So you can use:
 - `terms`
 - `wildcard`
 
-See ElasticSearch documentation for more details: 
-https://www.elastic.co/guide/en/elasticsearch/reference/current/query-filter-context.html
+See ElasticSearch documentation for more details:
+<https://www.elastic.co/guide/en/elasticsearch/reference/current/query-filter-context.html>
 
 ## Automatic mapping
 

@@ -7,6 +7,8 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Search.Lucene.Model;
 using YesSql;
@@ -16,13 +18,29 @@ namespace OrchardCore.Search.Lucene
     public class Migrations : DataMigration
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly ShellDescriptor _shellDescriptor;
 
-        public Migrations(IContentDefinitionManager contentDefinitionManager)
+        public Migrations(IContentDefinitionManager contentDefinitionManager, ShellDescriptor shellDescriptor)
         {
             _contentDefinitionManager = contentDefinitionManager;
+            _shellDescriptor = shellDescriptor;
         }
 
+        // New installations don't need to be upgraded, but because there is no initial migration record,
+        // 'UpgradeAsync' is called in a new 'CreateAsync' but only if the feature was already installed.
         public async Task<int> CreateAsync()
+        {
+            if (_shellDescriptor.WasFeatureAlreadyInstalled("OrchardCore.Search.Lucene"))
+            {
+                await UpgradeAsync();
+            }
+
+            // Shortcut other migration steps on new content definition schemas.
+            return 1;
+        }
+
+        // Upgrade an existing installation.
+        private async Task UpgradeAsync()
         {
             var contentTypeDefinitions = await _contentDefinitionManager.LoadTypeDefinitionsAsync();
 
@@ -208,8 +226,6 @@ namespace OrchardCore.Search.Lucene
                     throw;
                 }
             });
-
-            return 1;
         }
     }
 }
